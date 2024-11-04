@@ -1106,11 +1106,6 @@ void PermissionUmaUtil::RecordPermissionPromptPriorCount(
       ->Add(count);
 }
 
-void PermissionUmaUtil::RecordInfobarDetailsExpanded(bool expanded) {
-  base::UmaHistogramBoolean("Permissions.Prompt.Infobar.DetailsExpanded",
-                            expanded);
-}
-
 void PermissionUmaUtil::RecordCrowdDenyDelayedPushNotification(
     base::TimeDelta delay) {
   base::UmaHistogramTimes(

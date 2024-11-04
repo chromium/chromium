@@ -703,8 +703,6 @@ class PermissionUmaUtil {
       bool did_click_manage,
       bool did_click_learn_more);
 
-  static void RecordInfobarDetailsExpanded(bool expanded);
-
   static void RecordCrowdDenyDelayedPushNotification(base::TimeDelta delay);
 
   static void RecordCrowdDenyVersionAtAbuseCheckTime(

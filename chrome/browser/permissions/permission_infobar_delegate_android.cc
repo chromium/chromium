@@ -32,10 +32,7 @@ using SecondaryButtonBehavior =
 
 }  // namespace
 
-PermissionInfoBarDelegate::~PermissionInfoBarDelegate() {
-  permissions::PermissionUmaUtil::RecordInfobarDetailsExpanded(
-      details_expanded_);
-}
+PermissionInfoBarDelegate::~PermissionInfoBarDelegate() = default;
 
 // static
 infobars::InfoBar* PermissionInfoBarDelegate::Create(
