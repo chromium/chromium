@@ -83,10 +83,6 @@ def _ValidateDelta(root, delta):
     generated_files_to_skip = {
         ('third_party/blink/public/mojom/runtime_feature_state/'
          'runtime_feature.mojom'),
-        # TODO(chasej@): Remove this entry after CL lands to move to
-        # origin_trials/
-        ('third_party/blink/public/mojom/origin_trial_feature/'
-         'origin_trial_feature.mojom'),
         ('third_party/blink/public/mojom/origin_trials/'
          'origin_trial_feature.mojom'),
     }
