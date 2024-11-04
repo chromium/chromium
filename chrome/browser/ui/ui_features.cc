@@ -125,15 +125,15 @@ BASE_FEATURE(kIOSPromoPaymentBubble,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kIOSPromoPasswordBubbleQRCodeURL{
-    &kIOSPromoRefreshedPasswordBubble, "qr_code_url",
+    &kIOSPromoRefreshedPasswordBubble, "password_promo_qr_code_url",
     "https://apps.apple.com/app/apple-store/"
     "id535886823?pt=9008&ct=desktop-chr-passwords&mt=8"};
 const base::FeatureParam<std::string> kIOSPromoAddressBubbleQRCodeURL{
-    &kIOSPromoAddressBubble, "qr_code_url",
+    &kIOSPromoAddressBubble, "address_promo_qr_code_url",
     "https://apps.apple.com/app/apple-store/"
     "id535886823?pt=9008&ct=desktop-chr-address&mt=8"};
 const base::FeatureParam<std::string> kIOSPromoPaymentBubbleQRCodeURL{
-    &kIOSPromoPaymentBubble, "qr_code_url",
+    &kIOSPromoPaymentBubble, "payment_promo_qr_code_url",
     "https://apps.apple.com/app/apple-store/"
     "id535886823?pt=9008&ct=desktop-chr-payment&mt=8"};
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
