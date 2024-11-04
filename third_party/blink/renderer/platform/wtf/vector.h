@@ -1470,8 +1470,8 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   void AppendVector(const Vector<U, otherCapacity, V>&);
   template <typename Iterator>
   void AppendRange(Iterator begin, Iterator end);
-  template <typename U, size_t N>
-  void AppendSpan(base::span<U, N>);
+  template <typename U, size_t N, typename Ptr>
+  void AppendSpan(base::span<U, N, Ptr>);
   template <typename U>
   void UncheckedAppend(U&&);
 
@@ -2230,8 +2230,9 @@ void Vector<T, InlineCapacity, Allocator>::AppendRange(Iterator begin,
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename U, size_t N>
-void Vector<T, InlineCapacity, Allocator>::AppendSpan(base::span<U, N> data) {
+template <typename U, size_t N, typename Ptr>
+void Vector<T, InlineCapacity, Allocator>::AppendSpan(
+    base::span<U, N, Ptr> data) {
   Append(data.data(), base::checked_cast<wtf_size_t>(data.size()));
 }
 
