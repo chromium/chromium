@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/default.pb.h"
 #include "components/optimization_guide/proto/features/forms_annotations.pb.h"
@@ -157,6 +158,19 @@ class FormsPredictionsFeatureTypeMap {
   }
 
   static std::string_view ToString() { return "FormsPredictions"; }
+};
+
+class BlingPrototypingFeatureTypeMap {
+ public:
+  using LoggingData = proto::BlingPrototypingLoggingData;
+  using Request = proto::BlingPrototypingRequest;
+  using Response = proto::BlingPrototypingResponse;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_bling_prototyping();
+  }
+
+  static std::string_view ToString() { return "BlingPrototyping"; }
 };
 
 class ModelPrototypingFeatureTypeMap {
