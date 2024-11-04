@@ -106,7 +106,7 @@ std::vector<uint8_t> CanonicalizeHost(std::string_view host) {
     return std::vector<uint8_t>();
   }
 
-  return new_host.value();
+  return std::move(new_host).value();
 }
 
 // PreloadResult is the result of resolving a specific name in the preloaded
@@ -691,7 +691,7 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
         pkp_result->last_observed = key_pins_list_last_update_time_;
         pkp_result->include_subdomains = iter->second.second;
         const PinSet* pinset = iter->second.first;
-        for (auto hash : pinset->static_spki_hashes()) {
+        for (const auto& hash : pinset->static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
           if (hash.size() == 32) {
@@ -699,7 +699,7 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
                     &pkp_result->spki_hashes);
           }
         }
-        for (auto hash : pinset->bad_static_spki_hashes()) {
+        for (const auto& hash : pinset->bad_static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
           if (hash.size() == 32) {

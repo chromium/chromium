@@ -51,9 +51,8 @@ const uint64_t kMaxMergedHeaderAndBodySize = 1400;
 const size_t kRequestBodyBufferSize = 1 << 14;  // 16KB
 
 std::string GetResponseHeaderLines(const HttpResponseHeaders& headers) {
-  std::string raw_headers = headers.raw_headers();
   std::string cr_separated_headers;
-  base::StringTokenizer tokenizer(raw_headers, std::string(1, '\0'));
+  base::StringTokenizer tokenizer(headers.raw_headers(), std::string(1, '\0'));
   while (tokenizer.GetNext()) {
     base::StrAppend(&cr_separated_headers, {tokenizer.token_piece(), "\n"});
   }

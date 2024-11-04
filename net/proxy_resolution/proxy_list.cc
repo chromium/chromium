@@ -165,7 +165,7 @@ std::string ProxyList::ToPacString() const {
                       ? "DIRECT"
                       : ProxyServerToPacResultElement(proxy_chain.First());
   }
-  return proxy_list.empty() ? std::string() : proxy_list;
+  return proxy_list;
 }
 
 std::string ProxyList::ToDebugString() const {

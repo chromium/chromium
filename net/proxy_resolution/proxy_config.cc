@@ -126,7 +126,7 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules,
           continue;  // Unexpected.
         }
         AddProxyURIListToProxyList(
-            url_scheme, &single_proxies, ProxyServer::SCHEME_HTTP,
+            std::move(url_scheme), &single_proxies, ProxyServer::SCHEME_HTTP,
             allow_bracketed_proxy_chains, is_quic_allowed);
         type = Type::PROXY_LIST;
         return;

@@ -134,7 +134,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
   if (env_value.empty())
     return false;
 
-  env_value = FixupProxyHostScheme(scheme, env_value);
+  env_value = FixupProxyHostScheme(scheme, std::move(env_value));
   ProxyChain proxy_chain =
       ProxyUriToProxyChain(env_value, ProxyServer::SCHEME_HTTP);
   if (proxy_chain.IsValid() &&
@@ -741,7 +741,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       // port number from the hostname. If we find this, we need to convert it.
       std::string fixed = value;
       fixed[space] = ':';
-      string_table_[host_key] = fixed;
+      string_table_[host_key] = std::move(fixed);
     } else {
       // We don't need to parse the port number out; GetProxyFromSettings()
       // would only append it right back again. So we just leave the port
@@ -1065,7 +1065,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
   ProxyServer::Scheme scheme = host_key == SettingGetter::PROXY_SOCKS_HOST
                                    ? ProxyServer::SCHEME_SOCKS5
                                    : ProxyServer::SCHEME_HTTP;
-  host = FixupProxyHostScheme(scheme, host);
+  host = FixupProxyHostScheme(scheme, std::move(host));
   ProxyServer proxy_server =
       ProxyUriToProxyServer(host, ProxyServer::SCHEME_HTTP);
   if (proxy_server.is_valid()) {
