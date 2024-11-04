@@ -345,8 +345,7 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
   ReleaseWGPUTextureAccessIfNeeded();
 
   if (frame_pool->CopyRGBATextureToVideoFrame(
-          Format(), current_swap_buffer_->GetSharedImage()->size(),
-          PredefinedColorSpaceToGfxColorSpace(color_space_),
+          current_swap_buffer_->GetSharedImage()->size(),
           kTopLeft_GrSurfaceOrigin, current_swap_buffer_->GetSharedImage(),
           current_swap_buffer_->GetSyncToken(), dst_color_space,
           std::move(callback))) {

@@ -1172,8 +1172,7 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
 
   std::optional<gpu::SyncToken> sync_token =
       copy_function(src_color_buffer->shared_image, produce_sync_token,
-                    src_color_buffer->format, src_alpha_type,
-                    src_color_buffer->size, src_color_buffer->color_space);
+                    src_alpha_type, src_color_buffer->size);
 
   if (need_restore_access) {
     src_color_buffer->BeginAccess(sync_token.value_or(gpu::SyncToken()),
@@ -1196,9 +1195,8 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
 
   auto copy_function =
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
-          const gpu::SyncToken& produce_sync_token, viz::SharedImageFormat,
-          SkAlphaType src_alpha_type, const gfx::Size&,
-          const gfx::ColorSpace&) -> std::optional<gpu::SyncToken> {
+          const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
+          const gfx::Size&) -> std::optional<gpu::SyncToken> {
     dst_gl->WaitSyncTokenCHROMIUM(produce_sync_token.GetConstData());
 
     GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
@@ -1237,9 +1235,8 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     SourceDrawingBuffer src_buffer) {
   auto copy_function =
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
-          const gpu::SyncToken& produce_sync_token, viz::SharedImageFormat,
-          SkAlphaType src_alpha_type, const gfx::Size&,
-          const gfx::ColorSpace&) -> std::optional<gpu::SyncToken> {
+          const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
+          const gfx::Size&) -> std::optional<gpu::SyncToken> {
     dst_raster_interface->WaitSyncTokenCHROMIUM(
         produce_sync_token.GetConstData());
 
@@ -1280,15 +1277,12 @@ bool DrawingBuffer::CopyToVideoFrame(
                                                  : kBottomLeft_GrSurfaceOrigin;
   auto copy_function =
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
-          const gpu::SyncToken& produce_sync_token,
-          viz::SharedImageFormat src_format, SkAlphaType src_alpha_type,
-          const gfx::Size& src_size, const gfx::ColorSpace& src_color_space)
-      -> std::optional<gpu::SyncToken> {
+          const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
+          const gfx::Size& src_size) -> std::optional<gpu::SyncToken> {
     raster_interface->WaitSyncTokenCHROMIUM(produce_sync_token.GetConstData());
     bool succeeded = frame_pool->CopyRGBATextureToVideoFrame(
-        src_format, src_size, src_color_space, src_surface_origin,
-        src_shared_image, gpu::SyncToken(), dst_color_space,
-        std::move(callback));
+        src_size, src_surface_origin, src_shared_image, gpu::SyncToken(),
+        dst_color_space, std::move(callback));
     if (!succeeded) {
       return std::nullopt;
     }

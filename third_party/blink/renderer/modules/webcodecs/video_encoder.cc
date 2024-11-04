@@ -995,15 +995,6 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
                               CrossThreadBindOnce(metadata_fix_lambda, frame))
                               .Then(std::move(pool_result_cb));
 
-    // TODO(crbug.com/1224279): This assumes that all frames are 8-bit sRGB.
-    // Expose the color space and pixel format that is backing
-    // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
-    // SkImage.
-    auto format = (frame->format() == media::PIXEL_FORMAT_XBGR ||
-                   frame->format() == media::PIXEL_FORMAT_ABGR)
-                      ? viz::SinglePlaneFormat::kRGBA_8888
-                      : viz::SinglePlaneFormat::kBGRA_8888;
-
 #if BUILDFLAG(IS_APPLE)
     // The Apple hardware encoder properly sets output color spaces, so we can
     // round trip through the encoder and decoder w/o downgrading to BT.601.
@@ -1029,8 +1020,8 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CopyRGBATextureToVideoFrame",
                                       this, "timestamp", frame->timestamp());
     if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-            format, frame->coded_size(), frame->ColorSpace(), origin,
-            frame->shared_image(), frame->acquire_sync_token(), kDstColorSpace,
+            frame->coded_size(), origin, frame->shared_image(),
+            frame->acquire_sync_token(), kDstColorSpace,
             std::move(callback_chain))) {
       return true;
     }

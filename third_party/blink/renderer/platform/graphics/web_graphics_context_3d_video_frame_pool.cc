@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -264,9 +265,7 @@ void CopyToGpuMemoryBuffer(
 }  // namespace
 
 bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
-    viz::SharedImageFormat src_format,
     const gfx::Size& src_size,
-    const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
     scoped_refptr<gpu::ClientSharedImage> src_shared_image,
     const gpu::SyncToken& acquire_sync_token,
@@ -302,9 +301,8 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   CHECK(dst_frame->HasSharedImage());
 
   if (!media::CopyRGBATextureToVideoFrame(
-          raster_context_provider, src_format, src_size, src_color_space,
-          src_surface_origin, src_shared_image, acquire_sync_token,
-          dst_frame.get())) {
+          raster_context_provider, src_size, src_surface_origin,
+          src_shared_image, acquire_sync_token, dst_frame.get())) {
     return false;
   }
 
@@ -401,28 +399,8 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
          format == media::PIXEL_FORMAT_ARGB)
       << "Invalid format " << format;
   DCHECK(src_video_frame->HasSharedImage());
-  viz::SharedImageFormat texture_format;
-  switch (format) {
-    case media::PIXEL_FORMAT_XBGR:
-      texture_format = viz::SinglePlaneFormat::kRGBX_8888;
-      break;
-    case media::PIXEL_FORMAT_ABGR:
-      texture_format = viz::SinglePlaneFormat::kRGBA_8888;
-      break;
-    case media::PIXEL_FORMAT_XRGB:
-      texture_format = viz::SinglePlaneFormat::kBGRX_8888;
-      break;
-    case media::PIXEL_FORMAT_ARGB:
-      texture_format = viz::SinglePlaneFormat::kBGRA_8888;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
-  }
-
   return CopyRGBATextureToVideoFrame(
-      texture_format, src_video_frame->coded_size(),
-      src_video_frame->ColorSpace(),
+      src_video_frame->coded_size(),
       src_video_frame->metadata().texture_origin_is_top_left
           ? kTopLeft_GrSurfaceOrigin
           : kBottomLeft_GrSurfaceOrigin,

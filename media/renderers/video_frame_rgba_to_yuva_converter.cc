@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/simple_sync_token_client.h"
@@ -21,9 +20,7 @@ namespace media {
 
 bool CopyRGBATextureToVideoFrame(
     viz::RasterContextProvider* provider,
-    viz::SharedImageFormat src_format,
     const gfx::Size& src_size,
-    const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
     scoped_refptr<gpu::ClientSharedImage> src_shared_image,
     const gpu::SyncToken& acquire_sync_token,

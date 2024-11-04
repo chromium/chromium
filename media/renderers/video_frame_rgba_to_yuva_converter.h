@@ -10,7 +10,6 @@
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace gfx {
-class ColorSpace;
 class Size;
 }  // namespace gfx
 
@@ -21,7 +20,6 @@ struct SyncToken;
 
 namespace viz {
 class RasterContextProvider;
-class SharedImageFormat;
 }  // namespace viz
 
 namespace media {
@@ -34,9 +32,7 @@ class VideoFrame;
 // copy. Updates `dst_video_frame`'s sync token to wait on copy completion.
 MEDIA_EXPORT bool CopyRGBATextureToVideoFrame(
     viz::RasterContextProvider* raster_context_provider,
-    viz::SharedImageFormat src_format,
     const gfx::Size& src_size,
-    const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
     scoped_refptr<gpu::ClientSharedImage> src_shared_image,
     const gpu::SyncToken& acquire_sync_token,

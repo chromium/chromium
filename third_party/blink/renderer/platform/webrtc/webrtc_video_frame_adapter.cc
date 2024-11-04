@@ -245,15 +245,6 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
                       ? kTopLeft_GrSurfaceOrigin
                       : kBottomLeft_GrSurfaceOrigin;
 
-    // TODO(crbug.com/1224279): This assumes that all frames are 8-bit sRGB.
-    // Expose the color space and pixel format that is backing
-    // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
-    // SkImage.
-    auto format = (source_frame->format() == media::PIXEL_FORMAT_XBGR ||
-                   source_frame->format() == media::PIXEL_FORMAT_ABGR)
-                      ? viz::SinglePlaneFormat::kRGBA_8888
-                      : viz::SinglePlaneFormat::kBGRA_8888;
-
     scoped_refptr<media::VideoFrame> dst_frame;
     {
       // Blocking is necessary to create the GpuMemoryBuffer from this thread.
@@ -265,9 +256,9 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     if (dst_frame) {
       CHECK(dst_frame->HasSharedImage());
       const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
-          raster_context_provider.get(), format, source_frame->coded_size(),
-          source_frame->ColorSpace(), origin, source_frame->shared_image(),
-          source_frame->acquire_sync_token(), dst_frame.get());
+          raster_context_provider.get(), source_frame->coded_size(), origin,
+          source_frame->shared_image(), source_frame->acquire_sync_token(),
+          dst_frame.get());
       if (copy_succeeded) {
         // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames,
         // so we must manually copy over properties relevant to the encoder.

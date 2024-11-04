@@ -471,10 +471,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   using CopyFunctionRef = base::FunctionRef<std::optional<gpu::SyncToken>(
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
-      viz::SharedImageFormat,
       SkAlphaType alpha_type,
-      const gfx::Size&,
-      const gfx::ColorSpace&)>;
+      const gfx::Size&)>;
   bool CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
                               bool dst_is_unpremul_gl,
                               SourceDrawingBuffer src_buffer,
