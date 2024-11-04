@@ -67,7 +67,7 @@ constexpr gfx::Size kEmojiBarItemPreferredSize(32, 32);
 constexpr auto kGifsButtonCornerRadius = 12;
 
 // Horizontal padding between items in the item row.
-constexpr int kItemGap = 12;
+constexpr int kItemGap = 8;
 
 std::unique_ptr<views::View> CreateEmptyCell() {
   auto cell_view = std::make_unique<views::View>();
