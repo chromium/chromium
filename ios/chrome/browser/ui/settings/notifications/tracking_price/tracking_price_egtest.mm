@@ -26,16 +26,11 @@ using chrome_test_util::SettingsTrackingPriceTableView;
   AppLaunchConfiguration config;
   // Feature parameters follow a key/value format to enable or disable
   // parameters.
-  std::string params =
-      ":enable_price_tracking/true/enable_price_notification/true";
-  std::string priceNotificationsFlag =
-      std::string(commerce::kCommercePriceTracking.name) + params;
   std::string shoppingListFlag = std::string("ShoppingList");
   std::string settingsMenuItem = std::string("NotificationSettingsMenuItem");
 
-  config.additional_args.push_back(
-      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag +
-      "," + settingsMenuItem);
+  config.additional_args.push_back("--enable-features=" + shoppingListFlag +
+                                   "," + settingsMenuItem);
 
   return config;
 }

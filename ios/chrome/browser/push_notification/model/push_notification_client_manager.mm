@@ -29,8 +29,7 @@ PushNotificationClientManager::PushNotificationClientManager(
     : task_runner_(task_runner) {
   CHECK(task_runner_);
 
-  if (IsPriceNotificationsEnabled() &&
-      optimization_guide::features::IsPushNotificationsEnabled()) {
+  if (optimization_guide::features::IsPushNotificationsEnabled()) {
     AddPushNotificationClient(
         std::make_unique<CommercePushNotificationClient>());
   }

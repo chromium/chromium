@@ -1248,13 +1248,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       overflow_menu::Destination::RecentTabs,
       overflow_menu::Destination::SiteInfo,
       overflow_menu::Destination::Settings,
+      overflow_menu::Destination::PriceNotifications,
+      overflow_menu::Destination::WhatsNew,
   };
-
-  if (IsPriceNotificationsEnabled()) {
-    destinations.push_back(overflow_menu::Destination::PriceNotifications);
-  }
-
-  destinations.push_back(overflow_menu::Destination::WhatsNew);
 
   return destinations;
 }

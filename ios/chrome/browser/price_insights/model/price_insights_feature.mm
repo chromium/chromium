@@ -39,8 +39,7 @@ bool IsPriceInsightsEnabled(ProfileIOS* profile) {
     return false;
   }
 
-  return service->IsPriceInsightsEligible() ||
-         service->IsCommercePriceTrackingEnabled();
+  return service->IsPriceInsightsEligible();
 }
 
 std::string GetLowPriceParamValue() {

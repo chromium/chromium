@@ -2150,7 +2150,7 @@ struct EnhancedSafeBrowsingActivePromoData
 // Returns YES if the Notifications settings should show.
 - (BOOL)shouldShowNotificationsSettings {
   return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
-         (IsPriceNotificationsEnabled() ||
+         (IsPriceTrackingEnabled(_profile) ||
           IsContentNotificationEnabled(_profile) ||
           IsIOSTipsNotificationsEnabled() ||
           base::FeatureList::IsEnabled(
