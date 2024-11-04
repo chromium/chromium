@@ -170,6 +170,7 @@ constexpr std::string_view kSpan = "span";
 constexpr std::string_view kSrc = "src";
 #endif
 constexpr std::string_view kStrong = "strong";
+constexpr std::string_view kStyle = "style";
 constexpr std::string_view kSubmit = "submit";
 constexpr std::string_view kTable = "table";
 constexpr std::string_view kTableCell = "td";
@@ -398,7 +399,8 @@ std::u16string FindChildTextInner(const WebNode& node,
         IsAutofillableElement(element.DynamicTo<WebFormControlElement>())) {
       return std::u16string();
     }
-    skip_node = HasTagName<kScript>(element) || HasTagName<kNoScript>(element);
+    skip_node = HasTagName<kScript>(element) ||
+                HasTagName<kNoScript>(element) || HasTagName<kStyle>(element);
   }
 
   std::u16string node_text;
