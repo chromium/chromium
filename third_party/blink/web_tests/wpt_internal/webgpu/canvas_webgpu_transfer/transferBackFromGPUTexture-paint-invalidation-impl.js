@@ -32,4 +32,5 @@ async function waitForCanvasUpdate(canvas) {
   while (canvas.width != 100) {
     await new Promise(resolve => requestAnimationFrame(resolve));
   }
+  await new Promise(resolve => requestAnimationFrame(resolve));
 }
