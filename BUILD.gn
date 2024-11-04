@@ -1165,7 +1165,7 @@ if (use_blink && !is_cronet_build) {
     ]
   } else {
     base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), ".")
-    out_dir = get_path_info(root_build_dir, "file")
+    out_dir = get_path_info(root_build_dir, "name")
     _common_web_test_options += [
       "--build-directory",
       base_out_dir,
