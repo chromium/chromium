@@ -40,7 +40,9 @@ MediaEngagementServiceFactory::MediaEngagementServiceFactory()
 
 MediaEngagementServiceFactory::~MediaEngagementServiceFactory() = default;
 
-KeyedService* MediaEngagementServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MediaEngagementServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new MediaEngagementService(Profile::FromBrowserContext(context));
+  return std::make_unique<MediaEngagementService>(
+      Profile::FromBrowserContext(context));
 }
