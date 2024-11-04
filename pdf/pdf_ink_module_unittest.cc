@@ -1181,10 +1181,9 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
                                                     kInvalidationAreaMouseUp));
 
   PerformUndo();
-  // TODO(crbug.com/376301209): Determine if the small size reported for the
-  // entire stroke makes sense.  What is being returned by
-  // `ink::ModeledShape::Bounds()` looks like it is smaller than what would be
-  // expected given the inputs.
+  // This size is smaller than the area of the merged invalidation constants
+  // above because InkStrokeModeler modeled the "V" shaped input into an input
+  // with a much gentler line slope.
   const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(8.0f, 13.0f),
                                             gfx::Size(25.0f, 7.0f));
   EXPECT_THAT(
@@ -1219,10 +1218,9 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
                                                     kInvalidationAreaMouseUp));
 
   PerformUndo();
-  // TODO(crbug.com/376301209): Determine if the small size reported for the
-  // entire stroke makes sense.  What is being returned by
-  // `ink::ModeledShape::Bounds()` looks like it is smaller than what would be
-  // expected given the inputs.
+  // This size is smaller than the area of the merged invalidation constants
+  // above because InkStrokeModeler modeled the "V" shaped input into an input
+  // with a much gentler line slope.
   const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(7.0f, 12.0f),
                                             gfx::Size(27.0f, 9.0f));
   EXPECT_THAT(
