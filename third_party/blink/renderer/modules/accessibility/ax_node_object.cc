@@ -5415,7 +5415,7 @@ void AXNodeObject::AddInlineTextBoxChildren() {
   CHECK(ShouldLoadInlineTextBoxes());
   CHECK(GetLayoutObject());
   GetLayoutObject()->CheckIsNotDestroyed();
-  CHECK(GetLayoutObject()->IsText());
+  CHECK(GetLayoutObject()->IsText()) << GetLayoutObject() << " " << this;
   CHECK(!GetLayoutObject()->NeedsLayout());
   CHECK(AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes));
   CHECK(!AXObjectCache().GetAXMode().HasExperimentalFlags(
