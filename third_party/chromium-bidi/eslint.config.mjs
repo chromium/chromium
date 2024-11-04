@@ -235,7 +235,12 @@ export default [
       '@typescript-eslint/require-await': 'warn',
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/return-await': ['error', 'always'],
-      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': [
+        'error',
+        {
+          considerDefaultExhaustiveForUnions: true,
+        },
+      ],
       '@typescript-eslint/no-unused-expressions': 'off',
       'import/no-extraneous-dependencies': 'off',
     },

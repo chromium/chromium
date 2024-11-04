@@ -301,6 +301,7 @@ export abstract class Realm {
       'Runtime.callFunctionOn',
       {
         functionDeclaration: String(
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string
           (remoteObject: Protocol.Runtime.RemoteObject) => String(remoteObject),
         ),
         awaitPromise: false,
