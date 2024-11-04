@@ -63,11 +63,14 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
       manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
   drive::DriveServiceInterface* GetDriveService() override;
   google_apis::RequestSender* GetGoogleApisRequestSender() override;
+  bool IsGoogler() override;
 
   // KeyedService:
   void Shutdown() override;
 
  private:
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
   std::unique_ptr<manta::ScannerProvider> scanner_provider_;
   ScannerSystemStateProvider system_state_provider_;
 

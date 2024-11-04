@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
@@ -30,6 +31,7 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_url_generator.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -75,27 +77,28 @@ ScannerKeyedService::ScannerKeyedService(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<manta::ScannerProvider> scanner_provider)
-    : scanner_provider_(std::move(scanner_provider)) {
-  if (identity_manager != nullptr) {
+    : identity_manager_(identity_manager),
+      scanner_provider_(std::move(scanner_provider)) {
+  if (identity_manager_ != nullptr) {
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
     CoreAccountId account_id =
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
     const GURL& base_url = GaiaUrls::GetInstance()->google_apis_origin_url();
     GURL base_thumbnail_url(
         google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction);
 
     drive_service_ = std::make_unique<drive::DriveAPIService>(
-        identity_manager, url_loader_factory, blocking_task_runner.get(),
+        identity_manager_, url_loader_factory, blocking_task_runner.get(),
         base_url, base_thumbnail_url,
         /*custom_user_agent=*/"", kTrafficAnnotation);
     drive_service_->Initialize(account_id);
 
     auto auth_service = std::make_unique<google_apis::AuthService>(
-        identity_manager, account_id, url_loader_factory,
+        identity_manager_, account_id, url_loader_factory,
         std::vector<std::string>{GaiaConstants::kContactsOAuth2Scope});
     request_sender_ = std::make_unique<google_apis::RequestSender>(
         std::move(auth_service), url_loader_factory, blocking_task_runner,
@@ -149,6 +152,14 @@ drive::DriveServiceInterface* ScannerKeyedService::GetDriveService() {
 
 google_apis::RequestSender* ScannerKeyedService::GetGoogleApisRequestSender() {
   return request_sender_.get();
+}
+
+bool ScannerKeyedService::IsGoogler() {
+  return identity_manager_ != nullptr &&
+         gaia::IsGoogleInternalAccountEmail(
+             identity_manager_
+                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                 .email);
 }
 
 void ScannerKeyedService::Shutdown() {}

@@ -28,16 +28,21 @@ ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate)
 ScannerController::~ScannerController() = default;
 
 ScannerSession* ScannerController::StartNewSession() {
-  if (!switches::IsScannerUpdateSecretKeyMatched()) {
+  ScannerProfileScopedDelegate* profile_scoped_delegate =
+      delegate_->GetProfileScopedDelegate();
+
+  if (profile_scoped_delegate == nullptr) {
     return nullptr;
   }
 
-  ScannerProfileScopedDelegate* profile_scoped_delegate =
-      delegate_->GetProfileScopedDelegate();
+  if (!profile_scoped_delegate->IsGoogler() &&
+      !switches::IsScannerUpdateSecretKeyMatched()) {
+    return nullptr;
+  }
+
   scanner_session_ =
-      profile_scoped_delegate &&
-              profile_scoped_delegate->GetSystemState().status ==
-                  ScannerStatus::kEnabled
+      profile_scoped_delegate->GetSystemState().status ==
+              ScannerStatus::kEnabled
           ? std::make_unique<ScannerSession>(profile_scoped_delegate)
           : nullptr;
   return scanner_session_.get();

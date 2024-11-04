@@ -74,4 +74,8 @@ FakeScannerProfileScopedDelegate::HandleRequest(
   return request_callback_.Run(request);
 }
 
+bool FakeScannerProfileScopedDelegate::IsGoogler() {
+  return false;
+}
+
 }  // namespace ash
