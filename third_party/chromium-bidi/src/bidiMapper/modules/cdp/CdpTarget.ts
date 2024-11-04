@@ -197,32 +197,6 @@ export class CdpTarget {
           autoAttach: true,
           waitForDebuggerOnStart: true,
           flatten: true,
-          // Exclude target types that we currently do not need.
-          filter: [
-            {
-              type: 'worklet',
-              exclude: true,
-            },
-            {
-              type: 'webview',
-              exclude: true,
-            },
-            {
-              type: 'other',
-              exclude: true,
-            },
-            {
-              type: 'auction_worklet',
-              exclude: true,
-            },
-            {
-              type: 'shared_storage_worklet',
-              exclude: true,
-            },
-            {
-              // the rest is not excluded
-            },
-          ],
         }),
         this.#initAndEvaluatePreloadScripts(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
