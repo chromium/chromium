@@ -1355,9 +1355,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {
 
   // Now attempt to read the large value again and expect an error.
   EvalJsResult result = EvalJs(shell(), "readData()");
-  EXPECT_THAT(result.error,
-              testing::HasSubstr(
-                  "NotFoundError: Failed to read large IndexedDB value"));
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr("NotReadableError: Data lost due to missing file. "
+                         "Affected record should be considered irrecoverable"));
 
   // Verify that the right set of histograms were recorded.
   content::FetchHistogramsFromChildProcesses();

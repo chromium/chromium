@@ -78,7 +78,7 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   void StartNextValue();
 
   // Called when unwrapping of all values is complete.
-  void OnLoadComplete(DOMExceptionCode exception_code);
+  void OnLoadComplete(FileErrorCode error_code);
 
   Member<FileReaderLoader> loader_;
 
