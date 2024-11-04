@@ -5385,6 +5385,14 @@
     "expiry_milestone": 135
   },
   {
+    "name": "ios-provisional-notification-alert",
+    "owners": [
+      "thegreenfrog@google.com",
+      "bling-gsu-pod@google.com"
+    ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "ios-quick-delete",
     "owners": [
       "fsenra@google.com",

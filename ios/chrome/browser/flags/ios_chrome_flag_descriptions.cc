@@ -919,6 +919,12 @@ const char kPrivacyGuideIosDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
     "privacy settings.";
 
+const char kProvisionalNotificationAlertName[] =
+    "Provisional notifiation alert on iOS";
+const char kProvisionalNotificationAlertDescription[] =
+    "Shows an alert to the user when app notification settings are changed but "
+    "only provisonal notifications are enabled";
+
 const char kIPHPriceNotificationsWhileBrowsingName[] =
     "Price Tracking IPH Display";
 const char kIPHPriceNotificationsWhileBrowsingDescription[] =

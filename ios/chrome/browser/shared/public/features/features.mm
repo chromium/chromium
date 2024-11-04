@@ -1126,3 +1126,11 @@ const char kIOSReactivationNotificationsTriggerTimeParam[] =
 bool IsIOSReactivationNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSReactivationNotifications);
 }
+
+BASE_FEATURE(kProvisionalNotificationAlert,
+             "ProvisionalNotificationAlert",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsProvisionalNotificationAlertEnabled() {
+  return base::FeatureList::IsEnabled(kProvisionalNotificationAlert);
+}

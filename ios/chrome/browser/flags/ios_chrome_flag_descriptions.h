@@ -821,6 +821,11 @@ extern const char kPriceTrackingPromoDescription[];
 extern const char kPrivacyGuideIosName[];
 extern const char kPrivacyGuideIosDescription[];
 
+// Title and descriotion for the flag to enable the provisional notification
+// alert.
+extern const char kProvisionalNotificationAlertName[];
+extern const char kProvisionalNotificationAlertDescription[];
+
 // Title and description for the flag to enable PriceNotifications IPH to be
 // alwayws be displayed.
 extern const char kIPHPriceNotificationsWhileBrowsingName[];

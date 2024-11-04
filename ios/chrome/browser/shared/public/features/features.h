@@ -941,4 +941,11 @@ extern const char kIOSReactivationNotificationsTriggerTimeParam[];
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsIOSReactivationNotificationsEnabled();
 
+// Feature flag to show an alert to the user when only provisiona notifications
+// are allowed.
+BASE_DECLARE_FEATURE(kProvisionalNotificationAlert);
+
+// Returns whether `kIOSReactivationNotifications` is enabled.
+bool IsProvisionalNotificationAlertEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
