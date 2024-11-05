@@ -24,6 +24,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_features.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/test_support/fake_invalidation_listener.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"

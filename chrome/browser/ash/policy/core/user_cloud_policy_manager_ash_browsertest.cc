@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_features.h"
 #include "components/policy/proto/policy_common_definitions.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"

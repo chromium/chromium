@@ -8,7 +8,7 @@
 
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_features.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"

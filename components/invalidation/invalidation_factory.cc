@@ -9,7 +9,6 @@
 #include <utility>
 #include <variant>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -17,6 +16,7 @@
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
+#include "components/invalidation/invalidation_features.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/prefs/pref_service.h"
@@ -26,14 +26,6 @@ namespace invalidation {
 
 namespace {
 constexpr char kDriveFcmSenderId[] = "947318989803";
-}
-
-BASE_FEATURE(kInvalidationsWithDirectMessages,
-             "InvalidationsWithDirectMessages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsInvalidationsWithDirectMessagesEnabled() {
-  return base::FeatureList::IsEnabled(kInvalidationsWithDirectMessages);
 }
 
 std::variant<std::unique_ptr<InvalidationService>,

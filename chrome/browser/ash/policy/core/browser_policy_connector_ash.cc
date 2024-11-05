@@ -87,6 +87,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_features.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

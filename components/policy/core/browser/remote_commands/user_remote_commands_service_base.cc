@@ -5,7 +5,7 @@
 #include "components/policy/core/browser/remote_commands/user_remote_commands_service_base.h"
 
 #include "base/time/default_clock.h"
-#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_features.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

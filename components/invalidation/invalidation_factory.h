@@ -9,7 +9,6 @@
 #include <string>
 #include <variant>
 
-#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -30,13 +29,7 @@ class SharedURLLoaderFactory;
 
 namespace invalidation {
 
-// Turns on invalidations with direct messages by substituting
-// InvalidationService with InvalidationListener.
-BASE_DECLARE_FEATURE(kInvalidationsWithDirectMessages);
-
 class IdentityProvider;
-
-bool IsInvalidationsWithDirectMessagesEnabled();
 
 std::variant<std::unique_ptr<InvalidationService>,
              std::unique_ptr<InvalidationListener>>
