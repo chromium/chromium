@@ -520,14 +520,6 @@ BASE_FEATURE(kCryptAuthV2DeviceActivityStatusUseConnectivity,
              "CryptAuthV2DeviceActivityStatusUseConnectivity",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables use of last activity time to deduplicate eligible host
-// phones in multidevice setup dropdown list. We assume that different copies
-// of same device share the same last activity time but different last update
-// time.
-BASE_FEATURE(kCryptAuthV2DedupDeviceLastActivityTime,
-             "CryptAuthV2DedupDeviceLastActivityTime",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disable a Files banner about Google One offer. This flag is used by G1+
 // nudge to conditionally disable the G1 file banner via finch.
 BASE_FEATURE(kDisableGoogleOneOfferFilesBanner,
