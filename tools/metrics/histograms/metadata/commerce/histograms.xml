@@ -389,7 +389,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.IconComputationTime" units="ms"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping-eng@google.com</owner>
   <summary>
@@ -740,7 +740,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
-    enum="PriceInsightsPriceBucket" expires_after="2025-02-23">
+    enum="PriceInsightsPriceBucket" expires_after="2025-05-04">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>

@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.BGTaskSchedulerError"
-    enum="BGTaskSchedulerErrorType" expires_after="2025-03-02">
+    enum="BGTaskSchedulerErrorType" expires_after="2025-05-04">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -2138,7 +2138,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.MagicStack.Module.{Event}.TabResumption.{Surface}.{Source}"
-    units="index" expires_after="2025-03-02">
+    units="index" expires_after="2025-05-04">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2589,21 +2589,21 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MultiWindow.ConnectedScenesCount" units="scenes"
-    expires_after="2025-03-03">
+    expires_after="2025-05-04">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>Records the number of connected scenes.</summary>
 </histogram>
 
 <histogram name="IOS.MultiWindow.DisconnectedScenesCount" units="scenes"
-    expires_after="2025-03-03">
+    expires_after="2025-05-04">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>Records the number of disconnected scenes.</summary>
 </histogram>
 
 <histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
-    expires_after="2025-03-03">
+    expires_after="2025-05-04">
   <owner>marq@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -2759,7 +2759,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.UserType"
-    enum="IOSTipsNotificationUserType" expires_after="2024-12-29">
+    enum="IOSTipsNotificationUserType" expires_after="2025-05-04">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -3010,7 +3010,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionRemoved"
-    enum="IOSOverflowMenuAction" expires_after="2025-01-26">
+    enum="IOSOverflowMenuAction" expires_after="2025-05-04">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The action removed during an overflow menu customization.</summary>
@@ -3073,7 +3073,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.DestinationRemoved"
-    enum="IOSOverflowMenuDestination" expires_after="2025-02-10">
+    enum="IOSOverflowMenuDestination" expires_after="2025-05-04">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3280,7 +3280,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ParcelTracking.Tracked.{Source}" units="count"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>hiramahmood@google.com</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Logs number of packages tracked from {Source}.</summary>
@@ -3355,7 +3355,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PasswordManager.WidgetPromo.Action"
-    enum="PromoWithInstructionsAction" expires_after="2025-02-10">
+    enum="PromoWithInstructionsAction" expires_after="2025-05-04">
   <owner>noemies@google.com</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -3707,7 +3707,7 @@ the generic promo launch. -->
 <histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToProvisional"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2025-03-05">
+    expires_after="2025-05-04">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3922,7 +3922,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SafetyCheck.FreshnessTrigger"
-    enum="IOSSafetyCheckFreshnessTrigger" expires_after="2025-03-02">
+    enum="IOSSafetyCheckFreshnessTrigger" expires_after="2025-05-04">
   <owner>bwwilliams@google.com</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>
@@ -4394,7 +4394,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SearchWith.Trigger" enum="IOSSearchWithContext"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>olivierrobin@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>The context in which Search With has been triggered.</summary>

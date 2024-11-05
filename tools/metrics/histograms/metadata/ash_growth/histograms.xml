@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.Ui.ButtonPressed.Button{ButtonId}.Campaigns500"
-    units="int" expires_after="2025-03-01">
+    units="int" expires_after="2025-05-04">
   <owner>wutao@chromium.org</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.Ui.Dismissed.Campaigns500" units="int"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>wutao@chromium.org</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.Ui.Impression.Campaigns500" units="int"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>wutao@chromium.org</owner>
   <owner>cros-growth@google.com</owner>
   <summary>

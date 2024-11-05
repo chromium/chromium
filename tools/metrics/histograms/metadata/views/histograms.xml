@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.InvalidatesDuringLayout" units="count"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>dpranke@chromium.org</owner>
   <owner>elainechien@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.LayoutCallDepth" units="count"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>dpranke@chromium.org</owner>
   <owner>elainechien@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.UnnecessaryLayouts" units="count"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>elainechien@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
   <owner>pkasting@chromium.org</owner>

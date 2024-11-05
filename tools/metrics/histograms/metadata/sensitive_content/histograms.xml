@@ -28,7 +28,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SensitiveContent.{Embedder}.LatencyUntilSensitive" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SensitiveContent.{Embedder}.SensitiveTime" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SensitiveContent.{Embedder}.SensitivityChanged"
-    enum="ContentSensitivity" expires_after="2025-03-01">
+    enum="ContentSensitivity" expires_after="2025-05-04">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.FRE.MSBB.DialogShownCount.{FinalStatus}"
-    units="count" expires_after="2025-01-05">
+    units="count" expires_after="2025-05-04">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
