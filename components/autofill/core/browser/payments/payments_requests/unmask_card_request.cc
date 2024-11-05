@@ -348,13 +348,23 @@ std::string UnmaskCardRequest::GetRequestContent() {
   }
 
   if (request_details_.last_committed_primary_main_frame_origin.has_value()) {
-    base::Value::Dict virtual_card_request_info;
-    virtual_card_request_info.Set(
-        "merchant_domain",
+    std::string merchant_domain =
         request_details_.last_committed_primary_main_frame_origin.value()
-            .spec());
-    request_dict.Set("virtual_card_request_info",
-                     std::move(virtual_card_request_info));
+            .spec();
+    if (request_details_.card.record_type() ==
+        CreditCard::RecordType::kVirtualCard) {
+      base::Value::Dict virtual_card_request_info;
+      virtual_card_request_info.Set("merchant_domain", merchant_domain);
+      request_dict.Set("virtual_card_request_info",
+                       std::move(virtual_card_request_info));
+    } else if (request_details_.card.card_info_retrieval_enrollment_state() ==
+               CreditCard::CardInfoRetrievalEnrollmentState::
+                   kRetrievalEnrolled) {
+      base::Value::Dict card_retrieval_request_info;
+      card_retrieval_request_info.Set("merchant_domain", merchant_domain);
+      request_dict.Set("card_retrieval_request_info",
+                       std::move(card_retrieval_request_info));
+    }
   }
 
   std::string json_request;

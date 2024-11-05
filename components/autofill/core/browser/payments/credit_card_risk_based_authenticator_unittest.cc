@@ -300,6 +300,20 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, VirtualCardUnmaskSuccess) {
   EXPECT_EQ(mocked_response.dcvv, requester_->response_details().dcvv);
 }
 
+// Validate unmask request for risk based runtime retrieval.
+TEST_F(CreditCardRiskBasedAuthenticatorTest,
+       ValidateCardInfoRetrievalUnmaskRequest) {
+  CreditCard card = test::GetMaskedServerCardEnrolledIntoRuntimeRetrieval();
+  authenticator_->Authenticate(card, requester_->GetWeakPtr());
+  EXPECT_TRUE(
+      payments_network_interface()->unmask_request()->context_token.empty());
+  EXPECT_FALSE(
+      payments_network_interface()->unmask_request()->risk_data.empty());
+  EXPECT_TRUE(payments_network_interface()
+                  ->unmask_request()
+                  ->last_committed_primary_main_frame_origin.has_value());
+}
+
 // Test runtime CVC retrieval overrides saved CVC for CardInfoRetrievalEnrolled
 // card.
 TEST_F(CreditCardRiskBasedAuthenticatorTest, CVCRetrievalOverridesStoredCVC) {

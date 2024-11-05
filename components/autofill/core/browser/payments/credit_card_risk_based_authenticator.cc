@@ -55,9 +55,10 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
   unmask_request_details_ = std::make_unique<payments::UnmaskRequestDetails>();
   card_ = std::move(card);
   requester_ = requester;
-
   unmask_request_details_->card = card_;
-  if (card_.record_type() == CreditCard::RecordType::kVirtualCard) {
+  if (card_.record_type() == CreditCard::RecordType::kVirtualCard ||
+      card_.card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
     unmask_request_details_->last_committed_primary_main_frame_origin =
         autofill_client_->GetLastCommittedPrimaryMainFrameURL()
             .DeprecatedGetOriginAsURL();
