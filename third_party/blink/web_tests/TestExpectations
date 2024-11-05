@@ -8376,8 +8376,8 @@ crbug.com/374856213 external/wpt/digital-credentials/allow-attribute.https.html 
 crbug.com/376320405 external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
 
 # Fail or Crash after enable swiftshader on headless shell
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069c-print.html [ Failure ]
-crbug.com/339041663 external/wpt/css/geometry/DOMMatrix2DInit-validate-fixup.html [ Failure ]
+crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069c-print.html [ Failure Pass ]
+crbug.com/339041663 external/wpt/css/geometry/DOMMatrix2DInit-validate-fixup.html [ Failure Pass ]
 crbug.com/339041663 [ Linux ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Failure ]
 crbug.com/339041663 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Failure ]
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackGenerator-video.https.html [ Crash Timeout ]
