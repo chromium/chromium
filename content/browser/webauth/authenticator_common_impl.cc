@@ -462,8 +462,10 @@ std::optional<std::vector<device::PRFInput>> ParsePRFInputsForGetAssertion(
       prf_input.credential_id = std::move(*prf_input_from_renderer->id);
     }
 
+    prf_input.input1 = prf_input_from_renderer->first;
     prf_input.salt1 = HashPRFValue(prf_input_from_renderer->first);
     if (prf_input_from_renderer->second) {
+      prf_input.input2 = prf_input_from_renderer->second;
       prf_input.salt2 = HashPRFValue(*prf_input_from_renderer->second);
     }
 

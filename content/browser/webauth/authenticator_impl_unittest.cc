@@ -9339,9 +9339,23 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
       : public AuthenticatorRequestClientDelegate {
    public:
     using Callback = base::RepeatingCallback<void(
-        const device::FidoRequestHandlerBase::TransportAvailabilityInfo&)>;
+        const device::FidoRequestHandlerBase::TransportAvailabilityInfo&,
+        const std::optional<std::string>& icloud_keychain_id,
+        device::FidoRequestHandlerBase::RequestCallback request_callback)>;
     explicit InspectTAIAuthenticatorRequestDelegate(Callback callback)
         : callback_(std::move(callback)) {}
+
+    void RegisterActionCallbacks(
+        base::OnceClosure cancel_callback,
+        base::RepeatingClosure start_over_callback,
+        AccountPreselectedCallback account_preselected_callback,
+        device::FidoRequestHandlerBase::RequestCallback request_callback,
+        base::RepeatingClosure bluetooth_adapter_power_on_callback,
+        base::RepeatingCallback<
+            void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+            request_ble_permission_callback) override {
+      request_callback_ = std::move(request_callback);
+    }
 
     void ConfigureDiscoveries(
         const url::Origin& origin,
@@ -9363,11 +9377,22 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
     void OnTransportAvailabilityEnumerated(
         device::FidoRequestHandlerBase::TransportAvailabilityInfo tai)
         override {
-      callback_.Run(tai);
+      callback_.Run(tai, icloud_keychain_id_, request_callback_);
+    }
+
+    void FidoAuthenticatorAdded(
+        const device::FidoAuthenticator& authenticator) override {
+      if (authenticator.GetType() ==
+          device::AuthenticatorType::kICloudKeychain) {
+        CHECK(!icloud_keychain_id_);
+        icloud_keychain_id_ = authenticator.GetId();
+      }
     }
 
    private:
     Callback callback_;
+    device::FidoRequestHandlerBase::RequestCallback request_callback_;
+    std::optional<std::string> icloud_keychain_id_;
   };
 
   class InspectTAIContentBrowserClient : public ContentBrowserClient {
@@ -9402,9 +9427,11 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
   }
 
   void OnTransportAvailabilityEnumerated(
-      const device::FidoRequestHandlerBase::TransportAvailabilityInfo& tai) {
+      const device::FidoRequestHandlerBase::TransportAvailabilityInfo& tai,
+      const std::optional<std::string>& icloud_keychain_id,
+      device::FidoRequestHandlerBase::RequestCallback request_callback) {
     if (tai_callback_) {
-      std::move(tai_callback_).Run(tai);
+      std::move(tai_callback_).Run(tai, icloud_keychain_id, request_callback);
     }
   }
 
@@ -9431,7 +9458,9 @@ TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
     tai_callback_ = base::BindLambdaForTesting(
         [&tai_seen](
             const device::FidoRequestHandlerBase::TransportAvailabilityInfo&
-                tai) {
+                tai,
+            const std::optional<std::string>& icloud_keychain_id,
+            device::FidoRequestHandlerBase::RequestCallback request_callback) {
           tai_seen = true;
           CHECK_EQ(tai.has_icloud_keychain, true);
           CHECK_EQ(tai.recognized_credentials.size(), 1u);
@@ -9450,9 +9479,99 @@ TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
     const auto result = AuthenticatorGetAssertion(std::move(options));
     EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
     EXPECT_TRUE(tai_seen);
-
   } else {
-    GTEST_SKIP() << "Need macOS 13.3 for this test";
+    GTEST_SKIP() << "Need macOS 13.5 for this test";
+  }
+}
+
+TEST_F(ICloudKeychainAuthenticatorImplTest, PRFOnCreate) {
+  if (__builtin_available(macOS 15.0, *)) {
+    base::test::ScopedFeatureList scoped_feature_list_{
+        device::kWebAuthniCloudKeychainPrf};
+
+    NavigateAndCommit(GURL(kTestOrigin1));
+    device::fido::icloud_keychain::ScopedTestEnvironment test_environment(
+        GetCredentials());
+
+    auto prf_value = blink::mojom::PRFValues::New();
+    const std::vector<uint8_t> input1(8, 1);
+    const std::vector<uint8_t> input2(8, 2);
+    prf_value->first = input1;
+    prf_value->second = input2;
+
+    bool callback_was_called = false;
+    test_environment.SetMakeCredentialCallback(base::BindLambdaForTesting(
+        [&input1, &input2, &callback_was_called](
+            const device::CtapMakeCredentialRequest& request) {
+          CHECK(request.prf);
+          CHECK(request.prf_input.has_value());
+          CHECK(input1 == request.prf_input->input1);
+          CHECK(input2 == request.prf_input->input2);
+          callback_was_called = true;
+        }));
+
+    auto options = GetTestPublicKeyCredentialCreationOptions();
+    options->prf_enable = true;
+    options->prf_input = std::move(prf_value);
+
+    const auto result = AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    EXPECT_TRUE(callback_was_called);
+  } else {
+    GTEST_SKIP() << "Need macOS 15.0 for this test";
+  }
+}
+
+TEST_F(ICloudKeychainAuthenticatorImplTest, PRFOnGet) {
+  if (__builtin_available(macOS 15.0, *)) {
+    base::test::ScopedFeatureList scoped_feature_list_{
+        device::kWebAuthniCloudKeychainPrf};
+
+    NavigateAndCommit(GURL(kTestOrigin1));
+    device::fido::icloud_keychain::ScopedTestEnvironment test_environment(
+        GetCredentials());
+
+    auto prf_value = blink::mojom::PRFValues::New();
+    const std::vector<uint8_t> input1(8, 1);
+    const std::vector<uint8_t> input2(8, 2);
+    prf_value->first = input1;
+    prf_value->second = input2;
+    std::vector<blink::mojom::PRFValuesPtr> prf_inputs;
+    prf_inputs.emplace_back(std::move(prf_value));
+
+    bool callback_was_called = false;
+    test_environment.SetGetAssertionCallback(base::BindLambdaForTesting(
+        [&input1, &input2,
+         &callback_was_called](const device::CtapGetAssertionRequest& request) {
+          CHECK_EQ(request.prf_inputs.size(), 1u);
+          CHECK(input1 == request.prf_inputs[0].input1);
+          CHECK(input2 == request.prf_inputs[0].input2);
+          callback_was_called = true;
+        }));
+
+    tai_callback_ = base::BindLambdaForTesting(
+        [](const device::FidoRequestHandlerBase::TransportAvailabilityInfo& tai,
+           const std::optional<std::string>& icloud_keychain_id,
+           device::FidoRequestHandlerBase::RequestCallback request_callback) {
+          CHECK_EQ(tai.has_icloud_keychain, true);
+          CHECK(icloud_keychain_id.has_value());
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(request_callback, *icloud_keychain_id));
+        });
+
+    auto options = GetTestPublicKeyCredentialRequestOptions();
+    options->extensions->prf = true;
+    options->extensions->prf_inputs = std::move(prf_inputs);
+    options->allow_credentials.clear();
+    options->allow_credentials.push_back(device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, {1, 2, 3, 4},
+        {device::FidoTransportProtocol::kInternal}));
+
+    const auto result = AuthenticatorGetAssertion(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    EXPECT_TRUE(callback_was_called);
+  } else {
+    GTEST_SKIP() << "Need macOS 15.0 for this test";
   }
 }
 
