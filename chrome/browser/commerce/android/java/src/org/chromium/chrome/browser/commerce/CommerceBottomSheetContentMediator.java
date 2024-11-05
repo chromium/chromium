@@ -67,6 +67,7 @@ public class CommerceBottomSheetContentMediator {
 
     void onBottomSheetClosed() {
         mModelList.clear();
+        mContentReadyCount = 0;
     }
 
     private boolean isValidPropertyModel(PropertyModel model) {
