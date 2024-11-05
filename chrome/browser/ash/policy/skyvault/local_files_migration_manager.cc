@@ -79,6 +79,30 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
   return files;
 }
 
+// Checks if there are any files that should be uploaded in MyFiles.
+bool IsMyFilesEmpty(Profile* profile) {
+  base::FilePath my_files_path = GetMyFilesPath(profile);
+
+  base::FileEnumerator enumerator(my_files_path,
+                                  /*recursive=*/true,
+                                  /*file_type=*/base::FileEnumerator::FILES |
+                                      base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    if (enumerator.GetInfo().IsDirectory()) {
+      // Don't count directories as they might be empty.
+      continue;
+    }
+    // Ignore hidden files.
+    if (base::StartsWith(path.BaseName().value(), ".")) {
+      continue;
+    }
+    // Found a file.
+    return false;
+  }
+  return true;
+}
+
 // Generates a device-unique name for the root folder that all files are
 // uploaded to.
 std::string GenerateUploadRootName() {
@@ -141,7 +165,8 @@ LocalFilesMigrationManager::LocalFilesMigrationManager(
 LocalFilesMigrationManager::~LocalFilesMigrationManager() = default;
 
 void LocalFilesMigrationManager::Initialize() {
-  PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
+  Profile* profile = Profile::FromBrowserContext(context_);
+  PrefService* pref_service = profile->GetPrefs();
   state_ = static_cast<State>(
       pref_service->GetInteger(prefs::kSkyVaultMigrationState));
 
@@ -150,8 +175,7 @@ void LocalFilesMigrationManager::Initialize() {
   local_user_files_allowed_ = LocalUserFilesAllowed();
   cloud_provider_ = GetMigrationDestination();
 
-  LocalStorageHistograms(Profile::FromBrowserContext(context_),
-                         local_user_files_allowed_);
+  LocalStorageHistograms(profile, local_user_files_allowed_);
 
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
     // Migration is now disabled, reset the state.
@@ -165,29 +189,16 @@ void LocalFilesMigrationManager::Initialize() {
   // Migration is enabled.
   SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
 
-  switch (state_) {
-    case State::kUninitialized:
-    case State::kPending:
-      SetState(State::kPending);
-      InformUser();
-      break;
-    case State::kInProgress:
-      GetPathsToUpload();
-      break;
-    case State::kCleanup:
-      CleanupLocalFiles();
-      break;
-    case State::kCompleted:
-      // TODO(aidazolic): Consider if we should do any special handling.
-      for (auto& observer : observers_) {
-        observer.OnMigrationSucceeded();
-      }
-      SetLocalUserFilesWriteEnabled(/*enabled=*/false);
-      break;
-    case State::kFailure:
-      // TODO(b/351971781): Process errors from the error log.
-      break;
+  if (skip_empty_check_for_testing_) {
+    CHECK_IS_TEST();
+    OnMyFilesChecked(/*is_empty=*/false);
+    return;
   }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&IsMyFilesEmpty, profile),
+      base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LocalFilesMigrationManager::Shutdown() {
@@ -214,6 +225,11 @@ void LocalFilesMigrationManager::SetCoordinatorForTesting(
     std::unique_ptr<MigrationCoordinator> coordinator) {
   CHECK_IS_TEST();
   coordinator_ = std::move(coordinator);
+}
+
+void LocalFilesMigrationManager::SetSkipEmptyCheckForTesting(bool skip) {
+  CHECK_IS_TEST();
+  skip_empty_check_for_testing_ = skip;
 }
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
@@ -270,9 +286,58 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   }
 
   // Local files are disabled and migration destination is set - initiate
-  // migration.
+  // migration if there are any files to upload.
   SetState(State::kPending);
-  InformUser();
+  if (skip_empty_check_for_testing_) {
+    CHECK_IS_TEST();
+    OnMyFilesChecked(/*is_empty=*/false);
+    return;
+  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&IsMyFilesEmpty, profile),
+      base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LocalFilesMigrationManager::OnMyFilesChecked(bool is_empty) {
+  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+    return;
+  }
+
+  if (is_empty) {
+    // Completed state is handled below. For any other state, notify
+    // observers and also cleanup empty folders.
+    if (state_ != State::kCompleted) {
+      for (auto& observer : observers_) {
+        observer.OnMigrationSucceeded();
+      }
+      state_ = State::kCleanup;
+    }
+  }
+
+  switch (state_) {
+    case State::kUninitialized:
+    case State::kPending:
+      SetState(State::kPending);
+      InformUser();
+      break;
+    case State::kInProgress:
+      GetPathsToUpload();
+      break;
+    case State::kCleanup:
+      CleanupLocalFiles();
+      break;
+    case State::kCompleted:
+      // TODO(aidazolic): Consider if we should do any special handling.
+      for (auto& observer : observers_) {
+        observer.OnMigrationSucceeded();
+      }
+      SetLocalUserFilesWriteEnabled(/*enabled=*/false);
+      break;
+    case State::kFailure:
+      // TODO(351971781): Process errors from the error log.
+      break;
+  }
 }
 
 void LocalFilesMigrationManager::InformUser() {

@@ -78,9 +78,17 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   void SetCoordinatorForTesting(
       std::unique_ptr<MigrationCoordinator> coordinator);
 
+  // TODO(352539894): Remove when unit tests are adapted to use files.
+  void SetSkipEmptyCheckForTesting(bool skip);
+
  private:
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
+
+  // Called after contents of MyFiles are checked. If empty, removes the volume
+  // and restricts write access, otherwise initiates the migration based on the
+  // current state.
+  void OnMyFilesChecked(bool is_empty);
 
   // Informs the user about the upcoming migration. Schedules another dialog to
   // appear closer to the start. From the dialog, the user can also choose to
@@ -151,6 +159,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Whether local user files are allowed by policy.
   bool local_user_files_allowed_ = true;
+
+  // TODO(352539894): Remove when unit tests are adapted to use files.
+  bool skip_empty_check_for_testing_ = false;
 
   // Cloud provider to which files are uploaded. If not specified, no migration
   // happens.

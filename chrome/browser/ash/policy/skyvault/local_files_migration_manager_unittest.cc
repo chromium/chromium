@@ -34,6 +34,7 @@
 
 namespace policy::local_user_files {
 
+// TODO(352539894): Adapt to add some files in MyFiles.
 class LocalFilesMigrationManagerTest : public testing::Test {
  public:
   LocalFilesMigrationManagerTest()
@@ -159,6 +160,7 @@ TEST_F(LocalFilesMigrationManagerTest, ResetStateIfLocalStorageAllowed) {
            /*local_user_files_allowed=*/true);
 
   LocalFilesMigrationManager manager(profile());
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
   histogram_tester_.ExpectBucketCount("Enterprise.SkyVault.Migration.Reset",
                                       true, 1);
@@ -169,6 +171,7 @@ TEST_F(LocalFilesMigrationManagerTest, ResetStateIfMigrationDisabled) {
            /*local_user_files_allowed=*/false, "read_only");
 
   LocalFilesMigrationManager manager(profile());
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
   histogram_tester_.ExpectBucketCount("Enterprise.SkyVault.Migration.Reset",
                                       true, 1);
@@ -179,6 +182,7 @@ TEST_F(LocalFilesMigrationManagerTest, NoResetStateIfAlreadyDisabled) {
            /*local_user_files_allowed=*/false, "read_only");
 
   LocalFilesMigrationManager manager(profile());
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
   histogram_tester_.ExpectBucketCount("Enterprise.SkyVault.Migration.Reset",
                                       true, 0);
@@ -210,6 +214,7 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
   LocalFilesMigrationManager manager(profile());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
   ASSERT_TRUE(run_future.Wait());
 
@@ -226,6 +231,7 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesWriteAccessError) {
   SetPrefs(State::kCleanup);
 
   LocalFilesMigrationManager manager(profile());
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
   histogram_tester_.ExpectBucketCount(
       "Enterprise.SkyVault.Migration.WriteAccessError", true, 1);
@@ -253,6 +259,7 @@ TEST_F(LocalFilesMigrationManagerTest, StopsWhenLocalStorageAllowed) {
   LocalFilesMigrationManager manager(profile());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
 
   // Wait for Run as it's async.
@@ -289,6 +296,7 @@ TEST_P(LocalFilesMigrationManagerStateTest, InitializeFromState) {
   LocalFilesMigrationManager manager(profile());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
   if (expected_run_count) {
     // Wait for Run as it's async.

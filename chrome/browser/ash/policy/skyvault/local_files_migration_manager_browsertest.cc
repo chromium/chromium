@@ -7,15 +7,20 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
@@ -28,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
@@ -36,8 +42,10 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,6 +62,8 @@ constexpr base::TimeDelta kMaxDelta = base::Seconds(1);
 
 constexpr char kMigrationEnabledUMASuffix[] = "Enabled";
 constexpr char kMigrationMisconfiguredUMASuffix[] = "Misconfigured";
+
+constexpr char kTestFile[] = "test_file.txt";
 
 // Matcher for scheduled migration time.
 MATCHER_P(TimeNear, expected_time, "") {
@@ -74,6 +84,16 @@ std::string GetUMAName(const std::string& destination,
                                                                : "OneDrive";
   return base::StrCat(
       {"Enterprise.SkyVault.Migration.", provider, ".", suffix});
+}
+
+CloudProvider GetCloudProvider(const std::string& destination) {
+  if (destination == download_dir_util::kLocationGoogleDrive) {
+    return CloudProvider::kGoogleDrive;
+  }
+  if (destination == download_dir_util::kLocationOneDrive) {
+    return CloudProvider::kOneDrive;
+  }
+  return CloudProvider::kNotSpecified;
 }
 
 }  // namespace
@@ -147,6 +167,38 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
     provider_.UpdateChromePolicy(policies);
   }
 
+  // Creates mount point for My files and registers local filesystem.
+  void SetUpMyFiles() {
+    my_files_dir_ = GetMyFilesPath(browser()->profile());
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
+    }
+    std::string mount_point_name =
+        file_manager::util::GetDownloadsMountPointName(browser()->profile());
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        mount_point_name);
+    CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        mount_point_name, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), my_files_dir_));
+    file_manager::VolumeManager::Get(browser()->profile())
+        ->RegisterDownloadsDirectoryForTesting(my_files_dir_);
+  }
+
+  // Creates a file `test_file_name` in `parent_dir`.
+  base::FilePath CreateTestFile(const std::string& test_file_name,
+                                const base::FilePath& parent_dir) {
+    const base::FilePath copied_file_path =
+        parent_dir.AppendASCII(test_file_name);
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      CHECK(WriteFile(copied_file_path, "42"));
+      CHECK(base::PathExists(copied_file_path));
+    }
+
+    return copied_file_path;
+  }
+
   LocalFilesMigrationManager* manager() {
     return LocalFilesMigrationManagerFactory::GetInstance()
         ->GetForBrowserContext(browser()->profile());
@@ -154,6 +206,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
+  base::FilePath my_files_dir_;
   ash::system::FakeStatisticsProvider statistics_provider_;
   std::unique_ptr<MockMigrationNotificationManager> notification_manager_ =
       nullptr;
@@ -179,6 +232,9 @@ class LocalFilesMigrationManagerLocationTest
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        MigrationNotifiesObservers_Timeout) {
+  SetUpMyFiles();
+  base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
+
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
   EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
 
@@ -186,6 +242,22 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
               ShowMigrationInfoDialog(
                   _, TimeNear(base::Time::Now() + kTotalMigrationTimeout), _))
       .Times(2);
+
+  std::unique_ptr<MockMigrationCoordinator> coordinator =
+      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+
+  EXPECT_CALL(*coordinator.get(),
+              Run(GetCloudProvider(MigrationDestination()),
+                  std::vector<base::FilePath>({source_file_path}),
+                  ExpectedUploadRootName(), _))
+      .WillOnce([](CloudProvider cloud_provider,
+                   std::vector<base::FilePath> file_paths,
+                   const std::string& upload_root,
+                   MigrationDoneCallback callback) {
+        std::move(callback).Run({}, base::FilePath(), base::FilePath());
+      });
+
+  manager()->SetCoordinatorForTesting(std::move(coordinator));
 
   // Logged during initialization.
   histogram_tester_.ExpectBucketCount(
@@ -214,6 +286,9 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        MigrationNotifiesObservers_UploadNowFirstDialog) {
+  SetUpMyFiles();
+  base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
+
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
   EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
 
@@ -224,6 +299,22 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                    base::OnceClosure migration_callback) {
         std::move(migration_callback).Run();
       });
+
+  std::unique_ptr<MockMigrationCoordinator> coordinator =
+      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+
+  EXPECT_CALL(*coordinator.get(),
+              Run(GetCloudProvider(MigrationDestination()),
+                  std::vector<base::FilePath>({source_file_path}),
+                  ExpectedUploadRootName(), _))
+      .WillOnce([](CloudProvider cloud_provider,
+                   std::vector<base::FilePath> file_paths,
+                   const std::string& upload_root,
+                   MigrationDoneCallback callback) {
+        std::move(callback).Run({}, base::FilePath(), base::FilePath());
+      });
+
+  manager()->SetCoordinatorForTesting(std::move(coordinator));
 
   base::RunLoop run_loop;
   // Write access will be disallowed.
@@ -241,6 +332,9 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        MigrationNotifiesObservers_UploadNowSecondDialog) {
+  SetUpMyFiles();
+  base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
+
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
   EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
 
@@ -253,11 +347,44 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
         std::move(migration_callback).Run();
       });
 
+  std::unique_ptr<MockMigrationCoordinator> coordinator =
+      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+
+  EXPECT_CALL(*coordinator.get(),
+              Run(GetCloudProvider(MigrationDestination()),
+                  std::vector<base::FilePath>({source_file_path}),
+                  ExpectedUploadRootName(), _))
+      .WillOnce([](CloudProvider cloud_provider,
+                   std::vector<base::FilePath> file_paths,
+                   const std::string& upload_root,
+                   MigrationDoneCallback callback) {
+        std::move(callback).Run({}, base::FilePath(), base::FilePath());
+      });
+
+  manager()->SetCoordinatorForTesting(std::move(coordinator));
+
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/MigrationDestination());
   // Fast forward only to the second dialog.
   task_runner->FastForwardBy(
       base::TimeDelta(kTotalMigrationTimeout - kFinalMigrationTimeout));
+}
+
+IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
+                       CompletesIfEmpty) {
+  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
+
+  base::RunLoop run_loop;
+  // Write access will be disallowed.
+  EXPECT_CALL(userdataauth_,
+              SetUserDataStorageWriteEnabled(WithEnabled(false), _))
+      .WillOnce(testing::DoAll(
+          base::test::RunClosure(run_loop.QuitClosure()),
+          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply())));
+
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/MigrationDestination());
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
@@ -268,12 +395,6 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       .WillOnce(
           ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
   SetMigrationPolicies(/*local_user_files_allowed=*/true,
-                       /*destination=*/MigrationDestination());
-}
-
-IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
-                       NoMigrationIfDisabled) {
-  SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/MigrationDestination());
 }
 
@@ -321,14 +442,19 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        EnableLocalFilesStopsMigration) {
+  SetUpMyFiles();
+  base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
+
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
       std::make_unique<MockMigrationCoordinator>(browser()->profile());
   {
     testing::InSequence s;
-    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _,
-                                        ExpectedUploadRootName(), _))
+    EXPECT_CALL(*coordinator.get(),
+                Run(CloudProvider::kGoogleDrive,
+                    std::vector<base::FilePath>({source_file_path}),
+                    ExpectedUploadRootName(), _))
         .Times(1);
     EXPECT_CALL(*coordinator.get(), Cancel).Times(1);
   }
@@ -356,6 +482,9 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        ChangeDestinationStopsMigration) {
+  SetUpMyFiles();
+  base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
+
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
   EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
 
@@ -406,6 +535,9 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        NoDestinationStopsMigration) {
+  SetUpMyFiles();
+  base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
+
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
