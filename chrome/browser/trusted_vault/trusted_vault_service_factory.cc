@@ -107,9 +107,10 @@ TrustedVaultServiceFactory::TrustedVaultServiceFactory()
 
 TrustedVaultServiceFactory::~TrustedVaultServiceFactory() = default;
 
-KeyedService* TrustedVaultServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TrustedVaultServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildTrustedVaultService(context).release();
+  return BuildTrustedVaultService(context);
 }
 
 bool TrustedVaultServiceFactory::ServiceIsNULLWhileTesting() const {
