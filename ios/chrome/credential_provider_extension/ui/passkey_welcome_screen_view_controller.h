@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // Possible purposes for showing the passkey welcome screen.
 enum class PasskeyWelcomeScreenPurpose {
@@ -18,7 +19,7 @@ enum class PasskeyWelcomeScreenPurpose {
 
 // Screen shown to the user when they need to enroll or re-authenticate for
 // passkeys.
-@interface PasskeyWelcomeScreenViewController : UIViewController
+@interface PasskeyWelcomeScreenViewController : PromoStyleViewController
 
 // Designated initializer. `purpose` indicates the purpose for which the passkey
 // welcome screen needs to be shown, which impacts the screen's content.

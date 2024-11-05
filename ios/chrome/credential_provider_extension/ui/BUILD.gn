@@ -175,6 +175,7 @@ source_set("unit_tests") {
     "credential_list_mediator_unittest.mm",
     "new_password_coordinator_unittest.mm",
     "new_password_mediator_unittest.mm",
+    "passkey_welcome_screen_view_controller_unittest.mm",
   ]
   deps = [
     ":credential_list_ui_handler",
@@ -188,6 +189,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider:mock_credential_store",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/credential_provider_extension:font_provider_header",
     "//ios/chrome/credential_provider_extension:password_util",
     "//ios/chrome/credential_provider_extension:reauthentication_handler",
