@@ -252,7 +252,8 @@ void CanvasRenderingContext2D::DidSetSurfaceSize() {
     return;
   // This code path is for restoring from an eviction
   // Restoring from surface failure is handled internally
-  DCHECK(context_lost_mode_ != kNotLostContext && !IsPaintable());
+  DCHECK(context_lost_mode_ != kNotLostContext &&
+         !canvas()->ResourceProvider());
 
   if (CanCreateCanvas2dResourceProvider()) {
     dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
