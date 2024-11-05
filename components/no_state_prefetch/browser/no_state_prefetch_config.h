@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_CONFIG_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_CONFIG_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_CONFIG_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_CONFIG_H_
 
 #include <stddef.h>
 
@@ -12,9 +12,9 @@
 
 namespace prerender {
 
-struct Config {
-  Config();
-  ~Config();
+struct NoStatePrefetchConfig {
+  NoStatePrefetchConfig();
+  ~NoStatePrefetchConfig();
 
   // Maximum memory use for a prerendered page until it is killed.
   size_t max_bytes;
@@ -53,4 +53,4 @@ struct Config {
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_CONFIG_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_CONFIG_H_

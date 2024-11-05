@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_config.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_config.h"
 
 namespace prerender {
 
-Config::Config()
+NoStatePrefetchConfig::NoStatePrefetchConfig()
     : max_bytes(150 * 1024 * 1024),
       max_link_concurrency(1),
       max_link_concurrency_per_launcher(1),
@@ -16,6 +16,6 @@ Config::Config()
       abandon_time_to_live(base::Seconds(3)),
       default_tab_bounds(640, 480) {}
 
-Config::~Config() = default;
+NoStatePrefetchConfig::~NoStatePrefetchConfig() = default;
 
 }  // namespace prerender
