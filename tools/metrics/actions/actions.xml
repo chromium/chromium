@@ -32227,6 +32227,48 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PlusAddresses.AffiliationErrorCanceled">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User clicked &quot;cancel&quot; after an affiliation error occurred.
+  </description>
+</action>
+
+<action name="PlusAddresses.AffiliationErrorFilledExisting">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User agreed to fill an existing affiliated plus address after an error
+    dialog was shown.
+  </description>
+</action>
+
+<action name="PlusAddresses.CreateErrorCanceled">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User clicked on &quot;OK&quot; after a quota error occurred.
+  </description>
+</action>
+
+<action name="PlusAddresses.CreateErrorTryAgainClicked">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User clicked on &quot;try again&quot; after an error occurred during the
+    creation of a plus address.
+  </description>
+</action>
+
+<action name="PlusAddresses.QuotaErrorAccepted">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User clicked on &quot;OK&quot; after a quota error occurred.
+  </description>
+</action>
+
 <action name="PlusAddresses.Refreshed">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>
