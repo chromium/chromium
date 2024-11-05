@@ -465,7 +465,8 @@ void AuthenticatorRequestDialogController::StartOver() {
           ->GetOriginalProfile()
           ->GetPrefs();
   if (model_->step() == Step::kTrustThisComputerCreation ||
-      model_->step() == Step::kTrustThisComputerAssertion) {
+      model_->step() == Step::kTrustThisComputerAssertion ||
+      model_->step() == Step::kRecoverSecurityDomain) {
     device::enclave::RecordEvent(device::enclave::Event::kOnboardingRejected);
     int current_gpm_decline_count = pref_service->GetInteger(
         webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount);

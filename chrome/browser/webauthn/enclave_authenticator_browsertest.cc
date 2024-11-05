@@ -3368,10 +3368,25 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForDelegateDestruction();
 }
 
+// Tests that have different behaviour when hybrid linking is disabled.
+class HybridParamEnclaveAuthenticatorWithoutPinBrowserTest
+    : public EnclaveAuthenticatorWithoutPinBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(device::kWebAuthnHybridLinking,
+                                              GetParam());
+    EnclaveAuthenticatorWithoutPinBrowserTest::SetUp();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Attempt a GetAssertion multiple times with GPM passkey bootstrapping
-// offered, and decline each time. The default should change to hybrid after
+// offered, and decline each time. The default should change away from GPM after
 // two times declined.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+IN_PROC_BROWSER_TEST_P(HybridParamEnclaveAuthenticatorWithoutPinBrowserTest,
                        MultipleDeclinedBootstrappings) {
   EnableUVKeySupport();
   delegate_observer()->SetUseSyncedDeviceCablePairing(/*use_pairing=*/true);
@@ -3388,6 +3403,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
 
+  // Enclave will be the priority mechanism. Select it.
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
   EXPECT_EQ(request_delegate()
@@ -3395,10 +3411,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
+      base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking)
+          ? AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion
+          : AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
+  // Now cancel the request...
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   registration_state_result.state = trusted_vault::
@@ -3407,8 +3426,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   dialog_model()->StartOver();
   model_observer()->WaitForStep();
 
+  // ...and select it again from the mechanism list.
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
+      base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking)
+          ? AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion
+          : AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   EXPECT_TRUE(base::ranges::any_of(
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
@@ -3420,12 +3442,14 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   }
   model_observer()->WaitForStep();
 
-  // The second time simulate pressing the "Use [phone]" button.
-  model_observer()->ObserveNextStep();
-  dialog_model()->ContactPriorityPhone();
+  // Finally, cancel the request once more.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  dialog_model()->StartOver();
   model_observer()->WaitForStep();
 
-  // Cancel and send a new request so newly-enumerated credentials will be used.
+  // Terminate the request and send a new one so newly-enumerated credentials
+  // will be used.
   dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
 
@@ -3435,11 +3459,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
 
-  // Synced GPM passkeys should be hybrid credentials now.
+  // Passkeys from GPM should not be present anymore.
   EXPECT_FALSE(base::ranges::any_of(
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
 }
+
+INSTANTIATE_TEST_SUITE_P(HybridLinkingEnabled,
+                         HybridParamEnclaveAuthenticatorWithoutPinBrowserTest,
+                         testing::Values(false, true));
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        ChangedPINDetectedWhenDoingUV) {
