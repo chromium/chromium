@@ -1675,7 +1675,7 @@ See your search engine’s instructions for deleting your search history, if app
           Are you sure you want to discard your selection?
       </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_DISCARD_SELECTION" desc="Title of a button inside an alert asking the user to confirm whether they really want to discard and cancel their file selection. This button discards and cancel the file selection. [iOS only]">
-          Dicard selection
+          Discard selection
       </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_KEEP_SELECTION" desc="Title of a button inside an alert asking the user to confirm whether they really want to discard and cancel their file selection. This button keeps the selection. [iOS only]">
           Keep selection
