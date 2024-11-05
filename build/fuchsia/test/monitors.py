@@ -8,8 +8,10 @@ import sys
 
 from contextlib import AbstractContextManager
 
+from common import DIR_SRC_ROOT
+
 PROTO_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', 'util/lib/proto/'))
+    os.path.join(DIR_SRC_ROOT, 'build', 'util', 'lib', 'proto'))
 if os.path.isdir(PROTO_DIR):
     sys.path.append(PROTO_DIR)
     # pylint: disable=import-error, unused-import

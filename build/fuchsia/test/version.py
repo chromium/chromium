@@ -9,14 +9,15 @@ import os.path
 
 from typing import Dict
 
+from common import DIR_SRC_ROOT
+
 
 def chrome_version() -> Dict[str, int]:
     """ Returns a replica of //chrome/VERSION, crashes if the file does not
     exist. This function does not assume the existence of all the fields, but
     treats missing ones as 0; on the other hand, the unexpected fields would be
     also ignored."""
-    file = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'chrome',
-                        'VERSION')
+    file = os.path.join(DIR_SRC_ROOT, 'chrome', 'VERSION')
     assert os.path.exists(file)
     result = {}
 
