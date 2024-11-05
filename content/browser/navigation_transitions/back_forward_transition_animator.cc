@@ -515,14 +515,7 @@ void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
         "BackForwardTransitionAnimator::OnContentForNavigationEntryShown");
     return;
   }
-  if (!embedder_live_content_clone_) {
-    // The embedder has finished cross-fading from the screenshot to the new
-    // content. Unregister `this` from the `RenderWidgetHost` to stop the
-    // `OnRenderWidgetHostDestroyed()` notification.
-    CHECK(new_render_widget_host_);
-    new_render_widget_host_->RemoveObserver(animation_manager_);
-    new_render_widget_host_ = nullptr;
-  }
+  UnregisterNewFrameActivationObserver();
   AdvanceAndProcessState(State::kAnimationFinished);
 }
 
