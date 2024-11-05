@@ -64,6 +64,7 @@ class TrackingProtectionSettingsTest : public testing::Test {
   void TearDown() override {
     host_content_settings_map_->ShutdownOnUIThread();
     tracking_protection_settings_->Shutdown();
+    feature_list_.Reset();
   }
 
   TrackingProtectionSettings* tracking_protection_settings() {
@@ -93,9 +94,12 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsDoNotTrackStatus) {
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kIpProtectionEnabled));
   EXPECT_FALSE(tracking_protection_settings()->IsIpProtectionEnabled());
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
   EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
+
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kIpProtectionInitializedByDogfood));
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
@@ -280,6 +284,23 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
   EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+class TrackingProtectionSettingsTestWithIppDogfood
+    : public TrackingProtectionSettingsTest {
+ public:
+  TrackingProtectionSettingsTestWithIppDogfood() {
+    features_.InitAndEnableFeature(
+        privacy_sandbox::kIpProtectionDogfoodDefaultOn);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(TrackingProtectionSettingsTestWithIppDogfood, VerifyDogfoodPrefs) {
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kIpProtectionEnabled));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kIpProtectionInitializedByDogfood));
 }
 
 }  // namespace
