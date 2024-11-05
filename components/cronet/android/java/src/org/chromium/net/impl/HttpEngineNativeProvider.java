@@ -11,6 +11,7 @@ import android.os.ext.SdkExtensions;
 
 import androidx.annotation.RequiresExtension;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetProvider;
 import org.chromium.net.ExperimentalCronetEngine;
@@ -44,8 +45,11 @@ public class HttpEngineNativeProvider extends CronetProvider {
     @Override
     @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
     public CronetEngine.Builder createBuilder() {
-        return new ExperimentalCronetEngine.Builder(
-                new AndroidHttpEngineBuilderWrapper(new HttpEngine.Builder(mContext)));
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("HttpEngineNativeProvider#createBuilder")) {
+            return new ExperimentalCronetEngine.Builder(
+                    new AndroidHttpEngineBuilderWrapper(new HttpEngine.Builder(mContext)));
+        }
     }
 
     @Override

@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -191,19 +193,21 @@ public final class ResolvedFlags {
      *     FlagValue.ConstrainedValue#getMinVersion} field.
      */
     public static ResolvedFlags resolve(Flags flags, String appId, String cronetVersion) {
-        int[] parsedCronetVersion = parseVersionString(cronetVersion);
-        Map<String, Value> resolvedFlags = new HashMap<String, Value>();
-        for (var flag : flags.getFlagsMap().entrySet()) {
-            try {
-                Value value = Value.resolve(flag.getValue(), appId, parsedCronetVersion);
-                if (value == null) continue;
-                resolvedFlags.put(flag.getKey(), value);
-            } catch (RuntimeException exception) {
-                throw new IllegalArgumentException(
-                        "Unable to resolve HTTP flag `" + flag.getKey() + "`", exception);
+        try (var traceEvent = ScopedSysTraceEvent.scoped("Cronet ResolvedFlags#resolve")) {
+            int[] parsedCronetVersion = parseVersionString(cronetVersion);
+            Map<String, Value> resolvedFlags = new HashMap<String, Value>();
+            for (var flag : flags.getFlagsMap().entrySet()) {
+                try {
+                    Value value = Value.resolve(flag.getValue(), appId, parsedCronetVersion);
+                    if (value == null) continue;
+                    resolvedFlags.put(flag.getKey(), value);
+                } catch (RuntimeException exception) {
+                    throw new IllegalArgumentException(
+                            "Unable to resolve HTTP flag `" + flag.getKey() + "`", exception);
+                }
             }
+            return new ResolvedFlags(resolvedFlags);
         }
-        return new ResolvedFlags(resolvedFlags);
     }
 
     @VisibleForTesting

@@ -15,6 +15,7 @@ import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UploadDataSink;
 
@@ -136,7 +137,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
     void readData(ByteBuffer byteBuffer) {
         mByteBuffer = byteBuffer;
         mByteBufferLimit = byteBuffer.limit();
-        postTaskToExecutor(mReadTask);
+        postTaskToExecutor(mReadTask, "readData");
     }
 
     // TODO(mmenke): Consider implementing a cancel method.
@@ -165,7 +166,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
                         }
                     }
                 };
-        postTaskToExecutor(task);
+        postTaskToExecutor(task, "rewind");
     }
 
     private void checkCallingThread() {
@@ -228,105 +229,127 @@ public final class CronetUploadDataStream extends UploadDataSink {
     @Override
     @SuppressLint("DefaultLocale")
     public void onReadSucceeded(boolean lastChunk) {
-        synchronized (mLock) {
-            checkState(UserCallback.READ);
-            if (mByteBufferLimit != mByteBuffer.limit()) {
-                throw new IllegalStateException("ByteBuffer limit changed");
-            }
-            if (lastChunk && mLength >= 0) {
-                throw new IllegalArgumentException("Non-chunked upload can't have last chunk");
-            }
-            int bytesRead = mByteBuffer.position();
-            if (bytesRead == 0 && !lastChunk) {
-                // Sending an empty buffer does not make any sense, if the user wishes
-                // to signal end of data then that is done automatically done by the
-                // networking stack as we know the size through |getLength()|. So once
-                // the data has all completely transmitted, the networking stack will
-                // automatically signal to the receiver. However, for the case for
-                // chunked-upload, the optimal scenario is that the last chunk must
-                // be sent with |lastChunk = true| with a non-empty buffer, but sending
-                // an empty buffer with |lastChunk = true| is also allowed.
-                //
-                // Currently, H/1 and H/3 requests will hang indefinitely which will
-                // means that the user must handle the request timeout manually, while
-                // H/2 requests will immediately crash. In order to provide a consistent
-                // behavior, we will fail the request immediately and put the request
-                // in terminal state of |onError|
-                //
-                // We explicitly choose not to crash / throw for the sake of maintaining
-                // app compatibility unlike the other branches in this method which throws
-                // immediately.
-                //
-                // See b/332860415 for more details.
-                onError(
-                        new IllegalStateException(
-                                "Bytes read can't be zero except for last chunk!"));
-                return;
-            }
-            mRemainingLength -= bytesRead;
-            if (mRemainingLength < 0 && mLength >= 0) {
-                throw new IllegalArgumentException(
-                        String.format(
-                                "Read upload data length %d exceeds expected length %d",
-                                mLength - mRemainingLength, mLength));
-            }
-            mByteBuffer.position(0);
-            mByteBuffer = null;
-            mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetUploadDataStream#onReadSucceeded")) {
+            synchronized (mLock) {
+                checkState(UserCallback.READ);
+                if (mByteBufferLimit != mByteBuffer.limit()) {
+                    throw new IllegalStateException("ByteBuffer limit changed");
+                }
+                if (lastChunk && mLength >= 0) {
+                    throw new IllegalArgumentException("Non-chunked upload can't have last chunk");
+                }
+                int bytesRead = mByteBuffer.position();
+                if (bytesRead == 0 && !lastChunk) {
+                    // Sending an empty buffer does not make any sense, if the user wishes
+                    // to signal end of data then that is done automatically done by the
+                    // networking stack as we know the size through |getLength()|. So once
+                    // the data has all completely transmitted, the networking stack will
+                    // automatically signal to the receiver. However, for the case for
+                    // chunked-upload, the optimal scenario is that the last chunk must
+                    // be sent with |lastChunk = true| with a non-empty buffer, but sending
+                    // an empty buffer with |lastChunk = true| is also allowed.
+                    //
+                    // Currently, H/1 and H/3 requests will hang indefinitely which will
+                    // means that the user must handle the request timeout manually, while
+                    // H/2 requests will immediately crash. In order to provide a consistent
+                    // behavior, we will fail the request immediately and put the request
+                    // in terminal state of |onError|
+                    //
+                    // We explicitly choose not to crash / throw for the sake of maintaining
+                    // app compatibility unlike the other branches in this method which throws
+                    // immediately.
+                    //
+                    // See b/332860415 for more details.
+                    onError(
+                            new IllegalStateException(
+                                    "Bytes read can't be zero except for last chunk!"));
+                    return;
+                }
+                mRemainingLength -= bytesRead;
+                if (mRemainingLength < 0 && mLength >= 0) {
+                    throw new IllegalArgumentException(
+                            String.format(
+                                    "Read upload data length %d exceeds expected length %d",
+                                    mLength - mRemainingLength, mLength));
+                }
+                mByteBuffer.position(0);
+                mByteBuffer = null;
+                mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
 
-            destroyAdapterIfPostponed();
-            // Request may been canceled already.
-            if (mUploadDataStreamAdapter == 0) {
-                return;
+                destroyAdapterIfPostponed();
+                // Request may been canceled already.
+                if (mUploadDataStreamAdapter == 0) {
+                    return;
+                }
+                CronetUploadDataStreamJni.get()
+                        .onReadSucceeded(
+                                mUploadDataStreamAdapter,
+                                CronetUploadDataStream.this,
+                                bytesRead,
+                                lastChunk);
             }
-            CronetUploadDataStreamJni.get()
-                    .onReadSucceeded(
-                            mUploadDataStreamAdapter,
-                            CronetUploadDataStream.this,
-                            bytesRead,
-                            lastChunk);
         }
     }
 
     @Override
     public void onReadError(Exception exception) {
-        synchronized (mLock) {
-            checkState(UserCallback.READ);
-            onError(exception);
+        try (var traceEvent = ScopedSysTraceEvent.scoped("CronetUploadDataStream#onReadError")) {
+            synchronized (mLock) {
+                checkState(UserCallback.READ);
+                onError(exception);
+            }
         }
     }
 
     @Override
     public void onRewindSucceeded() {
-        synchronized (mLock) {
-            checkState(UserCallback.REWIND);
-            mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
-            mRemainingLength = mLength;
-            // Request may been canceled already.
-            if (mUploadDataStreamAdapter == 0) {
-                return;
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetUploadDataStream#onRewindSucceeded")) {
+            synchronized (mLock) {
+                checkState(UserCallback.REWIND);
+                mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
+                mRemainingLength = mLength;
+                // Request may been canceled already.
+                if (mUploadDataStreamAdapter == 0) {
+                    return;
+                }
+                CronetUploadDataStreamJni.get()
+                        .onRewindSucceeded(mUploadDataStreamAdapter, CronetUploadDataStream.this);
             }
-            CronetUploadDataStreamJni.get()
-                    .onRewindSucceeded(mUploadDataStreamAdapter, CronetUploadDataStream.this);
         }
     }
 
     @Override
     public void onRewindError(Exception exception) {
-        synchronized (mLock) {
-            checkState(UserCallback.REWIND);
-            onError(exception);
+        try (var traceEvent = ScopedSysTraceEvent.scoped("CronetUploadDataStream#onRewindError")) {
+            synchronized (mLock) {
+                checkState(UserCallback.REWIND);
+                onError(exception);
+            }
         }
     }
 
     /** Posts task to application Executor. */
-    void postTaskToExecutor(Runnable task) {
-        try {
-            mExecutor.execute(task);
-        } catch (Throwable e) {
-            // Just fail the request. The request is smart enough to handle the
-            // case where it was already canceled by the embedder.
-            mRequest.onUploadException(e);
+    void postTaskToExecutor(Runnable task, String name) {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetUploadDataStream#postTaskToExecutor " + name)) {
+            try {
+                mExecutor.execute(
+                        () -> {
+                            try (var callbackTraceEvent =
+                                    ScopedSysTraceEvent.scoped(
+                                            "CronetUploadDataStream#postTaskToExecutor "
+                                                    + name
+                                                    + " running callback")) {
+                                task.run();
+                            }
+                        });
+            } catch (Throwable e) {
+                // Just fail the request. The request is smart enough to handle the
+                // case where it was already canceled by the embedder.
+                mRequest.onUploadException(e);
+            }
         }
     }
 
@@ -362,7 +385,8 @@ public final class CronetUploadDataStream extends UploadDataSink {
                             Log.e(TAG, "Exception thrown when closing", e);
                         }
                     }
-                });
+                },
+                "destroyAdapter");
     }
 
     /**
@@ -388,18 +412,21 @@ public final class CronetUploadDataStream extends UploadDataSink {
      * this is done before request start, so native object may not exist.
      */
     void initializeWithRequest() {
-        synchronized (mLock) {
-            mInWhichUserCallback = UserCallback.GET_LENGTH;
-        }
-        try {
-            mRequest.checkCallingThread();
-            mLength = mDataProvider.getLength();
-            mRemainingLength = mLength;
-        } catch (Throwable t) {
-            onError(t);
-        }
-        synchronized (mLock) {
-            mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetUploadDataStream#initializeWithRequest")) {
+            synchronized (mLock) {
+                mInWhichUserCallback = UserCallback.GET_LENGTH;
+            }
+            try {
+                mRequest.checkCallingThread();
+                mLength = mDataProvider.getLength();
+                mRemainingLength = mLength;
+            } catch (Throwable t) {
+                onError(t);
+            }
+            synchronized (mLock) {
+                mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
+            }
         }
     }
 
@@ -408,11 +435,14 @@ public final class CronetUploadDataStream extends UploadDataSink {
      * called on executor thread.
      */
     void attachNativeAdapterToRequest(final long requestAdapter) {
-        synchronized (mLock) {
-            mUploadDataStreamAdapter =
-                    CronetUploadDataStreamJni.get()
-                            .attachUploadDataToRequest(
-                                    CronetUploadDataStream.this, requestAdapter, mLength);
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetUploadDataStream#attachNativeAdapterToRequest")) {
+            synchronized (mLock) {
+                mUploadDataStreamAdapter =
+                        CronetUploadDataStreamJni.get()
+                                .attachUploadDataToRequest(
+                                        CronetUploadDataStream.this, requestAdapter, mLength);
+            }
         }
     }
 

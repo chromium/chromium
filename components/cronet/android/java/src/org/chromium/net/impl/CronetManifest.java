@@ -13,6 +13,7 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 
 /**
@@ -96,27 +97,30 @@ public final class CronetManifest {
             // considerably more efficient because PackageManager calls are expensive (they involve
             // an IPC to the system server). See also https://crbug.com/346546533.
             if (context != sLastContext) {
-                ServiceInfo serviceInfo;
-                try {
-                    serviceInfo =
-                            context.getPackageManager()
-                                    .getServiceInfo(
-                                            new ComponentName(
-                                                    context, META_DATA_HOLDER_SERVICE_NAME),
-                                            PackageManager.GET_META_DATA
-                                                    | PackageManager.MATCH_DISABLED_COMPONENTS
-                                                    | PackageManager.MATCH_DIRECT_BOOT_AWARE
-                                                    | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
-                } catch (PackageManager.NameNotFoundException | NullPointerException e) {
-                    // TODO(b/331573772): Consider removing this NPE check once we can check for
-                    // CRONET_SOURCE_FAKE when creating logger.
-                    serviceInfo = null;
+                try (var traceEvent =
+                        ScopedSysTraceEvent.scoped("CronetManifest#getMetaData fetching info")) {
+                    ServiceInfo serviceInfo;
+                    try {
+                        serviceInfo =
+                                context.getPackageManager()
+                                        .getServiceInfo(
+                                                new ComponentName(
+                                                        context, META_DATA_HOLDER_SERVICE_NAME),
+                                                PackageManager.GET_META_DATA
+                                                        | PackageManager.MATCH_DISABLED_COMPONENTS
+                                                        | PackageManager.MATCH_DIRECT_BOOT_AWARE
+                                                        | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
+                    } catch (PackageManager.NameNotFoundException | NullPointerException e) {
+                        // TODO(b/331573772): Consider removing this NPE check once we can check for
+                        // CRONET_SOURCE_FAKE when creating logger.
+                        serviceInfo = null;
+                    }
+                    sMetaData =
+                            serviceInfo != null && serviceInfo.metaData != null
+                                    ? serviceInfo.metaData
+                                    : new Bundle();
+                    sLastContext = context;
                 }
-                sMetaData =
-                        serviceInfo != null && serviceInfo.metaData != null
-                                ? serviceInfo.metaData
-                                : new Bundle();
-                sLastContext = context;
             }
             assert sMetaData != null;
             return sMetaData;

@@ -4517,6 +4517,12 @@ if (is_android) {
     sources = [ "metrics/histogram_base.h" ]
   }
 
+  android_library("metrics_ScopedSysTraceEvent_java") {
+    sources = [
+      "android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java",
+    ]
+  }
+
   android_library("metrics_java") {
     srcjar_deps = [
       ":metrics_enum_srcjar",
@@ -4529,7 +4535,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/metrics/NoopUmaRecorder.java",
       "android/java/src/org/chromium/base/metrics/RecordHistogram.java",
       "android/java/src/org/chromium/base/metrics/RecordUserAction.java",
-      "android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java",
       "android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java",
       "android/java/src/org/chromium/base/metrics/TimingMetric.java",
       "android/java/src/org/chromium/base/metrics/UmaRecorder.java",
@@ -4545,6 +4550,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+    public_deps = [ ":metrics_ScopedSysTraceEvent_java" ]
   }
 
   generate_jni("jank_tracker_jni") {

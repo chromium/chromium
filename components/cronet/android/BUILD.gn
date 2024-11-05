@@ -262,7 +262,10 @@ sizes_test("cronet_sizes") {
   ]
 }
 
-cronet_shared_java_deps_to_package = [ ":cronet_stats_log_java" ]
+cronet_shared_java_deps_to_package = [
+  ":cronet_stats_log_java",
+  "//base:metrics_ScopedSysTraceEvent_java",
+]
 
 # Common Cronet code that is used in Cronet API *and* implementations.
 #
@@ -336,6 +339,7 @@ android_library("cronet_api_java") {
   deps = [
     ":api_version",
     ":cronet_shared_java",
+    "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -582,6 +586,7 @@ android_library("httpengine_native_provider_java") {
     ":cronet_api_java",
     ":cronet_impl_common_java",
     ":cronet_shared_java",
+    "//base:metrics_ScopedSysTraceEvent_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -788,7 +793,14 @@ java_prebuilt("package_impl_native_java") {
     "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
   ]
-  jar_excluded_patterns = [ "androidx/*/R*" ]
+  jar_excluded_patterns = [
+    "androidx/*/R*",
+
+    # This class is already in package_shared_java, which is always shipped as a
+    # required dependency of this jar. Including it in this jar would cause
+    # duplicate class errors.
+    "org/chromium/base/metrics/ScopedSysTraceEvent.class",
+  ]
 }
 
 android_java_prebuilt("package_impl_util_java") {
