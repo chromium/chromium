@@ -462,18 +462,12 @@ public class ToolbarManager
         public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
             if (mHandler == null) return;
             if (!mIsInProgress) {
-                assert mActivityTabProvider.get().canGoBack()
-                        : "Tab should be navigable when starting a new onStarted";
-                assert mHandler == null : "No active handler when starting a new onStarted";
-                mHandler = null;
                 handleOnBackStarted(backEvent);
                 return;
             }
 
             if (mInitialEdge != backEvent.getSwipeEdge()) {
                 handleOnBackCancelled();
-                assert mActivityTabProvider.get().canGoBack()
-                        : "Tab should be navigable when restarting gesture";
                 handleOnBackStarted(backEvent);
                 return;
             }
@@ -489,8 +483,6 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
-            assert mActivityTabProvider.get().canGoBack()
-                    : "Tab should be navigable when gesture starts";
             mIsInProgress = true;
             mIsGestureMode = UiUtils.isGestureNavigationMode(mActivity.getWindow());
             mInitialEdge = backEvent.getSwipeEdge();
@@ -514,6 +506,8 @@ public class ToolbarManager
             if (!mIsGestureMode) return;
             if (!GestureNavigationUtils.allowTransition(mActivityTabProvider.get(), false)) return;
 
+            mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
+
             boolean navigatesForward = isForward();
             if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
                     navigatesForward, backEvent.getSwipeEdge())) {
@@ -522,15 +516,14 @@ public class ToolbarManager
                         mLocationBarModel.getTab(),
                         BrowserControlsState.SHOWN,
                         /* animate= */ true);
-                mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
-                mHandler.onBackStarted(
-                        backEvent.getProgress(),
-                        backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
-                                ? BackGestureEventSwipeEdge.LEFT
-                                : BackGestureEventSwipeEdge.RIGHT,
-                        navigatesForward,
-                        mIsGestureMode);
             }
+            mHandler.onBackStarted(
+                    backEvent.getProgress(),
+                    backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
+                            ? BackGestureEventSwipeEdge.LEFT
+                            : BackGestureEventSwipeEdge.RIGHT,
+                    navigatesForward,
+                    mIsGestureMode);
         }
     }
 
