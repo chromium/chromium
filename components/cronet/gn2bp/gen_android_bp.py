@@ -35,6 +35,7 @@ import sys
 import copy
 from typing import List, Dict, Set, Union
 from pathlib import Path
+import hashlib
 
 import gn_utils
 PARENT_ROOT = os.path.abspath(
@@ -2176,17 +2177,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     # "lib{crate_name}" must be a prefix of the module name, this is a Soong
     # restriction.
     # https://cs.android.com/android/_/android/platform/build/soong/+/31934a55a8a1f9e4d56d68810f4a646f12ab6eb5:rust/library.go;l=724;drc=fdec8723d574daf54b956cc0f6dc879087da70a6;bpv=0;bpt=0
-    if len(target.crate_name) > 35:
-      # Chromium will set the `crate_name` to some mangled string from the
-      # GN target label, this is only the case when `crate_name` is not
-      # explicitly defined. We don't want that as the names get too long and
-      # exceeds the OS limit which results in compilation errors. This tries
-      # to shorten the names by only using the target_name.
-      bp_module_name = label_to_module_name(get_target_name(gn_target_name))
-      target.crate_name = bp_module_name
-      bp_module_name = f"lib{bp_module_name}"
-    else:
-      bp_module_name = f"lib{target.crate_name}_{bp_module_name}"
+    # Use the hash of the module_name instead of the entire name otherwise we will
+    # exceed the maximum file name length (b/376452102).
+    bp_module_hash = hashlib.sha256(
+        bp_module_name.encode('utf-8')).hexdigest()[:16]
+    bp_module_name = f"lib{target.crate_name}__{bp_module_hash}"
 
     if parent_gn_type in ["static_library", "shared_library"]:
       # CC modules must depend on a different type of modules that are
