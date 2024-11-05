@@ -1541,25 +1541,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result"
-    enum="BooleanSuccess" expires_after="2025-05-05">
-  <owner>hansberry@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>Result of trying to find eligible devices.</summary>
-</histogram>
-
-<histogram
-    name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result.FailureReason"
-    enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
-    expires_after="2025-05-05">
-  <owner>hansberry@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Breaks down the percentages of reasons when failure occurs on
-    FindEligibleDevices.
-  </summary>
-</histogram>
-
 <histogram name="MultiDevice.DeviceSyncService.ForceEnrollmentNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
     expires_after="2025-05-05">

@@ -259,22 +259,9 @@ class DeviceSyncImpl : public DeviceSyncBase,
   std::optional<multidevice::RemoteDevice> GetSyncedDeviceWithPublicKey(
       const std::string& public_key) const;
 
-  void OnSetSoftwareFeatureStateSuccess();
-  void OnSetSoftwareFeatureStateError(const base::UnguessableToken& request_id,
-                                      NetworkRequestError error);
   void OnSetFeatureStatusSuccess();
   void OnSetFeatureStatusError(const base::UnguessableToken& request_id,
                                NetworkRequestError error);
-  void OnFindEligibleDevicesSuccess(
-      base::OnceCallback<void(mojom::NetworkRequestResult,
-                              mojom::FindEligibleDevicesResponsePtr)> callback,
-      const std::vector<cryptauth::ExternalDeviceInfo>& eligible_devices,
-      const std::vector<cryptauth::IneligibleDevice>& ineligible_devices);
-  void OnFindEligibleDevicesError(
-      const base::OnceCallback<void(mojom::NetworkRequestResult,
-                                    mojom::FindEligibleDevicesResponsePtr)>
-          callback,
-      NetworkRequestError error);
   void OnNotifyDevicesSuccess(const base::UnguessableToken& request_id);
   void OnNotifyDevicesError(const base::UnguessableToken& request_id,
                             NetworkRequestError error);

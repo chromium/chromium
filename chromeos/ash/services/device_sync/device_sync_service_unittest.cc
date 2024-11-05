@@ -2192,11 +2192,6 @@ TEST_F(DeviceSyncServiceTest, FindEligibleDevices) {
             multidevice::RemoteDeviceList(test_devices().begin() + 1,
                                           test_devices().end()));
 
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.FindEligibleDevices.Result", false, 0);
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.FindEligibleDevices.Result", true, 1);
-
   // Find devices which are BETTER_TOGETHER_HOSTs again.
   CallFindEligibleDevices(multidevice::SoftwareFeature::kBetterTogetherHost);
   EXPECT_EQ(2u, find_eligible_calls.size());
@@ -2214,15 +2209,6 @@ TEST_F(DeviceSyncServiceTest, FindEligibleDevices) {
   EXPECT_TRUE(last_response);
   EXPECT_EQ(mojom::NetworkRequestResult::kOffline, last_response->first);
   EXPECT_FALSE(last_response->second /* response */);
-
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.FindEligibleDevices.Result", false, 1);
-  histogram_tester().ExpectTotalCount(
-      "MultiDevice.DeviceSyncService.FindEligibleDevices.Result."
-      "FailureReason",
-      1);
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.FindEligibleDevices.Result", true, 1);
 }
 
 TEST_F(DeviceSyncServiceTest, NotifyDevices_Success) {

@@ -108,34 +108,6 @@ enum class DeviceSyncSetSoftwareFeature {
   kMaxValue = kUnexpectedClientFeature
 };
 
-DeviceSyncRequestFailureReason GetDeviceSyncRequestFailureReason(
-    mojom::NetworkRequestResult failure_reason) {
-  switch (failure_reason) {
-    case mojom::NetworkRequestResult::kRequestSucceededButUnexpectedResult:
-      return DeviceSyncRequestFailureReason::
-          kRequestSucceededButUnexpectedResult;
-    case mojom::NetworkRequestResult::kServiceNotYetInitialized:
-      return DeviceSyncRequestFailureReason::kServiceNotYetInitialized;
-    case mojom::NetworkRequestResult::kOffline:
-      return DeviceSyncRequestFailureReason::kOffline;
-    case mojom::NetworkRequestResult::kEndpointNotFound:
-      return DeviceSyncRequestFailureReason::kEndpointNotFound;
-    case mojom::NetworkRequestResult::kAuthenticationError:
-      return DeviceSyncRequestFailureReason::kAuthenticationError;
-    case mojom::NetworkRequestResult::kBadRequest:
-      return DeviceSyncRequestFailureReason::kBadRequest;
-    case mojom::NetworkRequestResult::kResponseMalformed:
-      return DeviceSyncRequestFailureReason::kResponseMalformed;
-    case mojom::NetworkRequestResult::kInternalServerError:
-      return DeviceSyncRequestFailureReason::kInternalServerError;
-    case mojom::NetworkRequestResult::kUnknown:
-      return DeviceSyncRequestFailureReason::kUnknownNetworkError;
-    default:
-      return DeviceSyncRequestFailureReason::kUnknown;
-  }
-  NOTREACHED();
-}
-
 // The exponential back off is: base * 2^(num_failures - 1)
 base::TimeDelta GetRetryDelay(size_t num_failures) {
   DCHECK_GT(num_failures, 0u);
@@ -216,19 +188,6 @@ void RecordSetSoftwareFailedFeature(bool enabled,
   }
 }
 
-void RecordFindEligibleDevicesResult(bool success) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "MultiDevice.DeviceSyncService.FindEligibleDevices.Result", success);
-}
-
-void RecordFindEligibleDevicesResultFailureReason(
-    DeviceSyncRequestFailureReason failure_reason) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "MultiDevice.DeviceSyncService.FindEligibleDevices.Result."
-      "FailureReason",
-      failure_reason);
-}
-
 void RecordForceEnrollmentNowResult(ForceCryptAuthOperationResult result) {
   UMA_HISTOGRAM_ENUMERATION(
       "MultiDevice.DeviceSyncService.ForceEnrollmentNow.Result", result);
@@ -307,20 +266,23 @@ bool DeviceSyncImpl::PendingSetSoftwareFeatureRequest::IsFulfilled() const {
                          &multidevice::RemoteDevice::public_key);
 
   // If the device to edit no longer exists, the request is not fulfilled.
-  if (devices_it == synced_devices.end())
+  if (devices_it == synced_devices.end()) {
     return false;
+  }
 
   const auto features_map_it =
       devices_it->software_features.find(software_feature_);
 
   // If the device does not contain an entry for |software_feature_|, the
   // request is not fulfilled.
-  if (features_map_it == devices_it->software_features.end())
+  if (features_map_it == devices_it->software_features.end()) {
     return false;
+  }
 
-  if (enabled_)
+  if (enabled_) {
     return features_map_it->second ==
            multidevice::SoftwareFeatureState::kEnabled;
+  }
 
   return features_map_it->second ==
          multidevice::SoftwareFeatureState::kSupported;
@@ -377,8 +339,9 @@ bool DeviceSyncImpl::PendingSetFeatureStatusRequest::IsFulfilled() const {
 
       // If the requested device does not contain an entry for
       // |software_feature_|, the request is not fulfilled.
-      if (!is_feature_set_for_device)
+      if (!is_feature_set_for_device) {
         return false;
+      }
 
       is_feature_enabled_for_requested_device = is_feature_enabled_for_device;
     } else {
@@ -389,8 +352,9 @@ bool DeviceSyncImpl::PendingSetFeatureStatusRequest::IsFulfilled() const {
   }
 
   // If the requested device no longer exists, the request is not fulfilled.
-  if (!is_requested_device_in_list)
+  if (!is_requested_device_in_list) {
     return false;
+  }
 
   switch (status_change_) {
     case FeatureStatusChange::kEnableExclusively:
@@ -441,14 +405,17 @@ DeviceSyncImpl::DeviceSyncImpl(
 }
 
 DeviceSyncImpl::~DeviceSyncImpl() {
-  if (cryptauth_enrollment_manager_)
+  if (cryptauth_enrollment_manager_) {
     cryptauth_enrollment_manager_->RemoveObserver(this);
+  }
 
-  if (remote_device_provider_)
+  if (remote_device_provider_) {
     remote_device_provider_->RemoveObserver(this);
+  }
 
-  if (identity_manager_)
+  if (identity_manager_) {
     identity_manager_->RemoveObserver(this);  // No-op if we aren't observing.
+  }
 }
 
 void DeviceSyncImpl::ForceEnrollmentNow(ForceEnrollmentNowCallback callback) {
@@ -683,11 +650,13 @@ void DeviceSyncImpl::OnEnrollmentFinished(bool success) {
   PA_LOG(VERBOSE) << "DeviceSyncImpl: Enrollment finished; success = "
                   << success;
 
-  if (!success)
+  if (!success) {
     return;
+  }
 
-  if (status_ == InitializationStatus::kWaitingForEnrollment)
+  if (status_ == InitializationStatus::kWaitingForEnrollment) {
     RunNextInitializationStep();
+  }
 
   NotifyOnEnrollmentFinished();
 }
@@ -860,8 +829,9 @@ void DeviceSyncImpl::RegisterWithGcm() {
 }
 
 void DeviceSyncImpl::OnGCMRegistrationResult(bool success) {
-  if (status_ != InitializationStatus::kWaitingForGcmRegistration)
+  if (status_ != InitializationStatus::kWaitingForGcmRegistration) {
     return;
+  }
 
   cryptauth_gcm_manager_->RemoveObserver(this);
 
@@ -1044,49 +1014,11 @@ DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
   const auto it = base::ranges::find(synced_devices, public_key,
                                      &multidevice::RemoteDevice::public_key);
 
-  if (it == synced_devices.end())
+  if (it == synced_devices.end()) {
     return std::nullopt;
+  }
 
   return *it;
-}
-
-void DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess() {
-  DCHECK(features::ShouldUseV1DeviceSync());
-
-  PA_LOG(VERBOSE) << "DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess(): "
-                  << "Successfully completed SetSoftwareFeatureState() call; "
-                  << "requesting force sync.";
-
-  if (features::ShouldUseV2DeviceSync()) {
-    cryptauth_v2_device_manager_->ForceDeviceSyncNow(
-        cryptauthv2::ClientMetadata::FEATURE_TOGGLED,
-        std::nullopt /* session_id */);
-  }
-
-  RecordSetSoftwareFeatureStateResult(true /* success */);
-}
-
-void DeviceSyncImpl::OnSetSoftwareFeatureStateError(
-    const base::UnguessableToken& request_id,
-    NetworkRequestError error) {
-  DCHECK(features::ShouldUseV1DeviceSync());
-
-  auto it = id_to_pending_set_software_feature_request_map_.find(request_id);
-  if (it == id_to_pending_set_software_feature_request_map_.end()) {
-    NOTREACHED() << "DeviceSyncImpl::OnSetSoftwareFeatureStateError(): "
-                 << "Could not find request entry with ID " << request_id;
-  }
-
-  RecordSetSoftwareFeatureStateResult(false /* success */);
-  RecordSetSoftwareFeatureStateResultFailureReason(
-      GetDeviceSyncRequestFailureReason(
-          mojo::ConvertTo<mojom::NetworkRequestResult>(error)));
-  RecordSetSoftwareFailedFeature(it->second->enabled(),
-                                 it->second->software_feature());
-
-  it->second->InvokeCallback(
-      mojo::ConvertTo<mojom::NetworkRequestResult>(error));
-  id_to_pending_set_software_feature_request_map_.erase(it);
 }
 
 void DeviceSyncImpl::OnSetFeatureStatusSuccess() {
@@ -1115,60 +1047,6 @@ void DeviceSyncImpl::OnSetFeatureStatusError(
   it->second->InvokeCallback(
       mojo::ConvertTo<mojom::NetworkRequestResult>(error));
   id_to_pending_set_feature_status_request_map_.erase(it);
-}
-
-void DeviceSyncImpl::OnFindEligibleDevicesSuccess(
-    base::OnceCallback<void(mojom::NetworkRequestResult,
-                            mojom::FindEligibleDevicesResponsePtr)> callback,
-    const std::vector<cryptauth::ExternalDeviceInfo>& eligible_device_infos,
-    const std::vector<cryptauth::IneligibleDevice>& ineligible_devices) {
-  DCHECK(features::ShouldUseV1DeviceSync());
-
-  std::vector<multidevice::RemoteDevice> eligible_remote_devices;
-  for (const auto& eligible_device_info : eligible_device_infos) {
-    auto possible_device =
-        GetSyncedDeviceWithPublicKey(eligible_device_info.public_key());
-    if (possible_device) {
-      eligible_remote_devices.emplace_back(*possible_device);
-    } else {
-      PA_LOG(ERROR) << "Could not find eligible device with public key \""
-                    << eligible_device_info.public_key() << "\".";
-    }
-  }
-
-  std::vector<multidevice::RemoteDevice> ineligible_remote_devices;
-  for (const auto& ineligible_device : ineligible_devices) {
-    auto possible_device =
-        GetSyncedDeviceWithPublicKey(ineligible_device.device().public_key());
-    if (possible_device) {
-      ineligible_remote_devices.emplace_back(*possible_device);
-    } else {
-      PA_LOG(ERROR) << "Could not find ineligible device with public key \""
-                    << ineligible_device.device().public_key() << "\".";
-    }
-  }
-
-  std::move(callback).Run(
-      mojom::NetworkRequestResult::kSuccess,
-      mojom::FindEligibleDevicesResponse::New(eligible_remote_devices,
-                                              ineligible_remote_devices));
-
-  RecordFindEligibleDevicesResult(true /* success */);
-}
-
-void DeviceSyncImpl::OnFindEligibleDevicesError(
-    base::OnceCallback<void(mojom::NetworkRequestResult,
-                            mojom::FindEligibleDevicesResponsePtr)> callback,
-    NetworkRequestError error) {
-  DCHECK(features::ShouldUseV1DeviceSync());
-
-  std::move(callback).Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error),
-                          nullptr /* response */);
-
-  RecordFindEligibleDevicesResult(false /* success */);
-  RecordFindEligibleDevicesResultFailureReason(
-      GetDeviceSyncRequestFailureReason(
-          mojo::ConvertTo<mojom::NetworkRequestResult>(error)));
 }
 
 void DeviceSyncImpl::OnNotifyDevicesSuccess(
@@ -1234,8 +1112,9 @@ void DeviceSyncImpl::StartSetSoftwareFeatureTimer() {
 }
 
 void DeviceSyncImpl::OnSetSoftwareFeatureTimerFired() {
-  if (id_to_pending_set_software_feature_request_map_.empty())
+  if (id_to_pending_set_software_feature_request_map_.empty()) {
     return;
+  }
 
   PA_LOG(WARNING) << "DeviceSyncImpl::OnSetSoftwareFeatureTimerFired(): "
                   << "Timed out waiting for device feature states to update. "
