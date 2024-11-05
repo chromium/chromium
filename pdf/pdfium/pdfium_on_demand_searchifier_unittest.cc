@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -25,6 +26,9 @@
 namespace chrome_pdf {
 
 namespace {
+
+const char kPageHasTextHistogram[] = "PDF.PageHasText";
+const char kSearchifyAddedTextHistogram[] = "PDF.SearchifyAddedText";
 
 using VisualAnnotationPtr = screen_ai::mojom::VisualAnnotationPtr;
 
@@ -164,6 +168,7 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
 };
 
 TEST_P(PDFiumOnDemandSearchifierTest, NoImage) {
+  base::HistogramTester histogram_tester;
   CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
@@ -175,6 +180,10 @@ TEST_P(PDFiumOnDemandSearchifierTest, NoImage) {
 
   // Searchifier should not be created as it's not needed yet.
   ASSERT_FALSE(engine()->GetSearchifierForTesting());
+
+  histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 1);
+  histogram_tester.ExpectBucketCount(kPageHasTextHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
@@ -449,6 +458,63 @@ TEST_P(PDFiumOnDemandSearchifierTest, SearchifyStateChanges) {
 
   EXPECT_EQ(busy_state_changed_count(), 3);
   EXPECT_EQ(idle_state_changed_count(), 3);
+}
+
+TEST_P(PDFiumOnDemandSearchifierTest, MetricsProcessedPageWithoutText) {
+  base::HistogramTester histogram_tester;
+  CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
+
+  histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 0);
+  histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
+
+  // Trigger one page load.
+  GetPDFiumPageForTest(*engine(), 0).GetPage();
+
+  histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 1);
+  histogram_tester.ExpectBucketCount(kPageHasTextHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
+
+  StartSearchify(/*empty_results=*/false);
+
+  // Wait for searchifier to process all pending tasks.
+  {
+    base::test::TestFuture<void> future;
+    WaitUntilIdle(engine()->GetSearchifierForTesting(), future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 1);
+  histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 1);
+  histogram_tester.ExpectBucketCount(kSearchifyAddedTextHistogram, true, 1);
+}
+
+TEST_P(PDFiumOnDemandSearchifierTest, MetricsCanceledPageWithoutText) {
+  base::HistogramTester histogram_tester;
+  CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
+
+  histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 0);
+  histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
+
+  // Trigger one page load.
+  GetPDFiumPageForTest(*engine(), 0).GetPage();
+
+  histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 1);
+  histogram_tester.ExpectBucketCount(kPageHasTextHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
+
+  StartSearchify(/*empty_results=*/false);
+  engine()->GetOcrDisconnectHandler().Run();
+
+  // Wait for searchifier to process all pending tasks.
+  {
+    base::test::TestFuture<void> future;
+    WaitUntilFailure(engine()->GetSearchifierForTesting(),
+                     future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 1);
+  histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumOnDemandSearchifierTest, testing::Bool());

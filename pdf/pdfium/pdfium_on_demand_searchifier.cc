@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "pdf/pdfium/pdfium_searchify.h"
 
@@ -152,6 +153,15 @@ void PDFiumOnDemandSearchifier::SearchifyNextImage() {
                                bitmap_result.value().image_index,
                                gfx::Size(bitmap.width(), bitmap.height())));
     return;
+  }
+
+  // Report metric only once for each page.
+  bool not_reported =
+      searchify_added_text_metric_reported_.insert(current_page_->index())
+          .second;
+  if (not_reported) {
+    base::UmaHistogramBoolean("PDF.SearchifyAddedText",
+                              !current_page_ocr_results_.empty());
   }
 
   if (!current_page_ocr_results_.empty()) {

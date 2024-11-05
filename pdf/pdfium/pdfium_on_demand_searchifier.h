@@ -6,6 +6,7 @@
 #define PDF_PDFIUM_PDFIUM_ON_DEMAND_SEARCHIFIER_H_
 
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -91,6 +92,10 @@ class PDFiumOnDemandSearchifier {
 
   // Scheduled pages to be searchified.
   base::circular_deque<int> pages_queue_;
+
+  // Keeps track of the indices of pages for which "PDF.SearchifyAddedText"
+  // metric is reported.
+  std::set<int> searchify_added_text_metric_reported_;
 
   State state_ = State::kIdle;
 

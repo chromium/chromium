@@ -4237,14 +4237,25 @@ bool PDFiumEngine::PageNeedsSearchify(int page_index) const {
 }
 
 void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) ||
-      !base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
+  if (!page->available()) {
+    return;
+  }
+  // TODO(crbug.com/40066441): Explore heuristics to run OCR on pages with large
+  // images and a little text.
+  bool page_has_text = page->GetCharCount() != 0;
+
+  // Report metric only once for each page.
+  bool not_reported =
+      page_has_text_metric_reported_.insert(page->index()).second;
+  if (not_reported) {
+    base::UmaHistogramBoolean("PDF.PageHasText", page_has_text);
+  }
+  if (page_has_text) {
     return;
   }
 
-  // TODO(crbug.com/40066441): Explore heuristics to run OCR on pages with large
-  // images and a little text.
-  if (!page->available() || page->GetCharCount()) {
+  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) ||
+      !base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
     return;
   }
 

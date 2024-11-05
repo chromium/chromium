@@ -74,6 +74,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.PageHasText" enum="Boolean" expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks if a PDF page had text or not. This metric is recorded for each page
+    only the first time the page is loaded.
+  </summary>
+</histogram>
+
 <histogram name="PDF.PostMessageDataType" enum="PDFPostMessageDataType"
     expires_after="2025-04-06">
   <owner>andyphan@chromium.org</owner>
@@ -90,6 +99,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time used for rendering and painting all the visible pages in the PDF
     viewer.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SearchifyAddedText" enum="Boolean"
+    expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks if a PDF Searchifier added text to a page. This metric is recorded
+    only once for each page, when the searchify process for the page is
+    completed.
   </summary>
 </histogram>
 

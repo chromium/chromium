@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -865,6 +866,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   std::unique_ptr<PDFiumOnDemandSearchifier> searchifier_;
+
+  // Keeps track of the indices of pages for which "PDF.PageHasText" metric is
+  // reported.
+  std::set<int> page_has_text_metric_reported_;
 #endif
 
   std::unique_ptr<PDFiumDocument> document_;
