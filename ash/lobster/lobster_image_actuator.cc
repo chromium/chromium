@@ -4,6 +4,9 @@
 
 #include "ash/lobster/lobster_image_actuator.h"
 
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -12,11 +15,23 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace ash {
+
+namespace {
+
+constexpr char kLobsterToastId[] = "lobster_toast";
+
+}  // namespace
 
 bool InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
                                   const std::string& image_bytes) {
@@ -45,7 +60,17 @@ bool InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
   clipboard->WriteHTML(base::UTF8ToUTF16(base::StrCat(
                            {"<img src=\"", image_data_url.spec(), "\">"})),
                        /*source_url=*/"");
-  // TODO: b:369306847 - Show a toast notification if needed.
+
+  // Display a toast message.
+  ToastManager::Get()->Show(ToastData(
+      kLobsterToastId, ToastCatalogName::kCopyImageToClipboardAction,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LOBSTER_COPY_IMAGE_TO_CLIPBOARD_TOAST_MESSAGE)
+#else
+      u""
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          ));
 
   return false;
 }
