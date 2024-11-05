@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -35,7 +36,6 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
         shadows = {ShadowPendingIntent.class})
 public class DisclosureAcceptanceBroadcastReceiverTest {
     @Mock public NotificationManagerProxy mNotificationManager;
-    @Mock public BrowserServicesStore mStore;
 
     private DisclosureAcceptanceBroadcastReceiver mService;
 
@@ -43,7 +43,7 @@ public class DisclosureAcceptanceBroadcastReceiverTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mService = new DisclosureAcceptanceBroadcastReceiver(mNotificationManager, mStore);
+        mService = new DisclosureAcceptanceBroadcastReceiver(mNotificationManager);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class DisclosureAcceptanceBroadcastReceiverTest {
                         context, tag, id, packageName);
 
         mService.onReceive(context, extractIntent(provider));
-        verify(mStore).setUserAcceptedTwaDisclosureForPackage(eq(packageName));
+        assertTrue(BrowserServicesStore.hasUserAcceptedTwaDisclosureForPackage(packageName));
     }
 
     private static Intent extractIntent(PendingIntentProvider provider) {

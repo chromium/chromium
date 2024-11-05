@@ -19,13 +19,11 @@ import javax.inject.Inject;
  * with it.
  */
 public class TrustedWebActivityDisclosureController extends DisclosureController {
-    private final BrowserServicesStore mBrowserServicesStore;
     private final TrustedWebActivityUmaRecorder mRecorder;
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
     @Inject
     TrustedWebActivityDisclosureController(
-            BrowserServicesStore browserServicesStore,
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier,
@@ -36,7 +34,6 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
                 lifecycleDispatcher,
                 currentPageVerifier,
                 activity.getClientPackageNameProvider().get());
-        mBrowserServicesStore = browserServicesStore;
         mRecorder = recorder;
         mClientPackageNameProvider = activity.getClientPackageNameProvider();
     }
@@ -44,7 +41,7 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     @Override
     public void onDisclosureAccepted() {
         mRecorder.recordDisclosureAccepted();
-        mBrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(
+        BrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
         super.onDisclosureAccepted();
     }
@@ -52,20 +49,20 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     @Override
     public void onDisclosureShown() {
         mRecorder.recordDisclosureShown();
-        mBrowserServicesStore.setUserSeenTwaDisclosureForPackage(mClientPackageNameProvider.get());
+        BrowserServicesStore.setUserSeenTwaDisclosureForPackage(mClientPackageNameProvider.get());
         super.onDisclosureShown();
     }
 
     @Override
     protected boolean shouldShowDisclosure() {
         /* Has a disclosure been dismissed for this client package before? */
-        return !mBrowserServicesStore.hasUserAcceptedTwaDisclosureForPackage(
+        return !BrowserServicesStore.hasUserAcceptedTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
     }
 
     @Override
     protected boolean isFirstTime() {
-        return !mBrowserServicesStore.hasUserSeenTwaDisclosureForPackage(
+        return !BrowserServicesStore.hasUserSeenTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
     }
 }

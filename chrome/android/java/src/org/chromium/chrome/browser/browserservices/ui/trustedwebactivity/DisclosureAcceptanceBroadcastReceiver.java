@@ -13,7 +13,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -37,20 +36,15 @@ public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
     private static final String PACKAGE_EXTRA = "TWADisclosureResp.package_extra";
 
     private final BaseNotificationManagerProxy mNotificationManager;
-    private final BrowserServicesStore mStore;
 
     /** Constructor used by the Android framework. */
     public DisclosureAcceptanceBroadcastReceiver() {
-        this(
-                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()),
-                new BrowserServicesStore(ChromeSharedPreferences.getInstance()));
+        this(BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()));
     }
 
     /** Constructor that allows dependency injection for use in tests. */
-    public DisclosureAcceptanceBroadcastReceiver(
-            BaseNotificationManagerProxy notificationManager, BrowserServicesStore store) {
+    public DisclosureAcceptanceBroadcastReceiver(BaseNotificationManagerProxy notificationManager) {
         mNotificationManager = notificationManager;
-        mStore = store;
     }
 
     @Override
@@ -68,7 +62,7 @@ public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
         String packageName = intent.getStringExtra(PACKAGE_EXTRA);
 
         mNotificationManager.cancel(tag, id);
-        mStore.setUserAcceptedTwaDisclosureForPackage(packageName);
+        BrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(packageName);
     }
 
     public static PendingIntentProvider createPendingIntent(

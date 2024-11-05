@@ -53,10 +53,7 @@ public class InstalledWebappBroadcastReceiverTest {
 
         mReceiver =
                 new InstalledWebappBroadcastReceiver(
-                        mMockStrategy,
-                        mDataRegister,
-                        mock(BrowserServicesStore.class),
-                        mPermissionUpdater);
+                        mMockStrategy, mDataRegister, mPermissionUpdater);
         mContext = RuntimeEnvironment.application;
     }
 
@@ -114,7 +111,6 @@ public class InstalledWebappBroadcastReceiverTest {
                 new InstalledWebappBroadcastReceiver(
                         new InstalledWebappBroadcastReceiver.ClearDataStrategy(),
                         mDataRegister,
-                        mock(BrowserServicesStore.class),
                         mPermissionUpdater);
 
         int id = 67;
@@ -145,7 +141,6 @@ public class InstalledWebappBroadcastReceiverTest {
                 new InstalledWebappBroadcastReceiver(
                         new InstalledWebappBroadcastReceiver.ClearDataStrategy(),
                         mDataRegister,
-                        mock(BrowserServicesStore.class),
                         mPermissionUpdater);
 
         int id = 67;

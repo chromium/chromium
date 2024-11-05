@@ -70,7 +70,6 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
 
     private final ClearDataStrategy mClearDataStrategy;
     private final InstalledWebappDataRegister mDataRegister;
-    private final BrowserServicesStore mStore;
     private final PermissionUpdater mPermissionUpdater;
 
     /** Constructor with default dependencies for Android. */
@@ -79,8 +78,6 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
         this(
                 new ClearDataStrategy(),
                 new InstalledWebappDataRegister(),
-                new BrowserServicesStore(
-                        ChromeApplicationImpl.getComponent().resolveChromeSharedPreferences()),
                 ChromeApplicationImpl.getComponent().resolvePermissionUpdater());
     }
 
@@ -88,11 +85,9 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
     public InstalledWebappBroadcastReceiver(
             ClearDataStrategy strategy,
             InstalledWebappDataRegister dataRegister,
-            BrowserServicesStore store,
             PermissionUpdater permissionUpdater) {
         mClearDataStrategy = strategy;
         mDataRegister = dataRegister;
-        mStore = store;
         mPermissionUpdater = permissionUpdater;
     }
 
@@ -133,7 +128,7 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
 
     private void clearPreferences(int uid, boolean uninstalled) {
         String packageName = mDataRegister.getPackageNameForRegisteredUid(uid);
-        mStore.removeTwaDisclosureAcceptanceForPackage(packageName);
+        BrowserServicesStore.removeTwaDisclosureAcceptanceForPackage(packageName);
         if (uninstalled) {
             mDataRegister.removePackage(uid);
         }
