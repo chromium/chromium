@@ -2319,6 +2319,13 @@ experimental domain CSS
     returns
       array of SourceRange ranges
 
+  # Starts tracking the given node for the computed style updates
+  # and whenever the computed style is updated for node, it queues
+  # a `computedStyleUpdated` event with throttling.
+  experimental command trackComputedStyleUpdatesForNode
+    parameters
+      optional DOM.NodeId nodeId
+
   # Starts tracking the given computed styles for updates. The specified array of properties
   # replaces the one previously specified. Pass empty array to disable tracking.
   # Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified.
@@ -2485,6 +2492,11 @@ experimental domain CSS
     parameters
       # Identifier of the removed stylesheet.
       StyleSheetId styleSheetId
+
+  experimental event computedStyleUpdated
+    parameters
+      # The node id that has updated computed styles.
+      DOM.NodeId nodeId
 
 experimental domain CacheStorage
   depends on Storage

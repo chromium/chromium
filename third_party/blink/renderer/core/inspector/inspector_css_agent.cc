@@ -3618,6 +3618,17 @@ protocol::Response InspectorCSSAgent::startRuleUsageTracking() {
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorCSSAgent::trackComputedStyleUpdatesForNode(
+    protocol::Maybe<int> node_id) {
+  if (node_id.has_value()) {
+    node_id_for_computed_style_updated_events_ = node_id.value();
+  } else {
+    node_id_for_computed_style_updated_events_ = std::nullopt;
+  }
+
+  return protocol::Response::Success();
+}
+
 protocol::Response InspectorCSSAgent::stopRuleUsageTracking(
     std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>>* result) {
   for (Document* document : dom_agent_->Documents())
@@ -3758,19 +3769,52 @@ void InspectorCSSAgent::takeComputedStyleUpdates(
   computed_style_updated_callback_ = std::move(callback);
 }
 
+void InspectorCSSAgent::NotifyComputedStyleUpdatedForNode(int node_id) {
+  if (!notify_computed_style_updated_node_ids_.Contains(node_id)) {
+    return;
+  }
+
+  notify_computed_style_updated_node_ids_.erase(node_id);
+  if (!node_id_for_computed_style_updated_events_.has_value() ||
+      node_id_for_computed_style_updated_events_.value() != node_id) {
+    return;
+  }
+
+  GetFrontend()->computedStyleUpdated(node_id);
+}
+
 void InspectorCSSAgent::DidUpdateComputedStyle(Element* element,
                                                const ComputedStyle* old_style,
                                                const ComputedStyle* new_style) {
-  if (tracked_computed_styles_.empty())
+  if (tracked_computed_styles_.empty() &&
+      !node_id_for_computed_style_updated_events_.has_value()) {
     return;
-
-  if (!old_style && !new_style)
-    return;
+  }
 
   int id = dom_agent_->BoundNodeId(element);
   // If node is not mapped yet -> ignore the event.
   if (!id)
     return;
+
+  // If the updated computed styles belong to the tracked node,
+  // schedule a task to send `computedStyleUpdated` event.
+  if (node_id_for_computed_style_updated_events_.has_value() &&
+      node_id_for_computed_style_updated_events_.value() == id &&
+      !notify_computed_style_updated_node_ids_.Contains(id)) {
+    notify_computed_style_updated_node_ids_.insert(id);
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        inspected_frames_->Root()->GetTaskRunner(TaskType::kInternalInspector);
+    task_runner->PostDelayedTask(
+        FROM_HERE,
+        WTF::BindOnce(&InspectorCSSAgent::NotifyComputedStyleUpdatedForNode,
+                      WrapPersistent(weak_factory_.GetWeakCell()), id),
+        base::Milliseconds(50));
+  }
+
+  bool has_both_old_and_new_style = old_style && new_style;
+  if (tracked_computed_styles_.empty() || !has_both_old_and_new_style) {
+    return;
+  }
 
   if (computed_style_updated_node_ids_.Contains(id))
     return;
@@ -3843,6 +3887,7 @@ void InspectorCSSAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspector_user_agent_style_sheet_);
   visitor->Trace(user_agent_view_transition_style_sheet_);
   visitor->Trace(tracker_);
+  visitor->Trace(weak_factory_);
   InspectorBaseAgent::Trace(visitor);
 }
 

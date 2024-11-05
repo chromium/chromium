@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -273,6 +274,8 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response stopRuleUsageTracking(
       std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>>* result)
       override;
+  protocol::Response trackComputedStyleUpdatesForNode(
+      protocol::Maybe<int> node_id) override;
   protocol::Response trackComputedStyleUpdates(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSComputedStyleProperty>>
           properties_to_track) override;
@@ -466,6 +469,8 @@ class CORE_EXPORT InspectorCSSAgent final
   void IncrementFocusedCountForAncestors(Element*);
   void DecrementFocusedCountForAncestors(Element*);
 
+  void NotifyComputedStyleUpdatedForNode(int node_id);
+
   Member<InspectorDOMAgent> dom_agent_;
   Member<InspectedFrames> inspected_frames_;
   Member<InspectorNetworkAgent> network_agent_;
@@ -508,9 +513,18 @@ class CORE_EXPORT InspectorCSSAgent final
       computed_style_updated_callback_;
   HashSet<int> computed_style_updated_node_ids_;
 
+  // Keeps track of the node ids that has an active
+  // computedStyleUpdatedForNode task
+  HashSet<int> notify_computed_style_updated_node_ids_;
+  WeakCellFactory<InspectorCSSAgent> weak_factory_{this};
+
   // True while InspectorGhostRules is modifying a stylesheet. We don't
   // need to respond to such mutations, because we're guaranteed to undo them.
   bool ignore_stylesheet_mutation_ = false;
+
+  // Node to be tracked for `ComputedStyleUpdated` events.
+  // This is set via `trackComputedStyleUpdatesForNode` call.
+  std::optional<int> node_id_for_computed_style_updated_events_;
 
   friend class InspectorResourceContentLoaderCallback;
   friend class StyleSheetBinder;
