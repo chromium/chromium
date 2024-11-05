@@ -242,8 +242,7 @@ String String::Format(const char* format, ...) {
     va_end(args);
   }
 
-  return String(base::as_bytes(
-      base::span(buffer).first(base::checked_cast<size_t>(length))));
+  return String(base::span(buffer).first(base::checked_cast<size_t>(length)));
 }
 
 String String::EncodeForDebugging() const {

@@ -782,7 +782,7 @@ TEST_F(FetchDataLoaderTest, LoadAsStringWithNullBytes) {
   EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kDone));
   EXPECT_CALL(*fetch_data_loader_client,
               DidFetchDataLoadedString(
-                  String(base::byte_span_with_nul_from_cstring(kPattern))));
+                  String(base::span_with_nul_from_cstring(kPattern))));
   EXPECT_CALL(checkpoint, Call(3));
   EXPECT_CALL(*consumer, Cancel());
   EXPECT_CALL(checkpoint, Call(4));

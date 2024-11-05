@@ -150,7 +150,7 @@ TEST(UnicodeUtilitiesTest, FoldQuoteMarkOrSoftHyphenTest) {
 
   FoldQuoteMarksAndSoftHyphens(string_to_fold);
 
-  const String folded_string(base::byte_span_from_cstring("\"\"\"\'\'\'\0"));
+  const String folded_string(base::span_from_cstring("\"\"\"\'\'\'\0"));
   ASSERT_EQ(std::size(kCharactersToFold), folded_string.length());
   EXPECT_EQ(string_to_fold, folded_string);
 

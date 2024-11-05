@@ -315,7 +315,7 @@ TEST(HTMLDocumentParserFastpathTest, NullMappedToReplacementChar) {
   base::HistogramTester histogram_tester;
   // Constructor that takes a base::span is needed because of \0 in string.
   div->setInnerHTML(
-      String(base::byte_span_from_cstring("<div id='x' name='x\0y'></div>")));
+      String(base::span_from_cstring("<div id='x' name='x\0y'></div>")));
   Element* new_div = div->getElementById(AtomicString("x"));
   ASSERT_TRUE(new_div);
   // Null chars are generally mapped to \uFFFD (at least this test should

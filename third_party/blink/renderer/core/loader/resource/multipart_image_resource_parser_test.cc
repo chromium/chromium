@@ -19,7 +19,7 @@ namespace multipart_image_resource_parser_test {
 String ToString(const Vector<char>& data) {
   if (data.empty())
     return String("");
-  return String(base::as_byte_span(data));
+  return String(data);
 }
 
 class MockClient final : public GarbageCollected<MockClient>,
@@ -240,9 +240,9 @@ void VariousChunkSizesTest(base::span<const TestChunk> chunks,
     parser->AppendData(data.subspan(chunk.start_position,
                                     chunk.end_position - chunk.start_position));
     EXPECT_EQ(chunk.expected_responses, client->responses_.size());
-    EXPECT_EQ(
-        String(base::as_byte_span(chunk.expected_data)),
-        client->data_.size() > 0 ? ToString(client->data_.back()) : String(""));
+    EXPECT_EQ(String(chunk.expected_data), client->data_.size() > 0
+                                               ? ToString(client->data_.back())
+                                               : String(""));
   }
   // Check final state
   parser->Finish();

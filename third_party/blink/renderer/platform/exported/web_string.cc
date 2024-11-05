@@ -109,7 +109,7 @@ std::string WebString::Latin1() const {
 }
 
 WebString WebString::FromLatin1(std::string_view s) {
-  return String(base::as_bytes(base::span(s)));
+  return String(s);
 }
 
 std::string WebString::Ascii() const {
