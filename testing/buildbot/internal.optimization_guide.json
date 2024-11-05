@@ -91,7 +91,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "optimization_guide_gpu_unittests iPhone 14 Pro Max",
+        "name": "optimization_guide_gpu_unittests iPhone 13",
         "swarming": {
           "cipd_packages": [
             {
@@ -103,6 +103,7 @@
           "dimensions": {
             "cpu": "arm64",
             "device": "iPhone14,5",
+            "device_status": "available",
             "os": "Mac-14",
             "pool": "chrome.tests"
           },
@@ -116,7 +117,7 @@
         },
         "test": "optimization_guide_gpu_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "iPhone 14 Pro Max"
+        "variant_id": "iPhone 13"
       },
       {
         "args": [
@@ -129,7 +130,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "optimization_guide_unittests iPhone 14 Pro Max",
+        "name": "optimization_guide_unittests iPhone 13",
         "swarming": {
           "cipd_packages": [
             {
@@ -141,6 +142,7 @@
           "dimensions": {
             "cpu": "arm64",
             "device": "iPhone14,5",
+            "device_status": "available",
             "os": "Mac-14",
             "pool": "chrome.tests"
           },
@@ -154,7 +156,7 @@
         },
         "test": "optimization_guide_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_unittests/",
-        "variant_id": "iPhone 14 Pro Max"
+        "variant_id": "iPhone 13"
       }
     ]
   },

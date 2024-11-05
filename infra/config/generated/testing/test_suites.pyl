@@ -3329,7 +3329,7 @@
     'optimization_guide_ios_device_gtests': {
       'optimization_guide_ios_unittests': {
         'variants': [
-          'IPHONE_14_PRO_MAX',
+          'IPHONE_13',
         ],
       },
     },

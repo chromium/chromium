@@ -74,11 +74,12 @@
       'intel_uhd_630_or_770',
     ],
   },
-  'IPHONE_14_PRO_MAX': {
-    'identifier': 'iPhone 14 Pro Max',
+  'IPHONE_13': {
+    'identifier': 'iPhone 13',
     'swarming': {
       'dimensions': {
         'device': 'iPhone14,5',
+        'device_status': 'available',
       },
     },
   },

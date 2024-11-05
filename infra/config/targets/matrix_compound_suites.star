@@ -586,7 +586,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "optimization_guide_ios_unittests": targets.legacy_matrix_config(
             variants = [
-                "IPHONE_14_PRO_MAX",
+                "IPHONE_13",
             ],
         ),
     },

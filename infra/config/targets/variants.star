@@ -93,11 +93,12 @@ targets.variant(
 )
 
 targets.variant(
-    name = "IPHONE_14_PRO_MAX",
-    identifier = "iPhone 14 Pro Max",
+    name = "IPHONE_13",
+    identifier = "iPhone 13",
     swarming = targets.swarming(
         dimensions = {
             "device": "iPhone14,5",
+            "device_status": "available",
         },
     ),
 )
