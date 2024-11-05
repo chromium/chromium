@@ -71,9 +71,17 @@
     inset-inline-end: 24px;
   }
 
-  :host(:not([is-translate-button-enabled])) #translateButtonContainer,
-  :host([is-searchbox-focused]) #translateButtonContainer {
+  :host(:not([is-translate-button-enabled])) #translateButtonContainer {
     display: none;
+  }
+
+  :host([is-searchbox-focused]) #translateButtonContainer {
+    visibility: hidden; /* Allows for opacity transition. */
+  }
+
+  #translateButtonContainer.searchbox-unfocused {
+    transition: opacity 50ms linear, visibility 50ms linear;
+    transition-delay: 80ms;
   }
 
   .action-button {
@@ -222,6 +230,14 @@
 
   :host([is-searchbox-focused]) #searchboxContainer {
     inset-inline-end: 84px;
+  }
+
+  #searchboxContainer {
+    transition: inset-inline-end 200ms ease;
+  }
+
+  #searchbox {
+    transition: width 200ms ease;
   }
 
   :host([search-box-hidden]) #searchboxContainer {

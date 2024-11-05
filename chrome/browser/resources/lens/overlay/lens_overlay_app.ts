@@ -285,10 +285,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private handleSearchboxFocused() {
     this.isSearchboxFocused = true;
+    this.$.translateButtonContainer.classList.remove('searchbox-unfocused');
   }
 
   private handleSearchboxBlurred() {
     this.isSearchboxFocused = false;
+    this.$.translateButtonContainer.classList.add('searchbox-unfocused');
   }
 
   private handleLanguagePickersOpened() {
