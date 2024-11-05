@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
@@ -160,9 +161,16 @@ void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
     return;
   }
 
-  // Sets elucidation_eligibility = kUnknown to hide the elucidation button.
+  // kUnknown means hiding the elucidation button.
+  SelectedTextState elucidation_eligiblity = SelectedTextState::kUnknown;
+  if (features::IsPompanoEnabled()) {
+    CHECK(chromeos::MahiMediaAppContentManager::Get());
+    elucidation_eligiblity = IsTextEligibleForElucidation(base::UTF8ToUTF16(
+        chromeos::MahiMediaAppContentManager::Get()->GetSelectedText()));
+  }
+
   menu_widget_ = MahiMenuView::CreateWidget(
-      anchor, {.elucidation_eligiblity = SelectedTextState::kUnknown},
+      anchor, {.elucidation_eligiblity = elucidation_eligiblity},
       MahiMenuView::Surface::kMediaApp);
   menu_widget_->ShowInactive();
 }

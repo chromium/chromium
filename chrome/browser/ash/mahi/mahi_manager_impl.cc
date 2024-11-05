@@ -355,26 +355,23 @@ void MahiManagerImpl::GetElucidation(MahiElucidationCallback callback) {
   current_panel_info_ = current_page_info_->Clone();
 
   if (media_app_pdf_focused_) {
-    // TODO(b:372179217): obtain selected text from media app
-    current_selected_text_ = std::u16string();
+    current_selected_text_ = base::UTF8ToUTF16(
+        chromeos::MahiMediaAppContentManager::Get()->GetSelectedText());
   } else {
     current_selected_text_ =
         chromeos::MahiWebContentsManager::Get()->GetSelectedText();
   }
 
-  // TODO(b:372179217): replace with a proper eligibility check against the
-  // selected text.
   // Do not CHECK and crash here. It's true that Elucidation button should only
   // show when the selected text passed the eligiblity check, but this may also
   // be called by clicking `retry` link when error happens, and because of
   // crbug.com/375292907, the current_selected_text may change and not eligible
-  // anymore. In such cases we returns an error.
+  // anymore (e.g. becomes empty). In such cases we returns an error.
   if (current_selected_text_.empty()) {
     std::move(callback).Run(u"", MahiResponseStatus::kInappropriate);
     return;
   }
 
-  // TODO(b:372741602): maybe also query cached elucidation result
   const auto cached_content =
       cache_manager_->GetPageContentForUrl(current_panel_info_->url.spec());
 
