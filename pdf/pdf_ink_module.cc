@@ -98,6 +98,25 @@ SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
   return gfx::RectFToSkRect(clip_rect);
 }
 
+gfx::Rect CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
+    const ink::Envelope& envelope,
+    PageOrientation orientation,
+    const gfx::Rect& page_content_rect,
+    float scale_factor) {
+  gfx::Rect rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+      envelope, orientation, page_content_rect, scale_factor);
+
+  // TODO(crbug.com/376301209): The bounds for `ink::Envelope` are smaller
+  // than the resulting PDF paths, which can lead to a clipping artifact during
+  // invalidation.  This workaround extends the invalidation area to ensure all
+  // of the stroke object is covered by the invalidation area.  This workaround
+  // should be removed once the reason for the discrepancy has been determined
+  // and resolved.
+  constexpr float kInkBoundsExpansion = 5.0f;
+  rect.Outset(kInkBoundsExpansion * scale_factor);
+  return rect;
+}
+
 }  // namespace
 
 PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
@@ -581,7 +600,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   }
 
   // If `invalidate_envelope` isn't empty, then something got erased.
-  client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
+  client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
       invalidate_envelope, client_->GetOrientation(),
       client_->GetPageContentsRect(page_index), client_->GetZoom()));
   return true;
@@ -831,7 +850,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
       ids.erase(id);
     }
 
-    client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
+    client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
         invalidate_envelope, client_->GetOrientation(),
         client_->GetPageContentsRect(page_index), client_->GetZoom()));
     client_->UpdateThumbnail(page_index);

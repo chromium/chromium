@@ -1184,8 +1184,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
   // This size is smaller than the area of the merged invalidation constants
   // above because InkStrokeModeler modeled the "V" shaped input into an input
   // with a much gentler line slope.
-  const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(8.0f, 13.0f),
-                                            gfx::Size(25.0f, 7.0f));
+  const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(3.0f, 8.0f),
+                                            gfx::Size(35.0f, 17.0f));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1221,8 +1221,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
   // This size is smaller than the area of the merged invalidation constants
   // above because InkStrokeModeler modeled the "V" shaped input into an input
   // with a much gentler line slope.
-  const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(7.0f, 12.0f),
-                                            gfx::Size(27.0f, 9.0f));
+  const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(-3.0f, 2.0f),
+                                            gfx::Size(47.0f, 29.0f));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
