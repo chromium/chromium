@@ -893,6 +893,16 @@ enum HeaderBehaviour {
   [self.contentArea addGestureRecognizer:self.contentAreaGestureRecognizer];
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1003,96 +1013,15 @@ enum HeaderBehaviour {
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 17.0, *)) {
-    if (base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
-      [self updateTraitsIfNeeded];
-    }
-  }
-
-  // After `-shutdown` is called, profile is invalid and will cause a
-  // crash.
-  if (_isShutdown) {
+  if (@available(iOS 17, *)) {
     return;
   }
-
-  if (self.traitCollection.horizontalSizeClass ==
-          previousTraitCollection.horizontalSizeClass &&
-      self.traitCollection.verticalSizeClass ==
-          previousTraitCollection.verticalSizeClass) {
-    return;
-  }
-
-  self.fullscreenController->BrowserTraitCollectionChangedBegin();
-
-  // TODO(crbug.com/41198852): - traitCollectionDidChange: is not always
-  // forwarded because in some cases the presented view controller isn't a child
-  // of the BVC in the view controller hierarchy (some intervening object isn't
-  // a view controller).
-  [self.presentedViewController
-      traitCollectionDidChange:previousTraitCollection];
-
-  if (self.currentWebState) {
-    UIEdgeInsets contentPadding =
-        self.currentWebState->GetWebViewProxy().contentInset;
-    contentPadding.bottom = AlignValueToPixel(
-        self.footerFullscreenProgress * [self secondaryToolbarHeightWithInset]);
-    self.currentWebState->GetWebViewProxy().contentInset = contentPadding;
-  }
-
-  // Toolbar state must be updated before `updateFootersForFullscreenProgress`
-  // as the later uses the insets from fullscreen model.
-  [self updateToolbarState];
-
-  // Change the height of the secondary toolbar to show/hide it.
-  self.secondaryToolbarHeightConstraint.constant =
-      [self secondaryToolbarHeightWithInset];
-  [self updateFootersForFullscreenProgress:self.footerFullscreenProgress];
-
-  // If the device's size class has changed from RegularXRegular to another and
-  // vice-versa, the find bar should switch between regular mode and compact
-  // mode accordingly. Hide the findbar here and it will be reshown in [self
-  // updateToobar];
-  if (ShouldShowCompactToolbar(previousTraitCollection) !=
-      ShouldShowCompactToolbar(self)) {
-    if (!IsNativeFindInPageAvailable()) {
-      [self.findInPageCommandsHandler hideFindUI];
-    }
-    [self.textZoomHandler hideTextZoomUI];
-  }
-
-  // Update the toolbar visibility.
-  // TODO(crbug.com/40842406): Remove this and let
-  // `PrimaryToolbarViewController` or `ToolbarCoordinator` call the update ?
-  [self.toolbarCoordinator updateToolbar];
-
-  // Update the tab strip visibility.
-  if (self.tabStripView) {
-    [self showTabStripView:self.tabStripView];
-    [self.tabStripView layoutSubviews];
-    const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
-    if (IsModernTabStripOrRaccoonEnabled()) {
-      [self.tabStripCoordinator hideTabStrip:!canShowTabStrip];
-    } else {
-      [self.legacyTabStripCoordinator hideTabStrip:!canShowTabStrip];
-    }
-    _fakeStatusBarView.hidden = !canShowTabStrip;
-    [self addConstraintsToPrimaryToolbar];
-    // If tabstrip is coming back due to a window resize or screen rotation,
-    // reset the full screen controller to adjust the tabstrip position.
-    if (ShouldShowCompactToolbar(previousTraitCollection) &&
-        !ShouldShowCompactToolbar(self)) {
-      [self
-          updateForFullscreenProgress:self.fullscreenController->GetProgress()];
-    }
-  }
-
-  [self setNeedsStatusBarAppearanceUpdate];
-
-  self.fullscreenController->BrowserTraitCollectionChangedEnd();
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
@@ -1731,6 +1660,96 @@ enum HeaderBehaviour {
     webState->GetNavigationManager()->LoadIfNecessary();
   }
   return webState->GetView();
+}
+
+// Notifies or modifies BVC owned UI elements when a UITrait has been changed.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (@available(iOS 17.0, *)) {
+    if (base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
+      [self updateTraitsIfNeeded];
+    }
+  }
+
+  // After `-shutdown` is called, profile is invalid and will cause a
+  // crash.
+  if (_isShutdown) {
+    return;
+  }
+
+  if (self.traitCollection.horizontalSizeClass ==
+          previousTraitCollection.horizontalSizeClass &&
+      self.traitCollection.verticalSizeClass ==
+          previousTraitCollection.verticalSizeClass) {
+    return;
+  }
+
+  self.fullscreenController->BrowserTraitCollectionChangedBegin();
+
+  // TODO(crbug.com/41198852): - traitCollectionDidChange: is not always
+  // forwarded because in some cases the presented view controller isn't a child
+  // of the BVC in the view controller hierarchy (some intervening object isn't
+  // a view controller).
+  [self.presentedViewController
+      traitCollectionDidChange:previousTraitCollection];
+
+  if (self.currentWebState) {
+    UIEdgeInsets contentPadding =
+        self.currentWebState->GetWebViewProxy().contentInset;
+    contentPadding.bottom = AlignValueToPixel(
+        self.footerFullscreenProgress * [self secondaryToolbarHeightWithInset]);
+    self.currentWebState->GetWebViewProxy().contentInset = contentPadding;
+  }
+
+  // Toolbar state must be updated before `updateFootersForFullscreenProgress`
+  // as the later uses the insets from fullscreen model.
+  [self updateToolbarState];
+
+  // Change the height of the secondary toolbar to show/hide it.
+  self.secondaryToolbarHeightConstraint.constant =
+      [self secondaryToolbarHeightWithInset];
+  [self updateFootersForFullscreenProgress:self.footerFullscreenProgress];
+
+  // If the device's size class has changed from RegularXRegular to another and
+  // vice-versa, the find bar should switch between regular mode and compact
+  // mode accordingly. Hide the findbar here and it will be reshown in [self
+  // updateToobar];
+  if (ShouldShowCompactToolbar(previousTraitCollection) !=
+      ShouldShowCompactToolbar(self)) {
+    if (!IsNativeFindInPageAvailable()) {
+      [self.findInPageCommandsHandler hideFindUI];
+    }
+    [self.textZoomHandler hideTextZoomUI];
+  }
+
+  // Update the toolbar visibility.
+  // TODO(crbug.com/40842406): Remove this and let
+  // `PrimaryToolbarViewController` or `ToolbarCoordinator` call the update ?
+  [self.toolbarCoordinator updateToolbar];
+
+  // Update the tab strip visibility.
+  if (self.tabStripView) {
+    [self showTabStripView:self.tabStripView];
+    [self.tabStripView layoutSubviews];
+    const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
+    if (IsModernTabStripOrRaccoonEnabled()) {
+      [self.tabStripCoordinator hideTabStrip:!canShowTabStrip];
+    } else {
+      [self.legacyTabStripCoordinator hideTabStrip:!canShowTabStrip];
+    }
+    _fakeStatusBarView.hidden = !canShowTabStrip;
+    [self addConstraintsToPrimaryToolbar];
+    // If tabstrip is coming back due to a window resize or screen rotation,
+    // reset the full screen controller to adjust the tabstrip position.
+    if (ShouldShowCompactToolbar(previousTraitCollection) &&
+        !ShouldShowCompactToolbar(self)) {
+      [self
+          updateForFullscreenProgress:self.fullscreenController->GetProgress()];
+    }
+  }
+
+  [self setNeedsStatusBarAppearanceUpdate];
+
+  self.fullscreenController->BrowserTraitCollectionChangedEnd();
 }
 
 #pragma mark - Private Methods: Tap handling
