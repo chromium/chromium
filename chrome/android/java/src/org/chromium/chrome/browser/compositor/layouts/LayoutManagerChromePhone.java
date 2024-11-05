@@ -72,7 +72,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
         // Build Layouts
-        mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
+        mSimpleAnimationLayout =
+                new SimpleAnimationLayout(context, this, renderHost, getContentContainer());
 
         super.init(
                 selector,
