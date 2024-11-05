@@ -82,9 +82,6 @@ class ShellToplevelWrapper {
   virtual void UnSetFullscreen() = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Sets a native window's immersive mode.
-  virtual void SetUseImmersiveMode(bool immersive) = 0;
-
   // Sets the top inset (header) height which is reserved or occupied by the top
   // window frame.
   virtual void SetTopInset(int height) = 0;

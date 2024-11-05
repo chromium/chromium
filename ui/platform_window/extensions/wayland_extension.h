@@ -83,12 +83,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandToplevelExtension {
       bool allow_system_drag) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Signals the underneath platform that browser is entering (or exiting)
-  // 'immersive fullscreen mode'.
-  // Under lacros, it controls for instance interaction with the system shelf
-  // widget, when browser goes in fullscreen.
-  virtual void SetImmersiveFullscreenStatus(bool status) = 0;
-
   // Sets the top inset (header) height which is reserved or occupied by the top
   // window frame.
   virtual void SetTopInset(int height) = 0;

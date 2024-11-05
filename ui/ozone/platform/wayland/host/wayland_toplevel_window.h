@@ -162,7 +162,6 @@ class WaylandToplevelWindow : public WaylandWindow,
       ui::mojom::DragEventSource event_source,
       bool allow_system_drag) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetImmersiveFullscreenStatus(bool status) override;
   void SetTopInset(int height) override;
   gfx::RoundedCornersF GetWindowCornersRadii() override;
   void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) override;
@@ -272,11 +271,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool is_suspended_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The flag that indicates the last requested immersive fullscreen status from
-  // SetImmersiveFullscreenStatue to detect the immersive status changes. Set to
-  // null if it had never been called.
-  std::optional<bool> last_requested_immersive_status_ = std::nullopt;
-
   // Unique ID for this window. May be shared over non-Wayland IPC transports
   // (e.g. mojo) to identify the window.
   std::string window_unique_id_;

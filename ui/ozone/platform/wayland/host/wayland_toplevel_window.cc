@@ -912,18 +912,6 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
-  // Skip if `status` is same as the last request.
-  if (last_requested_immersive_status_ == status) {
-    return;
-  }
-  last_requested_immersive_status_ = std::make_optional(status);
-
-  if (shell_toplevel_) {
-    shell_toplevel_->SetUseImmersiveMode(status);
-  }
-}
-
 void WaylandToplevelWindow::SetTopInset(int height) {
   if (shell_toplevel_) {
     shell_toplevel_->SetTopInset(height);
@@ -1280,8 +1268,6 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    SetImmersiveFullscreenStatus(false);
-
     if (shell_toplevel_->IsSupportedOnAuraToplevel(
             ZAURA_TOPLEVEL_SET_PERSISTABLE_SINCE_VERSION)) {
       shell_toplevel_->SetPersistable(persistable_);
