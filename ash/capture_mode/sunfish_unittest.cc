@@ -71,7 +71,9 @@ using ::base::test::RunOnceCallback;
 using ::testing::Contains;
 using ::testing::DoDefault;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::NotNull;
 using ::testing::Property;
@@ -100,6 +102,13 @@ FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
     ScannerController& scanner_controller) {
   return static_cast<FakeScannerProfileScopedDelegate*>(
       scanner_controller.delegate_for_testing()->GetProfileScopedDelegate());
+}
+
+// Returns a matcher for an action button that returns true if the action button
+// has the specified `type`.
+Matcher<ActionButtonView*> ActionButtonTypeIs(ActionButtonType type) {
+  return Property(&ActionButtonView::rank,
+                  Field(&ActionButtonRank::type, type));
 }
 
 class SunfishTest : public AshTestBase {
@@ -1425,10 +1434,8 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
   // type / rank and use it here.
   std::vector<ActionButtonView*> action_buttons =
       session_test_api.GetActionButtons();
-  ASSERT_THAT(
-      action_buttons,
-      ElementsAre(Property(&ActionButtonView::label_for_testing,
-                           Property(&views::Label::GetText, u"Copy text"))));
+  ASSERT_THAT(action_buttons,
+              ElementsAre(ActionButtonTypeIs(ActionButtonType::kCopyText)));
   // Clipboard should currently be empty.
   std::u16string clipboard_data;
   ui::Clipboard::GetForCurrentThread()->ReadText(
@@ -1458,10 +1465,8 @@ TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_THAT(
-      session_test_api.GetActionButtons(),
-      Not(Contains(Property(&ActionButtonView::label_for_testing,
-                            Property(&views::Label::GetText, u"Copy text")))));
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              Not(Contains(ActionButtonTypeIs(ActionButtonType::kCopyText))));
 }
 
 // Tests that the copy text button is not shown if the selected region changes
@@ -1484,10 +1489,8 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_THAT(
-      session_test_api.GetActionButtons(),
-      Not(Contains(Property(&ActionButtonView::label_for_testing,
-                            Property(&views::Label::GetText, u"Copy text")))));
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              Not(Contains(ActionButtonTypeIs(ActionButtonType::kCopyText))));
 }
 
 }  // namespace ash
