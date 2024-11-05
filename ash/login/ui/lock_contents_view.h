@@ -84,7 +84,7 @@ enum class BottomIndicatorState {
 // but it is always shown on the primary display. There is only one instance
 // at a time.
 class ASH_EXPORT LockContentsView
-    : public views::View,
+    : public NonAccessibleView,
       public LoginDataDispatcher::Observer,
       public SystemTrayObserver,
       public display::DisplayObserver,
@@ -92,7 +92,7 @@ class ASH_EXPORT LockContentsView
       public chromeos::PowerManagerClient::Observer,
       public EnterpriseDomainObserver,
       public views::FocusChangeListener {
-  METADATA_HEADER(LockContentsView, views::View)
+  METADATA_HEADER(LockContentsView, NonAccessibleView)
 
  public:
   friend class LockContentsViewTestApi;

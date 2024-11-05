@@ -398,35 +398,25 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetHierarchicalLevel(int hierarchical_level);
 
-  void SetHasFocusableAncestorRecursive(bool ancestor_focusable);
-
   // Updates the focusable state of the `data_` object.
   // The view is considered focusable if it is not set to never receive focus
   // This function must be called whenever an attribute that can affect the
   // focusable state changes
   void UpdateFocusableState();
 
-  // Updates has_focusable_ancestor_ and the view's ignored state, which depends
-  // on this variable.
-  void SetHasFocusableAncestor(bool ancestor_focusable);
-
-  // Recursively updates the focusable and invisible states of the view and its
-  // children. If a parent is invisible, non-explicitly invisible views inherit
-  // invisibility, affecting their final state and focusability.
-  void UpdateInvisibleByInheritanceRecursive(const View* initial_view,
-                                             bool invisible_by_inheritance);
+  // This function recursively updates the focusable state of the `data_` member
+  // and that of the view's children. Then it updates the focusable state of the
+  // current view.
+  void UpdateFocusableStateRecursive();
 
   // This updates some shared state for the view and all its descendants.
-  // Called when `view_` gets added as a child of another View.
-  void OnViewReparented(const View* new_parent);
+  void UpdateStatesForViewAndDescendants();
 
   // This should only ever be called on the RootView.
   void SetRootViewIsReadyToNotifyEvents();
 
   // Updates the invisible state of the `data_` object. The view is considered
-  // invisible if it is not visible and its role is not kAlert, or if it is
-  // "invisible by inheritance", meaning one of its ancestors was set to be
-  // invisible.
+  // invisible if it is not visible and its role is not kAlert.
   void UpdateInvisibleState();
 
   // Override the child tree id.
@@ -503,12 +493,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void set_propagate_focus_to_ancestor(bool value) {
     propagate_focus_to_ancestor_ = value;
   }
-
-  bool is_invisible_by_inheritance() const {
-    return is_invisible_by_inheritance_;
-  }
-
-  bool has_focusable_ancestor() const { return has_focusable_ancestor_; }
 
   bool propagate_focus_to_ancestor() { return propagate_focus_to_ancestor_; }
 
@@ -631,11 +615,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // this. See `UpdateIgnoredState`.
   bool should_be_ignored_ = false;
 
-  // This is set to true when the view is explicitly marked as invisible by
-  // `SetIsInvisible`. It is not the only condition that will cause a view to
-  // have the invisible accessible state. See `UpdateInvisibleState`.
-  bool should_be_invisible_ = false;
-
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
   base::WeakPtr<Widget> next_focus_ = nullptr;
@@ -643,16 +622,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   // Whether to move accessibility focus to an ancestor.
   bool propagate_focus_to_ancestor_ = false;
-
-  // Used to determine if a View should be ignored by accessibility clients by
-  // being a non-focusable child of a focusable ancestor.
-  // E.g., LabelButtons contain Labels, but a11y should just show that there's a
-  // button. This helps us make sure this element is excluded from the a11y tree
-  // if there's a focusable parent. All focusable elements should be leaf nodes.
-  // Exceptions to this rule will themselves be accessibility focusable.
-  // TODO(crbug.com/371237539): Eventually this should be standardized across
-  // platforms.
-  bool has_focusable_ancestor_ = false;
 
   // Whether we need to ensure an AtomicViewAXTreeManager is created for this
   // View.
@@ -662,10 +631,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // the owning View.
   // True once a View is connected to a RootView.
   bool ready_to_notify_events_ = false;
-
-  // This keeps track of whether the view is invisible by an ancestor being set
-  // to be invisible.
-  bool is_invisible_by_inheritance_ = false;
 
   bool is_widget_closed_ = false;
 
