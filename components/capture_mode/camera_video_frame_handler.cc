@@ -17,7 +17,9 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -303,10 +305,26 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     // for the video frames will be used with. They will be read via the raster
     // interface (which will be going over GLES2 if OOP-R is not enabled), sent
     // to the display compositor, and may be used as overlays.
-    constexpr gpu::SharedImageUsageSet kSharedImageUsage =
+    gpu::SharedImageUsageSet shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_GLES2_READ |
         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+    bool add_scanout_usage = true;
+
+    // Scanout usage should be added only if scanout of SharedImages is
+    // supported. However, historically this was not checked.
+    // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
+    if (base::FeatureList::IsEnabled(
+            features::
+                kCameraVideoFrameHandlerAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+      add_scanout_usage &= shared_image_interface->GetCapabilities()
+                               .supports_scanout_shared_images;
+    }
+
+    if (add_scanout_usage) {
+      shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
 
     // We clone our handle `gpu_memory_buffer_handle_` and use the cloned handle
     // to create the shared image. This way, the lifetime of our
@@ -314,7 +332,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     // (i.e. until `OnBufferRetired()` is called).
     shared_image_ = shared_image_interface->CreateSharedImage(
         {format, frame_info->coded_size, frame_info->color_space,
-         kSharedImageUsage, "CameraVideoFrame"},
+         shared_image_usage, "CameraVideoFrame"},
         gpu_memory_buffer_handle_.Clone());
     CHECK(shared_image_);
 
