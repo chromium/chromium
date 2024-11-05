@@ -39,4 +39,7 @@ message App {
 
   // How the sign-in UI was closed.
   optional CloseType close_type = 3;
+
+  // How many times the UI was actively dismissed.
+  optional int32 dismiss_count = 4;
 }

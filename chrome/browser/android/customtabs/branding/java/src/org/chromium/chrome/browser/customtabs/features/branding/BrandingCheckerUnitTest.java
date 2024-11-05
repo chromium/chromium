@@ -230,6 +230,7 @@ public class BrandingCheckerUnitTest {
         var appData = new MismatchNotificationData.AppUiData();
         appData.showCount = 32;
         appData.closeType = CloseType.ACCEPTED.getNumber();
+        appData.dismissCount = 4;
         mimData.setAppData(accountId, appId, appData);
         mStorage.putMimData(mimData);
 

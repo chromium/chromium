@@ -95,6 +95,7 @@ robolectric_library("junit") {
     "//components/signin/public/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_animation_testing_java",

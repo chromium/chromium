@@ -35,6 +35,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 @RunWith(BaseRobolectricTestRunner.class)
 public class MismatchNotificationCheckerUnitTest {
     private static final int INIT_SHOW_COUNT = 2;
+    private static final int INIT_DISMISS_COUNT = 1;
 
     @Rule public MockitoRule mTestRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -46,17 +47,29 @@ public class MismatchNotificationCheckerUnitTest {
         new MismatchNotificationCheckerTester()
                 .newChecker()
                 .callMaybeShowUi(/* shown= */ true, null)
-                .callCloseUi(CloseType.DISMISSED)
-                .assertCloseCallbackInvoked(1, CloseType.DISMISSED);
+                .callCloseUi(CloseType.ACCEPTED)
+                .assertCloseCallbackInvoked(
+                        /* showCount= */ 1, /* dismissCount= */ 0, CloseType.ACCEPTED);
     }
 
     @Test
-    public void mimAccountUpdated_fromExstingData() {
+    public void mimAccountUpdated_fromExistingData_updateShowCount() {
         new MismatchNotificationCheckerTester()
                 .newChecker()
                 .callMaybeShowUi(/* shown= */ true, new MismatchNotificationData())
                 .callCloseUi(CloseType.TIMED_OUT)
-                .assertCloseCallbackInvoked(INIT_SHOW_COUNT + 1, CloseType.TIMED_OUT);
+                .assertCloseCallbackInvoked(
+                        INIT_SHOW_COUNT + 1, INIT_DISMISS_COUNT, CloseType.TIMED_OUT);
+    }
+
+    @Test
+    public void mimAccountUpdated_fromExistingData_updateDismissCount() {
+        new MismatchNotificationCheckerTester()
+                .newChecker()
+                .callMaybeShowUi(/* shown= */ true, new MismatchNotificationData())
+                .callCloseUi(CloseType.DISMISSED)
+                .assertCloseCallbackInvoked(
+                        INIT_SHOW_COUNT + 1, INIT_DISMISS_COUNT + 1, CloseType.DISMISSED);
     }
 
     @Test
@@ -105,6 +118,7 @@ public class MismatchNotificationCheckerUnitTest {
 
             mAppData.showCount = INIT_SHOW_COUNT;
             mAppData.closeType = CloseType.UNKNOWN.getNumber();
+            mAppData.dismissCount = INIT_DISMISS_COUNT;
 
             mOnClose = mock(Callback.class);
 
@@ -141,13 +155,14 @@ public class MismatchNotificationCheckerUnitTest {
         }
 
         public MismatchNotificationCheckerTester assertCloseCallbackInvoked(
-                int showCount, CloseType closeType) {
+                int showCount, int dismissCount, CloseType closeType) {
             var captor = ArgumentCaptor.forClass(MismatchNotificationData.class);
             verify(mOnClose).onResult(captor.capture());
             MismatchNotificationData data = captor.getValue();
             var appData = data.getAppData(mChecker.getAccountId(), "app-id");
             assertEquals("ShowCount was not updated", showCount, appData.showCount);
             assertEquals("CloseType was not updated", closeType.getNumber(), appData.closeType);
+            assertEquals("DismissCount was not updated", dismissCount, appData.dismissCount);
             return this;
         }
 

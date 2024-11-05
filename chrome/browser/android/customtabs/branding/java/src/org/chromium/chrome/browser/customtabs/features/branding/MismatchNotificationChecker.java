@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.HashUtil;
@@ -96,6 +97,9 @@ public class MismatchNotificationChecker {
                                     var appData = res.getAppData(accountId, appId);
                                     appData.showCount++;
                                     appData.closeType = closeType;
+                                    if (closeType == CloseType.DISMISSED.getNumber()) {
+                                        appData.dismissCount++;
+                                    }
                                     res.setAppData(accountId, appId, appData);
                                     closeCallback.onResult(res);
                                 }));

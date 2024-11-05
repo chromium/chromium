@@ -44,6 +44,7 @@ public class MismatchNotificationDataUnitTest {
         MismatchNotificationData.AppUiData appData = new MismatchNotificationData.AppUiData();
         appData.showCount = 15;
         appData.closeType = CloseType.DISMISSED.getNumber();
+        appData.dismissCount = 7;
         data.setAppData("good-account", "org.goodapp", appData);
         var retrievedAppData = data.getAppData("good-account", "org.goodapp");
         assertEquals("Retrieved data is not correct", appData, retrievedAppData);
@@ -55,6 +56,7 @@ public class MismatchNotificationDataUnitTest {
         MismatchNotificationData.AppUiData appData = new MismatchNotificationData.AppUiData();
         appData.showCount = 15;
         appData.closeType = CloseType.DISMISSED.getNumber();
+        appData.dismissCount = 7;
         data.setAppData("good-account", "org.goodapp", appData);
 
         String s = data.toBase64();
