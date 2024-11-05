@@ -374,6 +374,14 @@ bool OpenXrGraphicsBindingOpenGLES::Render(
       glGenTextures(1, &overlay_texture_.id);
     }
 
+    // If the image is going to be flipped during compositing then the overlay
+    // needs to be rendered flipped as well.
+    if (ShouldFlipSubmittedImage()) {
+      transform.Translate(0, 1);
+      transform.Scale(1, -1);
+      transform.GetColMajorF(transform_floats);
+    }
+
     glBindTexture(overlay_texture_.target, overlay_texture_.id);
     glEGLImageTargetTexture2DOES(overlay_texture_.target, egl_image.get());
     renderer_->Draw(overlay_texture_, transform_floats);
