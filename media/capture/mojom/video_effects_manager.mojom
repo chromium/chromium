@@ -13,15 +13,7 @@ struct ImageEnhancement {
 };
 
 // Settings that control a blur effect.
-struct Blur {
-  uint16 kernel;
-  float sigma;
-};
-
-// Effects that apply a mask to the video.
-struct Masking {
-  Blur background_blur;
-};
+struct Blur {};
 
 // Settings to control automatic framing.
 struct Framing {
@@ -36,7 +28,7 @@ struct Framing {
 // disabled.
 struct VideoEffectsConfiguration {
   ImageEnhancement? image_enhancement;
-  Masking? masking;
+  Blur? blur;
   Framing? framing;
 };
 
