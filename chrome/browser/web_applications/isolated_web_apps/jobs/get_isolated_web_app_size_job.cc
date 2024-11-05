@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
@@ -13,10 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -107,9 +110,11 @@ class StoragePartitionSizeEstimator : private ProfileObserver {
 
 GetIsolatedWebAppSizeJob::GetIsolatedWebAppSizeJob(
     Profile* profile,
+    const webapps::AppId& app_id,
     base::Value::Dict& debug_value,
     ResultCallback result_callback)
-    : profile_(profile),
+    : app_id_(app_id),
+      profile_(profile),
       debug_value_(debug_value),
       result_callback_(std::move(result_callback)) {
   debug_value_->Set("profile", profile->GetDebugName());
@@ -122,52 +127,52 @@ void GetIsolatedWebAppSizeJob::Start(
   CHECK(lock_with_app_resources);
   lock_with_app_resources_ = lock_with_app_resources;
 
-  pending_task_count_++;
   const WebAppRegistrar& web_app_registrar =
       lock_with_app_resources_->registrar();
-  for (const WebApp& web_app : web_app_registrar.GetApps()) {
-    const webapps::AppId& app_id = web_app.app_id();
-    if (!web_app_registrar.IsIsolated(app_id)) {
+  ASSIGN_OR_RETURN(const WebApp& isolated_web_app,
+                   GetIsolatedWebAppById(web_app_registrar, app_id_),
+                   [&](const std::string& error) {
+                     CHECK_EQ(pending_task_count_, 0);
+                     std::move(result_callback_).Run(std::nullopt);
+                   });
+
+  pending_task_count_++;
+  iwa_origin_ = url::Origin::Create(isolated_web_app.scope());
+  for (const content::StoragePartitionConfig& storage_partition_config :
+       web_app_registrar.GetIsolatedWebAppStoragePartitionConfigs(app_id_)) {
+    if (storage_partition_config.in_memory()) {
       continue;
     }
-    url::Origin iwa_origin = url::Origin::Create(web_app.scope());
-    for (const content::StoragePartitionConfig& storage_partition_config :
-         web_app_registrar.GetIsolatedWebAppStoragePartitionConfigs(app_id)) {
-      if (storage_partition_config.in_memory()) {
-        continue;
-      }
-      pending_task_count_++;
-      debug_value_->EnsureDict(kDebugOriginKey)
-          ->Set(iwa_origin.Serialize(), -1);
-      StoragePartitionSizeEstimator::EstimateSize(
-          profile_, storage_partition_config,
-          base::BindOnce(&GetIsolatedWebAppSizeJob::StoragePartitionSizeFetched,
-                         weak_factory_.GetWeakPtr(),
-                         /*data_key=*/iwa_origin));
-    }
+    pending_task_count_++;
+    debug_value_->EnsureDict(kDebugOriginKey)->Set(iwa_origin_.Serialize(), -1);
+    StoragePartitionSizeEstimator::EstimateSize(
+        profile_, storage_partition_config,
+        base::BindOnce(&GetIsolatedWebAppSizeJob::StoragePartitionSizeFetched,
+                       weak_factory_.GetWeakPtr()));
   }
+
   pending_task_count_--;
 
   MaybeCompleteCommand();
 }
 
-void GetIsolatedWebAppSizeJob::StoragePartitionSizeFetched(
-    const url::Origin& iwa_origin,
-    int64_t size) {
+void GetIsolatedWebAppSizeJob::StoragePartitionSizeFetched(int64_t size) {
   DCHECK_GT(pending_task_count_, 0);
   pending_task_count_--;
-  browsing_data_[iwa_origin] += size;
+  browsing_data_size_ += size;
   // Store the size as a double because Value::Dict doesn't support 64-bit
   // integers. This should only lead to data loss when size is >2^54.
   debug_value_->EnsureDict(kDebugOriginKey)
-      ->Set(iwa_origin.Serialize(), static_cast<double>(size));
+      ->Set(iwa_origin_.Serialize(), static_cast<double>(size));
 
   MaybeCompleteCommand();
 }
 
 void GetIsolatedWebAppSizeJob::MaybeCompleteCommand() {
   if (pending_task_count_ == 0) {
-    std::move(result_callback_).Run(CommandResult::kSuccess, browsing_data_);
+    std::move(result_callback_)
+        .Run(GetIsolatedWebAppSizeJobResult{.iwa_origin = iwa_origin_,
+                                            .app_size = browsing_data_size_});
   }
 }
 
