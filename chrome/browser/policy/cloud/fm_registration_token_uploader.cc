@@ -217,6 +217,7 @@ void FmRegistrationTokenUploader::DoUploadRegistrationToken(
   request.set_protocol_version(
       invalidation::InvalidationListener::kInvalidationProtocolVersion);
   request.set_token_type(ScopeToTokenType(scope_));
+  request.set_project_number(invalidation_listener_->project_number());
   request.set_expiration_timestamp_ms(
       token_data.token_end_of_life.InMillisecondsSinceUnixEpoch());
 

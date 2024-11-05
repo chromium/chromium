@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -108,11 +109,12 @@ struct FeaturesTestParam {
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string project_id,
+CreateInvalidationServiceForSenderId(std::string project_number,
                                      std::string /*log_prefix*/) {
   if (base::FeatureList::IsEnabled(
           invalidation::kInvalidationsWithDirectMessages)) {
-    return std::make_unique<invalidation::FakeInvalidationListener>();
+    return std::make_unique<invalidation::FakeInvalidationListener>(
+        std::move(project_number));
   }
   return std::make_unique<invalidation::FakeInvalidationService>();
 }

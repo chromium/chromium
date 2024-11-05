@@ -168,6 +168,10 @@ void InvalidationListenerImpl::SetRegistrationUploadStatus(
   UpdateObserversExpectations();
 }
 
+const std::string& InvalidationListenerImpl::project_number() const {
+  return project_number_;
+}
+
 // GCMAppHandler overrides.
 void InvalidationListenerImpl::ShutdownHandler() {
   NOTREACHED()

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -66,11 +68,12 @@ struct FeaturesTestParam {
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string /*project_id*/,
+CreateInvalidationServiceForSenderId(std::string project_number,
                                      std::string /*log_prefix*/) {
   if (base::FeatureList::IsEnabled(
           invalidation::kInvalidationsWithDirectMessages)) {
-    return std::make_unique<invalidation::FakeInvalidationListener>();
+    return std::make_unique<invalidation::FakeInvalidationListener>(
+        std::move(project_number));
   }
   return std::make_unique<invalidation::FakeInvalidationService>();
 }

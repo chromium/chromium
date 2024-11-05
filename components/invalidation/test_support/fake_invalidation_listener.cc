@@ -4,7 +4,16 @@
 
 #include "components/invalidation/test_support/fake_invalidation_listener.h"
 
+#include <string>
+#include <utility>
+
 namespace invalidation {
+
+FakeInvalidationListener::FakeInvalidationListener()
+    : FakeInvalidationListener(kFakeProjectNumber) {}
+
+FakeInvalidationListener::FakeInvalidationListener(std::string project_number)
+    : project_number_(std::move(project_number)) {}
 
 void FakeInvalidationListener::Shutdown() {
   invalidations_state_ = invalidation::InvalidationsExpected::kMaybe;
@@ -38,6 +47,10 @@ void FakeInvalidationListener::Start(invalidation::RegistrationTokenHandler*) {
   if (observer_) {
     observer_->OnExpectationChanged(invalidations_state_);
   }
+}
+
+const std::string& FakeInvalidationListener::project_number() const {
+  return project_number_;
 }
 
 }  // namespace invalidation

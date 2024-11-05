@@ -133,6 +133,10 @@ class InvalidationListener {
   virtual void SetRegistrationUploadStatus(
       RegistrationTokenUploadStatus status) = 0;
   virtual void Shutdown() = 0;
+
+  // Returns proeject number of Google Cloud Project this listener is registered
+  // with.
+  virtual const std::string& project_number() const = 0;
 };
 
 }  // namespace invalidation

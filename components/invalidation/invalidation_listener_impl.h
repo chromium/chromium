@@ -56,6 +56,7 @@ class InvalidationListenerImpl : public InvalidationListener,
   void Shutdown() override;
   void SetRegistrationUploadStatus(
       RegistrationTokenUploadStatus status) override;
+  const std::string& project_number() const override;
 
   // `GCMAppHandler`:
   void ShutdownHandler() override;
