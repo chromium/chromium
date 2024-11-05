@@ -26512,6 +26512,21 @@
             ]
         }
     ],
+    "WinSboxParallelProcessLaunch": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinSboxParallelProcessLaunch"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinSystemLocationPermission": [
         {
             "platforms": [
