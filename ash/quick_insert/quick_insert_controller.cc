@@ -195,14 +195,15 @@ InsertionContent GetInsertionContentForResult(
       result);
 }
 
-std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
+std::vector<QuickInsertSearchResultsSection>
+CreateSingleSectionForCategoryResults(
     PickerSectionType section_type,
     std::vector<QuickInsertSearchResult> results) {
   if (results.empty()) {
     return {};
   }
-  return {PickerSearchResultsSection(section_type, std::move(results),
-                                     /*has_more_results=*/false)};
+  return {QuickInsertSearchResultsSection(section_type, std::move(results),
+                                          /*has_more_results=*/false)};
 }
 
 std::u16string TransformText(std::u16string_view text,

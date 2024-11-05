@@ -851,7 +851,7 @@ TEST_F(QuickInsertControllerTest, ShowLobsterCallsCallbackFromClient) {
 
 TEST_F(QuickInsertControllerTest,
        GetResultsForCategoryReturnsEmptyForEmptyResults) {
-  base::test::TestFuture<std::vector<PickerSearchResultsSection>> future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResultsSection>> future;
   EXPECT_CALL(client(), GetSuggestedLinkResults)
       .WillRepeatedly([](size_t max_results,
                          TestPickerClient::SuggestedLinksCallback callback) {
@@ -1070,7 +1070,8 @@ TEST_F(QuickInsertControllerTest,
 }
 
 TEST_F(QuickInsertControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
-  base::test::TestFuture<std::vector<PickerSearchResultsSection>> search_future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResultsSection>>
+      search_future;
 
   controller().ToggleWidget();
   controller().StartSearch(u"caps", /*category=*/{},
@@ -1078,14 +1079,15 @@ TEST_F(QuickInsertControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
 
   EXPECT_THAT(search_future.Take(),
               Contains(Property(
-                  &PickerSearchResultsSection::results,
+                  &QuickInsertSearchResultsSection::results,
                   Contains(QuickInsertCapsLockResult(
                       /*enabled=*/true,
                       QuickInsertCapsLockResult::Shortcut::kAltLauncher)))));
 }
 
 TEST_F(QuickInsertControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
-  base::test::TestFuture<std::vector<PickerSearchResultsSection>> search_future;
+  base::test::TestFuture<std::vector<QuickInsertSearchResultsSection>>
+      search_future;
   GetImeKeyboard()->SetCapsLockEnabled(true);
 
   controller().ToggleWidget();
@@ -1094,7 +1096,7 @@ TEST_F(QuickInsertControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
 
   EXPECT_THAT(search_future.Take(),
               Contains(Property(
-                  &PickerSearchResultsSection::results,
+                  &QuickInsertSearchResultsSection::results,
                   Contains(QuickInsertCapsLockResult(
                       /*enabled=*/false,
                       QuickInsertCapsLockResult::Shortcut::kAltLauncher)))));
@@ -1112,7 +1114,7 @@ TEST_F(QuickInsertControllerTest,
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,
               Run(Contains(Property(
-                  &PickerSearchResultsSection::results,
+                  &QuickInsertSearchResultsSection::results,
                   Contains(VariantWith<QuickInsertCaseTransformResult>(_))))))
       .Times(0);
 
@@ -1132,7 +1134,7 @@ TEST_F(QuickInsertControllerTest, SearchesCaseTransformWhenSelectedText) {
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,
               Run(Contains(Property(
-                  &PickerSearchResultsSection::results,
+                  &QuickInsertSearchResultsSection::results,
                   Contains(VariantWith<QuickInsertCaseTransformResult>(
                       Field(&QuickInsertCaseTransformResult::type,
                             QuickInsertCaseTransformResult::kUpperCase)))))))

@@ -171,7 +171,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
+      Call(ElementsAre(Property("type", &QuickInsertSearchResultsSection::type,
                                 GetParam().section_type))))
       .Times(1);
 
@@ -193,9 +193,9 @@ TEST_P(QuickInsertSearchAggregatorTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    GetParam().section_type),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                        "primary_text", &QuickInsertTextResult::primary_text,
                        u"test"))))))))
@@ -217,9 +217,9 @@ TEST_P(QuickInsertSearchAggregatorTest, PublishesResultsPostBurnIn) {
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    GetParam().section_type),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                        "primary_text", &QuickInsertTextResult::primary_text,
                        u"test"))))))))
@@ -239,9 +239,10 @@ TEST_P(QuickInsertSearchAggregatorTest, PublishesResultsPostBurnIn) {
 TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySectionsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(_)).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback,
-              Call(Contains(Property("type", &PickerSearchResultsSection::type,
-                                     GetParam().section_type))))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Contains(Property("type", &QuickInsertSearchResultsSection::type,
+                             GetParam().section_type))))
       .Times(0);
 
   QuickInsertSearchAggregator aggregator(
@@ -257,9 +258,10 @@ TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySectionsAfterBurnIn) {
 TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySectionsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(_)).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback,
-              Call(Contains(Property("type", &PickerSearchResultsSection::type,
-                                     GetParam().section_type))))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Contains(Property("type", &QuickInsertSearchResultsSection::type,
+                             GetParam().section_type))))
       .Times(0);
 
   QuickInsertSearchAggregator aggregator(
@@ -305,10 +307,10 @@ TEST_P(QuickInsertSearchAggregatorTest,
   MockSearchResultsCallback search_results_callback;
   {
     ::testing::InSequence seq;
-    EXPECT_CALL(
-        search_results_callback,
-        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
-                                  GetParam().section_type))))
+    EXPECT_CALL(search_results_callback,
+                Call(ElementsAre(
+                    Property("type", &QuickInsertSearchResultsSection::type,
+                             GetParam().section_type))))
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
@@ -330,10 +332,10 @@ TEST_P(QuickInsertSearchAggregatorTest,
   MockSearchResultsCallback search_results_callback;
   {
     ::testing::InSequence seq;
-    EXPECT_CALL(
-        search_results_callback,
-        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
-                                  GetParam().section_type))))
+    EXPECT_CALL(search_results_callback,
+                Call(ElementsAre(
+                    Property("type", &QuickInsertSearchResultsSection::type,
+                             GetParam().section_type))))
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
@@ -357,10 +359,10 @@ TEST_P(QuickInsertSearchAggregatorNamedSectionTest,
   MockSearchResultsCallback search_results_callback;
   {
     ::testing::InSequence seq;
-    EXPECT_CALL(
-        search_results_callback,
-        Call(ElementsAre(Property("type", &PickerSearchResultsSection::type,
-                                  GetParam().section_type))))
+    EXPECT_CALL(search_results_callback,
+                Call(ElementsAre(
+                    Property("type", &QuickInsertSearchResultsSection::type,
+                             GetParam().section_type))))
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
@@ -485,10 +487,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kNone),
                 Property(
-                    "results", &PickerSearchResultsSection::results,
+                    "results", &QuickInsertSearchResultsSection::results,
                     ElementsAre(
                         VariantWith<QuickInsertTextResult>(Field(
                             "primary_text",
@@ -500,37 +502,37 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                             "primary_text",
                             &QuickInsertTextResult::primary_text, u"math"))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                            "primary_text", &QuickInsertTextResult::primary_text,
                            u"omnibox"))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kDriveFiles),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                            "primary_text", &QuickInsertTextResult::primary_text,
                            u"drive"))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
-                Property("results", &PickerSearchResultsSection::results,
+                Property("results", &QuickInsertSearchResultsSection::results,
                          ElementsAre(VariantWith<QuickInsertLocalFileResult>(
                              Field("title", &QuickInsertLocalFileResult::title,
                                    u"local"))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kClipboard),
-                Property("results", &PickerSearchResultsSection::results,
+                Property("results", &QuickInsertSearchResultsSection::results,
                          ElementsAre(VariantWith<QuickInsertClipboardResult>(
                              Field("display_text",
                                    &QuickInsertClipboardResult::display_text,
                                    u"clipboard"))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kContentEditor),
               Property(
-                  "results", &PickerSearchResultsSection::results,
+                  "results", &QuickInsertSearchResultsSection::results,
                   ElementsAre(
                       VariantWith<QuickInsertTextResult>(Field(
                           "primary_text", &QuickInsertTextResult::primary_text,
@@ -594,30 +596,30 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
-                Property("results", &PickerSearchResultsSection::results,
+                Property("results", &QuickInsertSearchResultsSection::results,
                          ElementsAre(VariantWith<QuickInsertLocalFileResult>(
                              Field("title", &QuickInsertLocalFileResult::title,
                                    u"local"))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                            "primary_text", &QuickInsertTextResult::primary_text,
                            u"omnibox"))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kClipboard),
-                Property("results", &PickerSearchResultsSection::results,
+                Property("results", &QuickInsertSearchResultsSection::results,
                          ElementsAre(VariantWith<QuickInsertClipboardResult>(
                              Field("display_text",
                                    &QuickInsertClipboardResult::display_text,
                                    u"clipboard"))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kContentEditor),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                            "primary_text", &QuickInsertTextResult::primary_text,
                            u"write"))))))))
@@ -656,30 +658,30 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
-                Property("results", &PickerSearchResultsSection::results,
+                Property("results", &QuickInsertSearchResultsSection::results,
                          ElementsAre(VariantWith<QuickInsertLocalFileResult>(
                              Field("title", &QuickInsertLocalFileResult::title,
                                    u"local"))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kClipboard),
-                Property("results", &PickerSearchResultsSection::results,
+                Property("results", &QuickInsertSearchResultsSection::results,
                          ElementsAre(VariantWith<QuickInsertClipboardResult>(
                              Field("display_text",
                                    &QuickInsertClipboardResult::display_text,
                                    u"clipboard"))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                            "primary_text", &QuickInsertTextResult::primary_text,
                            u"omnibox"))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kContentEditor),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                            "primary_text", &QuickInsertTextResult::primary_text,
                            u"write"))))))))
@@ -721,9 +723,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kLinks),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                        "primary_text", &QuickInsertTextResult::primary_text,
                        u"omnibox"))))))))
@@ -731,9 +733,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kDriveFiles),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                        "primary_text", &QuickInsertTextResult::primary_text,
                        u"drive"))))))))
@@ -741,9 +743,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kClipboard),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                        "primary_text", &QuickInsertTextResult::primary_text,
                        u"clipboard"))))))))
@@ -751,9 +753,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kLocalFiles),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                        "primary_text", &QuickInsertTextResult::primary_text,
                        u"local"))))))))
@@ -801,9 +803,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
        CombinesSearchResultsRetainingHasMoreResultsBeforeBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback,
-              Call(Each(Property("has_more_results",
-                                 &PickerSearchResultsSection::has_more_results,
-                                 true))));
+              Call(Each(Property(
+                  "has_more_results",
+                  &QuickInsertSearchResultsSection::has_more_results, true))));
 
   QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
@@ -827,10 +829,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   MockSearchResultsCallback search_results_callback;
   testing::InSequence seq;
   EXPECT_CALL(search_results_callback, Call(_)).Times(0);
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Each(Property("has_more_results",
-                         &PickerSearchResultsSection::has_more_results, true))))
+  EXPECT_CALL(search_results_callback,
+              Call(Each(Property(
+                  "has_more_results",
+                  &QuickInsertSearchResultsSection::has_more_results, true))))
       .Times(3);
 
   QuickInsertSearchAggregator aggregator(
@@ -856,10 +858,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(UnorderedElementsAre(
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kDriveFiles),
                 Property(
-                    "results", &PickerSearchResultsSection::results,
+                    "results", &QuickInsertSearchResultsSection::results,
                     ElementsAre(VariantWith<QuickInsertDriveFileResult>(
                                     Field("id", &QuickInsertDriveFileResult::id,
                                           std::nullopt)),
@@ -873,9 +875,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                     Field("id", &QuickInsertDriveFileResult::id,
                                           Optional(Eq("driveid3"))))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        ElementsAre(
                            VariantWith<QuickInsertBrowsingHistoryResult>(Field(
                                "url", &QuickInsertBrowsingHistoryResult::url,
@@ -936,10 +938,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(UnorderedElementsAre(
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kDriveFiles),
                 Property(
-                    "results", &PickerSearchResultsSection::results,
+                    "results", &QuickInsertSearchResultsSection::results,
                     ElementsAre(VariantWith<QuickInsertDriveFileResult>(
                                     Field("id", &QuickInsertDriveFileResult::id,
                                           std::nullopt)),
@@ -953,9 +955,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                     Field("id", &QuickInsertDriveFileResult::id,
                                           Optional(Eq("driveid3"))))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        ElementsAre(
                            VariantWith<QuickInsertBrowsingHistoryResult>(Field(
                                "url", &QuickInsertBrowsingHistoryResult::url,
@@ -1017,9 +1019,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kDriveFiles),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertDriveFileResult>(
                                    Field("id", &QuickInsertDriveFileResult::id,
                                          std::nullopt)),
@@ -1036,10 +1038,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kLinks),
           Property(
-              "results", &PickerSearchResultsSection::results,
+              "results", &QuickInsertSearchResultsSection::results,
               ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(Field(
                               "url", &QuickInsertBrowsingHistoryResult::url,
                               GURL("https://example.com"))),
@@ -1100,9 +1102,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kDriveFiles),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertDriveFileResult>(
                                    Field("id", &QuickInsertDriveFileResult::id,
                                          std::nullopt)),
@@ -1119,10 +1121,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kLinks),
           Property(
-              "results", &PickerSearchResultsSection::results,
+              "results", &QuickInsertSearchResultsSection::results,
               ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(Field(
                               "url", &QuickInsertBrowsingHistoryResult::url,
                               GURL("https://example.com"))),
@@ -1183,10 +1185,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kLinks),
           Property(
-              "results", &PickerSearchResultsSection::results,
+              "results", &QuickInsertSearchResultsSection::results,
               ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(Field(
                               "url", &QuickInsertBrowsingHistoryResult::url,
                               GURL("https://example.com"))),
@@ -1210,9 +1212,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kDriveFiles),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertDriveFileResult>(
                                    Field("id", &QuickInsertDriveFileResult::id,
                                          std::nullopt)),
@@ -1269,10 +1271,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kLinks),
           Property(
-              "results", &PickerSearchResultsSection::results,
+              "results", &QuickInsertSearchResultsSection::results,
               ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(Field(
                               "url", &QuickInsertBrowsingHistoryResult::url,
                               GURL("https://example.com"))),
@@ -1296,9 +1298,9 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kDriveFiles),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    ElementsAre(VariantWith<QuickInsertDriveFileResult>(
                                    Field("id", &QuickInsertDriveFileResult::id,
                                          std::nullopt)),

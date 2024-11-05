@@ -215,7 +215,7 @@ void PickerSearchResultsView::ClearSearchResults() {
 }
 
 void PickerSearchResultsView::AppendSearchResults(
-    PickerSearchResultsSection section) {
+    QuickInsertSearchResultsSection section) {
   StopLoadingAnimation();
   StopThrobber();
 

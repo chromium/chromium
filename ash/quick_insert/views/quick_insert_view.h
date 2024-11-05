@@ -49,7 +49,7 @@ class PickerEmojiBarView;
 class PickerMainContainerView;
 class PickerSearchFieldView;
 class PickerPageView;
-class PickerSearchResultsSection;
+class QuickInsertSearchResultsSection;
 class PickerSearchResultsView;
 class PickerTraversableItemContainer;
 class PickerViewDelegate;
@@ -172,7 +172,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Displays `results` in the search view and sets it as the active page.
   // If `results` is empty and no results were previously published, then a "no
   // results found" view is shown instead of a blank view.
-  void PublishSearchResults(std::vector<PickerSearchResultsSection> results);
+  void PublishSearchResults(
+      std::vector<QuickInsertSearchResultsSection> results);
 
   // Selects a category. This shows the category view and fetches zero-state
   // results for the category, which are returned to `PublishCategoryResults`.
@@ -185,8 +186,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                                std::u16string_view query);
 
   // Displays `results` in the category view.
-  void PublishCategoryResults(QuickInsertCategory category,
-                              std::vector<PickerSearchResultsSection> results);
+  void PublishCategoryResults(
+      QuickInsertCategory category,
+      std::vector<QuickInsertSearchResultsSection> results);
 
   // Adds the main container, which includes the search field and contents
   // pages.

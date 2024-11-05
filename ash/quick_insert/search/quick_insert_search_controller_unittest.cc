@@ -178,10 +178,10 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromOmniboxSearch) {
   EXPECT_CALL(
       search_results_callback,
       Call(Contains(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kLinks),
           Property(
-              "results", &PickerSearchResultsSection::results,
+              "results", &QuickInsertSearchResultsSection::results,
               ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(
                   Field("url", &QuickInsertBrowsingHistoryResult::url,
                         Property("spec", &GURL::spec,
@@ -238,18 +238,18 @@ TEST_F(QuickInsertSearchControllerTest,
   EXPECT_CALL(first_search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(first_search_results_callback,
               Call(Contains(AllOf(
-                  Property("type", &PickerSearchResultsSection::type,
+                  Property("type", &QuickInsertSearchResultsSection::type,
                            PickerSectionType::kLinks),
-                  Property("results", &PickerSearchResultsSection::results,
+                  Property("results", &QuickInsertSearchResultsSection::results,
                            IsEmpty())))))
       .Times(0)
       .After(after_start_search_call);
   EXPECT_CALL(second_search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(second_search_results_callback,
               Call(Contains(AllOf(
-                  Property("type", &PickerSearchResultsSection::type,
+                  Property("type", &QuickInsertSearchResultsSection::type,
                            PickerSectionType::kLinks),
-                  Property("results", &PickerSearchResultsSection::results,
+                  Property("results", &QuickInsertSearchResultsSection::results,
                            IsEmpty())))))
       // This may be changed to 1 if the initial state has an empty links
       // section.
@@ -439,9 +439,9 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromFileSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
               Call(Contains(AllOf(
-                  Property("type", &PickerSearchResultsSection::type,
+                  Property("type", &QuickInsertSearchResultsSection::type,
                            PickerSectionType::kLocalFiles),
-                  Property("results", &PickerSearchResultsSection::results,
+                  Property("results", &QuickInsertSearchResultsSection::results,
                            ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                                "text", &QuickInsertTextResult::primary_text,
                                u"monorail_cat.jpg"))))))))
@@ -576,9 +576,9 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromDriveSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
               Call(Contains(AllOf(
-                  Property("type", &PickerSearchResultsSection::type,
+                  Property("type", &QuickInsertSearchResultsSection::type,
                            PickerSectionType::kDriveFiles),
-                  Property("results", &PickerSearchResultsSection::results,
+                  Property("results", &QuickInsertSearchResultsSection::results,
                            ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                                "text", &QuickInsertTextResult::primary_text,
                                u"catrbug_135117.jpg"))))))))
@@ -715,22 +715,22 @@ TEST_F(QuickInsertSearchControllerTest, CombinesSearchResults) {
       search_results_callback,
       Call(IsSupersetOf({
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        Contains(VariantWith<QuickInsertTextResult>(Field(
                            "primary_text", &QuickInsertTextResult::primary_text,
                            u"omnibox"))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
+          AllOf(Property("type", &QuickInsertSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
-                Property("results", &PickerSearchResultsSection::results,
+                Property("results", &QuickInsertSearchResultsSection::results,
                          Contains(VariantWith<QuickInsertTextResult>(Field(
                              "primary_text",
                              &QuickInsertTextResult::primary_text, u"file"))))),
           AllOf(
-              Property("type", &PickerSearchResultsSection::type,
+              Property("type", &QuickInsertSearchResultsSection::type,
                        PickerSectionType::kDriveFiles),
-              Property("results", &PickerSearchResultsSection::results,
+              Property("results", &QuickInsertSearchResultsSection::results,
                        Contains(VariantWith<QuickInsertTextResult>(Field(
                            "primary_text", &QuickInsertTextResult::primary_text,
                            u"drive"))))),
@@ -791,9 +791,9 @@ TEST_F(QuickInsertSearchControllerTest, ShowResultsEvenAfterBurnIn) {
   EXPECT_CALL(
       search_results_callback,
       Call(Contains(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
+          Property("type", &QuickInsertSearchResultsSection::type,
                    PickerSectionType::kLinks),
-          Property("results", &PickerSearchResultsSection::results,
+          Property("results", &QuickInsertSearchResultsSection::results,
                    Contains(VariantWith<QuickInsertTextResult>(AllOf(Field(
                        "primary_text", &QuickInsertTextResult::primary_text,
                        u"test")))))))))
@@ -841,7 +841,7 @@ TEST_F(QuickInsertSearchControllerTest,
     // "cat" shouldn't match any categories.
     EXPECT_CALL(
         search_results_callback,
-        Call(Contains(Property("type", &PickerSearchResultsSection::type,
+        Call(Contains(Property("type", &QuickInsertSearchResultsSection::type,
                                PickerSectionType::kLinks))))
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
@@ -867,7 +867,7 @@ TEST_F(QuickInsertSearchControllerTest,
     // "cat" shouldn't match any categories.
     EXPECT_CALL(
         search_results_callback,
-        Call(Contains(Property("type", &PickerSearchResultsSection::type,
+        Call(Contains(Property("type", &QuickInsertSearchResultsSection::type,
                                PickerSectionType::kLinks))))
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
@@ -889,9 +889,10 @@ TEST_F(QuickInsertSearchControllerTest,
        DoesNotPublishResultsWhenInterruptedDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback,
-              Call(Contains(Property("type", &PickerSearchResultsSection::type,
-                                     PickerSectionType::kLinks))))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Contains(Property("type", &QuickInsertSearchResultsSection::type,
+                             PickerSectionType::kLinks))))
       .Times(0);
   PickerSearchController controller(kBurnInPeriod);
 

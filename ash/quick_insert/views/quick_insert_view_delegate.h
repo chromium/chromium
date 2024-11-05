@@ -21,14 +21,14 @@ namespace ash {
 enum class PickerActionType;
 enum class PickerCapsLockPosition;
 class PickerAssetFetcher;
-class PickerSearchResultsSection;
+class QuickInsertSearchResultsSection;
 class PickerSessionMetrics;
 
 // Delegate for `PickerView`.
 class ASH_EXPORT PickerViewDelegate {
  public:
   using SearchResultsCallback = base::RepeatingCallback<void(
-      std::vector<PickerSearchResultsSection> results)>;
+      std::vector<QuickInsertSearchResultsSection> results)>;
   using EmojiSearchResultsCallback =
       base::OnceCallback<void(std::vector<QuickInsertEmojiResult> results)>;
   using SuggestedEditorResultsCallback =

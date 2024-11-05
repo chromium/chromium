@@ -78,7 +78,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   // Append `section` to the current set of search results.
   // TODO: b/325840864 - Merge with existing sections if needed.
-  void AppendSearchResults(PickerSearchResultsSection section);
+  void AppendSearchResults(QuickInsertSearchResultsSection section);
 
   // Marks that no more search results will be appended until a
   // `ClearSearchResults()` call.

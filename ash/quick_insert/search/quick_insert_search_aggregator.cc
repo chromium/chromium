@@ -226,7 +226,7 @@ void QuickInsertSearchAggregator::HandleSearchSourceResults(
         }
       }
 
-      std::vector<PickerSearchResultsSection> sections;
+      std::vector<QuickInsertSearchResultsSection> sections;
       sections.emplace_back(section_type, std::move(results), has_more_results);
       current_callback_.Run(std::move(sections));
     }
@@ -293,7 +293,7 @@ void QuickInsertSearchAggregator::PublishBurnInResults() {
         DriveIdsFromSearchResults(drive_results->results);
   }
 
-  std::vector<PickerSearchResultsSection> sections;
+  std::vector<QuickInsertSearchResultsSection> sections;
   base::flat_set<PickerSectionType> published_types;
 
   // The None section always goes first.

@@ -673,7 +673,7 @@ void PickerView::OnClearResultsTimerFired() {
 }
 
 void PickerView::PublishSearchResults(
-    std::vector<PickerSearchResultsSection> results) {
+    std::vector<QuickInsertSearchResultsSection> results) {
   // `PickerView::UpdateActivePage` ensures that if the active page was set to
   // the zero state or category view, the delegate's search is stopped - which
   // guarantees that this can't be called.
@@ -701,7 +701,7 @@ void PickerView::PublishSearchResults(
     return;
   }
 
-  for (PickerSearchResultsSection& result : results) {
+  for (QuickInsertSearchResultsSection& result : results) {
     search_results_view_->AppendSearchResults(std::move(result));
   }
 
@@ -773,10 +773,10 @@ void PickerView::SelectCategoryWithQuery(QuickInsertCategory category,
 
 void PickerView::PublishCategoryResults(
     QuickInsertCategory category,
-    std::vector<PickerSearchResultsSection> results) {
+    std::vector<QuickInsertSearchResultsSection> results) {
   category_results_view_->ClearSearchResults();
 
-  for (PickerSearchResultsSection& section : results) {
+  for (QuickInsertSearchResultsSection& section : results) {
     if (!section.results().empty()) {
       category_results_view_->AppendSearchResults(std::move(section));
     }

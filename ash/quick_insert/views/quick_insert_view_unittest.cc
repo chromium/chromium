@@ -515,7 +515,7 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultInsertsResult) {
                 FakePickerViewDelegate::SearchResultsCallback callback) {
               future.SetValue();
               callback.Run({
-                  PickerSearchResultsSection(
+                  QuickInsertSearchResultsSection(
                       PickerSectionType::kClipboard,
                       {{QuickInsertTextResult(u"result")}},
                       /*has_more_results=*/false),
@@ -602,7 +602,7 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultOpensResult) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kLinks,
                     {QuickInsertBrowsingHistoryResult({}, u"a", {})},
                     /*has_more_results=*/false),
@@ -674,7 +674,7 @@ TEST_F(QuickInsertViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             search_called.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kNone,
                     {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
                     /*has_more_results=*/false),
@@ -841,8 +841,8 @@ TEST_F(QuickInsertViewTest, EmptySearchFieldSwitchesToCategoryViewFromSeeMore) {
           [](std::u16string_view query,
              FakePickerViewDelegate::SearchResultsCallback callback) {
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kLinks, {},
-                                           /*has_more_results=*/true),
+                QuickInsertSearchResultsSection(PickerSectionType::kLinks, {},
+                                                /*has_more_results=*/true),
             });
           }),
   });
@@ -871,14 +871,14 @@ TEST_F(QuickInsertViewTest, CategoryViewFromSeeMoreHasResults) {
            [&](std::u16string_view query,
                FakePickerViewDelegate::SearchResultsCallback callback) {
              callback.Run({
-                 PickerSearchResultsSection(PickerSectionType::kLinks, {},
-                                            /*has_more_results=*/true),
+                 QuickInsertSearchResultsSection(PickerSectionType::kLinks, {},
+                                                 /*has_more_results=*/true),
              });
            }),
        .category_results_function = base::BindLambdaForTesting(
            [&](FakePickerViewDelegate::SearchResultsCallback callback) {
              callback.Run({
-                 PickerSearchResultsSection(
+                 QuickInsertSearchResultsSection(
                      PickerSectionType::kLinks,
                      {
                          QuickInsertTextResult(u"result"),
@@ -921,7 +921,7 @@ TEST_F(QuickInsertViewTest, SearchingSpacesFromZeroStateDoesNotStartSearch) {
                 << query;
             // This should never be run - but if it is, immediately publish
             // to get results.
-            callback.Run({{PickerSearchResultsSection(
+            callback.Run({{QuickInsertSearchResultsSection(
                 PickerSectionType::kClipboard,
                 {{QuickInsertTextResult(u"result")}},
                 /*has_more_results=*/false)}});
@@ -952,7 +952,7 @@ TEST_F(QuickInsertViewTest, SearchTrimsLeftAndRightSpaces) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             // This will crash if it is run multiple times.
             future.SetValue(std::u16string(query));
-            callback.Run({{PickerSearchResultsSection(
+            callback.Run({{QuickInsertSearchResultsSection(
                 PickerSectionType::kClipboard,
                 {{QuickInsertTextResult(u"result")}},
                 /*has_more_results=*/false)}});
@@ -993,7 +993,7 @@ TEST_F(QuickInsertViewTest, SearchIsNotRerunIfSpacesAreAddedToEnds) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             // This will crash if it is run multiple times.
             future.SetValue(std::u16string(query));
-            callback.Run({{PickerSearchResultsSection(
+            callback.Run({{QuickInsertSearchResultsSection(
                 PickerSectionType::kClipboard,
                 {{QuickInsertTextResult(u"result")}},
                 /*has_more_results=*/false)}});
@@ -1040,7 +1040,7 @@ TEST_F(QuickInsertViewTest,
   FakePickerViewDelegate::SearchResultsCallback callback = future.Take();
 
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
-  callback.Run({{PickerSearchResultsSection(
+  callback.Run({{QuickInsertSearchResultsSection(
       PickerSectionType::kClipboard, {{QuickInsertTextResult(u"result")}},
       /*has_more_results=*/false)}});
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
@@ -1101,7 +1101,7 @@ TEST_F(QuickInsertViewTest,
   FakePickerViewDelegate::SearchResultsCallback callback = future.Take();
 
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
-  callback.Run({{PickerSearchResultsSection(
+  callback.Run({{QuickInsertSearchResultsSection(
       PickerSectionType::kLinks, {{QuickInsertTextResult(u"result")}},
       /*has_more_results=*/false)}});
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
@@ -1164,8 +1164,8 @@ TEST_F(QuickInsertViewTest,
   ASSERT_TRUE(search_called.Wait());
 
   search_callback.Run({
-      PickerSearchResultsSection(PickerSectionType::kLinks, {},
-                                 /*has_more_results=*/false),
+      QuickInsertSearchResultsSection(PickerSectionType::kLinks, {},
+                                      /*has_more_results=*/false),
   });
 
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
@@ -1187,8 +1187,8 @@ TEST_F(QuickInsertViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             if (!search1_called.IsReady()) {
               callback.Run({
-                  PickerSearchResultsSection(PickerSectionType::kLinks, {},
-                                             /*has_more_results=*/false),
+                  QuickInsertSearchResultsSection(PickerSectionType::kLinks, {},
+                                                  /*has_more_results=*/false),
               });
               search1_called.SetValue();
             } else {
@@ -1228,8 +1228,9 @@ TEST_F(QuickInsertViewTest, SearchingReplacesOldResultsWithNewResults) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             if (!search1_called.IsReady()) {
               callback.Run({
-                  PickerSearchResultsSection(PickerSectionType::kLocalFiles, {},
-                                             /*has_more_results=*/false),
+                  QuickInsertSearchResultsSection(
+                      PickerSectionType::kLocalFiles, {},
+                      /*has_more_results=*/false),
               });
               search1_called.SetValue();
             } else {
@@ -1249,8 +1250,8 @@ TEST_F(QuickInsertViewTest, SearchingReplacesOldResultsWithNewResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(search2_called.Wait());
   search2_callback.Run({
-      PickerSearchResultsSection(PickerSectionType::kLinks, {},
-                                 /*has_more_results=*/false),
+      QuickInsertSearchResultsSection(PickerSectionType::kLinks, {},
+                                      /*has_more_results=*/false),
   });
 
   // Results page should show the new results.
@@ -1400,7 +1401,7 @@ TEST_F(QuickInsertViewTest, DoesNotClearResultsBeforeTimeout) {
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
-  first_callback.Run({{PickerSearchResultsSection(
+  first_callback.Run({{QuickInsertSearchResultsSection(
       PickerSectionType::kClipboard, {{QuickInsertTextResult(u"result")}},
       /*has_more_results=*/false)}});
   task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
@@ -1433,7 +1434,7 @@ TEST_F(QuickInsertViewTest, ClearsResultsAfterTimeout) {
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
-  first_callback.Run({{PickerSearchResultsSection(
+  first_callback.Run({{QuickInsertSearchResultsSection(
       PickerSectionType::kClipboard, {{QuickInsertTextResult(u"result")}},
       /*has_more_results=*/false)}});
   task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
@@ -1465,7 +1466,7 @@ TEST_F(QuickInsertViewTest, ClearsResultsWhenQueryClearedNoCategory) {
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback callback = future.Take();
-  callback.Run({{PickerSearchResultsSection(
+  callback.Run({{QuickInsertSearchResultsSection(
       PickerSectionType::kClipboard, {{QuickInsertTextResult(u"result")}},
       /*has_more_results=*/false)}});
   ASSERT_FALSE(picker_view->search_results_view_for_testing()
@@ -1504,7 +1505,7 @@ TEST_F(QuickInsertViewTest, ClearsResultsWhenQueryClearedWithCategory) {
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback callback = future.Take();
-  callback.Run({{PickerSearchResultsSection(
+  callback.Run({{QuickInsertSearchResultsSection(
       PickerSectionType::kLinks, {{QuickInsertTextResult(u"result")}},
       /*has_more_results=*/false)}});
   ASSERT_FALSE(picker_view->search_results_view_for_testing()
@@ -1667,7 +1668,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenCategorySelectedInSearchResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback callback = search_future.Take();
   callback.Run({
-      PickerSearchResultsSection(
+      QuickInsertSearchResultsSection(
           PickerSectionType::kNone,
           {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
           /*has_more_results=*/false),
@@ -1743,9 +1744,10 @@ TEST_F(QuickInsertViewTest, ClearsResultsWhenGoingBackToZeroState) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             search_called.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kClipboard,
-                                           {{QuickInsertTextResult(u"result")}},
-                                           /*has_more_results=*/false),
+                QuickInsertSearchResultsSection(
+                    PickerSectionType::kClipboard,
+                    {{QuickInsertTextResult(u"result")}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -1792,9 +1794,10 @@ TEST_F(QuickInsertViewTest, RecordsSearchLatencyAfterSearchFinished) {
             // TODO: b/349913604 - Replace the metric with a new one which
             // records search latency even if "no results found" was shown.
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kClipboard,
-                                           {{QuickInsertTextResult(u"result")}},
-                                           /*has_more_results=*/false),
+                QuickInsertSearchResultsSection(
+                    PickerSectionType::kClipboard,
+                    {{QuickInsertTextResult(u"result")}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -2036,8 +2039,8 @@ TEST_F(QuickInsertViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kLinks, {},
-                                           /*has_more_results=*/false),
+                QuickInsertSearchResultsSection(PickerSectionType::kLinks, {},
+                                                /*has_more_results=*/false),
             });
           }),
   });
@@ -2060,7 +2063,7 @@ TEST_F(QuickInsertViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kClipboard,
                     {{QuickInsertTextResult(u"Result A"),
                       QuickInsertTextResult(u"Result B")}},
@@ -2130,7 +2133,7 @@ TEST_F(QuickInsertViewTest, DownArrowKeyNavigatesSearchResults) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kNone,
                     {{QuickInsertBrowsingHistoryResult(
                           GURL("http://foo.com"), u"Foo", ui::ImageModel()),
@@ -2239,7 +2242,7 @@ TEST_F(QuickInsertViewTest, PressingEscClosesPreviewThenWidget) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kLocalFiles,
                     {{QuickInsertLocalFileResult(u"a", /*file_path=*/{})}},
                     /*has_more_results=*/false),
@@ -2272,7 +2275,7 @@ TEST_F(QuickInsertViewTest, TabKeyNavigatesItemWithPreview) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kLocalFiles,
                     {{
                         QuickInsertTextResult(u"Result A"),
@@ -2378,7 +2381,7 @@ TEST_F(QuickInsertViewTest, TabKeyNavigatesSearchResults) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kClipboard,
                     {{QuickInsertTextResult(u"Result A"),
                       QuickInsertTextResult(u"Result B")}},
@@ -2411,7 +2414,7 @@ TEST_F(QuickInsertViewTest, ShiftTabKeyNavigatesSearchResultsWithEmojiBar) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kClipboard,
                     {{QuickInsertTextResult(u"Result A"),
                       QuickInsertTextResult(u"Result B")}},
@@ -2451,7 +2454,7 @@ TEST_F(QuickInsertViewTest, ShiftTabKeyNavigatesSearchResultsWithoutEmojiBar) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kClipboard,
                     {{QuickInsertTextResult(u"Result A"),
                       QuickInsertTextResult(u"Result B")}},
@@ -2488,7 +2491,7 @@ TEST_F(QuickInsertViewTest, ShiftTabNavigatesToClearButton) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kClipboard,
                     {{QuickInsertTextResult(u"Result A"),
                       QuickInsertTextResult(u"Result B")}},
@@ -2525,7 +2528,7 @@ TEST_F(QuickInsertViewTest,
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kClipboard,
                     {{QuickInsertTextResult(u"Result A"),
                       QuickInsertTextResult(u"Result B")}},
@@ -2623,7 +2626,7 @@ TEST_F(QuickInsertViewTest, ClearsSearchWhenClickingOnCategoryResult) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kNone,
                     {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
                     /*has_more_results=*/false),
@@ -2657,8 +2660,8 @@ TEST_F(QuickInsertViewTest,
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kLinks, {},
-                                           /*has_more_results=*/true),
+                QuickInsertSearchResultsSection(PickerSectionType::kLinks, {},
+                                                /*has_more_results=*/true),
             });
           }),
   });
@@ -2688,11 +2691,11 @@ TEST_F(QuickInsertViewTest, KeyNavigationToSeeMoreResults) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kClipboard,
                     {{QuickInsertTextResult(u"Result A")}},
                     /*has_more_results=*/false),
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kLinks,
                     {QuickInsertBrowsingHistoryResult({}, u"Result B", {})},
                     /*has_more_results=*/true),
@@ -2769,8 +2772,8 @@ TEST_F(QuickInsertViewTest,
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kLinks, {},
-                                           /*has_more_results=*/true),
+                QuickInsertSearchResultsSection(PickerSectionType::kLinks, {},
+                                                /*has_more_results=*/true),
             });
           }),
   });
@@ -2985,7 +2988,7 @@ TEST_F(QuickInsertViewTest, EnterOnSearchResults) {
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
-  first_callback.Run({PickerSearchResultsSection(
+  first_callback.Run({QuickInsertSearchResultsSection(
       PickerSectionType::kClipboard, {QuickInsertTextResult(u"first search")},
       /*has_more_results=*/false)});
   base::span<const raw_ptr<QuickInsertSectionView>> section_views =
@@ -3032,7 +3035,7 @@ TEST_F(QuickInsertViewTest, EnterDuringBurnInOnSearchResults) {
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   FakePickerViewDelegate::SearchResultsCallback first_callback = future.Take();
-  first_callback.Run({PickerSearchResultsSection(
+  first_callback.Run({QuickInsertSearchResultsSection(
       PickerSectionType::kClipboard, {QuickInsertTextResult(u"first search")},
       /*has_more_results=*/false)});
   base::span<const raw_ptr<QuickInsertSectionView>> section_views =
@@ -3073,7 +3076,7 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kNone,
                     {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
                     /*has_more_results=*/false),
@@ -3110,7 +3113,7 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateAfterPressingBrowserBack) {
               FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(
+                QuickInsertSearchResultsSection(
                     PickerSectionType::kNone,
                     {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
                     /*has_more_results=*/false),

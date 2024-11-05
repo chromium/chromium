@@ -25,18 +25,19 @@ enum class ASH_EXPORT PickerSectionType {
 };
 
 // Search results are divided into different sections.
-class ASH_EXPORT PickerSearchResultsSection {
+class ASH_EXPORT QuickInsertSearchResultsSection {
  public:
-  explicit PickerSearchResultsSection(
+  explicit QuickInsertSearchResultsSection(
       PickerSectionType type,
       std::vector<QuickInsertSearchResult> results,
       bool has_more_results);
-  PickerSearchResultsSection(const PickerSearchResultsSection& other);
-  PickerSearchResultsSection& operator=(
-      const PickerSearchResultsSection& other);
-  PickerSearchResultsSection(PickerSearchResultsSection&& other);
-  PickerSearchResultsSection& operator=(PickerSearchResultsSection&& other);
-  ~PickerSearchResultsSection();
+  QuickInsertSearchResultsSection(const QuickInsertSearchResultsSection& other);
+  QuickInsertSearchResultsSection& operator=(
+      const QuickInsertSearchResultsSection& other);
+  QuickInsertSearchResultsSection(QuickInsertSearchResultsSection&& other);
+  QuickInsertSearchResultsSection& operator=(
+      QuickInsertSearchResultsSection&& other);
+  ~QuickInsertSearchResultsSection();
 
   PickerSectionType type() const;
 
