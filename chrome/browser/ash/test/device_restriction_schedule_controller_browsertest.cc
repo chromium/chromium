@@ -226,16 +226,8 @@ IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
   ASSERT_TRUE(future.Wait());
 }
 
-// TODO(crbug.com/377134347): Consistently failing on linux-chromeos bots.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RestrictionScheduleMessageChanged \
-  DISABLED_RestrictionScheduleMessageChanged
-#else
-#define MAYBE_RestrictionScheduleMessageChanged \
-  RestrictionScheduleMessageChanged
-#endif
 IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
-                       MAYBE_RestrictionScheduleMessageChanged) {
+                       RestrictionScheduleMessageChanged) {
   auto mock_timer_owned = std::make_unique<FakeWallClockTimer>();
   FakeWallClockTimer* mock_timer = mock_timer_owned.get();
   controller().SetMessageUpdateTimerForTesting(std::move(mock_timer_owned));
@@ -254,8 +246,9 @@ IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
   OobeJS().ExpectElementContainsText(
       l10n_util::GetStringUTF8(IDS_TIME_TOMORROW), kBannerContents);
 
-  // Update the time to tomorrow and fire the mock timer.
-  test_clock.Advance(base::Days(1));
+  // Update the time to tomorrow and fire the mock timer (+6 hours to avoid any
+  // DST issues).
+  test_clock.Advance(base::Days(1) + base::Hours(6));
   mock_timer->FireNow();
 
   OobeJS().ExpectElementContainsText(
