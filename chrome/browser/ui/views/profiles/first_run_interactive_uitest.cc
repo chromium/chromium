@@ -509,22 +509,19 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 }
 #endif
 
-// TODO(crbug.com/366082752): Re-enable this test
-IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
-                       DISABLED_SignInAndSync) {
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
+  bool should_skip_test = false;
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+  // TODO(crbug.com/363254870, crbug.com/366082752): Re-enable this test
+  should_skip_test = true;
+#endif  // WIN && ARCH_CPU_64_BITS
+  if (should_skip_test)
+    GTEST_SKIP() << "Test is flaky on win64";
+
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Sync not possible until buttons stop loading";
   }
-
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
-  // TODO(crbug.com/363254870): Re-enable this test
-  if (SyncButtonsFeatureConfig() ==
-      SyncButtonsFeatureConfig::kAsyncEqualButtons) {
-    GTEST_SKIP() << "Test is flaky on win64";
-  }
-#endif  // WIN && ARCH_CPU_64_BITS
-
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -654,9 +651,15 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
-// TODO(crbug.com/366082752): Re-enable this test
-IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
-                       DISABLED_DeclineSync) {
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
+ bool should_skip_test = false;
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+  // TODO(crbug.com/366082752): Re-enable this test
+  should_skip_test = true;
+#endif  // WIN && ARCH_CPU_64_BITS
+  if (should_skip_test)
+    GTEST_SKIP() << "Test is flaky on win64";
+
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Decline is not possible until buttons stop loading";
