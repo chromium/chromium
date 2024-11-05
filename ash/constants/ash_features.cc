@@ -410,6 +410,13 @@ BASE_FEATURE(kConchExpandTranscriptionLanguage,
 // If enabled, conch will provide available GenAI features.
 BASE_FEATURE(kConchGenAi, "ConchGenAi", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, conch will request DLC to download large models. Otherwise,
+// request DLC to download small models. Note that if requested models are not
+// available on the device, GenAI features will be unavailable.
+BASE_FEATURE(kConchLargeModel,
+             "ConchLargeModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, conch will use microphone to capture system audio.
 BASE_FEATURE(kConchSystemAudioFromMic,
              "ConchSystemAudioFromMic",

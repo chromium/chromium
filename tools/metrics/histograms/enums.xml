@@ -22103,6 +22103,7 @@ from previous Chrome versions.
   <int value="768093619"
       label="EnableBookmarksSelectedTypeOnSigninForTesting:disabled"/>
   <int value="768158833" label="ViewTransitionOnNavigationForIframes:enabled"/>
+  <int value="768280875" label="ConchLargeModel:enabled"/>
   <int value="768287307" label="OmniboxCr2023Umbrella:enabled"/>
   <int value="768468500" label="FedCmAddAccount:disabled"/>
   <int value="768675159" label="FastPairDebugMetadata:enabled"/>
@@ -22168,6 +22169,7 @@ from previous Chrome versions.
       label="KeyboardBasedDisplayArrangementInSettings:enabled"/>
   <int value="792840942" label="BorealisDGPU:enabled"/>
   <int value="792884862" label="EnableSharedImageForWebview:enabled"/>
+  <int value="793145445" label="ConchLargeModel:disabled"/>
   <int value="793287900" label="VerifyDidCommitParams:disabled"/>
   <int value="793705368" label="ImeKoreanOnlyModeSwitchOnRightAlt:disabled"/>
   <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
