@@ -74,7 +74,7 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
 // Whether the DevTools resource explainer assistant is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceNetworkAgent,
              "DevToolsAiAssistanceNetworkAgent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiAssistanceNetworkAgentModelId{
     &kDevToolsAiAssistanceNetworkAgent, "aida_model_id",
     /*default_value=*/""};
