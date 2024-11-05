@@ -478,7 +478,7 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 #endif
 }
 
-void ChromePaymentsAutofillClient::OnVirtualCardDataAvailable(
+void ChromePaymentsAutofillClient::OnCardDataAvailable(
     const FilledCardInformationBubbleOptions& options) {
 #if BUILDFLAG(IS_ANDROID)
   client_->GetAutofillSnackbarController()->Show(

@@ -391,9 +391,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // result to users. `result` holds the outcome of virtual card enrollment.
   virtual void VirtualCardEnrollCompleted(PaymentsRpcResult result);
 
-  // Called when the virtual card has been fetched successfully. Uses the
-  // necessary information in `options` to show the manual fallback bubble.
-  virtual void OnVirtualCardDataAvailable(
+  // Called when the card has been fetched successfully. Uses the necessary
+  // information in `options` to show the FilledCardInformationBubble.
+  virtual void OnCardDataAvailable(
       const FilledCardInformationBubbleOptions& options);
 
   // Runs `callback` once the user makes a decision with respect to the

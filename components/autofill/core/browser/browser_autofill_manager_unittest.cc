@@ -503,7 +503,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const override));
   MOCK_METHOD(void,
-              OnVirtualCardDataAvailable,
+              OnCardDataAvailable,
               (const FilledCardInformationBubbleOptions&),
               (override));
 };
@@ -3571,7 +3571,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_LocalCreditCard) {
   const CreditCard local_card = test::GetCreditCard();
-  EXPECT_CALL(payments_client(), OnVirtualCardDataAvailable).Times(0);
+  EXPECT_CALL(payments_client(), OnCardDataAvailable).Times(0);
 
   browser_autofill_manager_->OnCreditCardFetchedSuccessfully(local_card);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
@@ -3581,7 +3581,7 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_ServerCreditCard) {
   const CreditCard server_card = test::GetMaskedServerCard();
-  EXPECT_CALL(payments_client(), OnVirtualCardDataAvailable).Times(0);
+  EXPECT_CALL(payments_client(), OnCardDataAvailable).Times(0);
 
   browser_autofill_manager_->OnCreditCardFetchedSuccessfully(server_card);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
@@ -3594,7 +3594,7 @@ TEST_F(BrowserAutofillManagerTest,
   using Options = FilledCardInformationBubbleOptions;
   EXPECT_CALL(
       payments_client(),
-      OnVirtualCardDataAvailable(
+      OnCardDataAvailable(
           AllOf(Field(&Options::masked_card_name,
                       virtual_card.CardNameForAutofillDisplay()),
                 Field(&Options::masked_card_number_last_four,

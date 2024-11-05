@@ -2929,7 +2929,7 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     // FilledCardInformationBubbleOptions.
     options.virtual_card_cvc = credit_card.cvc();
     options.card_image = GetCardImage(credit_card);
-    client().GetPaymentsAutofillClient()->OnVirtualCardDataAvailable(options);
+    client().GetPaymentsAutofillClient()->OnCardDataAvailable(options);
   }
 
   // After a server card is fetched, save its instrument id.

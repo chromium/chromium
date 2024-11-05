@@ -105,7 +105,7 @@ void PaymentsAutofillClient::ShowVirtualCardEnrollDialog(
 void PaymentsAutofillClient::VirtualCardEnrollCompleted(
     PaymentsRpcResult result) {}
 
-void PaymentsAutofillClient::OnVirtualCardDataAvailable(
+void PaymentsAutofillClient::OnCardDataAvailable(
     const FilledCardInformationBubbleOptions& options) {}
 
 void PaymentsAutofillClient::ConfirmSaveIbanLocally(
