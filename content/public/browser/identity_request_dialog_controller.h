@@ -64,6 +64,9 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   GURL config_url;
   // Whether this IdP supports signing in to additional accounts.
   bool supports_add_account{false};
+  // Whether this IdP has any filtered out account. This is reset to false each
+  // time the accounts dialog is shown and recomputed then.
+  bool has_filtered_out_account{false};
 };
 
 class CONTENT_EXPORT IdentityProviderData

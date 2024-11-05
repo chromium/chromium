@@ -1509,6 +1509,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
+      idp_info_it->second->data->idp_metadata.has_filtered_out_account = false;
       idp_data_for_display_.push_back(idp_info_it->second->data);
     }
     auto accounts_it = idp_accounts_.find(idp);
@@ -1550,9 +1551,9 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   for (const auto& account : accounts_) {
     if (IsNewlyLoggedIn(*account)) {
       new_accounts_.push_back(account);
-    } else {
-      // Since this is sorted, once not newly logged in, exit.
-      break;
+    }
+    if (account->is_filtered_out) {
+      account->identity_provider->idp_metadata.has_filtered_out_account = true;
     }
   }
   account_ids_before_login_.clear();

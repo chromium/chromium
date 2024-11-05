@@ -392,13 +392,18 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   void CheckUseOtherAccount(
       const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
-      size_t& accounts_index) {
-    EXPECT_TRUE(IsViewClass<views::Separator>(accounts[accounts_index++]));
+      size_t& accounts_index,
+      const std::optional<std::u16string>& expected_idp = std::nullopt) {
     views::View* button = accounts[accounts_index++];
     EXPECT_TRUE(IsViewClass<HoverButton>(button));
     HoverButton* idp_button = static_cast<HoverButton*>(button);
     ASSERT_TRUE(idp_button);
-    EXPECT_EQ(idp_button->GetText(), u"Use a different account");
+    if (expected_idp.has_value()) {
+      EXPECT_EQ(GetHoverButtonTitle(idp_button),
+                u"Use a different " + *expected_idp + u" account");
+    } else {
+      EXPECT_EQ(GetHoverButtonTitle(idp_button), u"Use a different account");
+    }
   }
 
   void CheckChooseAnAccount(
@@ -550,7 +555,7 @@ TEST_F(AccountSelectionBubbleViewTest, UseDifferentAccount) {
   PerformHeaderChecks(children[0], kTitleSignIn,
                       /*expect_idp_brand_icon_in_header=*/true);
 
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/3,
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/2,
                             /*expected_mismatch_rows=*/0);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
@@ -873,7 +878,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUseOtherAccount) {
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
                       /*expect_idp_brand_icon_in_header=*/false);
 
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/7,
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/5,
                             /*expected_mismatch_rows=*/0);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
@@ -887,8 +892,8 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUseOtherAccount) {
   // Check the second IDP.
   CheckHoverableAccountRows(accounts, kAccountSuffixes2, accounts_index,
                             /*expect_idp=*/true);
-  CheckUseOtherAccount(accounts, accounts_index);
-  CheckUseOtherAccount(accounts, accounts_index);
+  CheckUseOtherAccount(accounts, accounts_index, u"idp-example.com");
+  CheckUseOtherAccount(accounts, accounts_index, u"idp2.com");
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
@@ -1337,6 +1342,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccount) {
   IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
       kAccountSuffix, idp_data_, LoginState::kSignUp);
   account->is_filtered_out = true;
+  idp_data_->idp_metadata.has_filtered_out_account = true;
 
   CreateAccountSelectionBubble(/*exclude_title=*/false);
   // The backend will invoke ShowMultiAccountPicker with a single account since
@@ -1352,20 +1358,22 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccount) {
   PerformHeaderChecks(children[0], kTitleSignIn,
                       /*expect_idp_brand_icon_in_header=*/true);
 
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/1,
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/2,
                             /*expected_mismatch_rows=*/0);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
       GetAccounts(children[1]);
 
-  // Check the text shown.
+  // Check the filtered account and use a different account button.
   CheckHoverableAccountRow(accounts[0], kAccountSuffix,
                            /*expect_idp=*/false, /*is_modal_dialog=*/false,
                            /*is_disabled=*/true);
-  EXPECT_EQ(1u, accounts.size());
+  size_t index = 1;
+  CheckUseOtherAccount(accounts, index);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, MultipleDisabledAccounts) {
+  idp_data_->idp_metadata.has_filtered_out_account = true;
   std::vector<IdentityRequestAccountPtr> accounts_list;
   for (size_t i = 0; i < 3; ++i) {
     IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
@@ -1386,7 +1394,7 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleDisabledAccounts) {
   PerformHeaderChecks(children[0], kTitleSignIn,
                       /*expect_idp_brand_icon_in_header=*/true);
 
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/3,
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/4,
                             /*expected_mismatch_rows=*/0);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
@@ -1399,10 +1407,12 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleDisabledAccounts) {
                              /*expect_idp=*/false, /*is_modal_dialog=*/false,
                              /*is_disabled=*/true);
   }
-  EXPECT_EQ(3u, accounts.size());
+  size_t index = 3;
+  CheckUseOtherAccount(accounts, index);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
+  idp_data_->idp_metadata.has_filtered_out_account = true;
   std::vector<IdentityRequestAccountPtr> accounts_list;
   const std::vector<std::string> kAccountSuffixes = {"enabled", "disabled"};
   IdentityRequestAccountPtr account1 = CreateTestIdentityRequestAccount(
@@ -1425,7 +1435,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
   PerformHeaderChecks(children[0], kTitleSignIn,
                       /*expect_idp_brand_icon_in_header=*/true);
 
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/2,
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/3,
                             /*expected_mismatch_rows=*/0);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
@@ -1436,4 +1446,6 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
   CheckHoverableAccountRow(accounts[1], kAccountSuffixes[1],
                            /*expect_idp=*/false, /*is_modal_dialog=*/false,
                            /*is_disabled=*/true);
+  size_t index = 2;
+  CheckUseOtherAccount(accounts, index);
 }

@@ -560,6 +560,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
   void TestDisabledAccounts(const std::vector<std::string>& account_suffixes) {
+    idp_data_->idp_metadata.has_filtered_out_account = true;
     account_list_ =
         CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
     for (const auto& account : account_list_) {
@@ -592,11 +593,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                                /*is_disabled=*/true);
     }
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
-                   /*expect_add_account_button=*/false,
+                   /*expect_add_account_button=*/true,
                    /*expect_back_button=*/false);
   }
 
   void TestEnabledAndDisabled() {
+    idp_data_->idp_metadata.has_filtered_out_account = true;
     std::vector<std::string> account_suffixes = {"enabled", "disabled"};
     account_list_ =
         CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
@@ -626,7 +628,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                              /*is_disabled=*/true);
 
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
-                   /*expect_add_account_button=*/false,
+                   /*expect_add_account_button=*/true,
                    /*expect_back_button=*/false);
   }
 

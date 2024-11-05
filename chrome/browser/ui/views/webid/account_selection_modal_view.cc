@@ -431,7 +431,8 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
       std::nullopt;
 
   // TODO(crbug.com/324052630): Support add account with multi IDP API.
-  if (idp_list[0]->idp_metadata.supports_add_account) {
+  if (idp_list[0]->idp_metadata.supports_add_account ||
+      idp_list[0]->idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
         &AccountSelectionViewBase::Observer::OnLoginToIdP,
         base::Unretained(observer_), idp_list[0]->idp_metadata.config_url,
@@ -579,7 +580,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
 
   std::optional<views::Button::PressedCallback> use_other_account_callback =
       std::nullopt;
-  if (idp_data.idp_metadata.supports_add_account) {
+  if (idp_data.idp_metadata.supports_add_account ||
+      idp_data.idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
         &AccountSelectionViewBase::Observer::OnLoginToIdP,
         base::Unretained(observer_), idp_data.idp_metadata.config_url,

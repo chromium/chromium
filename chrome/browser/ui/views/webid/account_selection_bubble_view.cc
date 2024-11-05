@@ -16,6 +16,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/monogram_utils.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
@@ -32,11 +33,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -57,6 +60,9 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+constexpr int kMultiIdpUseOtherAccountButtonIconMargin = 9;
+constexpr int kSingleIdpUseOtherAccountButtonIconMargin = 5;
 
 // views::MdTextButton which:
 // - Uses the passed-in `brand_background_color` based on whether the button
@@ -94,8 +100,9 @@ class ContinueButton : public views::MdTextButton {
 
   void OnThemeChanged() override {
     views::MdTextButton::OnThemeChanged();
-    if (!brand_background_color_)
+    if (!brand_background_color_) {
       return;
+    }
 
     const SkColor dialog_background_color = bubble_view_->GetBackgroundColor();
     if (color_utils::GetContrastRatio(dialog_background_color,
@@ -690,9 +697,18 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   for (const auto& idp_data : idp_list) {
     const content::IdentityProviderMetadata& idp_metadata =
         idp_data->idp_metadata;
-    if (idp_metadata.supports_add_account) {
-      accounts_content->AddChildView(std::make_unique<views::Separator>());
-      accounts_content->AddChildView(CreateUseOtherAccountButton(idp_metadata));
+    if (!idp_data->has_login_status_mismatch &&
+        (idp_metadata.supports_add_account ||
+         idp_metadata.has_filtered_out_account)) {
+      accounts_content->AddChildView(CreateUseOtherAccountButton(
+          idp_metadata,
+          is_multi_idp ? l10n_util::GetStringFUTF16(
+                             IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT_MULTI_IDP,
+                             base::UTF8ToUTF16(idp_data->idp_for_display))
+                       : l10n_util::GetStringUTF16(
+                             IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT),
+          is_multi_idp ? kMultiIdpUseOtherAccountButtonIconMargin
+                       : kSingleIdpUseOtherAccountButtonIconMargin));
     }
   }
 
@@ -902,17 +918,22 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateUseOtherAccountButton(
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const content::IdentityProviderMetadata& idp_metadata,
+    const std::u16string& title,
+    int icon_margin) {
+  auto icon_view =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kOpenInNewIcon, ui::kColorMenuIcon, kIdpLoginIconSize));
   auto button = std::make_unique<HoverButton>(
       base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
                           base::Unretained(observer_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
-      ui::ImageModel::FromVectorIcon(kOpenInNewIcon, ui::kColorMenuIcon,
-                                     kIdpLoginIconSize),
-      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT));
+      std::move(icon_view), title);
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      /*top=*/2 * kVerticalSpacing, /*left=*/kLeftRightPadding, /*bottom=*/0,
+      /*top=*/kVerticalSpacing, /*left=*/kLeftRightPadding,
+      /*bottom=*/kVerticalSpacing,
       /*right=*/kLeftRightPadding)));
+  button->SetIconHorizontalMargins(icon_margin, icon_margin);
   return button;
 }
 
