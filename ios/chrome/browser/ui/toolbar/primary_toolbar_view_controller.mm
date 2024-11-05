@@ -153,8 +153,12 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   // set to topLayoutGuide after the view creation on iOS 10.
   [self.view setUp];
 
+  // Reference the location bar container as the top omnibox layout guide.
+  // Force the synchronous layout update, as this fixes the screen rotation
+  // animation in this case.
   [self.layoutGuideCenter referenceView:self.view.locationBarContainer
-                              underName:kTopOmniboxGuide];
+                              underName:kTopOmniboxGuide
+         forcesSynchronousLayoutUpdates:YES];
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:1];
 }

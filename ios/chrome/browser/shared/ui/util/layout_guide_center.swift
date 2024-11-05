@@ -21,13 +21,16 @@ public class LayoutGuideCenter: NSObject {
   /// MARK: Public
 
   /// References a view under a specific `name`.
-  @objc(referenceView:underName:)
-  public func reference(view referenceView: UIView?, under name: String) {
+  /// If forcesSynchronousLayoutUpdates is true, when the window coordinates change, the layout guides will be
+  /// updated synchronously. Otherwise, the layout guides will be updated in the next runloop.
+  @objc(referenceView:underName:forcesSynchronousLayoutUpdates:)
+  public func reference(view referenceView: UIView?, under name: String, forcesSynchronousLayoutUpdates: Bool) {
     let oldReferenceView = referencedView(under: name)
     // Early return if `referenceView` is already set.
     if referenceView == oldReferenceView {
       return
     }
+    oldReferenceView?.cr_forcesSynchronousLayoutUpdates = false
     oldReferenceView?.cr_onWindowCoordinatesChanged = nil
     if let referenceView = referenceView {
       referenceViews.setObject(referenceView, forKey: name as NSString)
@@ -35,11 +38,18 @@ public class LayoutGuideCenter: NSObject {
       referenceViews.removeObject(forKey: name as NSString)
     }
     updateGuides(named: name)
+    referenceView?.cr_forcesSynchronousLayoutUpdates = forcesSynchronousLayoutUpdates
     // Schedule updates to the matching layout guides when the reference view
     // moves in its window.
     referenceView?.cr_onWindowCoordinatesChanged = { [weak self] _ in
       self?.updateGuides(named: name)
     }
+  }
+
+  /// References a view under a specific `name`.
+  @objc(referenceView:underName:)
+  public func reference(view referenceView: UIView?, under name: String) {
+    self.reference(view: referenceView, under: name, forcesSynchronousLayoutUpdates: false)
   }
 
   /// Returns the referenced view under `name`.
