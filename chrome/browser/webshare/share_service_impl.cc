@@ -303,7 +303,6 @@ void ShareServiceImpl::OnSafeBrowsingResultReceived(
           std::move(share_operation), std::move(fullscreen_block),
           std::move(callback)));
 #else
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(blink::mojom::ShareError::INTERNAL_ERROR);
+  NOTREACHED();
 #endif
 }
