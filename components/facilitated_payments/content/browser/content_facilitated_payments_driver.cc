@@ -67,6 +67,9 @@ void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
 
 void ContentFacilitatedPaymentsDriver::SetPaymentLinkHandlerReceiver(
     mojo::PendingReceiver<mojom::PaymentLinkHandler> pending_receiver) {
+  if (receiver_.is_bound()) {
+    receiver_.reset();
+  }
   receiver_.Bind(std::move(pending_receiver));
 }
 
