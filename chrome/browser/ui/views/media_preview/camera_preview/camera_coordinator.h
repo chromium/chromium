@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/views/media_preview/camera_preview/blur_switch_view_controller.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_view_controller.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_coordinator.h"
@@ -65,6 +66,7 @@ class CameraCoordinator {
   const bool allow_device_selection_;
   const media_preview_metrics::Context metrics_context_;
   std::optional<CameraViewController> camera_view_controller_;
+  std::optional<BlurSwitchViewController> blur_switch_view_controller_;
   std::optional<VideoStreamCoordinator> video_stream_coordinator_;
 };
 

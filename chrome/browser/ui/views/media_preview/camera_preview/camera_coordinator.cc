@@ -51,6 +51,10 @@ CameraCoordinator::CameraCoordinator(
                           base::Unretained(this)),
       metrics_context_);
 
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
+    blur_switch_view_controller_.emplace(*camera_view, browser_context_);
+  }
+
   video_stream_coordinator_.emplace(
       camera_view_controller_->GetLiveFeedContainer(), metrics_context_);
 
@@ -87,6 +91,9 @@ void CameraCoordinator::OnVideoSourceInfosReceived(
   if (eligible_device_infos_.empty()) {
     active_device_id_.clear();
     video_stream_coordinator_->Stop();
+    if (blur_switch_view_controller_) {
+      blur_switch_view_controller_->ResetConnections();
+    }
   }
   camera_view_controller_->UpdateVideoSourceInfos(eligible_device_infos_);
 }
@@ -109,6 +116,10 @@ void CameraCoordinator::OnVideoSourceChanged(
 
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
       browser_context_) {
+    if (blur_switch_view_controller_) {
+      blur_switch_view_controller_->BindVideoEffectsManager(active_device_id_);
+    }
+
     // TODO: Consider moving this to `CameraMediator` when the code becomes more
     // permanent.
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
@@ -152,4 +163,5 @@ void CameraCoordinator::UpdateDevicePreferenceRanking() {
 
 void CameraCoordinator::ResetViewController() {
   camera_view_controller_.reset();
+  blur_switch_view_controller_.reset();
 }
