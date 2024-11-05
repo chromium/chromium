@@ -240,6 +240,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.NetworkLocationProvider.TimeToFirstPosition"
+    units="ms" expires_after="2025-04-17">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the time duration between starting the provider and getting the
+    first valid Geoposition for NetworkLocationProvider.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.NetworkLocationRequest.Accuracy" units="meter"
     expires_after="2025-10-15">
   <owner>chengweih@chromium.org</owner>

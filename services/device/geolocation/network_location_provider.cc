@@ -74,14 +74,14 @@ NetworkLocationProvider::NetworkLocationProvider(
 
 NetworkLocationProvider::~NetworkLocationProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (is_started_) {
+  if (start_time_) {
     StopProvider();
   }
 }
 
 void NetworkLocationProvider::FillDiagnostics(
     mojom::GeolocationDiagnostics& diagnostics) {
-  if (is_started_) {
+  if (start_time_) {
     if (high_accuracy_) {
       diagnostics.provider_state =
           mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy;
@@ -114,7 +114,7 @@ void NetworkLocationProvider::SetUpdateCallback(
 void NetworkLocationProvider::OnPermissionGranted() {
   const bool was_permission_granted = is_permission_granted_;
   is_permission_granted_ = true;
-  if (!was_permission_granted && is_started_) {
+  if (!was_permission_granted && start_time_) {
     RequestPosition();
     internals_updated_closure_.Run();
   }
@@ -122,7 +122,7 @@ void NetworkLocationProvider::OnPermissionGranted() {
 
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(is_started_);
+  DCHECK(start_time_);
   is_wifi_data_complete_ = wifi_data_provider_handle_->GetData(&wifi_data_);
   if (is_wifi_data_complete_) {
     wifi_timestamp_ = base::Time::Now();
@@ -167,7 +167,17 @@ void NetworkLocationProvider::OnLocationResponse(LocationResponseResult result,
   if (result.position->is_position() &&
       ValidateGeoposition(*result.position->get_position())) {
     position_cache_->CachePosition(wifi_data, *result.position->get_position());
-    position_received_ = true;
+    // Record the time to first position update. This is only done once to
+    // capture the initial position acquisition time. Also we check
+    // `start_time_` to ensure that we don't record it when a location calblack
+    // is fired after when the provider is stopped.
+    if (!position_received_ && start_time_) {
+      base::UmaHistogramCustomTimes(
+          "Geolocation.NetworkLocationProvider.TimeToFirstPosition",
+          base::TimeTicks::Now() - *start_time_, base::Milliseconds(1),
+          base::Seconds(10), 100);
+      position_received_ = true;
+    }
   }
 
   // Let listeners know that we now have a position available.
@@ -184,10 +194,10 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
 
   high_accuracy_ = high_accuracy;
 
-  if (is_started_) {
+  if (start_time_) {
     return;
   }
-  is_started_ = true;
+  start_time_ = base::TimeTicks::Now();
 
   // Registers a callback with the data provider.
   // Releasing the handle will automatically unregister the callback.
@@ -206,7 +216,7 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
 void NetworkLocationProvider::StopProvider() {
   GEOLOCATION_LOG(DEBUG) << "Stop provider";
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(is_started_);
+  DCHECK(start_time_);
   // Record the session result if either:
   // 1. An error occurred (first_session_error_ is set).
   // 2. At least one valid position update was received (position_received_ is
@@ -220,7 +230,7 @@ void NetworkLocationProvider::StopProvider() {
   position_received_ = false;
   first_session_error_.reset();
   wifi_data_provider_handle_ = nullptr;
-  is_started_ = false;
+  start_time_.reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 

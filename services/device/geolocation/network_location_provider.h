@@ -110,14 +110,17 @@ class NetworkLocationProvider : public LocationProvider {
   // diagnostics observers.
   NetworkResponseCallback network_response_callback_;
 
-  bool is_started_ = false;
-
   // Indicates whether at least one valid position update has been received.
   bool position_received_ = false;
 
   // This will hold the first error encountered, or be empty to indicate a
   // successful session with no errors.
   std::optional<NetworkLocationRequestResult> first_session_error_;
+
+  // The time when `StartProvider` was called.
+  // This is used to calculate the time it takes to receive the first position
+  // update. Setting this value also indicates that the provider has started.
+  std::optional<base::TimeTicks> start_time_;
 
   base::WeakPtrFactory<NetworkLocationProvider> weak_factory_{this};
 };
