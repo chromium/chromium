@@ -1126,10 +1126,11 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchUnpinned) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   int tab_count = tab_strip->count();
   LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  true /* prefer_containner */));
+      "app1_https",
+      apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                          true /* prefer_containner */));
   EXPECT_EQ(++tab_count, tab_strip->count());
-  ash::ShelfID shortcut_id = CreateShortcut("app1");
+  ash::ShelfID shortcut_id = CreateShortcut("app1_https");
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
   WebContents* tab = tab_strip->GetActiveWebContents();
   content::WebContentsDestroyedWatcher destroyed_watcher(tab);

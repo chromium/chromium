@@ -11229,6 +11229,24 @@
             ]
         }
     ],
+    "HttpsFirstBalancedModeAutoEnable": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpsFirstBalancedModeAutoEnable"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpsFirstModeV2ForEngagedSites": [
         {
             "platforms": [

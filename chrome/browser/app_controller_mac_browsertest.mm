@@ -316,7 +316,7 @@ class AppControllerWebAppBrowserTest : public InProcessBrowserTest {
   }
 
   std::string GetAppURL() const {
-    return "http://example.com/";
+    return "https://example.com/";
   }
 
   raw_ptr<const BrowserList> active_browser_list_;
