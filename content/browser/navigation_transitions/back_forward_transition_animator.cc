@@ -852,6 +852,7 @@ void BackForwardTransitionAnimator::DidFinishNavigation(
     old_surface_clone_->RemoveFromParent();
     old_surface_clone_.reset();
   }
+  UnregisterNewFrameActivationObserver();
   AdvanceAndProcessState(State::kDisplayingCancelAnimation);
 }
 
