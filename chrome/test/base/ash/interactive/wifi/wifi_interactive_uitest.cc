@@ -137,11 +137,16 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
   const ShillServiceInfo wifi_service_info_{/*id=*/0, shill::kTypeWifi};
 };
 
-IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, EnableDisableFromOsSettings) {
+IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
+                       ToggleAndCheckOsSettingsWiFiPageElements) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kWifiPoweredState);
 
   ConfigureWifi(/*connected=*/true);
+
+  // Set this delay so the WiFi scanning progress bar shows.
+  ShillManagerClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      base::Seconds(2));
 
   // Ensure the OS Settings app is installed.
   InstallSystemApps();
@@ -165,7 +170,13 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, EnableDisableFromOsSettings) {
       WaitForElementTextContains(
           kOSSettingsId, settings::InternetSettingsSubpageTitle(),
           /*text=*/l10n_util::GetStringUTF8(IDS_NETWORK_TYPE_WIFI)),
-      WaitForElementExists(kOSSettingsId, settings::wifi::WifiNetworksList()),
+      WaitForElementExists(
+          kOSSettingsId, settings::wifi::WiFiSubpageSearchForNetworksSpinner()),
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::wifi::WiFiSubpageSearchForNetworks(),
+                                 "Searching for networks"),
+      WaitForElementDisplayNotNone(kOSSettingsId,
+                                   settings::wifi::WiFiSubpageNetworkListDiv()),
       WaitForToggleState(kOSSettingsId,
                          settings::wifi::WifiSubpageEnableToggle(),
                          /*is_checked=*/true),
@@ -177,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, EnableDisableFromOsSettings) {
                          settings::wifi::WifiSubpageEnableToggle(), false),
       WaitForState(kWifiPoweredState, false),
       WaitForElementDisplayNone(kOSSettingsId,
-                                settings::wifi::WifiNetworksList()),
+                                settings::wifi::WiFiSubpageNetworkListDiv()),
 
       Log("Enable WiFi from WiFi subpage"),
 
@@ -185,7 +196,13 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, EnableDisableFromOsSettings) {
       WaitForToggleState(kOSSettingsId,
                          settings::wifi::WifiSubpageEnableToggle(), true),
       WaitForState(kWifiPoweredState, true),
-      WaitForElementExists(kOSSettingsId, settings::wifi::WifiNetworksList()),
+      WaitForElementExists(
+          kOSSettingsId, settings::wifi::WiFiSubpageSearchForNetworksSpinner()),
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::wifi::WiFiSubpageSearchForNetworks(),
+                                 "Searching for networks"),
+      WaitForElementDisplayNotNone(kOSSettingsId,
+                                   settings::wifi::WiFiSubpageNetworkListDiv()),
 
       Log("Test complete"));
 }

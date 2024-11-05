@@ -611,6 +611,21 @@ PasspointSubpageRemoveDialogConfirmButton() {
          "cr-button#removalConfirmButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageNetworkListDiv() {
+  return InternetPage() + "settings-internet-subpage" + "#networkListDiv";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageSearchForNetworks() {
+  return InternetPage() + "settings-internet-subpage" + "#networkListDiv" +
+         "localized-link" + "#container";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+WiFiSubpageSearchForNetworksSpinner() {
+  return InternetPage() + "os-settings-subpage.iron-selected" +
+         "paper-spinner-lite";
+}
+
 }  // namespace wifi
 
 namespace vpn {

@@ -412,6 +412,15 @@ WebContentsInteractionTestUtil::DeepQuery PasspointSubpageRemoveDialog();
 WebContentsInteractionTestUtil::DeepQuery
 PasspointSubpageRemoveDialogConfirmButton();
 
+// The div element containing the network list on the WiFi sub page.
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageNetworkListDiv();
+
+// The "Searching for networks..." message on the WiFi sub page.
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageSearchForNetworks();
+
+// The "Searching for networks..." spinner on the WiFi sub page.
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageSearchForNetworksSpinner();
+
 }  // namespace wifi
 
 namespace vpn {
