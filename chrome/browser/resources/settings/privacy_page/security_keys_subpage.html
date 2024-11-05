@@ -1,10 +1,12 @@
 <style include="settings-shared"></style>
 
-<cr-link-row
-    id="managePhonesButton"
-    label="$i18n{securityKeysPhonesManage}"
-    sub-label="$i18n{securityKeysPhonesManageDesc}"
-    on-click="onManagePhonesClick_"></cr-link-row>
+<template is="dom-if" if="[[enableManagePhones_]]" restamp>
+  <cr-link-row
+      id="managePhonesButton"
+      label="$i18n{securityKeysPhonesManage}"
+      sub-label="$i18n{securityKeysPhonesManageDesc}"
+      on-click="onManagePhonesClick_"></cr-link-row>
+</template>
 <cr-link-row
     id="setPINButton"
     class="hr"

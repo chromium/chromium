@@ -21,6 +21,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/crypto_buildflags.h"
+#include "device/fido/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/compositor/compositor_switches.h"
 
@@ -420,6 +421,23 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsDialog) {
           "runMochaSuite('OsSettingsRevampSecureDnsDialog')");
 }
 #endif
+
+// TODO(crbug.com/372493822): remove when hybrid linking is disabled by default.
+class HybridDisabledSettingsTest : public SettingsTest {
+ public:
+  HybridDisabledSettingsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{device::kWebAuthnHybridLinking});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HybridDisabledSettingsTest, SecurityKeysSubpage) {
+  RunTest("settings/security_keys_subpage_test.js", "mocha.run()");
+}
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysBioEnrollment) {
   RunTest("settings/security_keys_bio_enrollment_test.js", "mocha.run()");

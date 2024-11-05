@@ -346,16 +346,7 @@ suite('FlagsDisabled', function() {
     resetRouterForTesting();
   });
 
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-
+  function createPage() {
     page = document.createElement('settings-security-page');
     page.prefs = pagePrefs();
     document.body.appendChild(page);
@@ -363,6 +354,17 @@ suite('FlagsDisabled', function() {
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
     return flushTasks();
+  }
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    return createPage();
   });
 
   teardown(function() {
@@ -398,19 +400,38 @@ suite('FlagsDisabled', function() {
     assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));
   });
 
-  // The element only exists on Windows.
+  // On modern versions of Windows the security keys subpage will be disabled
+  // because Windows manages that itself, but a link to the subpage for
+  // managing phones as security keys will be included when hybrid linking is
+  // enabled.
+  // TODO(crbug.com/372493822): remove these tests when hybrid linking flag is
+  // removed.
   // <if expr="is_win">
-  test('ManageSecurityKeysPhonesSubpageVisibleAndNavigates', function() {
-    // On modern versions of Windows the security keys subpage will be disabled
-    // because Windows manages that itself, but a link to the subpage for
-    // managing phones as security keys will be included.
-    const triggerId = '#security-keys-phones-subpage-trigger';
-    assertTrue(isChildVisible(page, triggerId));
-    page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
-    flush();
-    assertEquals(
-        routes.SECURITY_KEYS_PHONES, Router.getInstance().getCurrentRoute());
-  });
+  test(
+      'ManageSecurityKeysPhonesSubpage_HybridLinkingEnabled', async function() {
+        loadTimeData.overrideValues({enableSecurityKeysManagePhones: true});
+        await createPage();
+        resetRouterForTesting();
+
+        const triggerId = '#security-keys-phones-subpage-trigger';
+        assertTrue(isChildVisible(page, triggerId));
+        page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
+        flush();
+        assertEquals(
+            routes.SECURITY_KEYS_PHONES,
+            Router.getInstance().getCurrentRoute());
+      });
+
+  test(
+      'ManageSecurityKeysPhonesSubpage_HybridLinkingDisabled',
+      async function() {
+        loadTimeData.overrideValues({enableSecurityKeysManagePhones: false});
+        await createPage();
+        resetRouterForTesting();
+
+        const triggerId = '#security-keys-phones-subpage-trigger';
+        assertFalse(isChildVisible(page, triggerId));
+      });
   // </if>
 
   // Tests the old HTTPS-Only Mode toggle UI.

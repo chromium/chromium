@@ -23,14 +23,14 @@ import {Router} from '../router.js';
 
 import {getTemplate} from './security_keys_subpage.html.js';
 
-interface SecurityKeysSubpageElement {
+export interface SecurityKeysSubpageElement {
   $: {
     setPINButton: HTMLElement,
     resetButton: HTMLElement,
   };
 }
 
-class SecurityKeysSubpageElement extends PolymerElement {
+export class SecurityKeysSubpageElement extends PolymerElement {
   static get is() {
     return 'security-keys-subpage';
   }
@@ -46,6 +46,14 @@ class SecurityKeysSubpageElement extends PolymerElement {
         readOnly: true,
         value() {
           return loadTimeData.getBoolean('enableSecurityKeysBioEnrollment');
+        },
+      },
+
+      enableManagePhones_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('enableSecurityKeysManagePhones');
         },
       },
 
@@ -121,6 +129,12 @@ class SecurityKeysSubpageElement extends PolymerElement {
         this.shadowRoot!.querySelector<HTMLElement>('#bioEnrollButton');
     assert(toFocus);
     focusWithoutInk(toFocus);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'security-keys-subpage': SecurityKeysSubpageElement;
   }
 }
 

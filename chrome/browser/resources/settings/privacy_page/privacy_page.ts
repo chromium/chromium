@@ -114,6 +114,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      enableManagePhones_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableSecurityKeysManagePhones');
+        },
+      },
+
       blockAutoplayStatus_: {
         type: Object,
         value() {

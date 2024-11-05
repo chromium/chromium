@@ -3706,6 +3706,9 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
                           !win_native_api_available);
   html_source->AddBoolean("enableSecurityKeysBioEnrollment",
                           !win_native_api_available);
+  html_source->AddBoolean(
+      "enableSecurityKeysManagePhones",
+      base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking));
 }
 
 }  // namespace
