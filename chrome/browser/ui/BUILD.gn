@@ -2057,8 +2057,6 @@ static_library("ui") {
       "webui/nearby_internals/nearby_internals_ui_trigger_handler.h",
       "webui/nearby_internals/quick_pair/quick_pair_handler.cc",
       "webui/nearby_internals/quick_pair/quick_pair_handler.h",
-      "webui/trusted_vault/trusted_vault_dialog_delegate.cc",
-      "webui/trusted_vault/trusted_vault_dialog_delegate.h",
       "webui/version/version_handler_chromeos.cc",
       "webui/version/version_handler_chromeos.h",
     ]

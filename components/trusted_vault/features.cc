@@ -19,10 +19,4 @@ BASE_FEATURE(kSetClientEncryptionKeysJsApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kChromeOSTrustedVaultUseWebUIDialog,
-             "ChromeOSTrustedVaultUseWebUIDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 }  // namespace trusted_vault

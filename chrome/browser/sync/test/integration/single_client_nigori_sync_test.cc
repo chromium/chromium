@@ -1306,25 +1306,16 @@ IN_PROC_BROWSER_TEST_F(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class SingleClientNigoriWithWebApiAndDialogUIParamTest
-    : public testing::WithParamInterface<bool>,
-      public SingleClientNigoriWithWebApiTest {
+    : public SingleClientNigoriWithWebApiTest {
  public:
-  SingleClientNigoriWithWebApiAndDialogUIParamTest() {
-      feature_list_.InitAndDisableFeature(
-          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog);
-  }
-
+  SingleClientNigoriWithWebApiAndDialogUIParamTest() = default;
   ~SingleClientNigoriWithWebApiAndDialogUIParamTest() override = default;
-
 
   bool WaitForTrustedVaultReauthCompletion() {
       return TabClosedChecker(
                  GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
           .Wait();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiAndDialogUIParamTest,

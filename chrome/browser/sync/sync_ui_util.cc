@@ -37,10 +37,6 @@
 #include "ash/constants/ash_features.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/trusted_vault/trusted_vault_dialog_delegate.h"
-#endif
-
 namespace {
 
 SyncStatusLabels GetStatusForUnrecoverableError(
@@ -394,23 +390,3 @@ void OpenTabForSyncKeyRecoverabilityDegraded(
   }
   OpenTabForSyncTrustedVaultUserAction(browser, url);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void OpenDialogForSyncKeyRetrieval(
-    Profile* profile,
-    syncer::TrustedVaultUserActionTriggerForUMA trigger) {
-  RecordKeyRetrievalTrigger(trigger);
-  TrustedVaultDialogDelegate::ShowDialogForProfile(
-      profile,
-      GaiaUrls::GetInstance()->signin_chrome_sync_keys_retrieval_url());
-}
-
-void OpenDialogForSyncKeyRecoverabilityDegraded(
-    Profile* profile,
-    syncer::TrustedVaultUserActionTriggerForUMA trigger) {
-  RecordRecoverabilityDegradedFixTrigger(trigger);
-  TrustedVaultDialogDelegate::ShowDialogForProfile(
-      profile, GaiaUrls::GetInstance()
-                   ->signin_chrome_sync_keys_recoverability_degraded_url());
-}
-#endif
