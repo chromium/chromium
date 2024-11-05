@@ -31,7 +31,7 @@ class ASH_EXPORT PickerImageItemView : public QuickInsertItemView {
   PickerImageItemView& operator=(const PickerImageItemView&) = delete;
   ~PickerImageItemView() override;
 
-  void SetAction(PickerActionType action);
+  void SetAction(QuickInsertActionType action);
 
  private:
   raw_ptr<views::ImageView> image_view_ = nullptr;

@@ -18,7 +18,7 @@ class View;
 
 namespace ash {
 
-enum class PickerActionType;
+enum class QuickInsertActionType;
 enum class PickerCapsLockPosition;
 
 // Delegate for `PickerZeroStateView`.
@@ -40,7 +40,7 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
   // Requests for `view` to become the pseudo focused view.
   virtual void RequestPseudoFocus(views::View* view) = 0;
 
-  virtual PickerActionType GetActionForResult(
+  virtual QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) = 0;
 
   // Informs that the height of the zero state view may change.

@@ -180,7 +180,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     FakeSearchFunction search_function;
     base::RepeatingClosure stop_search_function;
     FakeCategorySearchFunction category_results_function;
-    PickerActionType action_type = PickerActionType::kInsert;
+    QuickInsertActionType action_type = QuickInsertActionType::kInsert;
     std::vector<QuickInsertEmojiResult> emoji_results;
     std::vector<std::string> suggested_emojis;
     PickerModeType mode = PickerModeType::kNoSelection;
@@ -260,7 +260,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   PickerSessionMetrics& GetSessionMetrics() override {
     return session_metrics_;
   }
-  PickerActionType GetActionForResult(
+  QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) override {
     return options_.action_type;
   }
@@ -521,7 +521,7 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultInsertsResult) {
                       /*has_more_results=*/false),
               });
             }),
-        .action_type = PickerActionType::kInsert,
+        .action_type = QuickInsertActionType::kInsert,
     });
     auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
     widget->Show();
@@ -566,7 +566,7 @@ TEST_F(QuickInsertViewTest, LeftClickZeroStateSuggestedResultInsertsResult) {
         .available_categories = {QuickInsertCategory::kLinks},
         .zero_state_suggested_results = std::vector<QuickInsertSearchResult>(
             10, QuickInsertTextResult(u"abc")),
-        .action_type = PickerActionType::kInsert,
+        .action_type = QuickInsertActionType::kInsert,
     });
     auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
     widget->Show();
@@ -608,7 +608,7 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultOpensResult) {
                     /*has_more_results=*/false),
             });
           }),
-      .action_type = PickerActionType::kOpen,
+      .action_type = QuickInsertActionType::kOpen,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2317,7 +2317,7 @@ TEST_F(QuickInsertViewTest, KeyEventsNavigateWithinSubmenu) {
           {QuickInsertNewWindowResult(QuickInsertNewWindowResult::Type::kDoc),
            QuickInsertNewWindowResult(
                QuickInsertNewWindowResult::Type::kSheet)},
-      .action_type = PickerActionType::kOpen,
+      .action_type = QuickInsertActionType::kOpen,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();

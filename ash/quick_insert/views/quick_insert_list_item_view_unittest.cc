@@ -150,7 +150,7 @@ TEST_F(QuickInsertListItemViewTest, DoesNotSetBadgeVisibleWithPrimaryImage) {
 TEST_F(QuickInsertListItemViewTest, SetBadgeActionDoHasNoLabelText) {
   QuickInsertListItemView item_view(base::DoNothing());
 
-  item_view.SetBadgeAction(PickerActionType::kDo);
+  item_view.SetBadgeAction(QuickInsertActionType::kDo);
 
   EXPECT_EQ(item_view.trailing_badge_for_testing().GetText(), u"");
 }
@@ -158,13 +158,13 @@ TEST_F(QuickInsertListItemViewTest, SetBadgeActionDoHasNoLabelText) {
 TEST_F(QuickInsertListItemViewTest, SetBadgeActionHasLabelText) {
   QuickInsertListItemView item_view(base::DoNothing());
 
-  item_view.SetBadgeAction(PickerActionType::kInsert);
+  item_view.SetBadgeAction(QuickInsertActionType::kInsert);
   EXPECT_NE(item_view.trailing_badge_for_testing().GetText(), u"");
 
-  item_view.SetBadgeAction(PickerActionType::kOpen);
+  item_view.SetBadgeAction(QuickInsertActionType::kOpen);
   EXPECT_NE(item_view.trailing_badge_for_testing().GetText(), u"");
 
-  item_view.SetBadgeAction(PickerActionType::kCreate);
+  item_view.SetBadgeAction(QuickInsertActionType::kCreate);
   EXPECT_NE(item_view.trailing_badge_for_testing().GetText(), u"");
 }
 
@@ -405,7 +405,7 @@ TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryTextAndBadgeActionDo) {
   QuickInsertListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
-  view.SetBadgeAction(PickerActionType::kDo);
+  view.SetBadgeAction(QuickInsertActionType::kDo);
 
   EXPECT_EQ(view.GetAccessibleName(), u"primary");
 }
@@ -414,7 +414,7 @@ TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryTextAndBadgeActionInsert) {
   QuickInsertListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
-  view.SetBadgeAction(PickerActionType::kInsert);
+  view.SetBadgeAction(QuickInsertActionType::kInsert);
 
   EXPECT_EQ(view.GetAccessibleName(), u"Insert primary");
 }
@@ -423,7 +423,7 @@ TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryTextAndBadgeActionOpen) {
   QuickInsertListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
-  view.SetBadgeAction(PickerActionType::kOpen);
+  view.SetBadgeAction(QuickInsertActionType::kOpen);
 
   EXPECT_EQ(view.GetAccessibleName(), u"Open primary");
 }
@@ -432,7 +432,7 @@ TEST_F(QuickInsertListItemViewTest,
        AccessibleNameUsesPrimaryTextAndBadgeActionCreate) {
   QuickInsertListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
-  view.SetBadgeAction(PickerActionType::kCreate);
+  view.SetBadgeAction(QuickInsertActionType::kCreate);
 
   EXPECT_EQ(view.GetAccessibleName(), u"primary");
 }
@@ -442,7 +442,7 @@ TEST_F(QuickInsertListItemViewTest,
   QuickInsertListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
   view.SetSecondaryText(u"secondary");
-  view.SetBadgeAction(PickerActionType::kDo);
+  view.SetBadgeAction(QuickInsertActionType::kDo);
 
   EXPECT_EQ(view.GetAccessibleName(), u"primary, secondary");
 }
@@ -452,7 +452,7 @@ TEST_F(QuickInsertListItemViewTest,
   QuickInsertListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
   view.SetSecondaryText(u"secondary");
-  view.SetBadgeAction(PickerActionType::kInsert);
+  view.SetBadgeAction(QuickInsertActionType::kInsert);
 
   EXPECT_EQ(view.GetAccessibleName(), u"Insert primary, secondary");
 }
@@ -462,7 +462,7 @@ TEST_F(QuickInsertListItemViewTest,
   QuickInsertListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
   view.SetSecondaryText(u"secondary");
-  view.SetBadgeAction(PickerActionType::kOpen);
+  view.SetBadgeAction(QuickInsertActionType::kOpen);
 
   EXPECT_EQ(view.GetAccessibleName(), u"Open primary, secondary");
 }
@@ -472,7 +472,7 @@ TEST_F(QuickInsertListItemViewTest,
   QuickInsertListItemView view(base::DoNothing());
   view.SetPrimaryText(u"primary");
   view.SetSecondaryText(u"secondary");
-  view.SetBadgeAction(PickerActionType::kCreate);
+  view.SetBadgeAction(QuickInsertActionType::kCreate);
 
   EXPECT_EQ(view.GetAccessibleName(), u"primary, secondary");
 }

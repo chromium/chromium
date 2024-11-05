@@ -486,7 +486,7 @@ PickerSessionMetrics& QuickInsertController::GetSessionMetrics() {
   return session_->session_metrics;
 }
 
-PickerActionType QuickInsertController::GetActionForResult(
+QuickInsertActionType QuickInsertController::GetActionForResult(
     const QuickInsertSearchResult& result) {
   CHECK(session_);
   const PickerModeType mode = session_->model.GetMode();
@@ -494,58 +494,58 @@ PickerActionType QuickInsertController::GetActionForResult(
       base::Overloaded{[mode](const QuickInsertTextResult& data) {
                          CHECK(mode == PickerModeType::kNoSelection ||
                                mode == PickerModeType::kHasSelection);
-                         return PickerActionType::kInsert;
+                         return QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertEmojiResult& data) {
                          CHECK(mode == PickerModeType::kNoSelection ||
                                mode == PickerModeType::kHasSelection);
-                         return PickerActionType::kInsert;
+                         return QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertGifResult& data) {
                          CHECK(mode == PickerModeType::kNoSelection ||
                                mode == PickerModeType::kHasSelection);
-                         return PickerActionType::kInsert;
+                         return QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertClipboardResult& data) {
                          CHECK(mode == PickerModeType::kNoSelection ||
                                mode == PickerModeType::kHasSelection);
-                         return PickerActionType::kInsert;
+                         return QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertBrowsingHistoryResult& data) {
                          return mode == PickerModeType::kUnfocused
-                                    ? PickerActionType::kOpen
-                                    : PickerActionType::kInsert;
+                                    ? QuickInsertActionType::kOpen
+                                    : QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertLocalFileResult& data) {
                          return mode == PickerModeType::kUnfocused
-                                    ? PickerActionType::kOpen
-                                    : PickerActionType::kInsert;
+                                    ? QuickInsertActionType::kOpen
+                                    : QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertDriveFileResult& data) {
                          return mode == PickerModeType::kUnfocused
-                                    ? PickerActionType::kOpen
-                                    : PickerActionType::kInsert;
+                                    ? QuickInsertActionType::kOpen
+                                    : QuickInsertActionType::kInsert;
                        },
                        [](const QuickInsertCategoryResult& data) {
-                         return PickerActionType::kDo;
+                         return QuickInsertActionType::kDo;
                        },
                        [](const QuickInsertSearchRequestResult& data) {
-                         return PickerActionType::kDo;
+                         return QuickInsertActionType::kDo;
                        },
                        [](const QuickInsertEditorResult& data) {
-                         return PickerActionType::kCreate;
+                         return QuickInsertActionType::kCreate;
                        },
                        [](const QuickInsertLobsterResult& data) {
-                         return PickerActionType::kCreate;
+                         return QuickInsertActionType::kCreate;
                        },
                        [](const QuickInsertNewWindowResult& data) {
-                         return PickerActionType::kDo;
+                         return QuickInsertActionType::kDo;
                        },
                        [](const QuickInsertCapsLockResult& data) {
-                         return PickerActionType::kDo;
+                         return QuickInsertActionType::kDo;
                        },
                        [&](const QuickInsertCaseTransformResult& data) {
-                         return PickerActionType::kDo;
+                         return QuickInsertActionType::kDo;
                        }},
       result);
 }

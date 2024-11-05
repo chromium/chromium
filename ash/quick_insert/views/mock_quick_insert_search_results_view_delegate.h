@@ -23,7 +23,7 @@ class ASH_EXPORT MockPickerSearchResultsViewDelegate
               (const QuickInsertSearchResult&),
               (override));
   MOCK_METHOD(void, RequestPseudoFocus, (views::View*), (override));
-  MOCK_METHOD(PickerActionType,
+  MOCK_METHOD(QuickInsertActionType,
               GetActionForResult,
               (const QuickInsertSearchResult& result),
               (override));

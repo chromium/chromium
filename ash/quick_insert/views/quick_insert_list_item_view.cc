@@ -246,20 +246,20 @@ void QuickInsertListItemView::SetShortcutHintView(
       shortcut_hint_container_->AddChildView(std::move(shortcut_hint_view));
 }
 
-void QuickInsertListItemView::SetBadgeAction(PickerActionType action) {
+void QuickInsertListItemView::SetBadgeAction(QuickInsertActionType action) {
   switch (action) {
-    case PickerActionType::kDo:
+    case QuickInsertActionType::kDo:
       trailing_badge_->SetText(u"");
       break;
-    case PickerActionType::kInsert:
+    case QuickInsertActionType::kInsert:
       trailing_badge_->SetText(
           l10n_util::GetStringUTF16(IDS_PICKER_INSERT_RESULT_BADGE_LABEL));
       break;
-    case PickerActionType::kOpen:
+    case QuickInsertActionType::kOpen:
       trailing_badge_->SetText(
           l10n_util::GetStringUTF16(IDS_PICKER_OPEN_RESULT_BADGE_LABEL));
       break;
-    case PickerActionType::kCreate:
+    case QuickInsertActionType::kCreate:
       trailing_badge_->SetText(
           l10n_util::GetStringUTF16(IDS_PICKER_CREATE_RESULT_BADGE_LABEL));
       break;
@@ -381,15 +381,15 @@ std::u16string QuickInsertListItemView::GetAccessibilityLabel() const {
   }
 
   switch (badge_action_) {
-    case PickerActionType::kDo:
+    case QuickInsertActionType::kDo:
       return label;
-    case PickerActionType::kInsert:
+    case QuickInsertActionType::kInsert:
       return l10n_util::GetStringFUTF16(
           IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME, label);
-    case PickerActionType::kOpen:
+    case QuickInsertActionType::kOpen:
       return l10n_util::GetStringFUTF16(
           IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME, label);
-    case PickerActionType::kCreate:
+    case QuickInsertActionType::kCreate:
       // TODO: b/345303965 - Add internal strings for Create.
       return label;
   }

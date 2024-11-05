@@ -35,7 +35,7 @@ class QuickInsertListItemView;
 class PickerPreviewBubbleController;
 class PickerSubmenuController;
 class PickerTraversableItemContainer;
-enum class PickerActionType;
+enum class QuickInsertActionType;
 
 // View for a Picker section with a title and related items.
 class ASH_EXPORT QuickInsertSectionView : public views::View {

@@ -14,7 +14,7 @@
 
 namespace ash {
 
-enum class PickerActionType;
+enum class QuickInsertActionType;
 class PickerSubmenuController;
 
 // View for a Picker item which can be selected.

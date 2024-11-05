@@ -136,7 +136,7 @@ class ASH_EXPORT QuickInsertController : public PickerViewDelegate,
   void ShowLobster(std::optional<std::string> freeform_text) override;
   PickerAssetFetcher* GetAssetFetcher() override;
   PickerSessionMetrics& GetSessionMetrics() override;
-  PickerActionType GetActionForResult(
+  QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) override;
   std::vector<QuickInsertEmojiResult> GetSuggestedEmoji() override;
   bool IsGifsEnabled() override;

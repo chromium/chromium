@@ -14,7 +14,7 @@ class View;
 
 namespace ash {
 
-enum class PickerActionType;
+enum class QuickInsertActionType;
 enum class PickerSectionType;
 
 // Delegate for `PickerSearchResultsView`.
@@ -27,7 +27,7 @@ class ASH_EXPORT PickerSearchResultsViewDelegate {
   // Requests for `view` to become the pseudo focused view.
   virtual void RequestPseudoFocus(views::View* view) = 0;
 
-  virtual PickerActionType GetActionForResult(
+  virtual QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) = 0;
 
   // Informs that the height of the search results view may change.

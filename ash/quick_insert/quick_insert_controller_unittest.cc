@@ -1200,9 +1200,9 @@ TEST_F(QuickInsertControllerTest,
 
 struct ActionTestCase {
   QuickInsertSearchResult result;
-  std::optional<PickerActionType> unfocused_action;
-  std::optional<PickerActionType> no_selection_action;
-  std::optional<PickerActionType> has_selection_action;
+  std::optional<QuickInsertActionType> unfocused_action;
+  std::optional<QuickInsertActionType> no_selection_action;
+  std::optional<QuickInsertActionType> has_selection_action;
 };
 
 class QuickInsertControllerActionTest
@@ -1253,23 +1253,23 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<ActionTestCase>({
         {
             .result = QuickInsertTextResult(u""),
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result = QuickInsertEmojiResult::Emoji(u""),
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result = QuickInsertEmojiResult::Symbol(u""),
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result = QuickInsertEmojiResult::Emoticon(u""),
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result = QuickInsertClipboardResult(
@@ -1279,50 +1279,50 @@ INSTANTIATE_TEST_SUITE_P(
                 u"",
                 {},
                 false),
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result = QuickInsertGifResult({}, {}, {}, {}, {}, u""),
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result = QuickInsertBrowsingHistoryResult({}, u"", {}),
-            .unfocused_action = PickerActionType::kOpen,
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .unfocused_action = QuickInsertActionType::kOpen,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result = QuickInsertLocalFileResult(u"", {}),
-            .unfocused_action = PickerActionType::kOpen,
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .unfocused_action = QuickInsertActionType::kOpen,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result = QuickInsertDriveFileResult(std::nullopt, u"", {}, {}),
-            .unfocused_action = PickerActionType::kOpen,
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
+            .unfocused_action = QuickInsertActionType::kOpen,
+            .no_selection_action = QuickInsertActionType::kInsert,
+            .has_selection_action = QuickInsertActionType::kInsert,
         },
         {
             .result =
                 QuickInsertCategoryResult(QuickInsertCategory::kEmojisGifs),
-            .unfocused_action = PickerActionType::kDo,
-            .no_selection_action = PickerActionType::kDo,
-            .has_selection_action = PickerActionType::kDo,
+            .unfocused_action = QuickInsertActionType::kDo,
+            .no_selection_action = QuickInsertActionType::kDo,
+            .has_selection_action = QuickInsertActionType::kDo,
         },
         {
             .result = QuickInsertCategoryResult(QuickInsertCategory::kEmojis),
-            .unfocused_action = PickerActionType::kDo,
-            .no_selection_action = PickerActionType::kDo,
-            .has_selection_action = PickerActionType::kDo,
+            .unfocused_action = QuickInsertActionType::kDo,
+            .no_selection_action = QuickInsertActionType::kDo,
+            .has_selection_action = QuickInsertActionType::kDo,
         },
         {
             .result = QuickInsertSearchRequestResult(u"", u"", {}),
-            .unfocused_action = PickerActionType::kDo,
-            .no_selection_action = PickerActionType::kDo,
-            .has_selection_action = PickerActionType::kDo,
+            .unfocused_action = QuickInsertActionType::kDo,
+            .no_selection_action = QuickInsertActionType::kDo,
+            .has_selection_action = QuickInsertActionType::kDo,
         },
         {
             .result =
@@ -1330,14 +1330,14 @@ INSTANTIATE_TEST_SUITE_P(
                                         u"",
                                         {},
                                         {}),
-            .unfocused_action = PickerActionType::kCreate,
-            .no_selection_action = PickerActionType::kCreate,
-            .has_selection_action = PickerActionType::kCreate,
+            .unfocused_action = QuickInsertActionType::kCreate,
+            .no_selection_action = QuickInsertActionType::kCreate,
+            .has_selection_action = QuickInsertActionType::kCreate,
         },
         {
             .result = QuickInsertNewWindowResult(
                 QuickInsertNewWindowResult::Type::kDoc),
-            .unfocused_action = PickerActionType::kDo,
+            .unfocused_action = QuickInsertActionType::kDo,
         },
     }));
 

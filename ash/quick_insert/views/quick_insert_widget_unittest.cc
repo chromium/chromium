@@ -60,9 +60,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   PickerSessionMetrics& GetSessionMetrics() override {
     return session_metrics_;
   }
-  PickerActionType GetActionForResult(
+  QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) override {
-    return PickerActionType::kInsert;
+    return QuickInsertActionType::kInsert;
   }
   std::vector<QuickInsertEmojiResult> GetSuggestedEmoji() override {
     return {};

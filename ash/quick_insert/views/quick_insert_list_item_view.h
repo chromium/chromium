@@ -77,7 +77,7 @@ class ASH_EXPORT QuickInsertListItemView : public QuickInsertItemView {
   void SetShortcutHintView(
       std::unique_ptr<PickerShortcutHintView> shortcut_hint_view);
 
-  void SetBadgeAction(PickerActionType action);
+  void SetBadgeAction(QuickInsertActionType action);
   void SetBadgeVisible(bool visible);
 
   // Starts to retrieve a thumbnail preview of `file_path` to be used when the
@@ -134,7 +134,7 @@ class ASH_EXPORT QuickInsertListItemView : public QuickInsertItemView {
 
   // Contains the item's trailing badge if it has been set.
   raw_ptr<PickerBadgeView> trailing_badge_ = nullptr;
-  PickerActionType badge_action_ = PickerActionType::kDo;
+  QuickInsertActionType badge_action_ = QuickInsertActionType::kDo;
 
   // These are only used for file items.
   // TODO: b/344457947 - Combine the two async images by allowing the

@@ -44,21 +44,21 @@ PickerImageItemView::PickerImageItemView(
 
 PickerImageItemView::~PickerImageItemView() = default;
 
-void PickerImageItemView::SetAction(PickerActionType action) {
+void PickerImageItemView::SetAction(QuickInsertActionType action) {
   switch (action) {
-    case PickerActionType::kDo:
+    case QuickInsertActionType::kDo:
       GetViewAccessibility().SetName(accessible_name_);
       break;
-    case PickerActionType::kInsert:
+    case QuickInsertActionType::kInsert:
       GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME,
           accessible_name_));
       break;
-    case PickerActionType::kOpen:
+    case QuickInsertActionType::kOpen:
       GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME, accessible_name_));
       break;
-    case PickerActionType::kCreate:
+    case QuickInsertActionType::kCreate:
       // TODO: b/345303965 - Add internal strings for Create.
       GetViewAccessibility().SetName(accessible_name_);
       break;

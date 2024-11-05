@@ -370,7 +370,7 @@ void PickerView::SelectZeroStateResult(const QuickInsertSearchResult& result) {
   SelectSearchResult(result);
 }
 
-PickerActionType PickerView::GetActionForResult(
+QuickInsertActionType PickerView::GetActionForResult(
     const QuickInsertSearchResult& result) {
   return delegate_->GetActionForResult(result);
 }
@@ -426,15 +426,15 @@ void PickerView::SelectSearchResult(const QuickInsertSearchResult& result) {
     delegate_->GetSessionMetrics().SetSelectedResult(
         result, search_results_view_->GetIndex(result));
     switch (delegate_->GetActionForResult(result)) {
-      case PickerActionType::kInsert:
+      case QuickInsertActionType::kInsert:
         delegate_->CloseWidgetThenInsertResultOnNextFocus(result);
         break;
-      case PickerActionType::kOpen:
-      case PickerActionType::kDo:
+      case QuickInsertActionType::kOpen:
+      case QuickInsertActionType::kDo:
         delegate_->OpenResult(result);
         GetWidget()->Close();
         break;
-      case PickerActionType::kCreate:
+      case QuickInsertActionType::kCreate:
         NOTREACHED_NORETURN();
     }
   }

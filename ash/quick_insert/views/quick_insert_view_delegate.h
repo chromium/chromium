@@ -18,7 +18,7 @@
 
 namespace ash {
 
-enum class PickerActionType;
+enum class QuickInsertActionType;
 enum class PickerCapsLockPosition;
 class PickerAssetFetcher;
 class QuickInsertSearchResultsSection;
@@ -85,7 +85,7 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void ShowLobster(std::optional<std::string> freeform_text) = 0;
 
   // Returns the current action for `result`.
-  virtual PickerActionType GetActionForResult(
+  virtual QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) = 0;
 
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;

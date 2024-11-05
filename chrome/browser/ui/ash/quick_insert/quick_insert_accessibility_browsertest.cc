@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   item->SetLeadingIcon(ui::ImageModel::FromImage(gfx::test::CreateImage(1)));
   item->SetPrimaryText(u"primary");
   item->SetSecondaryText(u"secondary");
-  item->SetBadgeAction(ash::PickerActionType::kInsert);
+  item->SetBadgeAction(ash::QuickInsertActionType::kInsert);
   item->SetBadgeVisible(true);
 
   sm_.Call([item]() { item->RequestFocus(); });
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           std::make_unique<views::ImageView>(
               ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
           u"title1", base::DoNothing()));
-  item->SetAction(ash::PickerActionType::kInsert);
+  item->SetAction(ash::QuickInsertActionType::kInsert);
   section->AddImageRowItem(std::make_unique<ash::PickerImageItemView>(
       std::make_unique<views::ImageView>(
           ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
@@ -635,14 +635,14 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
           std::make_unique<views::ImageView>(
               ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
           u"title1", base::DoNothing()));
-  item1->SetAction(ash::PickerActionType::kInsert);
+  item1->SetAction(ash::QuickInsertActionType::kInsert);
 
   ash::PickerImageItemView* item2 =
       section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(
           std::make_unique<views::ImageView>(
               ui::ImageModel::FromImage(gfx::test::CreateImage(1))),
           u"title2", base::DoNothing()));
-  item2->SetAction(ash::PickerActionType::kOpen);
+  item2->SetAction(ash::QuickInsertActionType::kOpen);
 
   ash::PickerImageItemView* item3 =
       section->AddImageGridItem(std::make_unique<ash::PickerImageItemView>(

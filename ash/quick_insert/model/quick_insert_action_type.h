@@ -9,7 +9,7 @@
 
 namespace ash {
 
-enum class PickerActionType {
+enum class QuickInsertActionType {
   // Performs the action represented by the result.
   kDo,
   // Inserts the result into the focused input field.
@@ -19,7 +19,6 @@ enum class PickerActionType {
   // Requests the result to be created.
   kCreate,
 };
-
 }
 
 #endif  // ASH_QUICK_INSERT_MODEL_QUICK_INSERT_ACTION_TYPE_H_
