@@ -1571,13 +1571,6 @@ BASE_FEATURE(kUmaStorageDimensions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Populates the user type on device type metrics in UMA log if enabled.
-BASE_FEATURE(kUserTypeByDeviceTypeMetricsProvider,
-             "UserTypeByDeviceTypeMetricsProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_WIN)
 // Enables the accelerated default browser flow for Windows 10.
 BASE_FEATURE(kWin10AcceleratedDefaultBrowserFlow,
