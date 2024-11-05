@@ -9,10 +9,12 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
+#include "chrome/browser/media_effects/media_effects_manager_binder.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 
@@ -104,6 +106,21 @@ void CameraCoordinator::OnVideoSourceChanged(
   mojo::Remote<video_capture::mojom::VideoSource> video_source;
   camera_mediator_.BindVideoSource(active_device_id_,
                                    video_source.BindNewPipeAndPassReceiver());
+
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+      browser_context_) {
+    // TODO: Consider moving this to `CameraMediator` when the code becomes more
+    // permanent.
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+        video_effects_processor;
+
+    media_effects::BindVideoEffectsProcessor(
+        active_device_id_, browser_context_.get(),
+        video_effects_processor.InitWithNewPipeAndPassReceiver());
+    video_source->RegisterVideoEffectsProcessor(
+        std::move(video_effects_processor));
+  }
+
   video_stream_coordinator_->ConnectToDevice(device_info,
                                              std::move(video_source));
 }
