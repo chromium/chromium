@@ -8354,9 +8354,6 @@ crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 # Fix importer 2024-10-22
 crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-dedicated-worker.https.tentative.window.html [ Pass Timeout ]
 
-# Gardener 2024-10-23
-crbug.com/375006417 [ Linux ] external/wpt/fledge/tentative/trusted-scoring-signals.https.window.html?50-last [ Failure Pass Timeout ]
-
 # Gardener 2024-10-24
 # Platform specific failure expectations were previosly added after a wpt roll for crbug.com/367497041
 crbug.com/374856213 external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
