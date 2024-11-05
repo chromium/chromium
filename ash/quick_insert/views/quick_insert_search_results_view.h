@@ -126,7 +126,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void AddResultToSection(const QuickInsertSearchResult& result,
                           QuickInsertSectionView* section_view);
 
-  void OnTrailingLinkClicked(PickerSectionType section_type,
+  void OnTrailingLinkClicked(QuickInsertSectionType section_type,
                              const ui::Event& event);
 
   void StartThrobber();

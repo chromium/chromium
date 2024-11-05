@@ -17,7 +17,7 @@ class ASH_EXPORT MockPickerSearchResultsViewDelegate
   MockPickerSearchResultsViewDelegate();
   ~MockPickerSearchResultsViewDelegate();
 
-  MOCK_METHOD(void, SelectMoreResults, (PickerSectionType), (override));
+  MOCK_METHOD(void, SelectMoreResults, (QuickInsertSectionType), (override));
   MOCK_METHOD(void,
               SelectSearchResult,
               (const QuickInsertSearchResult&),

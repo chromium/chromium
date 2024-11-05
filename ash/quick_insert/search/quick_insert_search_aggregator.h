@@ -69,14 +69,14 @@ class ASH_EXPORT QuickInsertSearchAggregator {
   void PublishBurnInResults();
 
   // Returns nullptr if there are no accumulated results for the section type.
-  UnpublishedResults* AccumulatedResultsForSection(PickerSectionType type);
+  UnpublishedResults* AccumulatedResultsForSection(QuickInsertSectionType type);
 
   base::OneShotTimer burn_in_timer_;
 
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
   static constexpr size_t kNumSections =
-      base::to_underlying(PickerSectionType::kMaxValue) + 1;
+      base::to_underlying(QuickInsertSectionType::kMaxValue) + 1;
   // Unpublished results that are accumulated before burn-in.
   // Results are only published after burn-in if the `results` vector is not
   // empty.

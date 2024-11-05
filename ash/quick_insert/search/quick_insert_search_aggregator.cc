@@ -33,25 +33,25 @@ namespace ash {
 
 namespace {
 
-PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
+QuickInsertSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
   switch (source) {
     case PickerSearchSource::kOmnibox:
-      return PickerSectionType::kLinks;
+      return QuickInsertSectionType::kLinks;
     case PickerSearchSource::kDate:
     case PickerSearchSource::kMath:
-      return PickerSectionType::kNone;
+      return QuickInsertSectionType::kNone;
     case PickerSearchSource::kClipboard:
-      return PickerSectionType::kClipboard;
+      return QuickInsertSectionType::kClipboard;
     case PickerSearchSource::kAction:
-      return PickerSectionType::kNone;
+      return QuickInsertSectionType::kNone;
     case PickerSearchSource::kLocalFile:
-      return PickerSectionType::kLocalFiles;
+      return QuickInsertSectionType::kLocalFiles;
     case PickerSearchSource::kDrive:
-      return PickerSectionType::kDriveFiles;
+      return QuickInsertSectionType::kDriveFiles;
     case PickerSearchSource::kEditorWrite:
     case PickerSearchSource::kEditorRewrite:
     case PickerSearchSource::kLobster:
-      return PickerSectionType::kContentEditor;
+      return QuickInsertSectionType::kContentEditor;
   }
 }
 
@@ -187,13 +187,14 @@ void QuickInsertSearchAggregator::HandleSearchSourceResults(
     bool has_more_results) {
   CHECK(!current_callback_.is_null())
       << "Results were obtained after \"no more results\"";
-  const PickerSectionType section_type = SectionTypeFromSearchSource(source);
+  const QuickInsertSectionType section_type =
+      SectionTypeFromSearchSource(source);
   UnpublishedResults& accumulated =
       accumulated_results_[base::to_underlying(section_type)];
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
-  if (section_type == PickerSectionType::kNone ||
-      section_type == PickerSectionType::kContentEditor) {
+  if (section_type == QuickInsertSectionType::kNone ||
+      section_type == QuickInsertSectionType::kContentEditor) {
     // Suggested results cannot have more results, since it's not a proper
     // category.
     CHECK(!has_more_results);
@@ -204,7 +205,7 @@ void QuickInsertSearchAggregator::HandleSearchSourceResults(
   if (IsPostBurnIn()) {
     // Publish post-burn-in results and skip assignment.
     if (!results.empty()) {
-      if (section_type == PickerSectionType::kDriveFiles) {
+      if (section_type == QuickInsertSectionType::kDriveFiles) {
         if (std::holds_alternative<std::monostate>(link_drive_dedupe_state_)) {
           link_drive_dedupe_state_ = DriveIdsFromSearchResults(results);
         } else if (auto* links = std::get_if<std::vector<GURL>>(
@@ -214,7 +215,7 @@ void QuickInsertSearchAggregator::HandleSearchSourceResults(
         } else {
           NOTREACHED();
         }
-      } else if (section_type == PickerSectionType::kLinks) {
+      } else if (section_type == QuickInsertSectionType::kLinks) {
         if (std::holds_alternative<std::monostate>(link_drive_dedupe_state_)) {
           link_drive_dedupe_state_ = LinksFromSearchResults(results);
         } else if (auto* drive_ids = std::get_if<std::vector<std::string>>(
@@ -277,9 +278,9 @@ void QuickInsertSearchAggregator::PublishBurnInResults() {
   CHECK(std::holds_alternative<std::monostate>(link_drive_dedupe_state_));
 
   UnpublishedResults* link_results =
-      AccumulatedResultsForSection(PickerSectionType::kLinks);
+      AccumulatedResultsForSection(QuickInsertSectionType::kLinks);
   UnpublishedResults* drive_results =
-      AccumulatedResultsForSection(PickerSectionType::kDriveFiles);
+      AccumulatedResultsForSection(QuickInsertSectionType::kDriveFiles);
   if (link_results != nullptr && drive_results != nullptr) {
     DeduplicateDriveLinksFromIds(
         link_results->results,
@@ -294,23 +295,23 @@ void QuickInsertSearchAggregator::PublishBurnInResults() {
   }
 
   std::vector<QuickInsertSearchResultsSection> sections;
-  base::flat_set<PickerSectionType> published_types;
+  base::flat_set<QuickInsertSectionType> published_types;
 
   // The None section always goes first.
   if (UnpublishedResults* none_results =
-          AccumulatedResultsForSection(PickerSectionType::kNone)) {
-    sections.emplace_back(PickerSectionType::kNone,
+          AccumulatedResultsForSection(QuickInsertSectionType::kNone)) {
+    sections.emplace_back(QuickInsertSectionType::kNone,
                           std::move(none_results->results),
                           /*has_more=*/false);
-    published_types.insert(PickerSectionType::kNone);
+    published_types.insert(QuickInsertSectionType::kNone);
   }
 
   // User generated results can be ranked amongst themselves.
-  for (PickerSectionType type : {
-           PickerSectionType::kLinks,
-           PickerSectionType::kDriveFiles,
-           PickerSectionType::kLocalFiles,
-           PickerSectionType::kClipboard,
+  for (QuickInsertSectionType type : {
+           QuickInsertSectionType::kLinks,
+           QuickInsertSectionType::kDriveFiles,
+           QuickInsertSectionType::kLocalFiles,
+           QuickInsertSectionType::kClipboard,
        }) {
     if (UnpublishedResults* results = AccumulatedResultsForSection(type);
         results && base::ranges::any_of(results->results, &ShouldPromote)) {
@@ -321,12 +322,12 @@ void QuickInsertSearchAggregator::PublishBurnInResults() {
   }
 
   // The remaining results are ranked based on a predefined order
-  for (PickerSectionType type : {
-           PickerSectionType::kLinks,
-           PickerSectionType::kDriveFiles,
-           PickerSectionType::kLocalFiles,
-           PickerSectionType::kClipboard,
-           PickerSectionType::kContentEditor,
+  for (QuickInsertSectionType type : {
+           QuickInsertSectionType::kLinks,
+           QuickInsertSectionType::kDriveFiles,
+           QuickInsertSectionType::kLocalFiles,
+           QuickInsertSectionType::kClipboard,
+           QuickInsertSectionType::kContentEditor,
        }) {
     if (published_types.contains(type)) {
       continue;
@@ -348,7 +349,7 @@ QuickInsertSearchAggregator::GetWeakPtr() {
 
 QuickInsertSearchAggregator::UnpublishedResults*
 QuickInsertSearchAggregator::AccumulatedResultsForSection(
-    PickerSectionType type) {
+    QuickInsertSectionType type) {
   UnpublishedResults& accumulated =
       accumulated_results_[base::to_underlying(type)];
   if (accumulated.results.empty()) {

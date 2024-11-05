@@ -101,7 +101,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const QuickInsertSearchResult& result) override;
-  void SelectMoreResults(PickerSectionType type) override;
+  void SelectMoreResults(QuickInsertSectionType type) override;
   QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) override;
   void OnSearchResultsViewHeightChanged() override;

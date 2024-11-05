@@ -197,7 +197,7 @@ InsertionContent GetInsertionContentForResult(
 
 std::vector<QuickInsertSearchResultsSection>
 CreateSingleSectionForCategoryResults(
-    PickerSectionType section_type,
+    QuickInsertSectionType section_type,
     std::vector<QuickInsertSearchResult> results) {
   if (results.empty()) {
     return {};
@@ -334,11 +334,11 @@ void QuickInsertController::GetZeroStateSuggestedResults(
 void QuickInsertController::GetResultsForCategory(
     QuickInsertCategory category,
     SearchResultsCallback callback) {
-  const PickerSectionType section_type =
+  const QuickInsertSectionType section_type =
       (category == QuickInsertCategory::kUnitsMaths ||
        category == QuickInsertCategory::kDatesTimes)
-          ? PickerSectionType::kExamples
-          : PickerSectionType::kNone;
+          ? QuickInsertSectionType::kExamples
+          : QuickInsertSectionType::kNone;
 
   CHECK(client_);
   suggestions_controller_.GetSuggestionsForCategory(

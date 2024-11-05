@@ -57,21 +57,21 @@ constexpr gfx::Size kNoResultsIllustrationSize(200, 100);
 constexpr int kMaxIndexForMetrics = 10;
 
 std::u16string GetAccessibleNameForSeeMoreButton(
-    PickerSectionType section_type) {
+    QuickInsertSectionType section_type) {
   switch (section_type) {
-    case PickerSectionType::kLinks:
+    case QuickInsertSectionType::kLinks:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_SEE_MORE_LINKS_BUTTON_ACCESSIBLE_NAME);
-    case PickerSectionType::kLocalFiles:
+    case QuickInsertSectionType::kLocalFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME);
-    case PickerSectionType::kDriveFiles:
+    case QuickInsertSectionType::kDriveFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_SEE_MORE_DRIVE_FILES_BUTTON_ACCESSIBLE_NAME);
-    case PickerSectionType::kNone:
-    case PickerSectionType::kClipboard:
-    case PickerSectionType::kExamples:
-    case PickerSectionType::kContentEditor:
+    case QuickInsertSectionType::kNone:
+    case QuickInsertSectionType::kClipboard:
+    case QuickInsertSectionType::kExamples:
+    case QuickInsertSectionType::kContentEditor:
       return u"";
   }
 }
@@ -221,7 +221,7 @@ void PickerSearchResultsView::AppendSearchResults(
 
   auto* section_view = section_list_view_->AddSection();
   std::u16string section_title =
-      GetSectionTitleForPickerSectionType(section.type());
+      GetSectionTitleForQuickInsertSectionType(section.type());
   section_view->AddTitleLabel(section_title);
   if (section.has_more_results()) {
     section_view->AddTitleTrailingLink(
@@ -294,7 +294,7 @@ void PickerSearchResultsView::AddResultToSection(
 }
 
 void PickerSearchResultsView::OnTrailingLinkClicked(
-    PickerSectionType section_type,
+    QuickInsertSectionType section_type,
     const ui::Event& event) {
   delegate_->SelectMoreResults(section_type);
 }

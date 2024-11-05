@@ -13,7 +13,7 @@
 namespace ash {
 
 QuickInsertSearchResultsSection::QuickInsertSearchResultsSection(
-    PickerSectionType type,
+    QuickInsertSectionType type,
     std::vector<QuickInsertSearchResult> results,
     bool has_more_results)
     : type_(type),
@@ -34,7 +34,7 @@ QuickInsertSearchResultsSection& QuickInsertSearchResultsSection::operator=(
 
 QuickInsertSearchResultsSection::~QuickInsertSearchResultsSection() = default;
 
-PickerSectionType QuickInsertSearchResultsSection::type() const {
+QuickInsertSectionType QuickInsertSearchResultsSection::type() const {
   return type_;
 }
 

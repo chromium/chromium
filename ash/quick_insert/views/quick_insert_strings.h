@@ -24,7 +24,7 @@ std::u16string ASH_EXPORT GetSectionTitleForQuickInsertCategoryType(
     QuickInsertCategoryType category_type);
 
 std::u16string ASH_EXPORT
-GetSectionTitleForPickerSectionType(PickerSectionType section_type);
+GetSectionTitleForQuickInsertSectionType(QuickInsertSectionType section_type);
 
 }  // namespace ash
 

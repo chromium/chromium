@@ -129,17 +129,17 @@ std::u16string GetSectionTitleForQuickInsertCategoryType(
   }
 }
 
-std::u16string GetSectionTitleForPickerSectionType(
-    PickerSectionType section_type) {
+std::u16string GetSectionTitleForQuickInsertSectionType(
+    QuickInsertSectionType section_type) {
   switch (section_type) {
-    case PickerSectionType::kNone:
+    case QuickInsertSectionType::kNone:
       return u"";
-    case PickerSectionType::kClipboard:
+    case QuickInsertSectionType::kClipboard:
       return l10n_util::GetStringUTF16(IDS_PICKER_CLIPBOARD_CATEGORY_LABEL);
-    case PickerSectionType::kExamples:
+    case QuickInsertSectionType::kExamples:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EXAMPLES_CATEGORY_TYPE_SECTION_TITLE);
-    case PickerSectionType::kContentEditor:
+    case QuickInsertSectionType::kContentEditor:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       // TODO: b/369726248 - Rename the IDS variable name to a generic name.
       return l10n_util::GetStringUTF16(
@@ -147,11 +147,11 @@ std::u16string GetSectionTitleForPickerSectionType(
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerSectionType::kLinks:
+    case QuickInsertSectionType::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
-    case PickerSectionType::kLocalFiles:
+    case QuickInsertSectionType::kLocalFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
-    case PickerSectionType::kDriveFiles:
+    case QuickInsertSectionType::kDriveFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);
   }
 }

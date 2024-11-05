@@ -181,19 +181,19 @@ gfx::Rect GetPickerViewBoundsWithSelectedText(
   return picker_view_bounds;
 }
 
-QuickInsertCategory GetCategoryForMoreResults(PickerSectionType type) {
+QuickInsertCategory GetCategoryForMoreResults(QuickInsertSectionType type) {
   switch (type) {
-    case PickerSectionType::kNone:
-    case PickerSectionType::kContentEditor:
-    case PickerSectionType::kExamples:
+    case QuickInsertSectionType::kNone:
+    case QuickInsertSectionType::kContentEditor:
+    case QuickInsertSectionType::kExamples:
       NOTREACHED_NORETURN();
-    case PickerSectionType::kClipboard:
+    case QuickInsertSectionType::kClipboard:
       return QuickInsertCategory::kClipboard;
-    case PickerSectionType::kLinks:
+    case QuickInsertSectionType::kLinks:
       return QuickInsertCategory::kLinks;
-    case PickerSectionType::kLocalFiles:
+    case QuickInsertSectionType::kLocalFiles:
       return QuickInsertCategory::kLocalFiles;
-    case PickerSectionType::kDriveFiles:
+    case QuickInsertSectionType::kDriveFiles:
       return QuickInsertCategory::kDriveFiles;
   }
 }
@@ -440,7 +440,7 @@ void PickerView::SelectSearchResult(const QuickInsertSearchResult& result) {
   }
 }
 
-void PickerView::SelectMoreResults(PickerSectionType type) {
+void PickerView::SelectMoreResults(QuickInsertSectionType type) {
   SelectCategoryWithQuery(GetCategoryForMoreResults(type),
                           search_field_view_->GetQueryText());
 }

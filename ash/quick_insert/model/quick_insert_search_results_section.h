@@ -13,7 +13,7 @@
 
 namespace ash {
 
-enum class ASH_EXPORT PickerSectionType {
+enum class ASH_EXPORT QuickInsertSectionType {
   kNone,
   kClipboard,
   kExamples,
@@ -28,7 +28,7 @@ enum class ASH_EXPORT PickerSectionType {
 class ASH_EXPORT QuickInsertSearchResultsSection {
  public:
   explicit QuickInsertSearchResultsSection(
-      PickerSectionType type,
+      QuickInsertSectionType type,
       std::vector<QuickInsertSearchResult> results,
       bool has_more_results);
   QuickInsertSearchResultsSection(const QuickInsertSearchResultsSection& other);
@@ -39,14 +39,14 @@ class ASH_EXPORT QuickInsertSearchResultsSection {
       QuickInsertSearchResultsSection&& other);
   ~QuickInsertSearchResultsSection();
 
-  PickerSectionType type() const;
+  QuickInsertSectionType type() const;
 
   base::span<const QuickInsertSearchResult> results() const;
 
   bool has_more_results() const;
 
  private:
-  PickerSectionType type_;
+  QuickInsertSectionType type_;
   std::vector<QuickInsertSearchResult> results_;
   bool has_more_results_;
 };
