@@ -2928,6 +2928,10 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
+const char kPartitionAllocWithAdvancedChecksName[] =
+    "PartitionAlloc with Advanced Checks";
+const char kPartitionAllocWithAdvancedChecksDescription[] =
+    "Enables an extra security layer on PartitionAlloc.";
 const char kPartitionVisitedLinkDatabaseName[] =
     "Partition Visited Link Database";
 const char kPartitionVisitedLinkDatabaseDescription[] =

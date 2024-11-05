@@ -15834,6 +15834,7 @@ from previous Chrome versions.
   <int value="-1778760568"
       label="OmniboxFocusTriggersContextualWebZeroSuggest:enabled"/>
   <int value="-1778202807" label="DelayAsyncScriptExecution:enabled"/>
+  <int value="-1777903087" label="PartitionAllocWithAdvancedChecks:enabled"/>
   <int value="-1777820415" label="WebAssemblyStringref:disabled"/>
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
@@ -18806,6 +18807,7 @@ from previous Chrome versions.
   <int value="-567743697" label="EnableInputNoiseCancellationUi:enabled"/>
   <int value="-567309305" label="FontationsFontBackend:disabled"/>
   <int value="-567197068" label="ProductivityLauncherAnimation:enabled"/>
+  <int value="-566643324" label="PartitionAllocWithAdvancedChecks:disabled"/>
   <int value="-565368004" label="AutofillCenterAlignedSuggestions:disabled"/>
   <int value="-565155800" label="ImprovedScreenCaptureSettings:disabled"/>
   <int value="-563980787" label="disable-webrtc"/>

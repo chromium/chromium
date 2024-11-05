@@ -6814,6 +6814,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "partition-alloc-with-advanced-checks",
+    "owners": [ "mikt@google.com", "chrome-memory-safety@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "partition-visited-link-database",
     "owners": [ "janiceliu@chromium.org", "kyraseevers@chromium.org"],
     "expiry_milestone": 142
