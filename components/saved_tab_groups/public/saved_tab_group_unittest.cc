@@ -30,13 +30,8 @@ base::Uuid MakeUniqueGUID() {
 }
 
 LocalTabID MakeUniqueTabID() {
-  static uint64_t unique_value = 0;
-  unique_value++;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return unique_value;
-#else
-  return base::Token(0, unique_value);
-#endif
+  static uint32_t unique_value = 0;
+  return unique_value++;
 }
 
 SavedTabGroup CreateDefaultEmptySavedTabGroup() {

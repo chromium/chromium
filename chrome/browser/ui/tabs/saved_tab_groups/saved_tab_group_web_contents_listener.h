@@ -33,7 +33,6 @@ class TabGroupSyncService;
 class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  public:
   SavedTabGroupWebContentsListener(TabGroupSyncService* service,
-                                   const LocalTabID& local_tab_id,
                                    tabs::TabModel* local_tab);
   ~SavedTabGroupWebContentsListener() override;
 
@@ -44,7 +43,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   void NavigateToUrl(const GURL& url);
 
   // Accessors.
-  LocalTabID local_tab_id() const { return local_tab_id_; }
+  LocalTabID local_tab_id() const;
 
   content::WebContents* contents() const;
 
@@ -63,17 +62,13 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   // is a MainFrame navigation.
   void UpdateTabRedirectChain(content::NavigationHandle* navigation_handle);
 
-  // Retrieves the SavedTabGroup that contains the tab with the id
-  // |local_tab_id_|.
+  // Retrieves the SavedTabGroup that contains the tab |local_tab_|.
   const SavedTabGroup saved_group();
 
   // The service used to query and manage SavedTabGroups.
   const raw_ptr<TabGroupSyncService> service_ = nullptr;
 
-  // The saved tab group tab's ID.
-  const LocalTabID local_tab_id_;
-
-  // the local tab that is being listened to.
+  // The local tab that is being listened to.
   const raw_ptr<tabs::TabModel> local_tab_ = nullptr;
 
   // The subscription to the tab discarding callback in the `local_tab_`.

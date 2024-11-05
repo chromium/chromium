@@ -79,9 +79,8 @@ void SavedTabGroupWebContentsListener::OnTabDiscarded(
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     TabGroupSyncService* service,
-    const LocalTabID& local_tab_id,
     tabs::TabModel* local_tab)
-    : service_(service), local_tab_id_(local_tab_id), local_tab_(local_tab) {
+    : service_(service), local_tab_(local_tab) {
   tab_discard_subscription_ = local_tab->RegisterWillDiscardContents(
       base::BindRepeating(&SavedTabGroupWebContentsListener::OnTabDiscarded,
                           base::Unretained(this)));
@@ -120,6 +119,10 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
   params.navigation_ui_data = std::move(navigation_ui_data);
 
   contents()->GetController().LoadURLWithParams(params).get();
+}
+
+LocalTabID SavedTabGroupWebContentsListener::local_tab_id() const {
+  return local_tab_->GetTabHandle();
 }
 
 content::WebContents* SavedTabGroupWebContentsListener::contents() const {
