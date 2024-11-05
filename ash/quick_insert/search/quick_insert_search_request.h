@@ -32,7 +32,7 @@ class PickerClipboardHistoryProvider;
 
 // Represents a single Picker search query. Constructing this class starts a
 // search, and destructing it stops the search.
-class ASH_EXPORT PickerSearchRequest {
+class ASH_EXPORT QuickInsertSearchRequest {
  public:
   using SearchResultsCallback =
       base::RepeatingCallback<void(PickerSearchSource source,
@@ -42,7 +42,7 @@ class ASH_EXPORT PickerSearchRequest {
 
   // `done_closure` is guaranteed to be called strictly after the last call to
   // `callback`.
-  PickerSearchRequest(
+  QuickInsertSearchRequest(
       std::u16string_view query,
       std::optional<PickerCategory> category,
       SearchResultsCallback callback,
@@ -51,9 +51,9 @@ class ASH_EXPORT PickerSearchRequest {
       base::span<const PickerCategory> available_categories = {},
       bool caps_lock_state_to_search = false,
       bool search_case_transforms = false);
-  PickerSearchRequest(const PickerSearchRequest&) = delete;
-  PickerSearchRequest& operator=(const PickerSearchRequest&) = delete;
-  ~PickerSearchRequest();
+  QuickInsertSearchRequest(const QuickInsertSearchRequest&) = delete;
+  QuickInsertSearchRequest& operator=(const QuickInsertSearchRequest&) = delete;
+  ~QuickInsertSearchRequest();
 
  private:
   void HandleSearchSourceResults(PickerSearchSource source,
@@ -103,7 +103,7 @@ class ASH_EXPORT PickerSearchRequest {
       base::to_underlying(PickerSearchSource::kMaxValue) + 1;
   std::array<std::optional<base::TimeTicks>, kNumSources> search_starts_;
 
-  base::WeakPtrFactory<PickerSearchRequest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertSearchRequest> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

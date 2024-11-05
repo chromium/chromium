@@ -166,7 +166,7 @@ void PickerSearchController::StartSearch(
                                                          std::move(callback));
 
   // TODO: b/348067874 - Hook `done_closure` up to `aggregator_`.
-  search_request_ = std::make_unique<PickerSearchRequest>(
+  search_request_ = std::make_unique<QuickInsertSearchRequest>(
       query, std::move(category),
       base::BindRepeating(&PickerSearchAggregator::HandleSearchSourceResults,
                           aggregator_->GetWeakPtr()),

@@ -76,7 +76,7 @@ class ASH_EXPORT PickerSearchController {
   // The search request calls the aggregator, so the search request should be
   // destructed first.
   std::unique_ptr<PickerSearchAggregator> aggregator_;
-  std::unique_ptr<PickerSearchRequest> search_request_;
+  std::unique_ptr<QuickInsertSearchRequest> search_request_;
 
   base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};
 };

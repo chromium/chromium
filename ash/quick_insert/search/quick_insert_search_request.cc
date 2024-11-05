@@ -110,7 +110,7 @@ DeduplicateGoogleCorpGotoDomains(
 
 }  // namespace
 
-PickerSearchRequest::PickerSearchRequest(
+QuickInsertSearchRequest::QuickInsertSearchRequest(
     std::u16string_view query,
     std::optional<PickerCategory> category,
     SearchResultsCallback callback,
@@ -150,7 +150,7 @@ PickerSearchRequest::PickerSearchRequest(
     }
     client_->StartCrosSearch(
         std::u16string(query), category,
-        base::BindRepeating(&PickerSearchRequest::HandleCrosSearchResults,
+        base::BindRepeating(&QuickInsertSearchRequest::HandleCrosSearchResults,
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -159,7 +159,7 @@ PickerSearchRequest::PickerSearchRequest(
     clipboard_provider_ = std::make_unique<PickerClipboardHistoryProvider>();
     MarkSearchStarted(PickerSearchSource::kClipboard);
     clipboard_provider_->FetchResults(
-        base::BindOnce(&PickerSearchRequest::HandleClipboardSearchResults,
+        base::BindOnce(&QuickInsertSearchRequest::HandleClipboardSearchResults,
                        weak_ptr_factory_.GetWeakPtr()),
         query);
   }
@@ -214,7 +214,7 @@ PickerSearchRequest::PickerSearchRequest(
   MaybeCallDoneClosure();
 }
 
-PickerSearchRequest::~PickerSearchRequest() {
+QuickInsertSearchRequest::~QuickInsertSearchRequest() {
   // Ensure that any bound callbacks to `Handle*SearchResults` - and therefore
   // `current_callback_` - will not get called by stopping searches.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -225,7 +225,7 @@ PickerSearchRequest::~PickerSearchRequest() {
   client_->StopCrosQuery();
 }
 
-void PickerSearchRequest::HandleSearchSourceResults(
+void QuickInsertSearchRequest::HandleSearchSourceResults(
     PickerSearchSource source,
     std::vector<QuickInsertSearchResult> results,
     bool has_more_results) {
@@ -242,13 +242,13 @@ void PickerSearchRequest::HandleSearchSourceResults(
   MaybeCallDoneClosure();
 }
 
-void PickerSearchRequest::HandleActionSearchResults(
+void QuickInsertSearchRequest::HandleActionSearchResults(
     std::vector<QuickInsertSearchResult> results) {
   HandleSearchSourceResults(PickerSearchSource::kAction, std::move(results),
                             /*has_more_results*/ false);
 }
 
-void PickerSearchRequest::HandleCrosSearchResults(
+void QuickInsertSearchRequest::HandleCrosSearchResults(
     ash::AppListSearchResultType type,
     std::vector<QuickInsertSearchResult> results) {
   switch (type) {
@@ -292,14 +292,14 @@ void PickerSearchRequest::HandleCrosSearchResults(
   }
 }
 
-void PickerSearchRequest::HandleDateSearchResults(
+void QuickInsertSearchRequest::HandleDateSearchResults(
     std::vector<QuickInsertSearchResult> results) {
   // Date results are never truncated.
   HandleSearchSourceResults(PickerSearchSource::kDate, std::move(results),
                             /*has_more_results=*/false);
 }
 
-void PickerSearchRequest::HandleMathSearchResults(
+void QuickInsertSearchRequest::HandleMathSearchResults(
     std::optional<QuickInsertSearchResult> result) {
   std::vector<QuickInsertSearchResult> results;
   if (result.has_value()) {
@@ -311,14 +311,14 @@ void PickerSearchRequest::HandleMathSearchResults(
                             /*has_more_results=*/false);
 }
 
-void PickerSearchRequest::HandleClipboardSearchResults(
+void QuickInsertSearchRequest::HandleClipboardSearchResults(
     std::vector<QuickInsertSearchResult> results) {
   // Clipboard results are never truncated.
   HandleSearchSourceResults(PickerSearchSource::kClipboard, std::move(results),
                             /*has_more_results=*/false);
 }
 
-void PickerSearchRequest::HandleEditorSearchResults(
+void QuickInsertSearchRequest::HandleEditorSearchResults(
     PickerSearchSource source,
     std::optional<QuickInsertSearchResult> result) {
   std::vector<QuickInsertSearchResult> results;
@@ -331,7 +331,7 @@ void PickerSearchRequest::HandleEditorSearchResults(
                             /*has_more_results=*/false);
 }
 
-void PickerSearchRequest::HandleLobsterSearchResults(
+void QuickInsertSearchRequest::HandleLobsterSearchResults(
     PickerSearchSource source,
     std::optional<QuickInsertSearchResult> result) {
   std::vector<QuickInsertSearchResult> results;
@@ -344,13 +344,13 @@ void PickerSearchRequest::HandleLobsterSearchResults(
                             /*has_more_results=*/false);
 }
 
-void PickerSearchRequest::MarkSearchStarted(PickerSearchSource source) {
+void QuickInsertSearchRequest::MarkSearchStarted(PickerSearchSource source) {
   CHECK(!SwapSearchStart(source, base::TimeTicks::Now()).has_value())
       << "search_starts_ enum " << base::to_underlying(source)
       << " was already set";
 }
 
-void PickerSearchRequest::MarkSearchEnded(PickerSearchSource source) {
+void QuickInsertSearchRequest::MarkSearchEnded(PickerSearchSource source) {
   std::optional<base::TimeTicks> start = SwapSearchStart(source, std::nullopt);
   CHECK(start.has_value()) << "search_starts_ enum "
                            << base::to_underlying(source) << " was not set";
@@ -359,14 +359,14 @@ void PickerSearchRequest::MarkSearchEnded(PickerSearchSource source) {
   base::UmaHistogramTimes(SearchSourceToHistogram(source), elapsed);
 }
 
-std::optional<base::TimeTicks> PickerSearchRequest::SwapSearchStart(
+std::optional<base::TimeTicks> QuickInsertSearchRequest::SwapSearchStart(
     PickerSearchSource source,
     std::optional<base::TimeTicks> new_value) {
   return std::exchange(search_starts_[base::to_underlying(source)],
                        std::move(new_value));
 }
 
-void PickerSearchRequest::MaybeCallDoneClosure() {
+void QuickInsertSearchRequest::MaybeCallDoneClosure() {
   if (!can_call_done_closure_) {
     return;
   }

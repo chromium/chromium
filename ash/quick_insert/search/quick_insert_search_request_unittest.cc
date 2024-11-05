@@ -72,7 +72,7 @@ constexpr auto kAllCategories = std::to_array({
 });
 
 using MockSearchResultsCallback =
-    ::testing::MockFunction<PickerSearchRequest::SearchResultsCallback>;
+    ::testing::MockFunction<QuickInsertSearchRequest::SearchResultsCallback>;
 
 class QuickInsertSearchRequestTest : public testing::Test {
  protected:
@@ -92,7 +92,7 @@ TEST_F(QuickInsertSearchRequestTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(Eq(u"cat"), _, _)).Times(1);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -104,7 +104,7 @@ TEST_F(QuickInsertSearchRequestTest,
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(_, _, _)).Times(0);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -116,7 +116,7 @@ TEST_F(QuickInsertSearchRequestTest,
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(_, _, _)).Times(0);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", {PickerCategory::kLinks},
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -138,7 +138,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromOmniboxSearch) {
                    /*has_more_results=*/false))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -167,7 +167,7 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesOmniboxResults) {
           /*has_more_results=*/true))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -197,7 +197,7 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
           /*has_more_results=*/false))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", PickerCategory::kLinks,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -235,7 +235,7 @@ TEST_F(QuickInsertSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
            /*has_more_results=*/false))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", PickerCategory::kLinks,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -300,7 +300,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(0)
       .After(after_start_search_call);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&first_search_results_callback)),
@@ -317,7 +317,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsOmniboxMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -359,7 +359,7 @@ TEST_F(QuickInsertSearchRequestTest,
       });
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
@@ -395,7 +395,7 @@ TEST_F(QuickInsertSearchRequestTest,
       });
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
@@ -438,7 +438,7 @@ TEST_F(
       });
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&first_search_results_callback)),
@@ -464,7 +464,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromFileSearch) {
                    /*has_more_results=*/false))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -491,7 +491,7 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromFileSearch) {
            /*has_more_results=*/true))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -522,7 +522,7 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
            /*has_more_results=*/false))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", PickerCategory::kLocalFiles,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -538,7 +538,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsFileMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -577,7 +577,7 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
       });
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
@@ -613,7 +613,7 @@ TEST_F(QuickInsertSearchRequestTest,
       });
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
@@ -639,7 +639,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromDriveSearch) {
                    /*has_more_results=*/false))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -666,7 +666,7 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromDriveSearch) {
            /*has_more_results=*/true))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -699,7 +699,7 @@ TEST_F(QuickInsertSearchRequestTest,
            /*has_more_results=*/false))
       .Times(AtLeast(1));
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", /*category=*/PickerCategory::kDriveFiles,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -716,7 +716,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsDriveMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -756,7 +756,7 @@ TEST_F(QuickInsertSearchRequestTest,
       });
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
@@ -792,7 +792,7 @@ TEST_F(QuickInsertSearchRequestTest,
       });
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
@@ -820,7 +820,7 @@ TEST_F(QuickInsertSearchRequestTest, PublishesDateResultsOnlyOnce) {
   task_environment().GetMockClock()->Now().LocalExplode(&exploded);
   ASSERT_EQ(0, exploded.day_of_week);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"next Friday", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -838,7 +838,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsDateMetricsOnlyOnce) {
   ASSERT_EQ(0, exploded.day_of_week);
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"next Friday", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
@@ -862,7 +862,7 @@ TEST_F(QuickInsertSearchRequestTest,
   task_environment().GetMockClock()->Now().LocalExplode(&exploded);
   ASSERT_EQ(0, exploded.day_of_week);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"next Friday", PickerCategory::kDatesTimes,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -876,7 +876,7 @@ TEST_F(QuickInsertSearchRequestTest, PublishesMathResultsOnlyOnce) {
               Call(PickerSearchSource::kMath, _, /*has_more_results=*/_))
       .Times(1);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"1 + 1", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -892,7 +892,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsMathMetricsOnlyOnce) {
       .Times(1);
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"1 + 1", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
@@ -910,7 +910,7 @@ TEST_F(QuickInsertSearchRequestTest,
               Call(PickerSearchSource::kMath, _, /*has_more_results=*/_))
       .Times(1);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"1 + 1", PickerCategory::kUnitsMaths,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -929,19 +929,19 @@ TEST_F(QuickInsertSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
       .Times(1);
 
   {
-    PickerSearchRequest request(u"ant", PickerCategory::kLinks,
-                                base::DoNothing(), base::DoNothing(), &client(),
-                                kAllCategories);
+    QuickInsertSearchRequest request(u"ant", PickerCategory::kLinks,
+                                     base::DoNothing(), base::DoNothing(),
+                                     &client(), kAllCategories);
   }
   {
-    PickerSearchRequest request(u"bat", PickerCategory::kDriveFiles,
-                                base::DoNothing(), base::DoNothing(), &client(),
-                                kAllCategories);
+    QuickInsertSearchRequest request(u"bat", PickerCategory::kDriveFiles,
+                                     base::DoNothing(), base::DoNothing(),
+                                     &client(), kAllCategories);
   }
   {
-    PickerSearchRequest request(u"cat", PickerCategory::kLocalFiles,
-                                base::DoNothing(), base::DoNothing(), &client(),
-                                kAllCategories);
+    QuickInsertSearchRequest request(u"cat", PickerCategory::kLocalFiles,
+                                     base::DoNothing(), base::DoNothing(),
+                                     &client(), kAllCategories);
   }
 }
 
@@ -968,7 +968,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromClipboardSearch) {
            /*has_more_results=*/false))
       .Times(1);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -987,7 +987,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsClipboardMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1011,7 +1011,7 @@ TEST_P(QuickInsertSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
                    /*has_more_results=*/false))
       .Times(1);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1025,7 +1025,7 @@ TEST_P(QuickInsertSearchRequestEditorTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(source, _, _)).Times(0);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1037,7 +1037,7 @@ TEST_P(QuickInsertSearchRequestEditorTest, RecordsEditorMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1069,7 +1069,7 @@ TEST_P(QuickInsertSearchRequestLobsterTest, ShowsResultsFromLobsterSearch) {
            /*has_more_results=*/false))
       .Times(1);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1083,7 +1083,7 @@ TEST_P(QuickInsertSearchRequestLobsterTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(source, _, _)).Times(0);
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1095,7 +1095,7 @@ TEST_P(QuickInsertSearchRequestLobsterTest, RecordsLobsterMetrics) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1117,7 +1117,7 @@ TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1137,7 +1137,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(1);
   base::test::TestFuture<bool> done_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"1+1", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1153,7 +1153,7 @@ TEST_F(QuickInsertSearchRequestTest, DoneClosureNotCalledWhenAsynchronous) {
   base::test::TestFuture<bool> done_callback;
 
   // We expect there to be at least one asynchronous source.
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1174,7 +1174,7 @@ TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledAfterClipboard) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1198,7 +1198,7 @@ TEST_F(QuickInsertSearchRequestTest,
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1216,7 +1216,7 @@ TEST_F(QuickInsertSearchRequestTest,
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1248,7 +1248,7 @@ TEST_F(QuickInsertSearchRequestTest,
   NiceMock<MockSearchResultsCallback> search_results_callback;
   base::test::TestFuture<bool> done_callback;
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1279,7 +1279,7 @@ TEST_F(QuickInsertSearchRequestTest,
     EXPECT_CALL(done_callback, Run(/*interrupted=*/false)).Times(1);
   }
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"1+1", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1297,7 +1297,7 @@ TEST_F(QuickInsertSearchRequestTest,
     EXPECT_CALL(done_callback, Run(/*interrupted*/ false)).Times(1);
   }
 
-  PickerSearchRequest request(
+  QuickInsertSearchRequest request(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
@@ -1311,7 +1311,7 @@ TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledWhenDestructed) {
   base::test::TestFuture<bool> done_callback;
 
   {
-    PickerSearchRequest request(
+    QuickInsertSearchRequest request(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
