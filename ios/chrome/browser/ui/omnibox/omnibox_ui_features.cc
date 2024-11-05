@@ -14,7 +14,7 @@ BASE_FEATURE(kOmniboxLockIconEnabled,
 
 BASE_FEATURE(kOmniboxActionsInSuggest,
              "OmniboxIOSActionsInSuggest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsRichAutocompletionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
