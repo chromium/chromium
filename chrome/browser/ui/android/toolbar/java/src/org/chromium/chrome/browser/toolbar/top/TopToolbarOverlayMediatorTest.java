@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.view.View;
 
 import org.junit.Assert;
@@ -283,7 +282,7 @@ public class TopToolbarOverlayMediatorTest {
     @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
     public void testBottomToolbarOffset() {
         float height = 700.0f;
-        mMediator.setViewport(new RectF(0.0f, 0.0f, 100.0f, height));
+        mMediator.setViewportHeight(height);
         mBottomControlsOffset = -40;
 
         doReturn(ControlsPosition.TOP).when(mBrowserControlsProvider).getControlsPosition();
@@ -304,7 +303,7 @@ public class TopToolbarOverlayMediatorTest {
                 MathUtils.EPSILON);
 
         float newHeight = 1700.0f;
-        mMediator.setViewport(new RectF(0.0f, 0.0f, 100.0f, newHeight));
+        mMediator.setViewportHeight(newHeight);
 
         Assert.assertEquals(
                 newHeight + mBottomControlsOffset,

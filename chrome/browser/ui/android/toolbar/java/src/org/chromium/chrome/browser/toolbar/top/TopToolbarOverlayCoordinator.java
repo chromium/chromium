@@ -42,6 +42,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     /** Business logic for this overlay. */
     private final TopToolbarOverlayMediator mMediator;
 
+    private final Context mContext;
+
     public TopToolbarOverlayCoordinator(
             Context context,
             LayoutManager layoutManager,
@@ -55,6 +57,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             boolean isVisibilityManuallyControlled) {
         // If BCIV is enabled, we always show the hairline on the composited
         // toolbar, and let renderer+viz control the visibility during scrolls.
+        mContext = context;
         boolean showHairline =
                 ToolbarFeatures.isBrowserControlsInVizEnabled(
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
@@ -123,7 +126,6 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
-        mMediator.setViewport(viewport);
         return mSceneLayer;
     }
 
@@ -139,7 +141,9 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
 
     @Override
     public void onSizeChanged(
-            float width, float height, float visibleViewportOffsetY, int orientation) {}
+            float width, float height, float visibleViewportOffsetY, int orientation) {
+        mMediator.setViewportHeight(height * mContext.getResources().getDisplayMetrics().density);
+    }
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {}

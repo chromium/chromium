@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
-import android.graphics.RectF;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -83,7 +82,7 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
-    private RectF mViewport = new RectF();
+    private float mViewportHeight;
 
     TopToolbarOverlayMediator(
             PropertyModel model,
@@ -373,9 +372,9 @@ public class TopToolbarOverlayMediator {
         updateVisibility();
     }
 
-    void setViewport(RectF viewport) {
-        if (viewport.equals(mViewport)) return;
-        mViewport = viewport;
+    void setViewportHeight(float viewportHeight) {
+        if (viewportHeight == mViewportHeight) return;
+        mViewportHeight = viewportHeight;
         updateContentOffset();
     }
 
@@ -393,7 +392,7 @@ public class TopToolbarOverlayMediator {
         // position of bottom controls layers.
         int contentOffset = mBrowserControlsStateProvider.getContentOffset();
         if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM) {
-            contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewport.height());
+            contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
         }
 
         mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
