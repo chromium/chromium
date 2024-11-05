@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/skyvault/drive_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
@@ -95,13 +96,18 @@ class MigrationCloudUploader {
 
   // Starts the upload of files to the relevant cloud location. Invokes
   // `callback_` upon completion.
-  virtual void Run() = 0;
+  void Run();
 
   // Cancels any ongoing file uploads.
   virtual void Cancel(base::OnceClosure cancelled_callback) = 0;
 
  protected:
-  void LogError(base::FilePath file_path, MigrationUploadError error);
+  // Called after opening the log file.
+  virtual void OnLogFileReady(base::File log_file) = 0;
+
+  // Called after the error for `file_path` was logged.
+  virtual void OnErrorLogged(const base::FilePath& file_path) = 0;
+
   // Maps file to their upload errors, if any.
   std::map<base::FilePath, MigrationUploadError> errors_;
 
@@ -120,8 +126,13 @@ class MigrationCloudUploader {
   base::OnceClosure cancelled_callback_;
   // Indicates that the upload was cancelled, e.g. by a policy change.
   bool cancelled_ = false;
-  // Error log path. Can be empty if no errors or it fails to be created.
-  std::optional<base::FilePath> error_log_path_;
+  // Error logging:
+  base::FilePath error_log_path_;
+  // This file is created/destructed and accessed only on `log_tast_runner_`.
+  base::File error_log_file_;
+  scoped_refptr<base::SequencedTaskRunner> log_task_runner_;
+
+  base::WeakPtrFactory<MigrationCloudUploader> weak_ptr_factory_{this};
 };
 
 // Migration file uploader for uploads to Microsoft OneDrive.
@@ -137,7 +148,6 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
   ~OneDriveMigrationUploader() override;
 
   // MigrationCloudUploader overrides:
-  void Run() override;
   void Cancel(base::OnceClosure cancelled_callback) override;
 
  private:
@@ -146,6 +156,10 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
                     storage::FileSystemURL url,
                     std::optional<MigrationUploadError> error,
                     base::FilePath upload_root_path);
+
+  // MigrationCloudUploader overrides:
+  void OnLogFileReady(base::File log_file) override;
+  void OnErrorLogged(const base::FilePath& file_path) override;
 
   // Maps source urls of files being uploaded to corresponding
   // OdfsSkyvaultUploader instances. Keeps a weak reference as lifetime of
@@ -173,13 +187,16 @@ class GoogleDriveMigrationUploader : public MigrationCloudUploader {
   ~GoogleDriveMigrationUploader() override;
 
   // MigrationCloudUploader overrides:
-  void Run() override;
   void Cancel(base::OnceClosure cancelled_callback) override;
 
  private:
   void OnUploadDone(const base::FilePath& file_path,
                     std::optional<MigrationUploadError> error,
                     base::FilePath upload_root_path);
+
+  // MigrationCloudUploader overrides:
+  void OnLogFileReady(base::File log_file) override;
+  void OnErrorLogged(const base::FilePath& file_path) override;
 
   // Maps source urls of files being uploaded to corresponding
   // DriveSkyvaultUploader instances.

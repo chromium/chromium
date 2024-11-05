@@ -7,14 +7,19 @@
 #include <memory>
 #include <optional>
 
+#include "base/base_paths.h"
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/message_formatter.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -23,7 +28,9 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/generated_resources.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy::local_user_files {
 
@@ -45,6 +52,73 @@ base::FilePath GetPathRelativeToMyFiles(Profile* profile,
   base::FilePath rel_path;
   my_files_path.AppendRelativePath(file_path.DirName(), &rel_path);
   return rel_path;
+}
+
+std::string FormatErrorMessage(CloudProvider provider,
+                               MigrationUploadError error) {
+  switch (error) {
+    case MigrationUploadError::kCloudQuotaFull:
+      return base::UTF16ToUTF8(
+          base::i18n::MessageFormatter::FormatWithNumberedArgs(
+              l10n_util::GetStringUTF16(
+                  IDS_OFFICE_UPLOAD_ERROR_FREE_UP_SPACE_TO_MOVE),
+              1,
+              l10n_util::GetStringUTF16(
+                  provider == CloudProvider::kGoogleDrive
+                      ? IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE_SHORT
+                      : IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE_SHORT)));
+    case MigrationUploadError::kFileNotFound:
+      return l10n_util::GetStringUTF8(
+          IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_MOVE);
+    case MigrationUploadError::kInvalidURL:
+      return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_REJECTED);
+    case MigrationUploadError::kAuthRequired:
+      return l10n_util::GetStringUTF8(
+          IDS_OFFICE_UPLOAD_ERROR_REAUTHENTICATION_REQUIRED);
+    case MigrationUploadError::kCopyFailed:
+    case MigrationUploadError::kCreateFolderFailed:
+    case MigrationUploadError::kSyncFailed:
+    case MigrationUploadError::kDeleteFailed:  // should not be logged
+    case MigrationUploadError::kMoveFailed:
+    case MigrationUploadError::kCancelled:  // should not be logged
+    case MigrationUploadError::kUnexpectedError:
+    case MigrationUploadError::kServiceUnavailable:
+      return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_GENERIC);
+  }
+}
+
+void CloseFile(base::File file) {
+  file.Close();
+}
+
+base::File CreateOrOpenLogFile(Profile* profile, base::FilePath path) {
+  base::File error_log_file_ =
+      base::File(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
+  if (!error_log_file_.IsValid()) {
+    PLOG(ERROR) << "Failed to open migration error log file.";
+  }
+  // TODO(aidazolic): Do we need a header?
+  return error_log_file_;
+}
+
+void LogError(base::File& error_log_file,
+              CloudProvider provider,
+              base::FilePath file_path,
+              MigrationUploadError error) {
+  if (!error_log_file.IsValid()) {
+    LOG(ERROR) << "Cannot log error: log file invalid.";
+    return;
+  }
+
+  std::string log_entry = absl::StrFormat("%s - %s\n", file_path.AsUTF8Unsafe(),
+                                          FormatErrorMessage(provider, error));
+  error_log_file.WriteAtCurrentPos(log_entry.c_str(), log_entry.size());
+}
+
+base::FilePath GetLogPath() {
+  base::FilePath home_dir;
+  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
+  return home_dir.AppendASCII("local_files_upload");
 }
 
 }  // namespace
@@ -115,17 +189,30 @@ MigrationCloudUploader::MigrationCloudUploader(
     : profile_(profile),
       files_(std::move(files)),
       upload_root_(upload_root),
-      done_callback_(std::move(callback)) {}
+      done_callback_(std::move(callback)),
+      log_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
-MigrationCloudUploader::~MigrationCloudUploader() = default;
+MigrationCloudUploader::~MigrationCloudUploader() {
+  log_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&CloseFile, std::move(error_log_file_)));
+}
 
-void MigrationCloudUploader::LogError(base::FilePath file_path,
-                                      MigrationUploadError error) {
-  if (!error_log_path_.has_value()) {
-    LOG(ERROR) << "Cannot log error, log path is empty.";
+void MigrationCloudUploader::Run() {
+  if (files_.empty()) {
+    if (done_callback_) {
+      std::move(done_callback_).Run({}, base::FilePath(), base::FilePath());
+    }
     return;
   }
-  // TODO(351972769): Create an error log and pass the path.
+
+  error_log_path_ = GetLogPath();
+  log_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&CreateOrOpenLogFile, profile_, error_log_path_),
+      base::BindOnce(&MigrationCloudUploader::OnLogFileReady,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 OneDriveMigrationUploader::OneDriveMigrationUploader(
@@ -140,13 +227,8 @@ OneDriveMigrationUploader::OneDriveMigrationUploader(
 
 OneDriveMigrationUploader::~OneDriveMigrationUploader() = default;
 
-void OneDriveMigrationUploader::Run() {
-  if (files_.empty()) {
-    if (done_callback_) {
-      std::move(done_callback_).Run({}, base::FilePath(), base::FilePath());
-    }
-    return;
-  }
+void OneDriveMigrationUploader::OnLogFileReady(base::File log_file) {
+  error_log_file_ = std::move(log_file);
   // TODO(aidazolic): Consider if we can start all jobs at the same time, or we
   // need chunking.
   for (const auto& file_path : files_) {
@@ -169,6 +251,8 @@ void OneDriveMigrationUploader::Cancel(base::OnceClosure callback) {
   cancelled_callback_ = std::move(callback);
   cancelled_ = true;
 
+  // TODO(aidazolic): Delete the log file.
+
   // Create a copy of the keys to iterate over. This is necessary because
   // calling Cancel() on the uploader may trigger OnUploadDone(), which
   // modifies the |uploaders_| map, potentially invalidating iterators.
@@ -187,21 +271,37 @@ void OneDriveMigrationUploader::OnUploadDone(
     storage::FileSystemURL url,
     std::optional<MigrationUploadError> error,
     base::FilePath upload_root_path) {
-  if (error.has_value()) {
-    // TODO(aidazolic): UMA.
-    // TODO(aidazolic): Persist the failed file to memory.
-
-    // If we only failed to delete the file, don't fail the entire migration
-    // because of it.
-    if (error != MigrationUploadError::kDeleteFailed) {
-      errors_.insert({file_path, error.value()});
-    }
-  }
-
   if (upload_root_path_.empty()) {
     upload_root_path_ = upload_root_path;
   }
 
+  if (!error.has_value()) {
+    OnErrorLogged(file_path);
+    return;
+  }
+
+  // If we only failed to delete the file, don't fail the entire migration
+  // because of it.
+  if (error != MigrationUploadError::kDeleteFailed) {
+    errors_.insert({file_path, error.value()});
+  }
+
+  if (!error_log_file_.IsValid()) {
+    LOG(ERROR) << "Cannot log error: log file invalid";
+    OnErrorLogged(file_path);
+    return;
+  }
+
+  // TODO(aidazolic): UMA.
+  log_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&LogError, std::ref(error_log_file_),
+                     CloudProvider::kOneDrive, file_path, error.value()),
+      base::BindOnce(&OneDriveMigrationUploader::OnErrorLogged,
+                     weak_ptr_factory_.GetWeakPtr(), file_path));
+}
+
+void OneDriveMigrationUploader::OnErrorLogged(const base::FilePath& file_path) {
   uploaders_.erase(file_path);
 
   if (!uploaders_.empty()) {
@@ -215,6 +315,7 @@ void OneDriveMigrationUploader::OnUploadDone(
     return;
   }
   CHECK(done_callback_);
+  // TODO(aidazolic): What to do if the log file isn't valid?
   std::move(done_callback_)
       .Run(std::move(errors_), upload_root_path_, error_log_path_);
 }
@@ -231,14 +332,8 @@ GoogleDriveMigrationUploader::GoogleDriveMigrationUploader(
 
 GoogleDriveMigrationUploader::~GoogleDriveMigrationUploader() = default;
 
-void GoogleDriveMigrationUploader::Run() {
-  if (files_.empty()) {
-    if (done_callback_) {
-      std::move(done_callback_).Run({}, base::FilePath(), base::FilePath());
-      return;
-    }
-  }
-
+void GoogleDriveMigrationUploader::OnLogFileReady(base::File log_file) {
+  error_log_file_ = std::move(log_file);
   // TODO(aidazolic): Consider if we can start all jobs at the same time, or we
   // need chunking.
   for (const auto& file_path : files_) {
@@ -259,6 +354,8 @@ void GoogleDriveMigrationUploader::Cancel(base::OnceClosure callback) {
   cancelled_callback_ = std::move(callback);
   cancelled_ = true;
 
+  // TODO(aidazolic): Delete the log file.
+
   // Create a copy of the keys to iterate over. This is necessary because
   // calling Cancel() on the uploader may trigger OnUploadDone(), which
   // modifies the |uploaders_| map, potentially invalidating iterators.
@@ -276,22 +373,39 @@ void GoogleDriveMigrationUploader::OnUploadDone(
     const base::FilePath& file_path,
     std::optional<MigrationUploadError> error,
     base::FilePath upload_root_path) {
-  if (error.has_value()) {
-    // TODO(aidazolic): UMA.
-    // TODO(aidazolic): Persist the failed file to memory.
-
-    // If we only failed to delete the file, don't fail the entire migration
-    // because of it.
-    if (error != MigrationUploadError::kDeleteFailed) {
-      errors_.insert({file_path, error.value()});
-    }
-  }
-
   // Record the destination path the first time we receive it.
   if (upload_root_path_.empty()) {
     upload_root_path_ = upload_root_path;
   }
 
+  if (!error.has_value()) {
+    OnErrorLogged(file_path);
+    return;
+  }
+
+  // If we only failed to delete the file, don't fail the entire migration
+  // because of it.
+  if (error != MigrationUploadError::kDeleteFailed) {
+    errors_.insert({file_path, error.value()});
+  }
+
+  if (!error_log_file_.IsValid()) {
+    LOG(ERROR) << "Cannot log error: log file invalid";
+    OnErrorLogged(file_path);
+    return;
+  }
+
+  // TODO(aidazolic): UMA.
+  log_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&LogError, std::ref(error_log_file_),
+                     CloudProvider::kGoogleDrive, file_path, error.value()),
+      base::BindOnce(&GoogleDriveMigrationUploader::OnErrorLogged,
+                     weak_ptr_factory_.GetWeakPtr(), file_path));
+}
+
+void GoogleDriveMigrationUploader::OnErrorLogged(
+    const base::FilePath& file_path) {
   uploaders_.erase(file_path);
 
   if (!uploaders_.empty()) {
@@ -304,8 +418,8 @@ void GoogleDriveMigrationUploader::OnUploadDone(
     std::move(cancelled_callback_).Run();
     return;
   }
-
   CHECK(done_callback_);
+  // TODO(aidazolic): What to do if the log file isn't valid?
   std::move(done_callback_)
       .Run(std::move(errors_), upload_root_path_, error_log_path_);
 }
