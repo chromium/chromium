@@ -10458,8 +10458,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kFocusExisting_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10499,8 +10499,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kFocusExisting_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10540,8 +10540,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kFocusExisting_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10581,8 +10581,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kFocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10622,8 +10622,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kFocusExisting_Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOff_Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOff_Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10654,8 +10654,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kFocusExisting_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOff_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOff_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10686,8 +10686,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kFocusExisting_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10718,8 +10718,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kFocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10750,8 +10750,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10791,8 +10791,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10832,8 +10832,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10873,8 +10873,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOff_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10914,8 +10914,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOff_Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOff_Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10946,8 +10946,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOff_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOff_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -10978,8 +10978,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOff_Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -11010,8 +11010,8 @@
             "launch_metric_buckets": [  ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOff_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {

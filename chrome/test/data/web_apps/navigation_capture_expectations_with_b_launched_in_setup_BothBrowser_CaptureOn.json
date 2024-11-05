@@ -1,7 +1,7 @@
 {
    "tests": {
-      "kFocusExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -35,8 +35,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": "The wrong tab is active, see crbug.com/376936005.",
          "expected_state": {
             "browsers": [ {

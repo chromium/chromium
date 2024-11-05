@@ -1,7 +1,7 @@
 {
    "tests": {
-      "kAppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "AppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": "Flaky, see https://ci.chromium.org/ui/p/chromium/builders/ci/mac14-tests/9032/overview",
          "expected_state": {
             "browsers": [ {
@@ -46,8 +46,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
          }
       },
-      "kAppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "AppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -92,8 +92,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kAppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "AppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -138,8 +138,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kAppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": "Flaky, see https://ci.chromium.org/ui/p/chromium/builders/ci/mac14-tests/9032/overview",
          "expected_state": {
             "browsers": [ {
@@ -175,8 +175,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
          }
       },
-      "kAppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -212,8 +212,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kAppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": "Flaky, see https://ci.chromium.org/ui/p/chromium/builders/ci/mac14-tests/9032/overview",
          "expected_state": {
             "browsers": [ {
@@ -249,8 +249,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kFocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
+      "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -295,8 +295,8 @@
             "launch_metric_buckets": [ "kFromMenu" ]
          }
       },
-      "kFocusExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
+      "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -332,8 +332,8 @@
             "launch_metric_buckets": [ "kFromMenu" ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
          "disabled": "The history of the navigated tab is consistently flaky.",
          "expected_state": {
             "browsers": [ {
@@ -382,8 +382,8 @@
             "launch_metric_buckets": [ "kFromMenu" ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -432,8 +432,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -482,8 +482,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -532,8 +532,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetBlank",
          "disabled": "The history of the navigated tab is consistently flaky.",
          "expected_state": {
             "browsers": [ {
@@ -573,8 +573,8 @@
             "launch_metric_buckets": [ "kFromMenu" ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -614,8 +614,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -655,8 +655,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {

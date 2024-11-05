@@ -306,13 +306,13 @@ std::string ToParamString(ClientModeCombination client_mode_combo) {
     case ClientModeCombination::kAuto:
       return "";
     case ClientModeCombination::kBothFocusExisting:
-      return "kFocusExisting";
+      return "FocusExisting";
     case ClientModeCombination::kBothNavigateNew:
-      return "kNavigateNew";
+      return "NavigateNew";
     case ClientModeCombination::kBothNavigateExisting:
-      return "kNavigateExisting";
+      return "NavigateExisting";
     case ClientModeCombination::kAppANavigateExistingAppBFocusExisting:
-      return "kAppANavigateExistingAppBFocusExisting";
+      return "AppANavigateExistingAppBFocusExisting";
   }
 }
 

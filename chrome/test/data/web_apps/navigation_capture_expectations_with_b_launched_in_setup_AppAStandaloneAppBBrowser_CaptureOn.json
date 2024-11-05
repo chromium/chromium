@@ -1,7 +1,7 @@
 {
    "tests": {
-      "kFocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -38,8 +38,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kFocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -73,8 +73,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kFocusExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kFocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "FocusExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
          "expected_state": {
             "browsers": [ {
@@ -108,8 +108,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": true,
          "expected_state": {
             "browsers": [ {
@@ -150,8 +150,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": "This is flaky, see https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1994505/test-results",
          "expected_state": {
             "browsers": [ {
@@ -189,8 +189,8 @@
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
-      "kNavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "_params": "kNavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+      "NavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
+        "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": "The wrong tab is active, see crbug.com/376936005.",
          "expected_state": {
             "browsers": [ {
