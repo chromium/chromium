@@ -752,12 +752,13 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
   GetDownloadManager(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(2u, downloads.size());
   download::DownloadItem* download2;
-  if (download1 == downloads[0])
+  if (download1 == downloads[0]) {
     download2 = downloads[1];
-  else if (download1 == downloads[1])
+  } else if (download1 == downloads[1]) {
     download2 = downloads[0];
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
   EXPECT_NE(download1, download2);
 
   notifications = GetDownloadNotifications();

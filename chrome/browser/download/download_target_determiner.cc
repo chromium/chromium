@@ -205,8 +205,7 @@ void DownloadTargetDeterminer::DoLoop() {
         result = DoDetermineIntermediatePath();
         break;
       case STATE_NONE:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
   } while (result == CONTINUE);
   // Note that if a callback completes synchronously, the handler will still
@@ -499,7 +498,7 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
                conflict_action_ == DownloadPathReservationTracker::UNIQUIFY);
         break;
       case download::PathValidationResult::COUNT:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     virtual_path_ = path;
@@ -527,7 +526,7 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
         confirmation_reason_ = DownloadConfirmationReason::TARGET_CONFLICT;
         break;
       case download::PathValidationResult::COUNT:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

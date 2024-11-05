@@ -471,8 +471,7 @@ download::DownloadDangerType SavePackageDangerType(
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+      NOTREACHED();
   }
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
@@ -1761,13 +1760,8 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
       break;
 
     default:
-      // These other results should never be returned, but if they are somehow
-      // then scanning policies are fail-open, so the save package should be
-      // allowed to complete.
-      NOTREACHED_IN_MIGRATION();
-      enterprise_connectors::RunSavePackageScanningCallback(item,
-                                                            /*allowed*/ true);
-      break;
+      // These other results should never be returned.
+      NOTREACHED();
   }
 
 }

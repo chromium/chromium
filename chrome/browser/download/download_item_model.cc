@@ -335,8 +335,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_MAX:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       // We shouldn't get any of these due to the MightBeMalicious() test above.
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
@@ -351,8 +350,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool DownloadItemModel::IsInsecure() const {
@@ -389,11 +387,10 @@ bool DownloadItemModel::ShouldRemoveFromShelfWhenComplete() const {
       return false;
 
     case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool DownloadItemModel::ShouldShowDownloadStartedAnimation() const {
@@ -747,8 +744,7 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::CANCEL_DEEP_SCAN:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool DownloadItemModel::IsCommandChecked(
@@ -877,11 +873,11 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       if (protection_service)
         protection_service->ShowDetailsForDownload(
             download_, download_commands->GetBrowser());
+      break;
 #else
       // Should only be getting invoked if we are using safe browsing.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
 #endif
-      break;
     }
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::CANCEL:
@@ -1015,8 +1011,7 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
       break;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return DangerUiPattern::kNormal;

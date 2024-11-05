@@ -57,13 +57,9 @@ void DownloadDialogBridge::ShowDialog(
 
   dialog_callback_ = std::move(dialog_callback);
 
-  // This shouldn't happen, but if it does, cancel download.
+  // This shouldn't happen.
   if (dialog_type == DownloadLocationDialogType::NO_DIALOG) {
-    NOTREACHED_IN_MIGRATION();
-    DownloadDialogResult dialog_result;
-    dialog_result.location_result = DownloadLocationDialogResult::USER_CANCELED;
-    CompleteSelection(std::move(dialog_result));
-    return;
+    NOTREACHED();
   }
 
   // If dialog is showing, run the callback to continue without confirmation.

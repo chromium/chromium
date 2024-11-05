@@ -170,8 +170,7 @@ bool FieldMatches(
     case EQ: return accessor.Run(item) == value;
     case GT: return accessor.Run(item) > value;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Helper for building a Callback to FieldMatches<>().

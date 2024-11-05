@@ -169,7 +169,6 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::BYPASS_DEEP_SCANNING:
     case DownloadCommands::Command::OPEN_WITH_MEDIA_APP:
     case DownloadCommands::Command::EDIT_WITH_MEDIA_APP:
-      NOTREACHED_IN_MIGRATION();
-      return DownloadShelfContextMenuAction::kNotReached;
+      NOTREACHED();
   }
 }

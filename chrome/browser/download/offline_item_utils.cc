@@ -169,7 +169,7 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
       }
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // TODO(crbug.com/40582846): Set pending_state correctly.
