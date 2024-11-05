@@ -34,7 +34,7 @@ const char kCollaborationId[] = "resources/1234567/e/111111111111111";
 const char kAccessToken[] = "abcdefg";
 const char kExpectedUrl[] =
     "https://test.com/collaborations/"
-    "cmVzb3VyY2VzLzEyMzQ1NjcvZS8xMTExMTExMTExMTExMTE=/dataTypes/-/"
+    "cmVzb3VyY2VzLzEyMzQ1NjcvZS8xMTExMTExMTExMTExMTE/dataTypes/-/"
     "sharedEntities:preview?accessToken=abcdefg&pageToken=&pageSize=100";
 
 const std::string kTabGroupResponse = R"(

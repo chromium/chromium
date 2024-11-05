@@ -8,7 +8,7 @@
 #include <optional>
 #include <utility>
 
-#include "base/base64.h"
+#include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -286,9 +286,11 @@ void PreviewServerProxy::GetSharedDataPreview(
   const char kSharedEntitiesPreviewPath[] =
       "collaborations/{collaborationId}/dataTypes/-/sharedEntities:preview";
   std::string shared_entities_preview_path = kSharedEntitiesPreviewPath;
-  base::ReplaceFirstSubstringAfterOffset(
-      &shared_entities_preview_path, 0, "{collaborationId}",
-      base::Base64Encode(group_token.group_id.value()));
+  std::string encoded_id;
+  base::Base64UrlEncode(group_token.group_id.value(),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &encoded_id);
+  base::ReplaceFirstSubstringAfterOffset(&shared_entities_preview_path, 0,
+                                         "{collaborationId}", encoded_id);
   GURL url = GURL(
       kServiceBaseUrl.Get().append("/").append(shared_entities_preview_path));
 
