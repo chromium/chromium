@@ -8411,3 +8411,4 @@ crbug.com/376931817 virtual/fsa-incognito/external/wpt/file-system-access/local_
 crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-001c-print.html [ Pass Failure ]
 crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-001d-print.html [ Pass Failure ]
 crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-002c-print.html [ Pass Failure ]
+crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-002d-print.html [ Pass Failure ]
