@@ -2305,21 +2305,6 @@
             ]
         }
     ],
-    "AutofillPaymentsSheetV2Ios": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPaymentsSheetV2Ios"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillPopupDontAcceptNonVisibleEnoughSuggestion": [
         {
             "platforms": [
