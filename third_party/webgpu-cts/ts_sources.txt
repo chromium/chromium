@@ -244,6 +244,7 @@ src/webgpu/util/color_space_conversion.ts
 src/webgpu/web_platform/util.ts
 src/webgpu/api/validation/gpu_external_texture_expiration.spec.ts
 src/webgpu/api/validation/layout_shader_compat.spec.ts
+src/webgpu/api/validation/non_filterable_texture.spec.ts
 src/webgpu/api/validation/buffer/create.spec.ts
 src/webgpu/api/validation/buffer/destroy.spec.ts
 src/webgpu/api/validation/buffer/mapping.spec.ts
