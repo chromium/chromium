@@ -106,8 +106,7 @@ bool MIMETypeRegistry::IsSupportedImagePrefixedMIMEType(
     const String& mime_type) {
   std::string ascii_mime_type = ToLowerASCIIOrEmpty(mime_type);
   return (blink::IsSupportedImageMimeType(ascii_mime_type) ||
-          (base::StartsWith(ascii_mime_type, "image/",
-                            base::CompareCase::SENSITIVE) &&
+          (ascii_mime_type.starts_with("image/") &&
            blink::IsSupportedNonImageMimeType(ascii_mime_type)));
 }
 

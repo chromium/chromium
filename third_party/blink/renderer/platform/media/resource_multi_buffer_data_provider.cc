@@ -493,8 +493,7 @@ bool ResourceMultiBufferDataProvider::ParseContentRange(
     int64_t* last_byte_position,
     int64_t* instance_size) {
   const char kUpThroughBytesUnit[] = "bytes ";
-  if (!base::StartsWith(content_range_str, kUpThroughBytesUnit,
-                        base::CompareCase::SENSITIVE)) {
+  if (!content_range_str.starts_with(kUpThroughBytesUnit)) {
     return false;
   }
   std::string range_spec =

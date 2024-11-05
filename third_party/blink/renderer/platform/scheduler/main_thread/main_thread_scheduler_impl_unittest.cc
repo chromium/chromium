@@ -852,13 +852,13 @@ class MainThreadSchedulerImplTest : public testing::Test {
                                         String::FromUTF8(task)));
           break;
         case 'C':
-          if (base::StartsWith(task, "CM")) {
+          if (task.starts_with("CM")) {
             compositor_task_runner_->PostTask(
                 FROM_HERE, base::BindOnce(&MainThreadSchedulerImplTest::
                                               AppendToVectorBeginMainFrameTask,
                                           base::Unretained(this), run_order,
                                           String::FromUTF8(task)));
-          } else if (base::StartsWith(task, "CI")) {
+          } else if (task.starts_with("CI")) {
             compositor_task_runner_->PostTask(
                 FROM_HERE,
                 base::BindOnce(&MainThreadSchedulerImplTest::
@@ -872,7 +872,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
           }
           break;
         case 'P':
-          if (base::StartsWith(task, "PC")) {
+          if (task.starts_with("PC")) {
             input_task_runner_->PostTask(
                 FROM_HERE,
                 base::BindOnce(
@@ -880,7 +880,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
                     base::Unretained(this), WebInputEvent::Type::kMouseMove,
                     run_order, String::FromUTF8(task)));
 
-          } else if (base::StartsWith(task, "PD")) {
+          } else if (task.starts_with("PD")) {
             input_task_runner_->PostTask(
                 FROM_HERE,
                 base::BindOnce(

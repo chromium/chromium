@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/skia/segment_stream.h"
 
+#include <string_view>
+
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"

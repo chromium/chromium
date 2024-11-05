@@ -66,7 +66,7 @@ uint32_t GetReasonsForUncacheability(const WebURLResponse& response) {
 
   const char kMaxAgePrefix[] = "max-age=";
   const size_t kMaxAgePrefixLen = std::size(kMaxAgePrefix) - 1;
-  if (cache_control_header.substr(0, kMaxAgePrefixLen) == kMaxAgePrefix) {
+  if (cache_control_header.starts_with(kMaxAgePrefix)) {
     int64_t max_age_seconds;
     base::StringToInt64(
         base::MakeStringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
@@ -104,7 +104,7 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
 
   const char kMaxAgePrefix[] = "max-age=";
   const size_t kMaxAgePrefixLen = std::size(kMaxAgePrefix) - 1;
-  if (cache_control_header.substr(0, kMaxAgePrefixLen) == kMaxAgePrefix) {
+  if (cache_control_header.starts_with(kMaxAgePrefix)) {
     int64_t max_age_seconds;
     base::StringToInt64(
         base::MakeStringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
