@@ -286,20 +286,28 @@ NSCollectionLayoutSection* TabGroupHeaderSection(
   NSCollectionLayoutItem* item =
       [NSCollectionLayoutItem itemWithLayoutSize:item_size];
 
-  // Configure the layout group.
+  // Configure the layout group. Create `inner_group` to add a space between a
+  // boundary supplementary item and an activity cell by `edgeSpacing`. The
+  // space isn't applied if the cell doesn't exist.
   NSCollectionLayoutSize* group_size = [NSCollectionLayoutSize
       sizeWithWidthDimension:FractionalWidth(1.)
              heightDimension:estimated_height_dimension];
-  NSCollectionLayoutGroup* group =
+  NSCollectionLayoutGroup* inner_group =
       [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
                                                     subitems:@[ item ]];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
+                                                    subitems:@[ inner_group ]];
   const CGFloat spacing = Spacing(layout_environment);
-  group.interItemSpacing = [NSCollectionLayoutSpacing fixedSpacing:spacing];
+  inner_group.edgeSpacing = [NSCollectionLayoutEdgeSpacing
+      spacingForLeading:nil
+                    top:[NSCollectionLayoutSpacing fixedSpacing:spacing]
+               trailing:nil
+                 bottom:nil];
 
   // Configure the layout section.
   NSCollectionLayoutSection* section =
       [NSCollectionLayoutSection sectionWithGroup:group];
-  section_insets.top += spacing;
   section_insets.leading += spacing;
   section_insets.trailing += spacing;
   section.contentInsets = section_insets;
