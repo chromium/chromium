@@ -23,7 +23,7 @@ TEST_F(ActionButtonViewTest, ShowsIconAndLabelByDefault) {
       views::Button::PressedCallback(), u"text", &kCaptureModeImageIcon,
       ActionButtonRank(ActionButtonType::kOther, /*weight=*/0));
 
-  EXPECT_TRUE(action_button.icon_for_testing()->GetVisible());
+  EXPECT_TRUE(action_button.image_view_for_testing()->GetVisible());
   EXPECT_TRUE(action_button.label_for_testing()->GetVisible());
 }
 
@@ -34,7 +34,7 @@ TEST_F(ActionButtonViewTest, ShowsIconOnlyAfterCollapsed) {
 
   action_button.CollapseToIconButton();
 
-  EXPECT_TRUE(action_button.icon_for_testing()->GetVisible());
+  EXPECT_TRUE(action_button.image_view_for_testing()->GetVisible());
   EXPECT_FALSE(action_button.label_for_testing()->GetVisible());
 }
 

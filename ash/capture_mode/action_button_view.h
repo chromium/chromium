@@ -52,7 +52,7 @@ class ASH_EXPORT ActionButtonView : public views::Button {
   // shows.
   void CollapseToIconButton();
 
-  const views::ImageView* icon_for_testing() const { return icon_; }
+  const views::ImageView* image_view_for_testing() const { return image_view_; }
   const views::Label* label_for_testing() const { return label_; }
 
  private:
@@ -63,8 +63,8 @@ class ASH_EXPORT ActionButtonView : public views::Button {
 
   raw_ptr<views::BoxLayout> box_layout_ = nullptr;
 
-  // The action button icon.
-  raw_ptr<views::ImageView> icon_ = nullptr;
+  // The image view for the action button icon.
+  raw_ptr<views::ImageView> image_view_ = nullptr;
 
   // The label containing the action button text. This label is hidden when the
   // action button is collapsed.

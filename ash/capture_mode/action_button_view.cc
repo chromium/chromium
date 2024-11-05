@@ -73,7 +73,7 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
       this, kActionButtonRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);
 
-  icon_ = AddChildView(
+  image_view_ = AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           *icon, kColorAshButtonIconColor, kActionButtonIconSize)));
   label_ = AddChildView(std::make_unique<views::Label>(text));
