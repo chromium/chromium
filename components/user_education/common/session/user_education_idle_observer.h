@@ -13,7 +13,7 @@
 
 namespace user_education {
 
-class UserEducationStorageService;
+class UserEducationTimeProvider;
 
 // Used to observe the system/application idle state. Override virtual methods
 // for testing.
@@ -27,7 +27,7 @@ class UserEducationIdleObserver {
   virtual ~UserEducationIdleObserver();
 
   // Called by UserEducationSessionManager to initialize required data members.
-  void Init(const UserEducationStorageService* storage_service);
+  void Init(const UserEducationTimeProvider* time_provider);
 
   // Start any observation that is required to detect idle state changes.
   // Default is no-op.
@@ -51,9 +51,10 @@ class UserEducationIdleObserver {
   // Gets the current time from the current time source.
   base::Time GetCurrentTime() const;
 
+ private:
   base::RepeatingCallbackList<typename UpdateCallback::RunType>
       update_callbacks_;
-  raw_ptr<const UserEducationStorageService> storage_service_ = nullptr;
+  raw_ptr<const UserEducationTimeProvider> time_provider_ = nullptr;
 };
 
 }  // namespace user_education

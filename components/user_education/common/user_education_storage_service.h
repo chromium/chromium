@@ -20,6 +20,26 @@ class UserEducationInternalsPageHandlerImpl;
 
 namespace user_education {
 
+// For downstream consumers of user education data that only need to get the
+// common time, pass this interface.
+class UserEducationTimeProvider {
+ public:
+  UserEducationTimeProvider();
+  UserEducationTimeProvider(const UserEducationTimeProvider&) = delete;
+  void operator=(const UserEducationTimeProvider&) = delete;
+  virtual ~UserEducationTimeProvider();
+
+  // Returns the current time, as per `clock_`, which defaults to
+  // `base::DefaultClock`.
+  virtual base::Time GetCurrentTime() const;
+
+  // Sets the clock used across user education for session logic.
+  void set_clock_for_testing(const base::Clock* clock) { clock_ = clock; }
+
+ private:
+  raw_ptr<const base::Clock> clock_;
+};
+
 // This service manages snooze and other display data for in-product help
 // promos.
 //
@@ -29,15 +49,10 @@ namespace user_education {
 // Before showing an IPH, the IPH controller should ask if the IPH is blocked.
 // The controller should also notify after the IPH is shown and after the user
 // clicks the snooze/dismiss button.
-class UserEducationStorageService {
+class UserEducationStorageService : public UserEducationTimeProvider {
  public:
   UserEducationStorageService();
-  virtual ~UserEducationStorageService();
-
-  // Disallow copy and assign.
-  UserEducationStorageService(const UserEducationStorageService&) = delete;
-  UserEducationStorageService& operator=(const UserEducationStorageService&) =
-      delete;
+  ~UserEducationStorageService() override;
 
   virtual std::optional<FeaturePromoData> ReadPromoData(
       const base::Feature& iph_feature) const = 0;
@@ -85,19 +100,12 @@ class UserEducationStorageService {
   // Returns the count of previous snoozes for `iph_feature`.
   int GetSnoozeCount(const base::Feature& iph_feature) const;
 
-  // Returns the current time, as per `clock_`, which defaults to
-  // `base::DefaultClock`.
-  virtual base::Time GetCurrentTime() const;
-
   // Gets the time when the current profile was created.
   base::Time profile_creation_time() const { return profile_creation_time_; }
 
   void set_profile_creation_time_for_testing(base::Time profile_creation_time) {
     set_profile_creation_time(profile_creation_time);
   }
-
-  // Sets the clock used across user education for session logic.
-  void set_clock_for_testing(const base::Clock* clock) { clock_ = clock; }
 
  protected:
   friend UserEducationInternalsPageHandlerImpl;
@@ -112,8 +120,6 @@ class UserEducationStorageService {
   // determine if low-priority promos should show (there is a grace period after
   // new profile creation).
   base::Time profile_creation_time_;
-
-  raw_ptr<const base::Clock> clock_;
 };
 
 }  // namespace user_education

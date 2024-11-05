@@ -14,8 +14,8 @@ UserEducationIdleObserver::UserEducationIdleObserver() = default;
 UserEducationIdleObserver::~UserEducationIdleObserver() = default;
 
 void UserEducationIdleObserver::Init(
-    const UserEducationStorageService* storage_service) {
-  storage_service_ = storage_service;
+    const UserEducationTimeProvider* time_provider) {
+  time_provider_ = time_provider;
 }
 
 void UserEducationIdleObserver::StartObserving() {}
@@ -30,7 +30,7 @@ void UserEducationIdleObserver::NotifyLastActiveChanged(base::Time update) {
 }
 
 base::Time UserEducationIdleObserver::GetCurrentTime() const {
-  return storage_service_->GetCurrentTime();
+  return time_provider_->GetCurrentTime();
 }
 
 }  // namespace user_education

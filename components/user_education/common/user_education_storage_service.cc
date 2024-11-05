@@ -10,9 +10,16 @@
 
 namespace user_education {
 
-UserEducationStorageService::UserEducationStorageService()
+UserEducationTimeProvider::UserEducationTimeProvider()
     : clock_(base::DefaultClock::GetInstance()) {}
 
+UserEducationTimeProvider::~UserEducationTimeProvider() = default;
+
+base::Time UserEducationTimeProvider::GetCurrentTime() const {
+  return clock_->Now();
+}
+
+UserEducationStorageService::UserEducationStorageService() = default;
 UserEducationStorageService::~UserEducationStorageService() = default;
 
 int UserEducationStorageService::GetSnoozeCount(
@@ -29,10 +36,6 @@ KeyedFeaturePromoDataMap UserEducationStorageService::GetKeyedPromoData(
   }
 
   return data->shown_for_keys;
-}
-
-base::Time UserEducationStorageService::GetCurrentTime() const {
-  return clock_->Now();
 }
 
 }  // namespace user_education
