@@ -28,7 +28,8 @@
 
 namespace ash {
 
-constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
+constexpr base::TimeDelta kFadeAnimationDuration = base::Milliseconds(200);
+constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(300);
 
 // Pre target event handler that handles closing the widget if a mouse or touch
 // press event is seen outside the coral chip bounds.
@@ -134,6 +135,7 @@ void TabAppSelectionHost::SlideOut() {
   auto on_animation_end = base::BindRepeating(
       [](base::WeakPtr<views::Widget> self) {
         if (self) {
+          self->GetLayer()->SetOpacity(1.f);
           self->GetLayer()->SetTransform(gfx::Transform());
           self->GetLayer()->SetClipRect(gfx::Rect());
           self->Hide();
@@ -149,11 +151,19 @@ void TabAppSelectionHost::SlideOut() {
       .OnEnded(on_animation_end)
       .OnAborted(on_animation_end)
       .Once()
-      .SetDuration(kAnimationDuration)
-      .SetTransform(layer, gfx::Transform::MakeTranslation(
-                               0, chip_bounds.y() - selection_bounds.y()))
+      .SetOpacity(layer, 1.f)
+      .At(base::TimeDelta())
+      .SetDuration(kFadeAnimationDuration)
+      .SetOpacity(layer, 0.f)
+      .At(base::TimeDelta())
+      .SetDuration(kSlideAnimationDuration)
+      .SetTransform(layer,
+                    gfx::Transform::MakeTranslation(
+                        0, chip_bounds.y() - selection_bounds.y()),
+                    gfx::Tween::EASE_IN_OUT_EMPHASIZED)
       .SetClipRect(layer,
-                   gfx::Rect(selection_bounds.width(), chip_bounds.height()));
+                   gfx::Rect(selection_bounds.width(), chip_bounds.height()),
+                   gfx::Tween::EASE_IN_OUT_EMPHASIZED);
 }
 
 void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
@@ -173,6 +183,7 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
     auto on_animation_end = base::BindRepeating(
         [](base::WeakPtr<views::Widget> self) {
           if (self) {
+            self->GetLayer()->SetOpacity(1.f);
             self->GetLayer()->SetTransform(gfx::Transform());
             self->GetLayer()->SetClipRect(gfx::Rect());
           }
@@ -184,20 +195,28 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
     const gfx::Rect chip_bounds = owner_->GetBoundsInScreen();
     const gfx::Rect selection_bounds = GetWindowBoundsInScreen();
     ui::Layer* layer = GetLayer();
-    layer->SetTransform(gfx::Transform::MakeTranslation(
-        0, chip_bounds.y() - selection_bounds.y()));
-    layer->SetClipRect(
-        gfx::Rect(selection_bounds.width(), chip_bounds.height()));
     views::AnimationBuilder()
         .SetPreemptionStrategy(
             ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
         .OnEnded(on_animation_end)
         .OnAborted(on_animation_end)
         .Once()
-        .SetDuration(kAnimationDuration)
-        .SetTransform(layer, gfx::Transform())
-        .SetClipRect(layer, gfx::Rect(selection_bounds.width(),
-                                      selection_bounds.height()));
+        .SetOpacity(layer, 0.f)
+        .SetTransform(layer, gfx::Transform::MakeTranslation(
+                                 0, chip_bounds.y() - selection_bounds.y()))
+        .SetClipRect(layer,
+                     gfx::Rect(selection_bounds.width(), chip_bounds.height()))
+        .At(base::TimeDelta())
+        .SetDuration(kFadeAnimationDuration)
+        .SetOpacity(layer, 1.f)
+        .At(base::TimeDelta())
+        .SetDuration(kSlideAnimationDuration)
+        .SetTransform(layer, gfx::Transform(),
+                      gfx::Tween::EASE_IN_OUT_EMPHASIZED)
+        .SetClipRect(
+            layer,
+            gfx::Rect(selection_bounds.width(), selection_bounds.height()),
+            gfx::Tween::EASE_IN_OUT_EMPHASIZED);
   } else {
     views::AsViewClass<TabAppSelectionView>(GetContentsView())
         ->ClearSelection();
