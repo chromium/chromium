@@ -252,6 +252,13 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
   wgpu::Adapter adapter = wgpu::Adapter(adapters[0].Get());
 
   wgpu::DeviceDescriptor device_descriptor;
+
+  // We need to request internal usage to be able to do operations with
+  // internal methods that would need specific usages.
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  device_descriptor.requiredFeatureCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
+
   wgpu::Device device = adapter.CreateDevice(&device_descriptor);
 
   auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
