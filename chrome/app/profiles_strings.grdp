@@ -683,17 +683,23 @@
     <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
       Sign in to get your bookmarks, passwords, and more on all your devices
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the work profile they will create or keep it separate.">
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the work profile they will create or keep it separate.">
       Keep existing browsing data separate from your work profile?
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the school profile they will create or keep it separate.">
+      Keep existing browsing data separate from your school profile?
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the new profile they will create or keep it separate.">
+      Keep existing browsing data separate from this new profile?
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
       Yes, keep it separate (recommended)
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created work profile.">
-      Your existing browsing data will remain in the old profile. Your work profile will not contain any previous browsing data.
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created personal profile.">
+      Your existing browsing data will remain in the existing profile. This new profile will not contain any previous browsing data.
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
-      No, move it into your work profile
+      No, move it into this new profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
       This includes bookmarks, extensions and your browsing history of sites.

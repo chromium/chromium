@@ -172,8 +172,9 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                              IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE);
   source->AddLocalizedString("errorSubtitle",
                              IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE);
-  source->AddLocalizedString("separateBrowsingDataTitle",
-                             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TITLE);
+  source->AddLocalizedString(
+      "separateBrowsingDataTitle",
+      IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE);
   source->AddLocalizedString(
       "valuePropositionTitle",
       IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT);
@@ -272,6 +273,19 @@ void ManagedUserProfileNoticeUI::Initialize(
             base::UTF8ToUTF16(enterprise_util::GetDomainFromEmail(
                 create_param->account_info.email))));
   }
+
+  if (!create_param->account_info.IsManaged()) {
+    update_data.Set(
+        "separateBrowsingDataTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE));
+  } else if (create_param->account_info.capabilities.can_use_edu_features() ==
+             signin::Tribool::kTrue) {
+    update_data.Set("separateBrowsingDataTitle",
+                    l10n_util::GetStringUTF16(
+                        IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE));
+  }
+
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIManagedUserProfileNoticeHost,
       std::move(update_data));
