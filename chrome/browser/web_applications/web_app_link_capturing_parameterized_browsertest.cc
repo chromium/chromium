@@ -692,6 +692,11 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
     // TODO(crbug.com/359600606): Enable on CrOS if navigation capturing needs
     // to be supported.
     "*"
+#elif defined(ADDRESS_SANITIZER)
+    // TODO(crbug.com/377425233): Fix flakiness on ASAN.
+    "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
 #endif
 };
 
