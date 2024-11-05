@@ -120,13 +120,13 @@ TEST_F(DeferredInitializationRunnerTest, TestCancelledBlockDoNothing) {
 
 // Tests that adding a block with the same name as an existing block will
 // not override the existing one.
-TEST_F(DeferredInitializationRunnerTest, TestSecondBlockInvalidatesFirst) {
+TEST_F(DeferredInitializationRunnerTest, TestAllowMultipleBlockWithSameName) {
   base::RunLoop run_loop0;
-  [runner() enqueueBlockNamed:@"block0"
+  [runner() enqueueBlockNamed:@"block"
                         block:base::CallbackToBlock(run_loop0.QuitClosure())];
 
   base::RunLoop run_loop1;
-  [runner() enqueueBlockNamed:@"block1"
+  [runner() enqueueBlockNamed:@"block"
                         block:base::CallbackToBlock(run_loop1.QuitClosure())];
 
   EXPECT_FALSE(run_loop0.AnyQuitCalled());
