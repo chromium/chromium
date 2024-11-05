@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -54,6 +55,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
@@ -80,6 +82,8 @@ constexpr char kTestSearchUrl[] =
     "https://www.google.com/search?q=cat&gsc=1&masfc=c";
 constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
+constexpr std::string_view kSunfishEnabledPrefName =
+    "ash.capture_mode.sunfish_enabled";
 
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
@@ -134,6 +138,19 @@ TEST_F(SunfishTest, AccelEntryPoint) {
       controller->capture_mode_session()->active_behavior();
   ASSERT_TRUE(active_behavior);
   EXPECT_EQ(active_behavior->behavior_type(), BehaviorType::kSunfish);
+}
+
+// Tests that the accelerator entry point is a no-op when the enabled pref is
+// false.
+TEST_F(SunfishTest, AccelEntryPointIsNoopIfEnabledPrefIsFalse) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishEnabledPrefName, false);
+
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  auto* controller = CaptureModeController::Get();
+  EXPECT_FALSE(controller->IsActive());
 }
 
 // Tests that the ESC key ends capture mode session.

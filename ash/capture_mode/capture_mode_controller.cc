@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -131,6 +132,11 @@ constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 // way that the nudge no longer needs to be displayed again.
 constexpr char kCanShowDemoToolsNudge[] =
     "ash.capture_mode.can_show_demo_tools_nudge";
+
+// The name of a boolean pref that records whether the Sunfish feature has been
+// enabled or not.
+constexpr std::string_view kSunfishEnabledPrefName =
+    "ash.capture_mode.sunfish_enabled";
 
 // The name of a boolean pref that records whether the sunfish consent
 // disclaimer has been accepted.
@@ -666,6 +672,8 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(kCanShowDemoToolsNudge,
                                 /*default_value=*/true);
+  registry->RegisterBooleanPref(kSunfishEnabledPrefName,
+                                /*default_value=*/true);
   registry->RegisterBooleanPref(kSunfishConsentDisclaimerAccepted,
                                 /*default_value=*/false);
 }
@@ -841,6 +849,9 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 
 void CaptureModeController::StartSunfishSession() {
   DCHECK(features::CanStartSunfishSession());
+  if (!GetActiveUserPrefService()->GetBoolean(kSunfishEnabledPrefName)) {
+    return;
+  }
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish,
                 base::BindOnce(&CaptureModeController::MaybeShowDisclaimer,
                                weak_ptr_factory_.GetWeakPtr()));
