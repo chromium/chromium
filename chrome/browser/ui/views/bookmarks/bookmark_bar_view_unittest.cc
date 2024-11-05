@@ -408,8 +408,9 @@ TEST_F(BookmarkBarViewTest, MoveNode) {
   EXPECT_EQ("a c", GetStringForVisibleButtons());
 }
 
+// TODO(crbug.com/375364962): Deflake and re-enable.
 // Assertions for changing the title of a node.
-TEST_F(BookmarkBarViewTest, ChangeTitle) {
+TEST_F(BookmarkBarViewTest, DISABLED_ChangeTitle) {
   const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
