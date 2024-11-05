@@ -22,8 +22,8 @@ using ChangeProfileCompletion = void (^)(bool success);
 // then connecting the scene with the profile.
 //
 // The method may fail if the feature kSeparateProfilesForManagedAccounts
-// is disabled, if creating the profile is impossible or fails, or if no
-// scene named `sceneIdentifier` exists.
+// is disabled or not available (on iOS < 17), if creating the profile is
+// impossible or fails, or if no scene named `sceneIdentifier` exists.
 - (void)changeProfile:(NSString*)profileName
              forScene:(NSString*)sceneIdentifier
            completion:(ChangeProfileCompletion)completion;

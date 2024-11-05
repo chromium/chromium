@@ -1630,8 +1630,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
 - (void)changeProfile:(NSString*)profileName
              forScene:(NSString*)sceneIdentifier
            completion:(ChangeProfileCompletion)completion {
-  if (!base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
-    // Not supported when kSeparateProfilesForManagedAccounts is disabled.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Not supported when kSeparateProfilesForManagedAccounts is disabled or not
+    // available.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(completion, /*success=*/false));
     return;
