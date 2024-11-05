@@ -177,6 +177,23 @@ chromium-metrics-reviews@google.com.
   <int value="327684" label="5.4"/>
   <int value="327690" label="5.10"/>
   <int value="327695" label="5.15"/>
+  <int value="327696" label="5.16"/>
+  <int value="327697" label="5.17"/>
+  <int value="327698" label="5.18"/>
+  <int value="327699" label="5.19"/>
+  <int value="393216" label="6.0"/>
+  <int value="393217" label="6.1"/>
+  <int value="393218" label="6.2"/>
+  <int value="393219" label="6.3"/>
+  <int value="393220" label="6.4"/>
+  <int value="393221" label="6.5"/>
+  <int value="393222" label="6.6"/>
+  <int value="393223" label="6.7"/>
+  <int value="393224" label="6.8"/>
+  <int value="393225" label="6.9"/>
+  <int value="393226" label="6.10"/>
+  <int value="393227" label="6.11"/>
+  <int value="393228" label="6.12"/>
 </enum>
 
 <enum name="AndroidRestoreResult">
