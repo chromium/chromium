@@ -350,8 +350,8 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
   if (it != command_id_to_action_.end()) {
     auto type = it->second.type;
     if (type == Action::Type::OPEN_URL) {
-      SavedTabGroupUtils::OpenUrlToBrowser(browser_,
-                                           std::get<GURL>(it->second.element));
+      SavedTabGroupUtils::OpenUrlInNewUngroupedTab(
+          browser_, std::get<GURL>(it->second.element));
       return;
     }
 

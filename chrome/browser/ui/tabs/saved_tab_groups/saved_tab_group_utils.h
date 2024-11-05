@@ -63,8 +63,8 @@ class SavedTabGroupUtils {
   static void DeleteSavedGroup(const Browser* browser,
                                const base::Uuid& saved_group_guid);
 
-  // Open the `url` to the end of `browser` tab strip.
-  static void OpenUrlToBrowser(Browser* browser, const GURL& url);
+  // Open the `url` to the end of `browser` tab strip as a new ungrouped tab.
+  static void OpenUrlInNewUngroupedTab(Browser* browser, const GURL& url);
 
   static void OpenOrMoveSavedGroupToNewWindow(
       Browser* browser,

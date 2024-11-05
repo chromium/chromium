@@ -248,7 +248,8 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   }
 }
 
-void SavedTabGroupUtils::OpenUrlToBrowser(Browser* browser, const GURL& url) {
+void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(Browser* browser,
+                                                  const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.started_from_context_menu = true;
@@ -411,7 +412,7 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
 
         base::BindRepeating(
             [](Browser* browser, const GURL& url, int event_flags) {
-              SavedTabGroupUtils::OpenUrlToBrowser(browser, url);
+              SavedTabGroupUtils::OpenUrlInNewUngroupedTab(browser, url);
             },
             browser, tab.url()));
   }
