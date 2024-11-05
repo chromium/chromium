@@ -22,7 +22,9 @@ namespace payments::facilitated {
 enum class PayflowExitedReason {
   kCodeValidatorFailed = 0,
   kInvalidCode = 1,
-  kMaxValue = kInvalidCode
+  kUserOptedOut = 2,
+  kNoLinkedAccount = 3,
+  kMaxValue = kNoLinkedAccount
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is

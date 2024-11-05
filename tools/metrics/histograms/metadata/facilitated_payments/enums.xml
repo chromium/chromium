@@ -26,6 +26,9 @@ reviewer.
 <enum name="FacilitatedPayments.PayFlowExitedReason">
   <int value="0" label="Code validator failed"/>
   <int value="1" label="Invalid code"/>
+  <int value="2"
+      label="User opted out of the flow using the Settings page pref"/>
+  <int value="3" label="No linked account"/>
 </enum>
 
 <enum name="FacilitatedPayments.PaymentNotOfferedReason">

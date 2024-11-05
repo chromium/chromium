@@ -368,7 +368,8 @@ TEST_F(FacilitatedPaymentsManagerTest, ResettingPreventsPayment) {
 TEST_F(FacilitatedPaymentsManagerTest,
        CopyTrigger_UrlInAllowlist_LogPixCodeCopied) {
   base::HistogramTester histogram_tester;
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
   GURL url("https://example.com/");
   // Mock allowlist check result.
   EXPECT_CALL(
@@ -394,7 +395,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
 TEST_F(FacilitatedPaymentsManagerTest,
        CopyTrigger_UrlInAllowlist_PixValidationTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
   GURL url("https://example.com/");
   // Mock allowlist check result.
   EXPECT_CALL(
@@ -422,7 +424,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
 TEST_F(FacilitatedPaymentsManagerTest,
        CopyTrigger_UrlNotInAllowlist_PixValidationNotTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
   GURL url("https://example.com/");
   // Mock allowlist check result.
   EXPECT_CALL(
@@ -450,7 +453,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
 TEST_F(FacilitatedPaymentsManagerTest,
        TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
   GURL url("https://example.com/");
   // Mock allowlist check result.
   EXPECT_CALL(*optimization_guide_decider_,
@@ -479,7 +483,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // The manager checks for API availability after validating the Pix code.
 TEST_F(FacilitatedPaymentsManagerTest,
        ApiClientTriggeredAfterPixCodeValidation) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
@@ -492,7 +497,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // the manager does not check the API for availability.
 TEST_F(FacilitatedPaymentsManagerTest,
        PixCodeValidationFailed_NoApiClientTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
@@ -516,12 +522,46 @@ TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_InvalidCode) {
       /*expected_bucket_count=*/1);
 }
 
+// If the user has opted out of the Pix flow, the PayflowExitedReason
+// histogram should be logged.
+TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_UserOptedOut) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
+                               /*is_pix_code_valid=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kUserOptedOut,
+      /*expected_bucket_count=*/1);
+}
+
+// If the user doesn't have any linked Pix account, the PayflowExitedReason
+// histogram should be logged.
+TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_NoLinkedAccount) {
+  base::HistogramTester histogram_tester;
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               base::TimeTicks::Now(),
+                               /*is_pix_code_valid=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kNoLinkedAccount,
+      /*expected_bucket_count=*/1);
+}
+
 // If the validation utility process has disconnected (e.g., due to a crash in
 // the validation code), then the manager does not check the API for
 // availability.
 TEST_F(FacilitatedPaymentsManagerTest,
        PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
@@ -552,7 +592,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // If the Pix payment user pref is turned off, the manager does not check
 // whether the facilitated payment API is available.
 TEST_F(FacilitatedPaymentsManagerTest, PixPrefTurnedOff_NoApiClientTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
   // Turn off Pix pref.
   autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
 
@@ -577,7 +618,8 @@ TEST_F(FacilitatedPaymentsManagerTest, NoPixAccounts_NoApiClientTriggered) {
 // whether the facilitated payment API is available.
 TEST_F(FacilitatedPaymentsManagerTest,
        NoPaymentsDataManager_NoApiClientTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
   ON_CALL(*client_, GetPaymentsDataManager)
       .WillByDefault(testing::Return(nullptr));
 
@@ -721,7 +763,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // async call is completed.
 TEST_F(FacilitatedPaymentsManagerTest, ApiAvailabilityHistogram) {
   base::HistogramTester histogram_tester;
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                base::TimeTicks::Now(),
@@ -899,7 +942,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // Verify that the API client is initialized lazily, so it does not take up
 // space in memory unless it's being used.
 TEST_F(FacilitatedPaymentsManagerTest, ApiClientInitializedLazily) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
 
   EXPECT_EQ(nullptr, manager_->api_client_.get());
 
@@ -913,7 +957,8 @@ TEST_F(FacilitatedPaymentsManagerTest, ApiClientInitializedLazily) {
 // Verify that a failure to lazily initialize the API client is not fatal.
 TEST_F(FacilitatedPaymentsManagerTest,
        HandlesFailureToLazilyInitializeApiClient) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
   manager_->api_client_creator_.Reset();
 
   EXPECT_EQ(nullptr, manager_->api_client_.get());
@@ -952,7 +997,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
        PixPayflowBlockedWhenFlagDisabled) {
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
 
   // In landscape mode, checking the API client's availability (which is part of
   // Pix payflow) is only done if the `EnablePixPaymentsInLandscapeMode` flag is
@@ -968,7 +1014,8 @@ TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
 TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
        HistogramForPaymentNotOfferedReason) {
   base::HistogramTester histogram_tester;
-  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                base::TimeTicks::Now(),

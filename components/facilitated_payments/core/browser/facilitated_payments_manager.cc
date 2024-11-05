@@ -113,9 +113,20 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   // accounts, verify that the payments API is available, and then show the PIX
   // payment prompt.
   auto* payments_data_manager = client_->GetPaymentsDataManager();
-  if (!payments_data_manager ||
-      !payments_data_manager->IsFacilitatedPaymentsPixUserPrefEnabled() ||
-      !payments_data_manager->HasMaskedBankAccounts()) {
+  if (!payments_data_manager) {
+    // `payments_data_manager` (owned by a PersonalDataManager) does not exist
+    // in a system profile but Pix should not be triggered there. Keep this
+    // check for safety but no logging should be required.
+    return;
+  }
+
+  if (!payments_data_manager->IsFacilitatedPaymentsPixUserPrefEnabled()) {
+    LogPayflowExitedReason(PayflowExitedReason::kUserOptedOut);
+    return;
+  }
+
+  if (!payments_data_manager->HasMaskedBankAccounts()) {
+    LogPayflowExitedReason(PayflowExitedReason::kNoLinkedAccount);
     return;
   }
 
