@@ -189,8 +189,7 @@ class VariationsService
   // |client| provides some platform-specific operations for variations. Must
   // not be null.
   // |local_state| provides access to Local State prefs. Must not be null.
-  // |state_manager| provides access to metrics state info. May only be null
-  // during testing.
+  // |state_manager| provides access to metrics state info. Must not be null.
   // |disable_network_switch| is a command-line switch that can be used to
   // disable network communication.
   // |ui_string_overrider| provides overrides for UI strings.

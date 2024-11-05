@@ -326,6 +326,8 @@ source_set("unit_tests") {
     "//components/country_codes",
     "//components/handoff",
     "//components/language/core/browser",
+    "//components/metrics",
+    "//components/metrics:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common",
     "//components/policy:generated",

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_TEST_IOS_CHROME_SCOPED_TESTING_VARIATIONS_SERVICE_H_
 #define IOS_CHROME_TEST_IOS_CHROME_SCOPED_TESTING_VARIATIONS_SERVICE_H_
 
+#import "components/metrics/metrics_state_manager.h"
+#import "components/metrics/test/test_enabled_state_provider.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/synthetic_trial_registry.h"
 
@@ -18,6 +20,8 @@ class IOSChromeScopedTestingVariationsService {
 
   variations::VariationsService* Get();
 
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
   std::unique_ptr<variations::VariationsService> variations_service_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 };

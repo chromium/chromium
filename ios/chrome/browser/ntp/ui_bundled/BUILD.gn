@@ -320,6 +320,8 @@ source_set("unit_tests") {
     "//components/commerce/core:shopping_service_test_support",
     "//components/feed/core/v2/public:common",
     "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/metrics",
+    "//components/metrics:test_support",
     "//components/ntp_tiles",
     "//components/prefs",
     "//components/search_engines",
