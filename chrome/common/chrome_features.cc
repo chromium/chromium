@@ -1499,14 +1499,6 @@ BASE_FEATURE(kUseChromiumUpdater,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables or disables user activity event logging for power management on
-// Chrome OS.
-BASE_FEATURE(kUserActivityEventLogging,
-             "UserActivityEventLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebAppDontAddExistingAppsToSync,
              "WebAppDontAddExistingAppsToSync",

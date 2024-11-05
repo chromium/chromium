@@ -1414,12 +1414,10 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
         power::ml::AdaptiveScreenBrightnessManager::CreateInstance();
   }
 
-  if (base::FeatureList::IsEnabled(::features::kUserActivityEventLogging)) {
-    // MachineLearningDecisionServiceProvider needs to be created after
-    // UserActivityController which depends on UserActivityDetector, not
-    // available until PostBrowserStart.
-    dbus_services_->CreateMachineLearningDecisionProvider();
-  }
+  // MachineLearningDecisionServiceProvider needs to be created after
+  // UserActivityController which depends on UserActivityDetector, not
+  // available until PostBrowserStart.
+  dbus_services_->CreateMachineLearningDecisionProvider();
 
   auto_screen_brightness_controller_ =
       std::make_unique<power::auto_screen_brightness::Controller>();
