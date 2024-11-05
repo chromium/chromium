@@ -208,6 +208,7 @@ class AuthenticationService : public KeyedService,
 
   // ChromeAccountManagerService::Observer implementation.
   void OnIdentityListChanged() override;
+  void OnRefreshTokenUpdated(id<SystemIdentity> identity) override;
   void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                   id<RefreshAccessTokenError> error) override;
 

@@ -162,6 +162,12 @@ void FakeSystemIdentityManager::FireIdentityUpdatedNotification(
   FireIdentityUpdated(identity);
 }
 
+void FakeSystemIdentityManager::FireIdentityRefreshTokenUpdatedNotification(
+    id<SystemIdentity> identity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  FireIdentityRefreshTokenUpdated(identity);
+}
+
 void FakeSystemIdentityManager::WaitForServiceCallbacksToComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (pending_callbacks_) {

@@ -33,6 +33,10 @@ class AccountProfileMapper {
     // have been updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
 
+    // Called on identity refresh token updated events.
+    // `identity` is the the identity for which the refresh token was updated.
+    virtual void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) {}
+
     // Called on access token refresh failed events.
     // `identity` is the the identity for which the access token refresh failed.
     // `error` is an opaque type containing information about the error.
@@ -93,6 +97,7 @@ class AccountProfileMapper {
                       const ProfileNameToGaiaIds& new_mapping);
   // Called by the Assigner on the corresponding SystemIdentityManager events.
   void IdentityUpdated(id<SystemIdentity> identity);
+  void IdentityRefreshTokenUpdated(id<SystemIdentity> identity);
   void IdentityAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                         id<RefreshAccessTokenError> error);
 
@@ -107,6 +112,11 @@ class AccountProfileMapper {
   // notified, and `profile_name` is ignored.
   void NotifyIdentityUpdated(id<SystemIdentity> identity,
                              std::string_view profile_name);
+  // Invokes `OnIdentityRefreshTokenUpdated(...)` for all observers for
+  // the profile with `profile_name`. If `kSeparateProfilesForManagedAccounts`
+  // is disabled, all observers are notified, and `profile_name` is ignored.
+  void NotifyRefreshTokenUpdated(id<SystemIdentity> identity,
+                                 std::string_view profile_name);
   // Invokes `OnIdentityAccessTokenRefreshFailed(...)` for all observers for
   // the profile with `profile_name`. If `kSeparateProfilesForManagedAccounts`
   // is disabled, all observers are notified, and `profile_name` is ignored.

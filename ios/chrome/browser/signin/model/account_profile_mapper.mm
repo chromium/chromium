@@ -133,6 +133,8 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
                                    const ProfileNameToGaiaIds& new_mapping)>;
   using IdentityUpdatedCallback =
       base::RepeatingCallback<void(id<SystemIdentity> identity)>;
+  using IdentityRefreshTokenUpdatedCallback =
+      base::RepeatingCallback<void(id<SystemIdentity> identity)>;
   using IdentityAccessTokenRefreshFailedCallback =
       base::RepeatingCallback<void(id<SystemIdentity> identity,
                                    id<RefreshAccessTokenError> error)>;
@@ -141,17 +143,20 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   // removed from any profiles.
   // `identity_updated_cb` and `identity_access_token_refresh_failed_cb`
   // correspond to the similarly-named methods on Observer.
-  Assigner(SystemIdentityManager* system_identity_manager,
-           ProfileManagerIOS* profile_manager,
-           MappingUpdatedCallback mapping_updated_cb,
-           IdentityUpdatedCallback identity_updated_cb,
-           IdentityAccessTokenRefreshFailedCallback
-               identity_access_token_refresh_failed_cb);
+  Assigner(
+      SystemIdentityManager* system_identity_manager,
+      ProfileManagerIOS* profile_manager,
+      MappingUpdatedCallback mapping_updated_cb,
+      IdentityUpdatedCallback identity_updated_cb,
+      IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb,
+      IdentityAccessTokenRefreshFailedCallback
+          identity_access_token_refresh_failed_cb);
   ~Assigner() override;
 
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() final;
   void OnIdentityUpdated(id<SystemIdentity> identity) final;
+  void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) final;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
       id<RefreshAccessTokenError> error) final;
@@ -202,6 +207,7 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
 
   MappingUpdatedCallback mapping_updated_cb_;
   IdentityUpdatedCallback identity_updated_cb_;
+  IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb_;
   IdentityAccessTokenRefreshFailedCallback
       identity_access_token_refresh_failed_cb_;
 
@@ -228,12 +234,14 @@ AccountProfileMapper::Assigner::Assigner(
     ProfileManagerIOS* profile_manager,
     MappingUpdatedCallback mapping_updated_cb,
     IdentityUpdatedCallback identity_updated_cb,
+    IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb,
     IdentityAccessTokenRefreshFailedCallback
         identity_access_token_refresh_failed_cb)
     : system_identity_manager_(system_identity_manager),
       profile_manager_(profile_manager),
       mapping_updated_cb_(mapping_updated_cb),
       identity_updated_cb_(identity_updated_cb),
+      identity_refresh_token_updated_cb_(identity_refresh_token_updated_cb),
       identity_access_token_refresh_failed_cb_(
           identity_access_token_refresh_failed_cb) {
   CHECK(system_identity_manager_);
@@ -291,6 +299,11 @@ void AccountProfileMapper::Assigner::OnIdentityUpdated(
   // After updating the mappings, let the AccountProfileMapper know about the
   // updated identity.
   identity_updated_cb_.Run(identity);
+}
+
+void AccountProfileMapper::Assigner::OnIdentityRefreshTokenUpdated(
+    id<SystemIdentity> identity) {
+  identity_refresh_token_updated_cb_.Run(identity);
 }
 
 void AccountProfileMapper::Assigner::OnIdentityAccessTokenRefreshFailed(
@@ -474,6 +487,8 @@ AccountProfileMapper::AccountProfileMapper(
                           base::Unretained(this)),
       base::BindRepeating(&AccountProfileMapper::IdentityUpdated,
                           base::Unretained(this)),
+      base::BindRepeating(&AccountProfileMapper::IdentityRefreshTokenUpdated,
+                          base::Unretained(this)),
       base::BindRepeating(
           &AccountProfileMapper::IdentityAccessTokenRefreshFailed,
           base::Unretained(this)));
@@ -516,6 +531,18 @@ void AccountProfileMapper::IterateOverIdentities(
 void AccountProfileMapper::IdentityUpdated(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NotifyIdentityUpdated(
+      identity,
+      FindProfileNameForGaiaId(
+          profile_manager_ ? profile_manager_->GetProfileAttributesStorage()
+                           : nullptr,
+          base::SysNSStringToUTF8(identity.gaiaID)));
+}
+
+void AccountProfileMapper::IdentityRefreshTokenUpdated(
+    id<SystemIdentity> identity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  NotifyRefreshTokenUpdated(
       identity,
       FindProfileNameForGaiaId(
           profile_manager_ ? profile_manager_->GetProfileAttributesStorage()
@@ -636,6 +663,31 @@ void AccountProfileMapper::NotifyIdentityUpdated(
     for (const auto& [name, observer_list] : observer_lists_per_profile_name_) {
       for (Observer& observer : observer_list) {
         observer.OnIdentityUpdated(identity);
+      }
+    }
+  }
+}
+
+void AccountProfileMapper::NotifyRefreshTokenUpdated(
+    id<SystemIdentity> identity,
+    std::string_view profile_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+    if (profile_name.empty()) {
+      return;
+    }
+    auto it = observer_lists_per_profile_name_.find(profile_name);
+    if (it == observer_lists_per_profile_name_.end()) {
+      return;
+    }
+    for (Observer& observer : it->second) {
+      observer.OnIdentityRefreshTokenUpdated(identity);
+    }
+  } else {
+    // If the feature flag is not enabled, notify all profiles.
+    for (const auto& [name, observer_list] : observer_lists_per_profile_name_) {
+      for (Observer& observer : observer_list) {
+        observer.OnIdentityRefreshTokenUpdated(identity);
       }
     }
   }

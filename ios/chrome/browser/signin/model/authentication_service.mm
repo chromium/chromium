@@ -562,6 +562,17 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
           /*force_clear_browsing_data*/ false, nil);
 }
 
+void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
+  const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
+      base::SysNSStringToUTF8(identity.gaiaID),
+      base::SysNSStringToUTF8(identity.userEmail));
+  if (!identity_manager_->HasAccountWithRefreshToken(account_id)) {
+    return;
+  }
+  identity_manager_->GetDeviceAccountsSynchronizer()->ReloadAccountFromSystem(
+      account_id);
+}
+
 void AuthenticationService::OnAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error) {

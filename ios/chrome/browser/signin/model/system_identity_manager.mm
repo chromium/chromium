@@ -120,6 +120,14 @@ void SystemIdentityManager::FireIdentityUpdated(id<SystemIdentity> identity) {
   }
 }
 
+void SystemIdentityManager::FireIdentityRefreshTokenUpdated(
+    id<SystemIdentity> identity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& observer : observers_) {
+    observer.OnIdentityRefreshTokenUpdated(identity);
+  }
+}
+
 void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error) {

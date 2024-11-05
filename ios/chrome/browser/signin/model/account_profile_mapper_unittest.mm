@@ -50,6 +50,10 @@ class MockObserver : public AccountProfileMapper::Observer {
 
   MOCK_METHOD(void, OnIdentityListChanged, (), (override));
   MOCK_METHOD(void, OnIdentityUpdated, (id<SystemIdentity>), (override));
+  MOCK_METHOD(void,
+              OnIdentityRefreshTokenUpdated,
+              (id<SystemIdentity>),
+              (override));
 };
 
 // An "empty" implementation of ProfileIOS, used here to avoid using
@@ -282,6 +286,63 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest, NoIdentity) {
   EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
 
   account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
+}
+
+// Tests that `OnIdentityRefreshTokenUpdated()` is called when the refresh
+// token is updated. This should be done to the observer of the identity.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       RefreshTokenNotification) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  const std::string kTestProfile1Name("TestProfile1");
+  base::test::TestFuture<ProfileIOS*> profile_initialized;
+  profile_manager_->CreateProfileAsync(
+      kTestProfile1Name, profile_initialized.GetCallback(), base::DoNothing());
+  ASSERT_TRUE(profile_initialized.Wait());
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get());
+  testing::StrictMock<MockObserver> mock_personal_observer;
+  account_profile_mapper_->AddObserver(&mock_personal_observer,
+                                       kPersonalProfileName);
+  testing::StrictMock<MockObserver> mock_profile1_observer;
+  account_profile_mapper_->AddObserver(&mock_profile1_observer,
+                                       kTestProfile1Name);
+
+  EXPECT_CALL(mock_personal_observer, OnIdentityListChanged());
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  EXPECT_CALL(mock_personal_observer,
+              OnIdentityRefreshTokenUpdated(gmail_identity1));
+  system_identity_manager_->FireIdentityRefreshTokenUpdatedNotification(
+      gmail_identity1);
+
+  account_profile_mapper_->RemoveObserver(&mock_personal_observer,
+                                          kPersonalProfileName);
+  account_profile_mapper_->RemoveObserver(&mock_profile1_observer,
+                                          kTestProfile1Name);
+}
+
+// Tests that `OnIdentityRefreshTokenUpdated()` is called when the refresh
+// token is updated. This test is when having only one profile.
+TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
+       RefreshTokenNotification) {
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get());
+  testing::StrictMock<MockObserver> mock_personal_observer;
+  account_profile_mapper_->AddObserver(&mock_personal_observer,
+                                       kPersonalProfileName);
+
+  EXPECT_CALL(mock_personal_observer, OnIdentityListChanged());
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  EXPECT_CALL(mock_personal_observer,
+              OnIdentityRefreshTokenUpdated(gmail_identity1));
+  system_identity_manager_->FireIdentityRefreshTokenUpdatedNotification(
+      gmail_identity1);
+
+  account_profile_mapper_->RemoveObserver(&mock_personal_observer,
+                                          kPersonalProfileName);
 }
 
 // Tests that when the feature flag is disabled, all identities are visible
