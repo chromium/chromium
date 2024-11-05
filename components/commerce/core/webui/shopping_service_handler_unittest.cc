@@ -49,7 +49,6 @@ namespace {
 
 const std::string kTestUrl1 = "http://www.example.com/1";
 const std::string kTestUrl2 = "http://www.example.com/2";
-const std::string kTestHistoryResultTitle = "Product title";
 
 class MockPage : public shopping_service::mojom::Page {
  public:
@@ -79,18 +78,6 @@ class MockPage : public shopping_service::mojom::Page {
               OnProductBookmarkMoved,
               (shopping_service::mojom::BookmarkProductInfoPtr product),
               (override));
-  MOCK_METHOD(void,
-              OnProductSpecificationsSetAdded,
-              (shared::mojom::ProductSpecificationsSetPtr set),
-              (override));
-  MOCK_METHOD(void,
-              OnProductSpecificationsSetUpdated,
-              (shared::mojom::ProductSpecificationsSetPtr set),
-              (override));
-  MOCK_METHOD(void,
-              OnProductSpecificationsSetRemoved,
-              (const base::Uuid& uuid),
-              (override));
 };
 
 class MockDelegate : public ShoppingServiceHandler::Delegate {
@@ -116,17 +103,6 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
               ShowFeedbackForProductSpecifications,
               (const std::string& log_id),
               (override));
-  MOCK_METHOD(void,
-              ShowProductSpecificationsDisclosureDialog,
-              (const std::vector<GURL>& urls,
-               const std::string& name,
-               const std::string& set_id),
-              (override));
-  MOCK_METHOD(void,
-              ShowProductSpecificationsSetForUuid,
-              (const base::Uuid& uuid, bool in_new_tab),
-              (override));
-  MOCK_METHOD(void, ShowSyncSetupFlow, (), (override));
 
   void SetCurrentTabUrl(const GURL& url) {
     ON_CALL(*this, GetCurrentTabUrl)
@@ -525,24 +501,6 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductInfoForUrl) {
             run_loop->Quit();
           },
           &run_loop));
-
-  run_loop.Run();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestGetPageTitleFromHistory) {
-  shopping_service_->SetIsPriceInsightsEligible(true);
-
-  history::QueryURLResult result;
-  result.success = true;
-  result.row = history::URLRow();
-  result.row.set_title(base::UTF8ToUTF16(kTestHistoryResultTitle));
-  shopping_service_->SetQueryHistoryForUrlCallbackValue(result);
-
-  base::RunLoop run_loop;
-  handler_->GetPageTitleFromHistory(
-      GURL("http://example.com/"), base::BindOnce([](const std::string& title) {
-                                     ASSERT_EQ(kTestHistoryResultTitle, title);
-                                   }).Then(run_loop.QuitClosure()));
 
   run_loop.Run();
 }
@@ -946,13 +904,6 @@ TEST_F(ShoppingServiceHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
   handler_->ShowBookmarkEditorForCurrentUrl();
 }
 
-TEST_F(ShoppingServiceHandlerTest, TestShowProductSpecificationsSetForUuid) {
-  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
-  EXPECT_CALL(*delegate_, ShowProductSpecificationsSetForUuid(uuid, true))
-      .Times(1);
-  handler_->ShowProductSpecificationsSetForUuid(uuid, true);
-}
-
 TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
   ProductSpecifications specs;
   specs.product_dimension_map[1] = "color";
@@ -1119,24 +1070,6 @@ TEST_F(ShoppingServiceHandlerTest,
       entry_two->log_ai_data_request()->model_execution_info().execution_id());
 }
 
-TEST_F(ShoppingServiceHandlerTest, TestSetDisclosureVersion) {
-  handler_->SetProductSpecificationAcceptedDisclosureVersion(
-      shopping_service::mojom::ProductSpecificationsDisclosureVersion::kV1);
-  EXPECT_EQ(
-      static_cast<int>(
-          shopping_service::mojom::ProductSpecificationsDisclosureVersion::kV1),
-      pref_service_->GetInteger(
-          kProductSpecificationsAcceptedDisclosureVersion));
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestSetDisclosureVersion_DefaultValue) {
-  EXPECT_EQ(
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kUnknown),
-      pref_service_->GetInteger(
-          kProductSpecificationsAcceptedDisclosureVersion));
-}
-
 TEST_F(ShoppingServiceHandlerTest, TestBookmarkNodeMoved) {
   uint64_t cluster_id = 12345u;
 
@@ -1259,11 +1192,6 @@ TEST_F(ShoppingServiceHandlerTest, TestSetNameForProductSpecificationsSet) {
   run_loop.Run();
 }
 
-TEST_F(ShoppingServiceHandlerTest, TestShowSyncSetupFlow) {
-  EXPECT_CALL(*delegate_, ShowSyncSetupFlow).Times(1);
-  handler_->ShowSyncSetupFlow();
-}
-
 TEST_F(ShoppingServiceHandlerTest, TestSetUrlsForProductSpecificationsSet) {
   const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
   ProductSpecificationsSet updated_set = ProductSpecificationsSet(
@@ -1290,73 +1218,6 @@ TEST_F(ShoppingServiceHandlerTest, TestSetUrlsForProductSpecificationsSet) {
           .Then(run_loop.QuitClosure()));
 
   run_loop.Run();
-}
-
-TEST_F(ShoppingServiceHandlerTest,
-       TestMaybeShowProductSpecificationDisclosure_NotShow) {
-  EXPECT_CALL(*delegate_, ShowProductSpecificationsDisclosureDialog).Times(0);
-
-  pref_service_->SetInteger(
-      kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kV1));
-
-  base::RunLoop run_loop;
-  handler_->MaybeShowProductSpecificationDisclosure(
-      {}, "", "", base::BindOnce([](bool show) {
-                    ASSERT_FALSE(show);
-                  }).Then(run_loop.QuitClosure()));
-  run_loop.Run();
-}
-
-TEST_F(ShoppingServiceHandlerTest,
-       TestMaybeShowProductSpecificationDisclosure_Show) {
-  std::vector<GURL> urls{GURL(kTestUrl1)};
-  std::string name = "test_name";
-  std::string set_id = "test_id";
-  EXPECT_CALL(*delegate_,
-              ShowProductSpecificationsDisclosureDialog(urls, name, set_id))
-      .Times(1);
-
-  pref_service_->SetInteger(
-      kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kUnknown));
-
-  base::RunLoop run_loop;
-  handler_->MaybeShowProductSpecificationDisclosure(
-      urls, name, set_id, base::BindOnce([](bool show) {
-                            ASSERT_TRUE(show);
-                          }).Then(run_loop.QuitClosure()));
-  run_loop.Run();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestDeclineProductSpecificationDisclosure) {
-  ASSERT_EQ(0,
-            pref_service_->GetInteger(
-                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
-  base::Time last_dismiss_time = pref_service_->GetTime(
-      commerce::kProductSpecificationsEntryPointLastDismissedTime);
-
-  handler_->DeclineProductSpecificationDisclosure();
-
-  ASSERT_EQ(1,
-            pref_service_->GetInteger(
-                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
-  ASSERT_GT(pref_service_->GetTime(
-                commerce::kProductSpecificationsEntryPointLastDismissedTime),
-            last_dismiss_time);
-
-  last_dismiss_time = pref_service_->GetTime(
-      commerce::kProductSpecificationsEntryPointLastDismissedTime);
-  handler_->DeclineProductSpecificationDisclosure();
-
-  ASSERT_EQ(2,
-            pref_service_->GetInteger(
-                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
-  ASSERT_GT(pref_service_->GetTime(
-                commerce::kProductSpecificationsEntryPointLastDismissedTime),
-            last_dismiss_time);
 }
 
 TEST_F(ShoppingServiceHandlerTest,

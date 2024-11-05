@@ -20,6 +20,7 @@
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
@@ -159,8 +160,7 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
   // If user has not accepted the latest disclosure, show the disclosure dialog
   // first.
   if (prefs->GetInteger(kProductSpecificationsAcceptedDisclosureVersion) !=
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kV1)) {
+      static_cast<int>(product_specifications::mojom::DisclosureVersion::kV1)) {
     DialogArgs dialog_args(urls_in_set, current_entry_point_info_->title,
                            /*set_id=*/"",
                            /*in_new_tab=*/true);

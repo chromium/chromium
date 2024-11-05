@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/commerce/core/mojom/shopping_service.mojom.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -407,8 +407,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   // Mock that the disclosure dialog has shown.
   browser()->profile()->GetPrefs()->SetInteger(
       commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kV1));
+      static_cast<int>(
+          commerce::product_specifications::mojom::DisclosureVersion::kV1));
 
   int tab_count = browser()->tab_strip_model()->count();
   chrome::OpenCommerceProductSpecificationsTab(

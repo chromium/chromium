@@ -20,7 +20,7 @@
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/mock_shopping_service.h"
-#include "components/commerce/core/mojom/shopping_service.mojom.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
@@ -99,8 +99,8 @@ class ProductSpecificationsEntryPointControllerBrowserTest
     // Mock disclosure dialog has been accepted by default.
     browser()->profile()->GetPrefs()->SetInteger(
         commerce::kProductSpecificationsAcceptedDisclosureVersion,
-        static_cast<int>(shopping_service::mojom::
-                             ProductSpecificationsDisclosureVersion::kV1));
+        static_cast<int>(
+            commerce::product_specifications::mojom::DisclosureVersion::kV1));
     // This is needed to make sure that the URL changes caused by navigations
     // will happen immediately.
     browser()->set_update_ui_immediately_for_testing();
@@ -753,8 +753,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Mock that disclosure dialog has not been accepted.
   browser()->profile()->GetPrefs()->SetInteger(
       commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kUnknown));
+      static_cast<int>(commerce::product_specifications::mojom::
+                           DisclosureVersion::kUnknown));
   controller_->OnEntryPointExecuted();
 
   // Disclosure dialog has shown and product spec UI is not open.
@@ -791,8 +791,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Mock that disclosure dialog has not been accepted.
   browser()->profile()->GetPrefs()->SetInteger(
       commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kUnknown));
+      static_cast<int>(commerce::product_specifications::mojom::
+                           DisclosureVersion::kUnknown));
   controller_->OnEntryPointExecuted();
 
   // Disclosure dialog has shown and product spec UI is not open.
@@ -840,8 +840,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Mock that disclosure dialog has not been accepted.
   browser()->profile()->GetPrefs()->SetInteger(
       commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kUnknown));
+      static_cast<int>(commerce::product_specifications::mojom::
+                           DisclosureVersion::kUnknown));
   controller_->OnEntryPointExecuted();
 
   // Disclosure dialog has shown and product spec UI is not open.

@@ -123,7 +123,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/commerce/core/commerce_utils.h"
-#include "components/commerce/core/mojom/shopping_service.mojom.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -2334,11 +2334,10 @@ void OpenCommerceProductSpecificationsTab(Browser* browser,
   auto* prefs = browser->profile()->GetPrefs();
   // If user has not accepted the latest disclosure, show the disclosure dialog
   // first.
-  if (prefs &&
-      prefs->GetInteger(
-          commerce::kProductSpecificationsAcceptedDisclosureVersion) !=
-          static_cast<int>(shopping_service::mojom::
-                               ProductSpecificationsDisclosureVersion::kV1)) {
+  if (prefs && prefs->GetInteger(
+                   commerce::kProductSpecificationsAcceptedDisclosureVersion) !=
+                   static_cast<int>(commerce::product_specifications::mojom::
+                                        DisclosureVersion::kV1)) {
     commerce::DialogArgs dialog_args(urls, std::string(), /*set_id=*/"",
                                      /*in_new_tab=*/true);
     commerce::ProductSpecificationsDisclosureDialog::ShowDialog(

@@ -12,6 +12,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
@@ -231,8 +232,8 @@ void CommerceInternalsHandler::ResetProductSpecifications() {
       base::Time::Now());
   shopping_service_->pref_service_->SetInteger(
       commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kUnknown));
+      static_cast<int>(
+          product_specifications::mojom::DisclosureVersion::kUnknown));
   product_specifications_service->GetAllProductSpecifications(base::BindOnce(
       &CommerceInternalsHandler::DeleteAllProductSpecificationSets,
       weak_ptr_factory_.GetWeakPtr()));

@@ -405,11 +405,6 @@ ShoppingServiceHandler::ShoppingServiceHandler(
           model_quality_logs_uploader_service) {
   scoped_subscriptions_observation_.Observe(shopping_service_);
   scoped_bookmark_model_observation_.Observe(bookmark_model_);
-  if (shopping_service_ &&
-      shopping_service_->GetProductSpecificationsService()) {
-    scoped_product_spec_observer_.Observe(
-        shopping_service_->GetProductSpecificationsService());
-  }
 
   // It is safe to schedule updates and observe bookmarks. If the feature is
   // disabled, no new information will be fetched or provided to the frontend.
@@ -769,15 +764,6 @@ void ShoppingServiceHandler::ShowBookmarkEditorForCurrentUrl() {
   delegate_->ShowBookmarkEditorForCurrentUrl();
 }
 
-void ShoppingServiceHandler::ShowProductSpecificationsSetForUuid(
-    const base::Uuid& uuid,
-    bool in_new_tab) {
-  if (!delegate_) {
-    return;
-  }
-  delegate_->ShowProductSpecificationsSetForUuid(uuid, in_new_tab);
-}
-
 void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
     GetPriceInsightsInfoForCurrentUrlCallback callback) {
   if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
@@ -1063,53 +1049,6 @@ void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
   quality_proto->set_user_feedback(user_feedback);
 }
 
-void ShoppingServiceHandler::SetProductSpecificationAcceptedDisclosureVersion(
-    shopping_service::mojom::ProductSpecificationsDisclosureVersion version) {
-  if (!pref_service_) {
-    return;
-  }
-
-  pref_service_->SetInteger(kProductSpecificationsAcceptedDisclosureVersion,
-                            static_cast<int>(version));
-}
-
-void ShoppingServiceHandler::MaybeShowProductSpecificationDisclosure(
-    const std::vector<GURL>& urls,
-    const std::string& name,
-    const std::string& set_id,
-    MaybeShowProductSpecificationDisclosureCallback callback) {
-  bool show =
-      (pref_service_->GetInteger(
-           kProductSpecificationsAcceptedDisclosureVersion) ==
-       static_cast<int>(shopping_service::mojom::
-                            ProductSpecificationsDisclosureVersion::kUnknown));
-  if (show) {
-    delegate_->ShowProductSpecificationsDisclosureDialog(urls, name, set_id);
-  }
-  std::move(callback).Run(show);
-}
-
-void ShoppingServiceHandler::DeclineProductSpecificationDisclosure() {
-  if (!pref_service_) {
-    return;
-  }
-  int current_gap_time = pref_service_->GetInteger(
-      commerce::kProductSpecificationsEntryPointShowIntervalInDays);
-  // Double the gap time for every dismiss, starting from one day.
-  if (current_gap_time == 0) {
-    current_gap_time = 1;
-  } else {
-    current_gap_time = std::min(2 * current_gap_time,
-                                kProductSpecMaxEntryPointTriggeringInterval);
-  }
-  pref_service_->SetInteger(
-      commerce::kProductSpecificationsEntryPointShowIntervalInDays,
-      current_gap_time);
-  pref_service_->SetTime(
-      commerce::kProductSpecificationsEntryPointLastDismissedTime,
-      base::Time::Now());
-}
-
 void ShoppingServiceHandler::GetProductSpecificationsFeatureState(
     GetProductSpecificationsFeatureStateCallback callback) {
   if (!shopping_service_) {
@@ -1141,22 +1080,6 @@ void ShoppingServiceHandler::GetProductSpecificationsFeatureState(
   return;
 }
 
-void ShoppingServiceHandler::OnProductSpecificationsSetAdded(
-    const ProductSpecificationsSet& set) {
-  remote_page_->OnProductSpecificationsSetAdded(ProductSpecsSetToMojo(set));
-}
-
-void ShoppingServiceHandler::OnProductSpecificationsSetUpdate(
-    const ProductSpecificationsSet& before,
-    const ProductSpecificationsSet& set) {
-  remote_page_->OnProductSpecificationsSetUpdated(ProductSpecsSetToMojo(set));
-}
-
-void ShoppingServiceHandler::OnProductSpecificationsSetRemoved(
-    const ProductSpecificationsSet& set) {
-  remote_page_->OnProductSpecificationsSetRemoved(set.uuid());
-}
-
 void ShoppingServiceHandler::OnGetProductSpecificationsForUrls(
     std::vector<GURL> input_urls,
     GetProductSpecificationsForUrlsCallback callback,
@@ -1184,23 +1107,4 @@ void ShoppingServiceHandler::OnGetProductSpecificationsForUrls(
   std::move(callback).Run(ProductSpecsToMojo(specs.value()));
 }
 
-void ShoppingServiceHandler::ShowSyncSetupFlow() {
-  if (delegate_) {
-    delegate_->ShowSyncSetupFlow();
-  }
-}
-
-void ShoppingServiceHandler::GetPageTitleFromHistory(
-    const GURL& url,
-    GetPageTitleFromHistoryCallback callback) {
-  shopping_service_->QueryHistoryForUrl(
-      url,
-      base::BindOnce(
-          [](GetPageTitleFromHistoryCallback callback,
-             history::QueryURLResult result) {
-            std::move(callback).Run(
-                result.success ? base::UTF16ToUTF8(result.row.title()) : "");
-          },
-          std::move(callback)));
-}
 }  // namespace commerce

@@ -203,7 +203,6 @@ ShoppingService::ShoppingService(
                   /*require_sync_feature_enabled=*/!base::FeatureList::
                       IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))),
       web_extractor_(std::move(web_extractor)),
-      history_service_(history_service),
       tab_restore_service_(tab_restore_service),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
@@ -311,8 +310,8 @@ ShoppingService::ShoppingService(
     }
   }
 
-  if (history_service_) {
-    history_service_observation_.Observe(history_service_);
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
   }
 
   if (product_specifications_service_) {
@@ -1896,18 +1895,6 @@ void ShoppingService::OnProductSpecificationsSetRemoved(
         return entry.virtual_url().spec().starts_with(base_url);
       },
       GetProductSpecsTabUrlForID(set.uuid()).spec()));
-}
-
-void ShoppingService::QueryHistoryForUrl(
-    const GURL& url,
-    history::HistoryService::QueryURLCallback callback) {
-  if (!history_service_) {
-    std::move(callback).Run(history::QueryURLResult());
-    return;
-  }
-
-  history_service_->QueryURL(url, false, std::move(callback),
-                             &cancelable_task_tracker_);
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

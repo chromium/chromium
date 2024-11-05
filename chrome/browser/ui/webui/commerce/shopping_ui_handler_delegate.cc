@@ -197,62 +197,12 @@ ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
   return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
-void ShoppingUiHandlerDelegate::ShowProductSpecificationsDisclosureDialog(
-    const std::vector<GURL>& urls,
-    const std::string& name,
-    const std::string& set_id) {
-  auto* browser = chrome::FindTabbedBrowser(profile_, false);
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents) {
-    return;
-  }
-  // Currently this method is only used to trigger the dialog which will open
-  // the potential product specification set in the current tab.
-  DialogArgs dialog_args(urls, name, set_id, /*in_new_tab=*/false);
-  ProductSpecificationsDisclosureDialog::ShowDialog(profile_, web_contents,
-                                                    std::move(dialog_args));
-}
-
-void ShoppingUiHandlerDelegate::ShowProductSpecificationsSetForUuid(
-    const base::Uuid& uuid,
-    bool in_new_tab) {
-  const GURL product_spec_url = commerce::GetProductSpecsTabUrlForID(uuid);
-  if (in_new_tab) {
-    OpenUrlInNewTab(product_spec_url);
-  } else {
-    auto* browser = chrome::FindLastActiveWithProfile(profile_);
-    if (!browser) {
-      return;
-    }
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (!web_contents) {
-      return;
-    }
-    web_contents->GetController().LoadURL(product_spec_url, content::Referrer(),
-                                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                          /*extra_headers=*/std::string());
-  }
-}
-
 void ShoppingUiHandlerDelegate::NavigateToUrl(Browser* browser,
                                               const GURL& url) {
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
-}
-
-void ShoppingUiHandlerDelegate::ShowSyncSetupFlow() {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  CoreAccountInfo account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  signin_ui_util::EnableSyncFromSingleAccountPromo(
-      profile_, account_info,
-      signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS);
-  return;
 }
 
 }  // namespace commerce
