@@ -377,7 +377,6 @@ class BrowserAutofillManager : public AutofillManager {
 
   // AutofillManager:
   void OnFormSubmittedImpl(const FormData& form,
-                           bool known_success,
                            mojom::SubmissionSource source) override;
   void OnCaretMovedInFormFieldImpl(const FormData& form,
                                    const FieldGlobalId& field_id,

@@ -159,10 +159,9 @@ class AutofillDriverRouter {
                  std::vector<FormData> updated_forms,
                  const std::vector<FormGlobalId>& removed_forms);
   void FormSubmitted(
-      RoutedCallback<const FormData&, bool, mojom::SubmissionSource> callback,
+      RoutedCallback<const FormData&, mojom::SubmissionSource> callback,
       AutofillDriver& source,
       FormData form,
-      bool known_success,
       mojom::SubmissionSource submission_source);
   void CaretMovedInFormField(
       RoutedCallback<const FormData&, const FieldGlobalId&, const gfx::Rect&>

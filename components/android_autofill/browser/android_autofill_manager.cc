@@ -44,13 +44,12 @@ bool AndroidAutofillManager::ShouldClearPreviewedForm() {
 
 void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,
-    bool known_success,
     mojom::SubmissionSource source) {
   address_logger_->OnWillSubmitForm();
   payments_logger_->OnWillSubmitForm();
   password_logger_->OnWillSubmitForm();
   if (auto* provider = GetAutofillProvider())
-    provider->OnFormSubmitted(this, form, known_success, source);
+    provider->OnFormSubmitted(this, form, source);
 }
 
 void AndroidAutofillManager::OnTextFieldDidChangeImpl(

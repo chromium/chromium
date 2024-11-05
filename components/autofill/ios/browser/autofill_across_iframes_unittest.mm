@@ -325,10 +325,9 @@ class TestAutofillManager : public BrowserAutofillManager {
   }
 
   void OnFormSubmitted(const FormData& form,
-                       const bool known_success,
                        const mojom::SubmissionSource source) override {
     submitted_forms_.emplace_back(form);
-    BrowserAutofillManager::OnFormSubmitted(form, known_success, source);
+    BrowserAutofillManager::OnFormSubmitted(form, source);
   }
 
   void OnAskForValuesToFill(
@@ -1209,7 +1208,6 @@ TEST_F(AutofillAcrossIframesTest, SubmitMultiFrameForm) {
       [](const FormFieldData& field) { return field.global_id(); });
 
   main_frame_driver()->FormSubmitted(main_frame_manager().seen_forms().front(),
-                                     /*known_success=*/true,
                                      mojom::SubmissionSource::FORM_SUBMISSION);
 
   // Wait on the main frame form to report itself as submitted, which is the

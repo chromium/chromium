@@ -270,7 +270,6 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
     return;
   }
 
-  check_submission_ = false;
   manager_ = manager->GetWeakPtrToLeafClass();
 
   // Set the field type predictions in `form_`.
@@ -439,7 +438,6 @@ void AndroidAutofillProvider::FireSuccessfulSubmission(
 
 void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
                                               const FormData& form,
-                                              bool known_success,
                                               SubmissionSource source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsLinkedManager(manager)) {
@@ -465,15 +463,7 @@ void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
     return;
   }
 
-  if (known_success || source == SubmissionSource::FORM_SUBMISSION ||
-      base::FeatureList::IsEnabled(
-          features::kAndroidAutofillDirectFormSubmission)) {
-    FireSuccessfulSubmission(source);
-    return;
-  }
-
-  check_submission_ = true;
-  pending_submission_source_ = source;
+  FireSuccessfulSubmission(source);
 }
 
 void AndroidAutofillProvider::OnFocusOnNonFormField(
@@ -582,15 +572,6 @@ void AndroidAutofillProvider::OnManagerResetOrDestroyed(
   if (!IsLinkedManager(manager)) {
     return;
   }
-
-  // If we previously received a notification from the renderer that the form
-  // was likely submitted and no event caused a reset of state in the interim,
-  // we consider this navigation to be resulting from the submission.
-  if (check_submission_ && form_.get()) {
-    FireSuccessfulSubmission(pending_submission_source_);
-    return;
-  }
-
   Reset();
 }
 
@@ -724,7 +705,6 @@ void AndroidAutofillProvider::Reset() {
   form_.reset();
   credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
   current_field_ = {};
-  check_submission_ = false;
   was_shown_bottom_sheet_timer_.Stop();
   was_bottom_sheet_just_shown_ = false;
 

@@ -468,8 +468,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // FillOrPreviewForm() triggers OnFillOrPreviewDataModelForm().
 
   EXPECT_CALL(observer, OnFormSubmitted(m, Ref(form)));
-  manager().OnFormSubmitted(form, true,
-                            mojom::SubmissionSource::FORM_SUBMISSION);
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
 
   // OnBeforeLoadedServerPredictions(), OnAfterLoadedServerPredictions() are
   // tested in AutofillManagerTest_OnLoadedServerPredictionsObserver.

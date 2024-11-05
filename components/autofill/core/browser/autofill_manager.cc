@@ -221,13 +221,12 @@ void AutofillManager::OnDidFillAutofillFormData(
 }
 
 void AutofillManager::OnFormSubmitted(const FormData& form,
-                                      const bool known_success,
                                       const mojom::SubmissionSource source) {
   if (!IsValidFormData(form)) {
     return;
   }
   NotifyObservers(&Observer::OnFormSubmitted, form);
-  OnFormSubmittedImpl(form, known_success, source);
+  OnFormSubmittedImpl(form, source);
 }
 
 void AutofillManager::OnFormsSeen(

@@ -148,7 +148,6 @@ class AutofillDriverIOS final : public AutofillDriver,
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormGlobalId>& removed_forms);
   void FormSubmitted(const FormData& form,
-                     bool known_success,
                      mojom::SubmissionSource submission_source);
   void CaretMovedInFormField(const FormData& form,
                              const FieldGlobalId& field_id,

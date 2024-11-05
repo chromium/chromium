@@ -100,7 +100,6 @@ class AndroidAutofillProvider : public AutofillProvider,
                                 const FormFieldData& field) override;
   void OnFormSubmitted(AndroidAutofillManager* manager,
                        const FormData& form,
-                       bool known_success,
                        mojom::SubmissionSource source) override;
   void OnFocusOnNonFormField(AndroidAutofillManager* manager) override;
   void OnFocusOnFormField(AndroidAutofillManager* manager,
@@ -348,9 +347,6 @@ class AndroidAutofillProvider : public AutofillProvider,
   content::GlobalRenderFrameHostId last_queried_field_rfh_id_;
 
   base::WeakPtr<AndroidAutofillManager> manager_;
-  bool check_submission_ = false;
-  // Valid only if check_submission_ is true.
-  mojom::SubmissionSource pending_submission_source_;
 
   static constexpr SessionId kMinimumSessionId = SessionId(1);
   static constexpr SessionId kMaximumSessionId = SessionId(0xffff);

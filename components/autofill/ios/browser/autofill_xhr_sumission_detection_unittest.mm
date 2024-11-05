@@ -39,10 +39,9 @@ class TestingAutofillManager : public BrowserAutofillManager {
       : BrowserAutofillManager(driver, "en-US") {}
 
   void OnFormSubmitted(const FormData& form,
-                       const bool known_success,
                        const mojom::SubmissionSource source) override {
     submitted_form_ = form;
-    BrowserAutofillManager::OnFormSubmitted(form, known_success, source);
+    BrowserAutofillManager::OnFormSubmitted(form, source);
   }
 
   const std::optional<FormData>& submitted_form() const {

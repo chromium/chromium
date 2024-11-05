@@ -348,10 +348,8 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     DeferMsg(&mojom::AutofillDriver::FormsSeen, updated_forms, removed_forms);
   }
   void FormSubmitted(const FormData& form,
-                     bool known_success,
                      mojom::SubmissionSource source) override {
-    DeferMsg(&mojom::AutofillDriver::FormSubmitted, form, known_success,
-             source);
+    DeferMsg(&mojom::AutofillDriver::FormSubmitted, form, source);
   }
   void CaretMovedInFormField(const FormData& form,
                              FieldRendererId field_id,
@@ -676,7 +674,6 @@ void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
 }
 
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
-                                         bool known_success,
                                          mojom::SubmissionSource source) {
   DenseSet<mojom::SubmissionSource>& sources =
       submitted_forms_[form_data.renderer_id()];
@@ -724,7 +721,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
   if (!is_duplicate_submission_for_autofill) {
     base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FormSubmitted(form_data, known_success, source);
+      autofill_driver->FormSubmitted(form_data, source);
     }
   }
   // Bound the size of `submitted_forms_` to avoid possible memory leaks.
@@ -1823,7 +1820,7 @@ void AutofillAgent::OnProvisionallySaveForm(
                   : form_util::ExtractFormData(
                         document, form_element, field_data_manager(),
                         GetCallTimerState(kOnProvisionallySaveForm))) {
-        FireHostSubmitEvents(*form_data, /*known_success=*/false,
+        FireHostSubmitEvents(*form_data,
                              mojom::SubmissionSource::FORM_SUBMISSION);
       }
       break;
@@ -1841,7 +1838,7 @@ void AutofillAgent::OnProvisionallySaveForm(
 void AutofillAgent::OnProbablyFormSubmitted() {
   if (std::optional<FormData> form_data =
           GetSubmittedForm(/*form_element=*/std::nullopt)) {
-    FireHostSubmitEvents(form_data.value(), /*known_success=*/false,
+    FireHostSubmitEvents(form_data.value(),
                          mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
   }
   if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
@@ -1868,8 +1865,7 @@ void AutofillAgent::OnFormSubmitted(const WebFormElement& form_element) {
                     form_element.GetDocument(), form_element,
                     field_data_manager(),
                     GetCallTimerState(kOnFormSubmitted))) {
-    FireHostSubmitEvents(*form_data, /*known_success=*/false,
-                         mojom::SubmissionSource::FORM_SUBMISSION);
+    FireHostSubmitEvents(*form_data, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 }
 
@@ -1895,8 +1891,7 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
           base::FeatureList::IsEnabled(
               features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
         FireHostSubmitEvents(
-            *form_data, /*known_success=*/true,
-            mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+            *form_data, mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
       }
       // `BrowserAutofillManager` ignores submissions with
       // DOM_MUTATION_AFTER_AUTOFILL as a source, therefore we early return in
@@ -1915,15 +1910,14 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
       if (provisionally_saved_form()) {
         // Should not access the frame because it is now detached. Instead, use
         // `provisionally_saved_form()`.
-        FireHostSubmitEvents(*provisionally_saved_form(),
-                             /*known_success=*/true, source);
+        FireHostSubmitEvents(*provisionally_saved_form(), source);
       }
       break;
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
     case mojom::SubmissionSource::XHR_SUCCEEDED:
       if (std::optional<FormData> form_data =
               GetSubmittedForm(/*form_element=*/std::nullopt)) {
-        FireHostSubmitEvents(*form_data, /*known_success=*/true, source);
+        FireHostSubmitEvents(*form_data, source);
       }
       break;
   }

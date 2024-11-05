@@ -51,7 +51,6 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void,
               OnFormSubmittedImpl,
               (const FormData& form,
-               bool known_success,
                mojom::SubmissionSource source),
               (override));
   MOCK_METHOD(void,

@@ -165,8 +165,7 @@ class AutofillMetricsBaseTest {
 
   void SubmitForm(const FormData& form) {
     autofill_manager().OnFormSubmitted(
-        form, /*known_success=*/false,
-        mojom::SubmissionSource::FORM_SUBMISSION);
+        form, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 
   // Mocks a credit card fetching was completed. This mock starts from the

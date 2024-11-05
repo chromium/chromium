@@ -904,7 +904,6 @@ bool BrowserAutofillManager::ShouldParseForms() {
 }
 
 void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
-                                                 bool known_success,
                                                  SubmissionSource source) {
   if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) {
     // Autofill mostly ignores such submissions because we don't consider them
@@ -918,7 +917,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   const base::TimeTicks form_submitted_timestamp = base::TimeTicks::Now();
   LOG_AF(log_manager())
       << LoggingScope::kSubmission << LogMessage::kFormSubmissionDetected
-      << Br{} << "known_success: " << known_success << Br{} << "timestamp: "
+      << Br{} << "timestamp: "
       << form_submitted_timestamp.since_origin().InMilliseconds() << Br{}
       << "source: " << SubmissionSourceToString(source) << Br{} << form;
 

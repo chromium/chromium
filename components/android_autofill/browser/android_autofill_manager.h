@@ -73,7 +73,6 @@ class AndroidAutofillManager : public AutofillManager,
   void Reset() override;
 
   void OnFormSubmittedImpl(const FormData& form,
-                           bool known_success,
                            mojom::SubmissionSource source) override;
 
   void OnCaretMovedInFormFieldImpl(const FormData& form,

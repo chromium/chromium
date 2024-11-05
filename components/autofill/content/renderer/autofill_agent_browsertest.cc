@@ -975,7 +975,7 @@ TEST_P(AutofillAgentSubmissionTest,
                   AllOf(FieldsAre(HasFieldIdAttribute(u"name"),
                                   HasFieldIdAttribute(u"address")),
                         FieldsAre(HasValue(u"Ariel"), HasValue(u"Atlantica"))),
-                  _, _));
+                  _));
 
   // Simulate inferred form submission as a result the focused field being
   // removed after an AJAX call.
@@ -1007,7 +1007,7 @@ TEST_P(AutofillAgentSubmissionTest,
                                             HasFieldIdAttribute(u"address")),
                                   FieldsAre(HasValue(u""), HasValue(u"Ariel"),
                                             HasValue(u"Atlantica"))),
-                            _, _));
+                            _));
 
   // Simulate inferred form submission as a result the focused field being
   // removed after an AJAX call.
@@ -1040,12 +1040,12 @@ TEST_P(AutofillAgentSubmissionTest,
                                               HasFieldIdAttribute(u"address")),
                                     FieldsAre(HasValue(u"Ariel"),
                                               HasValue(u"Atlantica"))),
-                              _, _));
+                              _));
   } else {
     EXPECT_CALL(autofill_driver(),
                 FormSubmitted(AllOf(FieldsAre(HasFieldIdAttribute(u"address")),
                                     FieldsAre(HasValue(u"Atlantica"))),
-                              _, _));
+                              _));
   }
 
   // Remove element that the user did not interact with last.
@@ -1108,7 +1108,7 @@ TEST_P(AutofillAgentSubmissionTest,
   EXPECT_CALL(autofill_driver(),
               FormSubmitted(AllOf(FieldsAre(HasFieldIdAttribute(u"input2")),
                                   FieldsAre(HasValue(u"input2 autofilled"))),
-                            _, _));
+                            _));
   ExecuteJavaScriptForTests(R"(document.getElementById('form').remove();)");
   autofill_agent().OnInferredFormSubmission(
       mojom::SubmissionSource::XHR_SUCCEEDED);

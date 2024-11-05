@@ -504,11 +504,9 @@ void ContentAutofillDriver::FormsSeen(
 
 void ContentAutofillDriver::FormSubmitted(
     const FormData& form,
-    bool known_success,
     mojom::SubmissionSource submission_source) {
   RouteToManager(*this, router(), &AutofillDriverRouter::FormSubmitted,
-                 &AutofillManager::OnFormSubmitted, form, known_success,
-                 submission_source);
+                 &AutofillManager::OnFormSubmitted, form, submission_source);
 }
 
 void ContentAutofillDriver::CaretMovedInFormField(

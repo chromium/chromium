@@ -265,7 +265,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormRendererId>& removed_forms) override;
   void FormSubmitted(const FormData& form,
-                     bool known_success,
                      mojom::SubmissionSource submission_source) override;
   void JavaScriptChangedAutofilledValue(const FormData& form,
                                         FieldRendererId field_id,

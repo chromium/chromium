@@ -189,17 +189,16 @@ void AutofillDriverRouter::FormsSeen(
 }
 
 void AutofillDriverRouter::FormSubmitted(
-    RoutedCallback<const FormData&, bool, mojom::SubmissionSource> callback,
+    RoutedCallback<const FormData&, mojom::SubmissionSource> callback,
     AutofillDriver& source,
     FormData form,
-    bool known_success,
     mojom::SubmissionSource submission_source) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame());
-  callback(CHECK_DEREF(target), browser_form, known_success, submission_source);
+  callback(CHECK_DEREF(target), browser_form, submission_source);
 }
 
 void AutofillDriverRouter::CaretMovedInFormField(

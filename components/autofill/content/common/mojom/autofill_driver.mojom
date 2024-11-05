@@ -20,11 +20,8 @@ interface AutofillDriver {
   // DOM later).
   FormsSeen(array<FormData> updated_forms, array<FormRendererId> removed_forms);
 
-  // Notification that a form has been submitted. The `known_success` indicates
-  // whether the submission succeeded or not. Currently, we assume submission
-  // succeeds if the form is removed.
+  // Notification that a form has been submitted.
   FormSubmitted(FormData form,
-                bool known_success,
                 SubmissionSource source);
 
   // Notification that a form field's caret moved or selection has changed.

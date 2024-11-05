@@ -938,7 +938,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   void FormSubmitted(const FormData& form) {
     browser_autofill_manager_->OnFormSubmitted(
-        form, false, SubmissionSource::FORM_SUBMISSION);
+        form, SubmissionSource::FORM_SUBMISSION);
   }
 
   // TODO(crbug.com/40227071): Have separate functions for profile and credit
@@ -5668,8 +5668,7 @@ TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
   full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                   "4012888888881881");
-  browser_autofill_manager_->OnFormSubmitted(form, false,
-                                             SubmissionSource::FORM_SUBMISSION);
+  FormSubmitted(form);
 }
 
 TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {

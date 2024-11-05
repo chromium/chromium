@@ -1316,10 +1316,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     // TODO: Run the test with BFCache after relanding crrev.com/c/5434056
-    @CommandLineFlags.Add({
-        "enable-features=AndroidAutofillDirectFormSubmission",
-        "disable-features=WebViewBackForwardCache,AutofillServerCommunication"
-    })
+    @CommandLineFlags.Add({"disable-features=WebViewBackForwardCache,AutofillServerCommunication"})
     public void testNavigationAfterProbableSubmitResultsInSessionCommit() throws Throwable {
         int cnt = 0;
         loadHTML(
@@ -2179,10 +2176,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({
-        "disable-features=AutofillServerCommunication",
-        "enable-features=AndroidAutofillDirectFormSubmission"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     public void testUMAFormSubmissionProbablyFormSubmitted() throws Throwable {
         var histograms =
                 ThreadUtils.runOnUiThreadBlocking(

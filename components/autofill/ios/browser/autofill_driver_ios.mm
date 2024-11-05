@@ -460,22 +460,18 @@ void AutofillDriverIOS::FormsSeen(
 
 void AutofillDriverIOS::FormSubmitted(
     const FormData& form,
-    bool known_success,
     mojom::SubmissionSource submission_source) {
   auto callback = [](AutofillDriver& driver, const FormData& form,
-                     bool known_success,
                      mojom::SubmissionSource submission_source) {
     base::UmaHistogramEnumeration(kAutofillSubmissionDetectionSourceHistogram,
                                   submission_source);
-    driver.GetAutofillManager().OnFormSubmitted(form, known_success,
-                                                submission_source);
+    driver.GetAutofillManager().OnFormSubmitted(form, submission_source);
     cast(&driver)->ClearLastInteractedForm();
   };
   if (IsAcrossIframesEnabled()) {
-    router_->FormSubmitted(callback, *this, form, known_success,
-                           submission_source);
+    router_->FormSubmitted(callback, *this, form, submission_source);
   } else {
-    callback(*this, form, known_success, submission_source);
+    callback(*this, form, submission_source);
   }
 }
 
@@ -592,7 +588,6 @@ void AutofillDriverIOS::FormsRemoved(
     UpdateLastInteractedFormFromFieldDataManager();
 
     FormSubmitted(last_interacted_form_->form_data,
-                  /*known_success=*/true,
                   mojom::SubmissionSource::XHR_SUCCEEDED);
   }
 

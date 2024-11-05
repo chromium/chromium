@@ -113,9 +113,8 @@ void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
 
 void TestBrowserAutofillManager::OnFormSubmitted(
     const FormData& form,
-    const bool known_success,
     const mojom::SubmissionSource source) {
-  AutofillManager::OnFormSubmitted(form, known_success, source);
+  AutofillManager::OnFormSubmitted(form, source);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

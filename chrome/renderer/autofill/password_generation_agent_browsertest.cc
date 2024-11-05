@@ -91,7 +91,6 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   }
 
   void FormSubmitted(const FormData& form,
-                     bool known_success,
                      mojom::SubmissionSource source) override {}
 
   void CaretMovedInFormField(const FormData& form,

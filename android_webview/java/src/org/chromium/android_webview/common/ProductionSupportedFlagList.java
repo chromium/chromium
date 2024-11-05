@@ -228,10 +228,6 @@ public final class ProductionSupportedFlagList {
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME,
                 "Enable the workaround for autofill bottom sheet platform bug."),
         Flag.baseFeature(
-                AndroidAutofillFeatures.ANDROID_AUTOFILL_DIRECT_FORM_SUBMISSION,
-                "When enabled, submission is directly fired to the provider upon receiving the "
-                        + "renderer's signal."),
-        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD_NAME,
                 "Enables sending prefill requests for Change Password forms."),
         Flag.baseFeature(

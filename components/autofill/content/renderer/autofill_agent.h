@@ -287,7 +287,6 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Fires Mojo messages for a given form submission.
   void FireHostSubmitEvents(const FormData& form_data,
-                            bool known_success,
                             mojom::SubmissionSource source);
 
   // blink::WebAutofillClient:

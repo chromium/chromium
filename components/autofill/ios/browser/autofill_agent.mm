@@ -852,7 +852,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
 
   driver->FormSubmitted(formData,
-                        /*known_success=*/false,
                         autofill::mojom::SubmissionSource::FORM_SUBMISSION);
 }
 

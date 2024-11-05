@@ -328,7 +328,7 @@ class CreditCardSaveManagerTest : public testing::Test {
 
   void FormSubmitted(const FormData& form) {
     browser_autofill_manager_->OnFormSubmitted(
-        form, false, mojom::SubmissionSource::FORM_SUBMISSION);
+        form, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 
   void UserHasAcceptedCardUpload(

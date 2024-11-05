@@ -235,7 +235,6 @@ class AutofillManager
   virtual void OnFormsSeen(const std::vector<FormData>& updated_forms,
                            const std::vector<FormGlobalId>& removed_forms);
   virtual void OnFormSubmitted(const FormData& form,
-                               bool known_success,
                                mojom::SubmissionSource source);
   virtual void OnTextFieldDidChange(const FormData& form,
                                     const FieldGlobalId& field_id,
@@ -349,7 +348,6 @@ class AutofillManager
   // OnFooImpl() is called, potentially asynchronously after parsing the form,
   // by the renderer event OnFoo().
   virtual void OnFormSubmittedImpl(const FormData& form,
-                                   bool known_success,
                                    mojom::SubmissionSource source) = 0;
   virtual void OnCaretMovedInFormFieldImpl(const FormData& form,
                                            const FieldGlobalId& field_id,

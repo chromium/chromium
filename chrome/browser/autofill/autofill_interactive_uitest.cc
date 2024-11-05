@@ -3314,7 +3314,7 @@ class AutofillInteractiveFormSubmissionTest
         : BrowserAutofillManager(driver, "en-US") {}
     MOCK_METHOD(void,
                 OnFormSubmittedImpl,
-                (const FormData&, bool, mojom::SubmissionSource),
+                (const FormData&, mojom::SubmissionSource),
                 (override));
 
     TestAutofillManagerWaiter& text_field_change_waiter() {
@@ -3452,7 +3452,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest, Submission) {
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(HasExpectedValues(),
-                                  /*known_success=*/false,
                                   mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
@@ -3472,7 +3471,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(
       *autofill_manager(),
       OnFormSubmittedImpl(HasExpectedValues(),
-                          /*known_success=*/false,
                           mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
@@ -3494,7 +3492,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(
       *autofill_manager(),
       OnFormSubmittedImpl(HasExpectedValues(),
-                          /*known_success=*/true,
                           mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
@@ -3527,7 +3524,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(HasExpectedValues(),
-                                  /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
@@ -3560,7 +3556,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(HasExpectedValues(),
-                                  /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
@@ -3593,7 +3588,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(HasExpectedValues(),
-                                  /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
@@ -3635,11 +3629,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
   base::RunLoop run_loop;
   // Ensure that only expected form submissions are recorded.
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
-  EXPECT_CALL(
-      *autofill_manager(),
-      OnFormSubmittedImpl(
-          FieldsAre(Map(kExpectedSubmittedValues, HasNameValueUserInput)),
-          /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(FieldsAre(Map(kExpectedSubmittedValues,
+                                                HasNameValueUserInput)),
+                                  mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
@@ -3682,7 +3675,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                               {base::UTF8ToUTF16(fv.id),
                                base::UTF8ToUTF16(fv.value), u""});
                         })),
-          /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
+          mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
@@ -3741,7 +3734,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormlessFormSubmissionTest,
                                               {base::UTF8ToUTF16(fv.id),
                                                base::UTF8ToUTF16(fv.value)});
                                         })),
-                          /*known_success=*/false,
                           mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)
       .WillRepeatedly(RunClosure(run_loop.QuitClosure()));

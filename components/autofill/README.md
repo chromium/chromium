@@ -375,28 +375,26 @@ that the website accepted the submitted values, not that the HTTP request
 succeeded):
 
 * A **regular HTTP form submission** (`FormTracker::WillSubmitForm()`).
-  * Triggers `SubmissionSource::FORM_SUBMISSION` with `known_success=false`.
+  * Triggers `SubmissionSource::FORM_SUBMISSION`.
 * A **main-frame navigation** was initiated in the content area but not triggered by
   a link click (`FormTracker::DidStartNavigation()`) - only if the frame has a
   `last_interacted_form_` or form-less element that the user interacted with.
-  * Triggers `SubmissionSource::PROBABLY_FORM_SUBMITTED` with
-    `known_success=false`.
+  * Triggers `SubmissionSource::PROBABLY_FORM_SUBMITTED`.
 * After a **same document navigation**
   (`FormTracker::DidFinishSameDocumentNavigation()`), the last interacted form
   is/becomes unfocusable or removed. The former condition is tested via
   `WebNode::IsFocusable()` and considers various styles (e.g. "display: none" on
   the node or a parent, "visibility: hidden") and attributes (e.g. "inert",
   tabindex="-1", "disabled") which prevent focusability.
-  * Triggers `SubmissionSource::SAME_DOCUMENT_NAVIGATION` with
-    `known_success=true`.
+  * Triggers `SubmissionSource::SAME_DOCUMENT_NAVIGATION`.
 * After a **successful AJAX/XMLHttpRequest request**
   (`AutofillAgent::AjaxSucceeded()`), the last interacted form is/becomes
   unfocusable or removed.
   * Triggers `SubmissionSource::XHR_SUCCEEDED` if the form is already
-    inaccessible or removed and the XHR succeeds (`known_success=true`).
+    inaccessible or removed and the XHR succeeds.
 * The **subframe** or non-primary main frame containing the form was
   **detached** (`FormTracker::WillDetach()`)
-  * Triggers `SubmissionSource::FRAME_DETACHED` with `known_success=true`.
+  * Triggers `SubmissionSource::FRAME_DETACHED`.
 
 ## When are votes uploaded?
 

@@ -105,9 +105,8 @@ class TestAutofillManager : public BrowserAutofillManager {
   }
 
   void OnFormSubmittedImpl(const FormData& form,
-                           bool known_success,
                            mojom::SubmissionSource source) override {
-    BrowserAutofillManager::OnFormSubmittedImpl(form, known_success, source);
+    BrowserAutofillManager::OnFormSubmittedImpl(form, source);
     // The submitted form does not end up in the form cache, so we need to catch
     // it here.
     submitted_form_ = form;

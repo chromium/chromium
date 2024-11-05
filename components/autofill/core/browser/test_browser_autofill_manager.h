@@ -67,7 +67,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                                           const std::u16string& old_value,
                                           bool formatting_only) override;
   void OnFormSubmitted(const FormData& form,
-                       const bool known_success,
                        const mojom::SubmissionSource source) override;
 
   // BrowserAutofillManager overrides.
