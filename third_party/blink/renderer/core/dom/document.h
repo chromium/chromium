@@ -1762,7 +1762,8 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   PropertyRegistry& EnsurePropertyRegistry();
 
-  // May return nullptr when PerformanceManager instrumentation is disabled.
+  // May return nullptr when PerformanceManager instrumentation is disabled or
+  // when the Document is inactive.
   DocumentResourceCoordinator* GetResourceCoordinator();
 
   const AtomicString& bgColor() const;
