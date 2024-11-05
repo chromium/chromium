@@ -99,11 +99,17 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         custom_metrics = [
             buildbucket.custom_metric(
                 name = "/chrome/infra/browser/builds/cached_count",
-                predicates = ['string(build.output.properties.is_cached) == "true"'],
+                predicates = [
+                    "has(build.output.properties.is_cached)",
+                    'string(build.output.properties.is_cached) == "true"',
+                ],
             ),
             buildbucket.custom_metric(
                 name = "/chrome/infra/browser/builds/uncached_count",
-                predicates = ['string(build.output.properties.is_cached) == "false"'],
+                predicates = [
+                    "has(build.output.properties.is_cached)",
+                    'string(build.output.properties.is_cached) == "false"',
+                ],
             ),
         ],
         **kwargs
