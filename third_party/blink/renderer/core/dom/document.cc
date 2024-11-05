@@ -7372,9 +7372,8 @@ void Document::FinishedParsing() {
         UpdateStyleAndLayoutTree();
         if (base::FeatureList::IsEnabled(
                 features::kPrerender2EarlyDocumentLifecycleUpdate) &&
-            IsPrerendering()) {
-          View()->UpdateAllLifecyclePhasesExceptPaint(
-              DocumentUpdateReason::kPrerender);
+            IsPrerendering() && GetFrame()->IsLocalRoot()) {
+          View()->DryRunPaintingForPrerender();
         }
       }
     }
