@@ -9706,6 +9706,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyHubAndroidSurveyDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSafetyHubAndroidSurvey)},
 
+    {"safety-hub-android-survey-v2",
+     flag_descriptions::kSafetyHubAndroidSurveyV2Name,
+     flag_descriptions::kSafetyHubAndroidSurveyV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSafetyHubAndroidSurveyV2)},
+
     {"safety-hub-weak-reused-passwords",
      flag_descriptions::kSafetyHubWeakAndReusedPasswordsName,
      flag_descriptions::kSafetyHubWeakAndReusedPasswordsDescription, kOsAndroid,

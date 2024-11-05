@@ -446,6 +446,7 @@ public abstract class ChromeFeatureList {
             "ReplaceSyncPromosWithSignInPromos";
     public static final String SAFETY_HUB = "SafetyHub";
     public static final String SAFETY_HUB_ANDROID_SURVEY = "SafetyHubAndroidSurvey";
+    public static final String SAFETY_HUB_ANDROID_SURVEY_V2 = "SafetyHubAndroidSurveyV2";
     public static final String SAFETY_HUB_FOLLOWUP = "SafetyHubFollowup";
     public static final String SAFETY_HUB_MAGIC_STACK = "SafetyHubMagicStack";
     public static final String SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS =
@@ -885,6 +886,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SAFETY_HUB, false);
     public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurvey =
             newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_SURVEY, false);
+    public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurveyV2 =
+            newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_SURVEY_V2, false);
     public static final MutableFlagWithSafeDefault sSafetyHubFollowup =
             newMutableFlagWithSafeDefault(SAFETY_HUB_FOLLOWUP, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =

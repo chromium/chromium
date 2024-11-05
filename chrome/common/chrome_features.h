@@ -636,6 +636,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kSafetyHubAndroidTriggerId;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kSafetyHubAndroidSurveyV2);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyHubWeakAndReusedPasswords);
 #endif
 

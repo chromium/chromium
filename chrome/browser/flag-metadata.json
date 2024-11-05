@@ -7793,6 +7793,15 @@
     "expiry_milestone": 135
   },
   {
+    "name": "safety-hub-android-survey-v2",
+    "owners": [
+      "fsenra@google.com",
+      "zalmashni@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "safety-hub-followup",
     "owners": [
       "zalmashni@google.com",

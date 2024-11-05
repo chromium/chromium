@@ -142,6 +142,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPwaUpdateDialogForIcon,
     &features::kSafetyHub,
     &features::kSafetyHubAndroidSurvey,
+    &features::kSafetyHubAndroidSurveyV2,
     &features::kSafetyHubFollowup,
     &features::kSafetyHubMagicStack,
     &features::kSafetyHubWeakAndReusedPasswords,

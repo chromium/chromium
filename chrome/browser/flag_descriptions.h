@@ -1922,6 +1922,9 @@ extern const char kSafetyHubFollowupDescription[];
 extern const char kSafetyHubAndroidSurveyName[];
 extern const char kSafetyHubAndroidSurveyDescription[];
 
+extern const char kSafetyHubAndroidSurveyV2Name[];
+extern const char kSafetyHubAndroidSurveyV2Description[];
+
 extern const char kSafetyHubWeakAndReusedPasswordsName[];
 extern const char kSafetyHubWeakAndReusedPasswordsDescription[];
 #else

@@ -1068,6 +1068,11 @@ constexpr base::FeatureParam<std::string> kSafetyHubAndroidTriggerId(
     "trigger_id",
     /*default_value=*/"");
 
+// Enables new triggers for the Safety Hub HaTS survey on Android.
+BASE_FEATURE(kSafetyHubAndroidSurveyV2,
+             "SafetyHubAndroidSurveyV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Weak and Reused passwords in Safety Hub.
 BASE_FEATURE(kSafetyHubWeakAndReusedPasswords,
              "SafetyHubWeakAndReusedPasswords",
