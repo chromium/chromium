@@ -1846,7 +1846,8 @@ void CaptureModeController::OnImageCapturedForSearch(
     Shell::Get()->scanner_controller()->FetchActionsForImage(
         jpeg_bytes,
         base::BindOnce(&CaptureModeController::OnScannerActionsFetched,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), user_capture_region_,
+                       last_capture_region_update_time_));
   }
 
   if (ShouldSendRegionSearch(capture_type)) {
@@ -1926,16 +1927,33 @@ void CaptureModeController::OnDisclaimerAction(bool accepted) {
 }
 
 void CaptureModeController::OnScannerActionsFetched(
+    const gfx::Rect& captured_region,
+    base::TimeTicks capture_region_update_time,
     std::vector<ScannerActionViewModel> scanner_actions) {
   // The session may have been stopped before the Scanner actions have been
   // received. Defensively check to ensure that we do not dereference a null
   // pointer here.
-  if (IsActive()) {
-    // A new session may have started since the Scanner actions were requested.
-    // See the comments inside `CaptureModeSession::AddScannerActionButtons` for
-    // more details.
-    capture_mode_session_->AddScannerActionButtons(std::move(scanner_actions));
+  if (!IsActive()) {
+    return;
   }
+  // Use the captured region and the capture region update time - set from
+  // `OnImageCapturedForSearch()` - as a proxy to detect whether the current
+  // selection changed or not since the Scanner action request was sent.
+  // Note that when the region is being selected, the capture region and the
+  // update time is continuously being updated.
+  //
+  // This does not catch the case when:
+  // - the region + update time changed between `PerformImageSearch()` and
+  //   `OnImageCapturedForSearch()`. This will likely result in two sets of
+  //   Scanner actions being added to the region - stale actions for the old
+  //   image search and the new actions for the current image search.
+  // - the session ended and a new one started with `ShouldClearCaptureRegion()`
+  //   false. This will result in stale actions being added to the new session.
+  if (captured_region != user_capture_region_ ||
+      capture_region_update_time != last_capture_region_update_time_) {
+    return;
+  }
+  capture_mode_session_->AddScannerActionButtons(std::move(scanner_actions));
 }
 
 void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,

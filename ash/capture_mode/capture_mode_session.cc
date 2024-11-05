@@ -1417,30 +1417,6 @@ void CaptureModeSession::AddActionButton(
 
 void CaptureModeSession::AddScannerActionButtons(
     std::vector<ScannerActionViewModel> scanner_actions) {
-  // This function may be called from the controller after fetching Scanner
-  // actions from a stale session OR stale selection from the current session.
-  // Defensively check to ensure that we do not add action buttons if they are
-  // not expected.
-  if (!action_container_widget_) {
-    // `UpdateActionContainerWidget()` has not been called yet, so this session
-    // has not been initialised yet. This means the call must have come from a
-    // stale session.
-    return;
-  }
-  if (controller_->source() != CaptureModeSource::kRegion ||
-      is_selecting_region_ || controller_->user_capture_region().IsEmpty()) {
-    // A region has not been selected yet. This means the call must have come
-    // from a stale session OR stale selection from the current session.
-    return;
-  }
-  // The above checks are insufficient for stale region selections, and could
-  // make Scanner actions from a previous region appear in the active region if
-  // the Scanner action response is slow.
-  // TODO: b/369470078 - Fix this race condition by either introducing a class
-  // which represents a region selection, and fetching the Scanner actions from
-  // that, or introducing a `WeakPtrFactory` which is invalidated every time the
-  // region selection changes.
-
   // This is inefficient, as we repeatedly sort, insert and recalculate the
   // bounds for buttons one-by-one.
   // TODO: b/369470078 - Fix this inefficiency by adding multiple action buttons

@@ -67,10 +67,13 @@ namespace ash {
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::testing::Contains;
+using ::testing::DoDefault;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::WithArg;
 
 constexpr char kTestSearchUrl[] =
     "https://www.google.com/search?q=cat&gsc=1&masfc=c";
@@ -1088,6 +1091,187 @@ TEST_F(ScannerTest, FetchActionsImmediately) {
   const CaptureModeSessionTestApi session_test_api(
       capture_mode_controller->capture_mode_session());
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
+}
+
+// Tests that action buttons for a stale Scanner request are not added to a new
+// and different region the same session.
+TEST_F(ScannerTest, DoesNotCreateActionButtonsForNewerDifferentRegion) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      stale_fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(stale_fetch_actions_future)))
+      .WillOnce(DoDefault());
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(50, 50, 500, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  stale_fetch_actions_future.Take().Run(std::move(output),
+                                        manta::MantaStatus());
+
+  // The callback for the stale actions should not affect the current actions.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
+// Tests that action buttons for a stale Scanner request are not added to a new
+// but identical region in the same session.
+TEST_F(ScannerTest, DoesNotCreateActionButtonsForNewerSameRegion) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      stale_fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(stale_fetch_actions_future)))
+      .WillOnce(DoDefault());
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  // Reselect the same region. Trying to drag the exact same bounds will instead
+  // modify the existing region, so we need to clear the region first.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  stale_fetch_actions_future.Take().Run(std::move(output),
+                                        manta::MantaStatus());
+
+  // The callback for the stale actions should not affect the current actions.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
+// Tests that action buttons for a stale Scanner request are not added to a new
+// empty region in the same session.
+TEST_F(ScannerTest, DoesNotCreateActionButtonsForNewerEmptyRegion) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      stale_fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(stale_fetch_actions_future)));
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  stale_fetch_actions_future.Take().Run(std::move(output),
+                                        manta::MantaStatus());
+
+  // The callback for the stale actions should not affect the current actions.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
+// Tests that action buttons for a stale Scanner request are not added to region
+// that is currently being selected, that is identical to the region that was
+// selected for the stale Scanner request.
+TEST_F(ScannerTest, DoesNotCreateActionButtonsForNewerSameRegionBeingSelected) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      stale_fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(stale_fetch_actions_future)));
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  // Reselect the same region without releasing the mouse. Trying to drag the
+  // exact same bounds will instead modify the existing region, so we need to
+  // clear the region first.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/false, /*verify_region=*/true);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  stale_fetch_actions_future.Take().Run(std::move(output),
+                                        manta::MantaStatus());
+
+  // The callback for the stale actions should not affect the current actions.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
+// Tests that action buttons for a stale Scanner request are not added to region
+// that is currently being selected, that is identical to the region that was
+// selected for the stale Scanner request.
+TEST_F(ScannerTest,
+       DoesNotCreateActionButtonsForNewerEmptyRegionBeingSelected) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      stale_fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(stale_fetch_actions_future)));
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(),
+                          /*release_mouse=*/false, /*verify_region=*/true);
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  stale_fetch_actions_future.Take().Run(std::move(output),
+                                        manta::MantaStatus());
+
+  // The callback for the stale actions should not affect the current actions.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
 }
 
 // Tests that the copy text button is shown in default capture mode if text is

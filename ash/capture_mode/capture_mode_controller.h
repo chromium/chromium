@@ -24,6 +24,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
@@ -536,6 +537,8 @@ class ASH_EXPORT CaptureModeController
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
   void OnScannerActionsFetched(
+      const gfx::Rect& captured_region,
+      base::TimeTicks capture_region_update_time,
       std::vector<ScannerActionViewModel> scanner_actions);
 
   // Called back when an attempt to save the image file has been completed, with
