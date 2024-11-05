@@ -540,6 +540,9 @@ def _CheckForMissingSymbols(options, dex_files, error_title):
         # Explicitly guarded by try (NoClassDefFoundError) in Firebase's
         # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
         'kotlin.KotlinVersion',
+
+        # An ErrorProne annotation.
+        'ResultIgnorabilityUnspecified',
     ]
 
     had_unfiltered_items = '  ' in stderr
