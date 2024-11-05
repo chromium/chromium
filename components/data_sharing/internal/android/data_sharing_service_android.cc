@@ -89,9 +89,12 @@ class DataSharingServiceAndroid::GroupDataObserverBridge
   GroupDataObserverBridge& operator=(const GroupDataObserverBridge&) = delete;
 
   // DataSharingService::Observer impl:
-  void OnGroupChanged(const GroupData& group_data) override;
-  void OnGroupAdded(const GroupData& group_data) override;
-  void OnGroupRemoved(const GroupId& group_id) override;
+  void OnGroupChanged(const GroupData& group_data,
+                      const base::Time& event_time) override;
+  void OnGroupAdded(const GroupData& group_data,
+                    const base::Time& event_time) override;
+  void OnGroupRemoved(const GroupId& group_id,
+                      const base::Time& event_time) override;
   void OnServiceStatusChanged(
       const ServiceStatusUpdate& status_update) override;
 
@@ -114,7 +117,7 @@ DataSharingServiceAndroid::GroupDataObserverBridge::~GroupDataObserverBridge() =
     default;
 
 void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupChanged(
-    const GroupData& group_data) {
+    const GroupData& group_data, const base::Time& event_time) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_group =
       data_sharing::conversion::CreateJavaGroupData(env, group_data);
@@ -122,7 +125,7 @@ void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupChanged(
 }
 
 void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupAdded(
-    const GroupData& group_data) {
+    const GroupData& group_data, const base::Time& event_time) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_group =
       data_sharing::conversion::CreateJavaGroupData(env, group_data);
@@ -130,7 +133,7 @@ void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupAdded(
 }
 
 void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupRemoved(
-    const GroupId& group_id) {
+    const GroupId& group_id, const base::Time& event_time) {
   JNIEnv* env = AttachCurrentThread();
   Java_ObserverBridge_onGroupRemoved(
       env, java_obj_, ConvertUTF8ToJavaString(env, group_id.value()));

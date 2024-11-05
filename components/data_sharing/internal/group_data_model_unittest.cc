@@ -90,9 +90,18 @@ class MockModelObserver : public GroupDataModel::Observer {
   ~MockModelObserver() override = default;
 
   MOCK_METHOD(void, OnModelLoaded, (), (override));
-  MOCK_METHOD(void, OnGroupAdded, (const GroupId& group_id), (override));
-  MOCK_METHOD(void, OnGroupUpdated, (const GroupId& group_id), (override));
-  MOCK_METHOD(void, OnGroupDeleted, (const GroupId& group_id), (override));
+  MOCK_METHOD(void,
+              OnGroupAdded,
+              (const GroupId& group_id, const base::Time& event_time),
+              (override));
+  MOCK_METHOD(void,
+              OnGroupUpdated,
+              (const GroupId& group_id, const base::Time& event_time),
+              (override));
+  MOCK_METHOD(void,
+              OnGroupDeleted,
+              (const GroupId& group_id, const base::Time& event_time),
+              (override));
   MOCK_METHOD(void,
               OnMemberAdded,
               (const GroupId&, const std::string&, const base::Time&),
@@ -171,7 +180,7 @@ class GroupDataModelTest : public testing::Test {
 
   void WaitForGroupAdded(const GroupId& group_id) {
     base::RunLoop run_loop;
-    EXPECT_CALL(observer_, OnGroupAdded(group_id))
+    EXPECT_CALL(observer_, OnGroupAdded(group_id, NotNullTime()))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -202,7 +211,7 @@ class GroupDataModelTest : public testing::Test {
 
   void WaitForGroupUpdated(const GroupId& group_id) {
     base::RunLoop run_loop;
-    EXPECT_CALL(observer_, OnGroupUpdated(group_id))
+    EXPECT_CALL(observer_, OnGroupUpdated(group_id, NotNullTime()))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -332,7 +341,7 @@ TEST_F(GroupDataModelTest, ShouldDeleteGroup) {
   // Unlike additions/updates deletions are handled synchronously, once
   // CollaborationGroupSyncBridge received the update - no need to wait for
   // observer call with RunLoop.
-  EXPECT_CALL(model_observer(), OnGroupDeleted(group_id));
+  EXPECT_CALL(model_observer(), OnGroupDeleted(group_id, NotNullTime()));
   MimicGroupDeletedServerSide(group_id);
 
   EXPECT_FALSE(model().GetGroup(group_id).has_value());

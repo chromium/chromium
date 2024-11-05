@@ -70,11 +70,14 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     virtual void OnGroupDataModelLoaded() {}
 
     // Called when the group data model has been changed.
-    virtual void OnGroupChanged(const GroupData& group_data) {}
+    virtual void OnGroupChanged(const GroupData& group_data,
+                               const base::Time& event_time) {}
     // User either created a new group or has been invited to the existing one.
-    virtual void OnGroupAdded(const GroupData& group_data) {}
+    virtual void OnGroupAdded(const GroupData& group_data,
+                             const base::Time& event_time) {}
     // Either group has been deleted or user has been removed from the group.
-    virtual void OnGroupRemoved(const GroupId& group_id) {}
+    virtual void OnGroupRemoved(const GroupId& group_id,
+                                const base::Time& event_time) {}
 
     // Two methods below are called in addition to OnGroupChanged().
     // Called when a new member has been added to the group.

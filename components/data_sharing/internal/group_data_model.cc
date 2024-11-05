@@ -157,7 +157,9 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
 
   for (auto& group_id : deleted_group_ids) {
     for (auto& observer : observers_) {
-      observer.OnGroupDeleted(group_id);
+      // TODO(crbug.com/377215683): pass the actual event time (at least derived
+      // from CollaborationGroupSpecifics).
+      observer.OnGroupDeleted(group_id, base::Time::Now());
     }
   }
 
@@ -242,10 +244,12 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
     group_data_store_.StoreGroupData(requested_groups_and_versions.at(group_id),
                                      group_data);
     for (auto& observer : observers_) {
+      // TODO(crbug.com/377215683): pass the actual event time (at least derived
+      // from CollaborationGroupSpecifics).
       if (old_group_data_opt.has_value()) {
-        observer.OnGroupUpdated(group_id);
+        observer.OnGroupUpdated(group_id, base::Time::Now());
       } else {
-        observer.OnGroupAdded(group_id);
+        observer.OnGroupAdded(group_id, base::Time::Now());
       }
     }
     if (old_group_data_opt.has_value()) {

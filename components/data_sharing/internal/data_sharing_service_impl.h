@@ -122,9 +122,12 @@ class DataSharingServiceImpl : public DataSharingService,
 
   // GroupDataModel::Observer implementation.
   void OnModelLoaded() override;
-  void OnGroupAdded(const GroupId& group_id) override;
-  void OnGroupUpdated(const GroupId& group_id) override;
-  void OnGroupDeleted(const GroupId& group_id) override;
+  void OnGroupAdded(const GroupId& group_id,
+                    const base::Time& event_time) override;
+  void OnGroupUpdated(const GroupId& group_id,
+                      const base::Time& event_time) override;
+  void OnGroupDeleted(const GroupId& group_id,
+                      const base::Time& event_time) override;
   void OnMemberAdded(const GroupId& group_id,
                      const std::string& member_gaia_id,
                      const base::Time& event_time) override;

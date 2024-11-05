@@ -35,9 +35,12 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
     // though. GetGroup() / GetAllGroups() returns no data prior to this call.
     virtual void OnModelLoaded() = 0;
 
-    virtual void OnGroupAdded(const GroupId& group_id) = 0;
-    virtual void OnGroupUpdated(const GroupId& group_id) = 0;
-    virtual void OnGroupDeleted(const GroupId& group_id) = 0;
+    virtual void OnGroupAdded(const GroupId& group_id,
+                              const base::Time& event_time) = 0;
+    virtual void OnGroupUpdated(const GroupId& group_id,
+                                const base::Time& event_time) = 0;
+    virtual void OnGroupDeleted(const GroupId& group_id,
+                                const base::Time& event_time) = 0;
 
     virtual void OnMemberAdded(const GroupId& group_id,
                                const std::string& member_gaia_id,

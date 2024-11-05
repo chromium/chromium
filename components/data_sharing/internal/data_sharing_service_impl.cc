@@ -361,29 +361,32 @@ void DataSharingServiceImpl::OnModelLoaded() {
   }
 }
 
-void DataSharingServiceImpl::OnGroupAdded(const GroupId& group_id) {
+void DataSharingServiceImpl::OnGroupAdded(const GroupId& group_id,
+                                          const base::Time& event_time) {
   CHECK(group_data_model_);
 
   std::optional<GroupData> group_data = group_data_model_->GetGroup(group_id);
   CHECK(group_data);
   for (auto& observer : observers_) {
-    observer.OnGroupAdded(*group_data);
+    observer.OnGroupAdded(*group_data, event_time);
   }
 }
 
-void DataSharingServiceImpl::OnGroupUpdated(const GroupId& group_id) {
+void DataSharingServiceImpl::OnGroupUpdated(const GroupId& group_id,
+                                            const base::Time& event_time) {
   CHECK(group_data_model_);
 
   std::optional<GroupData> group_data = group_data_model_->GetGroup(group_id);
   CHECK(group_data);
   for (auto& observer : observers_) {
-    observer.OnGroupChanged(*group_data);
+    observer.OnGroupChanged(*group_data, event_time);
   }
 }
 
-void DataSharingServiceImpl::OnGroupDeleted(const GroupId& group_id) {
+void DataSharingServiceImpl::OnGroupDeleted(const GroupId& group_id,
+                                            const base::Time& event_time) {
   for (auto& observer : observers_) {
-    observer.OnGroupRemoved(group_id);
+    observer.OnGroupRemoved(group_id, event_time);
   }
 }
 
