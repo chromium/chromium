@@ -87,7 +87,7 @@ void ProductSpecificationsIconView::ShowConfirmationToast(
   if (toast_controller) {
     ToastParams params = ToastParams(ToastId::kAddedToComparisonTable);
 
-    params.body_string_replacement_params_ = {set_name};
+    params.body_string_replacement_params = {set_name};
     toast_controller->MaybeShowToast(ToastParams(std::move(params)));
   }
 }

@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #endif
 
-ToastParams::ToastParams(ToastId id) : toast_id_(id) {}
+ToastParams::ToastParams(ToastId id) : toast_id(id) {}
 ToastParams::ToastParams(ToastParams&& other) noexcept = default;
 ToastParams& ToastParams::operator=(ToastParams&& other) noexcept = default;
 ToastParams::~ToastParams() = default;
@@ -74,11 +74,11 @@ std::optional<ToastId> ToastController::GetCurrentToastId() const {
 }
 
 bool ToastController::MaybeShowToast(ToastParams params) {
-  if (!CanShowToast(params.toast_id_)) {
+  if (!CanShowToast(params.toast_id)) {
     return false;
   }
 
-  RecordToastTriggeredToShow(params.toast_id_);
+  RecordToastTriggeredToShow(params.toast_id);
   CloseToast(toasts::ToastCloseReason::kPreempted);
 
   if (IsShowingToast()) {
@@ -205,10 +205,10 @@ void ToastController::ShowToast(ToastParams params) {
   // TODO(crbug.com/367755347): Remove check when test is fixed.
   CHECK(!toast_registry_->IsEmpty());
   const ToastSpecification* current_toast_spec =
-      toast_registry_->GetToastSpecification(params.toast_id_);
+      toast_registry_->GetToastSpecification(params.toast_id);
   CHECK(current_toast_spec);
 
-  currently_showing_toast_id_ = params.toast_id_;
+  currently_showing_toast_id_ = params.toast_id;
   base::TimeDelta timeout =
       current_toast_spec->action_button_string_id().has_value()
           ? toast_features::kToastTimeout.Get()
@@ -240,27 +240,27 @@ void ToastController::CreateToast(ToastParams params,
 
   views::View* const anchor_view = browser_window_interface_->TopContainer();
   CHECK(anchor_view);
-  const ui::ImageModel* image_override = params.image_override_.has_value()
-                                             ? &params.image_override_.value()
+  const ui::ImageModel* image_override = params.image_override.has_value()
+                                             ? &params.image_override.value()
                                              : nullptr;
   auto toast_view = std::make_unique<toasts::ToastView>(
       anchor_view,
       FormatString(spec->body_string_id(),
-                   params.body_string_replacement_params_),
+                   params.body_string_replacement_params),
       spec->icon(), image_override, ShouldRenderToastOverWebContents(),
-      base::BindRepeating(&RecordToastDismissReason, params.toast_id_));
+      base::BindRepeating(&RecordToastDismissReason, params.toast_id));
 
   if (spec->has_close_button()) {
     toast_view->AddCloseButton(
-        base::BindRepeating(&RecordToastCloseButtonClicked, params.toast_id_));
+        base::BindRepeating(&RecordToastCloseButtonClicked, params.toast_id));
   }
 
   if (spec->action_button_string_id().has_value()) {
     toast_view->AddActionButton(
         FormatString(spec->action_button_string_id().value(),
-                     params.action_button_string_replacement_params_),
+                     params.action_button_string_replacement_params),
         spec->action_button_callback().Then(base::BindRepeating(
-            &RecordToastActionButtonClicked, params.toast_id_)));
+            &RecordToastActionButtonClicked, params.toast_id)));
   }
 
   toast_view_ = toast_view.get();
@@ -308,7 +308,7 @@ void ToastController::OnFullscreenStateChanged() {
 void ToastController::ClearTabScopedToasts() {
   toast_close_timer_.Stop();
   if (next_toast_params_.has_value()) {
-    const ToastId toast_id = next_toast_params_.value().toast_id_;
+    const ToastId toast_id = next_toast_params_.value().toast_id;
     const ToastSpecification* const specification =
         toast_registry_->GetToastSpecification(toast_id);
     RecordToastDismissReason(toast_id, toasts::ToastCloseReason::kAbort);

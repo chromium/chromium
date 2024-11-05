@@ -44,10 +44,10 @@ struct ToastParams {
   ToastParams& operator=(ToastParams&& other) noexcept;
   ~ToastParams();
 
-  ToastId toast_id_;
-  std::vector<std::u16string> body_string_replacement_params_;
-  std::vector<std::u16string> action_button_string_replacement_params_;
-  std::optional<ui::ImageModel> image_override_ = std::nullopt;
+  ToastId toast_id;
+  std::vector<std::u16string> body_string_replacement_params;
+  std::vector<std::u16string> action_button_string_replacement_params;
+  std::optional<ui::ImageModel> image_override;
 };
 
 class ToastController : public views::WidgetObserver,

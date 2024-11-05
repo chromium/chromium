@@ -94,7 +94,7 @@ TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
   EXPECT_CALL(*controller, CreateToast);
 
   ToastParams params = ToastParams(ToastId::kLinkCopied);
-  params.image_override_ =
+  params.image_override =
       ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16, 0xff0000));
 
   EXPECT_TRUE(controller->MaybeShowToast(std::move(params)));
