@@ -566,9 +566,14 @@ bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
 
 void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
     ContentPasswordManagerDriver& password_manager_driver) {
+  const bool add_passkey_from_another_device_option =
+      base::FeatureList::IsEnabled(
+          password_manager::features::
+              kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
   const bool add_select_password_option =
       UserHasPasswordsSaved(password_manager_driver);
-  const bool add_no_saved_passwords_option = !add_select_password_option;
+  const bool add_no_saved_passwords_option =
+      !add_select_password_option && !add_passkey_from_another_device_option;
   const bool add_import_passwords_option = !add_select_password_option;
 
   const bool add_password_generation_option =
@@ -577,11 +582,6 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
       password_manager_driver.IsPasswordFieldForPasswordManager(
           autofill::FieldRendererId(params_.field_renderer_id),
           params_.form_control_type);
-
-  const bool add_passkey_from_another_device_option =
-      base::FeatureList::IsEnabled(
-          password_manager::features::
-              kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 
   const bool add_submenu =
       std::ranges::count(
