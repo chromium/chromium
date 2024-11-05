@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig_base.json",
   "compilerOptions": {
-    "noUncheckedSideEffectImports": true,
     "useDefineForClassFields": false
   }
 }

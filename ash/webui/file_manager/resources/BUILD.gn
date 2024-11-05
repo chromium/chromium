@@ -23,6 +23,7 @@ if (!optimize_webui) {
   }
 
   webui_ts_library("labs_build_ts") {
+    tsconfig_base = "tsconfig_base.json"
     root_dir = target_gen_dir
     out_dir = "$target_gen_dir/tsc"
     enable_source_maps = true

@@ -118,6 +118,7 @@ copy("copy_mojo") {
 
 # All files in the rollup for the untrusted context should be here.
 webui_ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
 
   in_files = media_app_converted_ts_sources + media_app_unconverted_js_sources +
@@ -159,6 +160,7 @@ webui_ts_library("build_ts") {
 # rules must be here, in the common ancestor. Staging in ./test would trigger
 # `Error: root_dir (...) should be within gen/.../test or ../../.../test`.
 ts_library("test_build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
   testonly = true
   in_files = media_app_test_ts

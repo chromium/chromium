@@ -2,7 +2,6 @@
   "extends": "./tsconfig_base.json",
   "compilerOptions": {
     "noUncheckedIndexedAccess": false,
-    "noUncheckedSideEffectImports": true,
     "noUnusedLocals": false,
     "strictPropertyInitialization": false,
     "useDefineForClassFields": false
