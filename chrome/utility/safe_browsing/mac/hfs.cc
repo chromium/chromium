@@ -160,7 +160,8 @@ class HFSForkReadStream : public ReadStream {
  private:
   const raw_ptr<HFSIterator> hfs_;  // The HFS+ iterator.
   const HFSPlusForkData fork_;  // The fork to be read.
-  base::span<const HFSPlusExtentDescriptor>
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const HFSPlusExtentDescriptor>
       extents_;  // All extents in the fork.
   base::span<const HFSPlusExtentDescriptor>::iterator
       current_extent_;        // The current extent in the fork.

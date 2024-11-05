@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -27,7 +28,7 @@ class SearchEnginesTestEnvironment {
     raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service =
         nullptr;
     raw_ptr<TestingPrefServiceSimple> local_state = nullptr;
-    base::span<const TemplateURLService::Initializer>
+    base::raw_span<const TemplateURLService::Initializer>
         template_url_service_initializer;
   };
 

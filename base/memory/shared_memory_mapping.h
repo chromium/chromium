@@ -13,6 +13,7 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "base/memory/shared_memory_safety_checker.h"
 #include "base/unguessable_token.h"
@@ -85,7 +86,7 @@ class BASE_EXPORT SharedMemoryMapping {
 
   void Unmap();
 
-  span<uint8_t> mapped_span_;
+  raw_span<uint8_t> mapped_span_;
   size_t size_ = 0;
   UnguessableToken guid_;
   raw_ptr<SharedMemoryMapper> mapper_ = nullptr;

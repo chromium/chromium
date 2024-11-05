@@ -14,6 +14,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 
@@ -89,7 +90,7 @@ class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
   // RefCountedMemory:
   base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override;
 
-  base::span<const uint8_t> bytes_;
+  base::raw_span<const uint8_t> bytes_;
 };
 
 // An implementation of RefCountedMemory, where the data is stored in a STL

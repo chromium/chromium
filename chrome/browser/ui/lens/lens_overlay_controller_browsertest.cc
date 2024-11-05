@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -520,7 +521,9 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   lens::LensOverlaySelectionType last_lens_selection_type_;
   lens::mojom::CenterRotatedBoxPtr last_queried_region_;
   std::optional<SkBitmap> last_queried_region_bytes_;
-  base::span<const uint8_t> last_sent_underlying_content_bytes_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const uint8_t>
+      last_sent_underlying_content_bytes_;
   lens::PageContentMimeType last_sent_underlying_content_type_;
   GURL last_sent_page_url_;
   std::optional<lens::mojom::UserAction> last_user_action_;

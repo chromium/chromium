@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -750,7 +751,7 @@ bool CertVerifyProc::HasNameConstraintsViolation(
   //   openssl dgst -sha256 -binary | xxd -i
   static const struct PublicKeyDomainLimitation {
     SHA256HashValue public_key_hash;
-    base::span<const std::string_view> domains;
+    base::raw_span<const std::string_view> domains;
   } kLimits[] = {
       // C=FR, ST=France, L=Paris, O=PM/SGDN, OU=DCSSI,
       // CN=IGC/A/emailAddress=igca@sgdn.pm.gouv.fr

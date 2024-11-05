@@ -14,6 +14,7 @@
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -572,7 +573,7 @@ class IndexedLessThan {
   }
 
  private:
-  base::span<const T> values_;
+  base::raw_span<const T> values_;
   LessThan less_than_;
 };
 

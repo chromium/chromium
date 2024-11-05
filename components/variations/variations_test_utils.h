@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/mock_entropy_provider.h"
@@ -30,7 +31,9 @@ struct ClientFilterableState;
 // WriteSeedData(). This allows for encapsulated seed information to be created
 // below for generic test seeds as well as seeds which cause crashes.
 struct SignedSeedData {
-  base::span<const char*> study_names;  // Names of all studies in the seed.
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const char*>
+      study_names;  // Names of all studies in the seed.
   const char* base64_uncompressed_data;
   const char* base64_compressed_data;
   const char* base64_signature;

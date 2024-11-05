@@ -24,7 +24,8 @@ struct UsbProduct {
 // For example, uint16_t instead of size_t.
 struct UsbVendor {
   const char* name;
-  const base::span<const UsbProduct> products;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const UsbProduct> products;
   const uint16_t id;
 };
 

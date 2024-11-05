@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_span.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -126,7 +127,7 @@ class SortedPasskeysView {
   iterator end() const { return iterator(passkeys_.size(), this); }
 
  private:
-  const base::span<const PasskeyCredential> passkeys_;
+  const base::raw_span<const PasskeyCredential> passkeys_;
   std::vector<size_t> sorted_indexes_;
 };
 

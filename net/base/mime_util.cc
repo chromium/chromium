@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -725,7 +726,8 @@ static const char* const kStandardVideoTypes[] = {
 
 struct StandardType {
   const char* const leading_mime_type;
-  base::span<const char* const> standard_types;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const char* const> standard_types;
 };
 static const StandardType kStandardTypes[] = {{"image/", kStandardImageTypes},
                                               {"audio/", kStandardAudioTypes},

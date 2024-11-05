@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -571,7 +572,8 @@ class LensOverlayQueryController {
   // The bytes of the content the user is viewing. Owned by
   // LensOverlayController. Will be empty if no bytes to the underlying page
   // could be provided.
-  base::span<const uint8_t> underlying_content_bytes_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const uint8_t> underlying_content_bytes_;
 
   // The mime type of underlying_content_bytes. Will be kNone if
   // underlying_content_bytes_ is empty.

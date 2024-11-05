@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
 #include "base/native_library.h"
 #include "base/ranges/algorithm.h"
@@ -75,7 +76,8 @@ class ScopedModuleModifier {
   }
 
  private:
-  base::span<const uint8_t> modification_region_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const uint8_t> modification_region_;
 };
 
 }  // namespace

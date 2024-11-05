@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace media {
 
@@ -54,7 +55,8 @@ class TsPacket {
   bool ParseAdaptationField(BitReader* bit_reader,
                             int adaptation_field_length);
 
-  base::span<const uint8_t> payload_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const uint8_t> payload_;
 
   // TS header.
   bool payload_unit_start_indicator_;

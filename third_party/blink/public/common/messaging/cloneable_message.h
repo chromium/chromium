@@ -39,6 +39,7 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   //
   // TODO(crbug.com/372506014): investigate dangling span, e.g. in
   // `blink_web_tests` on `linux-rel`.
+  // TODO(367764863) Rewrite to base::raw_span
   RAW_PTR_EXCLUSION base::span<const uint8_t> encoded_message;
   std::vector<uint8_t> owned_encoded_message;
 

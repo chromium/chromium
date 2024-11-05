@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_transform.h"
@@ -35,7 +36,9 @@ class ModeledShapeOutlinesIterator {
   struct OutlineData {
     uint32_t group_index;
     // Guaranteeded to be non-empty.
-    base::span<const ink::ModeledShape::VertexIndexPair> outline;
+    // TODO(367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION base::span<const ink::ModeledShape::VertexIndexPair>
+        outline;
   };
 
   explicit ModeledShapeOutlinesIterator(const ink::ModeledShape& shape)

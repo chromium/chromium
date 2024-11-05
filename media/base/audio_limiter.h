@@ -8,6 +8,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/moving_window.h"
 #include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
@@ -84,8 +85,10 @@ class MEDIA_EXPORT AudioLimiter {
 
     PendingOutput(PendingOutput&&);
 
-    OutputFilledCB on_filled_callback;
-    OutputChannels channels;
+    // TODO(367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION OutputFilledCB on_filled_callback;
+    // TODO(367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION OutputChannels channels;
   };
 
   void FeedInput(const AudioBus& input, int num_frames);

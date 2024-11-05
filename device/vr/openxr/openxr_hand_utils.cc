@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "device/vr/public/mojom/xr_hand_tracking_data.mojom.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -165,7 +166,8 @@ struct XRFingerMapping {
   // The first joint of the finger to be remapped.
   const size_t start_index;
 
-  const base::span<const float> standard_joint_sizes;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const float> standard_joint_sizes;
 
   size_t JointCount() const { return standard_joint_sizes.size(); }
 };

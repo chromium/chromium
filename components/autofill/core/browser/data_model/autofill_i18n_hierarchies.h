@@ -13,6 +13,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {
@@ -82,7 +83,8 @@ inline constexpr FieldType kFieldTypeChildren_XX_ADDRESS_HOME_ADDRESS[] = {ADDRE
 // type and the list of children.
 struct FieldTypeDescription {
   FieldType field_type;
-  base::span<const FieldType> children;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const FieldType> children;
 };
 
 // Collection of arrays of node properties for each country.

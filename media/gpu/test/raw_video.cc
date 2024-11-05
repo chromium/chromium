@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -141,7 +142,8 @@ class RawVideo::VP9Decoder {
           keyframe_indices(keyframe_indices),
           mmap_file_(std::move(mmap_file)) {}
 
-    const std::vector<base::span<const uint8_t>> chunks;
+    // TODO(367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION const std::vector<base::span<const uint8_t>> chunks;
     const std::vector<size_t> keyframe_indices;
 
    protected:

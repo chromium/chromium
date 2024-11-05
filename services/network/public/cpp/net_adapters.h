@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 
@@ -68,7 +69,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
   // `buffer_` is not a raw_span<...> for performance reasons (also, pointee
   // would never be protected under BackupRefPtr, because the pointer comes
   // either from using `mmap`, MapViewOfFile or base::AllocPages directly).
-  base::span<char> buffer_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<char> buffer_;
 };
 
 // Net side of a Net -> Mojo copy. The data will be read from the network and
