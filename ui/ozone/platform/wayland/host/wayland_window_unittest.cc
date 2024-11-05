@@ -5293,50 +5293,6 @@ TEST_P(WaylandWindowTest, SetShape) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Asserts the server receives the correct height when `SetTopInset()` is called
-// for toplevel windows.
-TEST_P(WaylandWindowTest, SetTopInset) {
-  // `SetTopInset()` is only supported with zaura_shell.
-  if (!IsAuraShellEnabled()) {
-    GTEST_SKIP();
-  }
-
-  MockWaylandPlatformWindowDelegate delegate;
-  std::unique_ptr<WaylandWindow> toplevel_window =
-      CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
-                                    gfx::Rect(300, 300), &delegate);
-
-  toplevel_window->AsWaylandToplevelWindow()->SetTopInset(32);
-
-  // Validate the server has received the appropriate top inset for the
-  // toplevel.
-  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(
-        toplevel_window->root_surface()->get_surface_id());
-    ASSERT_TRUE(surface);
-
-    wl::TestZAuraToplevel* zaura_toplevel =
-        surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
-    ASSERT_TRUE(zaura_toplevel);
-    EXPECT_EQ(32, zaura_toplevel->top_inset());
-  });
-
-  toplevel_window->AsWaylandToplevelWindow()->SetTopInset(0);
-
-  // Validate the server has received the appropriate top inset for the
-  // toplevel.
-  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(
-        toplevel_window->root_surface()->get_surface_id());
-    ASSERT_TRUE(surface);
-
-    wl::TestZAuraToplevel* zaura_toplevel =
-        surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
-    ASSERT_TRUE(zaura_toplevel);
-    EXPECT_EQ(0, zaura_toplevel->top_inset());
-  });
-}
-
 // Tests that the platform window gets the notification when overview mode
 // changes.
 TEST_P(WaylandWindowTest, OverviewMode) {

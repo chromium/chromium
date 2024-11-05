@@ -911,27 +911,6 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
   connection()->window_drag_controller()->StartDragSession(this, event_source);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void WaylandToplevelWindow::SetTopInset(int height) {
-  if (shell_toplevel_) {
-    shell_toplevel_->SetTopInset(height);
-  }
-}
-
-gfx::RoundedCornersF WaylandToplevelWindow::GetWindowCornersRadii() {
-  auto* zaura_shell = connection()->zaura_shell();
-  return zaura_shell->GetWindowCornersRadii();
-}
-
-void WaylandToplevelWindow::SetShadowCornersRadii(
-    const gfx::RoundedCornersF& radii) {
-  if (shell_toplevel_) {
-    shell_toplevel_->SetShadowCornersRadii(radii);
-  }
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
     bool allow_haptic_feedback) {

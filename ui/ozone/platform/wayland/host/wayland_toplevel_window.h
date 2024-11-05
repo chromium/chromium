@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/extensions/desk_extension.h"
@@ -28,10 +27,6 @@
 namespace views::corewm {
 enum class TooltipTrigger;
 }  // namespace views::corewm
-
-namespace gfx {
-class RoundedCornersF;
-}  // namespace gfx
 
 namespace ui {
 
@@ -161,11 +156,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void StartWindowDraggingSessionIfNeeded(
       ui::mojom::DragEventSource event_source,
       bool allow_system_drag) override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetTopInset(int height) override;
-  gfx::RoundedCornersF GetWindowCornersRadii() override;
-  void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap, float snap_ratio) override;

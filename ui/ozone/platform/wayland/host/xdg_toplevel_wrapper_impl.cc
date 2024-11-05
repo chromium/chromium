@@ -194,27 +194,6 @@ void XDGToplevelWrapperImpl::SetFullscreen(WaylandOutput* wayland_output) {
       wayland_output ? wayland_output->get_output() : nullptr);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void XDGToplevelWrapperImpl::SetTopInset(int height) {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_TOP_INSET_SINCE_VERSION) {
-    zaura_toplevel_set_top_inset(aura_toplevel_.get(), height);
-  }
-}
-
-void XDGToplevelWrapperImpl::SetShadowCornersRadii(
-    const gfx::RoundedCornersF& radii) {
-  if (aura_toplevel_ &&
-      zaura_toplevel_get_version(aura_toplevel_.get()) >=
-          ZAURA_TOPLEVEL_SET_SHADOW_CORNER_RADII_SINCE_VERSION) {
-    zaura_toplevel_set_shadow_corner_radii(
-        aura_toplevel_.get(), radii.upper_left(), radii.upper_right(),
-        radii.lower_right(), radii.lower_left());
-  }
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 void XDGToplevelWrapperImpl::UnSetFullscreen() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_unset_fullscreen(xdg_toplevel_.get());
