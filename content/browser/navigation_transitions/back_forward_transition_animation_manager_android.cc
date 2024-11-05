@@ -64,10 +64,10 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
          "to this manager if there is a destination entry.";
 
   // Each previous gesture should finished with `OnGestureCancelled()` or
-  // `OnGestureInvoked()`. In both cases we reset `destination_entry_index_` to
+  // `OnGestureInvoked()`. In both cases we reset `destination_entry_id_` to
   // -1.
-  CHECK_EQ(destination_entry_index_, -1);
-  destination_entry_index_ = *index;
+  CHECK_EQ(destination_entry_id_, -1);
+  destination_entry_id_ = destination_entry->GetUniqueID();
 
   if (animator_) {
     // It's possible for a user to start a second gesture when the first gesture
@@ -115,23 +115,27 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureProgressed(
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureCancelled() {
-  CHECK_NE(destination_entry_index_, -1);
+  CHECK_NE(destination_entry_id_, -1);
   if (animator_) {
     animator_->OnGestureCancelled();
     MaybeDestroyAnimator();
   }
-  destination_entry_index_ = -1;
+  destination_entry_id_ = -1;
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
-  CHECK_NE(destination_entry_index_, -1);
+  CHECK_NE(destination_entry_id_, -1);
   if (animator_) {
     animator_->OnGestureInvoked();
     MaybeDestroyAnimator();
   } else {
-    navigation_controller_->GoToIndex(destination_entry_index_);
+    int index = navigation_controller_->GetEntryIndexWithUniqueID(
+        destination_entry_id_);
+    if (index != -1) {
+      navigation_controller_->GoToIndex(index);
+    }
   }
-  destination_entry_index_ = -1;
+  destination_entry_id_ = -1;
 }
 
 void BackForwardTransitionAnimationManagerAndroid::

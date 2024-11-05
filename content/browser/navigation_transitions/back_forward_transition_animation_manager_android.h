@@ -153,15 +153,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // this manager.
   const raw_ptr<NavigationControllerImpl> navigation_controller_;
 
-  // The index of the destination entry in the history list. Set when the
+  // The ID of the destination entry in the history list. Set when the
   // embedder notifies the animation manager upon a gesture's start. This is
   // used to ensure the navigation is initiated at gesture end, even if the
   // animation had to be terminated sooner.
-  //
-  // Use an index instead of an offset, in case during the animated transition
-  // the session history is updated (e.g., history.pushState()) and we don't
-  // want to lead the user to the wrong entry.
-  int destination_entry_index_ = -1;
+  int destination_entry_id_ = -1;
 
   // The actual implementation of the animation manager that manages the history
   // navigation animation. One instance per gesture.
