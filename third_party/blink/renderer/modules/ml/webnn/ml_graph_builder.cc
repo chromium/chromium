@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
@@ -69,7 +71,342 @@
 
 namespace blink {
 
+namespace blink_mojom = webnn::mojom::blink;
+
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered or
+// removed and numeric values should never be reused.
+// Please keep in sync with MLGraphOperatorUma in
+// //tools/metrics/histograms/metadata/webnn/enums.xml.
+enum class MLGraphOperatorUma {
+  kGraphBuilt = 0,
+  kAbs = 1,
+  kAdd = 2,
+  kArgMax = 3,
+  kArgMin = 4,
+  kAveragePool2d = 5,
+  kBatchNormalization = 6,
+  kCast = 7,
+  kCeil = 8,
+  kClamp = 9,
+  kConcat = 10,
+  kConv2d = 11,
+  kConvTranspose2d = 12,
+  kCos = 13,
+  kCumulativeSum = 14,
+  kDequantizeLinear = 15,
+  kDiv = 16,
+  kElu = 17,
+  kEqual = 18,
+  kErf = 19,
+  kExp = 20,
+  kExpand = 21,
+  kFloor = 22,
+  kGather = 23,
+  kGatherElements = 24,
+  kGatherNd = 25,
+  kGelu = 26,
+  kGemm = 27,
+  kGreater = 28,
+  kGreaterOrEqual = 29,
+  kGru = 30,
+  kGruCell = 31,
+  kHardSigmoid = 32,
+  kHardSwish = 33,
+  kIdentity = 34,
+  kInstanceNormalization = 35,
+  kL2Pool2d = 36,
+  kLayerNormalization = 37,
+  kLeakyRelu = 38,
+  kLesser = 39,
+  kLesserOrEqual = 40,
+  kLinear = 41,
+  kLog = 42,
+  kLogicalAnd = 43,
+  kLogicalNot = 44,
+  kLogicalOr = 45,
+  kLogicalXor = 46,
+  kLstm = 47,
+  kLstmCell = 48,
+  kMatmul = 49,
+  kMax = 50,
+  kMaxPool2d = 51,
+  kMin = 52,
+  kMul = 53,
+  kNeg = 54,
+  kPad = 55,
+  kPow = 56,
+  kPrelu = 57,
+  kQuantizeLinear = 58,
+  kReciprocal = 59,
+  kReduceL1 = 60,
+  kReduceL2 = 61,
+  kReduceLogSum = 62,
+  kReduceLogSumExp = 63,
+  kReduceMax = 64,
+  kReduceMean = 65,
+  kReduceMin = 66,
+  kReduceProduct = 67,
+  kReduceSum = 68,
+  kReduceSumSquare = 69,
+  kRelu = 70,
+  kResample2d = 71,
+  kReshape = 72,
+  kScatterElements = 73,
+  kScatterNd = 74,
+  kSigmoid = 75,
+  kSign = 76,
+  kSin = 77,
+  kSlice = 78,
+  kSoftmax = 79,
+  kSoftplus = 80,
+  kSoftsign = 81,
+  kSplit = 82,
+  kSqrt = 83,
+  kSub = 84,
+  kTan = 85,
+  kTanh = 86,
+  kTile = 87,
+  kTranspose = 88,
+  kTriangular = 89,
+  kWhere = 90,
+  kMinValue = kGraphBuilt,
+  kMaxValue = kWhere,
+};
+
+using MLGraphOperatorUmaSet = base::EnumSet<MLGraphOperatorUma,
+                                            MLGraphOperatorUma::kMinValue,
+                                            MLGraphOperatorUma::kMaxValue>;
+
+MLGraphOperatorUma GetUmaValueForOperation(
+    const blink_mojom::Operation& operation) {
+  switch (operation.which()) {
+    case blink_mojom::Operation::Tag::kArgMinMax: {
+      switch (operation.get_arg_min_max()->kind) {
+        case blink_mojom::ArgMinMax::Kind::kMax:
+          return MLGraphOperatorUma::kArgMax;
+        case blink_mojom::ArgMinMax::Kind::kMin:
+          return MLGraphOperatorUma::kArgMin;
+      }
+      break;
+    }
+    case blink_mojom::Operation::Tag::kBatchNormalization:
+      return MLGraphOperatorUma::kBatchNormalization;
+    case blink_mojom::Operation::Tag::kClamp:
+      return MLGraphOperatorUma::kClamp;
+    case blink_mojom::Operation::Tag::kConv2d:
+      return MLGraphOperatorUma::kConv2d;
+    case blink_mojom::Operation::Tag::kConcat:
+      return MLGraphOperatorUma::kConcat;
+    case blink_mojom::Operation::Tag::kCumulativeSum:
+      return MLGraphOperatorUma::kCumulativeSum;
+    case blink_mojom::Operation::Tag::kDequantizeLinear:
+      return MLGraphOperatorUma::kDequantizeLinear;
+    case blink_mojom::Operation::Tag::kElementWiseBinary: {
+      switch (operation.get_element_wise_binary()->kind) {
+        case blink_mojom::ElementWiseBinary::Kind::kAdd:
+          return MLGraphOperatorUma::kAdd;
+        case blink_mojom::ElementWiseBinary::Kind::kSub:
+          return MLGraphOperatorUma::kSub;
+        case blink_mojom::ElementWiseBinary::Kind::kMul:
+          return MLGraphOperatorUma::kMul;
+        case blink_mojom::ElementWiseBinary::Kind::kDiv:
+          return MLGraphOperatorUma::kDiv;
+        case blink_mojom::ElementWiseBinary::Kind::kMax:
+          return MLGraphOperatorUma::kMax;
+        case blink_mojom::ElementWiseBinary::Kind::kMin:
+          return MLGraphOperatorUma::kMin;
+        case blink_mojom::ElementWiseBinary::Kind::kPow:
+          return MLGraphOperatorUma::kPow;
+        case blink_mojom::ElementWiseBinary::Kind::kEqual:
+          return MLGraphOperatorUma::kEqual;
+        case blink_mojom::ElementWiseBinary::Kind::kGreater:
+          return MLGraphOperatorUma::kGreater;
+        case blink_mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
+          return MLGraphOperatorUma::kGreaterOrEqual;
+        case blink_mojom::ElementWiseBinary::Kind::kLesser:
+          return MLGraphOperatorUma::kLesser;
+        case blink_mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+          return MLGraphOperatorUma::kLesserOrEqual;
+        case blink_mojom::ElementWiseBinary::Kind::kLogicalAnd:
+          return MLGraphOperatorUma::kLogicalAnd;
+        case blink_mojom::ElementWiseBinary::Kind::kLogicalOr:
+          return MLGraphOperatorUma::kLogicalOr;
+        case blink_mojom::ElementWiseBinary::Kind::kLogicalXor:
+          return MLGraphOperatorUma::kLogicalXor;
+      }
+      break;
+    }
+    case blink_mojom::Operation::Tag::kElementWiseUnary: {
+      switch (operation.get_element_wise_unary()->kind) {
+        case blink_mojom::ElementWiseUnary::Kind::kAbs:
+          return MLGraphOperatorUma::kAbs;
+        case blink_mojom::ElementWiseUnary::Kind::kCast:
+          return MLGraphOperatorUma::kCast;
+        case blink_mojom::ElementWiseUnary::Kind::kCeil:
+          return MLGraphOperatorUma::kCeil;
+        case blink_mojom::ElementWiseUnary::Kind::kCos:
+          return MLGraphOperatorUma::kCos;
+        case blink_mojom::ElementWiseUnary::Kind::kExp:
+          return MLGraphOperatorUma::kExp;
+        case blink_mojom::ElementWiseUnary::Kind::kFloor:
+          return MLGraphOperatorUma::kFloor;
+        case blink_mojom::ElementWiseUnary::Kind::kIdentity:
+          return MLGraphOperatorUma::kIdentity;
+        case blink_mojom::ElementWiseUnary::Kind::kLog:
+          return MLGraphOperatorUma::kLog;
+        case blink_mojom::ElementWiseUnary::Kind::kLogicalNot:
+          return MLGraphOperatorUma::kLogicalNot;
+        case blink_mojom::ElementWiseUnary::Kind::kNeg:
+          return MLGraphOperatorUma::kNeg;
+        case blink_mojom::ElementWiseUnary::Kind::kReciprocal:
+          return MLGraphOperatorUma::kReciprocal;
+        case blink_mojom::ElementWiseUnary::Kind::kSign:
+          return MLGraphOperatorUma::kSign;
+        case blink_mojom::ElementWiseUnary::Kind::kSin:
+          return MLGraphOperatorUma::kSin;
+        case blink_mojom::ElementWiseUnary::Kind::kSqrt:
+          return MLGraphOperatorUma::kSqrt;
+        case blink_mojom::ElementWiseUnary::Kind::kTan:
+          return MLGraphOperatorUma::kTan;
+        case blink_mojom::ElementWiseUnary::Kind::kErf:
+          return MLGraphOperatorUma::kErf;
+      }
+      break;
+    }
+    case blink_mojom::Operation::Tag::kElu:
+      return MLGraphOperatorUma::kElu;
+    case blink_mojom::Operation::Tag::kExpand:
+      return MLGraphOperatorUma::kExpand;
+    case blink_mojom::Operation::Tag::kGather:
+      return MLGraphOperatorUma::kGather;
+    case blink_mojom::Operation::Tag::kGatherElements:
+      return MLGraphOperatorUma::kGatherElements;
+    case blink_mojom::Operation::Tag::kGatherNd:
+      return MLGraphOperatorUma::kGatherNd;
+    case blink_mojom::Operation::Tag::kGelu:
+      return MLGraphOperatorUma::kGelu;
+    case blink_mojom::Operation::Tag::kGemm:
+      return MLGraphOperatorUma::kGemm;
+    case blink_mojom::Operation::Tag::kGru:
+      return MLGraphOperatorUma::kGru;
+    case blink_mojom::Operation::Tag::kGruCell:
+      return MLGraphOperatorUma::kGruCell;
+    case blink_mojom::Operation::Tag::kHardSigmoid:
+      return MLGraphOperatorUma::kHardSigmoid;
+    case blink_mojom::Operation::Tag::kHardSwish:
+      return MLGraphOperatorUma::kHardSwish;
+    case blink_mojom::Operation::Tag::kInstanceNormalization:
+      return MLGraphOperatorUma::kInstanceNormalization;
+    case blink_mojom::Operation::Tag::kLayerNormalization:
+      return MLGraphOperatorUma::kLayerNormalization;
+    case blink_mojom::Operation::Tag::kLeakyRelu:
+      return MLGraphOperatorUma::kLeakyRelu;
+    case blink_mojom::Operation::Tag::kLinear:
+      return MLGraphOperatorUma::kLinear;
+    case blink_mojom::Operation::Tag::kLstmCell:
+      return MLGraphOperatorUma::kLstmCell;
+    case blink_mojom::Operation::Tag::kLstm:
+      return MLGraphOperatorUma::kLstm;
+    case blink_mojom::Operation::Tag::kMatmul:
+      return MLGraphOperatorUma::kMatmul;
+    case blink_mojom::Operation::Tag::kPad:
+      return MLGraphOperatorUma::kPad;
+    case blink_mojom::Operation::Tag::kPool2d: {
+      switch (operation.get_pool2d()->kind) {
+        case blink_mojom::Pool2d::Kind::kAveragePool2d:
+          return MLGraphOperatorUma::kAveragePool2d;
+        case blink_mojom::Pool2d::Kind::kMaxPool2d:
+          return MLGraphOperatorUma::kMaxPool2d;
+        case blink_mojom::Pool2d::Kind::kL2Pool2d:
+          return MLGraphOperatorUma::kL2Pool2d;
+      }
+      break;
+    }
+    case blink_mojom::Operation::Tag::kPrelu:
+      return MLGraphOperatorUma::kPrelu;
+    case blink_mojom::Operation::Tag::kQuantizeLinear:
+      return MLGraphOperatorUma::kQuantizeLinear;
+    case blink_mojom::Operation::Tag::kReduce: {
+      switch (operation.get_reduce()->kind) {
+        case blink_mojom::Reduce::Kind::kL1:
+          return MLGraphOperatorUma::kReduceL1;
+        case blink_mojom::Reduce::Kind::kL2:
+          return MLGraphOperatorUma::kReduceL2;
+        case blink_mojom::Reduce::Kind::kLogSum:
+          return MLGraphOperatorUma::kReduceLogSum;
+        case blink_mojom::Reduce::Kind::kLogSumExp:
+          return MLGraphOperatorUma::kReduceLogSumExp;
+        case blink_mojom::Reduce::Kind::kMax:
+          return MLGraphOperatorUma::kReduceMax;
+        case blink_mojom::Reduce::Kind::kMean:
+          return MLGraphOperatorUma::kReduceMean;
+        case blink_mojom::Reduce::Kind::kMin:
+          return MLGraphOperatorUma::kReduceMin;
+        case blink_mojom::Reduce::Kind::kProduct:
+          return MLGraphOperatorUma::kReduceProduct;
+        case blink_mojom::Reduce::Kind::kSum:
+          return MLGraphOperatorUma::kReduceSum;
+        case blink_mojom::Reduce::Kind::kSumSquare:
+          return MLGraphOperatorUma::kReduceSumSquare;
+      }
+      break;
+    }
+    case blink_mojom::Operation::Tag::kRelu:
+      return MLGraphOperatorUma::kRelu;
+    case blink_mojom::Operation::Tag::kResample2d:
+      return MLGraphOperatorUma::kResample2d;
+    case blink_mojom::Operation::Tag::kReshape:
+      return MLGraphOperatorUma::kReshape;
+    case blink_mojom::Operation::Tag::kScatterElements:
+      return MLGraphOperatorUma::kScatterElements;
+    case blink_mojom::Operation::Tag::kScatterNd:
+      return MLGraphOperatorUma::kScatterNd;
+    case blink_mojom::Operation::Tag::kSigmoid:
+      return MLGraphOperatorUma::kSigmoid;
+    case blink_mojom::Operation::Tag::kSlice:
+      return MLGraphOperatorUma::kSlice;
+    case blink_mojom::Operation::Tag::kSoftmax:
+      return MLGraphOperatorUma::kSoftmax;
+    case blink_mojom::Operation::Tag::kSoftplus:
+      return MLGraphOperatorUma::kSoftplus;
+    case blink_mojom::Operation::Tag::kSoftsign:
+      return MLGraphOperatorUma::kSoftsign;
+    case blink_mojom::Operation::Tag::kSplit:
+      return MLGraphOperatorUma::kSplit;
+    case blink_mojom::Operation::Tag::kTanh:
+      return MLGraphOperatorUma::kTanh;
+    case blink_mojom::Operation::Tag::kTile:
+      return MLGraphOperatorUma::kTile;
+    case blink_mojom::Operation::Tag::kTranspose:
+      return MLGraphOperatorUma::kTranspose;
+    case blink_mojom::Operation::Tag::kTriangular:
+      return MLGraphOperatorUma::kTriangular;
+    case blink_mojom::Operation::Tag::kWhere:
+      return MLGraphOperatorUma::kWhere;
+  }
+}
+
+void RecordOperatorsUsed(const blink_mojom::GraphInfo& graph_info) {
+  static const std::string_view kOperatorHistogram = "WebNN.Operator";
+
+  // Record once per graph that it has been built. This will give us a count
+  // for the total number of built graphs, which will be used to
+  // calculate what percentage of graphs use a given operator.
+  UMA_HISTOGRAM_ENUMERATION(kOperatorHistogram,
+                            MLGraphOperatorUma::kGraphBuilt);
+
+  MLGraphOperatorUmaSet operators_used;
+  for (const auto& operation : graph_info.operations) {
+    MLGraphOperatorUma uma_value = GetUmaValueForOperation(*operation);
+    // For a given operator, record that it has been used only once.
+    if (!operators_used.Has(uma_value)) {
+      UMA_HISTOGRAM_ENUMERATION(kOperatorHistogram, uma_value);
+      operators_used.Put(uma_value);
+    }
+  }
+}
 
 #define THROW_AND_RETURN_TYPE_IF_ERROR(func, return_value) \
   RETURN_IF_ERROR(func, [&exception_state](String error) { \
@@ -140,39 +477,38 @@ webnn::RoundingType BlinkRoundingTypeToComponent(
   }
 }
 
-webnn::Pool2dKind FromMojoPool2dKind(webnn::mojom::blink::Pool2d::Kind kind) {
+webnn::Pool2dKind FromMojoPool2dKind(blink_mojom::Pool2d::Kind kind) {
   switch (kind) {
-    case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d:
+    case blink_mojom::Pool2d::Kind::kAveragePool2d:
       return webnn::Pool2dKind::kAverage;
-    case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
+    case blink_mojom::Pool2d::Kind::kL2Pool2d:
       return webnn::Pool2dKind::kL2;
-    case webnn::mojom::blink::Pool2d::Kind::kMaxPool2d:
+    case blink_mojom::Pool2d::Kind::kMaxPool2d:
       return webnn::Pool2dKind::kMax;
   }
 }
 
-webnn::ReduceKind MojoReduceKindToComponent(
-    webnn::mojom::blink::Reduce::Kind kind) {
+webnn::ReduceKind MojoReduceKindToComponent(blink_mojom::Reduce::Kind kind) {
   switch (kind) {
-    case webnn::mojom::blink::Reduce::Kind::kL1:
+    case blink_mojom::Reduce::Kind::kL1:
       return webnn::ReduceKind::kL1;
-    case webnn::mojom::blink::Reduce::Kind::kL2:
+    case blink_mojom::Reduce::Kind::kL2:
       return webnn::ReduceKind::kL2;
-    case webnn::mojom::blink::Reduce::Kind::kLogSum:
+    case blink_mojom::Reduce::Kind::kLogSum:
       return webnn::ReduceKind::kLogSum;
-    case webnn::mojom::blink::Reduce::Kind::kLogSumExp:
+    case blink_mojom::Reduce::Kind::kLogSumExp:
       return webnn::ReduceKind::kLogSumExp;
-    case webnn::mojom::blink::Reduce::Kind::kMax:
+    case blink_mojom::Reduce::Kind::kMax:
       return webnn::ReduceKind::kMax;
-    case webnn::mojom::blink::Reduce::Kind::kMean:
+    case blink_mojom::Reduce::Kind::kMean:
       return webnn::ReduceKind::kMean;
-    case webnn::mojom::blink::Reduce::Kind::kMin:
+    case blink_mojom::Reduce::Kind::kMin:
       return webnn::ReduceKind::kMin;
-    case webnn::mojom::blink::Reduce::Kind::kProduct:
+    case blink_mojom::Reduce::Kind::kProduct:
       return webnn::ReduceKind::kProduct;
-    case webnn::mojom::blink::Reduce::Kind::kSum:
+    case blink_mojom::Reduce::Kind::kSum:
       return webnn::ReduceKind::kSum;
-    case webnn::mojom::blink::Reduce::Kind::kSumSquare:
+    case blink_mojom::Reduce::Kind::kSumSquare:
       return webnn::ReduceKind::kSumSquare;
   }
 }
@@ -540,7 +876,7 @@ bool ValidateClampOptions(const MLClampOptions* options,
 }
 
 MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
-                          webnn::mojom::blink::ArgMinMax::Kind sub_kind,
+                          blink_mojom::ArgMinMax::Kind sub_kind,
                           const MLOperand* input,
                           const uint32_t axis,
                           const MLArgMinMaxOptions* options,
@@ -564,7 +900,7 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
 
 MLOperand* BuildElementWiseBinary(
     MLGraphBuilder* builder,
-    webnn::mojom::blink::ElementWiseBinary::Kind kind,
+    blink_mojom::ElementWiseBinary::Kind kind,
     const webnn::SupportedDataTypes& data_type_constraint,
     const MLOperand* a,
     const MLOperand* b,
@@ -611,7 +947,7 @@ MLOperand* BuildElementWiseBinary(
       webnn::OperandDescriptor::Create(data_type, *output_shape));
 
   auto* binary = MakeGarbageCollected<MLOperator>(
-      builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kElementWiseBinary,
+      builder, /*kind=*/blink_mojom::Operation::Tag::kElementWiseBinary,
       options, /*sub_kind=*/kind);
   MLOperand* output =
       MLOperand::CreateOutput(builder, std::move(output_descriptor), binary);
@@ -623,7 +959,7 @@ MLOperand* BuildElementWiseBinary(
 MLOperand* BuildUnaryOperator(
     MLGraphBuilder* builder,
     ExceptionState& exception_state,
-    webnn::mojom::blink::Operation::Tag kind,
+    blink_mojom::Operation::Tag kind,
     const webnn::SupportedDataTypes& data_type_constraint,
     const MLOperand* input,
     const MLOperatorOptions* options) {
@@ -648,7 +984,7 @@ MLOperand* BuildUnaryOperator(
 MLOperand* BuildElementWiseUnaryOperator(
     MLGraphBuilder* builder,
     ExceptionState& exception_state,
-    webnn::mojom::blink::ElementWiseUnary::Kind kind,
+    blink_mojom::ElementWiseUnary::Kind kind,
     const webnn::SupportedDataTypes& data_type_constraint,
     const MLOperand* input,
     const MLOperatorOptions* options) {
@@ -662,8 +998,8 @@ MLOperand* BuildElementWiseUnaryOperator(
   }
 
   auto* unary = MakeGarbageCollected<MLOperator>(
-      builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kElementWiseUnary,
-      options, /*sub_kind=*/kind);
+      builder, /*kind=*/blink_mojom::Operation::Tag::kElementWiseUnary, options,
+      /*sub_kind=*/kind);
   MLOperand* output =
       MLOperand::CreateOutput(builder, input->Descriptor(), unary);
   unary->Connect({input}, {output});
@@ -671,7 +1007,7 @@ MLOperand* BuildElementWiseUnaryOperator(
 }
 
 MLOperand* BuildReduce(MLGraphBuilder* builder,
-                       webnn::mojom::blink::Reduce::Kind kind,
+                       blink_mojom::Reduce::Kind kind,
                        const webnn::ContextProperties& context_properties,
                        const MLOperand* input,
                        const MLReduceOptions* options,
@@ -685,7 +1021,7 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
           options->keepDimensions()));
 
   auto* reduce = MakeGarbageCollected<MLOperator>(
-      builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kReduce, options,
+      builder, /*kind=*/blink_mojom::Operation::Tag::kReduce, options,
       /*sub_kind=*/kind);
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce, the output
@@ -697,7 +1033,7 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
 }
 
 MLOperand* BuildPool2d(MLGraphBuilder* builder,
-                       webnn::mojom::blink::Pool2d::Kind kind,
+                       blink_mojom::Pool2d::Kind kind,
                        const webnn::ContextProperties& context_properties,
                        const MLOperand* input,
                        const MLPool2dOptions* options,
@@ -717,7 +1053,7 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
   // Create pool2d operator and its output operand. Connect the pool2d operator
   // to its input and output operands.
   auto* pool2d = MakeGarbageCollected<MLOperator>(
-      builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kPool2d, options,
+      builder, /*kind=*/blink_mojom::Operation::Tag::kPool2d, options,
       /*sub_kind=*/kind);
   MLOperand* output =
       MLOperand::CreateOutput(builder, std::move(output_descriptor), pool2d);
@@ -752,7 +1088,7 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
     const auto& name = output.first;
     const auto& operand = output.second;
     // Validate whether it is an output operand.
-    if (operand->Kind() != webnn::mojom::blink::Operand::Kind::kOutput) {
+    if (operand->Kind() != blink_mojom::Operand::Kind::kOutput) {
       return base::unexpected(String::Format(
           "The operand with name \"%s\" is not an output operand.",
           name.Utf8().c_str()));
@@ -774,7 +1110,7 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
     // Enumerate the current operator's input operands.
     for (const auto& operand : current_operator->Inputs()) {
       switch (operand->Kind()) {
-        case webnn::mojom::blink::Operand::Kind::kOutput:
+        case blink_mojom::Operand::Kind::kOutput:
           DCHECK(operand->Operator());
           // If the operand is an output operand and its dependent operator is
           // not visited, mark the dependent operator is visited and enqueue
@@ -784,7 +1120,7 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
             operators_queue.push_back(operand->Operator());
           }
           break;
-        case webnn::mojom::blink::Operand::Kind::kInput:
+        case blink_mojom::Operand::Kind::kInput:
           // If the operand has been validated, it doesn't need to be verified
           // multiple times.
           if (visited_input_operands.Contains(operand)) {
@@ -801,7 +1137,7 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
           // Setup resource info for this input operand.
           input_constraints.insert(operand->Name(), operand->Descriptor());
           break;
-        case webnn::mojom::blink::Operand::Kind::kConstant:
+        case blink_mojom::Operand::Kind::kConstant:
           // If the operand has been validated, it doesn't need to be verified
           // multiple times.
           if (visited_input_operands.Contains(operand)) {
@@ -816,17 +1152,17 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
                         std::move(output_constraints));
 }
 
-base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
+base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs,
     const webnn::ContextProperties& context_properties) {
   // The `GraphInfo` represents an entire information of WebNN graph.
-  auto graph_info = webnn::mojom::blink::GraphInfo::New();
+  auto graph_info = blink_mojom::GraphInfo::New();
 
   HeapHashMap<Member<const MLOperand>, uint64_t> operand_to_id_map;
   for (const auto& [name, operand] : named_outputs) {
     // Create `mojo::Operand` for output operands of graph with the name.
     auto output_operand =
-        mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get());
+        mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get());
     output_operand->name = name;
     uint64_t operand_id = NextOperandId(*graph_info);
     graph_info->id_to_operand_map.insert(operand_id, std::move(output_operand));
@@ -848,7 +1184,7 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
   HeapHashSet<Member<const MLOperand>> constant_operands;
   for (const auto& current_operator : *topologically_sorted_operators) {
     for (const auto& operand : current_operator->Inputs()) {
-      if (operand->Kind() == webnn::mojom::blink::Operand::Kind::kConstant) {
+      if (operand->Kind() == blink_mojom::Operand::Kind::kConstant) {
         constant_operands.insert(operand);
       }
       auto it = operand_dependencies.find(operand);
@@ -882,8 +1218,7 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
         break;
       }
       auto dependent_operator = *dependent_operators.begin();
-      if (dependent_operator->Kind() !=
-          webnn::mojom::blink::Operation::Tag::kReshape) {
+      if (dependent_operator->Kind() != blink_mojom::Operation::Tag::kReshape) {
         break;
       }
       Member<const MLOperand> reshape_output = dependent_operator->Outputs()[0];
@@ -904,27 +1239,27 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
         continue;
       }
       switch (operand->Kind()) {
-        case webnn::mojom::blink::Operand::Kind::kInput: {
+        case blink_mojom::Operand::Kind::kInput: {
           // Create `mojo::Operand` for the input MLOperand.
           uint64_t operand_id = NextOperandId(*graph_info);
           graph_info->id_to_operand_map.insert(
               operand_id,
-              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
+              mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
           //  Build the array of input operands for this graph with the id.
           graph_info->input_operands.push_back(operand_id);
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
-        case webnn::mojom::blink::Operand::Kind::kConstant: {
+        case blink_mojom::Operand::Kind::kConstant: {
           // Convert `mojo::Operand` for constant operand.
           uint64_t operand_id = NextOperandId(*graph_info);
           auto mojo_operand =
-              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get());
+              mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get());
           // Set constant's descriptor to the redundant reshape's output's
           // descriptor.
           if (constant_to_reshaped_mapping.Contains(operand)) {
             mojo_operand->descriptor =
-                mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(
+                mojo::ConvertTo<blink_mojom::OperandPtr>(
                     constant_to_reshaped_mapping.at(operand))
                     ->descriptor;
           }
@@ -936,7 +1271,7 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
-        case webnn::mojom::blink::Operand::Kind::kOutput:
+        case blink_mojom::Operand::Kind::kOutput:
           // Because the operators are visited in topological order, if this
           // operand is an intermediate operand, it should already be defined as
           // an output operand of the dependent operator.
@@ -964,8 +1299,7 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
       // operators. Create `mojo::Operand` for this operand.
       uint64_t operand_id = NextOperandId(*graph_info);
       graph_info->id_to_operand_map.insert(
-          operand_id,
-          mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
+          operand_id, mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
       operand_to_id_map.insert(operand, operand_id);
     }
     if (is_redundant_reshape) {
@@ -1002,7 +1336,7 @@ MLGraphBuilder* MLGraphBuilder::Create(ScriptState* script_state,
 MLGraphBuilder::MLGraphBuilder(
     ExecutionContext* execution_context,
     MLContext* context,
-    mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
+    mojo::PendingAssociatedRemote<blink_mojom::WebNNGraphBuilder>
         pending_remote)
     : ml_context_(context), remote_(execution_context) {
   CHECK(base::FeatureList::IsEnabled(
@@ -1100,8 +1434,8 @@ MLOperand* MLGraphBuilder::argMin(const MLOperand* input,
                                   ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
-  return BuildArgMinMax(this, webnn::mojom::blink::ArgMinMax::Kind::kMin, input,
-                        axis, options, exception_state);
+  return BuildArgMinMax(this, blink_mojom::ArgMinMax::Kind::kMin, input, axis,
+                        options, exception_state);
 }
 
 MLOperand* MLGraphBuilder::argMax(const MLOperand* input,
@@ -1110,8 +1444,8 @@ MLOperand* MLGraphBuilder::argMax(const MLOperand* input,
                                   ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
-  return BuildArgMinMax(this, webnn::mojom::blink::ArgMinMax::Kind::kMax, input,
-                        axis, options, exception_state);
+  return BuildArgMinMax(this, blink_mojom::ArgMinMax::Kind::kMax, input, axis,
+                        options, exception_state);
 }
 
 MLOperand* MLGraphBuilder::batchNormalization(
@@ -1144,7 +1478,7 @@ MLOperand* MLGraphBuilder::batchNormalization(
   // Create batchNormalization operator and its output operand. Connect the
   // batchNormalization operator to its input and output operands.
   auto* batch_normalization = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kBatchNormalization, options);
+      this, blink_mojom::Operation::Tag::kBatchNormalization, options);
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), batch_normalization);
   batch_normalization->Connect(std::move(inputs), {output});
@@ -1195,7 +1529,7 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, the output tensor of
   // clamp has the same data type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kClamp,
+      this, exception_state, blink_mojom::Operation::Tag::kClamp,
       ml_context_->GetProperties().data_type_limits.clamp_input, input,
       options);
 }
@@ -1227,8 +1561,8 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
   // Create conv2d operator and its output operand. Connect the conv2d operator
   // to its input and output operands.
   auto* conv2d = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kConv2d, options,
-      /*sub_type=*/webnn::mojom::blink::Conv2d::Kind::kDirect);
+      this, blink_mojom::Operation::Tag::kConv2d, options,
+      /*sub_type=*/blink_mojom::Conv2d::Kind::kDirect);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), conv2d);
   conv2d->Connect(std::move(inputs), {output});
@@ -1263,8 +1597,8 @@ MLOperand* MLGraphBuilder::convTranspose2d(
   // Create convTranspose2d operator and its output operand. Connect the
   // convTranspose2d operator to its input and output operands.
   auto* convTranspose2d = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kConv2d, options,
-      /*sub_type=*/webnn::mojom::blink::Conv2d::Kind::kTransposed);
+      this, blink_mojom::Operation::Tag::kConv2d, options,
+      /*sub_type=*/blink_mojom::Conv2d::Kind::kTransposed);
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), convTranspose2d);
   convTranspose2d->Connect(std::move(inputs), {output});
@@ -1308,7 +1642,7 @@ MLOperand* MLGraphBuilder::cumulativeSum(const MLOperand* input,
     THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);          \
     THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs({a, b}), nullptr);          \
     return BuildElementWiseBinary(                                            \
-        this, webnn::mojom::blink::ElementWiseBinary::Kind::op_kind,          \
+        this, blink_mojom::ElementWiseBinary::Kind::op_kind,                  \
         ml_context_->GetProperties().data_type_limits.op_snake##_input, a, b, \
         options, exception_state);                                            \
   }
@@ -1329,17 +1663,16 @@ BUILD_ELEMENTWISE_BINARY_OP(logicalAnd, logical_and, kLogicalAnd)
 BUILD_ELEMENTWISE_BINARY_OP(logicalOr, logical_or, kLogicalOr)
 BUILD_ELEMENTWISE_BINARY_OP(logicalXor, logical_xor, kLogicalXor)
 
-#define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind)                          \
-  MLOperand* MLGraphBuilder::op(const MLOperand* input,                  \
-                                const MLOperatorOptions* options,        \
-                                ExceptionState& exception_state) {       \
-    THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);     \
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);       \
-    return BuildElementWiseUnaryOperator(                                \
-        this, exception_state,                                           \
-        webnn::mojom::blink::ElementWiseUnary::Kind::op_kind,            \
-        ml_context_->GetProperties().data_type_limits.op##_input, input, \
-        options);                                                        \
+#define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind)                              \
+  MLOperand* MLGraphBuilder::op(const MLOperand* input,                      \
+                                const MLOperatorOptions* options,            \
+                                ExceptionState& exception_state) {           \
+    THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);         \
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);           \
+    return BuildElementWiseUnaryOperator(                                    \
+        this, exception_state, blink_mojom::ElementWiseUnary::Kind::op_kind, \
+        ml_context_->GetProperties().data_type_limits.op##_input, input,     \
+        options);                                                            \
   }
 
 BUILD_ELEMENTWISE_UNARY_OP(abs, kAbs)
@@ -1363,8 +1696,7 @@ MLOperand* MLGraphBuilder::logicalNot(const MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
   return BuildElementWiseUnaryOperator(
-      this, exception_state,
-      webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot,
+      this, exception_state, blink_mojom::ElementWiseUnary::Kind::kLogicalNot,
       ml_context_->GetProperties().data_type_limits.logical_not_input, input,
       options);
 }
@@ -1406,8 +1738,8 @@ MLOperand* MLGraphBuilder::cast(const MLOperand* input,
       webnn::OperandDescriptor::Create(cast_data_type, input->Shape()));
 
   auto* cast = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kElementWiseUnary, options,
-      /*sub_kind=*/webnn::mojom::blink::ElementWiseUnary::Kind::kCast);
+      this, blink_mojom::Operation::Tag::kElementWiseUnary, options,
+      /*sub_kind=*/blink_mojom::ElementWiseUnary::Kind::kCast);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), cast);
 
@@ -1432,22 +1764,22 @@ MLOperand* MLGraphBuilder::dequantizeLinear(const MLOperand* input,
           options->label().Utf8()));
 
   auto* dequantize_linear = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kDequantizeLinear, options);
+      this, blink_mojom::Operation::Tag::kDequantizeLinear, options);
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), dequantize_linear);
   dequantize_linear->Connect(std::move(inputs), {output});
   return output;
 }
 
-#define BUILD_REDUCE_OP(op, op_kind)                                     \
-  MLOperand* MLGraphBuilder::op(const MLOperand* input,                  \
-                                const MLReduceOptions* options,          \
-                                ExceptionState& exception_state) {       \
-    THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);     \
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);       \
-    return BuildReduce(this, webnn::mojom::blink::Reduce::Kind::op_kind, \
-                       ml_context_->GetProperties(), input, options,     \
-                       exception_state);                                 \
+#define BUILD_REDUCE_OP(op, op_kind)                                 \
+  MLOperand* MLGraphBuilder::op(const MLOperand* input,              \
+                                const MLReduceOptions* options,      \
+                                ExceptionState& exception_state) {   \
+    THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr); \
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);   \
+    return BuildReduce(this, blink_mojom::Reduce::Kind::op_kind,     \
+                       ml_context_->GetProperties(), input, options, \
+                       exception_state);                             \
   }
 
 BUILD_REDUCE_OP(reduceL1, kL1)
@@ -1480,7 +1812,7 @@ MLOperand* MLGraphBuilder::elu(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-elu, the output tensor of
   // elu has the same data type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kElu,
+      this, exception_state, blink_mojom::Operation::Tag::kElu,
       ml_context_->GetProperties().data_type_limits.elu_input, input, options);
 }
 
@@ -1518,7 +1850,7 @@ MLOperand* MLGraphBuilder::expand(const MLOperand* input,
       webnn::OperandDescriptor::Create(input->DataType(), *output_shape));
 
   auto* expand = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kExpand, options);
+      this, blink_mojom::Operation::Tag::kExpand, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), expand);
 
@@ -1542,7 +1874,7 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
           indices->Descriptor(), options->axis(), options->label().Utf8()));
 
   auto* gather = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kGather, options);
+      this, blink_mojom::Operation::Tag::kGather, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), gather);
 
@@ -1566,7 +1898,7 @@ MLOperand* MLGraphBuilder::gatherElements(const MLOperand* input,
           indices->Descriptor(), options->axis(), options->label().Utf8()));
 
   auto* gather_elements = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kGatherElements, options);
+      this, blink_mojom::Operation::Tag::kGatherElements, options);
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), gather_elements);
 
@@ -1590,7 +1922,7 @@ MLOperand* MLGraphBuilder::gatherND(const MLOperand* input,
           indices->Descriptor(), options->label().Utf8()));
 
   auto* gather_nd = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kGatherNd, options);
+      this, blink_mojom::Operation::Tag::kGatherNd, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), gather_nd);
 
@@ -1609,7 +1941,7 @@ MLOperand* MLGraphBuilder::gelu(const MLOperand* input,
   // gelu has the same data type and dimensions as its input. And the input data
   // type must be one of the floating point types.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kGelu,
+      this, exception_state, blink_mojom::Operation::Tag::kGelu,
       ml_context_->GetProperties().data_type_limits.gelu_input, input, options);
 }
 
@@ -1632,7 +1964,7 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
                                         ConvertToGemmAttributes(options)));
 
   auto* gemm = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kGemm, options);
+      this, blink_mojom::Operation::Tag::kGemm, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), gemm);
 
@@ -1732,7 +2064,7 @@ MLOperand* MLGraphBuilder::hardSigmoid(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hardsigmoid, the output
   // tensor of softplus has the same type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kHardSigmoid,
+      this, exception_state, blink_mojom::Operation::Tag::kHardSigmoid,
       ml_context_->GetProperties().data_type_limits.hard_sigmoid_input, input,
       options);
 }
@@ -1747,7 +2079,7 @@ MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hard-swish, the output
   // tensor of hard-swish has the same data type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kHardSwish,
+      this, exception_state, blink_mojom::Operation::Tag::kHardSwish,
       ml_context_->GetProperties().data_type_limits.hard_swish_input, input,
       options);
 }
@@ -1777,8 +2109,7 @@ MLOperand* MLGraphBuilder::instanceNormalization(
           ConvertToInstanceNormalizationAttributes(options)));
 
   auto* instance_normalization = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kInstanceNormalization,
-      options);
+      this, blink_mojom::Operation::Tag::kInstanceNormalization, options);
 
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), instance_normalization);
@@ -1817,7 +2148,7 @@ MLOperand* MLGraphBuilder::layerNormalization(
           ConvertToLayerNormalizationAttributes(options)));
 
   auto* layer_normalization = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kLayerNormalization, options);
+      this, blink_mojom::Operation::Tag::kLayerNormalization, options);
 
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), layer_normalization);
@@ -1836,7 +2167,7 @@ MLOperand* MLGraphBuilder::leakyRelu(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-leakyrelu, the output
   // tensor of leaky relu has the same type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kLeakyRelu,
+      this, exception_state, blink_mojom::Operation::Tag::kLeakyRelu,
       ml_context_->GetProperties().data_type_limits.leaky_relu_input, input,
       options);
 }
@@ -1855,7 +2186,7 @@ MLOperand* MLGraphBuilder::linear(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-linear, the output tensor
   // of linear has the same type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kLinear,
+      this, exception_state, blink_mojom::Operation::Tag::kLinear,
       ml_context_->GetProperties().data_type_limits.linear_input, input,
       options);
 }
@@ -2003,7 +2334,7 @@ MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
   // Create matmul operator and its output operand. Connect the matmul operator
   // to its input and output operands.
   auto* matmul = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kMatmul, options);
+      this, blink_mojom::Operation::Tag::kMatmul, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), matmul);
 
@@ -2064,7 +2395,7 @@ MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
     return nullptr;
   }
 
-  return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kAveragePool2d,
+  return BuildPool2d(this, blink_mojom::Pool2d::Kind::kAveragePool2d,
                      ml_context_->GetProperties(), input, options,
                      exception_state);
 }
@@ -2084,7 +2415,7 @@ MLOperand* MLGraphBuilder::l2Pool2d(const MLOperand* input,
     return nullptr;
   }
 
-  return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kL2Pool2d,
+  return BuildPool2d(this, blink_mojom::Pool2d::Kind::kL2Pool2d,
                      ml_context_->GetProperties(), input, options,
                      exception_state);
 }
@@ -2095,7 +2426,7 @@ MLOperand* MLGraphBuilder::maxPool2d(const MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kMaxPool2d,
+  return BuildPool2d(this, blink_mojom::Pool2d::Kind::kMaxPool2d,
                      ml_context_->GetProperties(), input, options,
                      exception_state);
 }
@@ -2116,7 +2447,7 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
           slope->Descriptor(), options->label().Utf8()));
 
   auto* prelu = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kPrelu, options);
+      this, blink_mojom::Operation::Tag::kPrelu, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), prelu);
 
@@ -2141,7 +2472,7 @@ MLOperand* MLGraphBuilder::quantizeLinear(const MLOperand* input,
           options->label().Utf8()));
 
   auto* quantize_linear = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kQuantizeLinear, options);
+      this, blink_mojom::Operation::Tag::kQuantizeLinear, options);
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), quantize_linear);
   quantize_linear->Connect(std::move(inputs), {output});
@@ -2158,7 +2489,7 @@ MLOperand* MLGraphBuilder::relu(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-relu, the output tensor of
   // relu has the same data type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kRelu,
+      this, exception_state, blink_mojom::Operation::Tag::kRelu,
       ml_context_->GetProperties().data_type_limits.relu_input, input, options);
 }
 
@@ -2222,7 +2553,7 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
       webnn::OperandDescriptor::Create(input->DataType(), output_shape));
 
   auto* reshape = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kReshape, options);
+      this, blink_mojom::Operation::Tag::kReshape, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), reshape);
 
@@ -2263,7 +2594,7 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
   // Create resample2d operator and its output operand. Connect the resample2d
   // operator to its input and output operands.
   auto* resample2d = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kResample2d, options);
+      this, blink_mojom::Operation::Tag::kResample2d, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), resample2d);
 
@@ -2289,7 +2620,7 @@ MLOperand* MLGraphBuilder::scatterElements(const MLOperand* input,
           options->label().Utf8()));
 
   auto* scatter_elements = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kScatterElements, options);
+      this, blink_mojom::Operation::Tag::kScatterElements, options);
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), scatter_elements);
 
@@ -2315,7 +2646,7 @@ MLOperand* MLGraphBuilder::scatterND(const MLOperand* input,
           options->label().Utf8()));
 
   auto* scatter_nd = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kScatterNd, options);
+      this, blink_mojom::Operation::Tag::kScatterNd, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), scatter_nd);
 
@@ -2334,7 +2665,7 @@ MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
   // output tensor of sigmoid has the same data type and dimensions as its
   // input. And the input data type must be one of the floating point types.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kSigmoid,
+      this, exception_state, blink_mojom::Operation::Tag::kSigmoid,
       ml_context_->GetProperties().data_type_limits.sigmoid_input, input,
       options);
 }
@@ -2411,7 +2742,7 @@ MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softplus, the output
   // tensor of softplus has the same type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kSoftplus,
+      this, exception_state, blink_mojom::Operation::Tag::kSoftplus,
       ml_context_->GetProperties().data_type_limits.softplus_input, input,
       options);
 }
@@ -2426,7 +2757,7 @@ MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softsign, the output tensor
   // of softsign has the same data type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kSoftsign,
+      this, exception_state, blink_mojom::Operation::Tag::kSoftsign,
       ml_context_->GetProperties().data_type_limits.softsign_input, input,
       options);
 }
@@ -2504,7 +2835,7 @@ MLOperand* MLGraphBuilder::tanh(const MLOperand* input,
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-tanh, the output tensor of
   // tanh has the same data type and dimensions as its input.
   return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kTanh,
+      this, exception_state, blink_mojom::Operation::Tag::kTanh,
       ml_context_->GetProperties().data_type_limits.tanh_input, input, options);
 }
 
@@ -2548,7 +2879,7 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
                                              options->label().Utf8()));
 
   auto* transpose = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kTranspose, options);
+      this, blink_mojom::Operation::Tag::kTranspose, options);
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose, the output
   // tensor of transpose has the same data type as its input.
@@ -2572,7 +2903,7 @@ MLOperand* MLGraphBuilder::triangular(const MLOperand* input,
                                               options->label().Utf8()));
 
   auto* triangular = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kTriangular, options);
+      this, blink_mojom::Operation::Tag::kTriangular, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), triangular);
 
@@ -2599,7 +2930,7 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
           options->label().Utf8()));
 
   auto* where = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kWhere, options);
+      this, blink_mojom::Operation::Tag::kWhere, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), where);
   where->Connect(std::move(inputs), {output});
@@ -2662,6 +2993,8 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   // Set `has_built_` after all inputs have been validated.
   has_built_ = true;
 
+  RecordOperatorsUsed(**graph_info);
+
   // Release constant data held by the renderer now that it has been copied to
   // the remote graph.
   ReleaseConstantData();
@@ -2681,7 +3014,7 @@ void MLGraphBuilder::DidCreateWebNNGraph(
     ScriptPromiseResolver<blink::MLGraph>* resolver,
     std::pair<MLGraph::NamedOperandDescriptors,
               MLGraph::NamedOperandDescriptors> input_and_output_constraints,
-    webnn::mojom::blink::CreateGraphResultPtr result) {
+    blink_mojom::CreateGraphResultPtr result) {
   CHECK(has_built_);
 
   pending_resolver_.Clear();

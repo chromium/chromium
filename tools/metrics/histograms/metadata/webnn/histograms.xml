@@ -95,6 +95,18 @@ chromium-metrics-reviews@google.com.
   <summary>The time taken to read the ml tensor.</summary>
 </histogram>
 
+<histogram name="WebNN.Operator" enum="MLGraphOperatorUma"
+    expires_after="2025-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    When an MLGraph is built using WebNN, this histogram records whether a given
+    operator has been used. The enum value GraphBuilt is always logged once per
+    MLGraph, so to see the prevalence of a given operator, you need to divide
+    its count by GraphBuilt count.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
