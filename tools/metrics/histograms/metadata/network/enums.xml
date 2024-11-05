@@ -1433,6 +1433,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PrefetchMatchesResourceRequestField) -->
 
 <enum name="PrefetchMatchesResourceRequestField">
+  <int value="0" label="unknown"/>
   <int value="1" label="method"/>
   <int value="2" label="url"/>
   <int value="3" label="site_for_cookies"/>
