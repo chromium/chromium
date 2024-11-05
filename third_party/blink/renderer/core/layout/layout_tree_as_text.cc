@@ -98,7 +98,8 @@ static void WriteLayers(StringBuilder&,
 
 static void PrintBorderStyle(StringBuilder& ts,
                              const EBorderStyle border_style) {
-  ts << getValueName(PlatformEnumToCSSValueID(border_style)) << " ";
+  ts << GetCSSValueNameAs<StringView>(PlatformEnumToCSSValueID(border_style))
+     << " ";
 }
 
 static String GetTagName(Node* n) {

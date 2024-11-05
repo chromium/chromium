@@ -58,7 +58,7 @@ float PagePopupClient::ScaledZoomFactor() {
 
 #define addLiteral(literal, data) data.Append(literal, sizeof(literal) - 1)
 
-void PagePopupClient::AddJavaScriptString(const String& str,
+void PagePopupClient::AddJavaScriptString(const StringView& str,
                                           SegmentedBuffer& data) {
   addLiteral("\"", data);
   StringBuilder builder;
@@ -87,7 +87,7 @@ void PagePopupClient::AddJavaScriptString(const String& str,
 }
 
 void PagePopupClient::AddProperty(const char* name,
-                                  const String& value,
+                                  const StringView& value,
                                   SegmentedBuffer& data) {
   data.Append(name, strlen(name));
   addLiteral(": ", data);

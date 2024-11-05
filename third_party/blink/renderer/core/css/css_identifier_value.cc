@@ -22,7 +22,7 @@ CSSIdentifierValue* CSSIdentifierValue::Create(CSSValueID value_id) {
 }
 
 String CSSIdentifierValue::CustomCSSText() const {
-  return AtomicString(getValueName(value_id_));
+  return GetCSSValueNameAs<AtomicString>(value_id_);
 }
 
 CSSIdentifierValue::CSSIdentifierValue(CSSValueID value_id)

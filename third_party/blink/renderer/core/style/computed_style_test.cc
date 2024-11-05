@@ -1580,9 +1580,9 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
        {CSSValueID::kNone, CSSValueID::kLayout, CSSValueID::kPaint,
         CSSValueID::kSize, CSSValueID::kStyle}) {
     html->SetInlineStyleProperty(CSSPropertyID::kContain,
-                                 getValueName(contain));
+                                 GetCSSValueNameAs<String>(contain));
     body->SetInlineStyleProperty(CSSPropertyID::kContain,
-                                 getValueName(contain));
+                                 GetCSSValueNameAs<String>(contain));
     for (auto html_display : display_types) {
       html->SetInlineStyleProperty(CSSPropertyID::kDisplay, html_display);
       for (auto body_display : display_types) {
@@ -1596,8 +1596,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
         EXPECT_EQ(html->GetLayoutObject()->ShouldApplyAnyContainment(),
                   html->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
                       *html))
-            << "html contain:" << getValueName(contain)
-            << " display:" << getValueName(html_display);
+            << "html contain:" << GetCSSValueName(contain)
+            << " display:" << GetCSSValueName(html_display);
         if (!body->GetLayoutObject()) {
           if (const auto* body_style = body->GetComputedStyle()) {
             EXPECT_EQ(body_style->Display(), EDisplay::kContents);
@@ -1609,8 +1609,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
         EXPECT_EQ(body->GetLayoutObject()->ShouldApplyAnyContainment(),
                   body->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
                       *body))
-            << "body contain:" << getValueName(contain)
-            << " display:" << getValueName(body_display);
+            << "body contain:" << GetCSSValueName(contain)
+            << " display:" << GetCSSValueName(body_display);
       }
     }
   }

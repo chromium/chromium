@@ -410,11 +410,10 @@ Color StyleColor::ColorFromKeyword(CSSValueID keyword,
                                    mojom::blink::ColorScheme color_scheme,
                                    const ui::ColorProvider* color_provider,
                                    bool is_in_web_app_scope) {
-  if (const char* value_name = getValueName(keyword)) {
-    if (const NamedColor* named_color = FindColor(
-            value_name, static_cast<wtf_size_t>(strlen(value_name)))) {
-      return Color::FromRGBA32(named_color->argb_value);
-    }
+  std::string_view value_name = GetCSSValueName(keyword);
+  if (const NamedColor* named_color = FindColor(
+          value_name.data(), static_cast<wtf_size_t>(value_name.length()))) {
+    return Color::FromRGBA32(named_color->argb_value);
   }
 
   return LayoutTheme::GetTheme().SystemColor(
@@ -522,7 +521,7 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
   } else if (color.IsUnresolvedColorFunction()) {
     return stream << color.GetUnresolvedColorFunction();
   } else if (color.HasColorKeyword() && !color.IsNumeric()) {
-    return stream << getValueName(color.GetColorKeyword());
+    return stream << GetCSSValueName(color.GetColorKeyword());
   } else {
     return stream << color.GetColor();
   }

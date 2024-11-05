@@ -488,7 +488,9 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   CSSPrimitiveValue::BoolStatus IsNegative() const final {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
-  String CustomCSSText() const final { return getValueName(keyword_); }
+  String CustomCSSText() const final {
+    return GetCSSValueNameAs<AtomicString>(keyword_);
+  }
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(

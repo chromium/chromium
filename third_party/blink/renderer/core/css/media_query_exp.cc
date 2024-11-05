@@ -608,7 +608,7 @@ String MediaQueryExpValue::CssText() const {
       output.Append(Denominator().CssText());
       break;
     case Type::kId:
-      output.Append(getValueName(Id()));
+      output.Append(GetCSSValueNameAs<StringView>(Id()));
       break;
   }
 

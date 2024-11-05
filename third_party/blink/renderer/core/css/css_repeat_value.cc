@@ -11,8 +11,9 @@ namespace blink::cssvalue {
 String CSSRepeatValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("repeat(");
-  repetitions_ ? result.Append(repetitions_->CssText())
-               : result.Append(getValueName(CSSValueID::kAuto));
+  repetitions_
+      ? result.Append(repetitions_->CssText())
+      : result.Append(GetCSSValueNameAs<StringView>(CSSValueID::kAuto));
   result.Append(", ");
   result.Append(values_->CustomCSSText());
   result.Append(')');

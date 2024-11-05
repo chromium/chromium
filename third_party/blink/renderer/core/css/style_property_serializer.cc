@@ -87,6 +87,11 @@ bool IsZeroPercent(const CSSValue* value) {
   return false;
 }
 
+template <typename T>
+StringView PlatformEnumToCSSValueString(T e) {
+  return GetCSSValueNameAs<StringView>(PlatformEnumToCSSValueID(e));
+}
+
 }  // namespace
 
 StylePropertySerializer::CSSPropertyValueSetForSerializer::
@@ -1193,7 +1198,7 @@ String StylePropertySerializer::FontValue() const {
         return g_empty_string;
       }
     }
-    return getValueName(system_font->SystemFontId());
+    return GetCSSValueNameAs<String>(system_font->SystemFontId());
   } else {
     for (const CSSProperty* const longhand : longhands.subspan(1)) {
       const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
@@ -1546,16 +1551,16 @@ void SerializeMaskOriginAndClip(StringBuilder& result,
     // If the values are the same, only emit one value. Note that mask-origin
     // does not support no-clip, so there is no need to consider no-clip
     // special cases.
-    result.Append(getValueName(origin_id));
+    result.Append(GetCSSValueNameAs<StringView>(origin_id));
   } else if (origin_id == CSSValueID::kBorderBox &&
              clip_id == CSSValueID::kNoClip) {
     // Mask-origin does not support no-clip, so mask-origin can be omitted if it
     // is the default.
-    result.Append(getValueName(clip_id));
+    result.Append(GetCSSValueNameAs<StringView>(clip_id));
   } else {
-    result.Append(getValueName(origin_id));
+    result.Append(GetCSSValueNameAs<StringView>(origin_id));
     result.Append(' ');
-    result.Append(getValueName(clip_id));
+    result.Append(GetCSSValueNameAs<StringView>(clip_id));
   }
 }
 
@@ -1790,7 +1795,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       }
     }
     if (shorthand.id() == CSSPropertyID::kMask && layer_result.empty()) {
-      layer_result.Append(getValueName(CSSValueID::kNone));
+      layer_result.Append(GetCSSValueNameAs<StringView>(CSSValueID::kNone));
     }
     if (shorthand.id() == CSSPropertyID::kTransition && layer_result.empty()) {
       // When serializing the transition shorthand, we omit all values which are
@@ -2349,7 +2354,7 @@ String StylePropertySerializer::TextBoxValue() const {
     const CSSValueID edge_id = edge_identifier->GetValueID();
     if (edge_id == CSSValueID::kAuto) {
       if (trim_id == CSSValueID::kNone) {
-        return getValueName(CSSValueID::kNormal);
+        return GetCSSValueNameAs<String>(CSSValueID::kNormal);
       }
       return trim_value->CssText();
     }
@@ -2381,23 +2386,23 @@ String StylePropertySerializer::TextSpacingValue() const {
   const CSSValueID spacing_trim_id = spacing_trim_value->GetValueID();
   if (autospace_id == CSSValueID::kNormal &&
       spacing_trim_id == CSSValueID::kNormal) {
-    return getValueName(CSSValueID::kNormal);
+    return GetCSSValueNameAs<String>(CSSValueID::kNormal);
   }
   if (autospace_id == CSSValueID::kNoAutospace &&
       spacing_trim_id == CSSValueID::kSpaceAll) {
-    return getValueName(CSSValueID::kNone);
+    return GetCSSValueNameAs<String>(CSSValueID::kNone);
   }
 
   // Otherwise build a multi-value list.
   StringBuilder result;
   if (spacing_trim_id != CSSValueID::kNormal) {
-    result.Append(getValueName(spacing_trim_id));
+    result.Append(GetCSSValueNameAs<StringView>(spacing_trim_id));
   }
   if (autospace_id != CSSValueID::kNormal) {
     if (!result.empty()) {
       result.Append(kSpaceCharacter);
     }
-    result.Append(getValueName(autospace_id));
+    result.Append(GetCSSValueNameAs<StringView>(autospace_id));
   }
   // When all longhands are initial values, it should be `normal`.
   DCHECK(!result.empty());
@@ -2418,19 +2423,19 @@ String StylePropertySerializer::TextWrapValue() const {
   const TextWrapMode mode = ToTextWrapMode(mode_value);
   const TextWrapStyle style = ToTextWrapStyle(style_value);
   if (style == ComputedStyleInitialValues::InitialTextWrapStyle()) {
-    return getValueName(PlatformEnumToCSSValueID(mode));
+    return PlatformEnumToCSSValueString(mode).ToString();
   }
 
   // Otherwise, if `text-wrap-mode` is initial, return `text-wrap-style`.
   if (mode == ComputedStyleInitialValues::InitialTextWrapMode()) {
-    return getValueName(PlatformEnumToCSSValueID(style));
+    return PlatformEnumToCSSValueString(style).ToString();
   }
 
   // If neither is initial, return a list.
   StringBuilder result;
-  result.Append(getValueName(PlatformEnumToCSSValueID(mode)));
+  result.Append(PlatformEnumToCSSValueString(mode));
   result.Append(kSpaceCharacter);
-  result.Append(getValueName(PlatformEnumToCSSValueID(style)));
+  result.Append(PlatformEnumToCSSValueString(style));
   return result.ToString();
 }
 
@@ -2449,19 +2454,19 @@ String StylePropertySerializer::WhiteSpaceValue() const {
   const TextWrapMode wrap = ToTextWrapMode(wrap_value);
   const EWhiteSpace whitespace = ToWhiteSpace(collapse, wrap);
   if (IsValidWhiteSpace(whitespace)) {
-    return getValueName(PlatformEnumToCSSValueID(whitespace));
+    return PlatformEnumToCSSValueString(whitespace).ToString();
   }
 
   // Otherwise build a multi-value list.
   StringBuilder result;
   if (collapse != ComputedStyleInitialValues::InitialWhiteSpaceCollapse()) {
-    result.Append(getValueName(PlatformEnumToCSSValueID(collapse)));
+    result.Append(PlatformEnumToCSSValueString(collapse));
   }
   if (wrap != ComputedStyleInitialValues::InitialTextWrapMode()) {
     if (!result.empty()) {
       result.Append(kSpaceCharacter);
     }
-    result.Append(getValueName(PlatformEnumToCSSValueID(wrap)));
+    result.Append(PlatformEnumToCSSValueString(wrap));
   }
   // When all longhands are initial values, it should be `normal`, covered by
   // `IsValidWhiteSpace()` above.
