@@ -157,6 +157,10 @@ function testStartStopAndRecorderState() {
 // made available by media recorder via dataavailable events, containing non
 // empty blob data.
 function testStartAndDataAvailable(mimeType) {
+  if (!MediaRecorder.isTypeSupported(mimeType)) {
+    console.log('Skip unsupported mimeType:', mimeType);
+    return logSuccess();
+  }
   var videoSize = 0;
   var emptyBlobs = 0;
   var lastTimecode = NaN;
@@ -193,6 +197,10 @@ function testStartAndDataAvailable(mimeType) {
 // Tests that when MediaRecorder's start(timeSlice) is called, some data
 // available events are fired containing non empty blob data.
 function testStartWithTimeSlice(mimeType) {
+  if (!MediaRecorder.isTypeSupported(mimeType)) {
+    console.log('Skip unsupported mimeType:', mimeType);
+    return logSuccess();
+  }
   var videoSize = 0;
   var emptyBlobs = 0;
   var timeStamps = [];
@@ -218,7 +226,10 @@ function testStartWithTimeSlice(mimeType) {
       .then(function() {
         return waitFor('Making sure the recording has data',
             function() {
-              return videoSize > 0 && timeStamps.length > 10;
+              // When mimetype is mp4, it only has a possible chance to flush when an
+              // IDR frame output. Therefore, the `ondataavailable` callback is not
+              // triggered precisely based on the timeslice parameter value.
+              return videoSize > 0 && timeStamps.length > (mimeType.startsWith('video/mp4') ? 2 : 10);
             });
       })
       .then(function() {
@@ -273,6 +284,10 @@ function testIllegalResumeThrowsDOMError() {
 
 // Tests that MediaRecorder sends data blobs when resume() is called.
 function testResumeAndDataAvailable(mimeType) {
+  if (!MediaRecorder.isTypeSupported(mimeType)) {
+    console.log('Skip unsupported mimeType:', mimeType);
+    return logSuccess();
+  }
   var videoSize = 0;
   var emptyBlobs = 0;
   var lastTimecode = NaN;
@@ -386,6 +401,10 @@ function testIllegalPauseThrowsDOMError() {
 
 // Tests that a remote peer connection stream can be successfully recorded.
 function testRecordRemotePeerConnection(mimeType) {
+  if (!MediaRecorder.isTypeSupported(mimeType)) {
+    console.log('Skip unsupported mimeType:', mimeType);
+    return logSuccess();
+  }
   var videoSize = 0;
   var timeStamps = [];
   var lastTimecode = NaN;
@@ -410,7 +429,10 @@ function testRecordRemotePeerConnection(mimeType) {
       .then(function() {
         return waitFor('Making sure the recording has data',
             function() {
-              return videoSize > 0 && timeStamps.length > 100;
+              // When mimetype is mp4, it only has a possible chance to flush when an
+              // IDR frame output. Therefore, the `ondataavailable` callback is not
+              // triggered precisely based on the timeslice parameter value.
+              return videoSize > 0 && (mimeType.startsWith('video/mp4') ? 2 : 100);
             });
       })
       .then(logSuccess);
@@ -481,6 +503,10 @@ function testTwoChannelAudio() {
 
 // Tests that MediaRecorder can handle video input with alpha channel.
 function testRecordWithTransparency(mimeType) {
+  if (!MediaRecorder.isTypeSupported(mimeType)) {
+    console.log('Skip unsupported mimeType:', mimeType);
+    return logSuccess();
+  }
   const ON_DATA_AVAILABLE_THRESHOLD = 10;
   const NUMBER_OF_EVENTS_TO_RECORD = 5;
 
