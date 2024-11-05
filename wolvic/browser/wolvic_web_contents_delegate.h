@@ -17,6 +17,10 @@ class WolvicWebContentsDelegate
   WolvicWebContentsDelegate(JNIEnv* env, jobject obj);
   ~WolvicWebContentsDelegate() override;
 
+  void OnDidGetManifest(content::WebContents* web_contents,
+                        const std::string& raw_manifest);
+
+  // web_contents_delegate_android::WebContentsDelegateAndroid:
   void LoadingStateChanged(content::WebContents* source,
                            bool should_show_loading_ui) override;
 

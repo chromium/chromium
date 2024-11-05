@@ -7,6 +7,10 @@
 
 #include "content/public/browser/web_contents_observer.h"
 
+namespace webapps {
+struct InstallableData;
+}
+
 namespace wolvic {
 
 class WolvicWebContentsDelegate;
@@ -24,12 +28,17 @@ class WolvicContents : public content::WebContentsObserver {
   ~WolvicContents() override;
 
   void DidFinishNavigation(content::NavigationHandle*) override;
-
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& url) override;
   void SetDelegate(std::unique_ptr<WolvicWebContentsDelegate>);
 
  private:
+  // Called once the installable data has been fetched.
+  void OnDidGetInstallableData(const webapps::InstallableData& data);
+
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WolvicWebContentsDelegate> web_contents_delegate_;
+  base::WeakPtrFactory<WolvicContents> weak_ptr_factory_{this};
 };
 
 }  // namespace wolvic

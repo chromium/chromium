@@ -4,6 +4,7 @@
 
 #include "wolvic/jni_headers/Tab_jni.h"
 
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -89,6 +90,7 @@ void JNI_Tab_SetWebContentsDelegate(
       std::make_unique<WolvicWebContentsDelegate>(env, jweb_contents_delegate);
   wolvic_contents->SetDelegate(std::move(web_contents_delegate));
 
+  webapps::InstallableManager::CreateForWebContents(web_contents);
   WolvicAutofillClient::CreateForWebContents(web_contents);
   WolvicPasswordManagerClient::CreateForWebContents(web_contents);
 }

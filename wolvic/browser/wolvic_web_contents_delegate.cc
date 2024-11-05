@@ -5,15 +5,16 @@
 #include "wolvic/browser/wolvic_web_contents_delegate.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "wolvic/browser/wolvic_contents.h"
-#include "wolvic/jni_headers/WolvicWebContentsDelegate_jni.h"
 #include "url/android/gurl_android.h"
 #include "wolvic/browser/dialogs/color_chooser_manager.h"
 #include "wolvic/browser/dialogs/file_select_manager.h"
 #include "wolvic/browser/dialogs/wolvic_javascript_dialog_manager.h"
+#include "wolvic/browser/wolvic_contents.h"
+#include "wolvic/jni_headers/WolvicWebContentsDelegate_jni.h"
 #include "wolvic/wolvic_permission_manager.h"
 
 namespace wolvic {
@@ -26,6 +27,23 @@ WolvicWebContentsDelegate::WolvicWebContentsDelegate(JNIEnv* env, jobject obj)
 WolvicWebContentsDelegate::~WolvicWebContentsDelegate() = default;
 
 using base::android::ScopedJavaLocalRef;
+
+void WolvicWebContentsDelegate::OnDidGetManifest(
+    content::WebContents* web_contents,
+    const std::string& raw_manifest) {
+  DCHECK(web_contents);
+  DCHECK(!raw_manifest.empty());
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> java_delegate = GetJavaDelegate(env);
+  if (java_delegate.is_null()) {
+    return;
+  }
+
+  Java_WolvicWebContentsDelegate_onWebAppManifest(
+      env, java_delegate, web_contents->GetJavaWebContents(),
+      base::android::ConvertUTF8ToJavaString(env, raw_manifest));
+}
 
 // Called by web_contents_impl.cc whenever a navigation requires the creation
 // of a new window (for example a link with target=_blank and window.open)

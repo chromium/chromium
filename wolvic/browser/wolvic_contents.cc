@@ -1,16 +1,19 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "wolvic/browser/wolvic_contents.h"
 
+#include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "wolvic/browser/webapps/manifest_builder.h"
+#include "wolvic/browser/wolvic_web_contents_delegate.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
-#include "wolvic/browser/wolvic_web_contents_delegate.h"
 
 using content::WebContents;
 
@@ -79,6 +82,36 @@ WolvicContents::DidFinishNavigation(content::NavigationHandle* navigation_handle
        navigation_handle->HasSubframeNavigationEntryCommitted())) {
     browser_context->AddVisitedURLs(navigation_handle->GetRedirectChain());
   }
+}
+
+void WolvicContents::DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                                   const GURL& url) {
+  if (render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  webapps::InstallableManager* installable_manager =
+      webapps::InstallableManager::FromWebContents(web_contents_.get());
+
+  webapps::InstallableParams params;
+  installable_manager->GetData(
+      params, base::BindOnce(&WolvicContents::OnDidGetInstallableData,
+                             weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WolvicContents::OnDidGetInstallableData(
+    const webapps::InstallableData& data) {
+  if (!data.errors.empty() || blink::IsEmptyManifest(*data.manifest)) {
+    return;
+  }
+
+  std::string raw_manifest = ManifestBuilder::FromMojoToJson(*data.manifest);
+  if (raw_manifest.empty()) {
+    LOG(ERROR) << "Failed to generate the raw manifest from Mojo";
+    return;
+  }
+
+  web_contents_delegate_->OnDidGetManifest(web_contents_.get(), raw_manifest);
 }
 
 void

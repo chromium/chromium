@@ -22,7 +22,9 @@ public class WolvicInstalledAppProviderFactory implements InterfaceFactory<Insta
     @Override
     public InstalledAppProvider createImpl() {
         return new InstalledAppProviderImpl(
-                WolvicBrowserContext.fromWebContents(WebContentsStatics.fromRenderFrameHost(mRenderFrameHost)),
-                mRenderFrameHost, null);
+                WolvicBrowserContext.fromWebContents(
+                        WebContentsStatics.fromRenderFrameHost(mRenderFrameHost)),
+                mRenderFrameHost,
+                null);
     }
 }
