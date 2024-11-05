@@ -798,7 +798,7 @@ BrowserProcessImpl::GetMetricsServicesManager() {
 metrics::MetricsService* BrowserProcessImpl::metrics_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* metrics_services_manager = GetMetricsServicesManager();
-  if (metrics_services_manager_) {
+  if (metrics_services_manager) {
     return metrics_services_manager->GetMetricsService();
   }
   return nullptr;
@@ -856,7 +856,7 @@ BrowserProcessImpl::active_primary_accounts_metrics_recorder() {
 variations::VariationsService* BrowserProcessImpl::variations_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* metrics_services_manager = GetMetricsServicesManager();
-  if (metrics_services_manager_) {
+  if (metrics_services_manager) {
     return metrics_services_manager->GetVariationsService();
   }
   return nullptr;
