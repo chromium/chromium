@@ -171,17 +171,21 @@ group("metrics_python_tests") {
   if (is_win) {
     data += [
       "//third_party/depot_tools/dirmd.bat",
-      "//third_party/depot_tools/.cipd_bin/dirmd.exe",
       "//third_party/depot_tools/cipd_bin_setup.bat",
       "//third_party/depot_tools/cipd_manifest.txt",
     ]
+    if (host_os == "win") {
+      data += [ "//third_party/depot_tools/.cipd_bin/dirmd.exe" ]
+    }
   } else {
     data += [
       "//third_party/depot_tools/dirmd",
-      "//third_party/depot_tools/.cipd_bin/dirmd",
       "//third_party/depot_tools/cipd_bin_setup.sh",
       "//third_party/depot_tools/cipd_manifest.txt",
     ]
+    if (host_os != "win") {
+      data += [ "//third_party/depot_tools/.cipd_bin/dirmd" ]
+    }
   }
 
   data_deps = [ "//testing:test_scripts_shared" ]
