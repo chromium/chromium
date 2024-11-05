@@ -41,7 +41,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
@@ -71,25 +70,6 @@ bool IsValidUpdateUrl(const std::string& update_url) {
   }
   return update_gurl.SchemeIsHTTPOrHTTPS() || update_gurl.SchemeIsFile();
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-// If Ash Chrome is no longer functioning as a browser and the extension is not
-// meant to run in Ash, do not load the extension.
-void FilterOutExtensionsMeantToRunInLacros(base::Value::Dict& extensions) {
-  auto iterator = extensions.begin();
-
-  while (iterator != extensions.end()) {
-    const std::string& extension_id = iterator->first;
-    if (ExtensionRunsInOS(extension_id) || ExtensionAppRunsInOS(extension_id)) {
-      // Keep extension meant to run in Ash
-      iterator++;
-    } else {
-      // Remove extension meant to run in Lacros
-      iterator = extensions.erase(iterator);
-    }
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 // ExtensionListPolicyHandler implementation -----------------------------------
@@ -220,9 +200,6 @@ std::optional<base::Value::Dict>
 ExtensionInstallForceListPolicyHandler::GetAshPolicyDict(
     const policy::PolicyMap& policies) {
   std::optional<base::Value::Dict> dict = GetPolicyDict(policies);
-  if (dict.has_value() && crosapi::browser_util::IsLacrosEnabled()) {
-    FilterOutExtensionsMeantToRunInLacros(dict.value());
-  }
   return dict;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

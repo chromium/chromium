@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -867,12 +866,7 @@ void InjectBrowserInitParams(
           ? crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kEarly
           : crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kNormal;
 
-  params->extension_keep_list = extensions::BuildExtensionKeeplistInitParam();
-
   params->vc_controls_ui_enabled = ash::features::IsVideoConferenceEnabled();
-
-  params->standalone_browser_app_service_blocklist =
-      extensions::BuildStandaloneBrowserAppServiceBlockListInitParam();
 
   params->enable_cpu_mappable_native_gpu_memory_buffers =
       base::CommandLine::ForCurrentProcess()->HasSwitch(

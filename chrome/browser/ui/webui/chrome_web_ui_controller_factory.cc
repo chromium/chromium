@@ -105,7 +105,6 @@
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
 #include "chrome/browser/ash/extensions/url_constants.h"
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -582,12 +581,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
 }
 
 bool ChromeWebUIControllerFactory::CanHandleUrl(const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (url.SchemeIs(extensions::kExtensionScheme) && url.has_host()) {
-    std::string extension_id = url.host();
-    return extensions::ExtensionRunsInOS(extension_id);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return crosapi::gurl_os_handler_utils::IsAshUrlInList(
       url, GetListOfAcceptableURLs());
 }

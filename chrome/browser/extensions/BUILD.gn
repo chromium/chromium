@@ -1007,8 +1007,6 @@ source_set("extensions") {
       "api/chromeos_api_browser_context_keyed_service_factories.h",
       "clipboard_extension_helper_chromeos.cc",
       "clipboard_extension_helper_chromeos.h",
-      "extension_keeplist_chromeos.cc",
-      "extension_keeplist_chromeos.h",
       "file_handlers/web_file_handlers_permission_handler.cc",
       "file_handlers/web_file_handlers_permission_handler.h",
       "system_display/display_info_provider_chromeos.cc",

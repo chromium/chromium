@@ -48,7 +48,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/extensions/web_file_handlers/intent_util.h"
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -793,22 +792,6 @@ bool ExtensionAppsChromeOs::IsBlocklisted(const std::string& app_id) {
     return true;
   }
 
-  // If lacros chrome apps is enabled, a small list of extension apps or
-  // extensions on ash extension keeplist is allowed to run in both ash and
-  // lacros, don't publish such app or extension if it is blocked for app
-  // service in ash.
-  if (crosapi::browser_util::IsLacrosChromeAppsEnabled()) {
-    if (extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(app_id) &&
-        extensions::ExtensionAppBlockListedForAppServiceInOS(app_id)) {
-      return true;
-    }
-
-    if (extensions::ExtensionRunsInBothOSAndStandaloneBrowser(app_id) &&
-        extensions::ExtensionBlockListedForAppServiceInOS(app_id)) {
-      return true;
-    }
-  }
-
   return false;
 }
 
@@ -882,27 +865,6 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     return false;
   }
 
-  // Do not publish legacy packaged apps in Ash if Lacros is user's primary
-  // browser. Legacy packaged apps are deprecated and not supported by Lacros.
-  if (extension->is_legacy_packaged_app() &&
-      crosapi::browser_util::IsLacrosEnabled()) {
-    return false;
-  }
-
-  //  Do not publish hosted apps in Ash if hosted apps should run in
-  //  Lacros.
-  if (extension->is_hosted_app() &&
-      extension->id() != app_constants::kChromeAppId &&
-      crosapi::IsStandaloneBrowserHostedAppsEnabled()) {
-    return false;
-  }
-
-  // Do not publish platform apps in Ash if it should run in Lacros instead.
-  if (extension->is_platform_app() &&
-      crosapi::browser_util::IsLacrosChromeAppsEnabled()) {
-    return extensions::ExtensionAppRunsInOS(extension->id());
-  }
-
   return true;
 }
 
@@ -950,11 +912,6 @@ bool ExtensionAppsChromeOs::ShouldShownInLauncher(
 AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
                                         Readiness readiness) {
   CHECK(extension);
-  // When Lacros is enabled, extensions not on the ash keep list should not be
-  // published to the app service at all. Thus this method should not be called.
-  DCHECK(!(extension->is_platform_app() &&
-           crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-           !extensions::ExtensionAppRunsInOS(extension->id())));
   const bool is_app_disabled = base::Contains(disabled_apps_, extension->id());
 
   auto app = CreateAppImpl(

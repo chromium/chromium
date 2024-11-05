@@ -73,7 +73,6 @@ include_rules = [
   "+chrome/browser/extensions/api/image_writer_private",
   "+chrome/browser/extensions/api/printing",
   "+chrome/browser/extensions/extension_apitest.h",
-  "+chrome/browser/extensions/extension_keeplist_chromeos.h",
   "+chrome/browser/extensions/forced_extensions",
   "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/file_system_access/cloud_identifier",

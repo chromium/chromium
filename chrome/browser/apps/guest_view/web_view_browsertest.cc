@@ -173,10 +173,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -609,13 +605,6 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
                                     "--expose-gc");
 
     extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Since LacrosAppsPublisherTest run without Ash, Lacros won't get
-    // the Ash extension keeplist data from Ash (passed via crosapi). Therefore,
-    // set empty ash keeplist for test.
-    extensions::SetEmptyAshKeeplistForTest();
-#endif
   }
 
   // Handles |request| by serving a redirect response if the |User-Agent| is
@@ -6115,14 +6104,8 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
 // Instead of repurposing existing webui pages to be able to create webviews
 // within a tabbed browser, create a dedicated test webui with the necessary
 // guest view permissions.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NoFindInPageForUnattachedGuest \
-  DISABLED_NoFindInPageForUnattachedGuest
-#else
-#define MAYBE_NoFindInPageForUnattachedGuest NoFindInPageForUnattachedGuest
-#endif
 IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
-                       MAYBE_NoFindInPageForUnattachedGuest) {
+                       NoFindInPageForUnattachedGuest) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
   GURL signin_url{"chrome://chrome-signin/?reason=5"};

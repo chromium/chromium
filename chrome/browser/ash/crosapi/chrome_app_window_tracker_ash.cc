@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/exo/shell_surface_util.h"
