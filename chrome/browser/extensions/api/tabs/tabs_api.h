@@ -207,6 +207,7 @@ class TabsDetectLanguageFunction
   void WebContentsDestroyed() override;
 
   // translate::TranslateDriver::LanguageDetectionObserver:
+  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 

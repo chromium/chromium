@@ -2503,6 +2503,14 @@ void TabsDetectLanguageFunction::WebContentsDestroyed() {
   RespondWithLanguage(std::string());
 }
 
+void TabsDetectLanguageFunction::OnTranslateDriverDestroyed(
+    translate::TranslateDriver* driver) {
+  // Typically, we'd return an error in these cases, since we weren't able to
+  // detect a valid language. However, this matches the behavior in other cases
+  // (like the tab going away), so we aim for consistency.
+  RespondWithLanguage(std::string());
+}
+
 void TabsDetectLanguageFunction::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   RespondWithLanguage(details.adopted_language);
@@ -2516,6 +2524,7 @@ void TabsDetectLanguageFunction::RespondWithLanguage(
         ->GetTranslateDriver()
         ->RemoveLanguageDetectionObserver(this);
     Observe(nullptr);
+    is_observing_ = false;
   }
 
   Respond(WithArguments(language));
