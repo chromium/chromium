@@ -10,6 +10,7 @@
 #import <optional>
 #import <vector>
 
+#import "base/files/file_path.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -95,7 +96,8 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
     NSString* identifier);
 
 // Generates the `URL` to which the local copy of a file will be saved.
-NSURL* DriveFilePickerGenerateDownloadFileURL(
+// This function should always return the same output for a given input.
+std::optional<base::FilePath> DriveFilePickerGenerateDownloadFilePath(
     web::WebStateID web_state_id,
     NSString* download_file_identifier,
     NSString* download_file_name);

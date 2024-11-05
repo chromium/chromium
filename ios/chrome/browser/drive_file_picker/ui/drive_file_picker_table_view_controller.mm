@@ -195,7 +195,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   BOOL _nextPageAvailable;
 
   // The selected item identifier.
-  NSString* _selectedIdentifier;
+  NSSet<NSString*>* _selectedIdentifiers;
 
   // Whether the view is showing the logo title (and thus must be updated for
   // dark/light mode).
@@ -249,6 +249,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       kDriveFilePickerSearchBarIdentifier;
 
   // Initialize the table view.
+  self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   self.tableView.tableHeaderView =
@@ -710,7 +711,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
   // Set other cell properties.
   if (item.type == DriveItemType::kFile) {
-    cell.accessoryType = [itemIdentifier isEqual:_selectedIdentifier]
+    cell.accessoryType = [_selectedIdentifiers containsObject:itemIdentifier]
                              ? UITableViewCellAccessoryCheckmark
                              : UITableViewCellAccessoryNone;
   } else if (item.type == DriveItemType::kFolder ||
@@ -719,7 +720,6 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   } else {
     cell.accessoryType = UITableViewCellAccessoryNone;
   }
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.accessibilityIdentifier = item.identifier;
 
   return cell;
@@ -1002,21 +1002,44 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _sortButton.enabled = enabled;
 }
 
-- (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
-  if ([_selectedIdentifier isEqual:selectedIdentifier]) {
-    return;
-  }
-  NSString* previousSelectedIdentifier = _selectedIdentifier;
-  _selectedIdentifier = selectedIdentifier;
-  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
-  NSMutableArray* identifiersToReconfigure = [NSMutableArray array];
-  for (NSString* itemIdentifier in snapshot.itemIdentifiers) {
-    if ([itemIdentifier isEqual:previousSelectedIdentifier] ||
-        [itemIdentifier isEqual:_selectedIdentifier]) {
-      [identifiersToReconfigure addObject:itemIdentifier];
+- (void)setSelectedItemIdentifiers:(NSSet<NSString*>*)newSelectedIdentifiers {
+  // First deselected rows which should not be selected.
+  for (NSIndexPath* indexPathForSelectedRow in self.tableView
+           .indexPathsForSelectedRows) {
+    NSString* itemIdentifierForSelectedRow = [_diffableDataSource
+        itemIdentifierForIndexPath:indexPathForSelectedRow];
+    if (![newSelectedIdentifiers containsObject:itemIdentifierForSelectedRow]) {
+      [self.tableView deselectRowAtIndexPath:indexPathForSelectedRow
+                                    animated:YES];
     }
   }
-  [snapshot reconfigureItemsWithIdentifiers:identifiersToReconfigure];
+
+  // Then select rows which should be selected.
+  for (NSString* selectedIdentifier in newSelectedIdentifiers) {
+    NSIndexPath* selectedIndexPath =
+        [_diffableDataSource indexPathForItemIdentifier:selectedIdentifier];
+    if (![self.tableView.indexPathsForSelectedRows
+            containsObject:selectedIndexPath]) {
+      [self.tableView selectRowAtIndexPath:selectedIndexPath
+                                  animated:YES
+                            scrollPosition:UITableViewScrollPositionNone];
+    }
+  }
+
+  // Reconfigure items which were added to/remove from the selection.
+  NSSet<NSString*>* oldSelectedIdentifiers = _selectedIdentifiers;
+  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
+  NSMutableArray<NSString*>* itemsToReconfigure = [NSMutableArray array];
+  for (NSString* identifier in snapshot.itemIdentifiers) {
+    if ([newSelectedIdentifiers containsObject:identifier] !=
+        [oldSelectedIdentifiers containsObject:identifier]) {
+      [itemsToReconfigure addObject:identifier];
+    }
+  }
+  [snapshot reconfigureItemsWithIdentifiers:itemsToReconfigure];
+  _selectedIdentifiers = [newSelectedIdentifiers copy];
+  // Apply snapshot after `_selectedIdentifiers` is updated so that reconfigured
+  // cells know whether they should appear as selected.
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
@@ -1069,9 +1092,15 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 }
 
-- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock {
-  UIAlertController* failureAlert = FailAlertController(retryBlock, nil);
+- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock
+                                   cancelBlock:(ProceduralBlock)cancelBlock {
+  UIAlertController* failureAlert =
+      FailAlertController(retryBlock, cancelBlock);
   [self presentViewController:failureAlert animated:YES completion:nil];
+}
+
+- (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection {
+  self.tableView.editing = allowsMultipleSelection;
 }
 
 #pragma mark - UI element creation helpers
@@ -1114,18 +1143,34 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   return 0;
 }
 
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+- (NSIndexPath*)tableView:(UITableView*)tableView
+    willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
   DriveFilePickerItem* item =
       FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
   CHECK(item);
-  if (!item.enabled) {
+  if (item.enabled) {
     // If selecting a disabled item, nothing should happen.
-    return;
+    [self.mutator selectOrDeselectDriveItem:itemIdentifier];
   }
-  [self.mutator selectDriveItem:itemIdentifier];
+  // Returning nil, items are only selected programmatically.
+  return nil;
+}
+
+- (NSIndexPath*)tableView:(UITableView*)tableView
+    willDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSString* itemIdentifier =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+  DriveFilePickerItem* item =
+      FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
+  CHECK(item);
+  if (item.enabled) {
+    // If deselecting a disabled item, nothing should happen.
+    [self.mutator selectOrDeselectDriveItem:itemIdentifier];
+  }
+  // Returning nil, items are only deselected programmatically.
+  return nil;
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -1138,6 +1183,13 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   CHECK(item);
   if (item.shouldFetchIcon) {
     [self.mutator fetchIconForDriveItem:itemIdentifier];
+  }
+
+  if ([_selectedIdentifiers containsObject:itemIdentifier] &&
+      ![self.tableView.indexPathsForSelectedRows containsObject:indexPath]) {
+    [self.tableView selectRowAtIndexPath:indexPath
+                                animated:YES
+                          scrollPosition:UITableViewScrollPositionNone];
   }
 
   // If this is the last item and the next page is available, load it.

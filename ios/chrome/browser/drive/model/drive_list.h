@@ -22,6 +22,11 @@ struct DriveItem {
   DriveItem& operator=(const DriveItem& other);
   DriveItem& operator=(DriveItem&& other);
 
+  // Comparison operator relies on `identifier` only.
+  bool operator==(const DriveItem& rhs) const {
+    return [identifier isEqualToString:rhs.identifier];
+  }
+
   // Unique identifier for this item.
   NSString* identifier = nil;
   // The name of this item.
@@ -58,6 +63,14 @@ struct DriveItem {
   // If this is a file which cannot be downloaded directly, then it can only be
   // exported to a different MIME type.
   bool can_download = false;
+};
+
+// std::hash specialization for DriveItem.
+template <>
+struct std::hash<DriveItem> {
+  size_t operator()(const DriveItem& item) const {
+    return size_t{item.identifier.hash};
+  }
 };
 
 // Results reported by the completion block of a query to list/search for files.

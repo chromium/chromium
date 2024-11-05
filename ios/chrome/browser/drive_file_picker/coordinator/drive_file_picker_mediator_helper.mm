@@ -483,14 +483,14 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
   return std::nullopt;
 }
 
-NSURL* DriveFilePickerGenerateDownloadFileURL(
+std::optional<base::FilePath> DriveFilePickerGenerateDownloadFilePath(
     web::WebStateID web_state_id,
     NSString* download_file_identifier,
     NSString* download_file_name) {
   std::optional<base::FilePath> web_state_dir =
       GetTabChooseFileDirectory(web_state_id);
   if (!web_state_dir) {
-    return nil;
+    return std::nullopt;
   }
 
   // Remove the potential file separator.
@@ -520,7 +520,7 @@ NSURL* DriveFilePickerGenerateDownloadFileURL(
       download_dir.Append(download_file_name_path);
 
   CHECK(download_dir.IsParent(download_file_path));
-  return base::apple::FilePathToNSURL(download_file_path);
+  return download_file_path;
 }
 
 UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item) {

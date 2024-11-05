@@ -4,8 +4,12 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/task/thread_pool.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 
@@ -91,11 +95,23 @@ enum class FilePickerFilterChange {
 }
 
 - (void)reportOutcomeMetrics {
-  if (_submitted) {
-    base::UmaHistogramMemoryMB("IOS.FilePicker.Drive.SubmittedFileSize",
-                               _fileSize / 1024 / 1024);
+  for (NSURL* submittedFile in _submittedFiles) {
+    base::FilePath submittedFilePath =
+        base::apple::NSURLToFilePath(submittedFile);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::GetFileSizeCallback(submittedFilePath),
+        base::BindOnce([](std::optional<int64_t> fileSize) {
+          if (!fileSize) {
+            return;
+          }
+          base::UmaHistogramMemoryMB("IOS.FilePicker.Drive.SubmittedFileSize",
+                                     *fileSize / 1024 / 1024);
+        }));
   }
 
+  base::UmaHistogramCounts100("IOS.FilePicker.Drive.NumberOfSubmittedFiles",
+                              _submittedFiles.count);
   base::UmaHistogramEnumeration("IOS.FilePicker.Drive.Outcome", [self outcome]);
   base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SearchOutcome",
                                 [self searchOutcome]);
@@ -135,7 +151,7 @@ enum class FilePickerFilterChange {
   if (_userInterrupted) {
     return FilePickerDriveOutcome::kInterruptedByUser;
   }
-  if (_submitted) {
+  if (_submittedFiles.count > 0) {
     if (_searchingState == DriveFilePickerSearchState::kSearchText) {
       return FilePickerDriveOutcome::kSubmittedFromSearch;
     } else if (_searchingState == DriveFilePickerSearchState::kSearchRecent) {
@@ -175,13 +191,13 @@ enum class FilePickerFilterChange {
 // Return the bucket to log in `IOS.FilePicker.Drive.SearchOutcome`.
 - (FilePickerSearchOutcome)searchOutcome {
   if (_searchingState != DriveFilePickerSearchState::kNotSearching) {
-    if (_submitted) {
+    if (_submittedFiles.count > 0) {
       return FilePickerSearchOutcome::kSubmittedSearchItem;
     } else {
       return FilePickerSearchOutcome::kCancelledAfterSearch;
     }
   } else {
-    if (_submitted) {
+    if (_submittedFiles.count > 0) {
       if (_searchSubFolderCounter > 0) {
         return FilePickerSearchOutcome::kSubmittedSearchSubItem;
       } else {

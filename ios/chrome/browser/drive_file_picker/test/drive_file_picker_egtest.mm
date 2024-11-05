@@ -89,7 +89,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       DriveFilePickerNavigationViewControllerMatcher()];
@@ -113,7 +113,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:secondaryIdentity];
 
-  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       DriveFilePickerNavigationViewControllerMatcher()];
@@ -139,7 +139,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:secondaryIdentity];
 
-  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       DriveFilePickerNavigationViewControllerMatcher()];
@@ -169,7 +169,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       DriveFilePickerNavigationViewControllerMatcher()];
@@ -201,7 +201,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       DriveFilePickerNavigationViewControllerMatcher()];
@@ -257,7 +257,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       DriveFilePickerNavigationViewControllerMatcher()];
@@ -276,6 +276,63 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kDriveFilePickerFilterButtonIdentifier)]
       assertWithMatcher:grey_interactable()];
+}
+
+// Tests that several files can be selected and submitted to the page.
+- (void)testMultifileSelection {
+  // Initialize the Drive file picker.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [DriveFilePickerAppInterface startChoosingMultipleFilesInCurrentWebState];
+  [DriveFilePickerAppInterface showDriveFilePicker];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      DriveFilePickerNavigationViewControllerMatcher()];
+
+  // Prepare a custom list of items with three downloadable files.
+  [DriveFilePickerAppInterface beginDriveListResult];
+  [DriveFilePickerAppInterface addDriveItemWithIdentifier:@"kTestDriveFile1"
+                                                     name:@"File 1"
+                                                 isFolder:NO
+                                                 mimeType:nil
+                                              canDownload:YES];
+  [DriveFilePickerAppInterface addDriveItemWithIdentifier:@"kTestDriveFile2"
+                                                     name:@"File 2"
+                                                 isFolder:NO
+                                                 mimeType:nil
+                                              canDownload:YES];
+  [DriveFilePickerAppInterface addDriveItemWithIdentifier:@"kTestDriveFile3"
+                                                     name:@"File 3"
+                                                 isFolder:NO
+                                                 mimeType:nil
+                                              canDownload:YES];
+  [DriveFilePickerAppInterface endDriveListResult];
+
+  // Open "My Drive".
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kDriveFilePickerMyDriveItemIdentifier)]
+      performAction:grey_tap()];
+
+  // Select all three files.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile1")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile2")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile3")]
+      performAction:grey_tap()];
+
+  // Check that all three files appear as selected.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile1")]
+      assertWithMatcher:grey_selected()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile2")]
+      assertWithMatcher:grey_selected()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile3")]
+      assertWithMatcher:grey_selected()];
+
+  // Tap the "Confirm" button.
+  [[EarlGrey selectElementWithMatcher:ConfirmButtonMatcher(/* enabled= */ YES)]
+      performAction:grey_tap()];
 }
 
 @end

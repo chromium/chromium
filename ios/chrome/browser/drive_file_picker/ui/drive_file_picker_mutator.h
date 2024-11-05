@@ -12,9 +12,9 @@
 // Mutator interface for the Drive file picker.
 @protocol DriveFilePickerMutator <NSObject>
 
-// Notifies the mutator that a drive item was selected in order to browse the
-// item in case of a folder or download it in case of a file.
-- (void)selectDriveItem:(NSString*)itemIdentifier;
+// Notifies the mutator that a drive item was selected or deselected, in order
+// to browse the item in case of a folder or download it in case of a file.
+- (void)selectOrDeselectDriveItem:(NSString*)itemIdentifier;
 
 // Ask the mutator to load the first drive items.
 - (void)loadFirstPage;

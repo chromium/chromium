@@ -49,11 +49,8 @@ enum class DriveFilePickerSearchState {
 // Whether user dismissed.
 @property(nonatomic, assign) BOOL userDismissed;
 
-// Whether a file was submitted.
-@property(nonatomic, assign) BOOL submitted;
-
-// The size of the currently selected file.
-@property(nonatomic, assign) uint64_t fileSize;
+// List of files which were submitted.
+@property(nonatomic, strong) NSArray<NSURL*>* submittedFiles;
 
 // Whether a search was triggered during the flow.
 @property(nonatomic, assign) BOOL triggeredSearch;

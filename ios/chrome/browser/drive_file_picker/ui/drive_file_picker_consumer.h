@@ -78,8 +78,8 @@
 // Sets whether the sorting menu is enabled.
 - (void)setSortingMenuEnabled:(BOOL)enabled;
 
-// Sets the identity displayed in the bottom bar.
-- (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier;
+// Sets the selected items.
+- (void)setSelectedItemIdentifiers:(NSSet<NSString*>*)selectedIdentifiers;
 
 // Sets whether the search bar is focused and the text it contains.
 - (void)setSearchBarFocused:(BOOL)focused searchText:(NSString*)searchText;
@@ -93,7 +93,11 @@
 
 // Shows an alert to indicate that the selected file could not be downloaded,
 // asking whether to try again or not.
-- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock;
+- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock
+                                   cancelBlock:(ProceduralBlock)cancelBlock;
+
+// Sets whether the file picker should let the user select multiple files.
+- (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection;
 
 @end
 

@@ -33,6 +33,8 @@ source_set("eg_app_support+eg2") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/drive/model:test_support",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
