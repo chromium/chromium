@@ -724,7 +724,8 @@ void ExpectNoCrashes(UpdaterScope scope) {
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer* test_server,
                               const base::Value::Dict& request_attributes,
-                              const std::vector<AppUpdateExpectation>& apps) {
+                              const std::vector<AppUpdateExpectation>& apps,
+                              const base::Version& updater_version) {
 #if BUILDFLAG(IS_WIN)
   const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL(".exe");
 #else
@@ -771,7 +772,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
         app.response_status));
   }
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
-                           request::GetUpdaterUserAgentMatcher(),
+                           request::GetUpdaterUserAgentMatcher(updater_version),
                            request::GetContentMatcher(attributes),
                            request::GetContentMatcher(app_requests),
                            request::GetScopeMatcher(scope),
@@ -785,16 +786,17 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
       ASSERT_TRUE(base::PathExists(crx_path));
       std::string crx_bytes;
       base::ReadFileToString(crx_path, &crx_bytes);
-      test_server->ExpectOnce({request::GetUpdaterUserAgentMatcher(),
-                               request::GetContentMatcher({""})},
-                              crx_bytes);
+      test_server->ExpectOnce(
+          {request::GetUpdaterUserAgentMatcher(updater_version),
+           request::GetContentMatcher({""})},
+          crx_bytes);
     }
 
     if (app.should_update) {
       // Followed by event ping.
       test_server->ExpectOnce(
           {request::GetPathMatcher(test_server->update_path()),
-           request::GetUpdaterUserAgentMatcher(),
+           request::GetUpdaterUserAgentMatcher(updater_version),
            request::GetContentMatcher({base::StringPrintf(
                R"(.*"appid":"%s",.*)"
                R"("eventresult":1,"eventtype":%d,)"
@@ -809,7 +811,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
       // Event ping for apps that doesn't update.
       test_server->ExpectOnce(
           {request::GetPathMatcher(test_server->update_path()),
-           request::GetUpdaterUserAgentMatcher(),
+           request::GetUpdaterUserAgentMatcher(updater_version),
            request::GetContentMatcher({base::StringPrintf(
                R"(.*"appid":"%s",.*)"
                R"(.*"errorcat":%d,"errorcode":%d,)"

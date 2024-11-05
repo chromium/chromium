@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -4695,227 +4696,253 @@ struct IntegrationInstallerResultsTestCase {
 };
 
 class IntegrationInstallerResultsTest
-    : public ::testing::WithParamInterface<IntegrationInstallerResultsTestCase>,
-      public IntegrationTestMsi {};
+    : public ::testing::WithParamInterface<
+          std::tuple<TestUpdaterVersion, IntegrationInstallerResultsTestCase>>,
+      public IntegrationTestMsi {
+ public:
+  TestUpdaterVersion GetSetup() { return std::get<0>(GetParam()); }
+  IntegrationInstallerResultsTestCase GetTestCase() {
+    return std::get<1>(GetParam());
+  }
+};
 
 INSTANTIATE_TEST_SUITE_P(
     IntegrationInstallerResultsTestCases,
     IntegrationInstallerResultsTest,
-    ::testing::ValuesIn(std::vector<IntegrationInstallerResultsTestCase>{
-        // InstallerResult::kMsiError, explicit error code.
-        {
-            false,
-            "INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
-            UpdateService::ErrorCategory::kInstaller,
-            1603,
-            "Installer error: Fatal error during installation. ",
-            {},
-            {},
-        },
+    ::testing::Combine(
+        ::testing::ValuesIn(GetRealUpdaterVersions()),
+        ::testing::ValuesIn(std::vector<IntegrationInstallerResultsTestCase>{
+            // InstallerResult::kMsiError, explicit error code.
+            {
+                false,
+                "INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
+                UpdateService::ErrorCategory::kInstaller,
+                1603,
+                "Installer error: Fatal error during installation. ",
+                {},
+                {},
+            },
 
-        // `InstallerResult::kCustomError`, implicit error code
-        // `kErrorApplicationInstallerFailed`.
-        {
-            false,
-            "INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
-            UpdateService::ErrorCategory::kInstaller,
-            kErrorApplicationInstallerFailed,
-            "TestUIString",
-            {},
-            {},
-        },
+            // `InstallerResult::kCustomError`, implicit error code
+            // `kErrorApplicationInstallerFailed`.
+            {
+                false,
+                "INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
+                UpdateService::ErrorCategory::kInstaller,
+                kErrorApplicationInstallerFailed,
+                "TestUIString",
+                {},
+                {},
+            },
 
-        // InstallerResult::kSystemError, explicit error code.
-        {
-            false,
-            "INSTALLER_RESULT=3 INSTALLER_ERROR=99",
-            UpdateService::ErrorCategory::kInstaller,
-            99,
-            "Installer error: 0x63",
-            {},
-            {},
-        },
+            // InstallerResult::kSystemError, explicit error code.
+            {
+                false,
+                "INSTALLER_RESULT=3 INSTALLER_ERROR=99",
+                UpdateService::ErrorCategory::kInstaller,
+                99,
+                "Installer error: 0x63",
+                {},
+                {},
+            },
 
-        // InstallerResult::kSuccess.
-        {
-            false,
-            "INSTALLER_RESULT=0",
-            UpdateService::ErrorCategory::kNone,
-            0,
-            {},
-            {},
-            {},
-        },
+            // InstallerResult::kSuccess.
+            {
+                false,
+                "INSTALLER_RESULT=0",
+                UpdateService::ErrorCategory::kNone,
+                0,
+                {},
+                {},
+                {},
+            },
 
-        // Silent install with a launch command, InstallerResult::kSuccess, will
-        // not run `more.com` since silent install.
-        {
-            false,
-            "INSTALLER_RESULT=0 "
-            "REGISTER_LAUNCH_COMMAND=more.com",
-            UpdateService::ErrorCategory::kNone,
-            0,
-            {},
-            "more.com",
-            {},
-        },
+            // Silent install with a launch command, InstallerResult::kSuccess,
+            // will
+            // not run `more.com` since silent install.
+            {
+                false,
+                "INSTALLER_RESULT=0 "
+                "REGISTER_LAUNCH_COMMAND=more.com",
+                UpdateService::ErrorCategory::kNone,
+                0,
+                {},
+                "more.com",
+                {},
+            },
 
-        // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
-        {
-            false,
-            base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
-                          base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
-            UpdateService::ErrorCategory::kInstaller,
-            ERROR_SUCCESS_REBOOT_REQUIRED,
-            "Reboot required: The requested operation is successful. Changes "
-            "will not be effective until the system is rebooted. ",
-            {},
-            {},
-        },
+            // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
+            {
+                false,
+                base::StrCat(
+                    {"INSTALLER_RESULT=2 INSTALLER_ERROR=",
+                     base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
+                UpdateService::ErrorCategory::kInstaller,
+                ERROR_SUCCESS_REBOOT_REQUIRED,
+                "Reboot required: The requested operation is successful. "
+                "Changes "
+                "will not be effective until the system is rebooted. ",
+                {},
+                {},
+            },
 
-        // InstallerResult::kMsiError, `ERROR_INSTALL_ALREADY_RUNNING`.
-        {
-            false,
-            base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
-                          base::NumberToString(ERROR_INSTALL_ALREADY_RUNNING)}),
-            UpdateService::ErrorCategory::kInstall,
-            GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING,
-            "Installer error: Another installation is already in progress. "
-            "Complete that installation before proceeding with this install. ",
-            {},
-            {},
-        },
+            // InstallerResult::kMsiError, `ERROR_INSTALL_ALREADY_RUNNING`.
+            {
+                false,
+                base::StrCat(
+                    {"INSTALLER_RESULT=2 INSTALLER_ERROR=",
+                     base::NumberToString(ERROR_INSTALL_ALREADY_RUNNING)}),
+                UpdateService::ErrorCategory::kInstall,
+                GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING,
+                "Installer error: Another installation is already in progress. "
+                "Complete that installation before proceeding with this "
+                "install. ",
+                {},
+                {},
+            },
 
-        // Interactive install via the command line with a launch command,
-        // InstallerResult::kSuccess, will run `more.com` since interactive
-        // install.
-        {
-            true,
-            "INSTALLER_RESULT=0 "
-            "REGISTER_LAUNCH_COMMAND=more.com",
-            UpdateService::ErrorCategory::kNone,
-            0,
-            {},
-            "more.com",
-            {},
-        },
+            // Interactive install via the command line with a launch command,
+            // InstallerResult::kSuccess, will run `more.com` since interactive
+            // install.
+            {
+                true,
+                "INSTALLER_RESULT=0 "
+                "REGISTER_LAUNCH_COMMAND=more.com",
+                UpdateService::ErrorCategory::kNone,
+                0,
+                {},
+                "more.com",
+                {},
+            },
 
-        // Silent install with a launch command, with `always_launch_cmd` set to
-        // `true`, InstallerResult::kSuccess, will run `more.com` even for
-        // silent install.
-        {
-            false,
-            "INSTALLER_RESULT=0 "
-            "REGISTER_LAUNCH_COMMAND=more.com",
-            UpdateService::ErrorCategory::kNone,
-            0,
-            {},
-            "more.com",
-            {},
-            true,
-        },
+            // Silent install with a launch command, with `always_launch_cmd`
+            // set to
+            // `true`, InstallerResult::kSuccess, will run `more.com` even for
+            // silent install.
+            {
+                false,
+                "INSTALLER_RESULT=0 "
+                "REGISTER_LAUNCH_COMMAND=more.com",
+                UpdateService::ErrorCategory::kNone,
+                0,
+                {},
+                "more.com",
+                {},
+                true,
+            },
 
-        // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
-        {
-            true,
-            base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
-                          base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
-            UpdateService::ErrorCategory::kInstaller,
-            ERROR_SUCCESS_REBOOT_REQUIRED,
-            base::WideToUTF8(GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE,
-                                                 L"")),
-            {},
-            {},
-        },
+            // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
+            {
+                true,
+                base::StrCat(
+                    {"INSTALLER_RESULT=2 INSTALLER_ERROR=",
+                     base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
+                UpdateService::ErrorCategory::kInstaller,
+                ERROR_SUCCESS_REBOOT_REQUIRED,
+                base::WideToUTF8(
+                    GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE, L"")),
+                {},
+                {},
+            },
 
-        // Interactive install via the command line,
-        // `update_client::ProtocolError::UNKNOWN_APPLICATION` error.
-        {
-            true,
-            "INSTALLER_RESULT=0",
-            UpdateService::ErrorCategory::kInstall,
-            static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION),
-            base::WideToUTF8(GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE)),
-            {},
-            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
-                          "\",\"status\":\"error-unknownApplication\"}"}),
-        },
+            // Interactive install via the command line,
+            // `update_client::ProtocolError::UNKNOWN_APPLICATION` error.
+            {
+                true,
+                "INSTALLER_RESULT=0",
+                UpdateService::ErrorCategory::kInstall,
+                static_cast<int>(
+                    update_client::ProtocolError::UNKNOWN_APPLICATION),
+                base::WideToUTF8(
+                    GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE)),
+                {},
+                base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                              "\",\"status\":\"error-unknownApplication\"}"}),
+            },
 
-        // Interactive install via the command line,
-        // `update_client::ProtocolError::OS_NOT_SUPPORTED` error.
-        {
-            true,
-            "INSTALLER_RESULT=0",
-            UpdateService::ErrorCategory::kInstall,
-            static_cast<int>(update_client::ProtocolError::OS_NOT_SUPPORTED),
-            base::WideToUTF8(GetLocalizedString(IDS_OS_NOT_SUPPORTED_BASE)),
-            {},
-            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
-                          "\",\"status\":\"error-osnotsupported\"}"}),
-        },
+            // Interactive install via the command line,
+            // `update_client::ProtocolError::OS_NOT_SUPPORTED` error.
+            {
+                true,
+                "INSTALLER_RESULT=0",
+                UpdateService::ErrorCategory::kInstall,
+                static_cast<int>(
+                    update_client::ProtocolError::OS_NOT_SUPPORTED),
+                base::WideToUTF8(GetLocalizedString(IDS_OS_NOT_SUPPORTED_BASE)),
+                {},
+                base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                              "\",\"status\":\"error-osnotsupported\"}"}),
+            },
 
-        // Interactive install via the command line,
-        // `update_client::ProtocolError::HW_NOT_SUPPORTED` error.
-        {
-            true,
-            "INSTALLER_RESULT=0",
-            UpdateService::ErrorCategory::kInstall,
-            static_cast<int>(update_client::ProtocolError::HW_NOT_SUPPORTED),
-            base::WideToUTF8(GetLocalizedString(IDS_HW_NOT_SUPPORTED_BASE)),
-            {},
-            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
-                          "\",\"status\":\"error-hwnotsupported\"}"}),
-        },
+            // Interactive install via the command line,
+            // `update_client::ProtocolError::HW_NOT_SUPPORTED` error.
+            {
+                true,
+                "INSTALLER_RESULT=0",
+                UpdateService::ErrorCategory::kInstall,
+                static_cast<int>(
+                    update_client::ProtocolError::HW_NOT_SUPPORTED),
+                base::WideToUTF8(GetLocalizedString(IDS_HW_NOT_SUPPORTED_BASE)),
+                {},
+                base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                              "\",\"status\":\"error-hwnotsupported\"}"}),
+            },
 
-        // Interactive install via the command line,
-        // `update_client::ProtocolError::NO_HASH` error.
-        {
-            true,
-            "INSTALLER_RESULT=0",
-            UpdateService::ErrorCategory::kInstall,
-            static_cast<int>(update_client::ProtocolError::NO_HASH),
-            base::WideToUTF8(GetLocalizedString(IDS_NO_HASH_BASE)),
-            {},
-            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
-                          "\",\"status\":\"error-hash\"}"}),
-        },
+            // Interactive install via the command line,
+            // `update_client::ProtocolError::NO_HASH` error.
+            {
+                true,
+                "INSTALLER_RESULT=0",
+                UpdateService::ErrorCategory::kInstall,
+                static_cast<int>(update_client::ProtocolError::NO_HASH),
+                base::WideToUTF8(GetLocalizedString(IDS_NO_HASH_BASE)),
+                {},
+                base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                              "\",\"status\":\"error-hash\"}"}),
+            },
 
-        // Interactive install via the command line,
-        // `update_client::ProtocolError::UNSUPPORTED_PROTOCOL` error.
-        {
-            true,
-            "INSTALLER_RESULT=0",
-            UpdateService::ErrorCategory::kInstall,
-            static_cast<int>(
-                update_client::ProtocolError::UNSUPPORTED_PROTOCOL),
-            base::WideToUTF8(GetLocalizedString(IDS_UNSUPPORTED_PROTOCOL_BASE)),
-            {},
-            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
-                          "\",\"status\":\"error-unsupportedprotocol\"}"}),
-        },
+            // Interactive install via the command line,
+            // `update_client::ProtocolError::UNSUPPORTED_PROTOCOL` error.
+            {
+                true,
+                "INSTALLER_RESULT=0",
+                UpdateService::ErrorCategory::kInstall,
+                static_cast<int>(
+                    update_client::ProtocolError::UNSUPPORTED_PROTOCOL),
+                base::WideToUTF8(
+                    GetLocalizedString(IDS_UNSUPPORTED_PROTOCOL_BASE)),
+                {},
+                base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                              "\",\"status\":\"error-unsupportedprotocol\"}"}),
+            },
 
-        // Interactive install via the command line,
-        // `update_client::ProtocolError::INTERNAL` error.
-        {
-            true,
-            "INSTALLER_RESULT=0",
-            UpdateService::ErrorCategory::kInstall,
-            static_cast<int>(update_client::ProtocolError::INTERNAL),
-            base::WideToUTF8(GetLocalizedString(IDS_INTERNAL_BASE)),
-            {},
-            base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
-                          "\",\"status\":\"error-internal\"}"}),
-        },
-    }));
+            // Interactive install via the command line,
+            // `update_client::ProtocolError::INTERNAL` error.
+            {
+                true,
+                "INSTALLER_RESULT=0",
+                UpdateService::ErrorCategory::kInstall,
+                static_cast<int>(update_client::ProtocolError::INTERNAL),
+                base::WideToUTF8(GetLocalizedString(IDS_INTERNAL_BASE)),
+                {},
+                base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
+                              "\",\"status\":\"error-internal\"}"}),
+            },
+        })));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {
+  if (GetSetup().version != base::Version(kUpdaterVersion)) {
+    GTEST_SKIP();
+  }
+
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
   const bool should_install_successfully =
-      !GetParam().error_code ||
-      GetParam().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
-  const bool always_launch_cmd = GetParam().always_launch_cmd.value_or(false);
+      !GetTestCase().error_code ||
+      GetTestCase().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
+  const bool always_launch_cmd =
+      GetTestCase().always_launch_cmd.value_or(false);
 
-  if (!GetParam().interactive_install && !always_launch_cmd) {
+  if (!GetTestCase().interactive_install && !always_launch_cmd) {
     ASSERT_NO_FATAL_FAILURE(Install());
     ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   }
@@ -4925,20 +4952,20 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
       /*request_attributes=*/{},
       {
           AppUpdateExpectation(
-              GetParam().command_line_args, kMsiAppId,
+              GetTestCase().command_line_args, kMsiAppId,
               base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
               /*is_install=*/true, should_install_successfully, false, "", "",
               crx_relative_path,
-              /*always_serve_crx=*/GetParam().custom_app_response.empty(),
-              GetParam().error_category, GetParam().error_code,
-              /*EVENT_INSTALL_COMPLETE=*/2, GetParam().custom_app_response),
+              /*always_serve_crx=*/GetTestCase().custom_app_response.empty(),
+              GetTestCase().error_category, GetTestCase().error_code,
+              /*EVENT_INSTALL_COMPLETE=*/2, GetTestCase().custom_app_response),
       });
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
-  if (GetParam().interactive_install || always_launch_cmd) {
+  if (GetTestCase().interactive_install || always_launch_cmd) {
     ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
-        kMsiAppId, !GetParam().interactive_install, "usagestats=1",
-        GetParam().installer_text, always_launch_cmd));
+        kMsiAppId, !GetTestCase().interactive_install, "usagestats=1",
+        GetTestCase().installer_text, always_launch_cmd));
     ASSERT_TRUE(WaitForUpdaterExit());
   } else {
     std::optional<int64_t> crx_file_size;
@@ -4970,21 +4997,22 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
                     .Set("error_category",
                          should_install_successfully
                              ? 0
-                             : static_cast<int>(GetParam().error_category))
-                    .Set("error_code", GetParam().error_code)
+                             : static_cast<int>(GetTestCase().error_category))
+                    .Set("error_code", GetTestCase().error_code)
                     .Set("extra_code1", 0)
-                    .Set("installer_text", GetParam().installer_text)
-                    .Set("installer_cmd_line", GetParam().installer_cmd_line))
+                    .Set("installer_text", GetTestCase().installer_text)
+                    .Set("installer_cmd_line",
+                         GetTestCase().installer_cmd_line))
             .Set("expected_result", 0)));
   }
 
   if (should_install_successfully) {
     ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
-    if (!GetParam().installer_cmd_line.empty()) {
+    if (!GetTestCase().installer_cmd_line.empty()) {
       const std::wstring post_install_launch_command_line =
-          base::ASCIIToWide(GetParam().installer_cmd_line);
+          base::ASCIIToWide(GetTestCase().installer_cmd_line);
       EXPECT_EQ(test::IsProcessRunning(post_install_launch_command_line),
-                GetParam().interactive_install || always_launch_cmd);
+                GetTestCase().interactive_install || always_launch_cmd);
       EXPECT_TRUE(test::KillProcesses(post_install_launch_command_line, 0));
     }
     ASSERT_NO_FATAL_FAILURE(Uninstall());
@@ -4998,41 +5026,45 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
 }
 
 TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
-  if (GetParam().interactive_install) {
+  if (GetTestCase().interactive_install) {
     GTEST_SKIP();
   }
 
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
   const bool should_install_successfully =
-      !GetParam().error_code ||
-      GetParam().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
+      !GetTestCase().error_code ||
+      GetTestCase().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
 
-  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetSetup().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(InstallApp(kMsiAppId, base::Version({0, 0, 0, 0})));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kMsiAppId, UpdateService::Priority::kForeground,
-      base::Version({0, 0, 0, 0}), kMsiUpdatedVersion));
+      base::Version({0, 0, 0, 0}), kMsiUpdatedVersion, GetSetup().version));
 
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       /*request_attributes=*/{},
       {
           AppUpdateExpectation(
-              GetParam().command_line_args, kMsiAppId,
+              GetTestCase().command_line_args, kMsiAppId,
               base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
               /*is_install=*/false, should_install_successfully, false, "", "",
               crx_relative_path,
-              /*always_serve_crx=*/GetParam().custom_app_response.empty(),
-              GetParam().error_category, GetParam().error_code,
-              /*EVENT_UPDATE_COMPLETE=*/3, GetParam().custom_app_response),
-      });
+              /*always_serve_crx=*/GetTestCase().custom_app_response.empty(),
+              GetTestCase().error_category, GetTestCase().error_code,
+              /*EVENT_UPDATE_COMPLETE=*/3, GetTestCase().custom_app_response),
+      },
+      GetSetup().version);
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
       kMsiAppId, AppBundleWebCreateMode::kCreateInstalledApp,
       should_install_successfully ? STATE_INSTALL_COMPLETE : STATE_ERROR,
-      GetParam().error_code));
+      GetTestCase().error_code));
+
+  // Cleanup by overinstalling the current version and uninstalling.
+  ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

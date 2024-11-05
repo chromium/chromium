@@ -439,10 +439,12 @@ void ExpectInstallSequence(UpdaterScope scope,
 
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
 
-void ExpectAppsUpdateSequence(UpdaterScope scope,
-                              ScopedServer* test_server,
-                              const base::Value::Dict& request_attributes,
-                              const std::vector<AppUpdateExpectation>& apps);
+void ExpectAppsUpdateSequence(
+    UpdaterScope scope,
+    ScopedServer* test_server,
+    const base::Value::Dict& request_attributes,
+    const std::vector<AppUpdateExpectation>& apps,
+    const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 void StressUpdateService(UpdaterScope scope);
 
