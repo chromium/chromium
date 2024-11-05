@@ -42,6 +42,7 @@ source_set("hooks") {
     "//ios/chrome/browser/plus_addresses/model",
     "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/share_kit/model:test_support",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",

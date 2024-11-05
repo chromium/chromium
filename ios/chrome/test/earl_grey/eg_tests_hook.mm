@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -221,6 +222,10 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
           std::move(delegate), sync_service.get()));
 
   return sync_service;
+}
+
+std::unique_ptr<ShareKitService> CreateShareKitService() {
+  return std::make_unique<TestShareKitService>();
 }
 
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
@@ -51,6 +52,12 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
   if (!IsSharedTabGroupsJoinEnabled(profile) &&
       !IsSharedTabGroupsCreateEnabled(profile)) {
     return nullptr;
+  }
+
+  // Give the opportunity for the test hook to override the service from
+  // the provider (allowing EG tests to use a test ShareKitService).
+  if (auto share_kit_service = tests_hook::CreateShareKitService()) {
+    return share_kit_service;
   }
 
   tab_groups::TabGroupSyncService* sync_service =

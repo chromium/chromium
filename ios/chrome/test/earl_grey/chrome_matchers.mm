@@ -1047,6 +1047,14 @@ id<GREYMatcher> CloseGroupButton() {
   return [ChromeMatchersAppInterface closeGroupButton];
 }
 
+id<GREYMatcher> ShareGroupButton() {
+  return [ChromeMatchersAppInterface shareGroupButton];
+}
+
+id<GREYMatcher> ManageGroupButton() {
+  return [ChromeMatchersAppInterface manageGroupButton];
+}
+
 #pragma mark - Tab Groups Panel
 
 id<GREYMatcher> TabGroupsPanel() {

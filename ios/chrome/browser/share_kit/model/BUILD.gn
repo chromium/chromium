@@ -38,6 +38,7 @@ source_set("factory") {
     ":model",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/data_sharing/model",
@@ -55,13 +56,25 @@ source_set("factory") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "fake_share_flow_view_controller.h",
+    "fake_share_flow_view_controller.mm",
     "test_share_kit_service.h",
     "test_share_kit_service.mm",
   ]
   deps = [
     ":model",
+    ":test_constants",
     "//base",
   ]
+}
+
+source_set("test_constants") {
+  testonly = true
+  sources = [
+    "test_constants.h",
+    "test_constants.mm",
+  ]
+  deps = []
 }
 
 source_set("unit_tests") {

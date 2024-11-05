@@ -77,6 +77,9 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
     ProfileIOS* profile) {
   return nullptr;
 }
+std::unique_ptr<ShareKitService> CreateShareKitService() {
+  return nullptr;
+}
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService() {
   return nullptr;

@@ -854,6 +854,14 @@ id<GREYMatcher> DeleteGroupConfirmationButton();
 // group.
 id<GREYMatcher> CloseGroupButton();
 
+// Returns the matcher for `Share Group` button in the context menu of a tab
+// group.
+id<GREYMatcher> ShareGroupButton();
+
+// Returns the matcher for the manage group button in the context menu of a tab
+// group.
+id<GREYMatcher> ManageGroupButton();
+
 #pragma mark - Tab Groups Panel
 
 // Returns the matcher for the tab groups panel view.

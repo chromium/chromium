@@ -12,6 +12,7 @@ class PrefService;
 class ProfileIOS;
 class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
+class ShareKitService;
 class SystemIdentityManager;
 class TrustedVaultClientBackend;
 namespace drive {
@@ -112,6 +113,10 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
 // used if this hook returns null.
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
     ProfileIOS* profile);
+
+// Allows overriding the ShareKitService factory. The real factory will be
+// used if this hook returns null.
+std::unique_ptr<ShareKitService> CreateShareKitService();
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.

@@ -1703,6 +1703,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                                          IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP];
 }
 
++ (id<GREYMatcher>)shareGroupButton {
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP];
+}
+
++ (id<GREYMatcher>)manageGroupButton {
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:
+          IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP];
+}
+
 #pragma mark - Tab Groups Panel
 
 + (id<GREYMatcher>)tabGroupsPanel {
