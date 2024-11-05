@@ -241,7 +241,7 @@ BASE_FEATURE(kFledgeAndroidWorkletOffMainThread,
 const base::FeatureParam<double>
     kFledgeBidderWorkletThreadPoolSizeLogarithmicScalingFactor{
         &kFledgeBidderWorkletThreadPool,
-        "bidder_worklet_thread_pool_size_logarithmic_scaling_factor", 0};
+        "bidder_worklet_thread_pool_size_logarithmic_scaling_factor", 2};
 
 // This is a kill switch for focusing the RenderWidgetHostViewAndroid on
 // ActionDown on every touch sequence if not focused already, please see
