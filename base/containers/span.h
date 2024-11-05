@@ -27,140 +27,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/to_address.h"
 
-namespace base {
-
-// [span.syn]: Constants
-inline constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
-
-template <typename T,
-          size_t Extent = dynamic_extent,
-          typename InternalPtrType = T*>
-class span;
-
-}  // namespace base
-
-// Mark `span` as satisfying the `view` and `borrowed_range` concepts. This
-// should be done before the definition of `span`, so that any inlined calls to
-// range functionality use the correct specializations.
-template <typename T, size_t N, typename Ptr>
-inline constexpr bool std::ranges::enable_view<base::span<T, N, Ptr>> = true;
-template <typename T, size_t N, typename Ptr>
-inline constexpr bool
-    std::ranges::enable_borrowed_range<base::span<T, N, Ptr>> = true;
-
-namespace base {
-
-namespace internal {
-
-// Exposition-only concept from [span.syn]
-template <typename T>
-concept IntegralConstantLike =
-    std::is_integral_v<decltype(T::value)> &&
-    !std::is_same_v<bool, std::remove_const_t<decltype(T::value)>> &&
-    std::convertible_to<T, decltype(T::value)> &&
-    std::equality_comparable_with<T, decltype(T::value)> &&
-    std::bool_constant<T() == T::value>::value &&
-    std::bool_constant<static_cast<decltype(T::value)>(T()) == T::value>::value;
-
-// Exposition-only concept from [span.syn]
-template <typename T>
-inline constexpr size_t MaybeStaticExt = dynamic_extent;
-template <typename T>
-  requires IntegralConstantLike<T>
-inline constexpr size_t MaybeStaticExt<T> = {T::value};
-
-template <typename From, typename To>
-concept LegalDataConversion =
-    std::is_convertible_v<std::remove_reference_t<From> (*)[],
-                          std::remove_reference_t<To> (*)[]>;
-
-// Akin to `std::constructible_from<span, T>`, but meant to be used in a
-// type-deducing context where we don't know what args would be deduced;
-// `std::constructible_from` can't be directly used in such a case since the
-// type parameters must be fully-specified (e.g. `span<int>`), requiring us to
-// have that knowledge already.
-template <typename T>
-concept SpanConstructibleFrom = requires(const T& t) { span(t); };
-
-template <typename T, typename It>
-concept CompatibleIter = std::contiguous_iterator<It> &&
-                         LegalDataConversion<std::iter_reference_t<It>, T>;
-
-// Disallow general-purpose range construction from types that have dedicated
-// constructors.
-// Arrays should go through the array constructors.
-template <typename T>
-inline constexpr bool kCompatibleRangeType = !std::is_array_v<T>;
-// `span`s should go through the copy constructor.
-template <typename T, size_t N, typename P>
-inline constexpr bool kCompatibleRangeType<span<T, N, P>> = false;
-
-template <typename T, typename R>
-concept CompatibleRange =
-    std::ranges::contiguous_range<R> && std::ranges::sized_range<R> &&
-    (std::ranges::borrowed_range<R> ||
-     std::is_const_v<T>)&&kCompatibleRangeType<std::remove_cvref_t<R>> &&
-    LegalDataConversion<std::ranges::range_reference_t<R>, T>;
-
-template <typename T>
-concept LegacyRangeDataIsPointer = std::is_pointer_v<T>;
-
-template <typename R>
-concept LegacyRange =
-    kCompatibleRangeType<std::remove_cvref_t<R>> && requires(R& r) {
-      { std::ranges::data(r) } -> LegacyRangeDataIsPointer;
-      { std::ranges::size(r) } -> std::convertible_to<size_t>;
-    };
-
-// NOTE: Ideally we'd just use `CompatibleRange`, however this currently breaks
-// code that was written prior to C++20 being standardized and assumes providing
-// .data() and .size() is sufficient.
-// TODO: https://crbug.com/1504998 - Remove in favor of CompatibleRange and fix
-// callsites.
-template <typename T, typename R>
-concept LegacyCompatibleRange = LegacyRange<R> && requires(R& r) {
-  { *std::ranges::data(r) } -> LegalDataConversion<T>;
-};
-
-// Computes a fixed extent if possible from a source container type `T`.
-template <typename T>
-inline constexpr size_t kComputedExtentImpl = dynamic_extent;
-template <typename T, size_t N>
-inline constexpr size_t kComputedExtentImpl<T[N]> = N;
-template <typename T, size_t N>
-inline constexpr size_t kComputedExtentImpl<std::array<T, N>> = N;
-template <typename T, size_t N>
-inline constexpr size_t kComputedExtentImpl<std::span<T, N>> = N;
-template <typename T, size_t N, typename InternalPtrType>
-inline constexpr size_t kComputedExtentImpl<span<T, N, InternalPtrType>> = N;
-template <typename T>
-inline constexpr size_t kComputedExtent =
-    kComputedExtentImpl<std::remove_cvref_t<T>>;
-
-// must_not_be_dynamic_extent prevents |dynamic_extent| from being returned in a
-// constexpr context.
-template <size_t kExtent>
-constexpr size_t must_not_be_dynamic_extent() {
-  static_assert(
-      kExtent != dynamic_extent,
-      "EXTENT should only be used for containers with a static extent.");
-  return kExtent;
-}
-
-template <class T, class U, size_t N, size_t M>
-  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
-           std::equality_comparable_with<T, U>)
-constexpr bool span_eq(span<T, N> l, span<U, M> r);
-template <class T, class U, size_t N, size_t M>
-  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
-           std::three_way_comparable_with<T, U>)
-constexpr auto span_cmp(span<T, N> l, span<U, M> r)
-    -> decltype(l[0u] <=> r[0u]);
-template <class T, size_t N>
-constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
-
-}  // namespace internal
-
 // A span is a value type that represents an array of elements of type T. Since
 // it only consists of a pointer to memory with an associated size, it is very
 // light-weight. It is cheap to construct, copy, move and use spans, so that
@@ -301,6 +167,140 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 //
 // Due to the lack of class template argument deduction guides in C++14
 // appropriate make_span() utility functions are provided for historic reasons.
+
+namespace base {
+
+// [span.syn]: Constants
+inline constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
+
+template <typename T,
+          size_t Extent = dynamic_extent,
+          typename InternalPtrType = T*>
+class span;
+
+}  // namespace base
+
+// Mark `span` as satisfying the `view` and `borrowed_range` concepts. This
+// should be done before the definition of `span`, so that any inlined calls to
+// range functionality use the correct specializations.
+template <typename T, size_t N, typename Ptr>
+inline constexpr bool std::ranges::enable_view<base::span<T, N, Ptr>> = true;
+template <typename T, size_t N, typename Ptr>
+inline constexpr bool
+    std::ranges::enable_borrowed_range<base::span<T, N, Ptr>> = true;
+
+namespace base {
+
+namespace internal {
+
+// Exposition-only concept from [span.syn]
+template <typename T>
+concept IntegralConstantLike =
+    std::is_integral_v<decltype(T::value)> &&
+    !std::is_same_v<bool, std::remove_const_t<decltype(T::value)>> &&
+    std::convertible_to<T, decltype(T::value)> &&
+    std::equality_comparable_with<T, decltype(T::value)> &&
+    std::bool_constant<T() == T::value>::value &&
+    std::bool_constant<static_cast<decltype(T::value)>(T()) == T::value>::value;
+
+// Exposition-only concept from [span.syn]
+template <typename T>
+inline constexpr size_t MaybeStaticExt = dynamic_extent;
+template <typename T>
+  requires IntegralConstantLike<T>
+inline constexpr size_t MaybeStaticExt<T> = {T::value};
+
+template <typename From, typename To>
+concept LegalDataConversion =
+    std::is_convertible_v<std::remove_reference_t<From> (*)[],
+                          std::remove_reference_t<To> (*)[]>;
+
+// Akin to `std::constructible_from<span, T>`, but meant to be used in a
+// type-deducing context where we don't know what args would be deduced;
+// `std::constructible_from` can't be directly used in such a case since the
+// type parameters must be fully-specified (e.g. `span<int>`), requiring us to
+// have that knowledge already.
+template <typename T>
+concept SpanConstructibleFrom = requires(const T& t) { span(t); };
+
+template <typename T, typename It>
+concept CompatibleIter = std::contiguous_iterator<It> &&
+                         LegalDataConversion<std::iter_reference_t<It>, T>;
+
+// Disallow general-purpose range construction from types that have dedicated
+// constructors.
+// Arrays should go through the array constructors.
+template <typename T>
+inline constexpr bool kCompatibleRangeType = !std::is_array_v<T>;
+// `span`s should go through the copy constructor.
+template <typename T, size_t N, typename P>
+inline constexpr bool kCompatibleRangeType<span<T, N, P>> = false;
+
+template <typename T, typename R>
+concept CompatibleRange =
+    std::ranges::contiguous_range<R> && std::ranges::sized_range<R> &&
+    (std::ranges::borrowed_range<R> ||
+     std::is_const_v<T>)&&kCompatibleRangeType<std::remove_cvref_t<R>> &&
+    LegalDataConversion<std::ranges::range_reference_t<R>, T>;
+
+template <typename T>
+concept LegacyRangeDataIsPointer = std::is_pointer_v<T>;
+
+template <typename R>
+concept LegacyRange =
+    kCompatibleRangeType<std::remove_cvref_t<R>> && requires(R& r) {
+      { std::ranges::data(r) } -> LegacyRangeDataIsPointer;
+      { std::ranges::size(r) } -> std::convertible_to<size_t>;
+    };
+
+// NOTE: Ideally we'd just use `CompatibleRange`, however this currently breaks
+// code that was written prior to C++20 being standardized and assumes providing
+// .data() and .size() is sufficient.
+// TODO: https://crbug.com/1504998 - Remove in favor of CompatibleRange and fix
+// callsites.
+template <typename T, typename R>
+concept LegacyCompatibleRange = LegacyRange<R> && requires(R& r) {
+  { *std::ranges::data(r) } -> LegalDataConversion<T>;
+};
+
+// Computes a fixed extent if possible from a source container type `T`.
+template <typename T>
+inline constexpr size_t kComputedExtentImpl = dynamic_extent;
+template <typename T, size_t N>
+inline constexpr size_t kComputedExtentImpl<T[N]> = N;
+template <typename T, size_t N>
+inline constexpr size_t kComputedExtentImpl<std::array<T, N>> = N;
+template <typename T, size_t N>
+inline constexpr size_t kComputedExtentImpl<std::span<T, N>> = N;
+template <typename T, size_t N, typename InternalPtrType>
+inline constexpr size_t kComputedExtentImpl<span<T, N, InternalPtrType>> = N;
+template <typename T>
+inline constexpr size_t kComputedExtent =
+    kComputedExtentImpl<std::remove_cvref_t<T>>;
+
+// must_not_be_dynamic_extent prevents |dynamic_extent| from being returned in a
+// constexpr context.
+template <size_t kExtent>
+constexpr size_t must_not_be_dynamic_extent() {
+  static_assert(
+      kExtent != dynamic_extent,
+      "EXTENT should only be used for containers with a static extent.");
+  return kExtent;
+}
+
+template <class T, class U, size_t N, size_t M>
+  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
+           std::equality_comparable_with<T, U>)
+constexpr bool span_eq(span<T, N> l, span<U, M> r);
+template <class T, class U, size_t N, size_t M>
+  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
+           std::three_way_comparable_with<T, U>)
+constexpr auto span_cmp(span<T, N> l, span<U, M> r)
+    -> decltype(l[0u] <=> r[0u]);
+template <class T, size_t N>
+constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
+
+}  // namespace internal
 
 // [span], class template span
 template <typename T, size_t N, typename InternalPtrType>
