@@ -10,6 +10,7 @@
 
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
@@ -158,6 +159,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false, kCertVerifyFlags, GURL(kUrl),
       env.net_log, &net_error_details,
+      MultiplexedSessionCreationInitiator::kUnknown,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       callback.callback());
 

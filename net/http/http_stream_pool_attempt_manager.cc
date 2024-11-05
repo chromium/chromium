@@ -615,6 +615,15 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   return dict;
 }
 
+MultiplexedSessionCreationInitiator
+HttpStreamPool::AttemptManager::CalculateMultiplexedSessionCreationInitiator() {
+  // Iff we only have preconnect jobs, return `kPreconnect`.
+  if (!preconnects_.empty() && jobs_.empty() && notified_jobs_.empty()) {
+    return MultiplexedSessionCreationInitiator::kPreconnect;
+  }
+  return MultiplexedSessionCreationInitiator::kUnknown;
+}
+
 void HttpStreamPool::AttemptManager::StartInternal(RequestPriority priority) {
   UpdateStreamAttemptState();
 

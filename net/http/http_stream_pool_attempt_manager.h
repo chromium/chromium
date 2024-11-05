@@ -20,6 +20,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
@@ -158,6 +159,9 @@ class HttpStreamPool::AttemptManager
   base::Value::Dict GetInfoAsValue();
 
   std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
+
+  MultiplexedSessionCreationInitiator
+  CalculateMultiplexedSessionCreationInitiator();
 
  private:
   // Represents failure of connection attempts. Used to notify job of completion

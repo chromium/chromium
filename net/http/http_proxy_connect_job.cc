@@ -24,6 +24,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
@@ -756,7 +757,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
       params_->secure_dns_policy(),
       /*require_dns_https_alpn=*/false, ssl_config.GetCertVerifyFlags(),
       GURL("https://" + proxy_server.ToString()), net_log(),
-      &quic_net_error_details_,
+      &quic_net_error_details_, MultiplexedSessionCreationInitiator::kUnknown,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       base::BindOnce(&HttpProxyConnectJob::OnIOComplete,
                      base::Unretained(this)));

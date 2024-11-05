@@ -101,7 +101,8 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
   session_attempt_ = quic_session_pool()->CreateSessionAttempt(
       this, GetKey().session_key(), std::move(*quic_endpoint),
       cert_verify_flags, dns_resolution_start_time, dns_resolution_end_time,
-      /*use_dns_aliases=*/true, std::move(dns_aliases));
+      /*use_dns_aliases=*/true, std::move(dns_aliases),
+      manager_->CalculateMultiplexedSessionCreationInitiator());
 
   int rv = session_attempt_->Start(base::BindOnce(
       &QuicTask::OnSessionAttemptComplete, weak_ptr_factory_.GetWeakPtr()));

@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -38,6 +39,7 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
             bool use_dns_aliases,
             bool require_dns_https_alpn,
             int cert_verify_flags,
+            MultiplexedSessionCreationInitiator session_creation_initiator,
             const NetLogWithSource& net_log);
 
   ~DirectJob() override;
@@ -87,6 +89,7 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
   base::TimeTicks dns_resolution_start_time_;
   base::TimeTicks dns_resolution_end_time_;
   std::unique_ptr<QuicSessionAttempt> session_attempt_;
+  const MultiplexedSessionCreationInitiator session_creation_initiator_;
   base::WeakPtrFactory<DirectJob> weak_factory_{this};
 };
 

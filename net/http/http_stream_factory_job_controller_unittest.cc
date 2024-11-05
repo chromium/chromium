@@ -26,6 +26,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -741,6 +742,7 @@ class JobControllerReconsiderProxyAfterErrorTest
         /*report_ecn=*/true,
         /*enable_origin_frame=*/true,
         /*allow_server_preferred_address=*/true,
+        MultiplexedSessionCreationInitiator::kUnknown,
         NetLogWithSource::Make(NetLogSourceType::NONE));
     mock_proxy_sessions_.emplace_back(new_session.get());
 
@@ -5342,6 +5344,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                  SecureDnsPolicy::kAllow, require_dns_https_alpn,
                  /*cert_verify_flags=*/0, GURL("https://www.example.org/"),
                  net_log_with_source_, &net_error_details,
+                 MultiplexedSessionCreationInitiator::kUnknown,
                  base::BindLambdaForTesting([&](int result) {}),
                  base::BindLambdaForTesting([&quic_request_result](int result) {
                    quic_request_result = result;

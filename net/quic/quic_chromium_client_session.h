@@ -31,6 +31,7 @@
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
@@ -633,6 +634,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       bool report_ecn,
       bool enable_origin_frame,
       bool allow_server_preferred_address,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
       const NetLogWithSource& net_log);
 
   QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
@@ -1194,6 +1196,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool observed_ecn_transition_ = false;
 
   const bool allow_server_preferred_address_;
+
+  const MultiplexedSessionCreationInitiator session_creation_initiator_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

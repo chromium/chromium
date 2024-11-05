@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
@@ -201,6 +202,7 @@ class QuicChromiumClientSessionTest
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         /*report_ecn=*/true, /*enable_origin_frame=*/true,
         /*allow_server_preferred_address=*/true,
+        MultiplexedSessionCreationInitiator::kUnknown,
         NetLogWithSource::Make(NetLogSourceType::NONE));
     if (connectivity_monitor_) {
       connectivity_monitor_->SetInitialDefaultNetwork(default_network_);

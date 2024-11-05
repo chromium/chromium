@@ -23,6 +23,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
@@ -521,6 +522,7 @@ class WebSocketHandshakeStreamCreateHelperTest
             ConnectionEndpointMetadata(), /*report_ecn=*/true,
             /*enable_origin_frame=*/true,
             /*allow_server_preferred_address=*/true,
+            MultiplexedSessionCreationInitiator::kUnknown,
             NetLogWithSource::Make(NetLogSourceType::NONE));
 
         session_->Initialize();

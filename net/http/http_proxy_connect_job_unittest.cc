@@ -2376,6 +2376,7 @@ class MockQuicSessionPool : public QuicSessionPool {
        url::SchemeHostPort destination,
        quic::ParsedQuicVersion quic_version,
        const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+       MultiplexedSessionCreationInitiator session_creation_initiator,
        const HttpUserAgentSettings* http_user_agent_settings,
        RequestPriority priority,
        bool use_dns_aliases,
@@ -2423,7 +2424,7 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestQuicProxy) {
 
   // Expect a session to be requested, and then leave it pending.
   EXPECT_CALL(mock_quic_session_pool_,
-              RequestSession(_, _, _, _, _, _, _, _, _, _,
+              RequestSession(_, _, _, _, _, _, _, _, _, _, _,
                              QSRHasProxyChain(proxy_chain.Prefix(0))))
       .Times(1)
       .WillRepeatedly(testing::Return(ERR_IO_PENDING));
@@ -2466,10 +2467,10 @@ TEST_F(HttpProxyConnectQuicJobTest, QuicProxyRequestUsesRfcV1) {
       /*net_log=*/nullptr);
 
   // Expect a session to be requested, and then leave it pending.
-  EXPECT_CALL(
-      mock_quic_session_pool_,
-      RequestSession(_, _, IsQuicVersion(quic::ParsedQuicVersion::RFCv1()), _,
-                     _, _, _, _, _, _, QSRHasProxyChain(proxy_chain.Prefix(0))))
+  EXPECT_CALL(mock_quic_session_pool_,
+              RequestSession(
+                  _, _, IsQuicVersion(quic::ParsedQuicVersion::RFCv1()), _, _,
+                  _, _, _, _, _, _, QSRHasProxyChain(proxy_chain.Prefix(0))))
 
       .Times(1)
       .WillRepeatedly(testing::Return(ERR_IO_PENDING));
@@ -2514,7 +2515,7 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestMultipleQuicProxies) {
   // Expect a session to be requested, and then leave it pending. The requested
   // QUIC session is to `qproxy2`, via proxy chain [`qproxy1`].
   EXPECT_CALL(mock_quic_session_pool_,
-              RequestSession(_, _, _, _, _, _, _, _, _, _,
+              RequestSession(_, _, _, _, _, _, _, _, _, _, _,
                              QSRHasProxyChain(proxy_chain.Prefix(1))))
       .Times(1)
       .WillRepeatedly(testing::Return(ERR_IO_PENDING));

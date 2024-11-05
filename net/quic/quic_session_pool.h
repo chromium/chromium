@@ -34,6 +34,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
@@ -172,6 +173,7 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
               const GURL& url,
               const NetLogWithSource& net_log,
               NetErrorDetails* net_error_details,
+              MultiplexedSessionCreationInitiator session_creation_initiator,
               CompletionOnceCallback failed_on_default_network_callback,
               CompletionOnceCallback callback);
 
@@ -355,6 +357,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       url::SchemeHostPort destination,
       quic::ParsedQuicVersion quic_version,
       std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
       const HttpUserAgentSettings* http_user_agent_settings,
       RequestPriority priority,
       bool use_dns_aliases,
@@ -376,7 +379,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
       bool use_dns_aliases,
-      std::set<std::string> dns_aliases);
+      std::set<std::string> dns_aliases,
+      MultiplexedSessionCreationInitiator session_creation_initiator);
 
   // Called by a session when it is going away and no more streams should be
   // created on it.
@@ -584,24 +588,27 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                         base::TimeTicks dns_resolution_end_time,
                         const NetLogWithSource& net_log,
                         raw_ptr<QuicChromiumClientSession>* session,
-                        handles::NetworkHandle* network);
+                        handles::NetworkHandle* network,
+                        MultiplexedSessionCreationInitiator preconnet_origin);
   // Note: QUIC session create methods that complete asynchronously, we can't
   // pass raw pointers as parameters because we can't guarantee that these raw
   // pointers outlive `this` since we use nested callbacks in these methods. See
   // the commit description of crrev.com/c/5858326.
   using CreateSessionCallback = base::OnceCallback<void(
       base::expected<QuicSessionAttempt::CreateSessionResult, int>)>;
-  int CreateSessionAsync(CreateSessionCallback callback,
-                         QuicSessionAliasKey key,
-                         quic::ParsedQuicVersion quic_version,
-                         int cert_verify_flags,
-                         bool require_confirmation,
-                         IPEndPoint peer_address,
-                         ConnectionEndpointMetadata metadata,
-                         base::TimeTicks dns_resolution_start_time,
-                         base::TimeTicks dns_resolution_end_time,
-                         const NetLogWithSource& net_log,
-                         handles::NetworkHandle network);
+  int CreateSessionAsync(
+      CreateSessionCallback callback,
+      QuicSessionAliasKey key,
+      quic::ParsedQuicVersion quic_version,
+      int cert_verify_flags,
+      bool require_confirmation,
+      IPEndPoint peer_address,
+      ConnectionEndpointMetadata metadata,
+      base::TimeTicks dns_resolution_start_time,
+      base::TimeTicks dns_resolution_end_time,
+      const NetLogWithSource& net_log,
+      handles::NetworkHandle network,
+      MultiplexedSessionCreationInitiator session_creation_initiator);
   int CreateSessionOnProxyStream(
       CreateSessionCallback callback,
       QuicSessionAliasKey key,
@@ -614,33 +621,37 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       std::string user_agent,
       const NetLogWithSource& net_log,
       handles::NetworkHandle network);
-  void FinishCreateSession(CreateSessionCallback callback,
-                           QuicSessionAliasKey key,
-                           quic::ParsedQuicVersion quic_version,
-                           int cert_verify_flags,
-                           bool require_confirmation,
-                           IPEndPoint peer_address,
-                           ConnectionEndpointMetadata metadata,
-                           base::TimeTicks dns_resolution_start_time,
-                           base::TimeTicks dns_resolution_end_time,
-                           quic::QuicPacketLength session_max_packet_length,
-                           const NetLogWithSource& net_log,
-                           handles::NetworkHandle network,
-                           std::unique_ptr<DatagramClientSocket> socket,
-                           int rv);
+  void FinishCreateSession(
+      CreateSessionCallback callback,
+      QuicSessionAliasKey key,
+      quic::ParsedQuicVersion quic_version,
+      int cert_verify_flags,
+      bool require_confirmation,
+      IPEndPoint peer_address,
+      ConnectionEndpointMetadata metadata,
+      base::TimeTicks dns_resolution_start_time,
+      base::TimeTicks dns_resolution_end_time,
+      quic::QuicPacketLength session_max_packet_length,
+      const NetLogWithSource& net_log,
+      handles::NetworkHandle network,
+      std::unique_ptr<DatagramClientSocket> socket,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
+      int rv);
   base::expected<QuicSessionAttempt::CreateSessionResult, int>
-  CreateSessionHelper(QuicSessionAliasKey key,
-                      quic::ParsedQuicVersion quic_version,
-                      int cert_verify_flags,
-                      bool require_confirmation,
-                      IPEndPoint peer_address,
-                      ConnectionEndpointMetadata metadata,
-                      base::TimeTicks dns_resolution_start_time,
-                      base::TimeTicks dns_resolution_end_time,
-                      quic::QuicPacketLength session_max_packet_length,
-                      const NetLogWithSource& net_log,
-                      handles::NetworkHandle network,
-                      std::unique_ptr<DatagramClientSocket> socket);
+  CreateSessionHelper(
+      QuicSessionAliasKey key,
+      quic::ParsedQuicVersion quic_version,
+      int cert_verify_flags,
+      bool require_confirmation,
+      IPEndPoint peer_address,
+      ConnectionEndpointMetadata metadata,
+      base::TimeTicks dns_resolution_start_time,
+      base::TimeTicks dns_resolution_end_time,
+      quic::QuicPacketLength session_max_packet_length,
+      const NetLogWithSource& net_log,
+      handles::NetworkHandle network,
+      std::unique_ptr<DatagramClientSocket> socket,
+      MultiplexedSessionCreationInitiator session_creation_initiator);
 
   // Called when the Job for the given key has created and confirmed a session.
   void ActivateSession(const QuicSessionAliasKey& key,

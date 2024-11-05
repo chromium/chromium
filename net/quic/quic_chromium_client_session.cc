@@ -36,6 +36,7 @@
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_activity_monitor.h"
 #include "net/base/network_anonymization_key.h"
@@ -948,6 +949,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     bool report_ecn,
     bool enable_origin_frame,
     bool allow_server_preferred_address,
+    MultiplexedSessionCreationInitiator session_creation_initiator,
     const NetLogWithSource& net_log)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
@@ -993,7 +995,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
       path_validation_writer_delegate_(this, task_runner_),
       ech_config_list_(metadata.ech_config_list),
-      allow_server_preferred_address_(allow_server_preferred_address) {
+      allow_server_preferred_address_(allow_server_preferred_address),
+      session_creation_initiator_(session_creation_initiator) {
   default_network_ = default_network;
   auto* socket_raw = socket.get();
   packet_readers_.push_back(std::make_unique<QuicChromiumPacketReader>(

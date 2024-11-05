@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/port_util.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
@@ -828,6 +829,11 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
                 proxy_info_.traffic_annotation())
           : std::nullopt;
 
+  auto initiator =
+      (job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3)
+          ? MultiplexedSessionCreationInitiator::kPreconnect
+          : MultiplexedSessionCreationInitiator::kUnknown;
+
   // The QuicSessionRequest will take care of connecting to any proxies in the
   // proxy chain.
   int rv = quic_request_.Request(
@@ -837,6 +843,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
       server_cert_verifier_flags, origin_url_, net_log_, &net_error_details_,
+      initiator,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {

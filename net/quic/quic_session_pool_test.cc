@@ -38,6 +38,7 @@
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
@@ -191,7 +192,7 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
         /*cert_verify_flags=*/0,
         /*dns_resolution_start_time=*/base::TimeTicks(),
         /*dns_resolution_end_time=*/base::TimeTicks(), /*use_dns_aliases=*/true,
-        /*dns_aliases=*/{});
+        /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown);
     return attempt_->Start(base::BindOnce(&SessionAttemptHelper::OnComplete,
                                           base::Unretained(this)));
   }
