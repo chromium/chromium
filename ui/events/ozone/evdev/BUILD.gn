@@ -252,6 +252,7 @@ source_set("event_device_info") {
   deps = [
     ":keyboard_mouse_combo_metrics",
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/events/devices",
     "//ui/events/ozone",
   ]
