@@ -116,13 +116,39 @@ using signin_metrics::PromoAction;
 }
 
 - (void)stop {
-  [self.signOutCoordinator stop];
   _signOutCoordinator = nil;
   [_parcelTrackingSettingsCoordinator stop];
   _parcelTrackingSettingsCoordinator = nil;
+  [self dismissSignoutCoordinator];
 }
 
 #pragma mark - Private
+
+// Callback for the sign-out confirmation button.
+// Dismisses the alert coordinator and sign-out.
+- (void)
+    onSignoutConfirmationTappedWithTargetRect:(CGRect)targetRect
+                                   completion:
+                                       (signin_ui::SignoutCompletionCallback)
+                                           completion {
+  [self dismissSignoutCoordinator];
+  // Provide additional data retention options if the user is
+  // syncing their data.
+  // TODO(crbug.com/40066949): Simplify once kSync becomes
+  // unreachable or is deleted from the codebase. See
+  // ConsentLevel::kSync documentation for details.
+  if (self.identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    [self showDataRetentionOptionsWithTargetRect:targetRect
+                                      completion:completion];
+    return;
+  }
+  [self signOutWithCompletion:completion];
+}
+
+- (void)dismissSignoutCoordinator {
+  [self.signOutCoordinator stop];
+  self.signOutCoordinator = nil;
+}
 
 - (void)authenticationFlowDidComplete {
   DCHECK(self.authenticationFlow);
@@ -204,32 +230,18 @@ using signin_metrics::PromoAction;
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)
                 action:^{
-                  if (!weakSelf) {
-                    return;
-                  }
-                  // Provide additional data retention options if the user is
-                  // syncing their data.
-                  // TODO(crbug.com/40066949): Simplify once kSync becomes
-                  // unreachable or is deleted from the codebase. See
-                  // ConsentLevel::kSync documentation for details.
-                  if (weakSelf.identityManager->HasPrimaryAccount(
-                          signin::ConsentLevel::kSync)) {
-                    [weakSelf
-                        showDataRetentionOptionsWithTargetRect:targetRect
-                                                    completion:completion];
-                    return;
-                  }
-                  [weakSelf signOutWithCompletion:completion];
+                  [weakSelf
+                      onSignoutConfirmationTappedWithTargetRect:targetRect
+                                                     completion:completion];
                 }
                  style:UIAlertActionStyleDestructive];
 
-  [self.signOutCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                action:^{
-                  weakSelf.signOutCoordinator = nil;
-                  completion(NO);
-                }
-                 style:UIAlertActionStyleCancel];
+  [self.signOutCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                                     action:^{
+                                       [weakSelf dismissSignoutCoordinator];
+                                       completion(NO);
+                                     }
+                                      style:UIAlertActionStyleCancel];
   [self.signOutCoordinator start];
 }
 
