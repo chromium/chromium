@@ -929,6 +929,29 @@ TEST_F(SunfishTest, SearchActionButton) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+// Tests that the search action button is not shown in the default capture mode
+// if the user has disabled Sunfish.
+TEST_F(SunfishTest, SearchActionButtonNotShownIfEnabledPrefIsFalse) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishEnabledPrefName, false);
+  // Start default capture mode *not* region selection.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  // Since we cannot select a region, no action buttons are shown.
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+
+  // Set the source type to region, then select a region.
+  controller->SetSource(CaptureModeSource::kRegion);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  // There should not be any buttons.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
 TEST_F(SunfishTest, SearchBoxInDefaultMode) {
   auto* controller = CaptureModeController::Get();
   auto* test_delegate =
@@ -1488,6 +1511,21 @@ TEST_F(ScannerTest,
   EXPECT_THAT(session_test_api.GetActionButtons(),
               AllOf(SizeIs(2), Each(Property("GetEnabled",
                                              &views::View::GetEnabled, true))));
+}
+
+// Tests that no text detection request is ever made in default capture mode if
+// the Sunfish enabled pref is false.
+TEST_F(ScannerTest, NoTextDetectionInDefaultModeIfEnabledPrefIsFalse) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishEnabledPrefName, false);
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  // No text detection request should have been made, so there should not be a
+  // pending DLP check.
+  EXPECT_FALSE(CaptureModeTestApi().IsPendingDlpCheck());
 }
 
 // Tests that the copy text button is shown in default capture mode if text is

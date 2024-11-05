@@ -525,6 +525,9 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
 
 bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
     const {
+  if (!CaptureModeController::IsSunfishAllowedAndEnabled()) {
+    return false;
+  }
   auto* controller = CaptureModeController::Get();
   return controller->type() == CaptureModeType::kImage &&
          controller->source() == CaptureModeSource::kRegion;
