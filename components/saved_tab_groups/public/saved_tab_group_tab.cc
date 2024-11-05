@@ -21,7 +21,8 @@ SavedTabGroupTab::SavedTabGroupTab(
     std::optional<std::string> last_updater_cache_guid,
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros,
-    std::optional<gfx::Image> favicon)
+    std::optional<gfx::Image> favicon,
+    bool is_pending_sanitization)
     : saved_tab_guid_(saved_tab_guid.has_value()
                           ? saved_tab_guid.value()
                           : base::Uuid::GenerateRandomV4()),
@@ -40,7 +41,8 @@ SavedTabGroupTab::SavedTabGroupTab(
           update_time_windows_epoch_micros.has_value()
               ? update_time_windows_epoch_micros.value()
               : base::Time::Now()),
-      favicon_(favicon) {}
+      favicon_(favicon),
+      is_pending_sanitization_(is_pending_sanitization) {}
 
 SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
 SavedTabGroupTab& SavedTabGroupTab::operator=(const SavedTabGroupTab& other) =

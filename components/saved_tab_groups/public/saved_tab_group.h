@@ -180,6 +180,9 @@ class SavedTabGroup {
   // copied.
   SavedTabGroup CloneAsSharedTabGroup(std::string collaboration_id) const;
 
+  // Whether the TabGroup is pending sanitization.
+  bool IsPendingSanitization() const;
+
  private:
   // Moves the tab denoted by `saved_tab_guid` to the position `new_index`.
   void MoveTabImpl(const base::Uuid& saved_tab_guid, size_t new_index);

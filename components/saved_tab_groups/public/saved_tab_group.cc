@@ -418,6 +418,15 @@ SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
   return shared_group;
 }
 
+bool SavedTabGroup::IsPendingSanitization() const {
+  for (const auto& tab : saved_tabs()) {
+    if (tab.is_pending_sanitization()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid) {
   std::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
   CHECK(index.has_value());

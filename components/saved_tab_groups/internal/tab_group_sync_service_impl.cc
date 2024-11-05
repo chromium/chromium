@@ -46,6 +46,10 @@ constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
 constexpr bool is_desktop = !(is_android || is_ios);
 
+bool IsSanitizationRequired(const SavedTabGroup& tab_group, const GURL url) {
+  return tab_group.is_shared_tab_group() && url.SchemeIsHTTPOrHTTPS();
+}
+
 void OnCanApplyOptimizationCompleted(
     TabGroupSyncService::UrlRestrictionCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
@@ -317,6 +321,7 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                            /*saved_tab_guid=*/std::nullopt, tab_id);
   new_tab.SetCreatorCacheGuid(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
+  new_tab.SetIsPendingSanitization(IsSanitizationRequired(*group, url));
 
   UpdateAttributions(group_id);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
@@ -346,25 +351,17 @@ void TabGroupSyncServiceImpl::UpdateTab(
 
   // Use the builder to create the updated tab.
   bool will_update_url = tab_builder.url().SchemeIsHTTPOrHTTPS();
-  bool need_update_title = group->is_shared_tab_group() &&
-                           !tab_builder.title().empty() &&
-                           tab_builder.url().SchemeIsHTTPOrHTTPS();
+  bool is_pending_sanitization =
+      IsSanitizationRequired(*group, tab_builder.url()) &&
+      !tab_builder.title().empty();
 
   SavedTabGroupTabBuilder new_builder = tab_builder;
-  if (need_update_title) {
-    new_builder.SetTitle(GetTitleFromUrlForDisplay(tab_builder.url()));
-  }
   SavedTabGroupTab updated_tab = new_builder.Build(*tab);
+  updated_tab.SetIsPendingSanitization(is_pending_sanitization);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
                            will_update_url);
   LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
-  if (need_update_title) {
-    GetPageTitle(tab_builder.url(),
-                 base::BindOnce(&TabGroupSyncServiceImpl::UpdateTabTitle,
-                                weak_ptr_factory_.GetWeakPtr(), group_id,
-                                tab_id, tab_builder.url()));
-  }
 }
 
 void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
@@ -458,6 +455,11 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   // tab groups, and without migration of local IDs.
   SavedTabGroup shared_group =
       saved_group->CloneAsSharedTabGroup(std::string(collaboration_id));
+  for (auto& tab : shared_group.saved_tabs()) {
+    tab.SetIsPendingSanitization(
+        IsSanitizationRequired(shared_group, tab.url()));
+  }
+
   // Make a copy before moving the group.
   base::Uuid shared_group_id = shared_group.saved_guid();
   // Clear the pointer before adding the new group as it might invalidate the
@@ -1071,41 +1073,6 @@ void TabGroupSyncServiceImpl::GetPageTitle(const GURL& url,
       url, optimization_guide::proto::PAGE_ENTITIES,
       base::BindOnce(&OnPageEntitiesResponseReceived, url,
                      std::move(callback)));
-}
-
-void TabGroupSyncServiceImpl::UpdateTabTitle(const LocalTabGroupID& group_id,
-                                             const LocalTabID& tab_id,
-                                             const GURL& url,
-                                             const std::u16string& title) {
-  if (title.empty()) {
-    return;
-  }
-
-  auto* group = model_->Get(group_id);
-  if (!group) {
-    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
-    return;
-  }
-
-  const auto* tab = group->GetTab(tab_id);
-  if (!tab) {
-    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
-    return;
-  }
-
-  // Tab URL has changed, ignore updating the title.
-  if (tab->url() != url) {
-    return;
-  }
-
-  if (tab->title() == title) {
-    return;
-  }
-
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetTitle(title);
-  model_->UpdateTabInGroup(group->saved_guid(), tab_builder.Build(*tab),
-                           /*notify_observers=*/true);
 }
 
 }  // namespace tab_groups

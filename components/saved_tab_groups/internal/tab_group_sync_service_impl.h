@@ -223,12 +223,6 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // Get the title on a given URL.
   void GetPageTitle(const GURL& url, GetTitleCallback callback);
 
-  // Helper method to update title and URL for a tab in a group.
-  void UpdateTabTitle(const LocalTabGroupID& group_id,
-                      const LocalTabID& tab_id,
-                      const GURL& url,
-                      const std::u16string& title);
-
   // Creates a copy of all shared tab groups from the model and stores them in
   // `shared_tab_groups_available_at_startup_for_messaging_` for later
   // retrieval.

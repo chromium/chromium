@@ -315,7 +315,7 @@ void SavedTabGroupModel::AddTabToGroupLocally(const base::Uuid& group_id,
 
   const base::Uuid tab_id = tab.saved_tab_guid();
   std::optional<int> group_index = GetIndexOf(group_id);
-  saved_tab_groups_[group_index.value()].AddTabLocally(tab);
+  saved_tab_groups_[group_index.value()].AddTabLocally(std::move(tab));
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
@@ -336,9 +336,9 @@ void SavedTabGroupModel::AddTabToGroupFromSync(const base::Uuid& group_id,
 
   if (saved_tab_groups_[group_index.value()].ContainsTab(tab_id)) {
     // This can happen when an out of sync SavedTabGroup sends a tab update.
-    saved_tab_groups_[group_index.value()].ReplaceTabAt(tab_id, tab);
+    saved_tab_groups_[group_index.value()].ReplaceTabAt(tab_id, std::move(tab));
   } else {
-    saved_tab_groups_[group_index.value()].AddTabFromSync(tab);
+    saved_tab_groups_[group_index.value()].AddTabFromSync(std::move(tab));
   }
 
   for (auto& observer : observers_) {
