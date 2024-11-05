@@ -33,14 +33,18 @@ TEST_P(PDFiumInkReaderTest, Basic) {
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
-  std::vector<ink::ModeledShape> shapes =
+  std::vector<ReadV2InkPathResult> results =
       ReadV2InkPathsFromPageAsModeledShapes(page);
-  ASSERT_EQ(shapes.size(), 1u);
+  ASSERT_EQ(results.size(), 1u);
+
+  // Make sure there is a page object and it is a path.
+  EXPECT_TRUE(results[0].page_object);
+  EXPECT_EQ(FPDFPageObj_GetType(results[0].page_object), FPDF_PAGEOBJ_PATH);
 
   // Test `shape` works with ink::Intersects(). All point values are in
   // canonical coordinates, so no transform is necessary.
   const auto no_transform = ink::AffineTransform::Identity();
-  const auto& shape = shapes[0];
+  const auto& shape = results[0].shape;
 
   // Points at the corners do not intersect with `shape`.
   EXPECT_FALSE(ink::Intersects(ink::Point{0, 0}, shape, no_transform));
@@ -58,9 +62,9 @@ TEST_P(PDFiumInkReaderTest, Basic) {
 }
 
 TEST_P(PDFiumInkReaderTest, NoPage) {
-  std::vector<ink::ModeledShape> shapes =
+  std::vector<ReadV2InkPathResult> results =
       ReadV2InkPathsFromPageAsModeledShapes(/*page=*/nullptr);
-  EXPECT_TRUE(shapes.empty());
+  EXPECT_TRUE(results.empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumInkReaderTest, testing::Bool());

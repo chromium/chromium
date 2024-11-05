@@ -15,15 +15,21 @@ static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace chrome_pdf {
 
+struct ReadV2InkPathResult {
+  FPDF_PAGEOBJECT page_object;
+  ink::ModeledShape shape;
+};
+
 // For the given `page`, iterate through all page objects and import "V2" paths
-// created by Ink as ink::ModeledShapes. The shapes do not have outlines and are
-// only suitable for use with ink::Intersects().
+// created by Ink as ink::ModeledShapes. For each shape, also return its
+// associated page object. The shapes do not have outlines and are only suitable
+// for use with ink::Intersects().
 //
 // If a path does not match the characteristics of a "V2" path, or if the path
 // cannot be properly tessellated, then it is ignored.
 //
 // If `page` is null, then the return value is an empty vector.
-std::vector<ink::ModeledShape> ReadV2InkPathsFromPageAsModeledShapes(
+std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
     FPDF_PAGE page);
 
 }  // namespace chrome_pdf

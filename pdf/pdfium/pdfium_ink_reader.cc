@@ -143,11 +143,11 @@ std::optional<ink::ModeledShape> ReadV2InkModeledShapeFromPath(
 
 }  // namespace
 
-std::vector<ink::ModeledShape> ReadV2InkPathsFromPageAsModeledShapes(
+std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
     FPDF_PAGE page) {
-  std::vector<ink::ModeledShape> shapes;
+  std::vector<ReadV2InkPathResult> results;
   if (!page) {
-    return shapes;
+    return results;
   }
 
   gfx::AxisTransform2d transform =
@@ -166,9 +166,9 @@ std::vector<ink::ModeledShape> ReadV2InkPathsFromPageAsModeledShapes(
     if (!shape.has_value()) {
       continue;
     }
-    shapes.push_back(std::move(shape.value()));
+    results.emplace_back(page_object, std::move(shape.value()));
   }
-  return shapes;
+  return results;
 }
 
 }  // namespace chrome_pdf
