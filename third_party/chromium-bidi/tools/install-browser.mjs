@@ -96,9 +96,8 @@ try {
   });
   if (process.argv.includes(GITHUB_SHELL_ARG)) {
     setOutput('executablePath', executablePath);
-  } else {
-    console.log(executablePath);
   }
+  console.log(executablePath);
 } catch (err) {
   setFailed(`Failed to download the browser: ${err.message}`);
 }

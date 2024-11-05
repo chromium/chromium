@@ -70,10 +70,22 @@ jobs:
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         with:
           path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
-      - name: Install pinned browser
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}
+      # Install chrome, chromedriver and headless shell is required to keep them cached.
+      - name: Install chrome
+        run: node tools/install-browser.mjs
+      - name: Install chromedriver
+        run: node tools/install-browser.mjs --chromedriver
+      - name: Install headless shell
+        run: node tools/install-browser.mjs --chrome-headless-shell
+      - name: Get chrome path
         id: browser
-        run: node tools/install-browser.mjs --github
+        run: |
+          if [[ ${{ matrix.head }} != 'old-headless' ]]; then
+            node tools/install-browser.mjs --github
+          else
+            node tools/install-browser.mjs --chrome-headless-shell --github
+          fi
       - name: Set up Python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
