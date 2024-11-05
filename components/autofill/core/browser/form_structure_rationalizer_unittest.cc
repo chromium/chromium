@@ -57,32 +57,12 @@ struct FieldTemplate {
   std::optional<AutocompleteParsingResult> parsed_autocomplete = std::nullopt;
   bool is_focusable = true;
   size_t max_length = std::numeric_limits<int>::max();
-  FormFieldData::RoleAttribute role = FormFieldData::RoleAttribute::kOther;
   std::optional<url::Origin> subframe_origin;
   std::optional<FormGlobalId> host_form;
   bool field_type_is_override = false;
   // Only appled if BuildFormStructure is called with run_heuristics=false.
   FieldType heuristic_type = UNKNOWN_TYPE;
 };
-
-// These are helper functions that set a special flag in a field_template.
-// They only exist because the output of clang-format for function calls is
-// more compact than if we switched to designated initializer lists.
-FieldTemplate ToNotFocusable(FieldTemplate field_template) {
-  // This is often set because a field is hidden.
-  field_template.is_focusable = false;
-  return field_template;
-}
-
-FieldTemplate ToSelectOne(FieldTemplate field_template) {
-  field_template.form_control_type = FormControlType::kSelectOne;
-  return field_template;
-}
-
-FieldTemplate SetRolePresentation(FieldTemplate field_template) {
-  field_template.role = FormFieldData::RoleAttribute::kPresentation;
-  return field_template;
-}
 
 std::pair<FormData, std::string> CreateFormAndServerClassification(
     std::vector<FieldTemplate> fields) {
@@ -105,7 +85,6 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     field.set_is_focusable(field_template.is_focusable);
     field.set_max_length(field_template.max_length);
     field.set_parsed_autocomplete(field_template.parsed_autocomplete);
-    field.set_role(field_template.role);
     field.set_origin(
         field_template.subframe_origin.value_or(form.main_frame_origin()));
     field.set_host_frame(
@@ -545,164 +524,6 @@ TEST_F(
           // Billing.
           NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3,
           ADDRESS_HOME_CITY));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_StateCountry_NoRationalization) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          // First Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"State", "state", ADDRESS_HOME_STATE},
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-          // Second Section
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-          {"Full Name", "fullName", NAME_FULL},
-          {"State", "state", ADDRESS_HOME_STATE},
-          // Third Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"State", "state", ADDRESS_HOME_STATE},
-          // Fourth Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-      },
-      /*run_heuristics=*/true);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(
-                  // First section.
-                  NAME_FULL, ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY,
-                  // Second section.
-                  ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
-                  // Third section.
-                  NAME_FULL, ADDRESS_HOME_STATE,
-                  // Fourth section.
-                  NAME_FULL, ADDRESS_HOME_COUNTRY));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_CountryStateNoHeuristics) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          // Shipping.
-          {"Full Name", "fullName", NAME_FULL, "shipping"},
-          {"City", "city", ADDRESS_HOME_CITY, "shipping"},
-          {"State", "state", ADDRESS_HOME_STATE, "shipping"},
-          {"Country", "country", ADDRESS_HOME_STATE, "shipping"},
-
-          // Billing.
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne({"Country", "country", ADDRESS_HOME_STATE, "billing"}),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne({"Full Name", "fullName", NAME_FULL, "billing"}),
-          {"State", "state", ADDRESS_HOME_STATE, "billing"},
-
-          // Billing-2.
-          {"Country", "country", ADDRESS_HOME_STATE, "billing-2"},
-          {"Full Name", "fullName", NAME_FULL, "billing-2"},
-          {"State", "state", ADDRESS_HOME_STATE, "billing-2"},
-      },
-      /*run_heuristics=*/false);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(
-                  // Shipping.
-                  NAME_FULL, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                  ADDRESS_HOME_COUNTRY,
-                  // Billing.
-                  ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                  ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                  ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
-                  // Billing-2.
-                  ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_StateCountryWithHeuristics) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          // First section.
-          {"Full Name", "fullName", NAME_FULL},
-          ToSelectOne(
-              ToNotFocusable({"Country", "country", ADDRESS_HOME_COUNTRY})),
-          {"Country", "country2", ADDRESS_HOME_COUNTRY},
-          {"city", "City", ADDRESS_HOME_CITY},
-          ToSelectOne(
-              SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
-          {"State", "state", ADDRESS_HOME_COUNTRY},
-
-          // Second Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-          {"city", "City", ADDRESS_HOME_CITY},
-          {"State", "state", ADDRESS_HOME_COUNTRY},
-
-          // Third Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"city", "City", ADDRESS_HOME_CITY},
-          ToSelectOne(
-              SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
-          {"State", "state", ADDRESS_HOME_COUNTRY},
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-          ToSelectOne(
-              ToNotFocusable({"Country", "country2", ADDRESS_HOME_COUNTRY})),
-      },
-      /*run_heuristics=*/true);
-  EXPECT_THAT(
-      GetTypes(*form_structure),
-      ElementsAre(
-          // First section.
-          NAME_FULL, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-          ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STATE,
-          // Second section
-          NAME_FULL, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_CITY,
-          ADDRESS_HOME_STATE,
-          // Third section
-          NAME_FULL, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STATE,
-          ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_FirstFieldRationalized) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          {"Country", "country", ADDRESS_HOME_STATE, "billing"},
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country3", ADDRESS_HOME_STATE, "billing"})),
-          {"Full Name", "fullName", NAME_FULL, "billing"},
-          {"State", "state", ADDRESS_HOME_STATE, "billing"},
-      },
-      /*run_heuristics=*/false);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                          ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_LastFieldRationalized) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          {"Country", "country", ADDRESS_HOME_COUNTRY, "billing"},
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_COUNTRY, "billing"})),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country3", ADDRESS_HOME_COUNTRY, "billing"})),
-          ToSelectOne({"Full Name", "fullName", NAME_FULL, "billing"}),
-          ToSelectOne(ToNotFocusable(
-              {"State", "state", ADDRESS_HOME_COUNTRY, "billing"})),
-          ToSelectOne({"State", "state2", ADDRESS_HOME_COUNTRY, "billing"}),
-      },
-      /*run_heuristics=*/false);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                          ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
-                          ADDRESS_HOME_STATE));
 }
 
 TEST_F(FormStructureRationalizerTest, RationalizeStandaloneCVCField) {

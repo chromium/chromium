@@ -130,35 +130,6 @@ class FormStructureRationalizer {
   // accordingly.
   void RationalizePhoneNumberTrunkTypes(LogManager* log_manager);
 
-  // The rationalization is based on the visible fields, but should be applied
-  // to the hidden select fields. This is because hidden 'select' fields are
-  // also autofilled to take care of the synthetic fields.
-  void ApplyRationalizationsToHiddenSelects(
-      size_t field_index,
-      FieldType new_type,
-      FormSignature form_signature,
-      autofill_metrics::FormInteractionsUkmLogger*);
-
-  // Returns true if we can replace server predictions with the heuristics one.
-  bool HeuristicsPredictionsAreApplicable(size_t upper_index,
-                                          size_t lower_index,
-                                          FieldType first_type,
-                                          FieldType second_type);
-
-  // Applies upper type to upper field, and lower type to lower field, and
-  // applies the rationalization also to hidden select fields if necessary.
-  void ApplyRationalizationsToFields(
-      size_t upper_index,
-      size_t lower_index,
-      FieldType upper_type,
-      FieldType lower_type,
-      FormSignature form_signature,
-      autofill_metrics::FormInteractionsUkmLogger*);
-
-  // Returns true if the fields_[index] server type should be rationalized to
-  // ADDRESS_HOME_COUNTRY.
-  bool FieldShouldBeRationalizedToCountry(size_t index);
-
   // Set fields_[|field_index|] to |new_type| and log this change.
   void ApplyRationalizationsToFieldAndLog(
       size_t field_index,
@@ -171,14 +142,6 @@ class FormStructureRationalizer {
   // 1, 2 and 3 instead.
   void RationalizeAddressLineFields(
       SectionedFieldsIndexes* sections_of_address_indexes,
-      FormSignature form_signature,
-      autofill_metrics::FormInteractionsUkmLogger*,
-      LogManager* log_manager);
-
-  // Rationalize state and country interdependently.
-  void RationalizeAddressStateCountry(
-      SectionedFieldsIndexes* sections_of_state_indexes,
-      SectionedFieldsIndexes* sections_of_country_indexes,
       FormSignature form_signature,
       autofill_metrics::FormInteractionsUkmLogger*,
       LogManager* log_manager);
