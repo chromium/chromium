@@ -282,6 +282,9 @@ extern const char kAutofillDeprecateAccessibilityApiName[];
 extern const char kAutofillDeprecateAccessibilityApiDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kAutofillDisableLocalCardMigrationName[];
+extern const char kAutofillDisableLocalCardMigrationDescription[];
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 extern const char kAutofillEnableAmountExtractionDesktopName[];

@@ -13,6 +13,9 @@
 namespace autofill::features {
 
 // All features in alphabetical order.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillDisableLocalCardMigration);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(AUTOFILL)

@@ -16835,6 +16835,7 @@ from previous Chrome versions.
   <int value="-1371984027" label="CrostiniWebUIUpgrader:disabled"/>
   <int value="-1371239786" label="EnablePasswordsAccountStorage:enabled"/>
   <int value="-1370883795" label="TerminalTmuxIntegration:disabled"/>
+  <int value="-1370575821" label="AutofillDisableLocalCardMigration:disabled"/>
   <int value="-1370532920" label="AppServiceAsh:enabled"/>
   <int value="-1369939420" label="BoardingPassDetector:disabled"/>
   <int value="-1369613781" label="FileHandlingIcons:disabled"/>
@@ -22109,6 +22110,7 @@ from previous Chrome versions.
   <int value="768900239" label="ArcSwitchToKeyMintOnTOverride:disabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
   <int value="771216808" label="EnableAutomaticSharedImageManagement:enabled"/>
+  <int value="772237902" label="AutofillDisableLocalCardMigration:enabled"/>
   <int value="772272625" label="simplify-https-indicator"/>
   <int value="772348426" label="AffiliationBasedMatching:enabled"/>
   <int value="772360813"

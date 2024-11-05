@@ -8,6 +8,11 @@
 
 namespace autofill::features {
 
+// When enabled, local credit card migration flows will not be offered.
+BASE_FEATURE(kAutofillDisableLocalCardMigration,
+             "AutofillDisableLocalCardMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 // When enabled, Chrome will extract the checkout amount from the checkout page
