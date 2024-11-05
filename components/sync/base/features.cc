@@ -194,7 +194,7 @@ BASE_FEATURE(kWebApkBackupAndRestoreBackend,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSyncEnableExtensionsInTransportMode,
-             "kSyncEnableExtensionsInTransportMode",
+             "SyncEnableExtensionsInTransportMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace syncer

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -87,11 +88,15 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
 std::unique_ptr<views::View> CreateSigninPromoView(
     Profile* profile,
     BubbleSignInPromoDelegate* delegate) {
+  int promo_message_id =
+      extensions::sync_util::IsExtensionsExplicitSigninEnabled()
+          ? IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE
+          : IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE;
+
   return std::make_unique<BubbleSignInPromoView>(
       profile, delegate,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
-      IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE,
-      ui::ButtonStyle::kProminent);
+      promo_message_id, ui::ButtonStyle::kProminent);
 }
 #endif
 
@@ -155,6 +160,11 @@ void ExtensionInstalledBubbleView::UpdateAnchorView() {
   SetAnchorView(reference_view);
 }
 
+void ExtensionInstalledBubbleView::SignInForTesting(
+    const AccountInfo& account_info) {
+  OnSignIn(account_info);
+}
+
 void ExtensionInstalledBubbleView::Init() {
   UpdateAnchorView();
 
@@ -208,9 +218,17 @@ void ExtensionInstalledBubbleView::Init() {
 }
 
 void ExtensionInstalledBubbleView::OnSignIn(const AccountInfo& account) {
-  signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser_->profile(), account,
-      signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
+  // Sign the user into transport mode (sync not enabled) if extensions sync in
+  // transport mode is supported. Otherwise, sign in with sync enabled.
+  if (extensions::sync_util::IsExtensionsExplicitSigninEnabled()) {
+    signin_ui_util::SignInFromSingleAccountPromo(
+        browser_->profile(), account,
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
+  } else {
+    signin_ui_util::EnableSyncFromSingleAccountPromo(
+        browser_->profile(), account,
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
+  }
   GetWidget()->Close();
 }
 

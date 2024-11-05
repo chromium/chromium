@@ -36,6 +36,7 @@
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"
@@ -1047,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, DoNotSync) {
       ExtensionPrefs::Get(browser()->profile());
   EXPECT_TRUE(extension_prefs->DoNotSync(crx_installer->extension()->id()));
   EXPECT_FALSE(
-      util::ShouldSync(crx_installer->extension(), browser()->profile()));
+      sync_util::ShouldSync(browser()->profile(), crx_installer->extension()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, ManagementPolicy) {

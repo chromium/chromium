@@ -216,23 +216,6 @@ void SetAllowFileAccess(const std::string& extension_id,
   ReloadExtension(extension_id, context);
 }
 
-bool ShouldSync(const Extension* extension,
-                content::BrowserContext* context) {
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(context);
-  // Update URL is overridden only for non webstore extensions and offstore
-  // extensions should not be synced.
-  if (extension_management->IsUpdateUrlOverridden(extension->id())) {
-    const GURL update_url =
-        extension_management->GetEffectiveUpdateURL(*extension);
-    DCHECK(!extension_urls::IsWebstoreUpdateUrl(update_url))
-        << "Update URL cannot be overridden to be the webstore URL!";
-    return false;
-  }
-  return sync_helper::IsSyncable(extension) &&
-         !ExtensionPrefs::Get(context)->DoNotSync(extension->id());
-}
-
 bool IsExtensionIdle(const std::string& extension_id,
                      content::BrowserContext* context) {
   std::vector<std::string> ids_to_check;

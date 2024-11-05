@@ -470,6 +470,8 @@ source_set("extensions") {
     "extension_sync_service.h",
     "extension_sync_service_factory.cc",
     "extension_sync_service_factory.h",
+    "extension_sync_util.cc",
+    "extension_sync_util.h",
     "extension_system_factory.cc",
     "extension_system_factory.h",
     "extension_system_impl.cc",

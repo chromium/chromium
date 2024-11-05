@@ -4577,6 +4577,7 @@ if (!is_android) {
       if (!is_chromeos) {
         sources += [
           "../browser/ui/views/bookmarks/bookmark_bubble_sign_in_delegate_browsertest.cc",
+          "../browser/ui/views/extensions/extension_installed_bubble_view_signin_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",
           "../browser/ui/views/policy/enterprise_startup_dialog_view_browsertest.cc",

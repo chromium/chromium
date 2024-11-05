@@ -50,9 +50,6 @@ void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow);
 
-// Returns true if |extension| should be synced.
-bool ShouldSync(const Extension* extension, content::BrowserContext* context);
-
 // Returns true if |extension_id| is idle and it is safe to perform actions such
 // as updating.
 bool IsExtensionIdle(const std::string& extension_id,

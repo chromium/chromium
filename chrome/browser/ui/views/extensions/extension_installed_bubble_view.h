@@ -48,6 +48,9 @@ class ExtensionInstalledBubbleView : public BubbleSignInPromoDelegate,
 
   const ExtensionInstalledBubbleModel* model() const { return model_.get(); }
 
+  // Simulate a sign in from this bubble with `account_info`.
+  void SignInForTesting(const AccountInfo& account_info);
+
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;

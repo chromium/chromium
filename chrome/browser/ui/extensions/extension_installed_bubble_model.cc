@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/commands/command_service.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo_util.h"
@@ -97,8 +98,13 @@ ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
   show_how_to_manage_ = !command.has_value() || anchor_to_omnibox_;
   show_key_binding_ = command.has_value();
 
-  show_sign_in_promo_ = extensions::util::ShouldSync(extension, profile) &&
-                        signin::ShouldShowSyncPromo(*profile);
+  // Note: `ShouldShowSyncPromo` does not check if extensions are syncing in
+  // transport mode. That's why `IsSyncingEnabled` is added so the sign in promo
+  // is not shown in that case.
+  show_sign_in_promo_ =
+      extensions::sync_util::ShouldSync(profile, extension) &&
+      !extensions::sync_util::IsSyncingExtensionsEnabled(profile) &&
+      signin::ShouldShowSyncPromo(*profile);
 
   if (show_how_to_use_)
     how_to_use_text_ = MakeHowToUseText(action_info, command, keyword);

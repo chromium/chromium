@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -450,7 +451,7 @@ TEST_F(ExtensionSyncServiceTest,
   ASSERT_TRUE(extension);
 
   // The extension shouldn't sync.
-  EXPECT_FALSE(extensions::util::ShouldSync(extension.get(), profile()));
+  EXPECT_FALSE(extensions::sync_util::ShouldSync(profile(), extension.get()));
   const std::string kExtensionId = extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(kExtensionId));
 

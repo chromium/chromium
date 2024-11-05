@@ -11,6 +11,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -25,6 +27,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -103,6 +106,18 @@ BubbleSignInPromoView::BubbleSignInPromoView(
         button_text =
             l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
         break;
+    }
+  }
+
+  if (access_point ==
+      signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE) {
+    if (extensions::sync_util::IsExtensionsExplicitSigninEnabled()) {
+      button_text =
+          account.given_name.empty()
+              ? l10n_util::GetStringUTF16(IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON)
+              : l10n_util::GetStringFUTF16(
+                    IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON_WITH_ACCOUNT_AWARENESS,
+                    base::UTF8ToUTF16(account.given_name));
     }
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

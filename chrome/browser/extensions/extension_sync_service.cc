@@ -17,17 +17,13 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -63,24 +59,7 @@ bool IsCorrectSyncType(const Extension& extension, syncer::DataType type) {
 bool ShouldAllowInstall(const Extension* extension,
                         content::BrowserContext* context) {
   return !extension->is_theme() &&
-         extensions::util::ShouldSync(extension, context);
-}
-
-// Returns whether the current `profile` is syncing extensions in transport mode
-// (user is signed in but does not have `kSync` consent level).
-bool IsSyncingInTransportMode(Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  bool in_transport_mode =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  return in_transport_mode &&
-         (sync_service &&
-          sync_service->GetUserSettings()->GetSelectedTypes().Has(
-              syncer::UserSelectableType::kExtensions));
+         extensions::sync_util::ShouldSync(context, extension);
 }
 
 // Returns if the given extension with `id` was installed while a user was
@@ -163,7 +142,7 @@ bool ExtensionSyncService::IsSyncableExtension(
     content::BrowserContext* browser_context,
     const Extension& extension) {
   // Themes are handled by the ThemeSyncableService.
-  return extensions::util::ShouldSync(&extension, browser_context) &&
+  return extensions::sync_util::ShouldSync(browser_context, &extension) &&
          !extension.is_theme() &&
          !extensions::blocklist_prefs::IsExtensionBlocklisted(
              extension.id(), ExtensionPrefs::Get(browser_context));
@@ -712,7 +691,7 @@ void ExtensionSyncService::FillSyncDataList(
 bool ExtensionSyncService::ShouldSync(const Extension& extension) const {
   // Only extensions associated with the signed in user's account should be
   // synced for transport mode.
-  if (IsSyncingInTransportMode(profile_) &&
+  if (extensions::sync_util::IsSyncingExtensionsInTransportMode(profile_) &&
       !IsAccountExtension(profile_, extension.id())) {
     return false;
   }

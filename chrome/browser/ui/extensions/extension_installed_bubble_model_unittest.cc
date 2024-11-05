@@ -12,9 +12,10 @@
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/omnibox.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
@@ -27,7 +28,11 @@ using extensions::Extension;
 class ExtensionInstalledBubbleModelTest
     : public extensions::ExtensionServiceTestWithInstall {
  public:
-  ExtensionInstalledBubbleModelTest() = default;
+  ExtensionInstalledBubbleModelTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kSyncEnableExtensionsInTransportMode);
+  }
+
   ~ExtensionInstalledBubbleModelTest() override = default;
 
   void SetUp() override {
@@ -68,6 +73,9 @@ class ExtensionInstalledBubbleModelTest
     return extension_loader.LoadExtension(
         data_dir().AppendASCII(extension_path));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ExtensionInstalledBubbleModelTest, SyntheticPageActionExtension) {
@@ -177,7 +185,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxKeywordAndSyntheticAction) {
 TEST_F(ExtensionInstalledBubbleModelTest, ShowSigninPromo) {
   // Returns whether the sign in promo is shown for the model based on the given
   // `extension`.
-  auto show_signin_promo = [this](const Extension* extension) {
+  auto should_show_signin_promo = [this](const Extension* extension) {
     ExtensionInstalledBubbleModel model(profile(), extension, SkBitmap());
     return model.show_sign_in_promo();
   };
@@ -186,7 +194,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, ShowSigninPromo) {
   auto unpacked_extension =
       LoadExtension("simple_with_popup", /*packed=*/false);
   ASSERT_TRUE(unpacked_extension);
-  EXPECT_FALSE(show_signin_promo(unpacked_extension.get()));
+  EXPECT_FALSE(should_show_signin_promo(unpacked_extension.get()));
 
   // Show a sign in promo for a syncable extension installed while the user is
   // not signed in.
@@ -197,9 +205,9 @@ TEST_F(ExtensionInstalledBubbleModelTest, ShowSigninPromo) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Note: User is always signed in for ChromeOS, so the sign in promo should
   // never be shown.
-  EXPECT_FALSE(show_signin_promo(extension_before_sign_in.get()));
+  EXPECT_FALSE(should_show_signin_promo(extension_before_sign_in.get()));
 #else
-  EXPECT_TRUE(show_signin_promo(extension_before_sign_in.get()));
+  EXPECT_TRUE(should_show_signin_promo(extension_before_sign_in.get()));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Use a test identity environment to mimic signing in a user with sync
@@ -214,5 +222,59 @@ TEST_F(ExtensionInstalledBubbleModelTest, ShowSigninPromo) {
   auto extension_after_sign_in =
       LoadExtension("simple_with_icon", /*packed=*/true);
   ASSERT_TRUE(extension_after_sign_in);
-  EXPECT_FALSE(show_signin_promo(extension_after_sign_in.get()));
+  EXPECT_FALSE(should_show_signin_promo(extension_after_sign_in.get()));
+}
+
+class ExtensionInstalledBubbleModelTransportModeTest
+    : public ExtensionInstalledBubbleModelTest {
+ public:
+  ExtensionInstalledBubbleModelTransportModeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        syncer::kSyncEnableExtensionsInTransportMode);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ExtensionInstalledBubbleModelTransportModeTest, ShowSigninPromo) {
+  // Returns whether the sign in promo is shown for the model based on the given
+  // `extension`.
+  auto should_show_signin_promo = [this](const Extension* extension) {
+    ExtensionInstalledBubbleModel model(profile(), extension, SkBitmap());
+    return model.show_sign_in_promo();
+  };
+
+  // Show a sign in promo for a syncable extension installed while the user is
+  // not signed in.
+  auto extension_before_sign_in =
+      LoadExtension("simple_with_file", /*packed=*/true);
+  ASSERT_TRUE(extension_before_sign_in);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Note: User is always signed in for ChromeOS, so the sign in promo should
+  // never be shown.
+  EXPECT_FALSE(should_show_signin_promo(extension_before_sign_in.get()));
+#else
+  EXPECT_TRUE(should_show_signin_promo(extension_before_sign_in.get()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Use a test identity environment to mimic signing a user in with sync
+  // disabled (transport mode).
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  identity_test_env_profile_adaptor->identity_test_env()
+      ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                    signin::ConsentLevel::kSignin);
+
+  // Pretend the user has now explcitly signed in: this is needed to sync
+  // extensions in transport mode.
+  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  // Don't show a sign in promo if the user is currently syncing in transport
+  // mode.
+  auto extension_after_sign_in =
+      LoadExtension("simple_with_icon", /*packed=*/true);
+  ASSERT_TRUE(extension_after_sign_in);
+  EXPECT_FALSE(should_show_signin_promo(extension_after_sign_in.get()));
 }
