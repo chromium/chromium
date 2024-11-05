@@ -34,6 +34,7 @@
 // performed on the main thread.
 namespace blink {
 
+class Digestor;
 class DiskDataAllocator;
 class WebProcessMemoryDump;
 struct BackgroundTaskParams;
@@ -65,6 +66,10 @@ class PLATFORM_EXPORT ParkableStringImpl
   // TODO(lizeb): This is the "right" way of hashing a string. Move this code
   // into WTF, and make sure it's the only way that is used.
   static std::unique_ptr<SecureDigest> HashString(StringImpl* string);
+  // Updates a digest to include the string width. This should be called after
+  // the Digestor has consumed all of the bytes of a string. Afterward, the
+  // digest can be used in MakeParkable.
+  static void UpdateDigestWithEncoding(Digestor* digestor, bool is_8bit);
 
   // Not all ParkableStringImpls are actually parkable.
   static scoped_refptr<ParkableStringImpl> MakeNonParkable(
