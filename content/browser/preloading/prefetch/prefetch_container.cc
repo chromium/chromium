@@ -1781,10 +1781,6 @@ void PrefetchContainer::MakeResourceRequest(
   request->headers.SetHeader("Sec-Purpose", GetSecPurposeHeaderValue(url));
   request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
 
-  // Remove the user agent header if it was set so that the network context's
-  // default is used.
-  request->headers.RemoveHeader("User-Agent");
-
   // There are sometimes other headers that are set during navigation.  These
   // aren't yet supported for prefetch, including browsing topics.
 
