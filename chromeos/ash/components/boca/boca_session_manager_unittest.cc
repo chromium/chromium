@@ -970,5 +970,27 @@ TEST_F(BocaSessionManagerTest, DoNotDispatchCaptionEventWhenAppNotOpened) {
       BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
+TEST_F(BocaSessionManagerTest, SwitchBetweenAccountShouldTriggerSessionReload) {
+  // Add a second user.
+  auto account_id = AccountId::FromUserEmail("differentemail");
+  const std::string username_hash =
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+  // When login new user with existing active user, it would trigger an user
+  // switch event for the existing user.
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  fake_user_manager()->AddUser(account_id);
+  fake_user_manager()->UserLoggedIn(account_id, username_hash,
+                                    /*browser_restart=*/false,
+                                    /*is_child=*/false);
+  // Account_id mismatch, should not load.
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
+  fake_user_manager()->SwitchActiveUser(
+      AccountId::FromUserEmail("differentemail"));
+
+  // Switch back to active user, load again.
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  fake_user_manager()->SwitchActiveUser(
+      AccountId::FromUserEmail(kTestUserEmail));
+}
 }  // namespace
 }  // namespace ash::boca

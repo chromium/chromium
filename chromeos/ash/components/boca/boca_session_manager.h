@@ -20,6 +20,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -38,7 +39,8 @@ namespace ash::boca {
 
 class BocaSessionManager
     : public chromeos::network_config::CrosNetworkConfigObserver,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public user_manager::UserManager::UserSessionStateObserver {
  public:
   // TODO(crbug.com/376912269): Replace intervals with finch config.
   inline static constexpr base::TimeDelta kInSessionPollingInterval =
@@ -131,6 +133,9 @@ class BocaSessionManager
   void OnRefreshTokenUpdatedForAccount(const CoreAccountInfo& info) override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
+
+  // user_manager::UserManager::UserSessionStateObserver:
+  void ActiveUserChanged(user_manager::User* active_user) override;
 
   void NotifyError(BocaError error);
   void AddObserver(Observer* observer);

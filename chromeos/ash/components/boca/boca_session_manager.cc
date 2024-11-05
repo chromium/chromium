@@ -46,15 +46,22 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
       identity_manager_->AddObserver(this);
     }
   }
+  if (user_manager::UserManager::IsInitialized()) {
+    user_manager::UserManager::Get()->AddSessionStateObserver(this);
+  }
   LoadInitialNetworkState();
   StartSessionPolling(/*in_session=*/false);
 }
+
 BocaSessionManager::~BocaSessionManager() {
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
   }
   if (indefinite_timer_.IsRunning()) {
     indefinite_timer_.Stop();
+  }
+  if (user_manager::UserManager::IsInitialized()) {
+    user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
   }
 }
 
@@ -271,6 +278,13 @@ void BocaSessionManager::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   identity_manager_->RemoveObserver(this);
   identity_manager_ = nullptr;
+}
+
+void BocaSessionManager::ActiveUserChanged(user_manager::User* active_user) {
+  if (!active_user || active_user->GetAccountId() != account_id_) {
+    return;
+  }
+  LoadCurrentSession();
 }
 
 bool BocaSessionManager::IsProfileActive() {
