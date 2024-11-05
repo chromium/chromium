@@ -259,11 +259,11 @@ using web::NavigationManagerImpl;
           holderForBackForwardListItem:self.webView.backForwardList.currentItem]
           navigationItem];
     } else {
-      // WKBackForwardList.currentItem may be nil in a corner case when
-      // location.replace is called with about:blank#hash in an empty window
-      // open tab. See crbug.com/866142.
-      DCHECK(self.webStateImpl->HasOpener());
-      DCHECK(!self.navigationManagerImpl->GetPendingItem());
+      // `WKBackForwardList.currentItem` may be nil in a corner case when
+      // `location.replace` is called with `about:blank#hash` in an empty window
+      // open tab. See crbug.com/866142. It may also be nil when the initial
+      // load is a failed navigation, such as when the user navigates to a
+      // an unresolvable hostname.
       currentItem = self.navigationManagerImpl->GetLastCommittedItem();
     }
 
