@@ -66,8 +66,7 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
       GetMutableDebugValue().Set("type_of_action", "sync_db_os_value");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -98,8 +97,7 @@ void RunOnOsLoginCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
       SyncRunOnOsLoginMode();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

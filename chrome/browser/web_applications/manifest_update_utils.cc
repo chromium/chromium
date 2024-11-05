@@ -116,8 +116,7 @@ ManifestUpdateResult FinalResultFromManifestUpdateCheckResult(
     case ManifestUpdateCheckResult::kAppUpdateNeeded:
       // The manifest needs to be applied before the overall update process is
       // considered complete.
-      NOTREACHED_IN_MIGRATION();
-      return ManifestUpdateResult::kAppUpdated;
+      NOTREACHED();
     case ManifestUpdateCheckResult::kAppUpToDate:
       return ManifestUpdateResult::kAppUpToDate;
     case ManifestUpdateCheckResult::kAppIdentityUpdateRejectedAndUninstalled:

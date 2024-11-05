@@ -196,8 +196,7 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
     case webapps::WebAppUrlLoaderResult::kUrlLoaded:
     case webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed:
       // Handled above.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded:
       code = webapps::InstallResultCode::kInstallURLRedirected;
       break;

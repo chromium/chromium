@@ -300,8 +300,7 @@ apps::InstallSource GetInstallSource(
     case webapps::WebappInstallSource::WEBAPK_RESTORE:
       return apps::InstallSource::kSync;
     case webapps::WebappInstallSource::COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return apps::InstallSource::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -1912,10 +1911,7 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
     case ApiApprovalState::kDisallowed:
       // We shouldn't have gotten this far (i.e. "open with" should not have
       // been selectable) if file handling was already disallowed for the app.
-      NOTREACHED_IN_MIGRATION();
-      std::move(launch_callback)
-          .Run(/*allowed=*/false, /*remember_user_choice=*/false);
-      break;
+      NOTREACHED();
   }
 }
 

@@ -553,7 +553,7 @@ base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
 #if !BUILDFLAG(IS_MAC)
 void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   // Multi-profile shortcuts exist only on macOS.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 

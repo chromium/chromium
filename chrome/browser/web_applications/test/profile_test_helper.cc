@@ -39,6 +39,6 @@ void ConfigureCommandLineForGuestMode(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(
       ash::switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }

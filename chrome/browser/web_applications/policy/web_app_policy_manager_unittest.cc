@@ -248,7 +248,7 @@ class MockAppRegistrarObserver : public WebAppRegistrarObserver {
     return on_policy_changed_call_count;
   }
 
-  void OnAppRegistrarDestroyed() override { NOTREACHED_IN_MIGRATION(); }
+  void OnAppRegistrarDestroyed() override { NOTREACHED(); }
 
  private:
   int on_policy_changed_call_count = 0;

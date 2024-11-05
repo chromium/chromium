@@ -208,8 +208,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
       return DisplayMode::kMinimalUi;
     case DisplayMode::kUndefined:
     case DisplayMode::kPictureInPicture:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
       return DisplayMode::kStandalone;

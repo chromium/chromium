@@ -458,8 +458,7 @@ SignedWebBundleReader::ReadResponseError::FromBundleParseError(
     case web_package::mojom::BundleParseErrorType::kVersionError:
       // A `kVersionError` error can only be triggered while parsing
       // the integrity block or metadata, not while parsing a response.
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case web_package::mojom::BundleParseErrorType::kParserInternalError:
       return ForParserInternalError(error->message);
     case web_package::mojom::BundleParseErrorType::kFormatError:

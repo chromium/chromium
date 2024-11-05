@@ -531,8 +531,7 @@ bool CreateDesktopShortcut(base::Environment* env,
       shell_integration_linux::internal::GetChromeExePath();
   if (chrome_exe_path.empty()) {
     RecordCreateShortcut(CreateShortcutResult::kFailToGetChromeExePath);
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   if (creation_locations.on_desktop) {
@@ -577,8 +576,7 @@ bool CreateDesktopShortcut(base::Environment* env,
           shell_integration::GetAppShortcutsSubdirName(), "");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   std::vector<std::string> mime_types(

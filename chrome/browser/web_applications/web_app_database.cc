@@ -128,8 +128,7 @@ WebAppProto::CaptureLinks CaptureLinksToProto(
     blink::mojom::CaptureLinks capture_links) {
   switch (capture_links) {
     case blink::mojom::CaptureLinks::kUndefined:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case blink::mojom::CaptureLinks::kNone:
       return WebAppProto_CaptureLinks_NONE;
     case blink::mojom::CaptureLinks::kNewClient:
@@ -242,8 +241,7 @@ WebAppFileHandlerProto::LaunchType LaunchTypeToProto(
 WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
   switch (type) {
     case WebAppManagementProto::WEBAPPMANAGEMENT_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case WebAppManagementProto::SYSTEM:
       return WebAppManagement::Type::kSystem;
     case WebAppManagementProto::KIOSK:
@@ -2043,8 +2041,7 @@ WebAppProto::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode) {
     case DisplayMode::kMinimalUi:
       return WebAppProto::MINIMAL_UI;
     case DisplayMode::kUndefined:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case DisplayMode::kStandalone:
       return WebAppProto::STANDALONE;
     case DisplayMode::kFullscreen:

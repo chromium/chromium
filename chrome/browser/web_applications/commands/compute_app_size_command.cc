@@ -88,9 +88,7 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not
     // expected.
-    NOTREACHED_IN_MIGRATION();
-    ReportResultAndDestroy(CommandResult::kFailure);
-    return;
+    NOTREACHED();
   }
 
   GURL gurl = lock_->registrar().GetAppById(app_id_)->start_url();
@@ -99,9 +97,7 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not
     // expected.
-    NOTREACHED_IN_MIGRATION();
-    ReportResultAndDestroy(CommandResult::kFailure);
-    return;
+    NOTREACHED();
   }
   origin_ = url::Origin::Create(gurl);
 
