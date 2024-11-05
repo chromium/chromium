@@ -11,31 +11,31 @@
 
 TEST(LogWebUIUrlTest, ValidUrls) {
   // chrome:// WebUI page.
-  EXPECT_TRUE(webui::LogWebUIUrl(GURL(chrome::kChromeUIDownloadsURL)));
+  EXPECT_TRUE(webui::LogWebUICreated(GURL(chrome::kChromeUIDownloadsURL)));
 
 #if !BUILDFLAG(IS_ANDROID)
   // chrome-untrusted:// WebUI page.
-  EXPECT_TRUE(webui::LogWebUIUrl(GURL(chrome::kChromeUIUntrustedPrintURL)));
+  EXPECT_TRUE(webui::LogWebUICreated(GURL(chrome::kChromeUIUntrustedPrintURL)));
 #endif
 
   // WebUI page with a subpage.
   GURL::Replacements replace_clear_data_path;
   replace_clear_data_path.SetPathStr(chrome::kClearBrowserDataSubPage);
   EXPECT_TRUE(
-      webui::LogWebUIUrl(GURL(chrome::kChromeUISettingsURL)
-                             .ReplaceComponents(replace_clear_data_path)));
+      webui::LogWebUICreated(GURL(chrome::kChromeUISettingsURL)
+                                 .ReplaceComponents(replace_clear_data_path)));
 
   // Developer tools scheme.
-  EXPECT_TRUE(webui::LogWebUIUrl(GURL("devtools://devtools")));
+  EXPECT_TRUE(webui::LogWebUICreated(GURL("devtools://devtools")));
 }
 
 TEST(LogWebUIUrlTest, InvalidUrls) {
   // HTTP/HTTPS/FTP/etc. schemes should be ignored.
-  EXPECT_FALSE(webui::LogWebUIUrl(GURL("http://google.com?q=pii")));
-  EXPECT_FALSE(webui::LogWebUIUrl(GURL("https://facebook.com")));
-  EXPECT_FALSE(webui::LogWebUIUrl(GURL("ftp://ftp.mysite.com")));
+  EXPECT_FALSE(webui::LogWebUICreated(GURL("http://google.com?q=pii")));
+  EXPECT_FALSE(webui::LogWebUICreated(GURL("https://facebook.com")));
+  EXPECT_FALSE(webui::LogWebUICreated(GURL("ftp://ftp.mysite.com")));
 
   // Extensions schemes should also be ignored.
-  EXPECT_FALSE(webui::LogWebUIUrl(GURL(
-      "chrome-extension://mfehgcgbbipciphmccgaenjidiccnmng")));
+  EXPECT_FALSE(webui::LogWebUICreated(
+      GURL("chrome-extension://mfehgcgbbipciphmccgaenjidiccnmng")));
 }

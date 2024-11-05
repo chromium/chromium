@@ -238,7 +238,11 @@ ContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
   return network::mojom::IPAddressSpace::kUnknown;
 }
 
-bool ContentBrowserClient::LogWebUIUrl(const GURL& web_ui_url) {
+bool ContentBrowserClient::LogWebUICreated(const GURL& web_ui_url) {
+  return false;
+}
+
+bool ContentBrowserClient::LogWebUIShown(const GURL& web_ui_url) {
   return false;
 }
 

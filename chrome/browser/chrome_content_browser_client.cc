@@ -2305,8 +2305,12 @@ ChromeContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
   return network::mojom::IPAddressSpace::kUnknown;
 }
 
-bool ChromeContentBrowserClient::LogWebUIUrl(const GURL& web_ui_url) {
-  return webui::LogWebUIUrl(web_ui_url);
+bool ChromeContentBrowserClient::LogWebUICreated(const GURL& web_ui_url) {
+  return webui::LogWebUICreated(web_ui_url);
+}
+
+bool ChromeContentBrowserClient::LogWebUIShown(const GURL& web_ui_url) {
+  return webui::LogWebUIShown(web_ui_url);
 }
 
 bool ChromeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
