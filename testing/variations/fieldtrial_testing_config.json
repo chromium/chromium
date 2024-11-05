@@ -21264,21 +21264,6 @@
             ]
         }
     ],
-    "SecagentdEnableXDRNetworkEvents": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootSecagentdXDRNetworkEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "SecureTimeCertificateVerification": [
         {
             "platforms": [
