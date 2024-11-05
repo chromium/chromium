@@ -123,6 +123,7 @@ suite('ExtensionsActivityLogTest', function() {
     // One activity is recorded and should appear in the stream.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
     flush();
+    await microtasksFinished();
 
     boundTestVisible('activity-log-stream', true);
     assertEquals(1, getStreamItems().length);

@@ -6,10 +6,9 @@
 
 import 'chrome://extensions/extensions.js';
 
-import type {ActivityLogStreamElement} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {ActivityLogStreamElement, ActivityLogStreamItemElement} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {testVisible} from './test_util.js';
@@ -65,23 +64,26 @@ suite('ExtensionsActivityLogStreamTest', function() {
     boundTestVisible = testVisible.bind(null, activityLogStream);
 
     document.body.appendChild(activityLogStream);
+    // Wait a render cycle for the startStream() method call in
+    // connectedCallback() to be reflected in the DOM.
+    return microtasksFinished();
   });
 
-  teardown(function() {
-    activityLogStream.remove();
-  });
-
-  // Returns a list of visible stream items. The not([hidden]) selector is
-  // needed for iron-list as it reuses components but hides them when not in
-  // use.
-  function getStreamItems(): NodeListOf<HTMLElement> {
-    return activityLogStream.shadowRoot!.querySelectorAll<HTMLElement>(
-        'activity-log-stream-item:not([hidden])');
+  async function waitForPaint() {
+    // Wait for paint before running checks that rely on innerText.
+    // requestAnimationFrame runs the callback just *before* the next repaint,
+    // so we call it twice to ensure a paint has actually completed.
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
   }
 
-  test('button toggles stream on/off', function() {
-    flush();
+  // Returns a list of visible stream items.
+  function getStreamItems(): NodeListOf<ActivityLogStreamItemElement> {
+    return activityLogStream.shadowRoot!.querySelectorAll(
+        'activity-log-stream-item');
+  }
 
+  test('button toggles stream on/off', async () => {
     // Stream should be on when element is first attached to the DOM.
     boundTestVisible('.activity-subpage-header', true);
     boundTestVisible('#empty-stream-message', true);
@@ -89,16 +91,16 @@ suite('ExtensionsActivityLogStreamTest', function() {
 
     activityLogStream.shadowRoot!
         .querySelector<HTMLElement>('#toggle-stream-button')!.click();
+    await microtasksFinished();
     boundTestVisible('#stream-stopped-message', true);
   });
 
   test(
       'new activity events are only shown while the stream is started',
       async () => {
-        flush();
         proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-        flush();
+        await eventToPromise('viewport-filled', activityLogStream);
         // One event coming in. Since the stream is on, we should be able to see
         // it.
         let streamItems = getStreamItems();
@@ -107,10 +109,11 @@ suite('ExtensionsActivityLogStreamTest', function() {
         // Pause the stream.
         activityLogStream.shadowRoot!
             .querySelector<HTMLElement>('#toggle-stream-button')!.click();
+        await microtasksFinished();
         proxyDelegate.getOnExtensionActivity().callListeners(
             contentScriptActivity);
 
-        flush();
+        await microtasksFinished();
         // One event was fired but the stream was paused, we should still see
         // only one item.
         streamItems = getStreamItems();
@@ -119,13 +122,13 @@ suite('ExtensionsActivityLogStreamTest', function() {
         // Resume the stream.
         activityLogStream.shadowRoot!
             .querySelector<HTMLElement>('#toggle-stream-button')!.click();
+        await microtasksFinished();
         proxyDelegate.getOnExtensionActivity().callListeners(activity2);
 
-        flush();
-        await microtasksFinished();
+        await eventToPromise('viewport-filled', activityLogStream);
         streamItems = getStreamItems();
         assertEquals(2, streamItems.length);
-
+        await waitForPaint();
         assertEquals(
             streamItems[0]!.shadowRoot!
                 .querySelector<HTMLElement>('#activity-name')!.innerText!,
@@ -137,13 +140,11 @@ suite('ExtensionsActivityLogStreamTest', function() {
       });
 
   test('activities shown match search query', async () => {
-    flush();
     boundTestVisible('#empty-stream-message', true);
 
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
     proxyDelegate.getOnExtensionActivity().callListeners(activity2);
-
-    flush();
+    await eventToPromise('viewport-filled', activityLogStream);
     assertEquals(2, getStreamItems().length);
 
     const search =
@@ -151,20 +152,20 @@ suite('ExtensionsActivityLogStreamTest', function() {
     assertTrue(!!search);
 
     // Search for the apiCall of |activity1|.
-    search!.setValue('testMethod');
-    flush();
-    await microtasksFinished();
+    search.setValue('testMethod');
+    await eventToPromise('viewport-filled', activityLogStream);
 
     const filteredStreamItems = getStreamItems();
     assertEquals(1, getStreamItems().length);
+    await waitForPaint();
     assertEquals(
         filteredStreamItems[0]!.shadowRoot!
             .querySelector<HTMLElement>('#activity-name')!.innerText!,
         'testAPI.testMethod');
 
     // search again, expect none
-    search!.setValue('not expecting any activities to match');
-    flush();
+    search.setValue('not expecting any activities to match');
+    await eventToPromise('viewport-filled', activityLogStream);
 
     assertEquals(0, getStreamItems().length);
     boundTestVisible('#empty-stream-message', false);
@@ -173,9 +174,10 @@ suite('ExtensionsActivityLogStreamTest', function() {
     // Another activity comes in while the stream is listening but search
     // returns no results.
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
+    await microtasksFinished();
 
     search!.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!.click();
-    flush();
+    await eventToPromise('viewport-filled', activityLogStream);
 
     // We expect 4 activities to appear as |contentScriptActivity| (which is
     // split into 2 items) should be processed and stored in the stream
@@ -186,10 +188,10 @@ suite('ExtensionsActivityLogStreamTest', function() {
   test('content script events are split by content script names', async () => {
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
 
-    flush();
-    await microtasksFinished();
+    await eventToPromise('viewport-filled', activityLogStream);
     const streamItems = getStreamItems();
     assertEquals(2, streamItems.length);
+    await waitForPaint();
 
     // We should see two items: one for every script called.
     assertEquals(
@@ -202,16 +204,16 @@ suite('ExtensionsActivityLogStreamTest', function() {
         'script2.js');
   });
 
-  test('clicking on clear button clears the activity log stream', function() {
+  test('clicking on clear button clears the activity log stream', async () => {
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-    flush();
+    await eventToPromise('viewport-filled', activityLogStream);
     assertEquals(1, getStreamItems().length);
     boundTestVisible('.activity-table-headings', true);
     activityLogStream.shadowRoot!
         .querySelector<HTMLElement>('.clear-activities-button')!.click();
 
-    flush();
+    await eventToPromise('viewport-filled', activityLogStream);
     assertEquals(0, getStreamItems().length);
     boundTestVisible('.activity-table-headings', false);
   });

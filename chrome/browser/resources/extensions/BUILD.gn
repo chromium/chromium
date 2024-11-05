@@ -18,7 +18,6 @@ build_webui("build") {
     "activity_log/activity_log.ts",
     "activity_log/activity_log_history.ts",
     "activity_log/activity_log_history_item.ts",
-    "activity_log/activity_log_stream.ts",
     "activity_log/activity_log_stream_item.ts",
     "code_section.ts",
     "detail_view.ts",
@@ -52,6 +51,8 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
+    "activity_log/activity_log_stream.html.ts",
+    "activity_log/activity_log_stream.ts",
     "async_map_directive.ts",
     "drag_and_drop_handler.ts",
     "extensions.ts",
@@ -74,6 +75,7 @@ build_webui("build") {
   css_files = [
     "activity_log/activity_log_history.css",
     "activity_log/activity_log_history_item.css",
+    "activity_log/activity_log_stream.css",
     "activity_log/activity_log_stream_item.css",
     "code_section.css",
     "detail_view.css",
