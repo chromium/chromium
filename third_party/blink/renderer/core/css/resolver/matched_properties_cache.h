@@ -172,7 +172,8 @@ template <>
 struct VectorTraits<blink::CachedMatchedProperties::Entry>
     : VectorTraitsBase<blink::CachedMatchedProperties::Entry> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
-  static constexpr bool kCanTraceConcurrently = true;
+  // HeapVector is evidently not concurrent.
+  static constexpr bool kCanTraceConcurrently = false;
 };
 
 }  // namespace WTF
