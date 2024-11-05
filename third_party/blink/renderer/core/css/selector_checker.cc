@@ -292,6 +292,12 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
       return false;
     }
   }
+  // Don't try to match explicit non-pseudo element selectors for pseudo
+  // elements.
+  if (context.pseudo_element && !context.selector->MatchesPseudoElement() &&
+      !context.selector->IsImplicit()) {
+    return false;
+  }
   return MatchSelector(context, result) == kSelectorMatches;
 }
 
