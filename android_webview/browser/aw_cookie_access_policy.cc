@@ -48,15 +48,12 @@ void AwCookieAccessPolicy::SetShouldAcceptCookies(bool allow) {
 
 bool AwCookieAccessPolicy::GetShouldAcceptThirdPartyCookies(
     base::optional_ref<const content::GlobalRenderFrameHostToken>
-        global_frame_token,
-    content::FrameTreeNodeId frame_tree_node_id) {
+        global_frame_token) {
   TRACE_EVENT0("android_webview",
                "AwCookieAccessPolicy::GetShouldAcceptThirdPartyCookies");
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::unique_ptr<AwContentsIoThreadClient> io_thread_client;
-  if (frame_tree_node_id) {
-    io_thread_client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
-  } else if (global_frame_token.has_value()) {
+  if (global_frame_token.has_value()) {
     io_thread_client =
         AwContentsIoThreadClient::FromToken(global_frame_token.value());
   }
@@ -74,8 +71,7 @@ PrivacySetting AwCookieAccessPolicy::AllowCookies(
         global_frame_token,
     net::StorageAccessApiStatus storage_access_api_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  bool third_party = GetShouldAcceptThirdPartyCookies(
-      global_frame_token, content::FrameTreeNodeId());
+  bool third_party = GetShouldAcceptThirdPartyCookies(global_frame_token);
   return CanAccessCookies(url, site_for_cookies, third_party,
                           storage_access_api_status);
 }
