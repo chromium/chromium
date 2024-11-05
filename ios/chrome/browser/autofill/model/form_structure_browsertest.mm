@@ -85,6 +85,7 @@ base::FilePath GetIOSInputDirectory() {
       .AppendASCII("input");
 }
 
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 base::FilePath GetIOSOutputDirectory() {
   base::FilePath dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir));
@@ -96,6 +97,7 @@ base::FilePath GetIOSOutputDirectory() {
       .Append(kTestName)
       .AppendASCII("output");
 }
+#endif
 
 const std::vector<base::FilePath> GetTestFiles() {
   base::FilePath dir(GetIOSInputDirectory());
@@ -349,6 +351,7 @@ std::string FormStructureBrowserTest::FormStructuresToString(
 
 namespace {
 
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 // To disable a data driven test, please add the name of the test file
 // (i.e., "NNN_some_site.html") as a literal to the initializer_list given
 // to the failing_test_names constructor.
@@ -384,6 +387,7 @@ const auto& GetFailingTestNames() {
   };
   return failing_test_names;
 }
+#endif
 
 }  // namespace
 
@@ -394,11 +398,12 @@ TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                   "parsing patterns";
-#endif
+#else
   bool is_expected_to_pass =
       !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetIOSOutputDirectory(),
                        is_expected_to_pass);
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(AllForms,

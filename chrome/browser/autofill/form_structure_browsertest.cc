@@ -62,6 +62,7 @@ using net::test_server::HttpResponse;
 const base::FilePath::CharType kFeatureName[] = FILE_PATH_LITERAL("autofill");
 const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("heuristics");
 
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 // To disable a data driven test, please add the name of the test file
 // (i.e., FILE_PATH_LITERAL("NNN_some_site.html")) to the initializer_list given
 // to the failing_test_names constructor.
@@ -69,6 +70,7 @@ const auto& GetFailingTestNames() {
   static std::set<base::FilePath::StringType> failing_test_names{};
   return failing_test_names;
 }
+#endif
 
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
@@ -294,12 +296,13 @@ IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                   "parsing patterns";
-#endif
+#else
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =
       !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetOutputDirectory(), is_expected_to_pass);
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(AllForms,
