@@ -9,6 +9,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -438,6 +439,12 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     if (shared_texture_memory_.BeginAccess(texture_, &begin_access_desc) !=
         wgpu::Status::Success) {
       LOG(ERROR) << "Failed to begin access for texture";
+      // TODO(crbug.com/377489264): Remove after ensuring that all samsung
+      // devices which are failing AHB size vs VkImage size checks have the
+      // check disabled.
+      base::debug::DumpWithoutCrashing();
+      ResetStorage();
+      return {};
     }
 
     // Obtain the YCbCr info from the device.
@@ -445,6 +452,8 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     if (!device.GetAHardwareBufferProperties(scoped_hardware_buffer_->buffer(),
                                              &ahb_properties)) {
       LOG(ERROR) << "Failed to get the ycbcr info";
+      EndReadAccess();
+      return {};
     }
 
     // Wrap the Dawn texture in a Skia texture, passing the YCbCr info.
@@ -492,6 +501,10 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
       scoped_hardware_buffer_->SetReadFence(std::move(end_access_sync_fd));
     }
 
+    ResetStorage();
+  }
+
+  void ResetStorage() {
     texture_.Destroy();
     texture_ = nullptr;
     shared_texture_memory_ = nullptr;
