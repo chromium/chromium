@@ -366,6 +366,7 @@ float CSSToLengthConversionData::RchFontSize(float zoom) const {
 }
 
 float CSSToLengthConversionData::IcFontSize(float zoom) const {
+  SetFlag(Flag::kIcRelative);
   SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ic(zoom);
 }
@@ -377,6 +378,7 @@ float CSSToLengthConversionData::RicFontSize(float zoom) const {
   // element does not necessarily cause a style difference for the root element,
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kRicRelative);
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Ric(zoom);
@@ -384,7 +386,7 @@ float CSSToLengthConversionData::RicFontSize(float zoom) const {
 
 float CSSToLengthConversionData::LineHeight(float zoom) const {
   SetFlag(Flag::kGlyphRelative);
-  SetFlag(Flag::kLineHeightRelative);
+  SetFlag(Flag::kLhRelative);
   return line_height_size_.Lh(zoom);
 }
 
@@ -397,7 +399,7 @@ float CSSToLengthConversionData::RootLineHeight(float zoom) const {
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kRootFontRelative);
-  SetFlag(Flag::kLineHeightRelative);
+  SetFlag(Flag::kRlhRelative);
   return line_height_size_.Rlh(zoom);
 }
 
@@ -409,6 +411,7 @@ float CSSToLengthConversionData::CapFontSize(float zoom) const {
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
   SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kCapRelative);
   return font_sizes_.Cap(zoom);
 }
 
@@ -420,6 +423,7 @@ float CSSToLengthConversionData::RcapFontSize(float zoom) const {
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
   SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kRcapRelative);
   SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Rcap(zoom);
 }

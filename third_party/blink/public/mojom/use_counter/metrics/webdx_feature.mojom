@@ -212,6 +212,12 @@ enum WebDXFeature {
   kRequestVideoFrameCallback = 154,
   kSvgContextFillOrStroke = 155,
   kObjectViewBox = 156,
+  kCap = 157,
+  kRcap = 158,
+  kIc = 159,
+  kRic = 160,
+  kLh = 161,
+  kRlh = 162,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

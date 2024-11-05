@@ -10843,6 +10843,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5158" label="ResolveToConfigValueCoercedToTrue"/>
   <int value="5159"
       label="ServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement"/>
+  <int value="5160" label="HasCapUnits"/>
+  <int value="5161" label="HasRcapUnits"/>
+  <int value="5162" label="HasIcUnits"/>
+  <int value="5163" label="HasRicUnits"/>
+  <int value="5164" label="HasLhUnits"/>
+  <int value="5165" label="HasRlhUnits"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33779,6 +33785,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="154" label="RequestVideoFrameCallback"/>
   <int value="155" label="SvgContextFillOrStroke"/>
   <int value="156" label="ObjectViewBox"/>
+  <int value="157" label="Cap"/>
+  <int value="158" label="Rcap"/>
+  <int value="159" label="Ic"/>
+  <int value="160" label="Ric"/>
+  <int value="161" label="Lh"/>
+  <int value="162" label="Rlh"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

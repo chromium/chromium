@@ -283,21 +283,31 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     // ex, ch, ic, lh, cap, rcap
     kGlyphRelative = 1u << 2,
     // rex, rch, ric have both kRootFontRelative and kGlyphRelative
-    // lh
-    kLineHeightRelative = 1u << 3,
     // sv*, lv*, v*
-    kStaticViewport = 1u << 4,
+    kStaticViewport = 1u << 3,
     // dv*
-    kDynamicViewport = 1u << 5,
+    kDynamicViewport = 1u << 4,
     // cq*
-    kContainerRelative = 1u << 6,
+    kContainerRelative = 1u << 5,
     // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
-    kTreeScopedReference = 1u << 7,
+    kTreeScopedReference = 1u << 6,
     // vi, vb, cqi, cqb, etc
-    kLogicalDirectionRelative = 1u << 8,
+    kLogicalDirectionRelative = 1u << 7,
     // anchor(), anchor-size()
     // https://drafts.csswg.org/css-anchor-position-1
-    kAnchorRelative = 1u << 9,
+    kAnchorRelative = 1u << 8,
+    // cap
+    kCapRelative = 1u << 9,
+    // rcap
+    kRcapRelative = 1u << 10,
+    // ic
+    kIcRelative = 1u << 11,
+    // ric
+    kRicRelative = 1u << 12,
+    // lh
+    kLhRelative = 1u << 13,
+    // rlh
+    kRlhRelative = 1u << 14,
     // Adjust the Flags type above if adding more bits below.
   };
 

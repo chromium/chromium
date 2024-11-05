@@ -4531,6 +4531,12 @@ enum WebFeature {
   kARIAActionsAttribute = 5157,
   kResolveToConfigValueCoercedToTrue = 5158,
   kServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement = 5159,
+  kHasCapUnits = 5160,
+  kHasRcapUnits = 5161,
+  kHasIcUnits = 5162,
+  kHasRicUnits = 5163,
+  kHasLhUnits = 5164,
+  kHasRlhUnits = 5165,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

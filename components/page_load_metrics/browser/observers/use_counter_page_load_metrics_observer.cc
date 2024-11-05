@@ -498,6 +498,12 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kRequestVideoFrameCallback},
           {WebFeature::kSvgContextFillOrStroke,
            WebDXFeature::kSvgContextFillOrStroke},
+          {WebFeature::kHasCapUnits, WebDXFeature::kCap},
+          {WebFeature::kHasRcapUnits, WebDXFeature::kRcap},
+          {WebFeature::kHasIcUnits, WebDXFeature::kIc},
+          {WebFeature::kHasRicUnits, WebDXFeature::kRic},
+          {WebFeature::kHasLhUnits, WebDXFeature::kLh},
+          {WebFeature::kHasRlhUnits, WebDXFeature::kRlh},
       }};
 
   return *kMap;

@@ -5,6 +5,9 @@ features:
 - name: cap
   files:
   - cap-*
+- name: rcap
+  files:
+  - rcap-*
 - name: exp-functions
   files:
   - exp-log-*
@@ -12,9 +15,15 @@ features:
 - name: ic
   files:
   - ic-*
+- name: ric
+  files:
+  - ric-*
 - name: lh
   files:
   - lh-*
+- name: rlh
+  files:
+  - rlh-*
 - name: round-mod-rem
   files:
   - round-function.html

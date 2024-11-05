@@ -405,9 +405,6 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   if (flags & static_cast<Flags>(Flag::kGlyphRelative)) {
     builder.SetHasGlyphRelativeUnits();
   }
-  if (flags & static_cast<Flags>(Flag::kLineHeightRelative)) {
-    builder.SetHasLineHeightRelativeUnits();
-  }
   if (flags & static_cast<Flags>(Flag::kStaticViewport)) {
     builder.SetHasStaticViewportUnits();
   }
@@ -426,6 +423,26 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   }
   if (flags & static_cast<Flags>(Flag::kLogicalDirectionRelative)) {
     builder.SetHasLogicalDirectionRelativeUnits();
+  }
+  if (flags & static_cast<Flags>(Flag::kCapRelative)) {
+    UseCounter::Count(state.GetDocument(), WebFeature::kHasCapUnits);
+  }
+  if (flags & static_cast<Flags>(Flag::kRcapRelative)) {
+    UseCounter::Count(state.GetDocument(), WebFeature::kHasRcapUnits);
+  }
+  if (flags & static_cast<Flags>(Flag::kIcRelative)) {
+    UseCounter::Count(state.GetDocument(), WebFeature::kHasIcUnits);
+  }
+  if (flags & static_cast<Flags>(Flag::kRicRelative)) {
+    UseCounter::Count(state.GetDocument(), WebFeature::kHasRicUnits);
+  }
+  if (flags & static_cast<Flags>(Flag::kLhRelative)) {
+    builder.SetHasLineHeightRelativeUnits();
+    UseCounter::Count(state.GetDocument(), WebFeature::kHasLhUnits);
+  }
+  if (flags & static_cast<Flags>(Flag::kRlhRelative)) {
+    builder.SetHasLineHeightRelativeUnits();
+    UseCounter::Count(state.GetDocument(), WebFeature::kHasRlhUnits);
   }
 }
 
