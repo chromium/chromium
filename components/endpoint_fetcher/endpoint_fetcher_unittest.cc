@@ -136,6 +136,10 @@ class EndpointFetcherTest : public testing::Test {
     return endpoint_fetcher.GetMaxRetries();
   }
 
+  bool GetSetSiteForCookies(EndpointFetcher& endpoint_fetcher) {
+    return endpoint_fetcher.GetSetSiteForCookies();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -328,4 +332,16 @@ TEST_F(EndpointFetcherTest, TestMaxRetries) {
   EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
       EndpointFetcher::RequestParams::Builder().SetMaxRetries(42).Build());
   EXPECT_EQ(42, GetMaxRetries(fetcher));
+}
+
+TEST_F(EndpointFetcherTest, TestSetSiteForCookiesUnspecified) {
+  EndpointFetcher fetcher =
+      GetAPIKeyEndpointFetcherWithRequestParams(std::nullopt);
+  EXPECT_FALSE(GetSetSiteForCookies(fetcher));
+}
+
+TEST_F(EndpointFetcherTest, TestSetSiteForCookies) {
+  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+      EndpointFetcher::RequestParams::Builder().SetSetSiteForCookies(true).Build());
+  EXPECT_TRUE(GetSetSiteForCookies(fetcher));
 }
