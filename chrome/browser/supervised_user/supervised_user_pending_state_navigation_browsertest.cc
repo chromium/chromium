@@ -57,12 +57,8 @@ namespace {
 
 using ::testing::_;
 
-static constexpr std::string_view
-    kUmaReauthenticationBlockedSitedHistogramName =
-        "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
-static constexpr std::string_view
-    kUmaReauthenticationYoutubeSubframeHistogramName =
-        "FamilyLinkUser.SubframeYoutubeReauthenticationInterstitial";
+static constexpr std::string_view kUmaReauthenticationHistogramName =
+    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
 
 static constexpr std::string_view kUmaClosedSignInTabsHistogramName =
     "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab.ClosedCount";
@@ -327,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   // Wait for the re-authentication interstitial. It should be the only tab.
   WaitForReauthenticationInterstitial();
   histogram_tester.ExpectBucketCount(
-      kUmaReauthenticationBlockedSitedHistogramName,
+      kUmaReauthenticationHistogramName,
       static_cast<int>(SupervisedUserVerificationPage::Status::SHOWN), 1);
   auto* interstitial_contents = contents();
   EXPECT_EQ(1, GetTabCount());
@@ -337,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   for (int i = 1; i <= 3; i++) {
     ASSERT_TRUE(StartSignInFlowFromContent(interstitial_contents));
     histogram_tester.ExpectBucketCount(
-        kUmaReauthenticationBlockedSitedHistogramName,
+        kUmaReauthenticationHistogramName,
         static_cast<int>(
             SupervisedUserVerificationPage::Status::REAUTH_STARTED),
         i);
@@ -371,7 +367,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   // navigation, remain open.
   SignInSupervisedUserAndWaitForInterstitialReload(interstitial_contents);
   histogram_tester.ExpectBucketCount(
-      kUmaReauthenticationBlockedSitedHistogramName,
+      kUmaReauthenticationHistogramName,
       static_cast<int>(
           SupervisedUserVerificationPage::Status::REAUTH_COMPLETED),
       1);
@@ -491,7 +487,6 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
 // Tests the YouTube subframe re-authentication interstitial.
 IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
                        TestYouTubeSubFrameReauthInterstitial) {
-  base::HistogramTester histogram_tester;
   supervision_mixin_.SetPendingStateForPrimaryAccount();
   kids_management_api_mock().AllowSubsequentClassifyUrl();
 
@@ -518,20 +513,12 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
               testing::HasSubstr(subframe_description));
   EXPECT_THAT(GetInnerHTMLString(iframe2),
               testing::HasSubstr(subframe_description));
-  // Verify the Uma subframe interstitial metrics.
-  histogram_tester.ExpectBucketCount(
-      kUmaReauthenticationYoutubeSubframeHistogramName,
-      static_cast<int>(SupervisedUserVerificationPage::Status::SHOWN), 2);
 
   // Click the "Next" buttons in both interstitials, which should open
   // re-authentication in two new tabs.
   ASSERT_TRUE(StartSignInFlowFromRenderFrameHost(iframe1));
   ASSERT_TRUE(StartSignInFlowFromRenderFrameHost(iframe2));
   EXPECT_EQ(3, GetTabCount());
-  histogram_tester.ExpectBucketCount(
-      kUmaReauthenticationYoutubeSubframeHistogramName,
-      static_cast<int>(SupervisedUserVerificationPage::Status::REAUTH_STARTED),
-      2);
 
   // Sign in a supervised user, which completes re-authentication.
   // This should close the sign-in tabs.
@@ -542,11 +529,6 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   // TODO(https://crbug.com/365531704): Wait until the re-auth subframe interstitials are no
   // longer displayed.
 
-  histogram_tester.ExpectBucketCount(
-      kUmaReauthenticationYoutubeSubframeHistogramName,
-      static_cast<int>(
-          SupervisedUserVerificationPage::Status::REAUTH_COMPLETED),
-      2);
   // UKM should not be recorded for the subframe interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
 }
