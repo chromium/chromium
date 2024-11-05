@@ -23,48 +23,42 @@
 #include "components/user_annotations/user_annotations_service.h"
 #include "components/user_annotations/user_annotations_types.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-AutofillPredictionImprovementsFillingEngineImpl::
-    AutofillPredictionImprovementsFillingEngineImpl(
-        optimization_guide::OptimizationGuideModelExecutor* model_executor,
-        user_annotations::UserAnnotationsService* user_annotations_service)
+AutofillAiFillingEngineImpl::AutofillAiFillingEngineImpl(
+    optimization_guide::OptimizationGuideModelExecutor* model_executor,
+    user_annotations::UserAnnotationsService* user_annotations_service)
     : model_executor_(model_executor),
       user_annotations_service_(user_annotations_service) {
   CHECK(model_executor_);
   CHECK(user_annotations_service_);
 }
-AutofillPredictionImprovementsFillingEngineImpl::
-    ~AutofillPredictionImprovementsFillingEngineImpl() = default;
+AutofillAiFillingEngineImpl::~AutofillAiFillingEngineImpl() = default;
 
-void AutofillPredictionImprovementsFillingEngineImpl::GetPredictions(
+void AutofillAiFillingEngineImpl::GetPredictions(
     autofill::FormData form_data,
     base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
     base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     PredictionsReceivedCallback callback) {
   user_annotations_service_->RetrieveAllEntries(base::BindOnce(
-      &AutofillPredictionImprovementsFillingEngineImpl::
-          OnUserAnnotationsRetrieved,
+      &AutofillAiFillingEngineImpl::OnUserAnnotationsRetrieved,
       weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
       std::move(field_eligibility_map), std::move(field_sensitivity_map),
       std::move(ax_tree_update), std::move(callback)));
 }
 
-void AutofillPredictionImprovementsFillingEngineImpl::
-    OnUserAnnotationsRetrieved(
-        autofill::FormData form_data,
-        const base::flat_map<autofill::FieldGlobalId, bool>&
-            field_eligibility_map,
-        const base::flat_map<autofill::FieldGlobalId, bool>&
-            field_sensitivity_map,
-        optimization_guide::proto::AXTreeUpdate ax_tree_update,
-        PredictionsReceivedCallback callback,
-        user_annotations::UserAnnotationsEntries user_annotations) {
+void AutofillAiFillingEngineImpl::OnUserAnnotationsRetrieved(
+    autofill::FormData form_data,
+    const base::flat_map<autofill::FieldGlobalId, bool>& field_eligibility_map,
+    const base::flat_map<autofill::FieldGlobalId, bool>& field_sensitivity_map,
+    optimization_guide::proto::AXTreeUpdate ax_tree_update,
+    PredictionsReceivedCallback callback,
+    user_annotations::UserAnnotationsEntries user_annotations) {
   // At this point there should be user annotations. Return an error if there
   // aren't.
   // TODO(crbug.com/361414075): Check that `user_annotations` aren't empty in
-  // `AutofillPredictionImprovementsDelegate::ShouldProvidePredictionImprovements()`.
+  // `AutofillAiDelegate::ShouldProvidePredictionImprovements()`.
   if (user_annotations.empty()) {
     std::move(callback).Run(base::unexpected(false), std::nullopt);
     return;
@@ -91,13 +85,12 @@ void AutofillPredictionImprovementsFillingEngineImpl::
   model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, request,
       kExecutionTimeout.Get(),
-      base::BindOnce(
-          &AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted,
-          weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
-          std::move(callback)));
+      base::BindOnce(&AutofillAiFillingEngineImpl::OnModelExecuted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
+                     std::move(callback)));
 }
 
-void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
+void AutofillAiFillingEngineImpl::OnModelExecuted(
     autofill::FormData form_data,
     PredictionsReceivedCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
@@ -124,8 +117,8 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
 }
 
 // static
-AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId
-AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
+AutofillAiFillingEngine::PredictionsByGlobalId
+AutofillAiFillingEngineImpl::ExtractPredictions(
     const autofill::FormData& form_data,
     const optimization_guide::proto::FilledFormData& form_data_proto) {
   std::vector<std::pair<autofill::FieldGlobalId, Prediction>> predictions;
@@ -193,4 +186,4 @@ AutofillPredictionImprovementsFillingEngineImpl::ExtractPredictions(
   return predictions;
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

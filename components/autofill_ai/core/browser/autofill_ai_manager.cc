@@ -48,7 +48,7 @@
 #include "components/user_annotations/user_annotations_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 namespace {
 
@@ -63,8 +63,8 @@ bool IsFormAndFieldEligible(const autofill::FormStructure& form,
 
 }  // namespace
 
-AutofillPredictionImprovementsManager::AutofillPredictionImprovementsManager(
-    AutofillPredictionImprovementsClient* client,
+AutofillAiManager::AutofillAiManager(
+    AutofillAiClient* client,
     optimization_guide::OptimizationGuideDecider* decider,
     autofill::StrikeDatabase* strike_database)
     : client_(CHECK_DEREF(client)), decider_(decider) {
@@ -82,7 +82,7 @@ AutofillPredictionImprovementsManager::AutofillPredictionImprovementsManager(
           : nullptr;
 }
 
-bool AutofillPredictionImprovementsManager::IsFormBlockedForImport(
+bool AutofillAiManager::IsFormBlockedForImport(
     const autofill::FormStructure& form) const {
   if (!user_annotation_prompt_strike_database_) {
     return true;
@@ -92,7 +92,7 @@ bool AutofillPredictionImprovementsManager::IsFormBlockedForImport(
       AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits::GetId(
           form.form_signature()));
 }
-void AutofillPredictionImprovementsManager::AddStrikeForImportFromForm(
+void AutofillAiManager::AddStrikeForImportFromForm(
     const autofill::FormStructure& form) {
   if (!user_annotation_prompt_strike_database_) {
     return;
@@ -103,7 +103,7 @@ void AutofillPredictionImprovementsManager::AddStrikeForImportFromForm(
           form.form_signature()));
 }
 
-void AutofillPredictionImprovementsManager::RemoveStrikesForImportFromForm(
+void AutofillAiManager::RemoveStrikesForImportFromForm(
     const autofill::FormStructure& form) {
   if (!user_annotation_prompt_strike_database_) {
     return;
@@ -115,7 +115,7 @@ void AutofillPredictionImprovementsManager::RemoveStrikesForImportFromForm(
 }
 
 base::flat_map<autofill::FieldGlobalId, bool>
-AutofillPredictionImprovementsManager::GetFieldFillingEligibilityMap(
+AutofillAiManager::GetFieldFillingEligibilityMap(
     const autofill::FormData& form_data) {
   autofill::FormStructure* form_structure =
       client_->GetCachedFormStructure(form_data);
@@ -132,7 +132,7 @@ AutofillPredictionImprovementsManager::GetFieldFillingEligibilityMap(
 }
 
 base::flat_map<autofill::FieldGlobalId, bool>
-AutofillPredictionImprovementsManager::GetFieldValueSensitivityMap(
+AutofillAiManager::GetFieldValueSensitivityMap(
     const autofill::FormData& form_data) {
   autofill::FormStructure* form_structure =
       client_->GetCachedFormStructure(form_data);
@@ -152,26 +152,25 @@ AutofillPredictionImprovementsManager::GetFieldValueSensitivityMap(
       });
 }
 
-AutofillPredictionImprovementsManager::
-    ~AutofillPredictionImprovementsManager() = default;
+AutofillAiManager::~AutofillAiManager() = default;
 
-bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
+bool AutofillAiManager::HasImprovedPredictionsForField(
     const autofill::FormFieldData& field) {
   return cache_ && cache_->contains(field.global_id());
 }
 
-bool AutofillPredictionImprovementsManager::IsPredictionImprovementsEligible(
+bool AutofillAiManager::IsPredictionImprovementsEligible(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
   return IsFormAndFieldEligible(form, field) &&
          ShouldProvidePredictionImprovements(form.main_frame_origin().GetURL());
 }
 
-bool AutofillPredictionImprovementsManager::IsUserEligible() const {
+bool AutofillAiManager::IsUserEligible() const {
   return client_->IsUserEligible();
 }
 
-void AutofillPredictionImprovementsManager::UpdateFieldFocusabilityInCache(
+void AutofillAiManager::UpdateFieldFocusabilityInCache(
     const autofill::FormData& form) {
   if (!cache_) {
     return;
@@ -184,8 +183,7 @@ void AutofillPredictionImprovementsManager::UpdateFieldFocusabilityInCache(
   }
 }
 
-std::vector<autofill::Suggestion>
-AutofillPredictionImprovementsManager::GetSuggestions(
+std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
     const std::vector<autofill::Suggestion>& autofill_suggestions,
     const autofill::FormData& form,
     const autofill::FormFieldData& field) {
@@ -269,7 +267,7 @@ AutofillPredictionImprovementsManager::GetSuggestions(
   }
 }
 
-void AutofillPredictionImprovementsManager::RetrievePredictions(
+void AutofillAiManager::RetrievePredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback,
@@ -285,32 +283,30 @@ void AutofillPredictionImprovementsManager::RetrievePredictions(
   prediction_retrieval_state_ = PredictionRetrievalState::kIsLoadingPredictions;
   last_queried_form_global_id_ = form.global_id();
   if (kExtractAXTreeForPredictions.Get()) {
-    client_->GetAXTree(
-        base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
-                       weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
+    client_->GetAXTree(base::BindOnce(&AutofillAiManager::OnReceivedAXTree,
+                                      weak_ptr_factory_.GetWeakPtr(), form,
+                                      trigger_field));
   } else {
     optimization_guide::proto::AXTreeUpdate ax_tree_update;
     OnReceivedAXTree(form, trigger_field, std::move(ax_tree_update));
   }
 }
 
-void AutofillPredictionImprovementsManager::OnReceivedAXTree(
+void AutofillAiManager::OnReceivedAXTree(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   client_->GetFillingEngine()->GetPredictions(
       form, GetFieldFillingEligibilityMap(form),
       GetFieldValueSensitivityMap(form), std::move(ax_tree_update),
-      base::BindOnce(
-          &AutofillPredictionImprovementsManager::OnReceivedPredictions,
-          weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
+      base::BindOnce(&AutofillAiManager::OnReceivedPredictions,
+                     weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
 }
 
-void AutofillPredictionImprovementsManager::OnReceivedPredictions(
+void AutofillAiManager::OnReceivedPredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    AutofillPredictionImprovementsFillingEngine::PredictionsOrError
-        predictions_or_error,
+    AutofillAiFillingEngine::PredictionsOrError predictions_or_error,
     std::optional<std::string> model_execution_id) {
   LOG_AF(GetLogManager()) << LoggingScope::kAutofillAi
                           << LogMessage::kAutofillAi
@@ -344,15 +340,14 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
   // don't see a flickering UI.
   loading_suggestion_timer_.Start(
       FROM_HERE, kMinTimeToShowLoading,
-      base::BindRepeating(&AutofillPredictionImprovementsManager::
-                              UpdateSuggestionsAfterReceivedPredictions,
-                          weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
+      base::BindRepeating(
+          &AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions,
+          weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
 }
 
-void AutofillPredictionImprovementsManager::
-    UpdateSuggestionsAfterReceivedPredictions(
-        const autofill::FormData& form,
-        const autofill::FormFieldData& trigger_field) {
+void AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& trigger_field) {
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kDoneSuccess:
       if (HasImprovedPredictionsForField(trigger_field)) {
@@ -371,8 +366,7 @@ void AutofillPredictionImprovementsManager::
   }
 }
 
-void AutofillPredictionImprovementsManager::UserFeedbackReceived(
-    UserFeedback feedback) {
+void AutofillAiManager::UserFeedbackReceived(UserFeedback feedback) {
   if (form_filling_predictions_model_execution_id_ &&
       feedback == UserFeedback::kThumbsDown) {
     client_->TryToOpenFeedbackPage(
@@ -380,10 +374,9 @@ void AutofillPredictionImprovementsManager::UserFeedbackReceived(
   }
 }
 
-void AutofillPredictionImprovementsManager::
-    SaveAutofillPredictionsUserFeedbackReceived(
-        const std::string& model_execution_id,
-        UserFeedback feedback) {
+void AutofillAiManager::SaveAutofillPredictionsUserFeedbackReceived(
+    const std::string& model_execution_id,
+    UserFeedback feedback) {
   if (feedback == UserFeedback::kThumbsDown) {
     client_->TryToOpenFeedbackPage(model_execution_id);
   }
@@ -391,12 +384,12 @@ void AutofillPredictionImprovementsManager::
 
 // TODO(crbug.com/362468426): Rename this method to
 // `UserClickedManagePredictionsImprovements()`.
-void AutofillPredictionImprovementsManager::UserClickedLearnMore() {
+void AutofillAiManager::UserClickedLearnMore() {
   client_->OpenPredictionImprovementsSettings();
 }
 
-bool AutofillPredictionImprovementsManager::
-    IsURLEligibleForPredictionImprovements(const GURL& url) const {
+bool AutofillAiManager::IsURLEligibleForPredictionImprovements(
+    const GURL& url) const {
   if (!decider_) {
     return false;
   }
@@ -417,13 +410,13 @@ bool AutofillPredictionImprovementsManager::
   return decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
-bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
+bool AutofillAiManager::ShouldProvidePredictionImprovements(
     const GURL& url) const {
-  return client_->IsAutofillPredictionImprovementsEnabledPref() &&
-         IsUserEligible() && IsURLEligibleForPredictionImprovements(url);
+  return client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
+         IsURLEligibleForPredictionImprovements(url);
 }
 
-void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
+void AutofillAiManager::OnClickedTriggerSuggestion(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
@@ -438,11 +431,10 @@ void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
                       /*update_to_loading_suggestion=*/true);
 }
 
-void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
+void AutofillAiManager::OnLoadingSuggestionShown(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    AutofillPredictionImprovementsManager::UpdateSuggestionsCallback
-        update_suggestions_callback) {
+    AutofillAiManager::UpdateSuggestionsCallback update_suggestions_callback) {
   logger_.OnTriggeredFillingSuggestions(form.global_id());
   if (kTriggerAutomatically.Get() &&
       prediction_retrieval_state_ !=
@@ -465,11 +457,11 @@ void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
   }
 }
 
-void AutofillPredictionImprovementsManager::OnErrorOrNoInfoSuggestionShown() {
+void AutofillAiManager::OnErrorOrNoInfoSuggestionShown() {
   error_or_no_info_suggestion_shown_ = true;
 }
 
-void AutofillPredictionImprovementsManager::OnSuggestionsShown(
+void AutofillAiManager::OnSuggestionsShown(
     const autofill::DenseSet<autofill::SuggestionType>& shown_suggestion_types,
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
@@ -489,13 +481,12 @@ void AutofillPredictionImprovementsManager::OnSuggestionsShown(
   }
 }
 
-void AutofillPredictionImprovementsManager::OnFormSeen(
-    const autofill::FormStructure& form) {
+void AutofillAiManager::OnFormSeen(const autofill::FormStructure& form) {
   bool is_eligible = IsFormEligibleForFilling(form);
   logger_.OnFormEligibilityAvailable(form.global_id(), is_eligible);
   if (is_eligible) {
     HasDataStored(base::BindOnce(
-        [](base::WeakPtr<AutofillPredictionImprovementsManager> manager,
+        [](base::WeakPtr<AutofillAiManager> manager,
            autofill::FormGlobalId form_id, HasData has_data) {
           if (!manager) {
             return;
@@ -511,17 +502,16 @@ void AutofillPredictionImprovementsManager::OnFormSeen(
   }
 }
 
-void AutofillPredictionImprovementsManager::OnDidFillSuggestion(
-    autofill::FormGlobalId form_id) {
+void AutofillAiManager::OnDidFillSuggestion(autofill::FormGlobalId form_id) {
   logger_.OnDidFillSuggestion(form_id);
 }
 
-void AutofillPredictionImprovementsManager::OnEditedAutofilledField(
+void AutofillAiManager::OnEditedAutofilledField(
     autofill::FormGlobalId form_id) {
   logger_.OnDidCorrectFillingSuggestion(form_id);
 }
 
-void AutofillPredictionImprovementsManager::Reset() {
+void AutofillAiManager::Reset() {
   cache_ = std::nullopt;
   last_queried_form_global_id_ = std::nullopt;
   update_suggestions_callback_ = base::NullCallback();
@@ -531,7 +521,7 @@ void AutofillPredictionImprovementsManager::Reset() {
   error_or_no_info_suggestion_shown_ = false;
 }
 
-void AutofillPredictionImprovementsManager::UpdateSuggestions(
+void AutofillAiManager::UpdateSuggestions(
     const std::vector<autofill::Suggestion>& suggestions) {
   loading_suggestion_timer_.Stop();
   if (update_suggestions_callback_.is_null()) {
@@ -542,12 +532,12 @@ void AutofillPredictionImprovementsManager::UpdateSuggestions(
       autofill::AutofillSuggestionTriggerSource::kPredictionImprovements);
 }
 
-void AutofillPredictionImprovementsManager::MaybeImportForm(
+void AutofillAiManager::MaybeImportForm(
     std::unique_ptr<autofill::FormStructure> form,
     base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
                             bool autofill_ai_shows_bubble)> autofill_callback) {
   user_annotations::ImportFormCallback callback = base::BindOnce(
-      [](base::WeakPtr<AutofillPredictionImprovementsManager> self,
+      [](base::WeakPtr<AutofillAiManager> self,
          base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
                                  bool autofill_ai_shows_bubble)>
              autofill_callback,
@@ -565,7 +555,7 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
             << (autofill_ai_shows_bubble ? "" : "not ")
             << "showing import bubble";
         if (autofill_ai_shows_bubble) {
-          self->client_->ShowSaveAutofillPredictionImprovementsBubble(
+          self->client_->ShowSaveAutofillAiBubble(
               std::move(form_annotation_response),
               std::move(prompt_acceptance_callback));
         }
@@ -582,8 +572,8 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
 
   bool skip_import = false;
 
-  if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
-    // `autofill::prefs::kAutofillPredictionImprovementsEnabled` is disabled.
+  if (!client_->IsAutofillAiEnabledPref()) {
+    // `autofill::prefs::kAutofillAiEnabled` is disabled.
     skip_import = true;
     LOG_AF(GetLogManager()) << LoggingScope::kAutofillAi
                             << LogMessage::kAutofillAi << "Pref is disabled";
@@ -622,7 +612,7 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
     // TODO(crbug.com/366222226): Ensure the AX tree retrieval is not delayed,
     // e.g. by async filters added in future.
     client_->GetAXTree(base::BindOnce(
-        &AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport,
+        &AutofillAiManager::OnReceivedAXTreeForFormImport,
         weak_ptr_factory_.GetWeakPtr(), url,
         kSendTitleURL.Get() ? client_->GetTitle() : std::string(),
         std::move(form), std::move(callback)));
@@ -634,7 +624,7 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
   }
 }
 
-void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
+void AutofillAiManager::OnReceivedAXTreeForFormImport(
     const GURL& url,
     const std::string& title,
     std::unique_ptr<autofill::FormStructure> form,
@@ -652,13 +642,11 @@ void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
                           base::DoNothing());
 }
 
-void AutofillPredictionImprovementsManager::HasDataStored(
-    HasDataCallback callback) {
+void AutofillAiManager::HasDataStored(HasDataCallback callback) {
   if (user_annotations::UserAnnotationsService* user_annotations_service =
           client_->GetUserAnnotationsService()) {
     user_annotations_service->RetrieveAllEntries(base::BindOnce(
-        [](base::WeakPtr<AutofillPredictionImprovementsManager> self,
-           HasDataCallback callback,
+        [](base::WeakPtr<AutofillAiManager> self, HasDataCallback callback,
            const user_annotations::UserAnnotationsEntries entries) {
           LOG_AF(self ? self->GetLogManager() : nullptr)
               << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
@@ -682,7 +670,7 @@ void AutofillPredictionImprovementsManager::HasDataStored(
   std::move(callback).Run(HasData(false));
 }
 
-bool AutofillPredictionImprovementsManager::ShouldDisplayIph(
+bool AutofillAiManager::ShouldDisplayIph(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
   // Iph can be shown if:
@@ -690,17 +678,17 @@ bool AutofillPredictionImprovementsManager::ShouldDisplayIph(
   // 2. The user can access the feature (for example the experiment flag is on).
   // 2. The focused form/field can trigger the feature.
   // 3. The current domain can trigger the feature.
-  return !client_->IsAutofillPredictionImprovementsEnabledPref() &&
-         IsUserEligible() && IsFormAndFieldEligible(form, field) &&
+  return !client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
+         IsFormAndFieldEligible(form, field) &&
          IsURLEligibleForPredictionImprovements(
              form.main_frame_origin().GetURL());
 }
 
-void AutofillPredictionImprovementsManager::GoToSettings() const {
+void AutofillAiManager::GoToSettings() const {
   client_->OpenPredictionImprovementsSettings();
 }
 
-void AutofillPredictionImprovementsManager::OnFailedToGenerateSuggestions() {
+void AutofillAiManager::OnFailedToGenerateSuggestions() {
   if (!autofill_suggestions_.empty()) {
     // Fallback to regular autofill suggestions if any instead of showing an
     // error directly.
@@ -722,14 +710,12 @@ void AutofillPredictionImprovementsManager::OnFailedToGenerateSuggestions() {
   }
 }
 
-autofill::LogManager* AutofillPredictionImprovementsManager::GetLogManager()
-    const {
+autofill::LogManager* AutofillAiManager::GetLogManager() const {
   return client_->GetAutofillClient().GetLogManager();
 }
 
-base::WeakPtr<AutofillPredictionImprovementsManager>
-AutofillPredictionImprovementsManager::GetWeakPtr() {
+base::WeakPtr<AutofillAiManager> AutofillAiManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

@@ -41,8 +41,7 @@ namespace user_annotations {
 class UserAnnotationsServiceDisabledBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        autofill_prediction_improvements::kAutofillPredictionImprovements);
+    feature_list_.InitAndDisableFeature(autofill_ai::kAutofillAi);
     InProcessBrowserTest::SetUp();
   }
 
@@ -59,8 +58,7 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceDisabledBrowserTest,
 class UserAnnotationsServiceKioskModeBrowserTest : public InProcessBrowserTest {
  public:
   UserAnnotationsServiceKioskModeBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill_prediction_improvements::kAutofillPredictionImprovements);
+    scoped_feature_list_.InitAndEnableFeature(autofill_ai::kAutofillAi);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -82,8 +80,7 @@ class UserAnnotationsServiceEphemeralProfileBrowserTest
     : public MixinBasedInProcessBrowserTest {
  public:
   UserAnnotationsServiceEphemeralProfileBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill_prediction_improvements::kAutofillPredictionImprovements);
+    scoped_feature_list_.InitAndEnableFeature(autofill_ai::kAutofillAi);
   }
 
  private:
@@ -170,9 +167,7 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
 
   virtual void InitializeFeatureList() {
-    feature_list_.InitWithFeatures(
-        {autofill_prediction_improvements::kAutofillPredictionImprovements},
-        {});
+    feature_list_.InitWithFeatures({autofill_ai::kAutofillAi}, {});
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -250,7 +245,7 @@ class UserAnnotationsServiceExplicitAllowlistBrowserTest
  protected:
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{autofill_prediction_improvements::kAutofillPredictionImprovements,
+        {{autofill_ai::kAutofillAi,
           {{"allowed_hosts_for_form_submissions", "allowed.com"}}}},
         {});
   }

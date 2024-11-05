@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
-class ChromeAutofillPredictionImprovementsClient;
+class ChromeAutofillAiClient;
 class FedCmAccountSelectionViewController;
 class LensOverlayController;
 class Profile;
@@ -100,9 +100,8 @@ class TabFeatures {
     return side_panel_registry_.get();
   }
 
-  ChromeAutofillPredictionImprovementsClient*
-  chrome_autofill_prediction_improvements_client() {
-    return chrome_autofill_prediction_improvements_client_.get();
+  ChromeAutofillAiClient* chrome_autofill_ai_client() {
+    return chrome_autofill_ai_client_.get();
   }
 
   ReadAnythingSidePanelController* read_anything_side_panel_controller() {
@@ -168,8 +167,7 @@ class TabFeatures {
   std::unique_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
 
-  std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
-      chrome_autofill_prediction_improvements_client_;
+  std::unique_ptr<ChromeAutofillAiClient> chrome_autofill_ai_client_;
 
   std::unique_ptr<ReadAnythingSidePanelController>
       read_anything_side_panel_controller_;

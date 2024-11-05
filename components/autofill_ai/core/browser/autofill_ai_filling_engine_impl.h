@@ -28,17 +28,16 @@ namespace user_annotations {
 class UserAnnotationsService;
 }  // namespace user_annotations
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-class AutofillPredictionImprovementsFillingEngineImpl
-    : public AutofillPredictionImprovementsFillingEngine {
+class AutofillAiFillingEngineImpl : public AutofillAiFillingEngine {
  public:
-  AutofillPredictionImprovementsFillingEngineImpl(
+  AutofillAiFillingEngineImpl(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
       user_annotations::UserAnnotationsService* user_annotations_service);
-  ~AutofillPredictionImprovementsFillingEngineImpl() override;
+  ~AutofillAiFillingEngineImpl() override;
 
-  // AutofillPredictionImprovementsFillingEngine:
+  // AutofillAiFillingEngine:
   void GetPredictions(
       autofill::FormData form_data,
       base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
@@ -75,10 +74,9 @@ class AutofillPredictionImprovementsFillingEngineImpl
   raw_ptr<user_annotations::UserAnnotationsService> user_annotations_service_ =
       nullptr;
 
-  base::WeakPtrFactory<AutofillPredictionImprovementsFillingEngineImpl>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<AutofillAiFillingEngineImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_FILLING_ENGINE_IMPL_H_

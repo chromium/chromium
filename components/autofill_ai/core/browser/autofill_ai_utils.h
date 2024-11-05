@@ -10,7 +10,7 @@ class FormStructure;
 class AutofillField;
 }  // namespace autofill
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // Returns true if the `field` is eligible based on the type criteria.
 bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field);
@@ -32,6 +32,6 @@ void SetFieldFillingEligibility(autofill::FormStructure& form);
 // Return weather the forms is eligible for the import journey.
 bool IsFormEligibleForImportByFieldCriteria(
     const autofill::FormStructure& form);
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_UTILS_H_

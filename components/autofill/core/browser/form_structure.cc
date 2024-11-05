@@ -260,8 +260,7 @@ void FormStructure::DetermineNonActiveHeuristicTypes(
     std::optional<FieldCandidatesMap> active_predictions,
     ParsingContext& context) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (base::FeatureList::IsEnabled(
-          autofill_prediction_improvements::kAutofillPredictionImprovements)) {
+  if (base::FeatureList::IsEnabled(autofill_ai::kAutofillAi)) {
     // Run the parser for the prediction improvements.
     context.pattern_file = PatternFile::kPredictionImprovements;
     AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),

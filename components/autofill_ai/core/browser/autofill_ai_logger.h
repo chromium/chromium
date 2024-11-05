@@ -9,18 +9,16 @@
 
 #include "components/autofill/core/common/unique_ids.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // A class that takes care of keeping track of metric-related states and user
 // interactions with forms.
-class AutofillPredictionImprovementsLogger {
+class AutofillAiLogger {
  public:
-  AutofillPredictionImprovementsLogger();
-  AutofillPredictionImprovementsLogger(
-      const AutofillPredictionImprovementsLogger&) = delete;
-  AutofillPredictionImprovementsLogger& operator=(
-      const AutofillPredictionImprovementsLogger&) = delete;
-  ~AutofillPredictionImprovementsLogger();
+  AutofillAiLogger();
+  AutofillAiLogger(const AutofillAiLogger&) = delete;
+  AutofillAiLogger& operator=(const AutofillAiLogger&) = delete;
+  ~AutofillAiLogger();
 
   void OnFormEligibilityAvailable(autofill::FormGlobalId form_id,
                                   bool is_eligible);
@@ -70,6 +68,6 @@ class AutofillPredictionImprovementsLogger {
   std::map<autofill::FormGlobalId, FunnelState> form_states_;
 };
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_LOGGER_H_

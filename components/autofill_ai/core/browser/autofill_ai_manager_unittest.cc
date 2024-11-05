@@ -33,15 +33,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 namespace {
 
 using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
 using enum SuggestionType;
 using PredictionImprovementsPayload = Suggestion::PredictionImprovementsPayload;
-using PredictionsByGlobalId =
-    AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId;
+using PredictionsByGlobalId = AutofillAiFillingEngine::PredictionsByGlobalId;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
@@ -94,8 +93,7 @@ auto HasLabel(const std::u16string& expected_label) {
                                              expected_label))));
 }
 
-class MockAutofillPredictionImprovementsFillingEngine
-    : public AutofillPredictionImprovementsFillingEngine {
+class MockAutofillAiFillingEngine : public AutofillAiFillingEngine {
  public:
   MOCK_METHOD(
       void,
@@ -118,24 +116,21 @@ const url::Origin& origin() {
   return origin;
 }
 
-class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
+class BaseAutofillAiManagerTest : public testing::Test {
  public:
-  BaseAutofillPredictionImprovementsManagerTest() {
+  BaseAutofillAiManagerTest() {
     ON_CALL(client(), GetAutofillClient)
         .WillByDefault(ReturnRef(autofill_client_));
-    ON_CALL(client(), IsAutofillPredictionImprovementsEnabledPref)
-        .WillByDefault(Return(true));
+    ON_CALL(client(), IsAutofillAiEnabledPref).WillByDefault(Return(true));
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
   }
 
   optimization_guide::MockOptimizationGuideDecider& decider() {
     return decider_;
   }
-  MockAutofillPredictionImprovementsFillingEngine& filling_engine() {
-    return filling_engine_;
-  }
-  MockAutofillPredictionImprovementsClient& client() { return client_; }
-  AutofillPredictionImprovementsManager& manager() { return manager_; }
+  MockAutofillAiFillingEngine& filling_engine() { return filling_engine_; }
+  MockAutofillAiClient& client() { return client_; }
+  AutofillAiManager& manager() { return manager_; }
   autofill::TestStrikeDatabase& strike_database() { return strike_database_; }
 
  private:
@@ -143,22 +138,19 @@ class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   autofill::TestAutofillClient autofill_client_;
   NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
-  NiceMock<MockAutofillPredictionImprovementsFillingEngine> filling_engine_;
-  NiceMock<MockAutofillPredictionImprovementsClient> client_;
+  NiceMock<MockAutofillAiFillingEngine> filling_engine_;
+  NiceMock<MockAutofillAiClient> client_;
   autofill::TestStrikeDatabase strike_database_;
-  AutofillPredictionImprovementsManager manager_{&client(), &decider(),
-                                                 &strike_database_};
+  AutofillAiManager manager_{&client(), &decider(), &strike_database_};
 };
 
-class AutofillPredictionImprovementsManagerTest
-    : public BaseAutofillPredictionImprovementsManagerTest {
+class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
  public:
-  AutofillPredictionImprovementsManagerTest() {
+  AutofillAiManagerTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillPredictionImprovements,
-        {{"skip_allowlist", "true"},
-         {"extract_ax_tree_for_predictions", "true"},
-         {"send_title_url", "false"}});
+        kAutofillAi, {{"skip_allowlist", "true"},
+                      {"extract_ax_tree_for_predictions", "true"},
+                      {"send_title_url", "false"}});
     ON_CALL(client(), GetFillingEngine)
         .WillByDefault(Return(&filling_engine()));
     ON_CALL(client(), GetLastCommittedOrigin)
@@ -174,7 +166,7 @@ class AutofillPredictionImprovementsManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AutofillPredictionImprovementsManagerTest, RejctedPromptStrikeCounting) {
+TEST_F(AutofillAiManagerTest, RejctedPromptStrikeCounting) {
   autofill::FormStructure form1{autofill::FormData()};
   form1.set_form_signature(autofill::FormSignature(1));
 
@@ -216,14 +208,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RejctedPromptStrikeCounting) {
 
 // Tests that when the server fails to return suggestions, we show an error
 // suggestion.
-TEST_F(AutofillPredictionImprovementsManagerTest, RetrievalFailed_ShowError) {
+TEST_F(AutofillAiManagerTest, RetrievalFailed_ShowError) {
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<
-      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
+  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
 
   {
@@ -253,8 +244,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RetrievalFailed_ShowError) {
 // Tests that when the server fails to generate suggestions, but we have
 // autofill suggestions stored already, we fallback to autofill and don't show
 // error suggestions.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       RetrievalFailed_FallbackToAutofill) {
+TEST_F(AutofillAiManagerTest, RetrievalFailed_FallbackToAutofill) {
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -265,8 +255,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                                                   Suggestion(kManageAddress)};
   test_api(manager()).SetAutofillSuggestions(autofill_suggestions);
 
-  base::MockCallback<
-      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
+  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
   {
     InSequence s;
@@ -293,7 +282,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 
 // Tests that the `update_suggestions_callback` is called eventually with the
 // `kFillPredictionImprovements` suggestion.
-TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
+TEST_F(AutofillAiManagerTest, EndToEnd) {
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -307,10 +296,9 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
   form_description.fields[0].renderer_id = form.fields().front().renderer_id();
   autofill::FormData filled_form =
       autofill::test::GetFormData(form_description);
-  AutofillPredictionImprovementsFillingEngine::PredictionsReceivedCallback
+  AutofillAiFillingEngine::PredictionsReceivedCallback
       predictions_received_callback;
-  base::MockCallback<
-      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
+  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
 
   const autofill::FormFieldData& filled_field = filled_form.fields().front();
@@ -367,8 +355,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
 // suggestions, but then changes focus while predictions are loading to a field
 // that doesn't have autofill suggestion, the initial autofill suggestions are
 // cleared and not used.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       AutofillSuggestionsAreCachedOnMultipleFocus) {
+TEST_F(AutofillAiManagerTest, AutofillSuggestionsAreCachedOnMultipleFocus) {
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -377,10 +364,9 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                   .heuristic_type = autofill::NAME_LAST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
 
-  AutofillPredictionImprovementsFillingEngine::PredictionsReceivedCallback
+  AutofillAiFillingEngine::PredictionsReceivedCallback
       predictions_received_callback;
-  base::MockCallback<
-      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
+  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
 
   {
@@ -420,25 +406,22 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 }
 
 struct GetSuggestionsFormNotEqualCachedFormTestData {
-  AutofillPredictionImprovementsManager::PredictionRetrievalState
-      prediction_retrieval_state;
+  AutofillAiManager::PredictionRetrievalState prediction_retrieval_state;
   bool trigger_automatically;
   std::optional<SuggestionType> expected_suggestion_type;
 };
 
-class
-    AutofillPredictionImprovementsManagerGetSuggestionsFormNotEqualCachedFormTest
-    : public BaseAutofillPredictionImprovementsManagerTest,
+class AutofillAiManagerGetSuggestionsFormNotEqualCachedFormTest
+    : public BaseAutofillAiManagerTest,
       public ::testing::WithParamInterface<
           GetSuggestionsFormNotEqualCachedFormTestData> {
  public:
-  AutofillPredictionImprovementsManagerGetSuggestionsFormNotEqualCachedFormTest() {
+  AutofillAiManagerGetSuggestionsFormNotEqualCachedFormTest() {
     const GetSuggestionsFormNotEqualCachedFormTestData& test_data = GetParam();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillPredictionImprovements,
-        {{"skip_allowlist", "true"},
-         {"trigger_automatically",
-          test_data.trigger_automatically ? "true" : "false"}});
+        kAutofillAi, {{"skip_allowlist", "true"},
+                      {"trigger_automatically",
+                       test_data.trigger_automatically ? "true" : "false"}});
   }
 
  private:
@@ -447,9 +430,8 @@ class
 
 // Tests that `GetSuggestions()` returns suggestions as expected when the
 // requesting form doesn't match the cached form.
-TEST_P(
-    AutofillPredictionImprovementsManagerGetSuggestionsFormNotEqualCachedFormTest,
-    GetSuggestions_ReturnsSuggestionsAsExpected) {
+TEST_P(AutofillAiManagerGetSuggestionsFormNotEqualCachedFormTest,
+       GetSuggestions_ReturnsSuggestionsAsExpected) {
   autofill::FormData cached_form =
       autofill::test::GetFormData(autofill::test::FormDescription{});
   autofill::test::FormDescription form_description = {
@@ -470,88 +452,78 @@ TEST_P(
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    AutofillPredictionImprovementsManagerGetSuggestionsFormNotEqualCachedFormTest,
+    AutofillAiManagerGetSuggestionsFormNotEqualCachedFormTest,
     testing::Values(
         GetSuggestionsFormNotEqualCachedFormTestData{
-            .prediction_retrieval_state =
-                AutofillPredictionImprovementsManager::
-                    PredictionRetrievalState::kIsLoadingPredictions,
+            .prediction_retrieval_state = AutofillAiManager::
+                PredictionRetrievalState::kIsLoadingPredictions,
             .trigger_automatically = false,
             .expected_suggestion_type = std::nullopt},
         GetSuggestionsFormNotEqualCachedFormTestData{
             .prediction_retrieval_state =
-                AutofillPredictionImprovementsManager::
-                    PredictionRetrievalState::kDoneSuccess,
+                AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
             .trigger_automatically = false,
             .expected_suggestion_type = kRetrievePredictionImprovements},
         GetSuggestionsFormNotEqualCachedFormTestData{
             .prediction_retrieval_state =
-                AutofillPredictionImprovementsManager::
-                    PredictionRetrievalState::kDoneError,
+                AutofillAiManager::PredictionRetrievalState::kDoneError,
             .trigger_automatically = false,
             .expected_suggestion_type = kRetrievePredictionImprovements},
         GetSuggestionsFormNotEqualCachedFormTestData{
-            .prediction_retrieval_state =
-                AutofillPredictionImprovementsManager::
-                    PredictionRetrievalState::kIsLoadingPredictions,
+            .prediction_retrieval_state = AutofillAiManager::
+                PredictionRetrievalState::kIsLoadingPredictions,
             .trigger_automatically = true,
             .expected_suggestion_type = std::nullopt},
         GetSuggestionsFormNotEqualCachedFormTestData{
             .prediction_retrieval_state =
-                AutofillPredictionImprovementsManager::
-                    PredictionRetrievalState::kDoneSuccess,
+                AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
             .trigger_automatically = true,
             .expected_suggestion_type = kPredictionImprovementsLoadingState},
         GetSuggestionsFormNotEqualCachedFormTestData{
             .prediction_retrieval_state =
-                AutofillPredictionImprovementsManager::
-                    PredictionRetrievalState::kDoneError,
+                AutofillAiManager::PredictionRetrievalState::kDoneError,
             .trigger_automatically = true,
             .expected_suggestion_type = kPredictionImprovementsLoadingState}));
 
 // Tests that trigger suggestions are returned by `GetSuggestions()` when the
 // class is in `kReady` state.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       GetSuggestions_Ready_ReturnsTriggerSuggestion) {
+TEST_F(AutofillAiManagerTest, GetSuggestions_Ready_ReturnsTriggerSuggestion) {
   autofill::FormData form;
   autofill::FormFieldData field;
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::kReady);
+      AutofillAiManager::PredictionRetrievalState::kReady);
   EXPECT_THAT(manager().GetSuggestions({}, form, field),
               ElementsAre(HasType(kRetrievePredictionImprovements)));
 }
 
 // Tests that loading suggestions are returned by `GetSuggestions()` when the
 // class is in `kIsLoadingPredictions` state.
-TEST_F(AutofillPredictionImprovementsManagerTest,
+TEST_F(AutofillAiManagerTest,
        GetSuggestions_IsLoadingPredictions_ReturnsLoadingSuggestion) {
   autofill::FormData form;
   autofill::FormFieldData field;
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::
-          kIsLoadingPredictions);
+      AutofillAiManager::PredictionRetrievalState::kIsLoadingPredictions);
   EXPECT_THAT(
       manager().GetSuggestions(/*autofill_suggestions=*/{}, form, field),
       ElementsAre(HasType(kPredictionImprovementsLoadingState)));
 }
 
 struct FallbackTestData {
-  AutofillPredictionImprovementsManager::PredictionRetrievalState
-      prediction_retrieval_state;
+  AutofillAiManager::PredictionRetrievalState prediction_retrieval_state;
   bool trigger_automatically;
 };
 
-class AutofillPredictionImprovementsManagerDoneFallbackTest
-    : public BaseAutofillPredictionImprovementsManagerTest,
+class AutofillAiManagerDoneFallbackTest
+    : public BaseAutofillAiManagerTest,
       public ::testing::WithParamInterface<FallbackTestData> {
  public:
-  AutofillPredictionImprovementsManagerDoneFallbackTest() {
+  AutofillAiManagerDoneFallbackTest() {
     const FallbackTestData& test_data = GetParam();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillPredictionImprovements,
-        {{"skip_allowlist", "true"},
-         {"trigger_automatically",
-          test_data.trigger_automatically ? "true" : "false"}});
+        kAutofillAi, {{"skip_allowlist", "true"},
+                      {"trigger_automatically",
+                       test_data.trigger_automatically ? "true" : "false"}});
   }
 
  private:
@@ -563,7 +535,7 @@ class AutofillPredictionImprovementsManagerDoneFallbackTest
 // the `field` but there are `autofill_suggestions` to fall back to. Note that
 // returning an empty vector would continue the regular Autofill flow in the
 // BrowserAutofillManager, i.e. show Autofill suggestions in this scenario.
-TEST_P(AutofillPredictionImprovementsManagerDoneFallbackTest,
+TEST_P(AutofillAiManagerDoneFallbackTest,
        GetSuggestions_NoPredictionsWithAutofillSuggestions_ReturnsEmptyVector) {
   std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry)};
   autofill::FormData form;
@@ -579,7 +551,7 @@ TEST_P(AutofillPredictionImprovementsManagerDoneFallbackTest,
 // improvements for the `field` nor `autofill_suggestions` to fall back to and
 // the no info suggestion wasn't shown yet.
 TEST_P(
-    AutofillPredictionImprovementsManagerDoneFallbackTest,
+    AutofillAiManagerDoneFallbackTest,
     GetSuggestions_NoPredictionsNoAutofillSuggestions_ReturnsNoInfoOrErrorSuggestion) {
   autofill::FormData form;
   autofill::FormFieldData field;
@@ -596,7 +568,7 @@ TEST_P(
 // for the `field` nor `autofill_suggestions` to fall back to and the no info
 // suggestion was shown before.
 TEST_P(
-    AutofillPredictionImprovementsManagerDoneFallbackTest,
+    AutofillAiManagerDoneFallbackTest,
     GetSuggestions_NoPredictionsNoAutofillSuggestionsNoInfoWasShown_ReturnsTriggerSuggestion) {
   autofill::FormData form;
   autofill::FormFieldData field;
@@ -610,29 +582,29 @@ TEST_P(
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    AutofillPredictionImprovementsManagerDoneFallbackTest,
+    AutofillAiManagerDoneFallbackTest,
     testing::Values(
-        FallbackTestData{.prediction_retrieval_state =
-                             AutofillPredictionImprovementsManager::
-                                 PredictionRetrievalState::kDoneSuccess,
-                         .trigger_automatically = false},
-        FallbackTestData{.prediction_retrieval_state =
-                             AutofillPredictionImprovementsManager::
-                                 PredictionRetrievalState::kDoneSuccess,
-                         .trigger_automatically = true},
-        FallbackTestData{.prediction_retrieval_state =
-                             AutofillPredictionImprovementsManager::
-                                 PredictionRetrievalState::kDoneError,
-                         .trigger_automatically = false},
-        FallbackTestData{.prediction_retrieval_state =
-                             AutofillPredictionImprovementsManager::
-                                 PredictionRetrievalState::kDoneError,
-                         .trigger_automatically = true}));
+        FallbackTestData{
+            .prediction_retrieval_state =
+                AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
+            .trigger_automatically = false},
+        FallbackTestData{
+            .prediction_retrieval_state =
+                AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
+            .trigger_automatically = true},
+        FallbackTestData{
+            .prediction_retrieval_state =
+                AutofillAiManager::PredictionRetrievalState::kDoneError,
+            .trigger_automatically = false},
+        FallbackTestData{
+            .prediction_retrieval_state =
+                AutofillAiManager::PredictionRetrievalState::kDoneError,
+            .trigger_automatically = true}));
 
 // Tests that cached filling suggestions for prediction improvements are shown
 // before autofill suggestions.
 TEST_F(
-    AutofillPredictionImprovementsManagerTest,
+    AutofillAiManagerTest,
     GetSuggestions_DoneSuccessWithAutofillSuggestions_PredictionImprovementsSuggestionsShownBeforeAutofill) {
   std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry),
                                                   Suggestion(kSeparator),
@@ -654,8 +626,7 @@ TEST_F(
                              {u"value", u"label", /*is_focusable=*/true}}});
   test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::
-          kDoneSuccess);
+      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
 
   EXPECT_THAT(manager().GetSuggestions(autofill_suggestions, form,
                                        form.fields().front()),
@@ -666,7 +637,7 @@ TEST_F(
 
 // Tests that the filling suggestion incl. its children is created as expected
 // if state is `kDoneSuccess`.
-TEST_F(AutofillPredictionImprovementsManagerTest,
+TEST_F(AutofillAiManagerTest,
        GetSuggestions_DoneSuccess_ReturnsFillingSuggestions) {
   const std::u16string trigger_field_value = u"Jane";
   const std::u16string trigger_field_label = u"First name";
@@ -696,8 +667,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
        {u"value", u"label", form.fields()[2].IsFocusable()}}});
   test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::
-          kDoneSuccess);
+      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
 
   EXPECT_THAT(
       manager().GetSuggestions(/*autofill_suggestions=*/{}, form,
@@ -735,7 +705,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // Tests that the filling suggestion label is correct when only one field can be
 // filled.
 TEST_F(
-    AutofillPredictionImprovementsManagerTest,
+    AutofillAiManagerTest,
     GetSuggestions_DoneSuccessOneFieldCanBeFilled_CreateLabelThatContainsOnlyOneFieldData) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -746,8 +716,7 @@ TEST_F(
        {u"Jane", u"First name", form.fields()[0].IsFocusable()}}});
   test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::
-          kDoneSuccess);
+      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
 
   const std::vector<Suggestion> suggestions = manager().GetSuggestions(
       /*autofill_suggestions=*/{}, form, form.fields()[0]);
@@ -758,7 +727,7 @@ TEST_F(
 // Tests that the filling suggestion label is correct when 3 fields can be
 // filled.
 TEST_F(
-    AutofillPredictionImprovementsManagerTest,
+    AutofillAiManagerTest,
     GetSuggestions_DoneSuccessThreeFieldsCanBeFilled_UserSingularAndMoreString) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -778,8 +747,7 @@ TEST_F(
        {u"33", u"state", form.fields()[2].IsFocusable(), u"West Virginia"}}});
   test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::
-          kDoneSuccess);
+      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
 
   const std::vector<Suggestion> suggestions = manager().GetSuggestions(
       /*autofill_suggestions=*/{}, form, form.fields()[0]);
@@ -791,7 +759,7 @@ TEST_F(
 // Tests that the filling suggestion label is correct when more than 3 fields
 // can be filled.
 TEST_F(
-    AutofillPredictionImprovementsManagerTest,
+    AutofillAiManagerTest,
     GetSuggestions_DoneSuccessMoreThanThreeFieldsCanBeFilled_UserPluralAndMoreString) {
   autofill::test::FormDescription form_description = {
       .fields = {
@@ -815,8 +783,7 @@ TEST_F(
        {u"33", u"state", form.fields()[3].IsFocusable(), u"West Virginia"}}});
   test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::
-          kDoneSuccess);
+      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
 
   const std::vector<Suggestion> suggestions =
       manager().GetSuggestions({}, form, form.fields()[0]);
@@ -827,7 +794,7 @@ TEST_F(
 
 // Tests that on field focus the potentially new state of the form fields'
 // focusability is set in the cache.
-TEST_F(AutofillPredictionImprovementsManagerTest,
+TEST_F(AutofillAiManagerTest,
        GetSuggestions_kDoneSuccess_UpdatesFieldFocusabilityInCache) {
   // Set up manager to reflect having received predictions successfully for two
   // form fields, one of which is not focusable at the time of retrieval.
@@ -841,8 +808,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       {form.fields()[1].global_id(),
        {u"Doe", u"Last name", form.fields()[1].IsFocusable()}}});
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::
-          kDoneSuccess);
+      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
 
   // Now swap focusability of the two form fields.
   test_api(form).fields()[0].set_is_focusable(!form.fields()[0].IsFocusable());
@@ -856,26 +822,23 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
               Optional(ElementsAre(
                   Pair(form.fields()[0].global_id(),
                        Field("Prediction::is_focusable",
-                             &AutofillPredictionImprovementsFillingEngine::
-                                 Prediction::is_focusable,
+                             &AutofillAiFillingEngine::Prediction::is_focusable,
                              form.fields()[0].IsFocusable())),
                   Pair(form.fields()[1].global_id(),
                        Field("Prediction::is_focusable",
-                             &AutofillPredictionImprovementsFillingEngine::
-                                 Prediction::is_focusable,
+                             &AutofillAiFillingEngine::Prediction::is_focusable,
                              form.fields()[1].IsFocusable())))));
 }
 
-class AutofillPredictionImprovementsManagerUserFeedbackTest
-    : public AutofillPredictionImprovementsManagerTest,
-      public testing::WithParamInterface<
-          AutofillPredictionImprovementsManager::UserFeedback> {};
+class AutofillAiManagerUserFeedbackTest
+    : public AutofillAiManagerTest,
+      public testing::WithParamInterface<AutofillAiManager::UserFeedback> {};
 
 // Given a non-null feedback id, tests that an attempt to open the feedback page
 // is only made if `UserFeedback::kThumbsDown` was received.
-TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
+TEST_P(AutofillAiManagerUserFeedbackTest,
        TryToOpenFeedbackPageNeverCalledIfUserFeedbackThumbsDown) {
-  using UserFeedback = AutofillPredictionImprovementsManager::UserFeedback;
+  using UserFeedback = AutofillAiManager::UserFeedback;
   test_api(manager()).SetFormFillingPredictionsModelExecutionId(
       "randomstringrjb");
   EXPECT_CALL(client(), TryToOpenFeedbackPage)
@@ -884,7 +847,7 @@ TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
 }
 
 // Tests that the feedback page will never be opened if no feedback id is set.
-TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
+TEST_P(AutofillAiManagerUserFeedbackTest,
        TryToOpenFeedbackPageNeverCalledIfNoFeedbackIdPresent) {
   test_api(manager()).SetFormFillingPredictionsModelExecutionId(std::nullopt);
   EXPECT_CALL(client(), TryToOpenFeedbackPage).Times(0);
@@ -893,20 +856,18 @@ TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    AutofillPredictionImprovementsManagerUserFeedbackTest,
-    testing::Values(
-        AutofillPredictionImprovementsManager::UserFeedback::kThumbsUp,
-        AutofillPredictionImprovementsManager::UserFeedback::kThumbsDown));
+    AutofillAiManagerUserFeedbackTest,
+    testing::Values(AutofillAiManager::UserFeedback::kThumbsUp,
+                    AutofillAiManager::UserFeedback::kThumbsDown));
 
-class AutofillPredictionImprovementsManagerImportFormTest
-    : public AutofillPredictionImprovementsManagerTest,
+class AutofillAiManagerImportFormTest
+    : public AutofillAiManagerTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  AutofillPredictionImprovementsManagerImportFormTest() {
+  AutofillAiManagerImportFormTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillPredictionImprovements,
-        {{"should_extract_ax_tree_for_forms_annotations",
-          should_extract_ax_tree() ? "true" : "false"}});
+        kAutofillAi, {{"should_extract_ax_tree_for_forms_annotations",
+                       should_extract_ax_tree() ? "true" : "false"}});
   }
 
   bool should_import_form_data() const { return std::get<0>(GetParam()); }
@@ -918,7 +879,7 @@ class AutofillPredictionImprovementsManagerImportFormTest
 
 // Tests that `import_form_callback` is run with added entries if the import was
 // successful.
-TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
+TEST_P(AutofillAiManagerImportFormTest,
        MaybeImportFormRunsCallbackWithAddedEntriesWhenImportWasSuccessful) {
   user_annotations_service_.AddHostToFormAnnotationsAllowlist(url().host());
   autofill::test::FormDescription form_description = {
@@ -954,7 +915,7 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
       autofill_callback;
   if (should_import_form_data()) {
     EXPECT_CALL(client(),
-                ShowSaveAutofillPredictionImprovementsBubble(
+                ShowSaveAutofillAiBubble(
                     Pointee(Field(&user_annotations::FormAnnotationResponse::
                                       to_be_upserted_entries,
                                   Not(IsEmpty()))),
@@ -962,8 +923,7 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
     EXPECT_CALL(autofill_callback,
                 Run(Pointer(eligible_form_structure.get()), true));
   } else {
-    EXPECT_CALL(client(), ShowSaveAutofillPredictionImprovementsBubble)
-        .Times(0);
+    EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
     EXPECT_CALL(autofill_callback,
                 Run(Pointer(eligible_form_structure.get()), false));
   }
@@ -973,15 +933,14 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    AutofillPredictionImprovementsManagerImportFormTest,
+    AutofillAiManagerImportFormTest,
     testing::Combine(/*should_import_form_data=*/testing::Bool(),
                      /*extract_ax_tree=*/testing::Bool()));
 
 // Tests that if the pref is disabled, `import_form_callback` is run with an
 // empty list of entries and nothing is forwarded to the
 // `user_annotations_service_`.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       FormNotImportedWhenPrefDisabled) {
+TEST_F(AutofillAiManagerTest, FormNotImportedWhenPrefDisabled) {
   user_annotations_service_.AddHostToFormAnnotationsAllowlist(url().host());
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -1008,10 +967,9 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
                               bool autofill_ai_shows_bubble)>
       autofill_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillPredictionImprovementsBubble).Times(0);
+  EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
   EXPECT_CALL(client(), GetAXTree).Times(0);
-  EXPECT_CALL(client(), IsAutofillPredictionImprovementsEnabledPref)
-      .WillOnce(Return(false));
+  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
   EXPECT_CALL(autofill_callback,
               Run(Pointer(eligible_form_structure.get()), false))
       .Times(1);
@@ -1021,19 +979,18 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 
 // Tests that `import_form_callback` is run with an empty list of entries when
 // `user_annotations::ShouldAddFormSubmissionForURL()` returns `false`.
-TEST_F(AutofillPredictionImprovementsManagerTest,
+TEST_F(AutofillAiManagerTest,
        MaybeImportFormRunsCallbackWithFalseWhenImportIsNotAttempted) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements,
-      {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
+      kAutofillAi, {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
   auto ineligible_form_structure =
       std::make_unique<autofill::FormStructure>(autofill::FormData());
 
   base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
                               bool autofill_ai_shows_bubble)>
       autofill_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillPredictionImprovementsBubble).Times(0);
+  EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
   EXPECT_CALL(autofill_callback,
               Run(Pointer(ineligible_form_structure.get()), false))
       .Times(1);
@@ -1043,42 +1000,35 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 
 // Tests that the callback passed to `HasDataStored()` is called with
 // `HasData(true)` if there's data stored in the user annotations.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       HasDataStoredReturnsTrueIfDataIsStored) {
-  base::MockCallback<AutofillPredictionImprovementsManager::HasDataCallback>
-      has_data_callback;
+TEST_F(AutofillAiManagerTest, HasDataStoredReturnsTrueIfDataIsStored) {
+  base::MockCallback<AutofillAiManager::HasDataCallback> has_data_callback;
   user_annotations_service_.ReplaceAllEntries(
       {optimization_guide::proto::UserAnnotationsEntry()});
   manager().HasDataStored(has_data_callback.Get());
-  EXPECT_CALL(has_data_callback,
-              Run(AutofillPredictionImprovementsManager::HasData(true)));
+  EXPECT_CALL(has_data_callback, Run(AutofillAiManager::HasData(true)));
   manager().HasDataStored(has_data_callback.Get());
 }
 
 // Tests that the callback passed to `HasDataStored()` is called with
 // `HasData(false)` if there's no data stored in the user annotations.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       HasDataStoredReturnsFalseIfDataIsNotStored) {
-  base::MockCallback<AutofillPredictionImprovementsManager::HasDataCallback>
-      has_data_callback;
+TEST_F(AutofillAiManagerTest, HasDataStoredReturnsFalseIfDataIsNotStored) {
+  base::MockCallback<AutofillAiManager::HasDataCallback> has_data_callback;
   user_annotations_service_.ReplaceAllEntries({});
   manager().HasDataStored(has_data_callback.Get());
-  EXPECT_CALL(has_data_callback,
-              Run(AutofillPredictionImprovementsManager::HasData(false)));
+  EXPECT_CALL(has_data_callback, Run(AutofillAiManager::HasData(false)));
   manager().HasDataStored(has_data_callback.Get());
 }
 
 // Tests that the prediction improvements settings page is opened when the
 // manage prediction improvements link is clicked.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       OpenSettingsWhenManagePILinkIsClicked) {
+TEST_F(AutofillAiManagerTest, OpenSettingsWhenManagePILinkIsClicked) {
   EXPECT_CALL(client(), OpenPredictionImprovementsSettings);
   manager().UserClickedLearnMore();
 }
 
 // Tests that calling `OnLoadingSuggestionShown()` is a no-op if the
 // `kTriggerAutomatically` parameter is disabled.
-TEST_F(AutofillPredictionImprovementsManagerTest,
+TEST_F(AutofillAiManagerTest,
        OnLoadingSuggestionShownDoesNothingIfParamNotEnabled) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -1086,8 +1036,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                   .label = u"First Name",
                   .value = u"Jane"}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<
-      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
+  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
   EXPECT_CALL(update_suggestions_callback, Run).Times(0);
   EXPECT_CALL(client(), GetAXTree).Times(0);
@@ -1098,7 +1047,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 
 // Tests that the regular Autofill flow continues if predictions are being
 // retrieved for form A, while a field of form B is focused.
-TEST_F(AutofillPredictionImprovementsManagerTest,
+TEST_F(AutofillAiManagerTest,
        GetSuggestionsReturnsEmptyVectorIfRequestedFromNewFormWhileLoading) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -1120,7 +1069,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // Tests that the trigger suggestion is shown if predictions were retrieved for
 // form A and now a field of form B is focused.
 TEST_F(
-    AutofillPredictionImprovementsManagerTest,
+    AutofillAiManagerTest,
     GetSuggestionsReturnsTriggerSuggestionIfRequestedFromNewFormAndNotLoading) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -1141,8 +1090,7 @@ TEST_F(
 // TODO(crbug.com/376016081): Refactor test to expect if suggestions are
 // included so that `ShouldSkipAutofillSuggestion()` can be move to the
 // anonymous namespace.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       ShouldSkipAutofillSuggestion) {
+TEST_F(AutofillAiManagerTest, ShouldSkipAutofillSuggestion) {
   Suggestion autofill_suggestion = Suggestion(kAddressEntry);
   autofill_suggestion.payload =
       Suggestion::AutofillProfilePayload(Suggestion::Guid("guid"));
@@ -1171,13 +1119,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       ShouldSkipAutofillSuggestion(client(), cache, form, autofill_suggestion));
 }
 
-class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest
-    : public BaseAutofillPredictionImprovementsManagerTest,
+class AutofillAiManagerTriggerAutomaticallyTest
+    : public BaseAutofillAiManagerTest,
       public testing::WithParamInterface<bool> {
  public:
-  AutofillPredictionImprovementsManagerTriggerAutomaticallyTest() {
+  AutofillAiManagerTriggerAutomaticallyTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillPredictionImprovements,
+        kAutofillAi,
         {{"skip_allowlist", "true"},
          {"trigger_automatically", "true"},
          {"extract_ax_tree_for_predictions", GetParam() ? "true" : "false"}});
@@ -1194,13 +1142,12 @@ class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest
 // Tests that calling `OnLoadingSuggestionShown()` results in retrieving the AX
 // tree (implying predictions will be attempted to be retrieved) if the
 // `kTriggerAutomatically` parameter is enabled.
-TEST_P(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
+TEST_P(AutofillAiManagerTriggerAutomaticallyTest,
        OnLoadingSuggestionShownGetsAXTreeIfParamEnabled) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<
-      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
+  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
   if (GetParam()) {
     EXPECT_CALL(client(), GetAXTree);
@@ -1210,27 +1157,25 @@ TEST_P(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
                                update_suggestions_callback.Get());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
-    testing::Bool());
+INSTANTIATE_TEST_SUITE_P(,
+                         AutofillAiManagerTriggerAutomaticallyTest,
+                         testing::Bool());
 
 // Tests that the loading suggestion is returned by `GetSuggestions()` when the
 // class is in `kReady` state.
-TEST_P(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
+TEST_P(AutofillAiManagerTriggerAutomaticallyTest,
        GetSuggestions_Ready_ReturnsLoadingSuggestion) {
   autofill::FormData form;
   autofill::FormFieldData field;
   test_api(manager()).SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState::kReady);
+      AutofillAiManager::PredictionRetrievalState::kReady);
   EXPECT_THAT(manager().GetSuggestions({}, form, field),
               ElementsAre(HasType(kPredictionImprovementsLoadingState)));
 }
 
-class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
-    : public BaseAutofillPredictionImprovementsManagerTest {
+class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
  public:
-  IsFormAndFieldEligibleAutofillPredictionImprovementsTest() {
+  IsFormAndFieldEligibleAutofillAiTest() {
     ON_CALL(client(), GetLastCommittedOrigin)
         .WillByDefault(ReturnRef(origin()));
     autofill::test::FormDescription form_description = {
@@ -1258,10 +1203,9 @@ class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
   }
 };
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
-       IsNotEligibleIfFlagDisabled) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfFlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kAutofillPredictionImprovements);
+  scoped_feature_list.InitAndDisableFeature(kAutofillAi);
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
@@ -1269,13 +1213,11 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       *form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
-       IsNotEligibleIfDeciderIsNull) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfDeciderIsNull) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "true"}});
-  AutofillPredictionImprovementsManager manager{&client(), nullptr,
-                                                &strike_database()};
+      kAutofillAi, {{"skip_allowlist", "true"}});
+  AutofillAiManager manager{&client(), nullptr, &strike_database()};
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
@@ -1283,11 +1225,10 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       *form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
-       IsEligibleIfSkipAllowlistIsTrue) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsEligibleIfSkipAllowlistIsTrue) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "true"}});
+      kAutofillAi, {{"skip_allowlist", "true"}});
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
@@ -1296,14 +1237,12 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       *form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
-       IsNotEligibleIfPrefIsDisabled) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "true"}});
+      kAutofillAi, {{"skip_allowlist", "true"}});
 
-  EXPECT_CALL(client(), IsAutofillPredictionImprovementsEnabledPref)
-      .WillOnce(Return(false));
+  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
@@ -1312,11 +1251,11 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       *form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
        IsNotEligibleIfOptimizationGuideCannotBeApplied) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "false"}});
+      kAutofillAi, {{"skip_allowlist", "false"}});
   ON_CALL(decider(), CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
@@ -1328,11 +1267,11 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       *form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
        IsEligibleIfOptimizationGuideCanBeApplied) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "false"}});
+      kAutofillAi, {{"skip_allowlist", "false"}});
   ON_CALL(decider(), CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
@@ -1343,11 +1282,10 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       *form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
-       IsNotEligibleForNotHttps) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNotHttps) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "false"}});
+      kAutofillAi, {{"skip_allowlist", "false"}});
 
   std::unique_ptr<autofill::FormStructure> form =
       CreateEligibleForm(GURL("http://http.com"));
@@ -1357,11 +1295,10 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       *form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
-       IsNotEligibleOnEmptyForm) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleOnEmptyForm) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "true"}});
+      kAutofillAi, {{"skip_allowlist", "true"}});
 
   autofill::FormData form_data;
   autofill::FormStructure form(form_data);
@@ -1370,11 +1307,11 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
   EXPECT_FALSE(manager().IsPredictionImprovementsEligible(form, field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+TEST_F(IsFormAndFieldEligibleAutofillAiTest,
        PredictionImprovementsEligibility_Eligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "true"}});
+      kAutofillAi, {{"skip_allowlist", "true"}});
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
@@ -1383,11 +1320,10 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       *form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
-       IsNotEligibleForNonEligibleUser) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNonEligibleUser) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillPredictionImprovements, {{"skip_allowlist", "true"}});
+      kAutofillAi, {{"skip_allowlist", "true"}});
 
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
@@ -1398,4 +1334,4 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
 }
 
 }  // namespace
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

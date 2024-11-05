@@ -4,12 +4,10 @@
 
 #include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-MockAutofillPredictionImprovementsClient::
-    MockAutofillPredictionImprovementsClient() = default;
+MockAutofillAiClient::MockAutofillAiClient() = default;
 
-MockAutofillPredictionImprovementsClient::
-    ~MockAutofillPredictionImprovementsClient() = default;
+MockAutofillAiClient::~MockAutofillAiClient() = default;
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

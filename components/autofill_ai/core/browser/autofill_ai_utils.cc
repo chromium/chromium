@@ -8,7 +8,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 using autofill::AutofillField;
 using autofill::FieldTypeGroup;
@@ -105,4 +105,4 @@ bool IsFormEligibleForImportByFieldCriteria(
          kMinimumNumberOfEligibleFieldsForImport.Get();
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

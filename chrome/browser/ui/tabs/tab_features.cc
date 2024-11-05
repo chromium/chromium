@@ -103,9 +103,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<permissions::PermissionIndicatorsTabData>(
             tab.GetContents());
 
-    chrome_autofill_prediction_improvements_client_ =
-        ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
-            tab.GetContents(), profile);
+    chrome_autofill_ai_client_ =
+        ChromeAutofillAiClient::MaybeCreateForWebContents(tab.GetContents(),
+                                                          profile);
 
     pinned_translate_action_listener_ =
         std::make_unique<PinnedTranslateActionListener>(&tab);
@@ -211,10 +211,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     commerce_ui_tab_helper_.reset();
     commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(new_contents, profile);
   }
-  if (chrome_autofill_prediction_improvements_client_) {
-    chrome_autofill_prediction_improvements_client_ =
-        ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
-            new_contents, profile);
+  if (chrome_autofill_ai_client_) {
+    chrome_autofill_ai_client_ =
+        ChromeAutofillAiClient::MaybeCreateForWebContents(new_contents,
+                                                          profile);
   }
 
   if (privacy_sandbox_tab_observer_) {

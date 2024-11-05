@@ -17,18 +17,17 @@ struct Suggestion;
 
 }  // namespace autofill
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-class AutofillPredictionImprovementsClient;
+class AutofillAiClient;
 
 // Returns true if the type of `autofill_suggestion` should not be added to
 // prediction improvements or if `autofill_suggestion` likely matches the cached
 // prediction improvements.
 // TODO(crbug.com/376016081): Move to anonymous namespace.
 bool ShouldSkipAutofillSuggestion(
-    AutofillPredictionImprovementsClient& client,
-    const AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId&
-        cache,
+    AutofillAiClient& client,
+    const AutofillAiFillingEngine::PredictionsByGlobalId& cache,
     const autofill::FormData& form,
     const autofill::Suggestion& autofill_suggestion);
 
@@ -41,9 +40,8 @@ std::vector<autofill::Suggestion> CreateLoadingSuggestions();
 // Creates filling suggestions listing the ones for prediction improvements
 // first and `autofill_suggestions` afterwards.
 std::vector<autofill::Suggestion> CreateFillingSuggestions(
-    AutofillPredictionImprovementsClient& client,
-    const AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId&
-        cache,
+    AutofillAiClient& client,
+    const AutofillAiFillingEngine::PredictionsByGlobalId& cache,
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     const std::vector<autofill::Suggestion>& autofill_suggestions);
@@ -56,6 +54,6 @@ std::vector<autofill::Suggestion> CreateErrorSuggestions();
 // or Autocomplete).
 std::vector<autofill::Suggestion> CreateNoInfoSuggestions();
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_SUGGESTIONS_H_

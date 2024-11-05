@@ -24,40 +24,40 @@ namespace user_annotations {
 class UserAnnotationsService;
 }
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-class AutofillPredictionImprovementsFillingEngine;
-class AutofillPredictionImprovementsManager;
+class AutofillAiFillingEngine;
+class AutofillAiManager;
 
 // An interface for embedder actions, e.g. Chrome on Desktop.
 //
 // A client should be created only if
-// `IsAutofillPredictionImprovementsSupported()`. However,
-// `IsAutofillPredictionImprovementsSupported()` is not necessarily a constant
+// `IsAutofillAiSupported()`. However,
+// `IsAutofillAiSupported()` is not necessarily a constant
 // over the lifetime of the client. For example, the user may disable Autofill
 // in the settings while the client is alive.
-class AutofillPredictionImprovementsClient {
+class AutofillAiClient {
  public:
   // The callback to extract the accessibility tree snapshot.
   using AXTreeCallback =
       base::OnceCallback<void(optimization_guide::proto::AXTreeUpdate)>;
 
-  virtual ~AutofillPredictionImprovementsClient() = default;
+  virtual ~AutofillAiClient() = default;
 
   // Returns the AutofillClient that is scoped to the same object (e.g., tab) as
-  // this AutofillPredictionImprovementsClient.
+  // this AutofillAiClient.
   virtual autofill::AutofillClient& GetAutofillClient() = 0;
 
   // Calls `callback` with the accessibility tree snapshot.
   virtual void GetAXTree(AXTreeCallback callback) = 0;
 
-  // Returns the `AutofillPredictionImprovementsManager` associated with this
+  // Returns the `AutofillAiManager` associated with this
   // client.
-  virtual AutofillPredictionImprovementsManager& GetManager() = 0;
+  virtual AutofillAiManager& GetManager() = 0;
 
   // Returns the filling engine associated with the client's web contents.
   // TODO(crbug.com/372432481): Make this return a reference.
-  virtual AutofillPredictionImprovementsFillingEngine* GetFillingEngine() = 0;
+  virtual AutofillAiFillingEngine* GetFillingEngine() = 0;
 
   // Returns the last committed URL of the primary main frame.
   virtual const GURL& GetLastCommittedURL() = 0;
@@ -74,12 +74,12 @@ class AutofillPredictionImprovementsClient {
   GetUserAnnotationsService() = 0;
 
   // Returns whether the feature is enabled in the prefs
-  // (`autofill::prefs::kAutofillPredictionImprovementsEnabled`).
+  // (`autofill::prefs::kAutofillAiEnabled`).
   //
-  // This is different from `IsAutofillPredictionImprovementsSupported()`, which
+  // This is different from `IsAutofillAiSupported()`, which
   // checks if the user could enable the feature in the first case (if not, the
   // client is not instantiated in the first place).
-  virtual bool IsAutofillPredictionImprovementsEnabledPref() const = 0;
+  virtual bool IsAutofillAiEnabledPref() const = 0;
 
   // Opens the feedback page if the feature is allowed for feedback.
   virtual void TryToOpenFeedbackPage(const std::string& feedback_id) = 0;
@@ -107,13 +107,13 @@ class AutofillPredictionImprovementsClient {
 
   // Shows a bubble asking whether the user wants to save prediction
   // improvements data.
-  virtual void ShowSaveAutofillPredictionImprovementsBubble(
+  virtual void ShowSaveAutofillAiBubble(
       std::unique_ptr<user_annotations::FormAnnotationResponse>
           form_annotation_response,
       user_annotations::PromptAcceptanceCallback
           prompt_acceptance_callback) = 0;
 };
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_CLIENT_H_

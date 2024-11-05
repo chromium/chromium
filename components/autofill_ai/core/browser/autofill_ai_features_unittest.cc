@@ -14,7 +14,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 namespace {
 
 using optimization_guide::model_execution::prefs::
@@ -35,13 +35,12 @@ class AutofillPredictionSettingsPolicyTest
   TestingPrefServiceSimple& prefs() { return prefs_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kAutofillPredictionImprovements};
+  base::test::ScopedFeatureList scoped_feature_list_{kAutofillAi};
   TestingPrefServiceSimple prefs_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    AutofillPredictionImprovementsFeaturesTest,
+    AutofillAiFeaturesTest,
     AutofillPredictionSettingsPolicyTest,
     testing::Values(
         GetAutofillPredictionSettingsPolicyParam{
@@ -69,8 +68,7 @@ INSTANTIATE_TEST_SUITE_P(
             .autofill_enabled = false,
             .expectation = false}));
 
-TEST_P(AutofillPredictionSettingsPolicyTest,
-       IsAutofillPredictionImprovementsSupported) {
+TEST_P(AutofillPredictionSettingsPolicyTest, IsAutofillAiSupported) {
   const char* kEnterprisePref = optimization_guide::prefs::
       kAutofillPredictionImprovementsEnterprisePolicyAllowed;
   const char* kAutofillPref = autofill::prefs::kAutofillProfileEnabled;
@@ -82,10 +80,9 @@ TEST_P(AutofillPredictionSettingsPolicyTest,
                          base::Value(base::to_underlying(GetParam().policy)));
   prefs().SetUserPref(kAutofillPref, base::Value(GetParam().autofill_enabled));
 
-  EXPECT_EQ(IsAutofillPredictionImprovementsSupported(&prefs()),
-            GetParam().expectation);
+  EXPECT_EQ(IsAutofillAiSupported(&prefs()), GetParam().expectation);
 }
 #endif
 
 }  // namespace
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

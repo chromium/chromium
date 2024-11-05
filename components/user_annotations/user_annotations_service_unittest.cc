@@ -86,8 +86,7 @@ class UserAnnotationsServiceTest : public testing::Test,
       feature_parameters["persist_annotations"] = "true";
     }
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        autofill_prediction_improvements::kAutofillPredictionImprovements,
-        feature_parameters);
+        autofill_ai::kAutofillAi, feature_parameters);
   }
 
   bool ShouldPersistAnnotations() const { return GetParam(); }

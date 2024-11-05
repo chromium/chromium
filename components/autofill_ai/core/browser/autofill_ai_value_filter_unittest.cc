@@ -8,7 +8,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 namespace {
 
@@ -136,4 +136,4 @@ INSTANTIATE_TEST_SUITE_P(
 
 }  // namespace
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

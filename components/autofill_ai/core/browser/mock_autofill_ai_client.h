@@ -8,31 +8,22 @@
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-class MockAutofillPredictionImprovementsClient
-    : public AutofillPredictionImprovementsClient {
+class MockAutofillAiClient : public AutofillAiClient {
  public:
-  MockAutofillPredictionImprovementsClient();
-  MockAutofillPredictionImprovementsClient(
-      const MockAutofillPredictionImprovementsClient&) = delete;
-  MockAutofillPredictionImprovementsClient& operator=(
-      const MockAutofillPredictionImprovementsClient&) = delete;
-  ~MockAutofillPredictionImprovementsClient() override;
+  MockAutofillAiClient();
+  MockAutofillAiClient(const MockAutofillAiClient&) = delete;
+  MockAutofillAiClient& operator=(const MockAutofillAiClient&) = delete;
+  ~MockAutofillAiClient() override;
 
   MOCK_METHOD(autofill::AutofillClient&, GetAutofillClient, (), (override));
   MOCK_METHOD(void,
               GetAXTree,
-              (AutofillPredictionImprovementsClient::AXTreeCallback callback),
+              (AutofillAiClient::AXTreeCallback callback),
               (override));
-  MOCK_METHOD(AutofillPredictionImprovementsManager&,
-              GetManager,
-              (),
-              (override));
-  MOCK_METHOD(AutofillPredictionImprovementsFillingEngine*,
-              GetFillingEngine,
-              (),
-              (override));
+  MOCK_METHOD(AutofillAiManager&, GetManager, (), (override));
+  MOCK_METHOD(AutofillAiFillingEngine*, GetFillingEngine, (), (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
   MOCK_METHOD(const url::Origin&, GetLastCommittedOrigin, (), (override));
   MOCK_METHOD(std::string, GetTitle, (), (override));
@@ -40,10 +31,7 @@ class MockAutofillPredictionImprovementsClient
               GetUserAnnotationsService,
               (),
               (override));
-  MOCK_METHOD(bool,
-              IsAutofillPredictionImprovementsEnabledPref,
-              (),
-              (const override));
+  MOCK_METHOD(bool, IsAutofillAiEnabledPref, (), (const override));
   MOCK_METHOD(void,
               TryToOpenFeedbackPage,
               (const std::string& feedback_id),
@@ -62,13 +50,13 @@ class MockAutofillPredictionImprovementsClient
               (override));
   MOCK_METHOD(
       void,
-      ShowSaveAutofillPredictionImprovementsBubble,
+      ShowSaveAutofillAiBubble,
       (std::unique_ptr<user_annotations::FormAnnotationResponse>
            form_annotation_response,
        user_annotations::PromptAcceptanceCallback prompt_acceptance_callback),
       (override));
 };
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_MOCK_AUTOFILL_AI_CLIENT_H_

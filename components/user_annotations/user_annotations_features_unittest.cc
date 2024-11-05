@@ -18,7 +18,7 @@ using ::testing::UnorderedElementsAre;
 TEST(UserAnnotationsFeaturesTest, GetAllowedHostsForFormsAnnotations) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      autofill_prediction_improvements::kAutofillPredictionImprovements,
+      autofill_ai::kAutofillAi,
       {{"allowed_hosts_for_form_submissions", "example.com,otherhost.com"}});
   EXPECT_THAT(GetAllowedHostsForFormsAnnotations(),
               UnorderedElementsAre("example.com", "otherhost.com"));

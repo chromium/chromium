@@ -67,7 +67,7 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
       views::BoxLayout::Orientation::kVertical);
   feedback_outer_container->SetMainAxisAlignment(
       views::LayoutAlignment::kStart);
-  if (autofill_prediction_improvements::kShowDetailsText.Get()) {
+  if (autofill_ai::kShowDetailsText.Get()) {
     feedback_outer_container->AddChildView(
         views::Builder<views::Label>()
             .SetText(l10n_util::GetStringUTF16(

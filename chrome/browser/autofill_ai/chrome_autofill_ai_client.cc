@@ -44,10 +44,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-ChromeAutofillPredictionImprovementsClient::
-    ChromeAutofillPredictionImprovementsClient(
-        content::WebContents* web_contents,
-        Profile* profile)
+ChromeAutofillAiClient::ChromeAutofillAiClient(
+    content::WebContents* web_contents,
+    Profile* profile)
     : web_contents_(CHECK_DEREF(web_contents)),
       prefs_(CHECK_DEREF(profile->GetPrefs())),
       prediction_improvements_manager_{
@@ -55,35 +54,30 @@ ChromeAutofillPredictionImprovementsClient::
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
           autofill::StrikeDatabaseFactory::GetForProfile(profile),
       } {
-  DCHECK(autofill_prediction_improvements::
-             IsAutofillPredictionImprovementsSupported(&*prefs_));
+  DCHECK(autofill_ai::IsAutofillAiSupported(&*prefs_));
 }
 
-ChromeAutofillPredictionImprovementsClient::
-    ~ChromeAutofillPredictionImprovementsClient() = default;
+ChromeAutofillAiClient::~ChromeAutofillAiClient() = default;
 
 // static
-std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
-ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
+std::unique_ptr<ChromeAutofillAiClient>
+ChromeAutofillAiClient::MaybeCreateForWebContents(
     content::WebContents* web_contents,
     Profile* profile) {
-  if (!autofill_prediction_improvements::
-          IsAutofillPredictionImprovementsSupported(profile->GetPrefs())) {
+  if (!autofill_ai::IsAutofillAiSupported(profile->GetPrefs())) {
     return nullptr;
   }
-  return base::WrapUnique<ChromeAutofillPredictionImprovementsClient>(
-      new ChromeAutofillPredictionImprovementsClient(web_contents, profile));
+  return base::WrapUnique<ChromeAutofillAiClient>(
+      new ChromeAutofillAiClient(web_contents, profile));
 }
 
-autofill::ContentAutofillClient&
-ChromeAutofillPredictionImprovementsClient::GetAutofillClient() {
+autofill::ContentAutofillClient& ChromeAutofillAiClient::GetAutofillClient() {
   // TODO: crbug.com/371534239 - Make the lifecycle relationships explicit.
   return CHECK_DEREF(
       autofill::ContentAutofillClient::FromWebContents(&*web_contents_));
 }
 
-void ChromeAutofillPredictionImprovementsClient::GetAXTree(
-    AXTreeCallback callback) {
+void ChromeAutofillAiClient::GetAXTree(AXTreeCallback callback) {
   using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
   base::OnceCallback<ProtoTreeUpdate(ui::AXTreeUpdate&)> processing_callback =
       base::BindOnce([](ui::AXTreeUpdate& ax_tree_update) {
@@ -100,53 +94,49 @@ void ChromeAutofillPredictionImprovementsClient::GetAXTree(
       content::WebContents::AXTreeSnapshotPolicy::kSameOriginDirectDescendants);
 }
 
-autofill_prediction_improvements::AutofillPredictionImprovementsManager&
-ChromeAutofillPredictionImprovementsClient::GetManager() {
+autofill_ai::AutofillAiManager& ChromeAutofillAiClient::GetManager() {
   return prediction_improvements_manager_;
 }
 
-autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
-ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
+autofill_ai::AutofillAiFillingEngine*
+ChromeAutofillAiClient::GetFillingEngine() {
   if (!filling_engine_) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     filling_engine_ =
-        std::make_unique<autofill_prediction_improvements::
-                             AutofillPredictionImprovementsFillingEngineImpl>(
+        std::make_unique<autofill_ai::AutofillAiFillingEngineImpl>(
             OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
             UserAnnotationsServiceFactory::GetForProfile(profile));
   }
   return filling_engine_.get();
 }
 
-const GURL& ChromeAutofillPredictionImprovementsClient::GetLastCommittedURL() {
+const GURL& ChromeAutofillAiClient::GetLastCommittedURL() {
   return web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL();
 }
 
-const url::Origin&
-ChromeAutofillPredictionImprovementsClient::GetLastCommittedOrigin() {
+const url::Origin& ChromeAutofillAiClient::GetLastCommittedOrigin() {
   return web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 }
 
-std::string ChromeAutofillPredictionImprovementsClient::GetTitle() {
+std::string ChromeAutofillAiClient::GetTitle() {
   return base::UTF16ToUTF8(web_contents_->GetTitle());
 }
 
 user_annotations::UserAnnotationsService*
-ChromeAutofillPredictionImprovementsClient::GetUserAnnotationsService() {
+ChromeAutofillAiClient::GetUserAnnotationsService() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   return profile ? UserAnnotationsServiceFactory::GetForProfile(profile)
                  : nullptr;
 }
 
-bool ChromeAutofillPredictionImprovementsClient::
-    IsAutofillPredictionImprovementsEnabledPref() const {
+bool ChromeAutofillAiClient::IsAutofillAiEnabledPref() const {
   return prefs_->GetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled);
 }
 
-bool ChromeAutofillPredictionImprovementsClient::CanShowFeedbackPage() {
+bool ChromeAutofillAiClient::CanShowFeedbackPage() {
   OptimizationGuideKeyedService* opt_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
@@ -160,7 +150,7 @@ bool ChromeAutofillPredictionImprovementsClient::CanShowFeedbackPage() {
   return true;
 }
 
-void ChromeAutofillPredictionImprovementsClient::TryToOpenFeedbackPage(
+void ChromeAutofillAiClient::TryToOpenFeedbackPage(
     const std::string& feedback_id) {
   if (!CanShowFeedbackPage()) {
     return;
@@ -181,8 +171,7 @@ void ChromeAutofillPredictionImprovementsClient::TryToOpenFeedbackPage(
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }
 
-void ChromeAutofillPredictionImprovementsClient::
-    OpenPredictionImprovementsSettings() {
+void ChromeAutofillAiClient::OpenPredictionImprovementsSettings() {
   web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(base::StrCat({"chrome://settings/",
@@ -193,11 +182,10 @@ void ChromeAutofillPredictionImprovementsClient::
       /*navigation_handle_callback=*/{});
 }
 
-void ChromeAutofillPredictionImprovementsClient::
-    ShowSaveAutofillPredictionImprovementsBubble(
-        std::unique_ptr<user_annotations::FormAnnotationResponse>
-            form_annotation_response,
-        user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
+void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
+    std::unique_ptr<user_annotations::FormAnnotationResponse>
+        form_annotation_response,
+    user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller =
           autofill::SaveAutofillPredictionImprovementsController::GetOrCreate(
@@ -206,12 +194,10 @@ void ChromeAutofillPredictionImprovementsClient::
         std::move(form_annotation_response->to_be_upserted_entries),
         std::move(prompt_acceptance_callback),
         base::BindRepeating(
-            &autofill_prediction_improvements::
-                AutofillPredictionImprovementsManager::UserClickedLearnMore,
+            &autofill_ai::AutofillAiManager::UserClickedLearnMore,
             prediction_improvements_manager_.GetWeakPtr()),
-        base::BindRepeating(&autofill_prediction_improvements::
-                                AutofillPredictionImprovementsManager::
-                                    SaveAutofillPredictionsUserFeedbackReceived,
+        base::BindRepeating(&autofill_ai::AutofillAiManager::
+                                SaveAutofillPredictionsUserFeedbackReceived,
                             prediction_improvements_manager_.GetWeakPtr(),
                             form_annotation_response->model_execution_id));
     return;
@@ -220,13 +206,12 @@ void ChromeAutofillPredictionImprovementsClient::
   std::move(prompt_acceptance_callback).Run({/*prompt_was_accepted=*/false});
 }
 
-bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {
-  return autofill_prediction_improvements::IsUserEligible(
+bool ChromeAutofillAiClient::IsUserEligible() {
+  return autofill_ai::IsUserEligible(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
 
-autofill::FormStructure*
-ChromeAutofillPredictionImprovementsClient::GetCachedFormStructure(
+autofill::FormStructure* ChromeAutofillAiClient::GetCachedFormStructure(
     const autofill::FormData& form_data) {
   autofill::ContentAutofillDriver* driver =
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
@@ -237,8 +222,7 @@ ChromeAutofillPredictionImprovementsClient::GetCachedFormStructure(
   return driver->GetAutofillManager().FindCachedFormById(form_data.global_id());
 }
 
-std::u16string
-ChromeAutofillPredictionImprovementsClient::GetAutofillNameFillingValue(
+std::u16string ChromeAutofillAiClient::GetAutofillNameFillingValue(
     const std::string& autofill_profile_guid,
     autofill::FieldType field_type,
     const autofill::FormFieldData& field) {

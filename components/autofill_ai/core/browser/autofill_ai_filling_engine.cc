@@ -8,18 +8,17 @@
 
 #include "base/strings/utf_string_conversions.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(
-    std::u16string value,
-    std::u16string label,
-    bool is_focusable)
+AutofillAiFillingEngine::Prediction::Prediction(std::u16string value,
+                                                std::u16string label,
+                                                bool is_focusable)
     : Prediction(std::move(value),
                  std::move(label),
                  is_focusable,
                  std::nullopt) {}
 
-AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(
+AutofillAiFillingEngine::Prediction::Prediction(
     std::u16string value,
     std::u16string label,
     bool is_focusable,
@@ -29,9 +28,8 @@ AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(
       is_focusable(is_focusable),
       select_option_text(std::move(select_option_text)) {}
 
-AutofillPredictionImprovementsFillingEngine::Prediction::Prediction(
-    const Prediction& other) = default;
-AutofillPredictionImprovementsFillingEngine::Prediction::~Prediction() =
+AutofillAiFillingEngine::Prediction::Prediction(const Prediction& other) =
     default;
+AutofillAiFillingEngine::Prediction::~Prediction() = default;
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

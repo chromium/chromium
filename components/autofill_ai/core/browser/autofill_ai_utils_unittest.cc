@@ -10,7 +10,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 namespace {
 
@@ -87,7 +87,7 @@ INSTANTIATE_TEST_SUITE_P(
             .autofill_type = autofill::ADDRESS_HOME_LINE1}));
 
 // Test that an empty form is not eligible.
-TEST(AutofillPredictionImprovementsUtilsTest,
+TEST(AutofillAiUtilsTest,
      IsFormEligibleForFillingByFieldTypeCriteria_EmptyForm) {
   FormData form_data;
   FormStructure form(form_data);
@@ -97,7 +97,7 @@ TEST(AutofillPredictionImprovementsUtilsTest,
 }
 
 // Test that a form with a single UNKNOWN_TYPE field is not eligible.
-TEST(AutofillPredictionImprovementsUtilsTest,
+TEST(AutofillAiUtilsTest,
      IsFormEligibleForFillingByFieldTypeCriteria_SingleUnknownField) {
   FormData form_data;
   FormStructure form(form_data);
@@ -109,7 +109,7 @@ TEST(AutofillPredictionImprovementsUtilsTest,
 }
 
 // Test that a form with a single address field is not eligible.
-TEST(AutofillPredictionImprovementsUtilsTest,
+TEST(AutofillAiUtilsTest,
      IsFormEligibleForFillingByFieldTypeCriteria_SingleAddressField) {
   FormData form_data;
   FormStructure form(form_data);
@@ -124,7 +124,7 @@ TEST(AutofillPredictionImprovementsUtilsTest,
 }
 
 // Test that a form with an eligible field is overall eligible.
-TEST(AutofillPredictionImprovementsUtilsTest,
+TEST(AutofillAiUtilsTest,
      IsFormEligibleForFillingByFieldTypeCriteria_SingleEligibleField) {
   FormData form_data;
   FormStructure form(form_data);
@@ -137,7 +137,7 @@ TEST(AutofillPredictionImprovementsUtilsTest,
 
 // Test that a form with an eligible but unfocusable field is not eligible.
 TEST(
-    AutofillPredictionImprovementsUtilsTest,
+    AutofillAiUtilsTest,
     IsFormEligibleForFillingByFieldTypeCriteria_SingleUnfocusableEligibleField) {
   FormData form_data;
   FormStructure form(form_data);
@@ -151,7 +151,7 @@ TEST(
 
 // Test that a form with an eligible field is overall eligible.
 TEST(
-    AutofillPredictionImprovementsUtilsTest,
+    AutofillAiUtilsTest,
     IsFormEligibleForFillingByFieldTypeCriteria_SingleEligibleField_Prefilled) {
   FormData form_data;
   FormStructure form(form_data);
@@ -165,7 +165,7 @@ TEST(
 }
 
 // Test that a form with an eligible field is overall eligible.
-TEST(AutofillPredictionImprovementsUtilsTest,
+TEST(AutofillAiUtilsTest,
      IsFormEligibleForFillingByFieldTypeCriteria_MixedFormWithEligibleField) {
   FormData form_data;
   FormStructure form(form_data);
@@ -185,7 +185,7 @@ TEST(AutofillPredictionImprovementsUtilsTest,
 }
 
 // Test that a form with an eligible field is overall eligible.
-TEST(AutofillPredictionImprovementsUtilsTest, SetFieldFillingEligibility) {
+TEST(AutofillAiUtilsTest, SetFieldFillingEligibility) {
   FormData form_data;
   FormStructure form(form_data);
   FormStructureTestApi form_test_api(form);
@@ -206,4 +206,4 @@ TEST(AutofillPredictionImprovementsUtilsTest, SetFieldFillingEligibility) {
 }
 }  // namespace
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

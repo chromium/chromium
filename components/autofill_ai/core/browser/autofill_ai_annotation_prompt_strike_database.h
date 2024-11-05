@@ -11,11 +11,10 @@
 #include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
 #include "components/autofill/core/common/signatures.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 struct AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits {
-  static constexpr std::string_view kName =
-      "AutofillPredictionImprovementsAnnotationPrompt";
+  static constexpr std::string_view kName = "AutofillAiAnnotationPrompt";
   static constexpr size_t kMaxStrikeEntities = 200;
   static constexpr size_t kMaxStrikeEntitiesAfterCleanup = 150;
   static constexpr size_t kMaxStrikeLimit = 3;
@@ -33,6 +32,6 @@ using AutofillPrectionImprovementsAnnotationPromptStrikeDatabase =
     autofill::HistoryClearableStrikeDatabase<
         AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits>;
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_ANNOTATION_PROMPT_STRIKE_DATABASE_H_

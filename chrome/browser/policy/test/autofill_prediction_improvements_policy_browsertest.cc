@@ -104,8 +104,7 @@ class AutofillPredictionImprovementsPolicyTest
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      autofill_prediction_improvements::kAutofillPredictionImprovements};
+  base::test::ScopedFeatureList scoped_feature_list_{autofill_ai::kAutofillAi};
 
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -125,10 +124,9 @@ IN_PROC_BROWSER_TEST_P(AutofillPredictionImprovementsPolicyTest,
                        SettingsDisabledByPolicy) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("chrome://settings/autofillPredictionImprovements")));
-  EXPECT_EQ(autofill_prediction_improvements::
-                IsAutofillPredictionImprovementsSupported(
-                    browser()->profile()->GetPrefs()),
-            !disabled_by_policy());
+  EXPECT_EQ(
+      autofill_ai::IsAutofillAiSupported(browser()->profile()->GetPrefs()),
+      !disabled_by_policy());
   EXPECT_EQ(GetWebContents()->GetURL().path(),
             disabled_by_policy() ? "/" : "/autofillPredictionImprovements");
 }
@@ -140,10 +138,10 @@ IN_PROC_BROWSER_TEST_P(AutofillPredictionImprovementsPolicyTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/autofill/autofill_address_enabled.html")));
-  ChromeAutofillPredictionImprovementsClient* client =
+  ChromeAutofillAiClient* client =
       CHECK_DEREF(tabs::TabInterface::MaybeGetFromContents(GetWebContents()))
           .GetTabFeatures()
-          ->chrome_autofill_prediction_improvements_client();
+          ->chrome_autofill_ai_client();
   EXPECT_EQ(client == nullptr, disabled_by_policy());
 }
 

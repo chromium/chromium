@@ -9,13 +9,12 @@
 
 #include "components/autofill_ai/core/browser/autofill_ai_filling_engine.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // For GTest.
-void PrintTo(
-    const AutofillPredictionImprovementsFillingEngine::Prediction& prediction,
-    std::ostream* os);
+void PrintTo(const AutofillAiFillingEngine::Prediction& prediction,
+             std::ostream* os);
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_TEST_UTILS_H_

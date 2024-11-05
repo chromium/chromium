@@ -16,39 +16,32 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-// An implementation of `AutofillPredictionImprovementsClient` for Desktop and
+// An implementation of `AutofillAiClient` for Desktop and
 // Android.
-class ChromeAutofillPredictionImprovementsClient
-    : public autofill_prediction_improvements::
-          AutofillPredictionImprovementsClient {
+class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
  public:
-  ChromeAutofillPredictionImprovementsClient(
-      const ChromeAutofillPredictionImprovementsClient&) = delete;
-  ChromeAutofillPredictionImprovementsClient& operator=(
-      const ChromeAutofillPredictionImprovementsClient&) = delete;
-  ~ChromeAutofillPredictionImprovementsClient() override;
+  ChromeAutofillAiClient(const ChromeAutofillAiClient&) = delete;
+  ChromeAutofillAiClient& operator=(const ChromeAutofillAiClient&) = delete;
+  ~ChromeAutofillAiClient() override;
 
-  // Creates a `ChromeAutofillPredictionImprovementsClient` for `web_contents`
-  // if it is supported, i.e., `autofill_prediction_improvements::
-  // IsAutofillPredictionImprovementsSupported()` is true.
-  [[nodiscard]] static std::unique_ptr<
-      ChromeAutofillPredictionImprovementsClient>
+  // Creates a `ChromeAutofillAiClient` for `web_contents`
+  // if it is supported, i.e., `autofill_ai::
+  // IsAutofillAiSupported()` is true.
+  [[nodiscard]] static std::unique_ptr<ChromeAutofillAiClient>
   MaybeCreateForWebContents(content::WebContents* web_contents,
                             Profile* profile);
 
-  // AutofillPredictionImprovementsClient:
+  // AutofillAiClient:
   autofill::ContentAutofillClient& GetAutofillClient() override;
   void GetAXTree(AXTreeCallback callback) override;
-  autofill_prediction_improvements::AutofillPredictionImprovementsManager&
-  GetManager() override;
-  autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
-  GetFillingEngine() override;
+  autofill_ai::AutofillAiManager& GetManager() override;
+  autofill_ai::AutofillAiFillingEngine* GetFillingEngine() override;
   const GURL& GetLastCommittedURL() override;
   const url::Origin& GetLastCommittedOrigin() override;
   std::string GetTitle() override;
   user_annotations::UserAnnotationsService* GetUserAnnotationsService()
       override;
-  bool IsAutofillPredictionImprovementsEnabledPref() const override;
+  bool IsAutofillAiEnabledPref() const override;
   void TryToOpenFeedbackPage(const std::string& feedback_id) override;
   void OpenPredictionImprovementsSettings() override;
   bool IsUserEligible() override;
@@ -58,16 +51,15 @@ class ChromeAutofillPredictionImprovementsClient
       const std::string& autofill_profile_guid,
       autofill::FieldType field_type,
       const autofill::FormFieldData& field) override;
-  void ShowSaveAutofillPredictionImprovementsBubble(
+  void ShowSaveAutofillAiBubble(
       std::unique_ptr<user_annotations::FormAnnotationResponse>
           form_annotation_response,
       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback)
       override;
 
  private:
-  explicit ChromeAutofillPredictionImprovementsClient(
-      content::WebContents* web_contents,
-      Profile* profile);
+  explicit ChromeAutofillAiClient(content::WebContents* web_contents,
+                                  Profile* profile);
 
   const raw_ref<content::WebContents> web_contents_;
   const raw_ref<const PrefService> prefs_;
@@ -76,12 +68,9 @@ class ChromeAutofillPredictionImprovementsClient
   // improvements should currently be allowed to report feedback.
   bool CanShowFeedbackPage();
 
-  std::unique_ptr<autofill_prediction_improvements::
-                      AutofillPredictionImprovementsFillingEngine>
-      filling_engine_;
+  std::unique_ptr<autofill_ai::AutofillAiFillingEngine> filling_engine_;
 
-  autofill_prediction_improvements::AutofillPredictionImprovementsManager
-      prediction_improvements_manager_;
+  autofill_ai::AutofillAiManager prediction_improvements_manager_;
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_AI_CHROME_AUTOFILL_AI_CLIENT_H_

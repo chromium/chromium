@@ -7,7 +7,7 @@
 
 class Profile;
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 bool IsUserEligible(Profile* profile);
 

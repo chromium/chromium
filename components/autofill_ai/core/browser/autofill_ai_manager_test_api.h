@@ -9,26 +9,21 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-class AutofillPredictionImprovementsLogger;
+class AutofillAiLogger;
 
-class AutofillPredictionImprovementsManagerTestApi {
+class AutofillAiManagerTestApi {
  public:
-  explicit AutofillPredictionImprovementsManagerTestApi(
-      AutofillPredictionImprovementsManager* manager)
+  explicit AutofillAiManagerTestApi(AutofillAiManager* manager)
       : manager_(CHECK_DEREF(manager)) {}
 
   void SetCache(
-      std::optional<
-          AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId>
-          cache) {
+      std::optional<AutofillAiFillingEngine::PredictionsByGlobalId> cache) {
     manager_->cache_ = cache;
   }
 
-  std::optional<
-      AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId>
-  GetCache() {
+  std::optional<AutofillAiFillingEngine::PredictionsByGlobalId> GetCache() {
     return manager_->cache_;
   }
 
@@ -52,8 +47,7 @@ class AutofillPredictionImprovementsManagerTestApi {
   }
 
   void SetPredictionRetrievalState(
-      AutofillPredictionImprovementsManager::PredictionRetrievalState
-          prediction_retrieval_state) {
+      AutofillAiManager::PredictionRetrievalState prediction_retrieval_state) {
     manager_->prediction_retrieval_state_ = prediction_retrieval_state;
   }
 
@@ -62,17 +56,16 @@ class AutofillPredictionImprovementsManagerTestApi {
         error_or_no_info_suggestion_shown;
   }
 
-  AutofillPredictionImprovementsLogger& logger() { return manager_->logger_; }
+  AutofillAiLogger& logger() { return manager_->logger_; }
 
  private:
-  raw_ref<AutofillPredictionImprovementsManager> manager_;
+  raw_ref<AutofillAiManager> manager_;
 };
 
-inline AutofillPredictionImprovementsManagerTestApi test_api(
-    AutofillPredictionImprovementsManager& manager) {
-  return AutofillPredictionImprovementsManagerTestApi(&manager);
+inline AutofillAiManagerTestApi test_api(AutofillAiManager& manager) {
+  return AutofillAiManagerTestApi(&manager);
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_MANAGER_TEST_API_H_

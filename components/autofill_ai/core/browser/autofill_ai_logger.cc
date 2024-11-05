@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/unique_ids.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 namespace {
 
@@ -31,50 +31,44 @@ void LogFunnelMetric(std::string_view funnel_metric_name,
 
 }  // namespace
 
-AutofillPredictionImprovementsLogger::AutofillPredictionImprovementsLogger() =
-    default;
-AutofillPredictionImprovementsLogger::~AutofillPredictionImprovementsLogger() =
-    default;
+AutofillAiLogger::AutofillAiLogger() = default;
+AutofillAiLogger::~AutofillAiLogger() = default;
 
-void AutofillPredictionImprovementsLogger::OnFormEligibilityAvailable(
+void AutofillAiLogger::OnFormEligibilityAvailable(
     autofill::FormGlobalId form_id,
     bool is_eligible) {
   form_states_[form_id].is_eligible = is_eligible;
 }
 
-void AutofillPredictionImprovementsLogger::OnFormHasDataToFill(
-    autofill::FormGlobalId form_id) {
+void AutofillAiLogger::OnFormHasDataToFill(autofill::FormGlobalId form_id) {
   form_states_[form_id].has_data_to_fill = true;
 }
 
-void AutofillPredictionImprovementsLogger::OnSuggestionsShown(
-    autofill::FormGlobalId form_id) {
+void AutofillAiLogger::OnSuggestionsShown(autofill::FormGlobalId form_id) {
   form_states_[form_id].did_show_suggestions = true;
 }
 
-void AutofillPredictionImprovementsLogger::OnTriggeredFillingSuggestions(
+void AutofillAiLogger::OnTriggeredFillingSuggestions(
     autofill::FormGlobalId form_id) {
   form_states_[form_id].did_start_loading_suggestions = true;
 }
 
-void AutofillPredictionImprovementsLogger::OnFillingSuggestionsShown(
+void AutofillAiLogger::OnFillingSuggestionsShown(
     autofill::FormGlobalId form_id) {
   form_states_[form_id].did_show_filling_suggestions = true;
 }
 
-void AutofillPredictionImprovementsLogger::OnDidFillSuggestion(
-    autofill::FormGlobalId form_id) {
+void AutofillAiLogger::OnDidFillSuggestion(autofill::FormGlobalId form_id) {
   form_states_[form_id].did_fill_suggestions = true;
 }
 
-void AutofillPredictionImprovementsLogger::OnDidCorrectFillingSuggestion(
+void AutofillAiLogger::OnDidCorrectFillingSuggestion(
     autofill::FormGlobalId form_id) {
   form_states_[form_id].did_correct_filling = true;
 }
 
-void AutofillPredictionImprovementsLogger::RecordMetricsForForm(
-    autofill::FormGlobalId form_id,
-    bool submission_state) {
+void AutofillAiLogger::RecordMetricsForForm(autofill::FormGlobalId form_id,
+                                            bool submission_state) {
   LogFunnelMetric("Eligibility", submission_state,
                   form_states_[form_id].is_eligible);
   if (!form_states_[form_id].is_eligible) {
@@ -109,4 +103,4 @@ void AutofillPredictionImprovementsLogger::RecordMetricsForForm(
                   form_states_[form_id].did_correct_filling);
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

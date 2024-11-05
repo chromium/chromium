@@ -10,7 +10,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 bool IsUserEligible(Profile* profile) {
   signin::IdentityManager* identity_manager =
@@ -40,4 +40,4 @@ bool IsUserEligible(Profile* profile) {
   return true;
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

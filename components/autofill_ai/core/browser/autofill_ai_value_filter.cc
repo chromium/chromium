@@ -6,7 +6,7 @@
 
 #include "components/autofill/core/browser/form_structure.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 namespace {
 
@@ -104,4 +104,4 @@ void FilterSensitiveValues(FormStructure& form) {
   FilterSensitiveValuesByInputType(form);
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

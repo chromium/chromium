@@ -9,12 +9,12 @@ namespace autofill {
 class FormStructure;
 }  // namespace autofill
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // Applies filtering rules to remove potential SPII data from form fields.
 // Return the number of fields that have been filtered.
 void FilterSensitiveValues(autofill::FormStructure& form);
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_VALUE_FILTER_H_

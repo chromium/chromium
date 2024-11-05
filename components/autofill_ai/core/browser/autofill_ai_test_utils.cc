@@ -9,12 +9,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill_ai/core/browser/autofill_ai_filling_engine.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // For tests to readably print an instance of this struct.
-void PrintTo(
-    const AutofillPredictionImprovementsFillingEngine::Prediction& prediction,
-    std::ostream* os) {
+void PrintTo(const AutofillAiFillingEngine::Prediction& prediction,
+             std::ostream* os) {
   *os << "Prediction { " << ".value = \"" << base::UTF16ToUTF8(prediction.value)
       << "\", " << ".label = \"" << base::UTF16ToUTF8(prediction.label)
       << "\", " << ".select_option_text = "
@@ -26,4 +25,4 @@ void PrintTo(
       << " " << "}";
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

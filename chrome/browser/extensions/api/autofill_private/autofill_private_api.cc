@@ -1218,8 +1218,7 @@ ExtensionFunction::ResponseAction
 AutofillPrivateIsUserEligibleForAutofillImprovementsFunction::Run() {
   Profile* profile =
       Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  return RespondNow(
-      WithArguments(autofill_prediction_improvements::IsUserEligible(profile)));
+  return RespondNow(WithArguments(autofill_ai::IsUserEligible(profile)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

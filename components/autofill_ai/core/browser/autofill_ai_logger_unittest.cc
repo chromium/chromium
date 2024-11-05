@@ -29,7 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 namespace {
 
@@ -105,22 +105,21 @@ std::string GetCorrectionAfterFillHistogram(bool submitted) {
                             submitted ? submitted_str : abandoned_str);
 }
 
-class BaseAutofillPredictionImprovementsTest : public testing::Test {
+class BaseAutofillAiTest : public testing::Test {
  public:
-  BaseAutofillPredictionImprovementsTest() {
+  BaseAutofillAiTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillPredictionImprovements,
-        {{"skip_allowlist", "true"},
-         {"extract_ax_tree_for_predictions", "true"}});
-    manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
-        &client_, &decider_, &strike_database_);
+        kAutofillAi, {{"skip_allowlist", "true"},
+                      {"extract_ax_tree_for_predictions", "true"}});
+    manager_ = std::make_unique<AutofillAiManager>(&client_, &decider_,
+                                                   &strike_database_);
     ON_CALL(client_, GetAutofillClient)
         .WillByDefault(testing::ReturnRef(autofill_client_));
     ON_CALL(client_, GetUserAnnotationsService)
         .WillByDefault(testing::Return(&user_annotations_service_));
   }
 
-  AutofillPredictionImprovementsManager& manager() { return *manager_; }
+  AutofillAiManager& manager() { return *manager_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -130,8 +129,8 @@ class BaseAutofillPredictionImprovementsTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   autofill::TestAutofillClient autofill_client_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
-  testing::NiceMock<MockAutofillPredictionImprovementsClient> client_;
-  std::unique_ptr<AutofillPredictionImprovementsManager> manager_;
+  testing::NiceMock<MockAutofillAiClient> client_;
+  std::unique_ptr<AutofillAiManager> manager_;
   autofill::TestStrikeDatabase strike_database_;
   user_annotations::TestUserAnnotationsService user_annotations_service_;
 };
@@ -149,11 +148,11 @@ class BaseAutofillPredictionImprovementsTest : public testing::Test {
 // 5) The user saw filling suggestions.
 // 6) The user accepted a filling suggestion.
 // 7) The user corrected the filled suggestion.
-class AutofillPredictionImprovementsFunnelMetricsTest
-    : public BaseAutofillPredictionImprovementsTest,
+class AutofillAiFunnelMetricsTest
+    : public BaseAutofillAiTest,
       public testing::WithParamInterface<std::tuple<bool, int>> {
  public:
-  AutofillPredictionImprovementsFunnelMetricsTest() = default;
+  AutofillAiFunnelMetricsTest() = default;
 
   bool submitted() { return std::get<0>(GetParam()); }
   bool is_form_eligible() { return std::get<1>(GetParam()) > 0; }
@@ -296,13 +295,13 @@ class AutofillPredictionImprovementsFunnelMetricsTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    AutofillPredictionImprovementsTest,
-    AutofillPredictionImprovementsFunnelMetricsTest,
+    AutofillAiTest,
+    AutofillAiFunnelMetricsTest,
     testing::Combine(testing::Bool(), testing::Values(0, 1, 2, 3, 4, 5, 6, 7)));
 
-// Tests that appropriate calls in `AutofillPredictionImprovementsLogger`
+// Tests that appropriate calls in `AutofillAiLogger`
 // result in correct metric logging.
-TEST_P(AutofillPredictionImprovementsFunnelMetricsTest, Logger) {
+TEST_P(AutofillAiFunnelMetricsTest, Logger) {
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
@@ -337,9 +336,9 @@ TEST_P(AutofillPredictionImprovementsFunnelMetricsTest, Logger) {
   ExpectCorrectFunnelRecording(histogram_tester);
 }
 
-// Tests that appropriate calls in `AutofillPredictionImprovementsManager`
+// Tests that appropriate calls in `AutofillAiManager`
 // result in correct metric logging.
-TEST_P(AutofillPredictionImprovementsFunnelMetricsTest, Manager) {
+TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   // This will dictate whether the form will be eligible for filling or not.
   std::unique_ptr<autofill::FormStructure> form =
       is_form_eligible() ? CreateEligibleForm() : CreateIneligibleForm();
@@ -385,4 +384,4 @@ TEST_P(AutofillPredictionImprovementsFunnelMetricsTest, Manager) {
 
 }  // namespace
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

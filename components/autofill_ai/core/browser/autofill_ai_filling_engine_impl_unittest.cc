@@ -21,12 +21,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 namespace {
 
-using Prediction = AutofillPredictionImprovementsFillingEngine::Prediction;
-using PredictionsOrError =
-    AutofillPredictionImprovementsFillingEngine::PredictionsOrError;
+using Prediction = AutofillAiFillingEngine::Prediction;
+using PredictionsOrError = AutofillAiFillingEngine::PredictionsOrError;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::An;
@@ -58,19 +57,16 @@ auto HasPrediction(Prediction expected_prediction) {
             expected_prediction.select_option_text));
 }
 
-class AutofillPredictionImprovementsFillingEngineImplTest
-    : public testing::Test {
+class AutofillAiFillingEngineImplTest : public testing::Test {
  public:
   void SetUp() override {
     user_annotations_service_ =
         std::make_unique<user_annotations::TestUserAnnotationsService>();
-    engine_ = std::make_unique<AutofillPredictionImprovementsFillingEngineImpl>(
+    engine_ = std::make_unique<AutofillAiFillingEngineImpl>(
         &model_executor_, user_annotations_service_.get());
   }
 
-  AutofillPredictionImprovementsFillingEngineImpl* engine() {
-    return engine_.get();
-  }
+  AutofillAiFillingEngineImpl* engine() { return engine_.get(); }
 
   optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
     return &model_executor_;
@@ -87,10 +83,10 @@ class AutofillPredictionImprovementsFillingEngineImplTest
       model_executor_;
   std::unique_ptr<user_annotations::TestUserAnnotationsService>
       user_annotations_service_;
-  std::unique_ptr<AutofillPredictionImprovementsFillingEngineImpl> engine_;
+  std::unique_ptr<AutofillAiFillingEngineImpl> engine_;
 };
 
-TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
+TEST_F(AutofillAiFillingEngineImplTest, EndToEnd) {
   // Seed user annotations service with entries.
   optimization_guide::proto::UserAnnotationsEntry entry;
   entry.set_key("label");
@@ -171,8 +167,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
                                         u"North Carolina")))));
 }
 
-TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
-       NoUserAnnotationEntries) {
+TEST_F(AutofillAiFillingEngineImplTest, NoUserAnnotationEntries) {
   // Seed user annotations service explicitly with no entries.
   user_annotations_service()->ReplaceAllEntries({});
 
@@ -194,8 +189,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   EXPECT_FALSE(predictions_or_error.has_value());
 }
 
-TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
-       ModelExecutionError) {
+TEST_F(AutofillAiFillingEngineImplTest, ModelExecutionError) {
   // Seed user annotations service with entries.
   optimization_guide::proto::UserAnnotationsEntry entry;
   entry.set_key("label");
@@ -235,8 +229,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   EXPECT_FALSE(predictions_or_error.has_value());
 }
 
-TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
-       ModelExecutionWrongTypeReturned) {
+TEST_F(AutofillAiFillingEngineImplTest, ModelExecutionWrongTypeReturned) {
   // Seed user annotations service with entries.
   optimization_guide::proto::UserAnnotationsEntry entry;
   entry.set_key("label");
@@ -272,4 +265,4 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
 }
 
 }  // namespace
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

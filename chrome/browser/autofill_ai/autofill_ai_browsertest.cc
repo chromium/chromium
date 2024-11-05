@@ -37,7 +37,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/dialog_client_view.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 namespace {
 
@@ -294,12 +294,11 @@ class OptimizationGuideTestServer {
 using ResponseType = OptimizationGuideTestServer::ResponseType;
 
 // Base class for setting up the browser test.
-class AutofillPredictionImprovementsBrowserBaseTest
-    : public InteractiveBrowserTest {
+class AutofillAiBrowserBaseTest : public InteractiveBrowserTest {
  public:
-  AutofillPredictionImprovementsBrowserBaseTest() {
+  AutofillAiBrowserBaseTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{kAutofillPredictionImprovements,
+        /*enabled_features=*/{{kAutofillAi,
                                {{"skip_allowlist", "true"},
                                 {"allowed_hosts_for_form_submissions",
                                  "a.com"}}}},
@@ -329,8 +328,7 @@ class AutofillPredictionImprovementsBrowserBaseTest
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &AutofillPredictionImprovementsBrowserBaseTest::
-                    OnWillCreateBrowserContextServices,
+                &AutofillAiBrowserBaseTest::OnWillCreateBrowserContextServices,
                 base::Unretained(this)));
   }
 
@@ -418,21 +416,18 @@ class AutofillPredictionImprovementsBrowserBaseTest
 // Source:
 // https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/test/interaction/README.md#known-issues-and-incompatibilities
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_AutofillPredictionImprovementsBrowserTest \
-  DISABLED_AutofillPredictionImprovementsBrowserTest
+#define MAYBE_AutofillAiBrowserTest DISABLED_AutofillAiBrowserTest
 #else
-#define MAYBE_AutofillPredictionImprovementsBrowserTest \
-  AutofillPredictionImprovementsBrowserTest
+#define MAYBE_AutofillAiBrowserTest AutofillAiBrowserTest
 #endif
 // Test fixture defining the steps taken in the browser tests. Steps are ordered
 // by first occurrence in the tests below. Uses the Kombucha API, see
 // https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/test/interaction/README.md
 // for documentation.
-class MAYBE_AutofillPredictionImprovementsBrowserTest
-    : public AutofillPredictionImprovementsBrowserBaseTest {
+class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
  protected:
   MultiStep Initialize() {
-    return NamedSteps("Initialize", EnableAutofillPredictionImprovementsPref(),
+    return NamedSteps("Initialize", EnableAutofillAiPref(),
                       InstrumentTab(kPrimaryTabId),
                       WaitForWebContentsReady(kPrimaryTabId),
                       CheckPredictionImprovementsDelegateExists(),
@@ -509,12 +504,12 @@ class MAYBE_AutofillPredictionImprovementsBrowserTest
   }
 
  private:
-  MultiStep EnableAutofillPredictionImprovementsPref() {
+  MultiStep EnableAutofillAiPref() {
     DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                         kPrefWasEnabledState);
     return NamedSteps(
-        "EnableAutofillPredictionImprovementsPref",
-        Log("Start polling kPrefWasEnabledState."), Do([&]() {
+        "EnableAutofillAiPref", Log("Start polling kPrefWasEnabledState."),
+        Do([&]() {
           browser()->profile()->GetPrefs()->SetBoolean(
               autofill::prefs::kAutofillPredictionImprovementsEnabled, true);
         }),
@@ -532,7 +527,7 @@ class MAYBE_AutofillPredictionImprovementsBrowserTest
   InteractiveTestApi::StepBuilder CheckPredictionImprovementsDelegateExists() {
     return Check(
         [&]() -> bool { return GetAutofillPredictionImprovementsDelegate(); },
-        "Tab has non-null AutofillPredictionImprovementsDelegate");
+        "Tab has non-null AutofillAiDelegate");
   }
 
   InteractiveTestApi::StepBuilder CheckUserAnnotationsServiceExists() {
@@ -676,7 +671,7 @@ class MAYBE_AutofillPredictionImprovementsBrowserTest
 };
 
 // Tests the import and fill "happy path" end to end.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillPredictionImprovementsBrowserTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillAiBrowserTest,
                        ImportAndFillFormSuccessful) {
   EnableSignin();
   RunTestSequence(
@@ -691,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillPredictionImprovementsBrowserTest,
 
 // Tests that the error suggestion is shown if filling suggestions cannot be
 // retrieved.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillPredictionImprovementsBrowserTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillAiBrowserTest,
                        ImportAndFillFormFailsAtRetrievingFillingSuggestions) {
   EnableSignin();
   RunTestSequence(
@@ -706,4 +701,4 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillPredictionImprovementsBrowserTest,
 
 }  // namespace
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

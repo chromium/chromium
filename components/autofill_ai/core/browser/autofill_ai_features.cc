@@ -11,20 +11,18 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // Autofill offers improvements on how field types and filling values are
 // predicted.
-BASE_FEATURE(kAutofillPredictionImprovements,
-             "AutofillPredictionImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAi, "AutofillAi", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Bootstrap autofill prediction while opt-ing in for improvements.
-BASE_FEATURE(kAutofillPredictionBootstrapping,
-             "AutofillPredictionBootstrapping",
+BASE_FEATURE(kAutofillAiBootstrapping,
+             "AutofillAiBootstrapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsAutofillPredictionImprovementsSupported(const PrefService* prefs) {
+bool IsAutofillAiSupported(const PrefService* prefs) {
   constexpr bool is_supported_platform = BUILDFLAG(IS_CHROMEOS) ||
                                          BUILDFLAG(IS_LINUX) ||
                                          BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
@@ -35,7 +33,7 @@ bool IsAutofillPredictionImprovementsSupported(const PrefService* prefs) {
       base::to_underlying(optimization_guide::model_execution::prefs::
                               ModelExecutionEnterprisePolicyValue::kDisable);
   static_assert(kAutofillPredictionSettingsDisabled == 2);
-  return base::FeatureList::IsEnabled(kAutofillPredictionImprovements) &&
+  return base::FeatureList::IsEnabled(kAutofillAi) &&
          prefs->GetInteger(
              optimization_guide::prefs::
                  kAutofillPredictionImprovementsEnterprisePolicyAllowed) !=
@@ -43,4 +41,4 @@ bool IsAutofillPredictionImprovementsSupported(const PrefService* prefs) {
          prefs->GetBoolean(autofill::prefs::kAutofillProfileEnabled);
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

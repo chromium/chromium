@@ -30,7 +30,7 @@ class FormStructure;
 class LogManager;
 }  // namespace autofill
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // Minimum time for the loading suggestion to be visible to the user, in order
 // to avoid flickering UI scenarios.
@@ -38,9 +38,9 @@ namespace autofill_prediction_improvements {
 inline constexpr base::TimeDelta kMinTimeToShowLoading =
     base::Milliseconds(300);
 
-// The class for embedder-independent, tab-specific
-// autofill_prediction_improvements logic. This class is an interface.
-class AutofillPredictionImprovementsManager
+// The class for embedder-independent, tab-specific Autofill AI logic. This
+// class is an interface.
+class AutofillAiManager
     : public autofill::AutofillPredictionImprovementsDelegate {
  public:
   // Enum specifying the states of retrieving prediction improvements.
@@ -58,17 +58,14 @@ class AutofillPredictionImprovementsManager
     kDoneError = 3
   };
 
-  AutofillPredictionImprovementsManager(
-      AutofillPredictionImprovementsClient* client,
-      optimization_guide::OptimizationGuideDecider* decider,
-      autofill::StrikeDatabase* strike_database);
-  AutofillPredictionImprovementsManager(
-      const AutofillPredictionImprovementsManager&) = delete;
-  AutofillPredictionImprovementsManager& operator=(
-      const AutofillPredictionImprovementsManager&) = delete;
-  ~AutofillPredictionImprovementsManager() override;
+  AutofillAiManager(AutofillAiClient* client,
+                    optimization_guide::OptimizationGuideDecider* decider,
+                    autofill::StrikeDatabase* strike_database);
+  AutofillAiManager(const AutofillAiManager&) = delete;
+  AutofillAiManager& operator=(const AutofillAiManager&) = delete;
+  ~AutofillAiManager() override;
 
-  // autofill::AutofillPredictionImprovementsDelegate:
+  // autofill::AutofillAiDelegate:
   std::vector<autofill::Suggestion> GetSuggestions(
       const std::vector<autofill::Suggestion>& autofill_suggestions,
       const autofill::FormData& form,
@@ -121,10 +118,10 @@ class AutofillPredictionImprovementsManager
   base::flat_map<autofill::FieldGlobalId, bool> GetFieldValueSensitivityMap(
       const autofill::FormData& form_data);
 
-  base::WeakPtr<AutofillPredictionImprovementsManager> GetWeakPtr();
+  base::WeakPtr<AutofillAiManager> GetWeakPtr();
 
  private:
-  friend class AutofillPredictionImprovementsManagerTestApi;
+  friend class AutofillAiManagerTestApi;
 
   // Event handler called when the loading suggestion is shown. Used for the
   // automatic triggering path.
@@ -154,8 +151,7 @@ class AutofillPredictionImprovementsManager
   void OnReceivedPredictions(
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
-      AutofillPredictionImprovementsFillingEngine::PredictionsOrError
-          predictions_or_error,
+      AutofillAiFillingEngine::PredictionsOrError predictions_or_error,
       std::optional<std::string> model_execution_id);
 
   // Method for showing filling or error suggestions, depending on the outcome
@@ -195,7 +191,7 @@ class AutofillPredictionImprovementsManager
   void OnFailedToGenerateSuggestions();
 
   // Logger that records various prediction improvements metrics.
-  AutofillPredictionImprovementsLogger logger_;
+  AutofillAiLogger logger_;
 
   // Sets the potentially new state of the `form` fields' focusability in the
   // `cache_`. This is meant to be called in `GetSuggestions()`, which is
@@ -214,13 +210,12 @@ class AutofillPredictionImprovementsManager
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
-  const raw_ref<AutofillPredictionImprovementsClient> client_;
+  const raw_ref<AutofillAiClient> client_;
 
   // Most recently retrieved form with field values set to prediction
   // improvements.
-  std::optional<
-      AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId>
-      cache_ = std::nullopt;
+  std::optional<AutofillAiFillingEngine::PredictionsByGlobalId> cache_ =
+      std::nullopt;
   // The form global id for which predictions were retrieved last. Set at the
   // beginning of retrieving prediction improvements.
   std::optional<autofill::FormGlobalId> last_queried_form_global_id_;
@@ -257,10 +252,9 @@ class AutofillPredictionImprovementsManager
   std::unique_ptr<AutofillPrectionImprovementsAnnotationPromptStrikeDatabase>
       user_annotation_prompt_strike_database_;
 
-  base::WeakPtrFactory<AutofillPredictionImprovementsManager> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<AutofillAiManager> weak_ptr_factory_{this};
 };
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_MANAGER_H_

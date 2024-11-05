@@ -36,7 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 namespace {
 
 using ::testing::NiceMock;
@@ -57,17 +57,13 @@ std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
   return std::make_unique<autofill::TestPersonalDataManager>();
 }
 
-class ChromeAutofillPredictionImprovementsClientTest
-    : public ChromeRenderViewHostTestHarness {
+class ChromeAutofillAiClientTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    ASSERT_TRUE(
-        autofill_prediction_improvements::
-            IsAutofillPredictionImprovementsSupported(profile()->GetPrefs()));
-    client_ =
-        ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
-            web_contents(), profile());
+    ASSERT_TRUE(autofill_ai::IsAutofillAiSupported(profile()->GetPrefs()));
+    client_ = ChromeAutofillAiClient::MaybeCreateForWebContents(web_contents(),
+                                                                profile());
     ASSERT_TRUE(client_);
   }
 
@@ -76,7 +72,7 @@ class ChromeAutofillPredictionImprovementsClientTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  ChromeAutofillPredictionImprovementsClient& client() { return *client_; }
+  ChromeAutofillAiClient& client() { return *client_; }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
@@ -91,40 +87,35 @@ class ChromeAutofillPredictionImprovementsClientTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      autofill_prediction_improvements::kAutofillPredictionImprovements};
-  std::unique_ptr<ChromeAutofillPredictionImprovementsClient> client_;
+  base::test::ScopedFeatureList scoped_feature_list_{autofill_ai::kAutofillAi};
+  std::unique_ptr<ChromeAutofillAiClient> client_;
 };
 
-TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetAXTree) {
-  base::MockCallback<autofill_prediction_improvements::
-                         AutofillPredictionImprovementsClient::AXTreeCallback>
-      callback;
+TEST_F(ChromeAutofillAiClientTest, GetAXTree) {
+  base::MockCallback<autofill_ai::AutofillAiClient::AXTreeCallback> callback;
   EXPECT_CALL(callback, Run);
   client().GetAXTree(callback.Get());
 }
 
-TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       GetUserAnnotationsService) {
+TEST_F(ChromeAutofillAiClientTest, GetUserAnnotationsService) {
   EXPECT_TRUE(client().GetUserAnnotationsService());
 }
 
-TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       IsAutofillPredictionImprovementsEnabledPrefReturnsTrueIfPrefEnabled) {
+TEST_F(ChromeAutofillAiClientTest,
+       IsAutofillAiEnabledPrefReturnsTrueIfPrefEnabled) {
   profile()->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled, true);
-  EXPECT_TRUE(client().IsAutofillPredictionImprovementsEnabledPref());
+  EXPECT_TRUE(client().IsAutofillAiEnabledPref());
 }
 
-TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       IsAutofillPredictionImprovementsEnabledPrefReturnsFalseIfPrefDisabled) {
+TEST_F(ChromeAutofillAiClientTest,
+       IsAutofillAiEnabledPrefReturnsFalseIfPrefDisabled) {
   profile()->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled, false);
-  EXPECT_FALSE(client().IsAutofillPredictionImprovementsEnabledPref());
+  EXPECT_FALSE(client().IsAutofillAiEnabledPref());
 }
 
-TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       EligibilityOfNotSignedInUser) {
+TEST_F(ChromeAutofillAiClientTest, EligibilityOfNotSignedInUser) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
   AccountInfo account_info = signin::MakeAccountAvailable(
@@ -138,8 +129,7 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
   EXPECT_FALSE(client().IsUserEligible());
 }
 
-TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       EligibilityOfSignedInUserWithMlDisabled) {
+TEST_F(ChromeAutofillAiClientTest, EligibilityOfSignedInUserWithMlDisabled) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
@@ -152,8 +142,7 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
   EXPECT_FALSE(client().IsUserEligible());
 }
 
-TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       EligibilityOfSignedInUserWithMlEnabled) {
+TEST_F(ChromeAutofillAiClientTest, EligibilityOfSignedInUserWithMlEnabled) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
@@ -167,12 +156,12 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
 }
 
 // Tests that the filling engine is initialized and returned.
-TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetFillingEngine) {
+TEST_F(ChromeAutofillAiClientTest, GetFillingEngine) {
   EXPECT_TRUE(client().GetFillingEngine());
 }
 
 // Tests that GetLastCommittedURL() accurately returns the last committed URL.
-TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetLastCommittedURL) {
+TEST_F(ChromeAutofillAiClientTest, GetLastCommittedURL) {
   const GURL about_blank = GURL("about:blank");
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(about_blank);
@@ -181,7 +170,7 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetLastCommittedURL) {
 
 // Tests that GetTitle() returns an empty string if no navigation had happened
 // before.
-TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetTitle) {
+TEST_F(ChromeAutofillAiClientTest, GetTitle) {
   EXPECT_EQ(client().GetTitle(), "");
 }
 
@@ -192,7 +181,7 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetTitle) {
 // page would be opened. Unfortunately there isn't a more robust way to test
 // this. Also the case where the feature should be allowed for feedback is hard
 // to test in this environment because it involves views and crashes the test.
-TEST_F(ChromeAutofillPredictionImprovementsClientTest, TryToOpenFeedbackPage) {
+TEST_F(ChromeAutofillAiClientTest, TryToOpenFeedbackPage) {
   auto* mock_optimization_guide_service =
       static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
           OptimizationGuideKeyedServiceFactory::GetInstance()->GetForProfile(
@@ -208,33 +197,25 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, TryToOpenFeedbackPage) {
                                        feedback::kFeedbackSourceAI, 0);
 }
 
-// Tests that no ChromeAutofillPredictionImprovementsClient is created if
-// IsAutofillPredictionImprovementsSupported() is false.
-TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       MaybeCreateForWebContents) {
-  ASSERT_TRUE(
-      autofill_prediction_improvements::
-          IsAutofillPredictionImprovementsSupported(profile()->GetPrefs()));
-  EXPECT_TRUE(
-      ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
-          web_contents(), profile()));
+// Tests that no ChromeAutofillAiClient is created if
+// IsAutofillAiSupported() is false.
+TEST_F(ChromeAutofillAiClientTest, MaybeCreateForWebContents) {
+  ASSERT_TRUE(autofill_ai::IsAutofillAiSupported(profile()->GetPrefs()));
+  EXPECT_TRUE(ChromeAutofillAiClient::MaybeCreateForWebContents(web_contents(),
+                                                                profile()));
 
   profile()->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
                                     false);
-  ASSERT_FALSE(
-      autofill_prediction_improvements::
-          IsAutofillPredictionImprovementsSupported(profile()->GetPrefs()));
-  EXPECT_FALSE(
-      ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
-          web_contents(), profile()));
+  ASSERT_FALSE(autofill_ai::IsAutofillAiSupported(profile()->GetPrefs()));
+  EXPECT_FALSE(ChromeAutofillAiClient::MaybeCreateForWebContents(web_contents(),
+                                                                 profile()));
 }
 
 // Tests that
-// ChromeAutofillPredictionImprovementsClient::GetAutofillNameFillingValue
+// ChromeAutofillAiClient::GetAutofillNameFillingValue
 // returns accurate information about the value for filling of an
 // AutofillProfile for a given name type.
-TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       GetAutofillNameFillingValue) {
+TEST_F(ChromeAutofillAiClientTest, GetAutofillNameFillingValue) {
   autofill::FormFieldData test_field;
   autofill::AutofillProfile test_autofill_profile =
       autofill::test::GetFullProfile();
@@ -272,4 +253,4 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
 }
 
 }  // namespace
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

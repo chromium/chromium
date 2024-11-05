@@ -310,8 +310,8 @@ ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
   if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
           web_contents()->GetOutermostWebContents())) {
-    ChromeAutofillPredictionImprovementsClient* client =
-        tab->GetTabFeatures()->chrome_autofill_prediction_improvements_client();
+    ChromeAutofillAiClient* client =
+        tab->GetTabFeatures()->chrome_autofill_ai_client();
     return client ? &client->GetManager() : nullptr;
   }
 #endif

@@ -18,10 +18,10 @@ namespace optimization_guide::proto {
 class AXTreeUpdate;
 }
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // The filling engine that provides autofill predictions improvements.
-class AutofillPredictionImprovementsFillingEngine {
+class AutofillAiFillingEngine {
  public:
   struct Prediction {
     Prediction(std::u16string value, std::u16string label, bool is_focusable);
@@ -49,7 +49,7 @@ class AutofillPredictionImprovementsFillingEngine {
       base::OnceCallback<void(PredictionsOrError,
                               std::optional<std::string> feedback_id)>;
 
-  virtual ~AutofillPredictionImprovementsFillingEngine() = default;
+  virtual ~AutofillAiFillingEngine() = default;
 
   // Retrieves predictions for `form_data` with context of `ax_tree_update`.
   // Invokes `callback` when done. The unexpected value is always `false` if
@@ -62,6 +62,6 @@ class AutofillPredictionImprovementsFillingEngine {
       PredictionsReceivedCallback callback) = 0;
 };
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
 #endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_FILLING_ENGINE_H_
