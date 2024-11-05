@@ -325,11 +325,10 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
   context->SetMode(mode);
   CSSParserImpl parser(context, document.ElementSheet().Contents());
   CSSParserTokenStream stream(string);
-  parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
-                                CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   return CreateCSSPropertyValueSet(parser.parsed_properties_, mode, &document);
 }
 
@@ -342,11 +341,10 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
       MakeGarbageCollected<CSSParserContext>(parser_mode, secure_context_mode);
   CSSParserImpl parser(context);
   CSSParserTokenStream stream(string);
-  parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
-                                CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   return CreateCSSPropertyValueSet(parser.parsed_properties_, parser_mode,
                                    document);
 }
@@ -360,10 +358,10 @@ bool CSSParserImpl::ParseDeclarationList(
   CSSParserTokenStream stream(string);
   // See function declaration comment for why parent_rule_for_nesting ==
   // nullptr.
-  parser.ConsumeDeclarationList(stream, rule_type, CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, rule_type, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   if (parser.parsed_properties_.empty()) {
     return false;
   }
@@ -396,12 +394,12 @@ StyleRuleBase* CSSParserImpl::ParseNestedDeclarationsRule(
   // of declarations (the only block) to be wrapped in a CSSNestedDeclarations
   // rule.
   //
-  // See comment above CSSParserImpl::ConsumeDeclarationList (definition)
+  // See comment above CSSParserImpl::ConsumeBlockContents (definition)
   // for more on nested_declarations_start_index.
-  parser.ConsumeDeclarationList(stream, StyleRule::RuleType::kStyle,
-                                nesting_type, parent_rule_for_nesting,
-                                /*nested_declarations_start_index=*/0u,
-                                &child_rules);
+  parser.ConsumeBlockContents(stream, StyleRule::RuleType::kStyle, nesting_type,
+                              parent_rule_for_nesting,
+                              /*nested_declarations_start_index=*/0u,
+                              &child_rules);
 
   return child_rules.size() == 1u ? child_rules.back().Get() : nullptr;
 }
@@ -598,11 +596,10 @@ void CSSParserImpl::ParseDeclarationListForInspector(
   observer.EndRuleHeader(1);
   CSSParserTokenStream stream(declaration);
   observer.StartRuleBody(stream.Offset());
-  parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
-                                CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   observer.EndRuleBody(stream.LookAheadOffset());
 }
 
@@ -638,11 +635,10 @@ CSSPropertyValueSet* CSSParserImpl::ParseDeclarationListForLazyStyle(
   CSSParserTokenStream stream(string, offset);
   CSSParserTokenStream::BlockGuard guard(stream);
   CSSParserImpl parser(context);
-  parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
-                                CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   return CreateCSSPropertyValueSet(parser.parsed_properties_, context->Mode(),
                                    context->GetDocument());
 }
@@ -1030,10 +1026,10 @@ StyleRulePageMargin* CSSParserImpl::ConsumePageMarginRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kPageMargin, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kPageMargin, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1532,10 +1528,10 @@ StyleRuleFontFace* CSSParserImpl::ConsumeFontFaceRule(
   }
 
   base::AutoReset<CSSParserObserver*> disable_observer(&observer_, nullptr);
-  ConsumeDeclarationList(stream, StyleRule::kFontFace, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kFontFace, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   return MakeGarbageCollected<StyleRuleFontFace>(CreateCSSPropertyValueSet(
       parsed_properties_, kCSSFontFaceRuleMode, context_->GetDocument()));
@@ -1813,10 +1809,10 @@ StyleRulePage* CSSParserImpl::ConsumePageRule(CSSParserTokenStream& stream) {
   }
 
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
-  ConsumeDeclarationList(stream, StyleRule::kPage, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         &child_rules);
+  ConsumeBlockContents(stream, StyleRule::kPage, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       &child_rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1857,10 +1853,10 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kProperty, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kProperty, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1928,11 +1924,10 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kCounterStyle,
-                         CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kCounterStyle, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1973,11 +1968,11 @@ StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kFontPaletteValues,
-                         CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kFontPaletteValues,
+                       CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -2050,11 +2045,11 @@ StyleRuleViewTransition* CSSParserImpl::ConsumeViewTransitionRule(
     observer_->EndRuleHeader(prelude_offset_end);
     observer_->StartRuleBody(stream.Offset());
   }
-  ConsumeDeclarationList(stream, StyleRule::kViewTransition,
-                         CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kViewTransition,
+                       CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -2253,10 +2248,10 @@ StyleRulePositionTry* CSSParserImpl::ConsumePositionTryRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kPositionTry, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kPositionTry, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -2539,10 +2534,10 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
     observer_->StartRuleBody(block.Offset());
   }
 
-  ConsumeDeclarationList(block, StyleRule::kKeyframe, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(block, StyleRule::kKeyframe, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(block.LookAheadOffset());
@@ -2651,7 +2646,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
     if (nested) {
       // https://drafts.csswg.org/css-syntax/#consume-the-remnants-of-a-bad-declaration
       // Note that the caller consumes the bad declaration remnants
-      // (see ConsumeDeclarationList).
+      // (see ConsumeBlockContents).
       return nullptr;
     }
     // "If nested is false, consume a block from input, and return nothing."
@@ -2737,10 +2732,10 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
   if (observer_) {
     observer_->StartRuleBody(stream.Offset());
   }
-  ConsumeDeclarationList(stream, StyleRule::kStyle, CSSNestingType::kNesting,
-                         /*parent_rule_for_nesting=*/style_rule,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         &child_rules);
+  ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNesting,
+                       /*parent_rule_for_nesting=*/style_rule,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       &child_rules);
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
   }
@@ -2752,17 +2747,10 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
   return style_rule;
 }
 
-// This function is used for two different but very similarly specified actions
-// in [css-syntax-3], namely “parse a list of declarations” (used for style
-// attributes, @page rules and a few other things) and “consume a style block's
-// contents” (used for the interior of rules, such as in a normal stylesheet).
-// The only real difference between the two is that the latter cannot contain
-// nested rules. In particular, both have the effective behavior that when
-// seeing something that is not an ident and is not a valid selector, we should
-// skip to the next semicolon. (For “consume a style block's contents”, this is
-// explicit, and for “parse a list of declarations”, it happens due to
-// synchronization behavior. Of course, for the latter case, a _valid_ selector
-// would get the same skipping behavior.)
+// https://drafts.csswg.org/css-syntax/#consume-block-contents
+//
+// Consumes declarations and/or child rules from the block of a style rule
+// or an at-rule (e.g. @media).
 //
 // The `nested_declarations_start_index` parameter controls how this function
 // emits "nested declaration" rules for the leading block of declarations.
@@ -2772,7 +2760,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
 // wrapped). For nested group rules, or generally rules that cannot hold
 // declarations directly (e.g. @media), the parameter value should be 0u,
 // causing the leading declarations to get wrapped as well.
-void CSSParserImpl::ConsumeDeclarationList(
+void CSSParserImpl::ConsumeBlockContents(
     CSSParserTokenStream& stream,
     StyleRule::RuleType rule_type,
     CSSNestingType nesting_type,
@@ -2916,8 +2904,8 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
   DCHECK(child_rules);
 
   if (is_nested_group_rule) {
-    // This is a nested group rule, which allows *declarations* to appear
-    // directly within the body of the rule, e.g.:
+    // This is a nested group rule, which (in addition to rules) allows
+    // *declarations* to appear directly within the body of the rule, e.g.:
     //
     // .foo {
     //    @media (width > 800px) {
@@ -2925,27 +2913,24 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     //    }
     //  }
     //
-    // Note that nested group rules may also contain *rules* within its body.
-    // This is handled by `ConsumeDeclarationList`, see comment near that
-    // function.
     if (RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
       // Using nested_declarations_start_index=0u here means that the leading
       // declarations will be wrapped in a CSSNestedDeclarations rule.
       // Unlike regular style rules, the leading declarations must be wrapped
       // in something that can hold them, because group rules (e.g. @media)
       // can not hold properties directly.
-      ConsumeDeclarationList(
+      ConsumeBlockContents(
           stream, StyleRule::kStyle, nesting_type, parent_rule_for_nesting,
           /* nested_declarations_start_index */ 0u, child_rules);
     } else {
       if (observer_) {
         // Observe an empty rule header to ensure the observer has a new rule
-        // data on the stack for the following ConsumeDeclarationList.
+        // data on the stack for the following ConsumeBlockContents.
         observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
         observer_->EndRuleHeader(stream.Offset());
         observer_->StartRuleBody(stream.Offset());
       }
-      ConsumeDeclarationList(
+      ConsumeBlockContents(
           stream, StyleRule::kStyle, nesting_type, parent_rule_for_nesting,
           /* nested_declarations_start_index */ kNotFound, child_rules);
       if (observer_) {
@@ -3010,7 +2995,7 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
 //
 // Leaving the stream in an awkward states is normally not desirable for
 // Consume functions, but declarations are sometimes parsed speculatively,
-// which may cause a restart at the call site (see ConsumeDeclarationList,
+// which may cause a restart at the call site (see ConsumeBlockContents,
 // kIdentToken branch). If we are anyway going to restart, any work we do
 // to leave the stream in a more consistent state is just wasted.
 bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,

@@ -280,13 +280,12 @@ class CORE_EXPORT CSSParserImpl {
   StyleRule* ConsumeStyleRuleContents(base::span<CSSSelector> selector_vector,
                                       CSSParserTokenStream& stream);
 
-  void ConsumeDeclarationList(
-      CSSParserTokenStream&,
-      StyleRule::RuleType,
-      CSSNestingType,
-      StyleRule* parent_rule_for_nesting,
-      wtf_size_t nested_declarations_start_index,
-      HeapVector<Member<StyleRuleBase>, 4>* child_rules);
+  void ConsumeBlockContents(CSSParserTokenStream&,
+                            StyleRule::RuleType,
+                            CSSNestingType,
+                            StyleRule* parent_rule_for_nesting,
+                            wtf_size_t nested_declarations_start_index,
+                            HeapVector<Member<StyleRuleBase>, 4>* child_rules);
 
   void ConsumeRuleListOrNestedDeclarationList(
       CSSParserTokenStream&,
