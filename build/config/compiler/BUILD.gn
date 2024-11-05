@@ -2306,9 +2306,16 @@ config("export_dynamic") {
 # 2. Remove the thin_archive config, so that the .a file actually contains all
 #    .o files, instead of just references to .o files in the build directoy
 config("thin_archive") {
-  # The macOS and iOS default linker ld64 does not support reading thin
-  # archives.
-  if ((is_posix && !is_nacl && (!is_apple || use_lld)) || is_fuchsia) {
+  if (is_apple && use_lld) {
+    # The macOS and iOS linker ld64.ldd doesn't support thin archive without
+    # symbol table.
+    arflags = [
+      "-T",
+      "-s",
+    ]
+  } else if ((is_posix && !is_nacl && (!is_apple || use_lld)) || is_fuchsia) {
+    # The macOS and iOS default linker ld64 does not support reading thin
+    # archives.
     arflags = [
       "-T",
       "-S",
