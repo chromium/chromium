@@ -12,6 +12,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
+#include "ash/public/cpp/scanner/scanner_enums.h"
+#include "ash/public/cpp/scanner/scanner_system_state.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/shell.h"
@@ -33,6 +35,7 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::IsEmpty;
+using ::testing::Return;
 using ::testing::SizeIs;
 
 FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
@@ -53,6 +56,30 @@ class ScannerControllerTest : public AshTestBase {
   base::AutoReset<bool> ignore_scanner_update_secret_key_ =
       switches::SetIgnoreScannerUpdateSecretKeyForTest();
 };
+
+TEST_F(ScannerControllerTest, CanStartSessionIfSystemStateEnabled) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          GetSystemState)
+      .WillByDefault(Return(
+          ScannerSystemState(ScannerStatus::kEnabled, /*failed_checks=*/{})));
+
+  EXPECT_TRUE(scanner_controller->CanStartSession());
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+}
+
+TEST_F(ScannerControllerTest, CanNotStartSessionIfSystemStateBlocked) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          GetSystemState)
+      .WillByDefault(Return(
+          ScannerSystemState(ScannerStatus::kBlocked, /*failed_checks=*/{})));
+
+  EXPECT_FALSE(scanner_controller->CanStartSession());
+  EXPECT_FALSE(scanner_controller->StartNewSession());
+}
 
 TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
   base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;

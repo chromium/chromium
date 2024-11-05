@@ -27,24 +27,32 @@ ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate)
 
 ScannerController::~ScannerController() = default;
 
-ScannerSession* ScannerController::StartNewSession() {
+bool ScannerController::CanStartSession() {
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
 
   if (profile_scoped_delegate == nullptr) {
-    return nullptr;
+    return false;
   }
 
   if (!profile_scoped_delegate->IsGoogler() &&
       !switches::IsScannerUpdateSecretKeyMatched()) {
-    return nullptr;
+    return false;
   }
 
-  scanner_session_ =
-      profile_scoped_delegate->GetSystemState().status ==
-              ScannerStatus::kEnabled
-          ? std::make_unique<ScannerSession>(profile_scoped_delegate)
-          : nullptr;
+  return profile_scoped_delegate->GetSystemState().status ==
+         ScannerStatus::kEnabled;
+}
+
+ScannerSession* ScannerController::StartNewSession() {
+  // Reset the current session if there is one. We do this here to ensure that
+  // the old session is destroyed before attempting to create the new session
+  // (to avoid subtle issues from having simultaneously existing sessions).
+  scanner_session_ = nullptr;
+  if (CanStartSession()) {
+    scanner_session_ =
+        std::make_unique<ScannerSession>(delegate_->GetProfileScopedDelegate());
+  }
   return scanner_session_.get();
 }
 

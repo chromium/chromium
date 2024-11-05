@@ -20,16 +20,21 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 
-FakeScannerProfileScopedDelegate::FakeScannerProfileScopedDelegate() = default;
+namespace {
+using ::testing::Return;
+}  // namespace
+
+FakeScannerProfileScopedDelegate::FakeScannerProfileScopedDelegate() {
+  ON_CALL(*this, GetSystemState)
+      .WillByDefault(Return(
+          ScannerSystemState(ScannerStatus::kEnabled, /*failed_checks=*/{})));
+}
 
 FakeScannerProfileScopedDelegate::~FakeScannerProfileScopedDelegate() = default;
-
-ScannerSystemState FakeScannerProfileScopedDelegate::GetSystemState() const {
-  return ScannerSystemState(ScannerStatus::kEnabled, /*failed_checks=*/{});
-}
 
 drive::DriveServiceInterface*
 FakeScannerProfileScopedDelegate::GetDriveService() {

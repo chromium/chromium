@@ -26,11 +26,15 @@ class ASH_EXPORT ScannerController {
   ScannerController& operator=(const ScannerController&) = delete;
   ~ScannerController();
 
+  // Checks system level constraints (e.g. prefs, feature flags) and returns
+  // true if the constraints allow a Scanner session to be created.
+  bool CanStartSession();
+
   // Creates a new ScannerSession and returns a pointer to the created session.
-  // Note that the created session is owned by the ScannerController. If the
-  // Scanner cannot be initialized due to system level constraints (e.g. pref
-  // disabled, feature not allowed), then no session is created and `nullptr` is
-  // returned instead.
+  // If the Scanner cannot be initialized due to system level constraints (e.g.
+  // pref disabled, feature not allowed), then no session is created and
+  // `nullptr` is returned instead. Note that calling `StartNewSession` will end
+  // the current session if there is one.
   ScannerSession* StartNewSession();
 
   // Fetches Scanner actions that are available based on the current
