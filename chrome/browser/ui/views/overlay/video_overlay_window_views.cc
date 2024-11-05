@@ -53,7 +53,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/non_client_view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
@@ -73,11 +73,6 @@
 #include "ui/base/win/shell.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/aura/window_tree_host.h"
-#include "ui/platform_window/extensions/wayland_extension.h"
-#endif
-
 namespace {
 
 // Lower bound size of the window is a fixed value to allow for minimal sizes
@@ -86,7 +81,7 @@ constexpr gfx::Size kMinWindowSize(260, 146);
 
 constexpr int kOverlayBorderThickness = 10;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // The opacity of the resize handle control.
 constexpr double kResizeHandleOpacity = 0.38;
 #endif
@@ -222,7 +217,7 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
       return window_component;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // If the resize handle is clicked on, we want to force the hit test to
     // force a resize drag.
     if (window->AreControlsVisible() &&
@@ -233,7 +228,7 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
     // Allows for dragging and resizing the window.
     return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateWindowRoundedCorners() override {
     // The first call to  occurs in `UpdateWindowRoundedCorners()`. However, the
     // layer is initialized after the widget is initialized, hence the null
@@ -320,7 +315,7 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.delegate = new OverlayWindowWidgetDelegate();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
                                                chromeos::AppType::BROWSER);
 #endif
@@ -526,7 +521,7 @@ void VideoOverlayWindowViews::OnNativeWidgetMove() {
   // window.
   UpdateMaxSize(GetWorkAreaForWindow());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Update the positioning of some icons when the window is moved.
   WindowQuadrant quadrant =
       GetCurrentWindowQuadrant(GetBounds(), GetController());
@@ -599,18 +594,11 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
       break;
 
     case ui::EventType::kMouseExited: {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // On Lacros, the |event| will always occur within
-      // |window_background_view_| despite the mouse exiting the respective
-      // surface so always hide the controls.
-      const bool should_update_control_visibility = true;
-#else
       // On Windows, ui::EventType::kMouseExited is triggered when hovering over
       // the media controls because of the HitTest. This check ensures the
       // controls are visible if the mouse is still over the window.
       const bool should_update_control_visibility =
           !GetWindowBackgroundView()->bounds().Contains(event->location());
-#endif
       if (should_update_control_visibility)
         UpdateControlsVisibility(false);
       break;
@@ -972,7 +960,7 @@ void VideoOverlayWindowViews::SetUpViews() {
         base::Unretained(this)));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   auto resize_handle_view =
       std::make_unique<ResizeHandleButton>(views::Button::PressedCallback());
 #endif
@@ -1065,7 +1053,7 @@ void VideoOverlayWindowViews::SetUpViews() {
     next_slide_controls_view->layer()->SetName("NextSlideButton");
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // views::View that shows the affordance that the window can be resized. ----
   resize_handle_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   resize_handle_view->layer()->SetFillsBoundsOpaquely(false);
@@ -1115,7 +1103,7 @@ void VideoOverlayWindowViews::SetUpViews() {
     hang_up_button_ =
         controls_container_view->AddChildView(std::move(hang_up_button));
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   resize_handle_view_ =
       controls_container_view->AddChildView(std::move(resize_handle_view));
 #endif
@@ -1124,10 +1112,10 @@ void VideoOverlayWindowViews::SetUpViews() {
 }
 
 void VideoOverlayWindowViews::OnRootViewReady() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
   highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(this);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   GetRootView()->SetPaintToLayer(ui::LAYER_TEXTURED);
   GetRootView()->layer()->SetName("RootView");
@@ -1207,7 +1195,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   WindowQuadrant quadrant = GetCurrentWindowQuadrant(GetBounds(), controller_);
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   UpdateResizeHandleBounds(quadrant);
 #endif
 
@@ -1408,7 +1396,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   next_slide_controls_view_->SetVisible(show_next_slide_button_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void VideoOverlayWindowViews::UpdateResizeHandleBounds(
     WindowQuadrant quadrant) {
   resize_handle_view_->SetPosition(GetBounds().size(), quadrant);
@@ -1430,7 +1418,7 @@ void VideoOverlayWindowViews::Close() {
 void VideoOverlayWindowViews::ShowInactive() {
   views::Widget::ShowInactive();
   views::Widget::SetVisibleOnAllWorkspaces(true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   non_client_view()->frame_view()->UpdateWindowRoundedCorners();
 #endif
 
@@ -1694,7 +1682,7 @@ gfx::Rect VideoOverlayWindowViews::GetMinimizeControlsBounds() {
   return minimize_button_->GetMirroredBounds();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Rect VideoOverlayWindowViews::GetResizeHandleControlsBounds() {
   return resize_handle_view_->GetMirroredBounds();
 }
@@ -1753,7 +1741,7 @@ gfx::Rect VideoOverlayWindowViews::GetNextSlideControlsBounds() {
   return next_slide_controls_view_->GetMirroredBounds();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 int VideoOverlayWindowViews::GetResizeHTComponent() const {
   return resize_handle_view_->GetHTComponent();
 }
@@ -1838,7 +1826,7 @@ gfx::Point VideoOverlayWindowViews::close_image_position_for_testing() const {
   return close_controls_view_->origin();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Point VideoOverlayWindowViews::resize_handle_position_for_testing() const {
   return resize_handle_view_->origin();
 }

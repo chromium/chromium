@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 #include "content/public/browser/overlay_window.h"
@@ -110,7 +109,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void OnAutoPipSettingOverlayViewHidden() override;
 
   bool ControlsHitTestContainsPoint(const gfx::Point& point);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Gets the proper hit test component when the hit point is on the resize
   // handle in order to force a drag-to-resize.
   int GetResizeHTComponent() const;
@@ -347,10 +346,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<SimpleOverlayWindowImageButton> next_slide_controls_view_ = nullptr;
   raw_ptr<AutoPipSettingOverlayView> overlay_view_ = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Generates a nine patch layer painted with a highlight border for ChromeOS
-  // ASH only, not including LaCrOS. Highlight border for chrome pip window in
-  // LaCrOS will be added when `ash::NonClientFrameViewAsh` is created.
+  // Ash.
   std::unique_ptr<HighlightBorderOverlay> highlight_border_overlay_;
 #endif
 

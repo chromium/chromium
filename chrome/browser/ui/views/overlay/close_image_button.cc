@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -42,7 +41,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
 void CloseImageButton::SetPosition(
     const gfx::Size& size,
     VideoOverlayWindowViews::WindowQuadrant quadrant) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (quadrant == VideoOverlayWindowViews::WindowQuadrant::kBottomLeft) {
     views::ImageButton::SetPosition(
         gfx::Point(kCloseButtonMargin, kCloseButtonMargin));
