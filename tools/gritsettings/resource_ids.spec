@@ -1088,19 +1088,19 @@
     "messages": [1220],
   },
   "ios/chrome/widget_kit_extension/strings/ios_widget_kit_extension_strings.grd": {
-    "messages": [1240],
+    "messages": [1320],
   },
   "ios/web/ios_web_resources.grd": {
-    "includes": [1260],
+    "includes": [1340],
   },
   "ios/web/test/test_resources.grd": {
-    "includes": [1280],
+    "includes": [1360],
   },
   # END ios/ section.
 
   # START ios_internal/ section.
   "ios_internal/chrome/app/ios_internal_strings.grd": {
-    "messages": [1300],
+    "messages": [1380],
   },
   "ios_internal/chrome/app/ios_internal_chromium_strings.grd": {
     "META": {"join": 2},
