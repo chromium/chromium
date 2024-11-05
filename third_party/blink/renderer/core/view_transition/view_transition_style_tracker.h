@@ -62,15 +62,7 @@ class ViewTransitionStyleTracker
  public:
   // Properties that transition on container elements.
   struct ContainerProperties {
-    bool operator==(const ContainerProperties& other) const {
-      return border_box_rect_in_css_space ==
-                 other.border_box_rect_in_css_space &&
-             snapshot_matrix == other.snapshot_matrix &&
-             border_offset == other.border_offset;
-    }
-    bool operator!=(const ContainerProperties& other) const {
-      return !(*this == other);
-    }
+    bool operator==(const ContainerProperties& other) const = default;
 
     PhysicalRect border_box_rect_in_css_space;
 
@@ -258,8 +250,8 @@ class ViewTransitionStyleTracker
 
     // Computed info for each element participating in the transition for the
     // |target_element|. This information is mirrored into the UA stylesheet.
-    // This is stored in a vector to be able to stack animations.
-    Vector<ContainerProperties> container_properties;
+    // It is std::nullopt before it is populated for the first time.
+    std::optional<ContainerProperties> container_properties;
 
     // Computed info cached before the DOM switches to the new state.
     ContainerProperties cached_container_properties;

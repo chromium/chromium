@@ -537,11 +537,11 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     DCHECK(!element_data_map_.Contains(name));
     auto* element_data = MakeGarbageCollected<ElementData>();
 
-    element_data->container_properties.emplace_back(
+    element_data->container_properties = ContainerProperties{
         PhysicalRect::EnclosingRect(
             transition_state_element
                 .border_box_rect_in_enclosing_layer_css_space),
-        transition_state_element.viewport_matrix);
+        transition_state_element.viewport_matrix};
     element_data->old_snapshot_id = transition_state_element.snapshot_id;
 
     element_data->element_index = transition_state_element.paint_order;
@@ -1472,8 +1472,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     auto css_properties = std::move(css_property_builder).Finish();
 
-    if (!element_data->container_properties.empty() &&
-        element_data->container_properties.back() == container_properties &&
+    if (element_data->container_properties == container_properties &&
         visual_overflow_rect_in_layout_space ==
             element_data->visual_overflow_rect_in_layout_space &&
         captured_rect_in_layout_space ==
@@ -1482,18 +1481,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       continue;
     }
 
-    // Only add a new container properties entry if it differs from the last
-    // one.
-    if (element_data->container_properties.empty()) {
-      element_data->container_properties.push_back(container_properties);
-    } else if (element_data->container_properties.back() !=
-               container_properties) {
-      if (state_ == State::kStarted) {
-        element_data->container_properties.push_back(container_properties);
-      } else {
-        element_data->container_properties.back() = container_properties;
-      }
-    }
+    element_data->container_properties = container_properties;
 
     element_data->visual_overflow_rect_in_layout_space =
         visual_overflow_rect_in_layout_space;
@@ -1877,16 +1865,14 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
 
   for (const auto& entry : element_data_map_) {
     const auto& element_data = entry.value;
-    DCHECK_EQ(element_data->container_properties.size(), 1u)
-        << "Multiple container properties are only created in the Animate "
-           "phase";
+    DCHECK(element_data->container_properties.has_value());
 
     auto& element = transition_state.elements.emplace_back();
     element.tag_name = entry.key.Utf8();
     element.border_box_rect_in_enclosing_layer_css_space = gfx::RectF(
-        element_data->container_properties[0].border_box_rect_in_css_space);
+        element_data->container_properties->border_box_rect_in_css_space);
     element.viewport_matrix =
-        element_data->container_properties[0].snapshot_matrix;
+        element_data->container_properties->snapshot_matrix;
     element.overflow_rect_in_layout_space =
         gfx::RectF(element_data->visual_overflow_rect_in_layout_space);
 
@@ -2030,8 +2016,9 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
     // a chance to update our rendering in RunPostPrePaintSteps. There is no
     // point in adding any styles here, because those will be wrong. The TODO
     // here is to skip this step earlier, instead of per each element.
-    if (element_data->container_properties.empty())
+    if (!element_data->container_properties) {
       continue;
+    }
 
     gfx::Transform old_parent_inverse_transform;
     gfx::Transform new_parent_inverse_transform;
@@ -2046,9 +2033,9 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
       old_parent_inverse_transform.Translate(
           -containing_group_data->cached_container_properties.border_offset);
 
-      if (!containing_group_data->container_properties.empty()) {
+      if (containing_group_data->container_properties) {
         const auto& new_container_properties =
-            containing_group_data->container_properties.back();
+            *containing_group_data->container_properties;
         new_parent_inverse_transform =
 
             new_container_properties.snapshot_matrix.InverseOrIdentity();
@@ -2060,7 +2047,7 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
     // This updates the styles on the pseudo-elements as described in
     // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
     builder.AddContainerStyles(
-        view_transition_name, element_data->container_properties.back(),
+        view_transition_name, *element_data->container_properties,
         element_data->captured_css_properties, new_parent_inverse_transform);
 
     // This sets up the styles to animate the pseudo-elements as described in
@@ -2154,13 +2141,12 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetBorderBoxRect(
     bool use_cached_data,
     float device_scale_factor) const {
   // TODO(vmpstr): Make container_properties a non-vector non-optional member.
-  if (!use_cached_data && container_properties.size() == 0) {
+  if (!use_cached_data && !container_properties) {
     return gfx::RectF();
   }
   auto border_box_rect_in_layout_space =
-      use_cached_data
-          ? cached_container_properties.border_box_rect_in_css_space
-          : container_properties.back().border_box_rect_in_css_space;
+      use_cached_data ? cached_container_properties.border_box_rect_in_css_space
+                      : container_properties->border_box_rect_in_css_space;
   border_box_rect_in_layout_space.Scale(device_scale_factor);
   return gfx::RectF(border_box_rect_in_layout_space);
 }
@@ -2173,12 +2159,8 @@ bool ViewTransitionStyleTracker::ElementData::
 }
 
 void ViewTransitionStyleTracker::ElementData::CacheStateForOldSnapshot() {
-  // This could be empty if the element was uncontained and was ignored for a
-  // transition.
-  DCHECK_LT(container_properties.size(), 2u);
-
-  if (!container_properties.empty()) {
-    cached_container_properties = container_properties.back();
+  if (container_properties) {
+    cached_container_properties = *container_properties;
   }
   cached_visual_overflow_rect_in_layout_space =
       visual_overflow_rect_in_layout_space;
