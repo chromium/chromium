@@ -256,34 +256,16 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest,
-       AssistiveDiacriticsLongpressFlagAndPrefEnabled_AssistiveFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDiacriticsOnPhysicalKeyboardLongpress);
+       AssistiveDiacriticsLongpressPrefEnabled_AssistiveFeatureEnabled) {
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
-       AssistiveDiacriticsLongpressFlagDisabled_AssistiveFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kDiacriticsOnPhysicalKeyboardLongpress);
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
-                        /*diacritics_on_longpress_enabled=*/true);
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
 TEST_F(AssistiveSuggesterTest,
        AssistiveDiacriticsLongpressPrefDisabled_AssistiveFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDiacriticsOnPhysicalKeyboardLongpress);
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
@@ -292,34 +274,17 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest,
-       OnlyAssistiveControlVLongpressFlagEnabled_AssistiveFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kClipboardHistoryLongpress},
-      /*disabled_features=*/{features::kAssistMultiWord,
-                             features::kDiacriticsOnPhysicalKeyboardLongpress});
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
-                        /*diacritics_on_longpress_enabled=*/false);
-  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
-       AssistiveControlVLongpressFlagDisabled_AssistiveFeatureDisabled) {
+       AssistiveControlVLongpressPrefDisabled_AssistiveFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          features::kClipboardHistoryLongpress, features::kAssistMultiWord,
-          features::kDiacriticsOnPhysicalKeyboardLongpress});
+          features::kClipboardHistoryLongpress, features::kAssistMultiWord});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
 TEST_F(AssistiveSuggesterTest, RecordPKDiacriticsPrefEnabledOnActivate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDiacriticsOnPhysicalKeyboardLongpress);
-
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
@@ -330,10 +295,6 @@ TEST_F(AssistiveSuggesterTest, RecordPKDiacriticsPrefEnabledOnActivate) {
 }
 
 TEST_F(AssistiveSuggesterTest, RecordPKDiacriticsPrefDisabledOnActivate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDiacriticsOnPhysicalKeyboardLongpress);
-
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
@@ -459,10 +420,6 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
 
 TEST_F(AssistiveSuggesterTest,
        DiacriticsSuggestionNotTriggeredIfShiftDownAndShiftUp) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -485,10 +442,6 @@ TEST_F(AssistiveSuggesterTest,
 
 TEST_F(AssistiveSuggesterTest,
        DiacriticsSuggestionOnKeyDownLongpressForUSEnglish) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -511,10 +464,6 @@ TEST_F(AssistiveSuggesterTest,
 TEST_F(
     AssistiveSuggesterTest,
     DiacriticsSuggestionDisabledOnKeyDownLongpressForLastSurroundingTextEmpty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -536,10 +485,6 @@ TEST_F(
 TEST_F(
     AssistiveSuggesterTest,
     DiacriticsSuggestionDisabledOnKeyDownLongpressForLastSurroundingTextBeforeCursorNotMatch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -561,10 +506,6 @@ TEST_F(
 TEST_F(
     AssistiveSuggesterTest,
     DiacriticsSuggestionDisabledOnKeyDownLongpressForLastSurroundingTextCursorPosTooLarge) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -586,10 +527,6 @@ TEST_F(
 TEST_F(
     AssistiveSuggesterTest,
     DiacriticsSuggestionDisabledOnKeyDownLongpressForLastSurroundingTextCursorPosZero) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -609,10 +546,6 @@ TEST_F(
 }
 
 TEST_F(AssistiveSuggesterTest, DiacriticsSuggestionOnKeyDownRecordsSuccess) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -637,10 +570,6 @@ TEST_F(AssistiveSuggesterTest, DiacriticsSuggestionOnKeyDownRecordsSuccess) {
 
 TEST_F(AssistiveSuggesterTest,
        NoDiacriticsSuggestionOnKeyDownLongpressForUSEnglishOnPrefDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -660,10 +589,6 @@ TEST_F(AssistiveSuggesterTest,
 
 TEST_F(AssistiveSuggesterTest,
        NoDiacriticsSuggestionOnKeyDownLongpressForNonUSEnglish) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -683,10 +608,6 @@ TEST_F(AssistiveSuggesterTest,
 
 TEST_F(AssistiveSuggesterTest,
        DiacriticsSuggestionOnKeyDownLongpressNotInterruptedByOtherKeys) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -712,10 +633,6 @@ TEST_F(AssistiveSuggesterTest,
 
 TEST_F(AssistiveSuggesterTest,
        DiacriticsSuggestionWithoutContextIgnoresOnKeyDownLongpress) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -731,10 +648,6 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest, DiacriticsSuggestionInterruptedDoesNotSuggest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -755,10 +668,6 @@ TEST_F(AssistiveSuggesterTest, DiacriticsSuggestionInterruptedDoesNotSuggest) {
 
 TEST_F(AssistiveSuggesterTest,
        DoNotPropagateAlphaRepeatKeyIfDiacriticsOnLongpressEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/true);
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
@@ -782,10 +691,6 @@ TEST_F(AssistiveSuggesterTest,
 
 TEST_F(AssistiveSuggesterTest,
        PropagateAlphaRepeatKeyIfDiacriticsOnLongpressDisabledViaSettings) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
@@ -803,10 +708,6 @@ TEST_F(AssistiveSuggesterTest,
 
 TEST_F(AssistiveSuggesterTest,
        PropagateAlphaRepeatKeyIfDiacriticsOnLongpressDisabledDenylist) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
@@ -824,10 +725,6 @@ TEST_F(AssistiveSuggesterTest,
 
 TEST_F(AssistiveSuggesterTest,
        IgnoreAndPropagateNonAlphaRepeatKeyIfDiacriticsOnLongpressEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
 
@@ -839,10 +736,6 @@ TEST_F(AssistiveSuggesterTest,
 TEST_F(AssistiveSuggesterTest, StoreLastEnabledSuggestionOnFocus) {
   EnabledSuggestions enabled_suggestions = EnabledSuggestions{
       .emoji_suggestions = true, .diacritic_suggestions = true};
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -861,10 +754,6 @@ TEST_F(AssistiveSuggesterTest, StoreLastEnabledSuggestionOnFocus) {
 }
 
 TEST_F(AssistiveSuggesterTest, ClearLastEnabledSuggestionOnBlur) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
-      /*disabled_features=*/{});
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
