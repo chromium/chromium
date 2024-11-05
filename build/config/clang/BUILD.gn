@@ -64,7 +64,7 @@ clang_plugin("raw_ptr_check") {
     if (enable_check_raw_ptr_fields) {
       plugin_arguments += [
         "check-raw-ptr-fields",
-        # TODO(367764863) Enable "check-span-fields".
+        "check-span-fields",
       ]
     }
 
