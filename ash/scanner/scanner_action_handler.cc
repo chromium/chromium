@@ -11,7 +11,6 @@
 #include <string_view>
 #include <utility>
 #include <variant>
-#include <vector>
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
@@ -30,7 +29,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -41,6 +39,7 @@
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_parser.h"
+#include "google_apis/people/people_api_request_types.h"
 #include "google_apis/people/people_api_requests.h"
 #include "google_apis/people/people_api_response_types.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -63,11 +62,6 @@ const GURL& GetCalendarEventTemplateUrl() {
   static GURL kGoogleCalendarEventTemplateUrl(
       "https://calendar.google.com/calendar/render?action=TEMPLATE");
   return kGoogleCalendarEventTemplateUrl;
-}
-
-const GURL& GetGoogleContactsNewUrl() {
-  static GURL kGoogleContactsNewUrl("https://contacts.google.com/new");
-  return kGoogleContactsNewUrl;
 }
 
 const GURL& GetGoogleContactsBaseUrl() {
@@ -99,46 +93,6 @@ GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);
   return GetCalendarEventTemplateUrl().ReplaceComponents(replacements);
-}
-
-GURL GetContactUrl(const manta::proto::NewContactAction& contact) {
-  CHECK(GetGoogleContactsNewUrl().query_piece().empty());
-
-  // Unlike the calendar event URL, the new contact URL template does not have a
-  // query.
-  // Because of this, we can't always prepend a '&' to every query parameter -
-  // only the query parameters after the first.
-  // Use `base::JoinString` to simplify this logic.
-  std::vector<std::string> query_params;
-  if (!contact.given_name().empty()) {
-    query_params.push_back(base::StrCat({
-        "givenname=",
-        base::EscapeQueryParamValue(contact.given_name(), /*use_plus=*/true),
-    }));
-  }
-  if (!contact.family_name().empty()) {
-    query_params.push_back(base::StrCat({
-        "familyname=",
-        base::EscapeQueryParamValue(contact.family_name(), /*use_plus=*/true),
-    }));
-  }
-  if (!contact.email().empty()) {
-    query_params.push_back(base::StrCat({
-        "email=",
-        base::EscapeQueryParamValue(contact.email(), /*use_plus=*/true),
-    }));
-  }
-  if (!contact.phone().empty()) {
-    query_params.push_back(base::StrCat({
-        "phone=",
-        base::EscapeQueryParamValue(contact.phone(), /*use_plus=*/true),
-    }));
-  }
-
-  GURL::Replacements replacements;
-  std::string query = base::JoinString(std::move(query_params), "&");
-  replacements.SetQueryStr(query);
-  return GetGoogleContactsNewUrl().ReplaceComponents(replacements);
 }
 
 // Given a resource name of a Person from the People API, returns a URL to the
@@ -315,6 +269,31 @@ std::unique_ptr<ui::ClipboardData> ClipboardDataFromAction(
   return data;
 }
 
+// Returns the `google_apis::people::Contact` from the given new contact action.
+google_apis::people::Contact ContactFromAction(
+    manta::proto::NewContactAction action) {
+  google_apis::people::Contact contact;
+
+  // `google_apis::people::Name` will not be serialised if all field are empty,
+  // so if the action's name fields are not set, the below would be a no-op.
+  contact.name.family_name = std::move(*action.mutable_family_name());
+  contact.name.given_name = std::move(*action.mutable_given_name());
+
+  if (!action.email().empty()) {
+    google_apis::people::EmailAddress email_address;
+    email_address.value = std::move(*action.mutable_email());
+    contact.email_addresses.push_back(std::move(email_address));
+  }
+
+  if (!action.phone().empty()) {
+    google_apis::people::PhoneNumber phone_number;
+    phone_number.value = std::move(*action.mutable_phone());
+    contact.phone_numbers.push_back(std::move(phone_number));
+  }
+
+  return contact;
+}
+
 // Run when the create contact request to the People API finishes.
 void OnContactCreated(base::WeakPtr<ScannerCommandDelegate> delegate,
                       ScannerCommandCallback callback,
@@ -343,7 +322,7 @@ ScannerCommand ScannerActionToCommand(ScannerAction action) {
             return OpenUrlCommand(GetCalendarEventUrl(action));
           },
           [&](manta::proto::NewContactAction& action) -> ScannerCommand {
-            return OpenUrlCommand(GetContactUrl(action));
+            return CreateContactCommand(ContactFromAction(std::move(action)));
           },
           [&](manta::proto::NewGoogleDocAction& action) -> ScannerCommand {
             return DriveUploadCommand(

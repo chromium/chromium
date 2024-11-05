@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "components/drive/service/fake_drive_service.h"
@@ -54,6 +55,7 @@ using ::testing::FieldsAre;
 using ::testing::HasSubstr;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::Return;
 using ::testing::VariantWith;
 
@@ -83,8 +85,12 @@ class TestScannerCommandDelegate : public ScannerCommandDelegate {
 constexpr std::string_view kGoogleCalendarHost = "calendar.google.com";
 constexpr std::string_view kGoogleCalendarRenderPath = "/calendar/render";
 
-constexpr std::string_view kGoogleContactsHost = "contacts.google.com";
-constexpr std::string_view kGoogleContactsNewPath = "/new";
+// gMock matchers must match on const refs. Turning a `Contact` into a
+// `base::Value::Dict` requires a rvalue reference, so explicitly create a copy
+// to turn it into a dict.
+base::Value::Dict ContactToDict(const google_apis::people::Contact& contact) {
+  return google_apis::people::Contact(contact).ToDict();
+}
 
 TEST(ScannerActionToCommandTest, NewEvent) {
   ScannerCommand command =
@@ -180,12 +186,8 @@ TEST(ScannerActionToCommandTest, NewContact) {
   ScannerCommand command =
       ScannerActionToCommand(manta::proto::NewContactAction());
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece, "")))));
+  EXPECT_THAT(std::move(command), VariantWith<CreateContactCommand>(FieldsAre(
+                                      ResultOf(&ContactToDict, IsJson("{}")))));
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithGivenName) {
@@ -193,12 +195,17 @@ TEST(ScannerActionToCommandTest, NewContactWithGivenName) {
   action.set_given_name("Léa");
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece, "givenname=L%C3%A9a")))));
+  constexpr std::string_view kExpectedJson = R"json({
+    "names": [
+      {
+        "givenName": "Léa",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithFamilyName) {
@@ -206,27 +213,35 @@ TEST(ScannerActionToCommandTest, NewContactWithFamilyName) {
   action.set_family_name("François");
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece,
-                   "familyname=Fran%C3%A7ois")))));
+  constexpr std::string_view kExpectedJson = R"json({
+    "names": [
+      {
+        "familyName": "François",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithEmail) {
   manta::proto::NewContactAction action;
-  action.set_phone("afrancois@example.com");
+  action.set_email("afrancois@example.com");
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece,
-                   "phone=afrancois%40example.com")))));
+  constexpr std::string_view kExpectedJson = R"json({
+    "emailAddresses": [
+      {
+        "value": "afrancois@example.com",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithPhoneNumber) {
@@ -234,13 +249,17 @@ TEST(ScannerActionToCommandTest, NewContactWithPhoneNumber) {
   action.set_phone("+61400000000");
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece,
-                   "phone=%2B61400000000")))));
+  constexpr std::string_view kExpectedJson = R"json({
+    "phoneNumbers": [
+      {
+        "value": "+61400000000",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithMultipleFields) {
@@ -251,16 +270,28 @@ TEST(ScannerActionToCommandTest, NewContactWithMultipleFields) {
   action.set_phone("+61400000000");
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
-  EXPECT_THAT(
-      command,
-      VariantWith<OpenUrlCommand>(FieldsAre(AllOf(
-          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
-          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
-          Property("query_piece", &GURL::query_piece,
-                   "givenname=Andr%C3%A9"
-                   "&familyname=Fran%C3%A7ois"
-                   "&email=afrancois%40example.com"
-                   "&phone=%2B61400000000")))));
+  constexpr std::string_view kExpectedJson = R"json({
+    "names": [
+      {
+        "givenName": "André",
+        "familyName": "François",
+      },
+    ],
+    "emailAddresses": [
+      {
+        "value": "afrancois@example.com",
+      },
+    ],
+    "phoneNumbers": [
+      {
+        "value": "+61400000000",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
 }
 
 TEST(ScannerActionToCommandTest, NewGoogleDoc) {

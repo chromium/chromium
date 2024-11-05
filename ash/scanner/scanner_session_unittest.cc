@@ -14,11 +14,16 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "components/manta/scanner_provider.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -35,10 +40,12 @@ using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::DoAll;
 using ::testing::IsEmpty;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::ResultOf;
+using ::testing::Return;
 using ::testing::SizeIs;
 
 using FetchActionsForImageFuture = base::test::TestFuture<
@@ -311,14 +318,12 @@ TEST(ScannerSessionTest, RunningNewEventActionOpensUrl) {
 }
 
 TEST(ScannerSessionTest, RunningNewContactActionOpensUrl) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
   MockNewWindowDelegate new_window_delegate;
   EXPECT_CALL(new_window_delegate,
               OpenUrl(Property("spec", &GURL::spec,
-                               "https://contacts.google.com/new"
-                               "?givenname=Andr%C3%A9"
-                               "&familyname=Fran%C3%A7ois"
-                               "&email=afrancois%40example.com"
-                               "&phone=%2B61400000000"),
+                               "https://contacts.google.com/person/c1?edit=1"),
                       _, _))
       .Times(1);
   FakeScannerProfileScopedDelegate delegate;
@@ -340,6 +345,15 @@ TEST(ScannerSessionTest, RunningNewContactActionOpensUrl) {
       .WillOnce(RunOnceCallback<2>(
           std::move(populated_output),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  base::MockCallback<
+      net::test_server::EmbeddedTestServer::HandleRequestCallback>
+      request_callback;
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HttpStatusCode::HTTP_OK);
+  response->set_content(R"json({"resourceName": "people/c1"})json");
+  response->set_content_type("application/json");
+  EXPECT_CALL(request_callback, Run).WillOnce(Return(std::move(response)));
+  delegate.SetRequestCallback(request_callback.Get());
   ScannerSession session(&delegate);
 
   base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
