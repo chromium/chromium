@@ -15731,21 +15731,6 @@
             ]
         }
     ],
-    "OsUpdateHandler": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RegisterOsUpdateHandlerWin"
-                    ]
-                }
-            ]
-        }
-    ],
     "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [
@@ -19159,6 +19144,21 @@
                     "enable_features": [
                         "ReduceSubresourceResponseStartedIPC",
                         "UkmReduceAddEntryIPC"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RegisterOsUpdateHandlerWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RegisterOsUpdateHandlerWin"
                     ]
                 }
             ]
