@@ -6,8 +6,9 @@ import 'chrome://compare/header.js';
 import 'chrome://compare/disclosure/app.js';
 
 import type {DisclosureAppElement} from 'chrome://compare/disclosure/app.js';
+import {DisclosureVersion} from 'chrome://compare/product_specifications.mojom-webui.js';
 import type {ProductSpecificationsSet} from 'chrome://compare/shared.mojom-webui.js';
-import {ProductSpecificationsDisclosureVersion} from 'chrome://compare/shopping_service.mojom-webui.js';
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -28,12 +29,18 @@ suite('DisclosureAppTest', () => {
   let metrics: MetricsTracker;
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
+  const productSpecificationsProxy =
+      TestMock.fromClass(ProductSpecificationsBrowserProxyImpl);
   const fakeUserEmail = 'test@gmail.com';
 
   setup(async () => {
     metrics = fakeMetricsPrivate();
     shoppingServiceApi.reset();
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
+
+    productSpecificationsProxy.reset();
+    ProductSpecificationsBrowserProxyImpl.setInstance(
+        productSpecificationsProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('product-specifications-disclosure-app');
@@ -170,13 +177,12 @@ suite('DisclosureAppTest', () => {
     // Ensure browser is called to update prefs.
     assertEquals(
         1,
-        shoppingServiceApi.getCallCount(
-            'setProductSpecificationDisclosureAcceptVersion'));
+        productSpecificationsProxy.getCallCount(
+            'setAcceptedDisclosureVersion'));
     assertEquals(
-        ProductSpecificationsDisclosureVersion.kV1,
-        shoppingServiceApi.getArgs(
-            'setProductSpecificationDisclosureAcceptVersion')[0] as
-            ProductSpecificationsDisclosureVersion);
+        DisclosureVersion.kV1,
+        productSpecificationsProxy.getArgs('setAcceptedDisclosureVersion')[0] as
+            DisclosureVersion);
 
     // Create product spec set.
     assertEquals(
@@ -188,12 +194,14 @@ suite('DisclosureAppTest', () => {
     assertEquals('https://bar.com', addSetArgs[0][1][1].url);
 
     // Show product spec set.
-    await shoppingServiceApi.whenCalled('showProductSpecificationsSetForUuid');
+    await productSpecificationsProxy.whenCalled(
+        'showProductSpecificationsSetForUuid');
     assertEquals(
         1,
-        shoppingServiceApi.getCallCount('showProductSpecificationsSetForUuid'));
-    const showArgs =
-        shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid');
+        productSpecificationsProxy.getCallCount(
+            'showProductSpecificationsSetForUuid'));
+    const showArgs = productSpecificationsProxy.getArgs(
+        'showProductSpecificationsSetForUuid');
     assertEquals('123', showArgs[0][0].value);
     assertEquals(false, showArgs[0][1]);
 
@@ -282,9 +290,10 @@ suite('DisclosureAppTest', () => {
         0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
     assertEquals(
         1,
-        shoppingServiceApi.getCallCount('showProductSpecificationsSetForUuid'));
-    const showSetArgs =
-        shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid');
+        productSpecificationsProxy.getCallCount(
+            'showProductSpecificationsSetForUuid'));
+    const showSetArgs = productSpecificationsProxy.getArgs(
+        'showProductSpecificationsSetForUuid');
     assertEquals(set_id, showSetArgs[0][0].value);
 
     // Received signal to close dialog.
@@ -322,9 +331,7 @@ suite('DisclosureAppTest', () => {
         1, metrics.count('Commerce.Compare.FirstRunExperience.Reject'));
     // Ensure browser is called about declining the disclosure.
     assertEquals(
-        1,
-        shoppingServiceApi.getCallCount(
-            'declineProductSpecificationDisclosure'));
+        1, productSpecificationsProxy.getCallCount('declineDisclosure'));
 
     // Received signal to close dialog.
     assertEquals(receivedMessage, 'dialogClose');

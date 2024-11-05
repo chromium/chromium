@@ -12,7 +12,9 @@ import {Router} from 'chrome://compare/router.js';
 import type {ProductSpecificationsSet} from 'chrome://compare/shared.mojom-webui.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
-import {PageCallbackRouter, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.js';
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import {UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
@@ -115,6 +117,8 @@ suite('AppTest', () => {
 
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
+  const productSpecificationsProxy =
+      TestMock.fromClass(ProductSpecificationsBrowserProxyImpl);
   const callbackRouter = new PageCallbackRouter();
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
   const router = TestMock.fromClass(Router);
@@ -159,7 +163,7 @@ suite('AppTest', () => {
           const emptyInfo = createProductInfo();
           return Promise.resolve({productInfo: emptyInfo});
         });
-    shoppingServiceApi.setResultMapperFor(
+    productSpecificationsProxy.setResultMapperFor(
         'getPageTitleFromHistory', (url: Url) => {
           return Promise.resolve({
             title:
@@ -204,11 +208,14 @@ suite('AppTest', () => {
             isQualityLoggingAllowed: true,
           },
         }));
-    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
-    shoppingServiceApi.setResultFor(
-        'maybeShowProductSpecificationDisclosure',
-        Promise.resolve({show: false}));
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
+    productSpecificationsProxy.reset();
+    productSpecificationsProxy.setResultFor(
+        'getCallbackRouter', callbackRouter);
+    productSpecificationsProxy.setResultFor(
+        'maybeShowDisclosure', Promise.resolve({show: false}));
+    ProductSpecificationsBrowserProxyImpl.setInstance(
+        productSpecificationsProxy);
     router.reset();
     Router.setInstance(router);
     windowProxy = installMock(WindowProxy);
@@ -1059,9 +1066,8 @@ suite('AppTest', () => {
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
     // Mock that disclosure dialog should be shown.
-    shoppingServiceApi.setResultFor(
-        'maybeShowProductSpecificationDisclosure',
-        Promise.resolve({disclosureShown: true}));
+    productSpecificationsProxy.setResultFor(
+        'maybeShowDisclosure', Promise.resolve({disclosureShown: true}));
     createAppElement();
 
     // Click on the "add column" button and select the first (only) item.
@@ -1077,10 +1083,8 @@ suite('AppTest', () => {
     dropdownItem.click();
     await waitAfterNextRender(appElement);
 
-    await shoppingServiceApi.whenCalled(
-        'maybeShowProductSpecificationDisclosure');
-    const showArgs =
-        shoppingServiceApi.getArgs('maybeShowProductSpecificationDisclosure');
+    await productSpecificationsProxy.whenCalled('maybeShowDisclosure');
+    const showArgs = productSpecificationsProxy.getArgs('maybeShowDisclosure');
     assertEquals('https://example.com/', showArgs[0][0][0].url);
     // Product spec set title will be empty by default.
     assertEquals('', showArgs[0][1]);
@@ -1090,9 +1094,8 @@ suite('AppTest', () => {
 
   test('populate table triggers disclosure', async () => {
     // Mock that disclosure dialog should be shown.
-    shoppingServiceApi.setResultFor(
-        'maybeShowProductSpecificationDisclosure',
-        Promise.resolve({disclosureShown: true}));
+    productSpecificationsProxy.setResultFor(
+        'maybeShowDisclosure', Promise.resolve({disclosureShown: true}));
     // Mock that we are opening the page with an existing set.
     const dimensionValues = {
       summary: [],
@@ -1137,9 +1140,7 @@ suite('AppTest', () => {
     assertTrue(isVisible(appElement.$.empty));
     assertFalse(isVisible(appElement.$.specs));
     assertEquals(
-        1,
-        shoppingServiceApi.getCallCount(
-            'maybeShowProductSpecificationDisclosure'));
+        1, productSpecificationsProxy.getCallCount('maybeShowDisclosure'));
   });
 
   test('add url for existing set', async () => {
@@ -1191,9 +1192,7 @@ suite('AppTest', () => {
     await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
     // Check whether we should show disclosure when there is an existing set.
     assertEquals(
-        1,
-        shoppingServiceApi.getCallCount(
-            'maybeShowProductSpecificationDisclosure'));
+        1, productSpecificationsProxy.getCallCount('maybeShowDisclosure'));
 
     // Click on the "add column" button and select the first (only) item.
     const newColSelector = appElement.$.newColumnSelector;
@@ -1217,9 +1216,7 @@ suite('AppTest', () => {
     // We should not try to show the disclosure when trying to add product to an
     // existing set.
     assertEquals(
-        1,
-        shoppingServiceApi.getCallCount(
-            'maybeShowProductSpecificationDisclosure'));
+        1, productSpecificationsProxy.getCallCount('maybeShowDisclosure'));
   });
 
   suite('metrics', () => {
@@ -2129,7 +2126,8 @@ suite('AppTest', () => {
       assertFalse(isVisible(appElement.$.specs));
 
       shoppingServiceApi.reset();
-      shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+      productSpecificationsProxy.setResultFor(
+          'getCallbackRouter', callbackRouter);
       shoppingServiceApi.setResultFor(
           'getProductSpecificationsFeatureState', Promise.resolve({
             state: {
@@ -2168,7 +2166,7 @@ suite('AppTest', () => {
       assertTrue(isVisible(appElement.$.syncPromo));
 
       appElement.$.turnOnSyncButton.click();
-      shoppingServiceApi.whenCalled('showSyncSetupFlow');
+      productSpecificationsProxy.whenCalled('showSyncSetupFlow');
     });
 
     test('sync button click when user is signed in', async () => {
@@ -2190,7 +2188,8 @@ suite('AppTest', () => {
 
       appElement.$.turnOnSyncButton.click();
       await flushTasks();
-      assertEquals(0, shoppingServiceApi.getCallCount('showSyncSetupFlow'));
+      assertEquals(
+          0, productSpecificationsProxy.getCallCount('showSyncSetupFlow'));
 
       const arg = await mockOpenWindowProxy.whenCalled('openUrl');
       assertEquals('chrome://settings/syncSetup/advanced', arg);

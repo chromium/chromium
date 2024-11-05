@@ -15,9 +15,12 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './shared_vars.css.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.ts';
+import type {ProductSpecificationsBrowserProxy} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.js';
 import {UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
-import type {PageCallbackRouter, ProductSpecificationsFeatureState} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {ProductSpecificationsFeatureState} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {ShoppingServiceBrowserProxy} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -233,13 +236,15 @@ export class ProductSpecificationsElement extends PolymerElement {
   private listenerIds_: number[] = [];
   private minLoadingAnimationMs_: number = 500;
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
+  private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
+      ProductSpecificationsBrowserProxyImpl.getInstance();
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
   private showEmptyState_: boolean;
 
   constructor() {
     super();
-    this.callbackRouter_ = this.shoppingApi_.getCallbackRouter();
+    this.callbackRouter_ = this.productSpecificationsProxy_.getCallbackRouter();
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -322,7 +327,7 @@ export class ProductSpecificationsElement extends PolymerElement {
           {value: idParam});
       if (set) {
         const {disclosureShown} =
-            await this.shoppingApi_.maybeShowProductSpecificationDisclosure(
+            await this.productSpecificationsProxy_.maybeShowDisclosure(
                 /* urls= */[], /* name= */ '', idParam);
         if (disclosureShown) {
           this.showEmptyState_ = true;
@@ -416,7 +421,7 @@ export class ProductSpecificationsElement extends PolymerElement {
           'chrome://settings/syncSetup/advanced');
       return;
     }
-    this.shoppingApi_.showSyncSetupFlow();
+    this.productSpecificationsProxy_.showSyncSetupFlow();
   }
 
   private showOfflineToast_() {
@@ -451,7 +456,9 @@ export class ProductSpecificationsElement extends PolymerElement {
         const info = aggregatedDataByUrl.get(url)?.productInfo;
         const product = aggregatedDataByUrl.get(url)?.spec;
         const title = product?.title || info?.title ||
-            (await this.shoppingApi_.getPageTitleFromHistory({url})).title;
+            (await this.productSpecificationsProxy_.getPageTitleFromHistory(
+                 {url}))
+                .title;
 
         tableColumns.push({
           selectedItem: {
@@ -583,7 +590,7 @@ export class ProductSpecificationsElement extends PolymerElement {
       return;
     }
     const {disclosureShown} =
-        await this.shoppingApi_.maybeShowProductSpecificationDisclosure(
+        await this.productSpecificationsProxy_.maybeShowDisclosure(
             urls.map(url => ({url})), this.setName_ ? this.setName_ : '',
             /* set_id= */ '');
     // If the disclosure is shown, we won't update the current set.
