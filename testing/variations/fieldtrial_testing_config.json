@@ -10162,6 +10162,27 @@
             ]
         }
     ],
+    "FreezingOnBatterySaverTweaks": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LowCPUThreshold",
+                    "params": {
+                        "freezing_high_cpu_proportion": "0.05"
+                    },
+                    "enable_features": [
+                        "CPUMeasurementInFreezingPolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
