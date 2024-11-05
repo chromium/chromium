@@ -18,6 +18,7 @@
 #include "ash/scanner/scanner_command_delegate.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_file.h"
@@ -279,13 +280,31 @@ google_apis::people::Contact ContactFromAction(
   contact.name.family_name = std::move(*action.mutable_family_name());
   contact.name.given_name = std::move(*action.mutable_given_name());
 
-  if (!action.email().empty()) {
+  if (action.email_addresses_size() > 0) {
+    contact.email_addresses = base::ToVector(
+        *action.mutable_email_addresses(),
+        [](manta::proto::NewContactAction::EmailAddress& proto_email) {
+          google_apis::people::EmailAddress email_address;
+          email_address.value = std::move(*proto_email.mutable_value());
+          email_address.type = std::move(*proto_email.mutable_type());
+          return email_address;
+        });
+  } else if (!action.email().empty()) {
     google_apis::people::EmailAddress email_address;
     email_address.value = std::move(*action.mutable_email());
     contact.email_addresses.push_back(std::move(email_address));
   }
 
-  if (!action.phone().empty()) {
+  if (action.phone_numbers_size() > 0) {
+    contact.phone_numbers = base::ToVector(
+        *action.mutable_phone_numbers(),
+        [](manta::proto::NewContactAction::PhoneNumber& proto_phone) {
+          google_apis::people::PhoneNumber phone_number;
+          phone_number.value = std::move(*proto_phone.mutable_value());
+          phone_number.type = std::move(*proto_phone.mutable_type());
+          return phone_number;
+        });
+  } else if (!action.phone().empty()) {
     google_apis::people::PhoneNumber phone_number;
     phone_number.value = std::move(*action.mutable_phone());
     contact.phone_numbers.push_back(std::move(phone_number));

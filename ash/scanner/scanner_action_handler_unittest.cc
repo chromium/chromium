@@ -226,7 +226,7 @@ TEST(ScannerActionToCommandTest, NewContactWithFamilyName) {
                   FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
 }
 
-TEST(ScannerActionToCommandTest, NewContactWithEmail) {
+TEST(ScannerActionToCommandTest, NewContactWithDeprecatedEmail) {
   manta::proto::NewContactAction action;
   action.set_email("afrancois@example.com");
   ScannerCommand command = ScannerActionToCommand(std::move(action));
@@ -244,7 +244,69 @@ TEST(ScannerActionToCommandTest, NewContactWithEmail) {
                   FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
 }
 
-TEST(ScannerActionToCommandTest, NewContactWithPhoneNumber) {
+TEST(ScannerActionToCommandTest, NewContactWithEmailAddresses) {
+  manta::proto::NewContactAction action;
+  manta::proto::NewContactAction::EmailAddress& home_email =
+      *action.add_email_addresses();
+  home_email.set_value("afrancois@example.com");
+  home_email.set_type("home");
+  manta::proto::NewContactAction::EmailAddress& work_email =
+      *action.add_email_addresses();
+  work_email.set_value("afrancois@work.example.com");
+  work_email.set_type("work");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  constexpr std::string_view kExpectedJson = R"json({
+    "emailAddresses": [
+      {
+        "value": "afrancois@example.com",
+        "type": "home",
+      },
+      {
+        "value": "afrancois@work.example.com",
+        "type": "work",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
+}
+
+TEST(ScannerActionToCommandTest,
+     NewContactWithEmailAddressesAndDeprecatedEmail) {
+  manta::proto::NewContactAction action;
+  action.set_email("afrancois@example.com");
+  manta::proto::NewContactAction::EmailAddress& home_email =
+      *action.add_email_addresses();
+  home_email.set_value("afrancois@example.com");
+  home_email.set_type("home");
+  manta::proto::NewContactAction::EmailAddress& work_email =
+      *action.add_email_addresses();
+  work_email.set_value("afrancois@work.example.com");
+  work_email.set_type("work");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  constexpr std::string_view kExpectedJson = R"json({
+    "emailAddresses": [
+      {
+        "value": "afrancois@example.com",
+        "type": "home",
+      },
+      {
+        "value": "afrancois@work.example.com",
+        "type": "work",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
+}
+
+TEST(ScannerActionToCommandTest, NewContactWithDeprecatedPhone) {
   manta::proto::NewContactAction action;
   action.set_phone("+61400000000");
   ScannerCommand command = ScannerActionToCommand(std::move(action));
@@ -253,6 +315,67 @@ TEST(ScannerActionToCommandTest, NewContactWithPhoneNumber) {
     "phoneNumbers": [
       {
         "value": "+61400000000",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
+}
+
+TEST(ScannerActionToCommandTest, NewContactWithPhoneNumbers) {
+  manta::proto::NewContactAction action;
+  manta::proto::NewContactAction::PhoneNumber& mobile_number =
+      *action.add_phone_numbers();
+  mobile_number.set_value("+61400000000");
+  mobile_number.set_type("mobile");
+  manta::proto::NewContactAction::PhoneNumber& home_number =
+      *action.add_phone_numbers();
+  home_number.set_value("+61390000000");
+  home_number.set_type("home");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  constexpr std::string_view kExpectedJson = R"json({
+    "phoneNumbers": [
+      {
+        "value": "+61400000000",
+        "type": "mobile",
+      },
+      {
+        "value": "+61390000000",
+        "type": "home",
+      },
+    ],
+  })json";
+
+  EXPECT_THAT(std::move(command),
+              VariantWith<CreateContactCommand>(
+                  FieldsAre(ResultOf(&ContactToDict, IsJson(kExpectedJson)))));
+}
+
+TEST(ScannerActionToCommandTest, NewContactWithPhoneNumbersAndDeprecatedPhone) {
+  manta::proto::NewContactAction action;
+  action.set_phone("+61400000000");
+  manta::proto::NewContactAction::PhoneNumber& mobile_number =
+      *action.add_phone_numbers();
+  mobile_number.set_value("+61400000000");
+  mobile_number.set_type("mobile");
+  manta::proto::NewContactAction::PhoneNumber& home_number =
+      *action.add_phone_numbers();
+  home_number.set_value("+61390000000");
+  home_number.set_type("home");
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
+
+  constexpr std::string_view kExpectedJson = R"json({
+    "phoneNumbers": [
+      {
+        "value": "+61400000000",
+        "type": "mobile",
+      },
+      {
+        "value": "+61390000000",
+        "type": "home",
       },
     ],
   })json";
@@ -266,8 +389,22 @@ TEST(ScannerActionToCommandTest, NewContactWithMultipleFields) {
   manta::proto::NewContactAction action;
   action.set_given_name("André");
   action.set_family_name("François");
-  action.set_email("afrancois@example.com");
-  action.set_phone("+61400000000");
+  manta::proto::NewContactAction::EmailAddress& home_email =
+      *action.add_email_addresses();
+  home_email.set_value("afrancois@example.com");
+  home_email.set_type("home");
+  manta::proto::NewContactAction::EmailAddress& work_email =
+      *action.add_email_addresses();
+  work_email.set_value("afrancois@work.example.com");
+  work_email.set_type("work");
+  manta::proto::NewContactAction::PhoneNumber& mobile_number =
+      *action.add_phone_numbers();
+  mobile_number.set_value("+61400000000");
+  mobile_number.set_type("mobile");
+  manta::proto::NewContactAction::PhoneNumber& home_number =
+      *action.add_phone_numbers();
+  home_number.set_value("+61390000000");
+  home_number.set_type("home");
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -280,11 +417,21 @@ TEST(ScannerActionToCommandTest, NewContactWithMultipleFields) {
     "emailAddresses": [
       {
         "value": "afrancois@example.com",
+        "type": "home",
+      },
+      {
+        "value": "afrancois@work.example.com",
+        "type": "work",
       },
     ],
     "phoneNumbers": [
       {
         "value": "+61400000000",
+        "type": "mobile",
+      },
+      {
+        "value": "+61390000000",
+        "type": "home",
       },
     ],
   })json";

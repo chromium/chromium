@@ -58,11 +58,47 @@ message NewEventAction {
 
 // Details on creating a new Google contact.
 message NewContactAction {
+  message EmailAddress {
+    // The email address.
+    string value = 1;
+    // The type of email address. The type can be custom or one of these
+    // predefined values:
+    // - "home"
+    // - "work"
+    // - "other"
+    string type = 2;
+  }
+  message PhoneNumber {
+    // The phone number.
+    string value = 1;
+    // The type of phone number. The type can be custom or one of these
+    // predefined values:
+    // - "home"
+    // - "work"
+    // - "mobile"
+    // - "homeFax"
+    // - "workFax"
+    // - "otherFax"
+    // - "pager"
+    // - "workMobile"
+    // - "workPager"
+    // - "main"
+    // - "googleVoice"
+    // - "other"
+    string type = 2;
+  }
+
   // At least one of the following fields must be specified.
   string given_name = 1;
   string family_name = 2;
-  string email = 3;
-  string phone = 4;
+  // Deprecated. Use `email_addresses` instead.
+  // Will only be used if `email_addresses` is empty.
+  string email = 3 [deprecated = true];
+  // Deprecated. Use `phone_numbers` instead.
+  // Will only be used if `phone_numbers` is empty.
+  string phone = 4 [deprecated = true];
+  repeated EmailAddress email_addresses = 5;
+  repeated PhoneNumber phone_numbers = 6;
 }
 
 // Details on creating a new Google Doc with some initial rich text content.
