@@ -1060,11 +1060,15 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
             ? SkBlendMode::kSrcOver
             : SkBlendMode::kSrc;
     gfx::RectF src_rect((gfx::SizeF(Size())));
+
+    // Note: If hibernation is supported (i.e., there is a non-null hibernation
+    // handler), go through the context to take a snapshot - this will result in
+    // the snapshot being taken via the hibernation handler in the case where
+    // the canvas is hibernating. Otherwise, get the snapshot directly from the
+    // CanvasResourceProvider.
+    bool has_hibernation_handler = GetHibernationHandler() != nullptr;
     scoped_refptr<StaticBitmapImage> snapshot =
-        // TODO(crbug.com/40280152): Port this check away from checking
-        // `canvas2d_bridge_` directly as part of eliminating
-        // Canvas2DLayerBridge.
-        canvas2d_bridge_
+        has_hibernation_handler
             ? context_->GetImage(FlushReason::kPaint)
             : (ResourceProvider()
                    ? ResourceProvider()->Snapshot(FlushReason::kPaint)
