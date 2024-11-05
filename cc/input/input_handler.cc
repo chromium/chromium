@@ -1044,9 +1044,7 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
       snap.type == SnapPositionData::Type::kCovered) {
     fling_snap_constrain_x_ = snap.covered_range_x;
     fling_snap_constrain_y_ = snap.covered_range_y;
-    if (base::FeatureList::IsEnabled(
-            features::kScrollSnapCoveringUseNativeFling) &&
-        !ConstrainFling(new_offset)) {
+    if (!ConstrainFling(new_offset)) {
       snap_fling_state_ = kConstrainedNativeFling;
       return false;
     }
