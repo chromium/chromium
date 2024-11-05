@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/manta/proto/scanner.pb.h"
@@ -18,9 +19,8 @@ namespace {
 
 // Converts a proto action - a oneof - into the equivalent variant type in
 // Scanner code.
-// Returns nullopt if the action is unsupported.
-std::optional<ScannerAction> ProtoActionToVariant(
-    manta::proto::ScannerAction proto_action) {
+// `proto_action.action_case()` is guaranteed to never be `ACTION_NOT_SET`.
+ScannerAction ProtoActionToVariant(manta::proto::ScannerAction proto_action) {
   switch (proto_action.action_case()) {
     case manta::proto::ScannerAction::kNewEvent:
       return std::move(*proto_action.mutable_new_event());
@@ -38,7 +38,7 @@ std::optional<ScannerAction> ProtoActionToVariant(
       return std::move(*proto_action.mutable_copy_to_clipboard());
 
     case manta::proto::ScannerAction::ACTION_NOT_SET:
-      return std::nullopt;
+      NOTREACHED();
   }
 
   // This should never be reached, as `action_case()` should always return a
@@ -50,10 +50,16 @@ std::optional<ScannerAction> ProtoActionToVariant(
 
 // Called when `PopulateToVariant`'s call to the provided
 // `PopulateToProtoCallback` succeeds.
+// `unpopulated_action_case` is guaranteed to never be `ACTION_NOT_SET`.
 void OnPopulatedToProto(
+    manta::proto::ScannerAction::ActionCase unpopulated_action_case,
     ScannerUnpopulatedAction::PopulateToVariantCallback callback,
     std::optional<manta::proto::ScannerAction> populated_action) {
   if (!populated_action.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  if (populated_action->action_case() != unpopulated_action_case) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -94,10 +100,17 @@ ScannerUnpopulatedAction::~ScannerUnpopulatedAction() = default;
 
 void ScannerUnpopulatedAction::PopulateToVariant(
     PopulateToVariantCallback callback) const& {
+  manta::proto::ScannerAction::ActionCase unpopulated_action_case =
+      unpopulated_action_.action_case();
+  // This should never occur unless the action has been previously moved.
+  CHECK_NE(unpopulated_action_case,
+           manta::proto::ScannerAction::ACTION_NOT_SET);
+
   // This causes a copy of the unpopulated action to be made.
   populate_to_proto_callback_.Run(
       unpopulated_action_,
-      base::BindOnce(&OnPopulatedToProto, std::move(callback)));
+      base::BindOnce(&OnPopulatedToProto, unpopulated_action_case,
+                     std::move(callback)));
 }
 
 }  // namespace ash

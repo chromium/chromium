@@ -46,6 +46,7 @@ MATCHER_P(EqualsScannerAction, action, "") {
 struct TestCase {
   manta::proto::ScannerAction unpopulated_proto;
   manta::proto::ScannerAction populated_proto;
+  manta::proto::ScannerAction different_proto;
   ScannerAction populated_variant;
 };
 
@@ -70,6 +71,8 @@ INSTANTIATE_TEST_SUITE_P(
           test_case.populated_proto = action;
           test_case.populated_variant = event_action;
 
+          test_case.different_proto.mutable_new_contact();
+
           return test_case;
         }(),
         []() {
@@ -86,6 +89,8 @@ INSTANTIATE_TEST_SUITE_P(
           test_case.populated_proto = action;
           test_case.populated_variant = contact_action;
 
+          test_case.different_proto.mutable_new_event();
+
           return test_case;
         }(),
         []() {
@@ -99,6 +104,8 @@ INSTANTIATE_TEST_SUITE_P(
           doc_action.set_html_contents("<span>Contents</span>");
           test_case.populated_proto = action;
           test_case.populated_variant = doc_action;
+
+          test_case.different_proto.mutable_new_event();
 
           return test_case;
         }(),
@@ -114,6 +121,8 @@ INSTANTIATE_TEST_SUITE_P(
           test_case.populated_proto = action;
           test_case.populated_variant = sheet_action;
 
+          test_case.different_proto.mutable_new_event();
+
           return test_case;
         }(),
         []() {
@@ -127,6 +136,8 @@ INSTANTIATE_TEST_SUITE_P(
           copy_action.set_html_text("<b>Hello</b>");
           test_case.populated_proto = action;
           test_case.populated_variant = copy_action;
+
+          test_case.different_proto.mutable_new_event();
 
           return test_case;
         }()));
@@ -228,6 +239,26 @@ TEST_P(ScannerUnpopulatedActionTestWithParam,
       populate_to_proto_callback;
   EXPECT_CALL(populate_to_proto_callback, Run)
       .WillOnce(RunOnceCallback<1>(manta::proto::ScannerAction()));
+  std::optional<ScannerUnpopulatedAction> unpopulated_action =
+      ScannerUnpopulatedAction::FromProto(unpopulated_proto,
+                                          populate_to_proto_callback.Get());
+  ASSERT_TRUE(unpopulated_action.has_value());
+
+  base::test::TestFuture<std::optional<ScannerAction>> future;
+  unpopulated_action->PopulateToVariant(future.GetCallback());
+
+  EXPECT_THAT(future.Take(), Eq(std::nullopt));
+}
+
+TEST_P(
+    ScannerUnpopulatedActionTestWithParam,
+    PopulateToVariantReturnsNulloptWhenPopulateToProtoReturnsDifferentAction) {
+  manta::proto::ScannerAction unpopulated_proto = GetParam().unpopulated_proto;
+  testing::StrictMock<
+      base::MockCallback<ScannerUnpopulatedAction::PopulateToProtoCallback>>
+      populate_to_proto_callback;
+  EXPECT_CALL(populate_to_proto_callback, Run)
+      .WillOnce(RunOnceCallback<1>(GetParam().different_proto));
   std::optional<ScannerUnpopulatedAction> unpopulated_action =
       ScannerUnpopulatedAction::FromProto(unpopulated_proto,
                                           populate_to_proto_callback.Get());

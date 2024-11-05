@@ -50,7 +50,9 @@ class ASH_EXPORT ScannerUnpopulatedAction {
   }
 
   // Calls the provided `PopulateToProtoCallback` and asynchronously returns a
-  // `ScannerAction`. If any errors occur, nullopt is returned.
+  // `ScannerAction`. If any errors occur, such as `PopulateToProtoCallback`
+  // returning a different type of action to this action, nullopt is returned.
+  // This method will crash if this has been previously moved.
   void PopulateToVariant(PopulateToVariantCallback callback) const&;
 
  private:
