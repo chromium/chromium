@@ -43,29 +43,40 @@ void AppendSamplingTrialGroup(const std::string& group_name,
 // Unconditionally attempts to create a field trial to control client side
 // metrics/crash sampling to use as a fallback when one hasn't been
 // provided. This is expected to occur on first-run on platforms that don't
-// have first-run variations support. This should only be called when there is
-// no existing field trial controlling the sampling feature, and on the
-// correct platform. |trial_name| is the name of the trial. |feature_name| is
-// the name of the feature that determines sampling. |sampled_in_rate| is the
-// sampling rate per mille.
+// have first-run variations support, or when no valid seed is available. This
+// should only be called when there is no existing field trial controlling the
+// sampling feature. |feature_name| is the name of the feature that determines
+// sampling.
+// Rates:
+//   |sampled_in_rate_per_mille| is the sampling rate per mille.
+//   |reporting_full_rate_per_mille| is the rate for clients who are sampled in,
+//   in the special ReportingFull group.
+//   All other clients are in the OutOfSampling group.
 void CreateFallbackSamplingTrial(
     const base::FieldTrial::EntropyProvider& entropy_provider,
     const std::string& trial_name,
     const std::string& feature_name,
     const int sampled_in_rate_per_mille,
+    const int reporting_full_rate_per_mille,
     const bool starts_active,
     base::FeatureList* feature_list) {
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           trial_name, /*total_probability=*/1000, "Default", entropy_provider));
 
-  // Like the trial name, the order that these two groups are added to the trial
+  // Like the trial name, the order that these groups are added to the trial
   // must be kept in sync with the order that they appear in the server config.
-  // The desired order is: OutOfReportingSample, InReportingSample.
+  // The desired order is: OutOfReportingSample, ReportingFull,
+  // InReportingSample.
 
   const char kSampledOutGroup[] = "OutOfReportingSample";
-  const int sampled_out_rate_per_mille = 1000 - sampled_in_rate_per_mille;
+  const int sampled_out_rate_per_mille =
+      1000 - sampled_in_rate_per_mille - reporting_full_rate_per_mille;
   AppendSamplingTrialGroup(kSampledOutGroup, sampled_out_rate_per_mille,
+                           trial.get());
+
+  const char kReportingFullGroup[] = "ReportingFull";
+  AppendSamplingTrialGroup(kReportingFullGroup, reporting_full_rate_per_mille,
                            trial.get());
 
   const char kInSampleGroup[] = "InReportingSample";
@@ -76,6 +87,8 @@ void CreateFallbackSamplingTrial(
   // GetGroupNameWithoutActivation() will finalize the group choice.
   const std::string& group_name = trial->GetGroupNameWithoutActivation();
 
+  // Note that this will set both ReportingFull and InReportingSample to enable
+  // the feature.
   feature_list->RegisterFieldTrialOverride(
       feature_name,
       group_name == kSampledOutGroup
@@ -134,22 +147,47 @@ void CreateFallbackUkmSamplingTrial(
 void CreateFallbackSamplingTrialsIfNeeded(
     const base::FieldTrial::EntropyProvider& entropy_provider,
     base::FeatureList* feature_list) {
-  [[maybe_unused]] const bool is_stable =
-      chrome::GetChannel() == version_info::Channel::STABLE;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+
+  const bool is_stable =
+      chrome::GetChannel() == version_info::Channel::STABLE;
+
   if (!base::FieldTrialList::TrialExists(kSamplingTrialName)) {
+#if BUILDFLAG(IS_WIN)
+
     // On all channels except stable, we sample out at a minimal rate to ensure
     // the code paths are exercised in the wild before hitting stable.
-    const int kPreStableSampledInRatePerMille = 990;  // 99%
+    const int kPreStableSampledInRatePerMille = 990;    // 99%
+    const int kPreStableReportingFullRatePerMille = 5;  // 0.5%
+    // This leaves 0.5% for OutOfReportingSample.
 
-    int kStableSampledInRatePerMille = 100;  // 10%
+    const int kStableSampledInRatePerMille = 100;      // 10%
+    const int kStableReportingFullRatePerMille = 900;  // 90%
+
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
+
+    // On all channels except stable, we sample out at a minimal rate to ensure
+    // the code paths are exercised in the wild before hitting stable.
+    const int kPreStableSampledInRatePerMille = 995;    // 99.5%
+    const int kPreStableReportingFullRatePerMille = 0;  // 0%
+    // This leaves 0.5% for OutOfReportingSample.
+
     // We use 5.3% for this set of users to work around an old bug
-    // (crbug/1306481). This should be ~10% in practice.
-    kStableSampledInRatePerMille = 53;  // 5.3%
+    // (crbug.com/1306481). This should be ~10% in practice.
+    const int kStableSampledInRatePerMille = 53;     // 5.3%
+    const int kStableReportingFullRatePerMille = 0;  // 0%
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    const int kSamplingInRatePerMille = is_stable
+                                            ? kStableSampledInRatePerMille
+                                            : kPreStableSampledInRatePerMille;
+
+    const int kReportingFullRatePerMille =
+        is_stable ? kStableReportingFullRatePerMille
+                  : kPreStableReportingFullRatePerMille;
 
     // Note that the trial has to be activated immediately. Otherwise, it would
     // be possible for this session to crash before its feature was queried, and
@@ -157,20 +195,21 @@ void CreateFallbackSamplingTrialsIfNeeded(
     CreateFallbackSamplingTrial(
         entropy_provider, kSamplingTrialName,
         metrics::internal::kMetricsReportingFeature.name,
-        is_stable ? kStableSampledInRatePerMille
-                  : kPreStableSampledInRatePerMille,
+        kSamplingInRatePerMille, kReportingFullRatePerMille,
         /*starts_active=*/true, feature_list);
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FieldTrialList::TrialExists(kPostFREFixSamplingTrialName)) {
     // On all channels except stable, we sample out at a minimal rate to ensure
     // the code paths are exercised in the wild before hitting stable.
-    const int kPreStableSampledInRatePerMille = 990;  // 99%
+    const int kPreStableSampledInRatePerMille = 995;  // 99.5%
 
     // This is meant to be 10%, and this population, unlike the set of users
     // under the kSamplingTrialName trial should correctly be 10% in practice.
     const int kStableSampledInRatePerMille = 100;  // 10%
+
+    const int kReportingFullRatePerMille = 0;
 
     // Note that as per the serverside config, this trial does not start active
     // (so that it is possible to determine from the serverside whether the
@@ -183,9 +222,12 @@ void CreateFallbackSamplingTrialsIfNeeded(
         metrics::internal::kPostFREFixMetricsReportingFeature.name,
         is_stable ? kStableSampledInRatePerMille
                   : kPreStableSampledInRatePerMille,
+        kReportingFullRatePerMille,
         /*starts_active=*/false, feature_list);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 }
 
 void CreateFallbackUkmSamplingTrialIfNeeded(
