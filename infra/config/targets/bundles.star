@@ -3859,7 +3859,6 @@ targets.bundle(
                 args = [
                     "--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite",
                 ],
-                ci_only = True,
             ),
             "gpu_integration_test_common_args",
         ],

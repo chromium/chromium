@@ -863,7 +863,6 @@
           "--jobs=1",
           "--initial-find-device-attempts=3"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -2547,7 +2546,6 @@
           "--jobs=1",
           "--initial-find-device-attempts=3"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
