@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/data_sharing/public/features.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,6 +83,63 @@ TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
       {.primary_account_consent_level = signin::ConsentLevel::kSignin,
        .gaia_id = kUserGaia});
   EXPECT_EQ(service->GetCurrentUserRoleForGroup(group_id), MemberRole::kOwner);
+}
+
+TEST_F(CollaborationServiceImplTest, GetServiceStatus_Disabled) {
+  auto service = std::make_unique<CollaborationServiceImpl>(
+      /*tab_group_sync_service=*/nullptr,
+      /*data_sharing_service=*/nullptr,
+      /*identity_manager=*/nullptr,
+      /*sync_service=*/nullptr);
+
+  EXPECT_EQ(service->GetServiceStatus().collaboration_status,
+            CollaborationStatus::kDisabled);
+}
+
+TEST_F(CollaborationServiceImplTest, GetServiceStatus_JoinOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      data_sharing::features::kDataSharingJoinOnly);
+
+  auto service = std::make_unique<CollaborationServiceImpl>(
+      /*tab_group_sync_service=*/nullptr,
+      /*data_sharing_service=*/nullptr,
+      /*identity_manager=*/nullptr,
+      /*sync_service=*/nullptr);
+
+  EXPECT_EQ(service->GetServiceStatus().collaboration_status,
+            CollaborationStatus::kAllowedToJoin);
+}
+
+TEST_F(CollaborationServiceImplTest, GetServiceStatus_Create) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      data_sharing::features::kDataSharingFeature);
+
+  auto service = std::make_unique<CollaborationServiceImpl>(
+      /*tab_group_sync_service=*/nullptr,
+      /*data_sharing_service=*/nullptr,
+      /*identity_manager=*/nullptr,
+      /*sync_service=*/nullptr);
+
+  EXPECT_EQ(service->GetServiceStatus().collaboration_status,
+            CollaborationStatus::kEnabledCreateAndJoin);
+}
+
+TEST_F(CollaborationServiceImplTest, GetServiceStatus_CreateOverridesJoinOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({data_sharing::features::kDataSharingJoinOnly,
+                                 data_sharing::features::kDataSharingFeature},
+                                {});
+
+  auto service = std::make_unique<CollaborationServiceImpl>(
+      /*tab_group_sync_service=*/nullptr,
+      /*data_sharing_service=*/nullptr,
+      /*identity_manager=*/nullptr,
+      /*sync_service=*/nullptr);
+
+  EXPECT_EQ(service->GetServiceStatus().collaboration_status,
+            CollaborationStatus::kEnabledCreateAndJoin);
 }
 
 }  // namespace collaboration
