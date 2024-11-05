@@ -5805,7 +5805,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.SetLcppNavigationHint.Status"
-    enum="LcppHintStatus" expires_after="2024-05-01">
+    enum="LcppHintStatus" expires_after="2025-04-30">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -5813,6 +5813,9 @@ chromium-metrics-reviews@google.com.
     kLCPCriticalPathPredictor feature is enabled and MaybeSetLCPPNavigationHint
     is called. It includes status on not only SetLCPPNavigation failure, but
     also success for ease of understanding the failure ratio.
+
+    Warning: this histogram was expired from 2024-05-01 to 2024-11-01; data may
+    be missing.
   </summary>
 </histogram>
 
