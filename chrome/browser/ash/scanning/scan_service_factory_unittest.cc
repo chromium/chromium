@@ -33,8 +33,7 @@ std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
 // Creates a new ScanService for the given `context`.
 std::unique_ptr<KeyedService> BuildScanService(
     content::BrowserContext* context) {
-  return std::unique_ptr<KeyedService>(static_cast<KeyedService*>(
-      ScanServiceFactory::BuildInstanceFor(context)));
+  return ScanServiceFactory::BuildInstanceFor(context);
 }
 
 // Creates a Profile based on the provided `file_path` and sets the required

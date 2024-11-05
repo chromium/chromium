@@ -25,7 +25,8 @@ class ScanServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ScanService* GetForBrowserContext(content::BrowserContext* context);
   static ScanServiceFactory* GetInstance();
-  static KeyedService* BuildInstanceFor(content::BrowserContext* context);
+  static std::unique_ptr<KeyedService> BuildInstanceFor(
+      content::BrowserContext* context);
 
  private:
   friend base::NoDestructor<ScanServiceFactory>;
@@ -37,7 +38,7 @@ class ScanServiceFactory : public ProfileKeyedServiceFactory {
   ScanServiceFactory& operator=(const ScanServiceFactory&) = delete;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
