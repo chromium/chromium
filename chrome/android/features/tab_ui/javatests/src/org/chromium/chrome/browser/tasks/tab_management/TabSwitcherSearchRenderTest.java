@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.ui.base.DeviceFormFactor.PHONE;
 import static org.chromium.ui.base.DeviceFormFactor.TABLET;
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -85,6 +88,20 @@ public class TabSwitcherSearchRenderTest {
 
         mRenderTestRule.render(
                 cta.findViewById(R.id.tab_switcher_view_holder), "hub_searchbox_phone");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction(PHONE)
+    public void testHubSearchBox_PhoneLandscape() throws IOException {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_LANDSCAPE);
+        enterTabSwitcher(cta);
+
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_switcher_view_holder), "hub_searchbox_phone_landscape");
+        ActivityTestUtils.clearActivityOrientation(cta);
     }
 
     @Test

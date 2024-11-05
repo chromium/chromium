@@ -51,9 +51,12 @@ public class HubToolbarMediator {
             new ComponentCallbacks() {
                 @Override
                 public void onConfigurationChanged(@NonNull Configuration configuration) {
-                    boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-                    mPropertyModel.set(SEARCH_BOX_VISIBLE, !isTablet);
-                    mPropertyModel.set(SEARCH_LOUPE_VISIBLE, isTablet);
+                    boolean showLoupe =
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                                    || configuration.orientation
+                                            == Configuration.ORIENTATION_LANDSCAPE;
+                    mPropertyModel.set(SEARCH_BOX_VISIBLE, !showLoupe);
+                    mPropertyModel.set(SEARCH_LOUPE_VISIBLE, showLoupe);
                 }
 
                 @Override
@@ -128,7 +131,7 @@ public class HubToolbarMediator {
         if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
             mPropertyModel.set(SEARCH_LISTENER, this::onSearchClicked);
             // Fire an event for the original setup.
-            mComponentCallbacks.onConfigurationChanged(null);
+            mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
             mContext.registerComponentCallbacks(mComponentCallbacks);
         }
     }
