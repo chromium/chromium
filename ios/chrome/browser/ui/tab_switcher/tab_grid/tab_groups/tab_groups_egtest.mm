@@ -650,7 +650,15 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
-- (void)testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
+// TODO(crbug.com/377475535): Deflake and re-enable.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid \
+  DISABLED_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid
+#else
+#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid \
+  testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid
+#endif
+- (void)MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ YES];
 }
 
