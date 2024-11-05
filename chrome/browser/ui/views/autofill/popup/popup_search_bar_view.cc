@@ -78,6 +78,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
           .SetAccessibleName(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_POPUP_SEARCH_BAR_CLEAR_SEARCH_BUTTON_A11Y_NAME))
           .Build());
+  clear_->SetFocusBehavior(FocusBehavior::ALWAYS);
   views::InstallCircleHighlightPathGenerator(clear_);
 }
 
