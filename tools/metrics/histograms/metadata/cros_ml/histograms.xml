@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.HandwritingModel.Recognize.Event"
-    enum="Boolean" expires_after="2025-03-02">
+    enum="Boolean" expires_after="2025-05-04">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.TotalMemoryKb" units="KB"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.WorkerProcessAcceptMojoConnectionTime"
-    units="microseconds" expires_after="2025-03-01">
+    units="microseconds" expires_after="2025-05-04">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -414,7 +414,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.{ModelName}.LoadModelResult.Event"
     enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>

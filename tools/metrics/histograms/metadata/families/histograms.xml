@@ -780,7 +780,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse"
-    units="ms" expires_after="2025-03-02">
+    units="ms" expires_after="2025-05-04">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

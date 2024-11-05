@@ -1958,7 +1958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.ResolveDuration" units="ms"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -4639,7 +4639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.{Technology}.SLAACProvisionDurationMillis"
-    units="ms" expires_after="2025-03-02">
+    units="ms" expires_after="2025-05-04">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>

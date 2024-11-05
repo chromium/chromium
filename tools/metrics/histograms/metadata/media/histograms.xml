@@ -2293,7 +2293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnFirstRead" units="KB"
-    expires_after="2025-02-27">
+    expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2303,7 +2303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.TimeTo.{FileOperation}{IncognitoOrNormal}"
-    units="ms" expires_after="2025-02-27">
+    units="ms" expires_after="2025-05-04">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2376,13 +2376,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmLoadResult" enum="CdmLoadResult"
-    expires_after="2025-02-27">
+    expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>The result from an attempt to load a library CDM.</summary>
 </histogram>
 
-<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2025-02-27">
+<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>The time spent to load a library CDM.</summary>
@@ -2819,7 +2819,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationCdm.LoadTime" units="ms"
-    expires_after="2025-02-27">
+    expires_after="2025-05-04">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>The time spent to load a library MediaFoundation CDM.</summary>
@@ -2849,7 +2849,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.{EmeApi}"
-    enum="Hresult" expires_after="2025-02-27">
+    enum="Hresult" expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3080,7 +3080,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.OutputProtection" enum="MediaOutputProtectionStatus"
-    expires_after="2025-02-27">
+    expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3254,7 +3254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateCdm" enum="BooleanSuccess"
-    expires_after="2025-02-27">
+    expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3278,7 +3278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateCdmTime" units="ms"
-    expires_after="2025-02-27">
+    expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>Time took to create the CDM instance for {KeySystem}.</summary>
@@ -3286,7 +3286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateSession.SessionType"
-    enum="EmeSessionType" expires_after="2025-02-27">
+    enum="EmeSessionType" expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>EME session type passed into CreateSession.</summary>
@@ -3304,7 +3304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.InitialKeyStatusMix"
-    enum="CdmKeyStatusMix" expires_after="2025-02-27">
+    enum="CdmKeyStatusMix" expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3315,7 +3315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.KeyStatusSystemCode"
-    enum="CdmSystemCode" expires_after="2025-02-27">
+    enum="CdmSystemCode" expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>System code associated with key status for {KeySystem}.</summary>
@@ -3336,7 +3336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.TimeTo{ResolveOrReject}.{EmeApi}"
-    units="ms" expires_after="2025-02-27">
+    units="ms" expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>The time it takes to {ResolveOrReject} a EME promise.</summary>
@@ -3346,7 +3346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.WaitingForKey" enum="Boolean"
-    expires_after="2025-02-27">
+    expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3358,7 +3358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.{EmeApi}" enum="CdmPromiseResult"
-    expires_after="2025-02-27">
+    expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>Result of EME promises that were handled by Chromium code.</summary>
@@ -3367,7 +3367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.{EmeApi}.SystemCode"
-    enum="CdmSystemCode" expires_after="2025-02-27">
+    enum="CdmSystemCode" expires_after="2025-05-04">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>System code in promise rejection.</summary>

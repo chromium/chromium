@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2025-02-28">
+<histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2025-05-04">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.LogUpload.Canceled.CellularConstraint"
-    enum="BooleanCanceled" expires_after="2025-02-28">
+    enum="BooleanCanceled" expires_after="2025-05-04">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.LogUpload.ResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-02-28">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-04">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>

@@ -716,7 +716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeEntityChange{SyncDataType}"
-    enum="SyncEntityChange" expires_after="2025-03-02">
+    enum="SyncEntityChange" expires_after="2025-05-04">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1292,7 +1292,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.NonReflectionUpdateFreshnessPossiblySkewed2{SyncDataType}"
-    units="ms" expires_after="2025-03-02">
+    units="ms" expires_after="2025-05-04">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
