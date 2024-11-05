@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/not_fatal_until.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -243,14 +244,12 @@ void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
   }
 
   const LocalTabGroupID& group_id = group.local_group_id().value();
-  if (!listener_->IsTrackingLocalTabGroup(group_id)) {
-    // Start tracking the `group` before applying updates.
-    ConnectLocalTabGroup(group);
-  } else {
-    // Update the local group with the new data. This will open new tabs, close
-    // tabs, and navigate tabs to match the saved group.
-    listener_->UpdateLocalGroupFromSync(group_id);
-  }
+  CHECK(listener_->IsTrackingLocalTabGroup(group_id),
+        base::NotFatalUntil::M135);
+
+  // Update the local group with the new data. This will open new tabs, close
+  // tabs, and navigate tabs to match the saved group.
+  listener_->UpdateLocalGroupFromSync(group_id);
 }
 
 std::vector<LocalTabGroupID>
