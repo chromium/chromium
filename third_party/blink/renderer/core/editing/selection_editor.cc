@@ -158,6 +158,9 @@ void SelectionEditor::DidFinishTextChange(const Position& new_anchor,
   selection_.anchor_ = new_anchor;
   selection_.focus_ = new_focus;
   selection_.ResetDirectionCache();
+  if (RuntimeEnabledFeatures::ScheduleSelectionChangeOnBackspaceEnabled()) {
+    GetDocument().ScheduleSelectionchangeEvent();
+  }
   MarkCacheDirty();
   DidFinishDOMMutation();
 }
