@@ -38,10 +38,6 @@ TimeTicks TimeTicksNowIgnoringOverride() {
   CHECK_NE(0, nanos_since_boot);
   return TimeTicks::FromZxTime(nanos_since_boot);
 }
-
-TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
-  return TimeTicksNowIgnoringOverride();
-}
 }  // namespace subtle
 
 // static

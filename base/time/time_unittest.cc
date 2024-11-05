@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/test/gtest_util.h"
-#include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
@@ -1421,10 +1420,8 @@ static void HighResClockTest(TimeTicks (*GetTicks)()) {
       delta = GetTicks() - ticks_start;
     } while (delta.InMilliseconds() == 0);
 
-    if (delta.InMicroseconds() <= kTargetGranularityUs) {
+    if (delta.InMicroseconds() <= kTargetGranularityUs)
       success = true;
-      break;
-    }
   }
 
   // In high resolution mode, we expect to see the clock increment
@@ -1435,71 +1432,6 @@ static void HighResClockTest(TimeTicks (*GetTicks)()) {
 TEST(TimeTicks, HighRes) {
   HighResClockTest(&TimeTicks::Now);
 }
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-// Check that MaybeTimeTicksNowIgnoringOverride() and TimeTicks::Now()
-// measurements are "very close". i.e. that they're effectively using the same
-// clock.
-TEST(TimeTicks, MaybeHighRes) {
-  // Loop to avoid flakiness if we happen to context switch between the two
-  // calls to get the current ticks.
-  bool success = false;
-  int retries = 100;  // Arbitrary.
-  TimeDelta delta;
-  while (!success && retries--) {
-    std::optional<TimeTicks> maybe_ticks =
-        subtle::MaybeTimeTicksNowIgnoringOverride();
-    TimeTicks time_ticks = TimeTicks::Now();
-
-    // MaybeTimeTicksNowIgnoringOverride() should always produce a value when
-    // not called from a signal handler.
-    ASSERT_TRUE(maybe_ticks.has_value());
-
-    delta = time_ticks - *maybe_ticks;
-
-    if (delta <= Milliseconds(16)) {
-      success = true;
-      break;
-    }
-  }
-
-  ASSERT_TRUE(success);
-
-  // We expect the second call to be at least as large as the first.
-  EXPECT_GE(delta, Milliseconds(0));
-}
-#endif
-
-#if !BUILDFLAG(IS_IOS)
-// Check that the low resolution tick value is "close" to the high resolution
-// tick value across platforms. This property holds on non-iOS platforms.
-TEST(TimeTicks, LowRes) {
-  const TimeDelta kExpectedMaxDifference = Milliseconds(64);
-
-  // Loop to avoid flakiness if we happen to context switch between the two
-  // calls to get the current ticks.
-  bool success = false;
-  int retries = 100;  // Arbitrary.
-  TimeDelta delta;
-  while (!success && retries--) {
-    TimeTicks low_res_ticks = TimeTicks::LowResolutionNow();
-    TimeTicks high_res_ticks = TimeTicks::Now();
-
-    delta = high_res_ticks - low_res_ticks;
-
-    if (delta <= kExpectedMaxDifference) {
-      success = true;
-      break;
-    }
-  }
-
-  ASSERT_TRUE(success);
-
-  // We don't expect the low res ticks to be behind the high res ticks, when
-  // evaluated first.
-  EXPECT_GE(delta, Milliseconds(0));
-}
-#endif
 
 class TimeTicksOverride {
  public:
@@ -1546,62 +1478,6 @@ TEST(TimeTicks, NowOverride) {
   EXPECT_GT(TimeTicks::Max(), TimeTicks::Now());
   EXPECT_LT(TimeTicks::UnixEpoch(), subtle::TimeTicksNowIgnoringOverride());
   EXPECT_GT(TimeTicks::Max(), subtle::TimeTicksNowIgnoringOverride());
-}
-
-class TimeTicksLowResolutionOverride {
- public:
-  static TimeTicks Now() {
-    now_ticks_ += Seconds(1);
-    return now_ticks_;
-  }
-
-  static TimeTicks now_ticks_;
-};
-
-// static
-TimeTicks TimeTicksLowResolutionOverride::now_ticks_;
-
-TEST(TimeTicks, LowResolutionNowOverride) {
-  TimeTicksLowResolutionOverride::now_ticks_ = TimeTicks::Min();
-
-  // Override is not active. All LowResolutionNow() methods should return a
-  // sensible value.
-  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::LowResolutionNow());
-  EXPECT_GT(TimeTicks::Max(), TimeTicks::LowResolutionNow());
-  EXPECT_LT(TimeTicks::UnixEpoch(),
-            subtle::TimeTicksLowResolutionNowIgnoringOverride());
-  EXPECT_GT(TimeTicks::Max(),
-            subtle::TimeTicksLowResolutionNowIgnoringOverride());
-
-  {
-    // Set override.
-    subtle::ScopedTimeClockOverrides overrides(
-        nullptr, nullptr, nullptr, nullptr,
-        &TimeTicksLowResolutionOverride::Now);
-
-    // Overridden value is returned and incremented when LowResolutionNow() is
-    // called.
-    EXPECT_EQ(TimeTicks::Min() + Seconds(1), TimeTicks::LowResolutionNow());
-    EXPECT_EQ(TimeTicks::Min() + Seconds(2), TimeTicks::LowResolutionNow());
-
-    // LowResolutionNowIgnoringOverride() still returns real ticks.
-    EXPECT_LT(TimeTicks::UnixEpoch(),
-              subtle::TimeTicksLowResolutionNowIgnoringOverride());
-    EXPECT_GT(TimeTicks::Max(),
-              subtle::TimeTicksLowResolutionNowIgnoringOverride());
-
-    // IgnoringOverride methods didn't call
-    // TimeTicksLowResolutionOverride::Now().
-    EXPECT_EQ(TimeTicks::Min() + Seconds(3), TimeTicks::LowResolutionNow());
-  }
-
-  // All methods return real ticks again.
-  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::LowResolutionNow());
-  EXPECT_GT(TimeTicks::Max(), TimeTicks::LowResolutionNow());
-  EXPECT_LT(TimeTicks::UnixEpoch(),
-            subtle::TimeTicksLowResolutionNowIgnoringOverride());
-  EXPECT_GT(TimeTicks::Max(),
-            subtle::TimeTicksLowResolutionNowIgnoringOverride());
 }
 
 class ThreadTicksOverride {

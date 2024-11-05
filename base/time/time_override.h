@@ -16,8 +16,6 @@ namespace base {
 
 using TimeNowFunction = decltype(&Time::Now);
 using TimeTicksNowFunction = decltype(&TimeTicks::Now);
-using TimeTicksLowResolutionNowFunction =
-    decltype(&TimeTicks::LowResolutionNow);
 using LiveTicksNowFunction = decltype(&LiveTicks::Now);
 using ThreadTicksNowFunction = decltype(&ThreadTicks::Now);
 
@@ -42,9 +40,7 @@ class BASE_EXPORT ScopedTimeClockOverrides {
   ScopedTimeClockOverrides(TimeNowFunction time_override,
                            TimeTicksNowFunction time_ticks_override,
                            ThreadTicksNowFunction thread_ticks_override,
-                           LiveTicksNowFunction live_ticks_override = nullptr,
-                           TimeTicksLowResolutionNowFunction
-                               time_ticks_low_resolution_override = nullptr);
+                           LiveTicksNowFunction live_ticks_override = nullptr);
 
   ScopedTimeClockOverrides(const ScopedTimeClockOverrides&) = delete;
   ScopedTimeClockOverrides& operator=(const ScopedTimeClockOverrides&) = delete;
@@ -68,7 +64,6 @@ BASE_EXPORT Time TimeNowFromSystemTimeIgnoringOverride();
 BASE_EXPORT TimeTicks TimeTicksNowIgnoringOverride();
 BASE_EXPORT LiveTicks LiveTicksNowIgnoringOverride();
 BASE_EXPORT ThreadTicks ThreadTicksNowIgnoringOverride();
-BASE_EXPORT TimeTicks TimeTicksLowResolutionNowIgnoringOverride();
 
 #if BUILDFLAG(IS_POSIX)
 // Equivalent to TimeTicksNowIgnoringOverride(), but is allowed to fail and
@@ -90,8 +85,6 @@ namespace internal {
 extern std::atomic<TimeNowFunction> g_time_now_function;
 extern std::atomic<TimeNowFunction> g_time_now_from_system_time_function;
 extern std::atomic<TimeTicksNowFunction> g_time_ticks_now_function;
-extern std::atomic<TimeTicksNowFunction>
-    g_time_ticks_low_resolution_now_function;
 extern std::atomic<LiveTicksNowFunction> g_live_ticks_now_function;
 extern std::atomic<ThreadTicksNowFunction> g_thread_ticks_now_function;
 
