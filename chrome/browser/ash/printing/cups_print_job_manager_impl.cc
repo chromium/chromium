@@ -538,8 +538,9 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
 };
 
 // static
-CupsPrintJobManager* CupsPrintJobManager::CreateInstance(Profile* profile) {
-  return new CupsPrintJobManagerImpl(profile);
+std::unique_ptr<CupsPrintJobManager> CupsPrintJobManager::CreateInstance(
+    Profile* profile) {
+  return std::make_unique<CupsPrintJobManagerImpl>(profile);
 }
 
 }  // namespace ash
