@@ -2780,6 +2780,7 @@ Called by update_extension_histograms.py.-->
   <int value="1911" label="ACCESSIBILITY_PRIVATE_ENABLEDRAGEVENTREWRITER"/>
   <int value="1912" label="TTSENGINE_UPDATELANGUAGE"/>
   <int value="1913" label="ODFSCONFIGPRIVATE_OPENINOFFICEAPP"/>
+  <int value="1914" label="COOKIES_GETPARTITIONKEY"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

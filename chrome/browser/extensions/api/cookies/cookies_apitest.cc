@@ -13,10 +13,14 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -70,6 +74,11 @@ class CookiesApiTest : public ExtensionApiTest,
           base::NullCallback());
       cookie_manager_remote_.FlushForTesting();
     }
+
+    net::test_server::RegisterDefaultHandlers(embedded_test_server());
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
  protected:
@@ -99,6 +108,15 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     CookiesApiTest,
+    ::testing::Combine(::testing::Values(ContextType::kServiceWorker),
+                       ::testing::Values(SameSiteCookieSemantics::kLegacy,
+                                         SameSiteCookieSemantics::kModern)));
+
+// A test suite that only runs with MV3 extensions.
+using CookiesApiMV3Test = CookiesApiTest;
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    CookiesApiMV3Test,
     ::testing::Combine(::testing::Values(ContextType::kServiceWorker),
                        ::testing::Values(SameSiteCookieSemantics::kLegacy,
                                          SameSiteCookieSemantics::kModern)));
@@ -152,6 +170,39 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanningAsync) {
 
 IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesNoPermission) {
   ASSERT_TRUE(RunTest("cookies/no_permission")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(CookiesApiMV3Test, TestGetPartitionKey) {
+  // Before running test, set up a top-level site (a.com) that embeds a
+  // cross-site (b.com). To test the cookies.getPartitionKey() api.
+  const std::string default_response = "/defaultresponse";
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", default_response)));
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Inject two iframes and navigate one to a cross-site with host permissions
+  // (b.com) and the other to a cross-site (c.com) with no host permissions.
+  const GURL cross_site_url =
+      embedded_test_server()->GetURL("b.com", default_response);
+  const GURL no_host_permissions_url =
+      embedded_test_server()->GetURL("c.com", default_response);
+
+  std::string script =
+      "var f = document.createElement('iframe');\n"
+      "f.src = '" +
+      cross_site_url.spec() +
+      "';\n"
+      "document.body.appendChild(f);\n"
+      "var noHostFrame = document.createElement('iframe');\n"
+      "noHostFrame.src = '" +
+      no_host_permissions_url.spec() +
+      "';\n"
+      "document.body.appendChild(noHostFrame);\n";
+
+  EXPECT_TRUE(ExecJs(contents, script));
+  EXPECT_TRUE(WaitForLoadStop(contents));
+  ASSERT_TRUE(RunTest("cookies/get_partition_key")) << message_;
 }
 
 }  // namespace extensions

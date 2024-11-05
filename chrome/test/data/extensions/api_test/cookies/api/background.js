@@ -211,6 +211,7 @@ function removeTestCookies() {
     partitionKey: TEST_FIRST_PARTY_PARTITIONED_COOKIE.partitionKey
   });
 }
+
 var pass = chrome.test.callbackPass;
 var fail = chrome.test.callbackFail;
 
@@ -1276,19 +1277,21 @@ chrome.test.runTests([
             chrome.cookies.get({url: TEST_URL, name: 'abcd'},
                 pass(expectNullCookie));
           }));
-      chrome.cookies.set({
+    chrome.cookies.set(
+        {
           url: TEST_ODD_URL,
           name: 'abcd',
           domain: TEST_ODD_DOMAIN,
-            path: TEST_ODD_PATH
-          }, pass(function () {
-            chrome.cookies.get({url: TEST_ODD_URL, name: 'abcd'},
-              pass(function(cookie) {
+          path: TEST_ODD_PATH
+        },
+        pass(function() {
+          chrome.cookies.get(
+              {url: TEST_ODD_URL, name: 'abcd'}, pass(function(cookie) {
                 expectValidCookie(cookie);
                 chrome.test.assertEq(TEST_ODD_DOMAIN, unescape(cookie.domain));
                 chrome.test.assertEq(TEST_ODD_PATH, unescape(cookie.path));
-                }));
-          }));
+              }));
+        }));
   },
   function setSameSiteCookies() {
     removeTestCookies();

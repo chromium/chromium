@@ -199,6 +199,23 @@ class CookiesRemoveFunction : public ExtensionFunction {
   std::optional<api::cookies::Remove::Params> parsed_args_;
 };
 
+// Implements the cookies.getPartitionKey() extension function.
+class CookiesGetPartitionKeyFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("cookies.getPartitionKey", COOKIES_GETPARTITIONKEY)
+
+  CookiesGetPartitionKeyFunction();
+
+ protected:
+  ~CookiesGetPartitionKeyFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  std::optional<api::cookies::GetPartitionKey::Params> parsed_args_;
+};
+
 // Implements the cookies.getAllCookieStores() extension function.
 class CookiesGetAllCookieStoresFunction : public ExtensionFunction {
  public:
