@@ -30,9 +30,7 @@ BirchChipButtonBase* GetBirchChipButton() {
   aura::Window* root = Shell::GetPrimaryRootWindow();
   OverviewGridTestApi test_api(root);
   CHECK(test_api.birch_bar_view());
-  if (!test_api.GetBirchChips().size()) {
-    return nullptr;
-  }
+  CHECK_EQ(test_api.GetBirchChips().size(), 1u);
   return test_api.GetBirchChips()[0];
 }
 

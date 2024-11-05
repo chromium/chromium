@@ -28,8 +28,6 @@ constexpr int kMaxShownCount = 3;
 // Minimum time between shows.
 constexpr base::TimeDelta kTimeBetweenShown = base::Hours(24);
 
-constexpr std::string kNudgeId = "BirchPrivacyId";
-
 PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetActivePrefService();
 }
@@ -77,7 +75,7 @@ void BirchPrivacyNudgeController::MaybeShowNudge(views::View* anchor_view) {
   }
 
   AnchoredNudgeData nudge_data(
-      kNudgeId, NudgeCatalogName::kBirchPrivacy,
+      "BirchPrivacyId", NudgeCatalogName::kBirchPrivacy,
       l10n_util::GetStringUTF16(IDS_ASH_BIRCH_PRIVACY_NUDGE), anchor_view);
   nudge_data.arrow = views::BubbleBorder::BOTTOM_LEFT;
 
@@ -86,10 +84,6 @@ void BirchPrivacyNudgeController::MaybeShowNudge(views::View* anchor_view) {
   // Update nudge prefs.
   prefs->SetInteger(prefs::kBirchPrivacyNudgeShownCount, shown_count + 1);
   prefs->SetTime(prefs::kBirchPrivacyNudgeLastShownTime, base::Time::Now());
-}
-
-void BirchPrivacyNudgeController::MaybeHideNudge() {
-  Shell::Get()->anchored_nudge_manager()->Cancel(kNudgeId);
 }
 
 }  // namespace ash

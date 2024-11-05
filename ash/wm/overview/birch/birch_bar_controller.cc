@@ -232,22 +232,6 @@ void BirchBarController::ToggleTemperatureUnits() {
   MaybeFetchDataFromModel();
 }
 
-void BirchBarController::OnCoralGroupRemoved(const base::Token& group_id) {
-  auto iter =
-      std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
-        if (item->GetType() != BirchItemType::kCoral) {
-          return false;
-        }
-        return static_cast<BirchCoralItem*>(item.get())->group_id() == group_id;
-      });
-  if (iter == items_.end()) {
-    return;
-  }
-
-  RemoveItemChips(iter->get());
-  items_.erase(iter);
-}
-
 void BirchBarController::OnCoralGroupUpdated(const base::Token& group_id) {
   auto iter =
       std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
