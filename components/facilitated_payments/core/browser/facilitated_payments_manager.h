@@ -63,6 +63,7 @@ class FacilitatedPaymentsManager {
 
  private:
   friend class FacilitatedPaymentsManagerTest;
+  // TODO(crbug.com/367751320): Sort below tests in alphabetical order.
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RegisterPixAllowlist);
   FRIEND_TEST_ALL_PREFIXES(
@@ -160,11 +161,11 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ApiClientTriggeredAfterPixCodeValidation);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PaymentNotOfferedReason_CodeValidatorReturnsFalse);
+                           PayflowExitedReason_InvalidCode);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixCodeValidationFailed_NoApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PaymentNotOfferedReason_CodeValidatorFailed);
+                           PayflowExitedReason_CodeValidatorFailed);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ApiAvailabilityHistogram);
   FRIEND_TEST_ALL_PREFIXES(

@@ -14,9 +14,22 @@ class TimeDelta;
 
 namespace payments::facilitated {
 
-// Reasons for why the payment was not offered. These only include the reasons
+// Reasons for why the payflow was exited early. These only include the reasons
 // after the renderer has detected a valid code and sent the signal to the
 // browser process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PayflowExitedReason {
+  kCodeValidatorFailed = 0,
+  kInvalidCode = 1,
+  kMaxValue = kInvalidCode
+};
+
+// TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
+// finished.
+// Reasons for why the payment was not offered. These only include the
+// reasons after the renderer has detected a valid code and sent the signal to
+// the browser process.
 enum class PaymentNotOfferedReason {
   kApiNotAvailable = 0,
   kRiskDataEmpty = 1,
@@ -64,9 +77,16 @@ void LogLoadRiskDataResultAndLatency(bool was_successful,
 // Log the result of the GetClientToken call made to api client.
 void LogGetClientTokenResult(bool result, base::TimeDelta duration);
 
-// Log the reason for the payment option not offered to the user. This includes
-// all the reasons after receiving a signal from the renderer process that a
-// valid code has been found.
+// Log the reason for the payflow was exited early. This includes all the
+// reasons after receiving a signal from the renderer process that a valid code
+// has been found.
+void LogPayflowExitedReason(PayflowExitedReason reason);
+
+// TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
+// finished.
+// Log the reason for the payment option not offered to the user. This
+// includes all the reasons after receiving a signal from the renderer process
+// that a valid code has been found.
 void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason);
 
 // Log the result and latency for the InitiatePayment backend endpoint.

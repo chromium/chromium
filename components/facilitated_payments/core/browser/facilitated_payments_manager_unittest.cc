@@ -167,7 +167,7 @@ TEST_F(FacilitatedPaymentsManagerTest, RegisterPixAllowlist) {
 }
 
 // If the facilitated payment API is not available, then the manager does not
-// show the PIX payment prompt.
+// show the Pix payment prompt.
 TEST_F(FacilitatedPaymentsManagerTest,
        NoPixPaymentPromptWhenApiClientNotAvailable) {
   payments_data_manager_->AddMaskedBankAccountForTest(
@@ -415,7 +415,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
       url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       ukm::UkmRecorder::GetNewSourceID());
 
-  // The DataDecoder (utility process) validates the PIX code string
+  // The DataDecoder (utility process) validates the Pix code string
   // asynchronously.
   task_environment_.RunUntilIdle();
 }
@@ -443,7 +443,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnPixCodeCopiedToClipboard(
       url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       ukm::UkmRecorder::GetNewSourceID());
-  // The DataDecoder (utility process) validates the PIX code string
+  // The DataDecoder (utility process) validates the Pix code string
   // asynchronously.
   task_environment_.RunUntilIdle();
 }
@@ -471,12 +471,12 @@ TEST_F(FacilitatedPaymentsManagerTest,
                                        ukm::UkmRecorder::GetNewSourceID());
   manager_->OnPixCodeCopiedToClipboard(url, pix_code,
                                        ukm::UkmRecorder::GetNewSourceID());
-  // The DataDecoder (utility process) validates the PIX code string
+  // The DataDecoder (utility process) validates the Pix code string
   // asynchronously.
   task_environment_.RunUntilIdle();
 }
 
-// The manager checks for API availability after validating the PIX code.
+// The manager checks for API availability after validating the Pix code.
 TEST_F(FacilitatedPaymentsManagerTest,
        ApiClientTriggeredAfterPixCodeValidation) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
@@ -488,7 +488,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
                                /*is_pix_code_valid=*/true);
 }
 
-// If the PIX code validation in the utility process has returned `false`, then
+// If the Pix code validation in the utility process has returned `false`, then
 // the manager does not check the API for availability.
 TEST_F(FacilitatedPaymentsManagerTest,
        PixCodeValidationFailed_NoApiClientTriggered) {
@@ -501,18 +501,18 @@ TEST_F(FacilitatedPaymentsManagerTest,
                                /*is_pix_code_valid=*/false);
 }
 
-// If the PIX code validation in the utility process has returned `false`, then
-// the PaymentNotOfferedReason histogram should be logged.
-TEST_F(FacilitatedPaymentsManagerTest,
-       PaymentNotOfferedReason_CodeValidatorReturnsFalse) {
+// If the Pix code validation in the utility process has returned `false`, then
+// the PayflowExitedReason histogram should be logged.
+TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_InvalidCode) {
   base::HistogramTester histogram_tester;
+
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                base::TimeTicks::Now(),
                                /*is_pix_code_valid=*/false);
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
-      /*sample=*/PaymentNotOfferedReason::kInvalidCode,
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kInvalidCode,
       /*expected_bucket_count=*/1);
 }
 
@@ -532,27 +532,28 @@ TEST_F(FacilitatedPaymentsManagerTest,
 }
 
 // If the validation utility process has disconnected (e.g., due to a crash in
-// the validation code), then the PaymentNotOfferedReason histogram should be
+// the validation code), then the PayflowExitedReason histogram should be
 // logged.
 TEST_F(FacilitatedPaymentsManagerTest,
-       PaymentNotOfferedReason_CodeValidatorFailed) {
+       PayflowExitedReason_CodeValidatorFailed) {
   base::HistogramTester histogram_tester;
+
   manager_->OnPixCodeValidated(
       /*pix_code=*/std::string(), base::TimeTicks::Now(),
       /*is_pix_code_valid=*/
       base::unexpected("Data Decoder terminated unexpectedly"));
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
-      /*sample=*/PaymentNotOfferedReason::kCodeValidatorFailed,
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kCodeValidatorFailed,
       /*expected_bucket_count=*/1);
 }
 
-// If the PIX payment user pref is turned off, the manager does not check
+// If the Pix payment user pref is turned off, the manager does not check
 // whether the facilitated payment API is available.
 TEST_F(FacilitatedPaymentsManagerTest, PixPrefTurnedOff_NoApiClientTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
-  // Turn off PIX pref.
+  // Turn off Pix pref.
   autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
@@ -562,7 +563,7 @@ TEST_F(FacilitatedPaymentsManagerTest, PixPrefTurnedOff_NoApiClientTriggered) {
                                /*is_pix_code_valid=*/true);
 }
 
-// If the user doesn't have any linked PIX accounts, the manager does not check
+// If the user doesn't have any linked Pix accounts, the manager does not check
 // whether the facilitated payment API is available.
 TEST_F(FacilitatedPaymentsManagerTest, NoPixAccounts_NoApiClientTriggered) {
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);

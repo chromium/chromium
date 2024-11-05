@@ -62,9 +62,16 @@ void LogGetClientTokenResult(bool result, base::TimeDelta duration) {
                               duration);
 }
 
-void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason) {
+void LogPayflowExitedReason(PayflowExitedReason reason) {
   // TODO(b/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
+  base::UmaHistogramEnumeration("FacilitatedPayments.Pix.PayflowExitedReason",
+                                reason);
+}
+
+// TODO(crbug.com/367751320): Remove after new PayflowExitedReason histogram is
+// finished.
+void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason) {
   base::UmaHistogramEnumeration(
       "FacilitatedPayments.Pix.PaymentNotOfferedReason", reason);
 }

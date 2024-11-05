@@ -100,13 +100,13 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
       is_pix_code_valid, (base::TimeTicks::Now() - start_time));
   if (!is_pix_code_valid.has_value()) {
     // Pix code validator encountered an error.
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kCodeValidatorFailed);
+    LogPayflowExitedReason(PayflowExitedReason::kCodeValidatorFailed);
     return;
   }
 
   if (!is_pix_code_valid.value()) {
     // Pix code is not valid.
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kInvalidCode);
+    LogPayflowExitedReason(PayflowExitedReason::kInvalidCode);
     return;
   }
   // If a valid PIX code is found, and the user has Google wallet linked PIX

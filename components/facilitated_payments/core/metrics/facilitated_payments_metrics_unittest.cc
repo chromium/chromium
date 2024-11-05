@@ -106,17 +106,6 @@ TEST(FacilitatedPaymentsMetricsTest, LogGetClientTokenResult) {
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogPaymentNotOfferedReason) {
-  base::HistogramTester histogram_tester;
-
-  LogPaymentNotOfferedReason(PaymentNotOfferedReason::kApiNotAvailable);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
-      /*sample=*/PaymentNotOfferedReason::kApiNotAvailable,
-      /*expected_bucket_count=*/1);
-}
-
 TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResult) {
   base::HistogramTester histogram_tester;
 
@@ -208,6 +197,26 @@ TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Abandoned) {
       /*sample=*/10,
       /*expected_bucket_count=*/1);
 }
+
+class FacilitatedPaymentsMetricsExitedReasonTest
+    : public testing::TestWithParam<PayflowExitedReason> {};
+
+TEST_P(FacilitatedPaymentsMetricsExitedReasonTest, LogPayflowExitedReason) {
+  base::HistogramTester histogram_tester;
+
+  LogPayflowExitedReason(GetParam());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/GetParam(),
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsExitedReasonTest,
+    testing::Values(PayflowExitedReason::kCodeValidatorFailed,
+                    PayflowExitedReason::kInvalidCode));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:
