@@ -230,11 +230,18 @@ UIColor* BackgroundColor() {
 // Only available in iOS 17.0+.
 - (void)prepareInterfaceToProvideCredentialForRequest:
     (id<ASCredentialRequest>)credentialRequest API_AVAILABLE(ios(17.0)) {
+  __weak __typeof__(self) weakSelf = self;
   if (credentialRequest.type == ASCredentialRequestTypePasskeyAssertion) {
     // Reaching this code means that user reauthentication is needed in order to
     // proceed with the passkey assertion. Reauthentication will be performed
     // later on in the assertion process, so no need to reauthenticate just yet.
-    [self provideCredentialForRequest:credentialRequest];
+    [self validateUserWithCompletion:^(BOOL userIsValid) {
+      if (!userIsValid) {
+        [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
+        return;
+      }
+      [weakSelf provideCredentialForRequest:credentialRequest];
+    }];
     return;
   }
 
@@ -242,7 +249,6 @@ UIColor* BackgroundColor() {
   // expected or whether it's called at all. Technically, when this method is
   // called, the CPE is not yet foregrounded and, hence, can't present the
   // reauthentication process.
-  __weak __typeof__(self) weakSelf = self;
   [self validateUserWithCompletion:^(BOOL userIsValid) {
     if (!userIsValid) {
       [weakSelf showStaleCredentials];
@@ -294,36 +300,14 @@ UIColor* BackgroundColor() {
     return;
   }
 
-  ASPasskeyCredentialRequest* passkeyCredentialRequest =
-      base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
-          registrationRequest);
-
-  NSArray<NSNumber*>* supportedAlgorithms =
-      [passkeyCredentialRequest.supportedAlgorithms
-          filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
-                                                       NSNumber* algorithm,
-                                                       NSDictionary* bindings) {
-            return webauthn::passkey_model_utils::IsSupportedAlgorithm(
-                algorithm.intValue);
-          }]];
-
-  if (supportedAlgorithms.count == 0) {
-    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
-    return;
-  }
-
-  ASPasskeyCredentialIdentity* identity =
-      base::apple::ObjCCastStrict<ASPasskeyCredentialIdentity>(
-          passkeyCredentialRequest.credentialIdentity);
-
-  [self createPasskeyForClient:passkeyCredentialRequest.clientDataHash
-        relyingPartyIdentifier:identity.relyingPartyIdentifier
-                      username:identity.userName
-                    userHandle:identity.userHandle
-                          gaia:gaia
-      userVerificationRequired:[self shouldPerformUserVerificationForPreference:
-                                         passkeyCredentialRequest
-                                             .userVerificationPreference]];
+  __weak __typeof__(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    if (!userIsValid) {
+      [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
+      return;
+    }
+    [weakSelf createPasskeyForRequest:registrationRequest gaia:gaia];
+  }];
 }
 
 #pragma mark - Properties
@@ -482,19 +466,13 @@ UIColor* BackgroundColor() {
   }
 
   __weak __typeof(self) weakSelf = self;
-  [self validateUserWithCompletion:^(BOOL userIsValid) {
-    if (!userIsValid) {
+  [self reauthenticateIfNeededWithCompletionHandler:^(
+            ReauthenticationResult result) {
+    if (result != ReauthenticationResult::kFailure) {
+      completion();
+    } else {
       [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-      return;
     }
-    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                  ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        completion();
-      } else {
-        [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-      }
-    }];
   }];
 }
 
@@ -622,6 +600,41 @@ UIColor* BackgroundColor() {
     }
   }
   [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
+}
+
+// Creates a passkey for the provided gaia ID.
+- (void)createPasskeyForRequest:(id<ASCredentialRequest>)registrationRequest
+                           gaia:(NSString*)gaia API_AVAILABLE(ios(17.0)) {
+  ASPasskeyCredentialRequest* passkeyCredentialRequest =
+      base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
+          registrationRequest);
+
+  NSArray<NSNumber*>* supportedAlgorithms =
+      [passkeyCredentialRequest.supportedAlgorithms
+          filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                                       NSNumber* algorithm,
+                                                       NSDictionary* bindings) {
+            return webauthn::passkey_model_utils::IsSupportedAlgorithm(
+                algorithm.intValue);
+          }]];
+
+  if (supportedAlgorithms.count == 0) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
+  ASPasskeyCredentialIdentity* identity =
+      base::apple::ObjCCastStrict<ASPasskeyCredentialIdentity>(
+          passkeyCredentialRequest.credentialIdentity);
+
+  [self createPasskeyForClient:passkeyCredentialRequest.clientDataHash
+        relyingPartyIdentifier:identity.relyingPartyIdentifier
+                      username:identity.userName
+                    userHandle:identity.userHandle
+                          gaia:gaia
+      userVerificationRequired:[self shouldPerformUserVerificationForPreference:
+                                         passkeyCredentialRequest
+                                             .userVerificationPreference]];
 }
 
 // Shows a loading indicator,
@@ -875,22 +888,16 @@ UIColor* BackgroundColor() {
                                    primaryButtonAction:
                                        (ProceduralBlock)primaryButtonAction {
   ProceduralBlock action;
-  __weak __typeof(self) weakSelf = self;
   if (_userVerificationRequired) {
+    __weak __typeof(self) weakSelf = self;
     action = ^{
-      [weakSelf validateUserWithCompletion:^(BOOL userIsValid) {
-        if (!userIsValid) {
+      [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
+                    ReauthenticationResult result) {
+        if (result != ReauthenticationResult::kFailure) {
+          primaryButtonAction();
+        } else {
           [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-          return;
         }
-        [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                      ReauthenticationResult result) {
-          if (result != ReauthenticationResult::kFailure) {
-            primaryButtonAction();
-          } else {
-            [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-          }
-        }];
       }];
     };
   } else {
