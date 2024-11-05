@@ -2119,7 +2119,9 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
       PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   base::FilePath test_config_dir = GetResourceFile(
       FILE_PATH_LITERAL("webapps_integration/preinstalled_config_dir/"));
-  web_app::SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
+  auto config_auto_reset =
+      ::web_app::test::SetPreinstalledWebAppConfigDirForTesting(
+          test_config_dir);
 
   base::Value::List app_configs;
   auto json_parse_result =
@@ -2140,7 +2142,6 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
   provider()->preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
       test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-  web_app::SetPreinstalledWebAppConfigDirForTesting(nullptr);
 }
 
 void WebAppIntegrationTestDriver::NavigateAppHome() {

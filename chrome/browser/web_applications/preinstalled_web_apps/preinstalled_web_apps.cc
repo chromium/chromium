@@ -10,6 +10,8 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -18,6 +20,7 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/web_applications/preinstalled_web_apps/gmail.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_drive.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_sheets.h"
@@ -32,7 +35,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/messages_dogfood.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -51,6 +53,18 @@ std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+#if !BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kChatPreinstalledWebApp,
+             "ChatPreinstalledWebApp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kOnlyForNewUsers,
+                   &kChatPreinstalledWebApp,
+                   "only_for_new_users",
+                   true);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsGoogleInternalAccount() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -59,6 +73,7 @@ bool IsGoogleInternalAccount() {
   return gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
 
 std::vector<ExternalInstallOptions> GetChromeBrandedApps(
     Profile& profile,
@@ -74,7 +89,6 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
   // - Validating everything works on all OSs (Mac bundles things differently).
   // - Ensure that these resources are correctly installed by our Chrome
   //   installers on every desktop platform.
-  // clang-format off
   std::vector<ExternalInstallOptions> apps = {
       GetConfigForGmail(),
       GetConfigForGoogleDocs(is_standalone_tabbed),
@@ -86,16 +100,23 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
 #if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(
           chromeos::features::kPreinstalledWebAppsCoreOnly)) {
-    apps.insert(apps.end(), {
-      GetConfigForCalculator(),
-      GetConfigForGemini(device_info),
-      GetConfigForGoogleCalendar(),
-      GetConfigForGoogleChat(),
-      GetConfigForGoogleMeet(),
-    });
+    apps.insert(apps.end(),
+                {
+                    GetConfigForCalculator(),
+                    GetConfigForGemini(device_info),
+                    GetConfigForGoogleCalendar(),
+                    GetConfigForGoogleChat(/*is_standalone=*/true,
+                                           /*only_for_new_users=*/true),
+                    GetConfigForGoogleMeet(),
+                });
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  // clang-format on
+#else  // BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kChatPreinstalledWebApp)) {
+    apps.insert(apps.end(), GetConfigForGoogleChat(
+                                /*is_standalone=*/false,
+                                /*only_for_new_users=*/kOnlyForNewUsers.Get()));
+  }
+#endif
 
   return apps;
 }

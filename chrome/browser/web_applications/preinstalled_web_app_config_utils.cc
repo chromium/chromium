@@ -4,8 +4,12 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 
+#include <optional>
+
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -23,7 +27,12 @@ namespace web_app {
 
 namespace {
 
-const base::FilePath* g_config_dir_for_testing = nullptr;
+std::optional<base::FilePath>&
+GetPreinstalledWebAppConfigDirMutableForTesting() {
+  static base::NoDestructor<std::optional<base::FilePath>>
+      g_config_dir_for_testing(std::nullopt);
+  return *g_config_dir_for_testing.get();
+}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The sub-directory of the extensions directory in which to scan for external
@@ -35,8 +44,8 @@ const base::FilePath::CharType kWebAppsSubDirectory[] =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 base::FilePath GetPreinstalledWebAppConfigDirFromDefaultPaths(
     Profile* profile) {
-  if (g_config_dir_for_testing) {
-    return *g_config_dir_for_testing;
+  if (test::GetPreinstalledWebAppConfigDirForTesting()) {  // IN-TEST
+    return *test::GetPreinstalledWebAppConfigDirForTesting();  // IN-TEST
   }
 
   base::FilePath web_apps_dir;
@@ -56,14 +65,19 @@ base::FilePath GetPreinstalledWebAppExtraConfigDirFromDefaultPaths(
 
 }  // namespace
 
-const base::FilePath* GetPreinstalledWebAppConfigDirForTesting() {
-  return g_config_dir_for_testing;
+namespace test {
+
+std::optional<base::FilePath> GetPreinstalledWebAppConfigDirForTesting() {
+  return GetPreinstalledWebAppConfigDirMutableForTesting();
 }
 
-void SetPreinstalledWebAppConfigDirForTesting(
-    const base::FilePath* config_dir) {
-  g_config_dir_for_testing = config_dir;
+base::AutoReset<std::optional<base::FilePath>>
+SetPreinstalledWebAppConfigDirForTesting(const base::FilePath& config_dir) {
+  return {&GetPreinstalledWebAppConfigDirMutableForTesting(),  // IN-TEST
+                         config_dir};
 }
+
+}  // namespace test
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile) {
@@ -83,8 +97,8 @@ base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile) {
     return {};
   }
 
-  if (g_config_dir_for_testing) {
-    return *g_config_dir_for_testing;
+  if (test::GetPreinstalledWebAppConfigDirForTesting()) {  // IN-TEST
+    return *test::GetPreinstalledWebAppConfigDirForTesting();  // IN-TEST
   }
 
   // For manual testing, you can change s/STANDALONE/USER/, as writing to

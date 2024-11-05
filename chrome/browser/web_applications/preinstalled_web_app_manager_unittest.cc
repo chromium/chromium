@@ -145,7 +145,8 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     }
 
     base::FilePath config_dir = GetConfigDir(test_dir);
-    SetPreinstalledWebAppConfigDirForTesting(&config_dir);
+    test::ConfigDirAutoReset config_reset =
+        test::SetPreinstalledWebAppConfigDirForTesting(config_dir);
 
     if (!disable_default_apps) {
       base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -161,8 +162,6 @@ class PreinstalledWebAppManagerTest : public testing::Test {
               run_loop.Quit();
             }));
     run_loop.Run();
-
-    SetPreinstalledWebAppConfigDirForTesting(nullptr);
 
     return result;
   }

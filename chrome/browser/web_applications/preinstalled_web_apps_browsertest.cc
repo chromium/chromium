@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 
 #include "ash/constants/web_app_id_constants.h"
+#include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -31,15 +32,13 @@ namespace web_app {
 class PreinstalledWebAppsBrowserTest : public WebAppBrowserTestBase {
  public:
   PreinstalledWebAppsBrowserTest()
-      : skip_preinstalled_web_app_startup_(
-            PreinstalledWebAppManager::SkipStartupForTesting()) {
-    // Ignore any default app configs on disk.
-    SetPreinstalledWebAppConfigDirForTesting(&empty_path_);
-  }
+      :  // Ignore any default app configs on disk.
+        config_dir_auto_reset_(
+            test::SetPreinstalledWebAppConfigDirForTesting(base::FilePath())),
+        skip_preinstalled_web_app_startup_(
+            PreinstalledWebAppManager::SkipStartupForTesting()) {}
 
-  ~PreinstalledWebAppsBrowserTest() override {
-    SetPreinstalledWebAppConfigDirForTesting(nullptr);
-  }
+  ~PreinstalledWebAppsBrowserTest() override = default;
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     WebAppBrowserTestBase::SetUpDefaultCommandLine(command_line);
@@ -49,7 +48,7 @@ class PreinstalledWebAppsBrowserTest : public WebAppBrowserTestBase {
     command_line->RemoveSwitch(switches::kDisableDefaultApps);
   }
 
-  base::FilePath empty_path_;
+  test::ConfigDirAutoReset config_dir_auto_reset_;
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
 };
 

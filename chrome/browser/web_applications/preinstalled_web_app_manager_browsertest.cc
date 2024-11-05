@@ -238,7 +238,8 @@ class PreinstalledWebAppManagerBrowserTestBase
       const GURL& install_url,
       std::string_view app_config_string) {
     base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
-    SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
+    auto config_auto_reset =
+        test::SetPreinstalledWebAppConfigDirForTesting(test_config_dir);
 
     base::FilePath source_root_dir;
     CHECK(
@@ -278,8 +279,6 @@ class PreinstalledWebAppManagerBrowserTestBase
               sync_run_loop.Quit();
             }));
     sync_run_loop.Run();
-
-    SetPreinstalledWebAppConfigDirForTesting(nullptr);
 
     return code;
   }
