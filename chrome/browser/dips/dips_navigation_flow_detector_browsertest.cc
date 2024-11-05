@@ -1140,6 +1140,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
                                      CookieOperation::kChange);
   content::EvalJsResult result =
       content::EvalJs(frame, "document.cookie = 'name=value;';");
+  observer.Wait();
   base::TimeDelta visit_duration = base::Seconds(1);
   test_clock_.Advance(visit_duration);
   // Visit A again, and wait for UKM to be recorded.
