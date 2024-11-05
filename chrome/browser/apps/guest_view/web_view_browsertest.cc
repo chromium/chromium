@@ -3140,14 +3140,14 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuInspectElement) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class WebViewSettingsRevampTest : public WebViewTestBase,
-                                  public testing::WithParamInterface<bool> {
+class WebViewChromeOSTest : public WebViewTestBase,
+                            public testing::WithParamInterface<bool> {
  public:
-  WebViewSettingsRevampTest() {
+  WebViewChromeOSTest() {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kGuestViewMPArch, GetParam()}});
   }
-  ~WebViewSettingsRevampTest() override = default;
+  ~WebViewChromeOSTest() override = default;
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
@@ -3159,9 +3159,9 @@ class WebViewSettingsRevampTest : public WebViewTestBase,
 };
 
 INSTANTIATE_TEST_SUITE_P(WebViewTests,
-                         WebViewSettingsRevampTest,
+                         WebViewChromeOSTest,
                          testing::Bool(),
-                         WebViewSettingsRevampTest::DescribeParams);
+                         WebViewChromeOSTest::DescribeParams);
 #endif
 
 // This test executes the context menu command 'LanguageSettings'.
@@ -3170,7 +3170,7 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 // In either case, this is a browser-initiated operation and so we expect it
 // to succeed if the embedder is allowed to perform the operation.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(WebViewSettingsRevampTest, ContextMenuLanguageSettings) {
+IN_PROC_BROWSER_TEST_P(WebViewChromeOSTest, ContextMenuLanguageSettings) {
 #else
 IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
 #endif
@@ -3195,13 +3195,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
   content::WebContents* new_contents =
       web_contents_added_observer.GetWebContents();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(
-      GURL(chrome::kChromeUIOSSettingsURL)
-          .Resolve(
-              ash::features::IsOsSettingsRevampWayfindingEnabled()
-                  ? chromeos::settings::mojom::kLanguagesSubpagePath
-                  : chromeos::settings::mojom::kLanguagesAndInputSectionPath),
-      new_contents->GetVisibleURL());
+  EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL)
+                .Resolve(chromeos::settings::mojom::kLanguagesSubpagePath),
+            new_contents->GetVisibleURL());
 #else
   EXPECT_EQ(GURL(chrome::kChromeUISettingsURL)
                 .Resolve(chrome::kLanguageOptionsSubPage),
