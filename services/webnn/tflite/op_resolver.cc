@@ -207,6 +207,8 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              ::tflite::ops::builtin::Register_RESIZE_NEAREST_NEIGHBOR(),
              /* min_version = */ 1,
              /* max_version = */ 3);
+  AddBuiltin(::tflite::BuiltinOperator_SCATTER_ND,
+             ::tflite::ops::builtin::Register_SCATTER_ND());
   AddBuiltin(::tflite::BuiltinOperator_SELECT_V2,
              ::tflite::ops::builtin::Register_SELECT_V2());
   AddBuiltin(::tflite::BuiltinOperator_SIN,
