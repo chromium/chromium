@@ -984,4 +984,35 @@ TEST_F(FocusModeDetailedViewWithLotsOfTasksTest, LimitTasks) {
   EXPECT_TRUE(chip_carousel->GetVisible());
 }
 
+// Tests that deselecting and re-selecting a task added through the focus panel
+// works and has the newly added task data.
+TEST_F(FocusModeDetailedViewTest, ReselectAddedTask) {
+  // Verify the starting state where we have one pre-populated task.
+  auto* task_view = GetTaskView();
+  auto* chip_carousel = task_view->chip_carousel_for_testing();
+  EXPECT_TRUE(chip_carousel->HasTasks());
+  EXPECT_TRUE(chip_carousel->GetVisible());
+  EXPECT_EQ(chip_carousel->GetTaskCountForTesting(), 1);
+
+  // Verify a new task is added.
+  std::u16string new_task_title = u"my task title";
+  task_view->CommitTextfieldContents(new_task_title);
+  AdvanceClock(base::Milliseconds(10));
+  EXPECT_FALSE(chip_carousel->GetVisible());
+  EXPECT_EQ(chip_carousel->GetTaskCountForTesting(), 2);
+
+  // Simulate a task being removed. Then verify that we are able to select the
+  // task that was added.
+  task_view->OnClearTask();
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->HasSelectedTask());
+  EXPECT_TRUE(chip_carousel->GetVisible());
+  views::View* scroll_contents =
+      chip_carousel->GetScrollViewForTesting()->contents();
+  LeftClickOn(scroll_contents->GetChildrenInZOrder()[0]);
+  EXPECT_TRUE(controller->HasSelectedTask());
+  EXPECT_EQ(controller->tasks_model().selected_task()->title,
+            base::UTF16ToUTF8(new_task_title));
+}
+
 }  // namespace ash

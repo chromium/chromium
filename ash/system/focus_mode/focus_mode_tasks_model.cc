@@ -358,8 +358,12 @@ void FocusModeTasksModel::OnTaskAdded(
     NotifySelectedTask(observers_, selected_task_);
   }
 
-  // Clear the pending task.
+  // The pending task has now been successfully added, so we can clear
+  // `pending_task_` since it's updated in `tasks_`.
   pending_task_ = nullptr;
+
+  // Update the UI with the newly added task data.
+  NotifyTaskListChanged(observers_, tasks_);
 }
 
 void FocusModeTasksModel::OnPrefTaskFetched(
