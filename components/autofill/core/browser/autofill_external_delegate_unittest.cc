@@ -2014,12 +2014,11 @@ TEST_F(AutofillExternalDelegateUnitTest,
 }
 
 // Tests that on acceptance of a `kRetrievePredictionImprovements` suggestion,
-// the `AutofillPredictionImprovementsDelegate::OnClickedTriggerSuggestion()`
-// event handler is called.
+// the `AutofillAiDelegate::OnClickedTriggerSuggestion()` event handler is
+// called.
 TEST_F(AutofillExternalDelegateUnitTest,
        DidAcceptRetrievePredictionImprovementsSuggestionCallsEventHandler) {
-  EXPECT_CALL(*client().GetAutofillPredictionImprovementsDelegate(),
-              OnClickedTriggerSuggestion);
+  EXPECT_CALL(*client().GetAutofillAiDelegate(), OnClickedTriggerSuggestion);
   external_delegate().DidAcceptSuggestion(
       Suggestion(u"Autocomplete",
                  SuggestionType::kRetrievePredictionImprovements),
@@ -2098,8 +2097,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       form, *field_to_fill,
       /*caret_bounds=*/gfx::Rect(),
       AutofillSuggestionTriggerSource::kPredictionImprovements);
-  EXPECT_CALL(*client().GetAutofillPredictionImprovementsDelegate(),
-              OnSuggestionsShown);
+  EXPECT_CALL(*client().GetAutofillAiDelegate(), OnSuggestionsShown);
   external_delegate().OnSuggestionsShown(std::vector<Suggestion>{
       Suggestion(SuggestionType::kPredictionImprovementsLoadingState)});
 }
@@ -2685,13 +2683,13 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 TEST_F(
     AutofillExternalDelegateUnitTest,
-    PredictionImprovements_DidPerformButtonAction_ThumbsUpFeedbackIsForwardedToDelegate) {
+    AutofillAi_DidPerformButtonAction_ThumbsUpFeedbackIsForwardedToDelegate) {
   IssueOnQuery();
 
   // TODO(crbug.com/362468426): Update comment in case it is decided that
   // feedback will be its own suggestion.
   EXPECT_CALL(
-      *client().GetAutofillPredictionImprovementsDelegate(),
+      *client().GetAutofillAiDelegate(),
       UserFeedbackReceived(AutofillAiDelegate::UserFeedback::kThumbsUp));
 
   external_delegate().DidPerformButtonActionForSuggestion(
@@ -2701,13 +2699,13 @@ TEST_F(
 
 TEST_F(
     AutofillExternalDelegateUnitTest,
-    PredictionImprovements_DidPerformButtonAction_ThumbsDownFeedbackIsForwardedToDelegate) {
+    AutofillAi_DidPerformButtonAction_ThumbsDownFeedbackIsForwardedToDelegate) {
   IssueOnQuery();
 
   // TODO(crbug.com/362468426): Update comment in case it is decided that
   // feedback will be its own suggestion.
   EXPECT_CALL(
-      *client().GetAutofillPredictionImprovementsDelegate(),
+      *client().GetAutofillAiDelegate(),
       UserFeedbackReceived(AutofillAiDelegate::UserFeedback::kThumbsDown));
 
   external_delegate().DidPerformButtonActionForSuggestion(
@@ -2715,15 +2713,13 @@ TEST_F(
       PredictionImprovementsButtonActions::kThumbsDownClicked);
 }
 
-TEST_F(
-    AutofillExternalDelegateUnitTest,
-    PredictionImprovements_DidPerformButtonAction_LearnMoreIsForwardedToDelegate) {
+TEST_F(AutofillExternalDelegateUnitTest,
+       AutofillAi_DidPerformButtonAction_LearnMoreIsForwardedToDelegate) {
   IssueOnQuery();
 
   // TODO(crbug.com/362468426): Update comment in case it is decided that
   // feedback will be its own suggestion.
-  EXPECT_CALL(*client().GetAutofillPredictionImprovementsDelegate(),
-              UserClickedLearnMore());
+  EXPECT_CALL(*client().GetAutofillAiDelegate(), UserClickedLearnMore());
 
   external_delegate().DidPerformButtonActionForSuggestion(
       Suggestion(SuggestionType::kPredictionImprovementsFeedback),

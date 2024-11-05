@@ -403,8 +403,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
     auto* web_contents = content::WebContents::FromRenderFrameHost(
         autofill_driver->render_frame_host());
     add_prediction_improvements = ShouldAddPredictionImprovementsItem(
-        autofill_driver->GetAutofillClient()
-            .GetAutofillPredictionImprovementsDelegate(),
+        autofill_driver->GetAutofillClient().GetAutofillAiDelegate(),
         web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
     add_plus_address_fallback =
         ShouldAddPlusAddressManualFallbackItem(*autofill_driver);

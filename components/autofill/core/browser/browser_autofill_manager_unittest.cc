@@ -555,10 +555,7 @@ class MockAutofillClient : public TestAutofillClient {
               NotifyIphFeatureUsed,
               (AutofillClient::IphFeature),
               (override));
-  MOCK_METHOD(MockAutofillAiDelegate*,
-              GetAutofillPredictionImprovementsDelegate,
-              (),
-              (override));
+  MOCK_METHOD(MockAutofillAiDelegate*, GetAutofillAiDelegate, (), (override));
   MOCK_METHOD(void,
               ShowPlusAddressEmailOverrideNotification,
               (const std::string&, AutofillClient::EmailOverrideUndoCallback),
@@ -7208,13 +7205,13 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
   external_delegate()->CheckSuggestionCount(form.fields()[0].global_id(), 1);
 }
 
-// Tests that prediction improvements suggestions are shown.
-TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
+// Tests that Autofill AI suggestions are shown.
+TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
   NiceMock<MockAutofillAiDelegate> delegate;
-  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+  ON_CALL(autofill_client_, GetAutofillAiDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsPredictionImprovementsEligible)
       .WillByDefault(Return(true));
@@ -7233,14 +7230,14 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
                         Eq(SuggestionType::kRetrievePredictionImprovements))));
 }
 
-// Tests that the prediction improvements IPH is shown when the user and form
-// are eligible but the pref is disabled.
-TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsIPH) {
+// Tests that the Autofill AI IPH is shown when the user and form are eligible
+// but the pref is disabled.
+TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
   NiceMock<MockAutofillAiDelegate> delegate;
-  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+  ON_CALL(autofill_client_, GetAutofillAiDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsPredictionImprovementsEligible)
       .WillByDefault(Return(false));
@@ -7265,7 +7262,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   NiceMock<MockAutofillAiDelegate> delegate;
-  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+  ON_CALL(autofill_client_, GetAutofillAiDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
 
@@ -7302,7 +7299,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   NiceMock<MockAutofillAiDelegate> delegate;
-  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+  ON_CALL(autofill_client_, GetAutofillAiDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
 
@@ -7337,7 +7334,7 @@ TEST_F(BrowserAutofillManagerTest, CC) {
   FormsSeen({form});
 
   NiceMock<MockAutofillAiDelegate> delegate;
-  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+  ON_CALL(autofill_client_, GetAutofillAiDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(false));
   EXPECT_CALL(delegate, MaybeImportForm).Times(0);

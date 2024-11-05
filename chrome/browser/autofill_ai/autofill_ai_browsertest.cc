@@ -352,10 +352,9 @@ class AutofillAiBrowserBaseTest : public InteractiveBrowserTest {
         web_contents());
   }
 
-  autofill::AutofillAiDelegate* GetAutofillPredictionImprovementsDelegate() {
-    return autofill_client()
-               ? autofill_client()->GetAutofillPredictionImprovementsDelegate()
-               : nullptr;
+  autofill::AutofillAiDelegate* GetAutofillAiDelegate() {
+    return autofill_client() ? autofill_client()->GetAutofillAiDelegate()
+                             : nullptr;
   }
 
   user_annotations::UserAnnotationsService* GetUserAnnotationsService() {
@@ -426,12 +425,11 @@ class AutofillAiBrowserBaseTest : public InteractiveBrowserTest {
 class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
  protected:
   MultiStep Initialize() {
-    return NamedSteps("Initialize", EnableAutofillAiPref(),
-                      InstrumentTab(kPrimaryTabId),
-                      WaitForWebContentsReady(kPrimaryTabId),
-                      CheckPredictionImprovementsDelegateExists(),
-                      CheckUserAnnotationsServiceExists(), RemoveAllEntries(),
-                      CheckHasNoEntries());
+    return NamedSteps(
+        "Initialize", EnableAutofillAiPref(), InstrumentTab(kPrimaryTabId),
+        WaitForWebContentsReady(kPrimaryTabId), CheckAutofillAiDelegateExists(),
+        CheckUserAnnotationsServiceExists(), RemoveAllEntries(),
+        CheckHasNoEntries());
   }
 
   MultiStep NavigateToFormPage() {
@@ -523,10 +521,9 @@ class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
         Log("Stopped polling kPrefWasEnabledState."));
   }
 
-  InteractiveTestApi::StepBuilder CheckPredictionImprovementsDelegateExists() {
-    return Check(
-        [&]() -> bool { return GetAutofillPredictionImprovementsDelegate(); },
-        "Tab has non-null AutofillAiDelegate");
+  InteractiveTestApi::StepBuilder CheckAutofillAiDelegateExists() {
+    return Check([&]() -> bool { return GetAutofillAiDelegate(); },
+                 "Tab has non-null AutofillAiDelegate");
   }
 
   InteractiveTestApi::StepBuilder CheckUserAnnotationsServiceExists() {

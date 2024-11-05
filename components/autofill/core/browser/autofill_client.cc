@@ -77,8 +77,7 @@ AutofillPlusAddressDelegate* AutofillClient::GetPlusAddressDelegate() {
   return nullptr;
 }
 
-AutofillAiDelegate*
-AutofillClient::GetAutofillPredictionImprovementsDelegate() {
+AutofillAiDelegate* AutofillClient::GetAutofillAiDelegate() {
   return nullptr;
 }
 

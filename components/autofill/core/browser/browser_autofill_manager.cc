@@ -929,8 +929,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   // Try to import the `form` into user annotations via the
   // `AutofillAiDelegate`. `MaybeImportFromSubmittedForm()` will be called if
   // the import was not successful.
-  if (AutofillAiDelegate* delegate =
-          client().GetAutofillPredictionImprovementsDelegate();
+  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
       delegate && delegate->IsUserEligible() && submitted_form) {
     // Only upload server statistics and UMA metrics if at least some local data
     // is available to use as a baseline.
@@ -1290,8 +1289,7 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     if (logger) {
       logger->OnEditedAutofilledField();
     }
-    if (AutofillAiDelegate* delegate =
-            client().GetAutofillPredictionImprovementsDelegate();
+    if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
         delegate && autofill_field->filling_product() ==
                         FillingProduct::kPredictionImprovements) {
       delegate->OnEditedAutofilledField(form.global_id());
@@ -1456,8 +1454,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // annotations. IMPORTANT NOTE: If there's no data stored in user annotations,
   // `GenerateSuggestionsAndMaybeShowUI()` will be called and Autofill's regular
   // flow will continue.
-  AutofillAiDelegate* delegate =
-      client().GetAutofillPredictionImprovementsDelegate();
+  AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
 
   if (delegate && form_structure && autofill_field &&
       delegate->IsPredictionImprovementsEligible(*form_structure,
@@ -1560,8 +1557,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     }
     return;
   }
-  AutofillAiDelegate* delegate =
-      client().GetAutofillPredictionImprovementsDelegate();
+  AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
   if (delegate && has_prediction_improvements_data &&
       (trigger_source ==
            AutofillSuggestionTriggerSource::kPredictionImprovements ||
@@ -1975,8 +1971,7 @@ void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
   form_filler_->FillOrPreviewFormWithPredictionImprovements(
       action_persistence, field_types_to_fill, ignorable_skip_reasons, form,
       trigger_field, *form_structure, *autofill_trigger_field, values_to_fill);
-  if (AutofillAiDelegate* delegate =
-          client().GetAutofillPredictionImprovementsDelegate()) {
+  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
     delegate->OnDidFillSuggestion(form.global_id());
   }
 }
@@ -3228,8 +3223,7 @@ void BrowserAutofillManager::OnFormProcessed(
         form_structure, client().GetPersonalDataManager());
   }
 
-  if (AutofillAiDelegate* delegate =
-          client().GetAutofillPredictionImprovementsDelegate()) {
+  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
     delegate->OnFormSeen(form_structure);
   }
 

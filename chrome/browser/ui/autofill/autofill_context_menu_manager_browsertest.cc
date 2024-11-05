@@ -790,12 +790,11 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
 
 // Tests if the prediction improvements entry is not added based on
 // `ShouldProvidePredictionImprovements()` returning `false`.
-class PredictionImprovementsDisabledTest
-    : public BaseAutofillContextMenuManagerTest {
+class AutofillAiDisabledTest : public BaseAutofillContextMenuManagerTest {
  public:
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
-    ON_CALL(*autofill_client()->GetAutofillPredictionImprovementsDelegate(),
+    ON_CALL(*autofill_client()->GetAutofillAiDelegate(),
             ShouldProvidePredictionImprovements)
         .WillByDefault(::testing::Return(false));
   }
@@ -803,7 +802,7 @@ class PredictionImprovementsDisabledTest
 
 // Tests that when triggering the context menu on any form field, the improved
 // predictions fallback is not added when the feature is disabled.
-IN_PROC_BROWSER_TEST_F(PredictionImprovementsDisabledTest,
+IN_PROC_BROWSER_TEST_F(AutofillAiDisabledTest,
                        PredictionImprovementsEntryNotAdded) {
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -815,12 +814,11 @@ IN_PROC_BROWSER_TEST_F(PredictionImprovementsDisabledTest,
 
 // Tests if the prediction improvements entry is added based on
 // `ShouldProvidePredictionImprovements()` returning `true`.
-class PredictionImprovementsEnabledTest
-    : public BaseAutofillContextMenuManagerTest {
+class AutofillAiEnabledTest : public BaseAutofillContextMenuManagerTest {
  public:
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
-    ON_CALL(*autofill_client()->GetAutofillPredictionImprovementsDelegate(),
+    ON_CALL(*autofill_client()->GetAutofillAiDelegate(),
             ShouldProvidePredictionImprovements)
         .WillByDefault(::testing::Return(true));
   }
@@ -829,7 +827,7 @@ class PredictionImprovementsEnabledTest
 // Tests that when triggering the context menu on any form field, the improved
 // prediction entry point is added.
 // TODO(crbug.com/372158654): Implement suitable criteria or remove the entry.
-IN_PROC_BROWSER_TEST_F(PredictionImprovementsEnabledTest,
+IN_PROC_BROWSER_TEST_F(AutofillAiEnabledTest,
                        PredictionImprovementsEntryAdded) {
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
@@ -840,8 +838,7 @@ IN_PROC_BROWSER_TEST_F(PredictionImprovementsEnabledTest,
 }
 
 // Tests that selecting the improved predictions triggers the right command.
-IN_PROC_BROWSER_TEST_F(PredictionImprovementsEnabledTest,
-                       ActionTriggersSuggestions) {
+IN_PROC_BROWSER_TEST_F(AutofillAiEnabledTest, ActionTriggersSuggestions) {
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),

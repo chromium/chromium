@@ -305,8 +305,7 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
       web_contents()->GetBrowserContext());
 }
 
-AutofillAiDelegate*
-ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
+AutofillAiDelegate* ChromeAutofillClient::GetAutofillAiDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
   if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
           web_contents()->GetOutermostWebContents())) {

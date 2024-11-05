@@ -103,7 +103,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
-  AutofillAiDelegate* GetAutofillPredictionImprovementsDelegate() override;
+  AutofillAiDelegate* GetAutofillAiDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
   void ShowPlusAddressError(PlusAddressErrorDialogType error_dialog_type,

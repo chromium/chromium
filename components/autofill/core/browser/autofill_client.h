@@ -257,11 +257,10 @@ class AutofillClient {
   // Returns the `AutofillComposeDelegate` instance for the tab of this client.
   virtual AutofillComposeDelegate* GetComposeDelegate();
 
-  // Returns the `AutofillPredictionImprovementsDelegate` instance for
-  // the tab of this client.
+  // Returns the `AutofillAiDelegate` instance for the tab of this client.
   // Returns `nullptr` if, at the time of the AutofillClient's construction, the
-  // Autofill Prediction Improvements feature is unsupported.
-  virtual AutofillAiDelegate* GetAutofillPredictionImprovementsDelegate();
+  // Autofill AI feature is unsupported.
+  virtual AutofillAiDelegate* GetAutofillAiDelegate();
 
   // Returns the `AutofillPlusAddressDelegate` associated with the profile of
   // the window of this tab.

@@ -552,7 +552,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
                                     FillingProduct::kPredictionImprovements;
                            })) {
     if (auto* prediction_improvements_delegate =
-            manager_->client().GetAutofillPredictionImprovementsDelegate()) {
+            manager_->client().GetAutofillAiDelegate()) {
       prediction_improvements_delegate->OnSuggestionsShown(
           shown_suggestion_types, query_form_, query_field_,
           CreateUpdateSuggestionsCallback());
@@ -905,7 +905,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kRetrievePredictionImprovements:
       if (AutofillAiDelegate* delegate =
-              manager_->client().GetAutofillPredictionImprovementsDelegate()) {
+              manager_->client().GetAutofillAiDelegate()) {
         delegate->OnClickedTriggerSuggestion(query_form_, query_field_,
                                              CreateUpdateSuggestionsCallback());
       }
@@ -915,7 +915,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kEditPredictionImprovementsInformation:
       if (AutofillAiDelegate* delegate =
-              manager_->client().GetAutofillPredictionImprovementsDelegate()) {
+              manager_->client().GetAutofillAiDelegate()) {
         delegate->GoToSettings();
       }
       break;
@@ -977,8 +977,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       }
       return;
     case SuggestionType::kPredictionImprovementsFeedback: {
-      AutofillAiDelegate* delegate =
-          manager_->client().GetAutofillPredictionImprovementsDelegate();
+      AutofillAiDelegate* delegate = manager_->client().GetAutofillAiDelegate();
       if (!delegate) {
         break;
       }

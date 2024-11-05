@@ -134,8 +134,8 @@ class TestAutofillClientTemplate : public T {
     mock_autofill_optimization_guide_.reset();
   }
 
-  MockAutofillAiDelegate* GetAutofillPredictionImprovementsDelegate() override {
-    return mock_autofill_prediction_improvements_delegate_.get();
+  MockAutofillAiDelegate* GetAutofillAiDelegate() override {
+    return mock_autofill_ai_delegate_.get();
   }
 
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
@@ -503,7 +503,7 @@ class TestAutofillClientTemplate : public T {
       mock_autofill_optimization_guide_ =
           std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
   std::unique_ptr<::testing::NiceMock<MockAutofillAiDelegate>>
-      mock_autofill_prediction_improvements_delegate_ =
+      mock_autofill_ai_delegate_ =
           std::make_unique<testing::NiceMock<MockAutofillAiDelegate>>();
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
