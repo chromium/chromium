@@ -242,6 +242,7 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
     if (type == NavigationWebMessageSender::kOptedInMessage) {
       expected_dict.Set("supports_start_and_redirect", true);
       expected_dict.Set("supports_history_details", true);
+      expected_dict.Set("supports_dom_content_loaded", true);
     }
     ASSERT_EQ(
         NavigationWebMessageSender::CreateWebMessage(std::move(expected_dict))
@@ -316,6 +317,9 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
     if (load_end) {
       CHECK(!is_same_document);
       CHECK(committed);
+      listener().WaitForNextMessageForHost(host_after_nav);
+      CheckNavigationMessage(
+          host_after_nav, NavigationWebMessageSender::kDOMContentLoadedMessage);
       listener().WaitForNextMessageForHost(host_after_nav);
       CheckNavigationMessage(host_after_nav,
                              NavigationWebMessageSender::kPageLoadEndMessage);

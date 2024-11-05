@@ -238,6 +238,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
         Assert.assertNotEquals(page3ReplyProxy, page4ReplyProxy);
 
         data = mListener.waitForOnPostMessage();
+        assertNavigationMessageType(data, "DOM_CONTENT_LOADED");
+
+        data = mListener.waitForOnPostMessage();
         assertNavigationMessageType(data, "PAGE_LOAD_END");
         Assert.assertEquals(page4ReplyProxy, data.mReplyProxy);
 
@@ -437,6 +440,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
         Assert.assertNotEquals(page1ReplyProxy, page2ReplyProxy);
 
         data = mListener.waitForOnPostMessage();
+        assertNavigationMessageType(data, "DOM_CONTENT_LOADED");
+
+        data = mListener.waitForOnPostMessage();
         assertNavigationMessageType(data, "PAGE_LOAD_END");
         Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
 
@@ -565,6 +571,10 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 /* statusCode */ 200);
         JsReplyProxy page4ReplyProxy = data.mReplyProxy;
         Assert.assertNotEquals(page3ReplyProxy, page4ReplyProxy);
+
+        data = newListener.waitForOnPostMessage();
+        assertNavigationMessageType(data, "DOM_CONTENT_LOADED");
+        Assert.assertEquals(page4ReplyProxy, data.mReplyProxy);
 
         data = newListener.waitForOnPostMessage();
         assertNavigationMessageType(data, "PAGE_LOAD_END");
@@ -1146,6 +1156,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
         }
 
         if (loadEnds) {
+            data = mListener.waitForOnPostMessage();
+            assertNavigationMessageType(data, "DOM_CONTENT_LOADED");
+
             data = mListener.waitForOnPostMessage();
             assertNavigationMessageType(data, "PAGE_LOAD_END");
             Assert.assertEquals(currentPageReplyProxy, data.mReplyProxy);

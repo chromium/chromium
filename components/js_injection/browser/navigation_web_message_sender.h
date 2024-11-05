@@ -77,9 +77,15 @@ class NavigationWebMessageSender
   // `DidFinishNavigation()`.
   static const char kNavigationCompletedMessage[];
 
-  // Indicates that the page has finished loading. This is dispatched on
-  // `DidFinishLoad()`.
+  // Indicates that the page has finished loading (i.e. the "load" event fired
+  // on the primary main frame). This is dispatched on `DidFinishLoad()`.
   static const char kPageLoadEndMessage[];
+
+  // Indicates that the page's initial DOM Content has finished loading (i.e.
+  // the "domcontentloaded" event fired on the primary main frame). This is
+  // dispatched on `DOMContentLoaded()`.
+  static const char kDOMContentLoadedMessage[];
+
   // Indicates that the page has been deleted. This is dispatched from the class
   // destructor, since this is a PageUserData. If the page is BFCached, this
   // will be when the page is evicted. Otherwise, it will be when the primary
@@ -115,6 +121,7 @@ class NavigationWebMessageSender
                              WebMessageHostFactory* factory);
 
   // content::WebContentsObserver implementations
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void DidStartNavigation(
@@ -129,6 +136,9 @@ class NavigationWebMessageSender
 
   bool ShouldSendMessageForNavigation(
       content::NavigationHandle* navigation_handle);
+
+  bool ShouldSendMessageForRenderFrameHost(
+      content::RenderFrameHost* render_frame_host);
 
   WebMessageHost* GetWebMessageHostForTesting() { return host_.get(); }
 
