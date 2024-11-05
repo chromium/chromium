@@ -1359,7 +1359,7 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
 
 // TODO(crbug.com/372740410): Determine behavior when we add a button with the
 // exact same rank (type and priority) as an existing valid button.
-void CaptureModeSession::AddActionButton(
+ActionButtonView* CaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,
     const gfx::VectorIcon* icon,
@@ -1368,14 +1368,14 @@ void CaptureModeSession::AddActionButton(
   // created, or while it is invalid. In these cases, we don't want to do
   // anything.
   if (!action_container_widget_) {
-    return;
+    return nullptr;
   }
 
   // If we are in the midst of selecting a region, or a region has not been
   // selected yet, don't add a button.
   if (controller_->source() != CaptureModeSource::kRegion ||
       is_drag_in_progress_ || controller_->user_capture_region().IsEmpty()) {
-    return;
+    return nullptr;
   }
 
   CHECK(action_container_view_);
@@ -1397,8 +1397,10 @@ void CaptureModeSession::AddActionButton(
   CHECK(action_container_view_->children().empty());
 
   // Add the new action button to the vector so it can also be sorted.
-  action_buttons.push_back(std::make_unique<ActionButtonView>(
-      std::move(callback), text, icon, rank));
+  auto new_action_button =
+      std::make_unique<ActionButtonView>(std::move(callback), text, icon, rank);
+  ActionButtonView* new_action_button_ptr = new_action_button.get();
+  action_buttons.push_back(std::move(new_action_button));
 
   // Sort the buttons by rank.
   auto rank_sort = [](const std::unique_ptr<ActionButtonView>& lhs,
@@ -1415,6 +1417,8 @@ void CaptureModeSession::AddActionButton(
   }
 
   UpdateActionContainerWidget();
+
+  return new_action_button_ptr;
 }
 
 void CaptureModeSession::OnTextDetected() {
@@ -1424,11 +1428,12 @@ void CaptureModeSession::OnTextDetected() {
     // TODO(crbug.com/374356291): Collapse the smart actions button.
     // TODO(crbug.com/375967525): Finalize and translate the smart actions
     // button accessible name.
-    AddActionButton(
+    ActionButtonView* action_button = AddActionButton(
         base::BindOnce(&CaptureModeSession::OnSmartActionsButtonPressed,
                        weak_ptr_factory_.GetWeakPtr()),
         u"Smart actions", &kAiWandIcon,
         ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0});
+    action_button->CollapseToIconButton();
   }
 }
 

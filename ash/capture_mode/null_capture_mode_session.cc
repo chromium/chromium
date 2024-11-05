@@ -113,11 +113,13 @@ NullCaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return std::set<aura::Window*>();
 }
 
-void NullCaptureModeSession::AddActionButton(
+ActionButtonView* NullCaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,
     const gfx::VectorIcon* icon,
-    const ActionButtonRank rank) {}
+    const ActionButtonRank rank) {
+  return nullptr;
+}
 
 void NullCaptureModeSession::AddScannerActionButtons(
     std::vector<ScannerActionViewModel> scanner_actions) {}

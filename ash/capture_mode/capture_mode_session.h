@@ -44,6 +44,7 @@ class BoxLayoutView;
 
 namespace ash {
 
+class ActionButtonView;
 class CaptureModeBarView;
 class CaptureModeController;
 class CaptureModeSessionFocusCycler;
@@ -178,10 +179,10 @@ class ASH_EXPORT CaptureModeSession
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
-  void AddActionButton(views::Button::PressedCallback callback,
-                       std::u16string text,
-                       const gfx::VectorIcon* icon,
-                       ActionButtonRank rank) override;
+  ActionButtonView* AddActionButton(views::Button::PressedCallback callback,
+                                    std::u16string text,
+                                    const gfx::VectorIcon* icon,
+                                    ActionButtonRank rank) override;
   void AddScannerActionButtons(
       std::vector<ScannerActionViewModel> scanner_actions) override;
   void OnTextDetected() override;

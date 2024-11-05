@@ -18,6 +18,8 @@
 
 namespace ash {
 
+class ActionButtonView;
+
 // An interface for different kinds of capture mode sessions. This class is a
 // LayerOwner and will transfer ownership of its texture layer to a recording
 // if/when it starts.
@@ -160,10 +162,12 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   virtual std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() = 0;
 
   // Adds an action button below the selected region during an active session.
-  virtual void AddActionButton(views::Button::PressedCallback callback,
-                               std::u16string text,
-                               const gfx::VectorIcon* icon,
-                               ActionButtonRank rank) = 0;
+  // Returns a pointer to the added button, or nullptr if no button was added.
+  virtual ActionButtonView* AddActionButton(
+      views::Button::PressedCallback callback,
+      std::u16string text,
+      const gfx::VectorIcon* icon,
+      ActionButtonRank rank) = 0;
 
   // Adds all Scanner action buttons provided below the selected region for this
   // session. These will automatically be assigned a rank depending on the order
