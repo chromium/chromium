@@ -1,18 +1,19 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/shared_storage/shared_storage_mojom_traits.h"
+#include "services/network/public/cpp/shared_storage_mojom_traits.h"
 
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/network/public/cpp/shared_storage_utils.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 
-namespace blink {
+namespace network {
 namespace {
 
 // Divide the byte limit by two to get the character limit for a key or value.
-constexpr int kMaxChar16StringLength = 5242880 / 2;
+constexpr int kMaxChar16StringLength = kMaxSharedStorageBytesPerOrigin / 2;
 
 TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeKeyArgument) {
   std::u16string success_originals[] = {
@@ -59,4 +60,4 @@ TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeValueArgument) {
 }
 
 }  // namespace
-}  // namespace blink
+}  // namespace network

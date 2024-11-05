@@ -13,6 +13,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/shared_storage_utils.h"
+#include "services/network/public/mojom/shared_storage.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
@@ -404,14 +406,14 @@ ScriptPromise<IDLAny> SharedStorage::set(
     return promise;
   }
 
-  if (!IsValidSharedStorageKeyStringLength(key.length())) {
+  if (!network::IsValidSharedStorageKeyStringLength(key.length())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "Length of the \"key\" parameter is not valid."));
     return promise;
   }
 
-  if (!IsValidSharedStorageValueStringLength(value.length())) {
+  if (!network::IsValidSharedStorageValueStringLength(value.length())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "Length of the \"value\" parameter is not valid."));
@@ -421,8 +423,10 @@ ScriptPromise<IDLAny> SharedStorage::set(
   bool ignore_if_present =
       options->hasIgnoreIfPresent() && options->ignoreIfPresent();
 
-  auto method = mojom::blink::SharedStorageModifierMethod::NewSetMethod(
-      mojom::blink::SharedStorageSetMethod::New(key, value, ignore_if_present));
+  auto method =
+      network::mojom::blink::SharedStorageModifierMethod::NewSetMethod(
+          network::mojom::blink::SharedStorageSetMethod::New(
+              key, value, ignore_if_present));
 
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
@@ -474,22 +478,23 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
     return promise;
   }
 
-  if (!IsValidSharedStorageKeyStringLength(key.length())) {
+  if (!network::IsValidSharedStorageKeyStringLength(key.length())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "Length of the \"key\" parameter is not valid."));
     return promise;
   }
 
-  if (!IsValidSharedStorageValueStringLength(value.length())) {
+  if (!network::IsValidSharedStorageValueStringLength(value.length())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "Length of the \"value\" parameter is not valid."));
     return promise;
   }
 
-  auto method = mojom::blink::SharedStorageModifierMethod::NewAppendMethod(
-      mojom::blink::SharedStorageAppendMethod::New(key, value));
+  auto method =
+      network::mojom::blink::SharedStorageModifierMethod::NewAppendMethod(
+          network::mojom::blink::SharedStorageAppendMethod::New(key, value));
 
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
@@ -540,15 +545,16 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
     return promise;
   }
 
-  if (!IsValidSharedStorageKeyStringLength(key.length())) {
+  if (!network::IsValidSharedStorageKeyStringLength(key.length())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "Length of the \"key\" parameter is not valid."));
     return promise;
   }
 
-  auto method = mojom::blink::SharedStorageModifierMethod::NewDeleteMethod(
-      mojom::blink::SharedStorageDeleteMethod::New(key));
+  auto method =
+      network::mojom::blink::SharedStorageModifierMethod::NewDeleteMethod(
+          network::mojom::blink::SharedStorageDeleteMethod::New(key));
 
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
@@ -598,8 +604,9 @@ ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
     return promise;
   }
 
-  auto method = mojom::blink::SharedStorageModifierMethod::NewClearMethod(
-      mojom::blink::SharedStorageClearMethod::New());
+  auto method =
+      network::mojom::blink::SharedStorageModifierMethod::NewClearMethod(
+          network::mojom::blink::SharedStorageClearMethod::New());
 
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
@@ -678,7 +685,7 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
   CHECK(CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                             *resolver));
 
-  if (!IsValidSharedStorageKeyStringLength(key.length())) {
+  if (!network::IsValidSharedStorageKeyStringLength(key.length())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
         "Length of the \"key\" parameter is not valid."));

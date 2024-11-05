@@ -34,9 +34,6 @@ static constexpr char kSharedStorageReturnValueToIntErrorMessage[] =
 static constexpr char kSharedStorageReturnValueOutOfRangeErrorMessage[] =
     "Promise resolved to a number outside the length of the input urls.";
 
-// We use a max of 5 MB = 5 * 1024 * 1024 B = 5242880 B.
-static constexpr size_t kMaxSharedStorageBytesPerOrigin = 5242880;
-
 // Whether or not the worklet ever entered keep-alive, and if so, the reason the
 // keep-alive was terminated. Recorded to UMA; always add new values to the end
 // and do not reorder or delete values from this list.
@@ -118,12 +115,6 @@ enum class SharedStorageSelectUrlBudgetStatus {
 // Whether the length of the urls input parameter (of the
 // sharedStorage.runURLSelectionOperation method) is valid.
 BLINK_COMMON_EXPORT bool IsValidSharedStorageURLsArrayLength(size_t length);
-
-// Whether the length of a shared storage's key is valid.
-BLINK_COMMON_EXPORT bool IsValidSharedStorageKeyStringLength(size_t length);
-
-// Whether the length of shared storage's value is valid.
-BLINK_COMMON_EXPORT bool IsValidSharedStorageValueStringLength(size_t length);
 
 // Logs histogram of the calling method and error type for worklet errors.
 BLINK_COMMON_EXPORT void LogSharedStorageWorkletError(

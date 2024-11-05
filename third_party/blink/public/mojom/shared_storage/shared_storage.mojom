@@ -6,54 +6,12 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/shared_storage.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
 import "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-
-// The input argument of the shared storage key. The data will be checked at
-// mojom boundary to ensure it meets the length requirement. Avoid using this
-// type if you don't intend to check the key's length.
-struct SharedStorageKeyArgument {
-  mojo_base.mojom.String16 data;
-};
-
-// The input argument of the shared storage value. The data will be checked at
-// mojom boundary to ensure it meets the length requirement. Avoid using this
-// type if you don't intend to check the value's length.
-struct SharedStorageValueArgument {
-  mojo_base.mojom.String16 data;
-};
-
-// Request to set the entry at `key` to `value`. If `ignoreIfPresent` is true,
-// the entry is not updated if `key` already exists.
-struct SharedStorageSetMethod {
-  blink.mojom.SharedStorageKeyArgument key;
-  blink.mojom.SharedStorageValueArgument value;
-  bool ignore_if_present;
-};
-
-// Request to append `value` to the entry at `key`.
-struct SharedStorageAppendMethod {
-  blink.mojom.SharedStorageKeyArgument key;
-  blink.mojom.SharedStorageValueArgument value;
-};
-
-// Request to delete the entry at `key`.
-struct SharedStorageDeleteMethod {
-  blink.mojom.SharedStorageKeyArgument key;
-};
-
-// Request to clear all entries.
-struct SharedStorageClearMethod {};
-
-union SharedStorageModifierMethod {
-  SharedStorageSetMethod set_method;
-  SharedStorageAppendMethod append_method;
-  SharedStorageDeleteMethod delete_method;
-  SharedStorageClearMethod clear_method;
-};
 
 // Bundles a candidate URL for `RunURLSelectionOperationOnWorklet()` with any
 // `reporting metadata` (map of each report event type to report URL) for
@@ -158,12 +116,12 @@ interface SharedStorageDocumentService {
   // if `key` is not present. May only be called from a fenced frame with
   // network access restricted. Returns an error if the API is disabled, or if
   // the state of the fenced frame is invalid.
-  SharedStorageGet(blink.mojom.SharedStorageKeyArgument key)
+  SharedStorageGet(network.mojom.SharedStorageKeyArgument key)
       => (SharedStorageGetStatus status, string error_message,
           mojo_base.mojom.String16 value);
 
   // Handle the modifier method `method`. Return an empty `error_message` on
   // success, and return an non-empty `error_message` on failure.
-  SharedStorageUpdate(SharedStorageModifierMethod method)
+  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method)
       => (string error_message);
 };

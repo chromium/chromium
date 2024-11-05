@@ -13,6 +13,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -81,7 +82,7 @@ base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper);
 class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
  public:
   struct Request {
-    Request(blink::mojom::SharedStorageModifierMethodPtr method,
+    Request(network::mojom::SharedStorageModifierMethodPtr method,
             mojom::AuctionWorkletFunction source_auction_worklet_function);
     ~Request();
 
@@ -90,7 +91,7 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
     Request(Request&& other);
     Request& operator=(Request&& other);
 
-    blink::mojom::SharedStorageModifierMethodPtr method;
+    network::mojom::SharedStorageModifierMethodPtr method;
     mojom::AuctionWorkletFunction source_auction_worklet_function;
 
     bool operator==(const Request& rhs) const;
@@ -101,9 +102,10 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
   ~TestAuctionSharedStorageHost() override;
 
   // mojom::AuctionSharedStorageHost:
-  void SharedStorageUpdate(blink::mojom::SharedStorageModifierMethodPtr method,
-                           auction_worklet::mojom::AuctionWorkletFunction
-                               source_auction_worklet_function) override;
+  void SharedStorageUpdate(
+      network::mojom::SharedStorageModifierMethodPtr method,
+      auction_worklet::mojom::AuctionWorkletFunction
+          source_auction_worklet_function) override;
 
   const std::vector<Request>& observed_requests() const {
     return observed_requests_;

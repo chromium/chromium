@@ -36,6 +36,7 @@
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -813,7 +814,7 @@ void SharedStorageWorkletHost::EnterKeepAliveOnDocumentDestroyed(
 }
 
 void SharedStorageWorkletHost::SharedStorageUpdate(
-    blink::mojom::SharedStorageModifierMethodPtr method,
+    network::mojom::SharedStorageModifierMethodPtr method,
     SharedStorageUpdateCallback callback) {
   std::string debug_message;
   if (!IsSharedStorageAllowed(&debug_message)) {
@@ -823,7 +824,7 @@ void SharedStorageWorkletHost::SharedStorageUpdate(
   }
 
   if (method->is_set_method()) {
-    blink::mojom::SharedStorageSetMethodPtr& set_method =
+    network::mojom::SharedStorageSetMethodPtr& set_method =
         method->get_set_method();
 
     if (document_service_) {
@@ -858,7 +859,7 @@ void SharedStorageWorkletHost::SharedStorageUpdate(
         shared_storage_origin_, set_method->key, set_method->value,
         std::move(operation_completed_callback), set_behavior);
   } else if (method->is_append_method()) {
-    blink::mojom::SharedStorageAppendMethodPtr& append_method =
+    network::mojom::SharedStorageAppendMethodPtr& append_method =
         method->get_append_method();
 
     if (document_service_) {
@@ -886,7 +887,7 @@ void SharedStorageWorkletHost::SharedStorageUpdate(
                                     append_method->value,
                                     std::move(operation_completed_callback));
   } else if (method->is_delete_method()) {
-    blink::mojom::SharedStorageDeleteMethodPtr& delete_method =
+    network::mojom::SharedStorageDeleteMethodPtr& delete_method =
         method->get_delete_method();
 
     if (document_service_) {

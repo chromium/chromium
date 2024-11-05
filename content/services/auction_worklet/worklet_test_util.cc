@@ -20,9 +20,9 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 
 namespace auction_worklet {
 
@@ -139,7 +139,7 @@ base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper) {
 }
 
 TestAuctionSharedStorageHost::Request::Request(
-    blink::mojom::SharedStorageModifierMethodPtr method,
+    network::mojom::SharedStorageModifierMethodPtr method,
     mojom::AuctionWorkletFunction source_auction_worklet_function)
     : method(std::move(method)),
       source_auction_worklet_function(source_auction_worklet_function) {}
@@ -174,7 +174,7 @@ TestAuctionSharedStorageHost::TestAuctionSharedStorageHost() = default;
 TestAuctionSharedStorageHost::~TestAuctionSharedStorageHost() = default;
 
 void TestAuctionSharedStorageHost::SharedStorageUpdate(
-    blink::mojom::SharedStorageModifierMethodPtr method,
+    network::mojom::SharedStorageModifierMethodPtr method,
     auction_worklet::mojom::AuctionWorkletFunction
         source_auction_worklet_function) {
   observed_requests_.emplace_back(

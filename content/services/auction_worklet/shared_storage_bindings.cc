@@ -13,8 +13,8 @@
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
-#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
+#include "services/network/public/cpp/shared_storage_utils.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -131,20 +131,20 @@ void SharedStorageBindings::Set(
   }
 
   // IDL portions of checking done, now do semantic checking.
-  if (!blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
+  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
         isolate, "Invalid 'key' argument in sharedStorage.set()")));
     return;
   }
 
-  if (!blink::IsValidSharedStorageValueStringLength(arg1_value.size())) {
+  if (!network::IsValidSharedStorageValueStringLength(arg1_value.size())) {
     isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
         isolate, "Invalid 'value' argument in sharedStorage.set()")));
     return;
   }
 
-  auto method = blink::mojom::SharedStorageModifierMethod::NewSetMethod(
-      blink::mojom::SharedStorageSetMethod::New(
+  auto method = network::mojom::SharedStorageModifierMethod::NewSetMethod(
+      network::mojom::SharedStorageSetMethod::New(
           arg0_key, arg1_value, ignore_if_present.value_or(false)));
 
   bindings->shared_storage_host_->SharedStorageUpdate(
@@ -179,20 +179,20 @@ void SharedStorageBindings::Append(
   }
 
   // IDL portions of checking done, now do semantic checking.
-  if (!blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
+  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
         isolate, "Invalid 'key' argument in sharedStorage.append()")));
     return;
   }
 
-  if (!blink::IsValidSharedStorageValueStringLength(arg1_value.size())) {
+  if (!network::IsValidSharedStorageValueStringLength(arg1_value.size())) {
     isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
         isolate, "Invalid 'value' argument in sharedStorage.append()")));
     return;
   }
 
-  auto method = blink::mojom::SharedStorageModifierMethod::NewAppendMethod(
-      blink::mojom::SharedStorageAppendMethod::New(arg0_key, arg1_value));
+  auto method = network::mojom::SharedStorageModifierMethod::NewAppendMethod(
+      network::mojom::SharedStorageAppendMethod::New(arg0_key, arg1_value));
 
   bindings->shared_storage_host_->SharedStorageUpdate(
       std::move(method), bindings->source_auction_worklet_function_);
@@ -224,14 +224,14 @@ void SharedStorageBindings::Delete(
   }
 
   // IDL portions of checking done, now do semantic checking.
-  if (!blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
+  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
         isolate, "Invalid 'key' argument in sharedStorage.delete()")));
     return;
   }
 
-  auto method = blink::mojom::SharedStorageModifierMethod::NewDeleteMethod(
-      blink::mojom::SharedStorageDeleteMethod::New(arg0_key));
+  auto method = network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+      network::mojom::SharedStorageDeleteMethod::New(arg0_key));
 
   bindings->shared_storage_host_->SharedStorageUpdate(
       std::move(method), bindings->source_auction_worklet_function_);
@@ -251,8 +251,8 @@ void SharedStorageBindings::Clear(
     return;
   }
 
-  auto method = blink::mojom::SharedStorageModifierMethod::NewClearMethod(
-      blink::mojom::SharedStorageClearMethod::New());
+  auto method = network::mojom::SharedStorageModifierMethod::NewClearMethod(
+      network::mojom::SharedStorageClearMethod::New());
 
   bindings->shared_storage_host_->SharedStorageUpdate(
       std::move(method), bindings->source_auction_worklet_function_);

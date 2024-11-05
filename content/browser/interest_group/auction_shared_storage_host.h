@@ -9,6 +9,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -41,9 +42,10 @@ class CONTENT_EXPORT AuctionSharedStorageHost
           receiver);
 
   // auction_worklet::mojom::AuctionSharedStorageHost:
-  void SharedStorageUpdate(blink::mojom::SharedStorageModifierMethodPtr method,
-                           auction_worklet::mojom::AuctionWorkletFunction
-                               source_auction_worklet_function) override;
+  void SharedStorageUpdate(
+      network::mojom::SharedStorageModifierMethodPtr method,
+      auction_worklet::mojom::AuctionWorkletFunction
+          source_auction_worklet_function) override;
 
  private:
   struct ReceiverContext;

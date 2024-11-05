@@ -33,16 +33,16 @@
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "services/network/public/cpp/shared_storage_utils.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-primitive.h"
 
@@ -2140,7 +2140,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
 
   // Divide the byte limit by two to get the character limit for a key or value.
   const std::string kInvalidValue(
-      blink::kMaxSharedStorageBytesPerOrigin / 2u + 1u, '*');
+      network::kMaxSharedStorageBytesPerOrigin / 2u + 1u, '*');
 
   const char kScript[] = R"(
     function testSet(...args) {
@@ -2188,8 +2188,8 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
 
     EXPECT_THAT(test_shared_storage_host.observed_requests(),
                 ElementsAre(Request(
-                    blink::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        blink::mojom::SharedStorageSetMethod::New(
+                    network::mojom::SharedStorageModifierMethod::NewSetMethod(
+                        network::mojom::SharedStorageSetMethod::New(
                             /*key=*/u"a", /*value=*/u"b",
                             /*ignore_if_present=*/false)),
                     mojom::AuctionWorkletFunction::kBidderGenerateBid)));
@@ -2216,8 +2216,8 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
 
     EXPECT_THAT(test_shared_storage_host.observed_requests(),
                 ElementsAre(Request(
-                    blink::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        blink::mojom::SharedStorageSetMethod::New(
+                    network::mojom::SharedStorageModifierMethod::NewSetMethod(
+                        network::mojom::SharedStorageSetMethod::New(
                             /*key=*/u"a", /*value=*/u"b",
                             /*ignore_if_present=*/true)),
                     mojom::AuctionWorkletFunction::kBidderGenerateBid)));
@@ -2237,12 +2237,13 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
              gin::ConvertToV8(helper_->isolate(), std::string("b"))}));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                ElementsAre(Request(
-                    blink::mojom::SharedStorageModifierMethod::NewAppendMethod(
-                        blink::mojom::SharedStorageAppendMethod::New(
-                            /*key=*/u"a", /*value=*/u"b")),
-                    mojom::AuctionWorkletFunction::kBidderGenerateBid)));
+    EXPECT_THAT(
+        test_shared_storage_host.observed_requests(),
+        ElementsAre(Request(
+            network::mojom::SharedStorageModifierMethod::NewAppendMethod(
+                network::mojom::SharedStorageAppendMethod::New(
+                    /*key=*/u"a", /*value=*/u"b")),
+            mojom::AuctionWorkletFunction::kBidderGenerateBid)));
 
     test_shared_storage_host.ClearObservedRequests();
   }
@@ -2258,12 +2259,13 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
             {gin::ConvertToV8(helper_->isolate(), std::string("a"))}));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                ElementsAre(Request(
-                    blink::mojom::SharedStorageModifierMethod::NewDeleteMethod(
-                        blink::mojom::SharedStorageDeleteMethod::New(
-                            /*key=*/u"a")),
-                    mojom::AuctionWorkletFunction::kBidderGenerateBid)));
+    EXPECT_THAT(
+        test_shared_storage_host.observed_requests(),
+        ElementsAre(Request(
+            network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+                network::mojom::SharedStorageDeleteMethod::New(
+                    /*key=*/u"a")),
+            mojom::AuctionWorkletFunction::kBidderGenerateBid)));
 
     test_shared_storage_host.ClearObservedRequests();
   }
@@ -2281,8 +2283,8 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
 
     EXPECT_THAT(test_shared_storage_host.observed_requests(),
                 ElementsAre(Request(
-                    blink::mojom::SharedStorageModifierMethod::NewClearMethod(
-                        blink::mojom::SharedStorageClearMethod::New()),
+                    network::mojom::SharedStorageModifierMethod::NewClearMethod(
+                        network::mojom::SharedStorageClearMethod::New()),
                     mojom::AuctionWorkletFunction::kBidderGenerateBid)));
 
     test_shared_storage_host.ClearObservedRequests();

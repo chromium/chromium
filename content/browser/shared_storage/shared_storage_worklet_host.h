@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/schemeful_site.h"
+#include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
@@ -108,8 +109,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void EnterKeepAliveOnDocumentDestroyed(KeepAliveFinishedCallback callback);
 
   // blink::mojom::SharedStorageWorkletServiceClient:
-  void SharedStorageUpdate(blink::mojom::SharedStorageModifierMethodPtr method,
-                           SharedStorageUpdateCallback callback) override;
+  void SharedStorageUpdate(
+      network::mojom::SharedStorageModifierMethodPtr method,
+      SharedStorageUpdateCallback callback) override;
   void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;
   void SharedStorageKeys(

@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// The input argument of the shared storage key. The data will be checked at
+// mojom boundary to ensure it meets the length requirement. Avoid using this
+// type if you don't intend to check the key's length.
+struct SharedStorageKeyArgument {
+  mojo_base.mojom.String16 data;
+};
+
+// The input argument of the shared storage value. The data will be checked at
+// mojom boundary to ensure it meets the length requirement. Avoid using this
+// type if you don't intend to check the value's length.
+struct SharedStorageValueArgument {
+  mojo_base.mojom.String16 data;
+};
+
+// Request to set the entry at `key` to `value`. If `ignore_if_present` is true,
+// the entry is not updated if `key` already exists.
+struct SharedStorageSetMethod {
+  SharedStorageKeyArgument key;
+  SharedStorageValueArgument value;
+  bool ignore_if_present;
+};
+
+// Request to append `value` to the entry at `key`.
+struct SharedStorageAppendMethod {
+  SharedStorageKeyArgument key;
+  SharedStorageValueArgument value;
+};
+
+// Request to delete the entry at `key`.
+struct SharedStorageDeleteMethod {
+  SharedStorageKeyArgument key;
+};
+
+// Request to clear all entries.
+struct SharedStorageClearMethod {};
+
+union SharedStorageModifierMethod {
+  SharedStorageSetMethod set_method;
+  SharedStorageAppendMethod append_method;
+  SharedStorageDeleteMethod delete_method;
+  SharedStorageClearMethod clear_method;
+};

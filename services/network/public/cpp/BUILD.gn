@@ -330,6 +330,28 @@ component("document_isolation_policy") {
   defines = [ "IS_NETWORK_CPP_DOCUMENT_ISOLATION_IMPL" ]
 }
 
+component("shared_storage_support") {
+  sources = [
+    "shared_storage_mojom_traits.cc",
+    "shared_storage_mojom_traits.h",
+    "shared_storage_utils.cc",
+    "shared_storage_utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_shared_storage",
+  ]
+
+  # TODO(crbug.com/40915226): Remove the need to ignore this warning.
+  if (is_win && is_component_build) {
+    ldflags = [ "/IGNORE:4217" ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_SHARED_STORAGE_IMPL" ]
+}
+
 # This component is separate from cpp_base as it is a dependency of
 # //services/network/public/mojom:cookies_mojom.
 component("schemeful_site_mojom_support") {
@@ -444,6 +466,7 @@ component("cpp_base") {
     ":network_param_mojom_support",
     ":proxy_config_mojom_support",
     ":schemeful_site_mojom_support",
+    ":shared_storage_support",
     ":storage_access_api_mojom_support",
     ":structured_headers_mojom_support",
     "//services/network/public/mojom:url_loader_base",
@@ -575,6 +598,7 @@ source_set("tests") {
     "self_deleting_url_loader_factory_unittest.cc",
     "shared_dictionary_isolation_key_mojom_traits_unittest.cc",
     "shared_dictionary_usage_info_mojom_traits_unittest.cc",
+    "shared_storage_mojom_traits_unittest.cc",
     "simple_host_resolver_unittest.cc",
     "simple_url_loader_unittest.cc",
     "source_stream_to_data_pipe_unittest.cc",
@@ -597,6 +621,7 @@ source_set("tests") {
 
   deps = [
     ":cpp",
+    ":shared_storage_support",
     ":test_interfaces",
     ":test_support",
     "//base",

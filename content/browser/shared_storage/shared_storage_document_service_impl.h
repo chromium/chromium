@@ -15,6 +15,7 @@
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
@@ -72,8 +73,9 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
       CreateWorkletCallback callback) override;
   void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;
-  void SharedStorageUpdate(blink::mojom::SharedStorageModifierMethodPtr method,
-                           SharedStorageUpdateCallback callback) override;
+  void SharedStorageUpdate(
+      network::mojom::SharedStorageModifierMethodPtr method,
+      SharedStorageUpdateCallback callback) override;
 
   base::WeakPtr<SharedStorageDocumentServiceImpl> GetWeakPtr();
 

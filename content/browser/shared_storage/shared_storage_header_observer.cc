@@ -31,8 +31,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
-#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
 
@@ -301,8 +301,8 @@ bool SharedStorageHeaderObserver::Set(
   std::u16string utf16_value;
   if (!base::UTF8ToUTF16(key.c_str(), key.size(), &utf16_key) ||
       !base::UTF8ToUTF16(value.c_str(), value.size(), &utf16_value) ||
-      !blink::IsValidSharedStorageKeyStringLength(utf16_key.size()) ||
-      !blink::IsValidSharedStorageValueStringLength(utf16_value.size())) {
+      !network::IsValidSharedStorageKeyStringLength(utf16_key.size()) ||
+      !network::IsValidSharedStorageValueStringLength(utf16_value.size())) {
     // TODO(crbug.com/40064101): Log the following error message to console:
     // "Shared-Storage-Write: 'set' has invalid parameter 'key' or 'value'."
     return false;
@@ -338,8 +338,8 @@ bool SharedStorageHeaderObserver::Append(const url::Origin& request_origin,
   std::u16string utf16_value;
   if (!base::UTF8ToUTF16(key.c_str(), key.size(), &utf16_key) ||
       !base::UTF8ToUTF16(value.c_str(), value.size(), &utf16_value) ||
-      !blink::IsValidSharedStorageKeyStringLength(utf16_key.size()) ||
-      !blink::IsValidSharedStorageValueStringLength(utf16_value.size())) {
+      !network::IsValidSharedStorageKeyStringLength(utf16_key.size()) ||
+      !network::IsValidSharedStorageValueStringLength(utf16_value.size())) {
     // TODO(crbug.com/40064101): Log the following error message to console:
     // "Shared-Storage-Write: 'append' has invalid parameter 'key' or 'value'."
     return false;
@@ -365,7 +365,7 @@ bool SharedStorageHeaderObserver::Delete(const url::Origin& request_origin,
                                          std::string key) {
   std::u16string utf16_key;
   if (!base::UTF8ToUTF16(key.c_str(), key.size(), &utf16_key) ||
-      !blink::IsValidSharedStorageKeyStringLength(utf16_key.size())) {
+      !network::IsValidSharedStorageKeyStringLength(utf16_key.size())) {
     // TODO(crbug.com/40064101): Log the following error message to console:
     // "Shared-Storage-Write: 'delete' has invalid parameter 'key'."
     return false;

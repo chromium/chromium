@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/url_constants.h"
@@ -281,7 +282,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
-    blink::mojom::SharedStorageModifierMethodPtr method,
+    network::mojom::SharedStorageModifierMethodPtr method,
     SharedStorageUpdateCallback callback) {
   if (render_frame_host().GetLastCommittedOrigin().opaque()) {
     receiver_.ReportBadMessage(
@@ -307,7 +308,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
   }
 
   if (method->is_set_method()) {
-    blink::mojom::SharedStorageSetMethodPtr& set_method =
+    network::mojom::SharedStorageSetMethodPtr& set_method =
         method->get_set_method();
 
     storage::SharedStorageDatabase::SetBehavior set_behavior =
@@ -327,7 +328,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
                                    set_method->key, set_method->value,
                                    base::DoNothing(), set_behavior);
   } else if (method->is_append_method()) {
-    blink::mojom::SharedStorageAppendMethodPtr& append_method =
+    network::mojom::SharedStorageAppendMethodPtr& append_method =
         method->get_append_method();
 
     GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
@@ -341,7 +342,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
         render_frame_host().GetLastCommittedOrigin(), append_method->key,
         append_method->value, base::DoNothing());
   } else if (method->is_delete_method()) {
-    blink::mojom::SharedStorageDeleteMethodPtr& delete_method =
+    network::mojom::SharedStorageDeleteMethodPtr& delete_method =
         method->get_delete_method();
 
     GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(

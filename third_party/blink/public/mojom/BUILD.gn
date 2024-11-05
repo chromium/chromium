@@ -1648,6 +1648,7 @@ mojom("mojom_modules") {
     ":android_mojo_bindings",
     ":mojom_core",
     "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_shared_storage",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
@@ -1716,19 +1717,6 @@ mojom("mojom_modules") {
       ]
       traits_deps = [ "//third_party/blink/renderer/platform/wtf" ]
     },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.SharedStorageKeyArgument"
-          cpp = "::WTF::String"
-        },
-        {
-          mojom = "blink.mojom.SharedStorageValueArgument"
-          cpp = "::WTF::String"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.h" ]
-    },
   ]
 
   cpp_typemaps = [
@@ -1776,19 +1764,6 @@ mojom("mojom_modules") {
         "//third_party/blink/public/common/indexeddb/indexeddb_metadata.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/indexeddb/indexed_db_default_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.SharedStorageKeyArgument"
-          cpp = "::std::u16string"
-        },
-        {
-          mojom = "blink.mojom.SharedStorageValueArgument"
-          cpp = "::std::u16string"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/shared_storage/shared_storage_mojom_traits.h" ]
     },
   ]
 }

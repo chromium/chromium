@@ -49,6 +49,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/http/http_status_code.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +62,6 @@
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-more-matchers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -10617,26 +10617,28 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
     EXPECT_THAT(
         test_shared_storage_host.observed_requests(),
         testing::ElementsAre(
-            Request(blink::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        blink::mojom::SharedStorageSetMethod::New(
+            Request(network::mojom::SharedStorageModifierMethod::NewSetMethod(
+                        network::mojom::SharedStorageSetMethod::New(
                             /*key=*/u"a", /*value=*/u"b",
                             /*ignore_if_present=*/false)),
                     mojom::AuctionWorkletFunction::kBidderGenerateBid),
-            Request(blink::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        blink::mojom::SharedStorageSetMethod::New(
+            Request(network::mojom::SharedStorageModifierMethod::NewSetMethod(
+                        network::mojom::SharedStorageSetMethod::New(
                             /*key=*/u"a", /*value=*/u"b",
                             /*ignore_if_present=*/true)),
                     mojom::AuctionWorkletFunction::kBidderGenerateBid),
-            Request(blink::mojom::SharedStorageModifierMethod::NewAppendMethod(
-                        blink::mojom::SharedStorageAppendMethod::New(
-                            /*key=*/u"a", /*value=*/u"b")),
-                    mojom::AuctionWorkletFunction::kBidderGenerateBid),
             Request(
-                blink::mojom::SharedStorageModifierMethod::NewDeleteMethod(
-                    blink::mojom::SharedStorageDeleteMethod::New(/*key=*/u"a")),
+                network::mojom::SharedStorageModifierMethod::NewAppendMethod(
+                    network::mojom::SharedStorageAppendMethod::New(
+                        /*key=*/u"a", /*value=*/u"b")),
                 mojom::AuctionWorkletFunction::kBidderGenerateBid),
-            Request(blink::mojom::SharedStorageModifierMethod::NewClearMethod(
-                        blink::mojom::SharedStorageClearMethod::New()),
+            Request(
+                network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+                    network::mojom::SharedStorageDeleteMethod::New(
+                        /*key=*/u"a")),
+                mojom::AuctionWorkletFunction::kBidderGenerateBid),
+            Request(network::mojom::SharedStorageModifierMethod::NewClearMethod(
+                        network::mojom::SharedStorageClearMethod::New()),
                     mojom::AuctionWorkletFunction::kBidderGenerateBid)));
   }
 
@@ -10705,26 +10707,28 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
     EXPECT_THAT(
         test_shared_storage_host.observed_requests(),
         testing::ElementsAre(
-            Request(blink::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        blink::mojom::SharedStorageSetMethod::New(
+            Request(network::mojom::SharedStorageModifierMethod::NewSetMethod(
+                        network::mojom::SharedStorageSetMethod::New(
                             /*key=*/u"a", /*value=*/u"b",
                             /*ignore_if_present=*/false)),
                     mojom::AuctionWorkletFunction::kBidderReportWin),
-            Request(blink::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        blink::mojom::SharedStorageSetMethod::New(
+            Request(network::mojom::SharedStorageModifierMethod::NewSetMethod(
+                        network::mojom::SharedStorageSetMethod::New(
                             /*key=*/u"a", /*value=*/u"b",
                             /*ignore_if_present=*/true)),
                     mojom::AuctionWorkletFunction::kBidderReportWin),
-            Request(blink::mojom::SharedStorageModifierMethod::NewAppendMethod(
-                        blink::mojom::SharedStorageAppendMethod::New(
-                            /*key=*/u"a", /*value=*/u"b")),
-                    mojom::AuctionWorkletFunction::kBidderReportWin),
             Request(
-                blink::mojom::SharedStorageModifierMethod::NewDeleteMethod(
-                    blink::mojom::SharedStorageDeleteMethod::New(/*key=*/u"a")),
+                network::mojom::SharedStorageModifierMethod::NewAppendMethod(
+                    network::mojom::SharedStorageAppendMethod::New(
+                        /*key=*/u"a", /*value=*/u"b")),
                 mojom::AuctionWorkletFunction::kBidderReportWin),
-            Request(blink::mojom::SharedStorageModifierMethod::NewClearMethod(
-                        blink::mojom::SharedStorageClearMethod::New()),
+            Request(
+                network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+                    network::mojom::SharedStorageDeleteMethod::New(
+                        /*key=*/u"a")),
+                mojom::AuctionWorkletFunction::kBidderReportWin),
+            Request(network::mojom::SharedStorageModifierMethod::NewClearMethod(
+                        network::mojom::SharedStorageClearMethod::New()),
                     mojom::AuctionWorkletFunction::kBidderReportWin)));
   }
 
@@ -10834,11 +10838,10 @@ TEST_F(BidderWorkletTwoThreadsSharedStorageAPIEnabledTest,
 
   EXPECT_THAT(test_shared_storage_host0.observed_requests(),
               testing::ElementsAre(Request(
-                  blink::mojom::SharedStorageModifierMethod::NewSetMethod(
-                      blink::mojom::SharedStorageSetMethod::New(
+                  network::mojom::SharedStorageModifierMethod::NewSetMethod(
+                      network::mojom::SharedStorageSetMethod::New(
                           /*key=*/u"a", /*value=*/u"b",
                           /*ignore_if_present=*/false)),
-
                   mojom::AuctionWorkletFunction::kBidderGenerateBid)));
 }
 

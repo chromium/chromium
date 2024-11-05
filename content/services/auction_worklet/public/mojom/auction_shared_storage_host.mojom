@@ -4,7 +4,7 @@
 
 module auction_worklet.mojom;
 
-import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
+import "services/network/public/mojom/shared_storage.mojom";
 
 enum AuctionWorkletFunction {
   kBidderGenerateBid,
@@ -19,6 +19,6 @@ enum AuctionWorkletFunction {
 // result of these calls to avoid leaking state to the worklet.
 interface AuctionSharedStorageHost {
   // Handle the modifier method `method`.
-  SharedStorageUpdate(blink.mojom.SharedStorageModifierMethod method,
+  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method,
                       AuctionWorkletFunction source_auction_worklet_function);
 };

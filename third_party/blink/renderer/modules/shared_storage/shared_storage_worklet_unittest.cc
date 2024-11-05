@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,8 +140,9 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
                       blink::mojom::SharedStorageWorkletServiceClient> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  void SharedStorageUpdate(blink::mojom::SharedStorageModifierMethodPtr method,
-                           SharedStorageUpdateCallback callback) override {
+  void SharedStorageUpdate(
+      network::mojom::SharedStorageModifierMethodPtr method,
+      SharedStorageUpdateCallback callback) override {
     observed_update_params_.push_back(std::move(method));
 
     std::move(callback).Run(update_result_error_message_);
@@ -225,7 +227,7 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
   std::deque<mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>>
       pending_entries_listeners_;
 
-  std::vector<blink::mojom::SharedStorageModifierMethodPtr>
+  std::vector<network::mojom::SharedStorageModifierMethodPtr>
       observed_update_params_;
   std::vector<std::u16string> observed_get_params_;
   size_t observed_length_count_ = 0;
@@ -1831,7 +1833,7 @@ TEST_F(SharedStorageWorkletTest, Set_ClientError) {
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
-  blink::mojom::SharedStorageSetMethodPtr& observed_params =
+  network::mojom::SharedStorageSetMethodPtr& observed_params =
       test_client_->observed_update_params_[0]->get_set_method();
   EXPECT_EQ(observed_params->key, u"key0");
   EXPECT_EQ(observed_params->value, u"value0");
@@ -2231,7 +2233,7 @@ TEST_F(SharedStorageWorkletTest, Set_Success) {
   EXPECT_TRUE(run_result.error_message.empty());
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
-  blink::mojom::SharedStorageSetMethodPtr& observed_params =
+  network::mojom::SharedStorageSetMethodPtr& observed_params =
       test_client_->observed_update_params_[0]->get_set_method();
   EXPECT_EQ(observed_params->key, u"key0");
   EXPECT_EQ(observed_params->value, u"value0");
@@ -2336,22 +2338,22 @@ TEST_F(SharedStorageWorkletTest, Set_KeyAndValueConvertedToString) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 4u);
 
-  blink::mojom::SharedStorageSetMethodPtr& observed_params_0 =
+  network::mojom::SharedStorageSetMethodPtr& observed_params_0 =
       test_client_->observed_update_params_[0]->get_set_method();
   EXPECT_EQ(observed_params_0->key, u"123");
   EXPECT_EQ(observed_params_0->value, u"456");
 
-  blink::mojom::SharedStorageSetMethodPtr& observed_params_1 =
+  network::mojom::SharedStorageSetMethodPtr& observed_params_1 =
       test_client_->observed_update_params_[1]->get_set_method();
   EXPECT_EQ(observed_params_1->key, u"null");
   EXPECT_EQ(observed_params_1->value, u"null");
 
-  blink::mojom::SharedStorageSetMethodPtr& observed_params_2 =
+  network::mojom::SharedStorageSetMethodPtr& observed_params_2 =
       test_client_->observed_update_params_[2]->get_set_method();
   EXPECT_EQ(observed_params_2->key, u"undefined");
   EXPECT_EQ(observed_params_2->value, u"undefined");
 
-  blink::mojom::SharedStorageSetMethodPtr& observed_params_3 =
+  network::mojom::SharedStorageSetMethodPtr& observed_params_3 =
       test_client_->observed_update_params_[3]->get_set_method();
   EXPECT_EQ(observed_params_3->key, u"[object Object]");
   EXPECT_EQ(observed_params_3->value, u"[object Object]");
@@ -2524,7 +2526,7 @@ TEST_F(SharedStorageWorkletTest, Append_ClientError) {
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
-  blink::mojom::SharedStorageAppendMethodPtr& observed_params =
+  network::mojom::SharedStorageAppendMethodPtr& observed_params =
       test_client_->observed_update_params_[0]->get_append_method();
   EXPECT_EQ(observed_params->key, u"key0");
   EXPECT_EQ(observed_params->value, u"value0");
@@ -2549,7 +2551,7 @@ TEST_F(SharedStorageWorkletTest, Append_Success) {
   EXPECT_TRUE(run_result.error_message.empty());
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
-  blink::mojom::SharedStorageAppendMethodPtr& observed_params =
+  network::mojom::SharedStorageAppendMethodPtr& observed_params =
       test_client_->observed_update_params_[0]->get_append_method();
   EXPECT_EQ(observed_params->key, u"key0");
   EXPECT_EQ(observed_params->value, u"value0");
@@ -2648,7 +2650,7 @@ TEST_F(SharedStorageWorkletTest, Delete_ClientError) {
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
-  blink::mojom::SharedStorageDeleteMethodPtr& observed_params =
+  network::mojom::SharedStorageDeleteMethodPtr& observed_params =
       test_client_->observed_update_params_[0]->get_delete_method();
   EXPECT_EQ(observed_params->key, u"key0");
 }
@@ -2672,7 +2674,7 @@ TEST_F(SharedStorageWorkletTest, Delete_Success) {
   EXPECT_TRUE(run_result.error_message.empty());
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
-  blink::mojom::SharedStorageDeleteMethodPtr& observed_params =
+  network::mojom::SharedStorageDeleteMethodPtr& observed_params =
       test_client_->observed_update_params_[0]->get_delete_method();
   EXPECT_EQ(observed_params->key, u"key0");
 }

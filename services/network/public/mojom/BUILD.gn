@@ -222,6 +222,53 @@ mojom("mojom_network_isolation_key") {
   ]
 }
 
+mojom("mojom_shared_storage") {
+  generate_java = true
+  sources = [ "shared_storage.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_MODULES_EXPORT"
+    export_define_blink = "BLINK_MODULES_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.SharedStorageKeyArgument"
+          cpp = "::std::u16string"
+        },
+        {
+          mojom = "network.mojom.SharedStorageValueArgument"
+          cpp = "::std::u16string"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/shared_storage_mojom_traits.h" ]
+    },
+  ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.SharedStorageKeyArgument"
+          cpp = "::WTF::String"
+        },
+        {
+          mojom = "network.mojom.SharedStorageValueArgument"
+          cpp = "::WTF::String"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.h" ]
+      traits_sources = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.cc" ]
+    },
+  ]
+}
+
 mojom("mojom_shared_dictionary") {
   generate_java = true
   sources = [
@@ -1441,6 +1488,7 @@ mojom("mojom") {
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",
+    ":mojom_shared_storage",
     ":mojom_storage_access_api",
     ":mojom_structured_headers",
     ":url_loader_base",

@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/shared_storage.mojom";
 import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
@@ -63,12 +64,12 @@ union GetInterestGroupsResult {
 interface SharedStorageWorkletServiceClient {
   // Handle the modifier method `method`. Return an empty `error_message` on
   // success, and return an non-empty `error_message` on failure.
-  SharedStorageUpdate(SharedStorageModifierMethod method)
+  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method)
       => (string error_message);
 
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if
   // `key` is not present.
-  SharedStorageGet(SharedStorageKeyArgument key)
+  SharedStorageGet(network.mojom.SharedStorageKeyArgument key)
     => (SharedStorageGetStatus status, string error_message,
       mojo_base.mojom.String16 value);
 

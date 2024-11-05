@@ -6,6 +6,7 @@
 
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 
 namespace content {
 
@@ -56,11 +57,11 @@ void AuctionSharedStorageHost::BindNewReceiver(
 }
 
 void AuctionSharedStorageHost::SharedStorageUpdate(
-    blink::mojom::SharedStorageModifierMethodPtr method,
+    network::mojom::SharedStorageModifierMethodPtr method,
     auction_worklet::mojom::AuctionWorkletFunction
         source_auction_worklet_function) {
   if (method->is_set_method()) {
-    blink::mojom::SharedStorageSetMethodPtr& set_method =
+    network::mojom::SharedStorageSetMethodPtr& set_method =
         method->get_set_method();
 
     storage::SharedStorageManager::SetBehavior set_behavior =
@@ -72,14 +73,14 @@ void AuctionSharedStorageHost::SharedStorageUpdate(
                                  set_method->key, set_method->value,
                                  base::DoNothing(), set_behavior);
   } else if (method->is_append_method()) {
-    blink::mojom::SharedStorageAppendMethodPtr& append_method =
+    network::mojom::SharedStorageAppendMethodPtr& append_method =
         method->get_append_method();
 
     shared_storage_manager_->Append(
         receiver_set_.current_context().worklet_origin, append_method->key,
         append_method->value, base::DoNothing());
   } else if (method->is_delete_method()) {
-    blink::mojom::SharedStorageDeleteMethodPtr& delete_method =
+    network::mojom::SharedStorageDeleteMethodPtr& delete_method =
         method->get_delete_method();
 
     shared_storage_manager_->Delete(
