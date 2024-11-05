@@ -2034,8 +2034,8 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
 
 // Temporary plumbing
 bool HTMLCanvasElement::IsHibernating() const {
-  return canvas2d_bridge_ &&
-         canvas2d_bridge_->GetHibernationHandler().IsHibernating();
+  CanvasHibernationHandler* hibernation_handler = GetHibernationHandler();
+  return hibernation_handler && hibernation_handler->IsHibernating();
 }
 
 void HTMLCanvasElement::SetTransferToGPUTextureWasInvoked() {
