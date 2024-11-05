@@ -261,6 +261,10 @@ void BirchBarView::ShutdownChips() {
   for (BirchChipButtonBase* chip : chips_) {
     chip->Shutdown();
   }
+
+  if (chip_to_attach_) {
+    chip_to_attach_->Shutdown();
+  }
 }
 
 void BirchBarView::UpdateAvailableSpace(int available_space) {
@@ -350,6 +354,11 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
 
   if (iter == chips_.end()) {
     return;
+  }
+
+  // The privacy nudge is attached to the first chip. Hide the nudge if exists.
+  if (std::distance(chips_.begin(), iter) == 0) {
+    Shell::Get()->birch_privacy_nudge_controller()->MaybeHideNudge();
   }
 
   BirchChipButtonBase* removing_chip = *iter;
@@ -453,8 +462,7 @@ void BirchBarView::Clear() {
   chips_.clear();
   primary_row_->RemoveAllChildViews();
   if (secondary_row_) {
-    auto secondary_row = RemoveChildViewT(secondary_row_);
-    secondary_row_ = nullptr;
+    RemoveChildViewT(std::exchange(secondary_row_, nullptr));
   }
 
   chip_to_attach_.reset();
@@ -538,8 +546,7 @@ void BirchBarView::Relayout(RelayoutReason reason) {
 
   // Remove the secondary row if it is empty.
   if (chips_in_secondary.empty()) {
-    auto secondary_row = RemoveChildViewT(secondary_row_);
-    secondary_row_ = nullptr;
+    RemoveChildViewT(std::exchange(secondary_row_, nullptr));
   }
 }
 

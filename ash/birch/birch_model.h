@@ -137,8 +137,12 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // Returns whether all data in the model is currently fresh.
   bool IsDataFresh();
 
-  // Add the BirchItem to the list of persistenly removed items.
+  // Adds the BirchItem to the list of persistently removed items.
   void RemoveItem(BirchItem* item);
+
+  // Removes the `BirchCoralItem` with given `group_id`. The removed item will
+  // NOT be added to the `item_remover_`.
+  void OnCoralGroupRemoved(const base::Token& group_id);
 
   void SetLostMediaDataChangedCallback(LostMediaDataChangedCallback callback);
 

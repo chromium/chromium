@@ -87,6 +87,9 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // Toggles temperature units for weather chip between F and C.
   void ToggleTemperatureUnits();
 
+  // Called when the coral group with `group_id` is being removed.
+  void OnCoralGroupRemoved(const base::Token& group_id);
+
   // Called when the content of a group with given `group_id` gets updated.
   void OnCoralGroupUpdated(const base::Token& group_id);
 

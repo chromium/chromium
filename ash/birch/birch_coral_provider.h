@@ -10,11 +10,15 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/wm/coral/coral_controller.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/token.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "ui/aura/window_observer.h"
 
 namespace ash {
 
@@ -24,7 +28,9 @@ class CoralItemRemover;
 class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
                                       public TabClusterUIController::Observer,
                                       public coral::mojom::TitleObserver,
-                                      public SessionObserver {
+                                      public SessionObserver,
+                                      public aura::WindowObserver,
+                                      public OverviewObserver {
  public:
   explicit BirchCoralProvider(BirchModel* birch_model);
   BirchCoralProvider(const BirchCoralProvider&) = delete;
@@ -66,6 +72,12 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override;
+
+  // OverviewObserver:
+  void OnOverviewModeEnded() override;
 
   const CoralRequest& GetCoralRequestForTest() const { return request_; }
 
@@ -111,6 +123,13 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   void HandleEmbeddingResult(bool success);
 
+  // Observes all the valid app windows associated with `response_`.
+  void ObserveAppWindows();
+
+  // Removes the entity corresponding to the given `entity_identifier` from
+  // current in-session `response_`.
+  void RemoveEntity(std::string_view entity_identifier);
+
   const raw_ptr<BirchModel> birch_model_;
 
   // The request sent to the coral backend.
@@ -132,6 +151,12 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   mojo::Receiver<coral::mojom::TitleObserver> receiver_{this};
 
   ScopedSessionObserver session_observer_{this};
+
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      app_windows_observation_{this};
+
+  base::ScopedObservation<OverviewController, OverviewObserver>
+      overview_observation_{this};
 
   base::WeakPtrFactory<BirchCoralProvider> weak_ptr_factory_{this};
 };
