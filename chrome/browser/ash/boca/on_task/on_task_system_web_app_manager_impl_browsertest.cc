@@ -8,6 +8,8 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/boca/boca_manager.h"
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -16,6 +18,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
@@ -63,7 +67,18 @@ class OnTaskSystemWebAppManagerImplBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     ash::SystemWebAppManager::Get(profile())->InstallSystemAppsForTesting();
+
+    // Set up OnTask session for testing purposes. Especially needed to ensure
+    // newly created tabs are not deleted.
+    GetOnTaskSessionManager()->OnSessionStarted("test_session",
+                                                ::boca::UserIdentity());
     InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  OnTaskSessionManager* GetOnTaskSessionManager() {
+    ash::BocaManager* const boca_manager =
+        ash::BocaManagerFactory::GetInstance()->GetForProfile(profile());
+    return boca_manager->GetOnTaskSessionManagerForTesting();
   }
 
   Browser* FindBocaSystemWebAppBrowser() {

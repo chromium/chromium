@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ash/boca/boca_manager.h"
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -21,6 +23,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -57,6 +61,7 @@ class OnTaskLockedSessionWindowTrackerBrowserTest
                               ash::features::kBocaConsumer},
         /*disabled_features=*/{});
   }
+
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   void SetUpOnMainThread() override {
@@ -68,6 +73,11 @@ class OnTaskLockedSessionWindowTrackerBrowserTest
 
     https_server()->AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+
+    // Set up OnTask session for testing purposes. Especially needed to ensure
+    // newly created tabs are not deleted.
+    GetOnTaskSessionManager()->OnSessionStarted("test_session",
+                                                ::boca::UserIdentity());
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
@@ -94,6 +104,12 @@ class OnTaskLockedSessionWindowTrackerBrowserTest
 
   Browser* FindBocaSystemWebAppBrowser() {
     return ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
+  }
+
+  OnTaskSessionManager* GetOnTaskSessionManager() {
+    ash::BocaManager* const boca_manager =
+        ash::BocaManagerFactory::GetInstance()->GetForProfile(profile());
+    return boca_manager->GetOnTaskSessionManagerForTesting();
   }
 
   Profile* profile() { return browser()->profile(); }

@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
+#include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
@@ -764,19 +765,45 @@ TEST_F(OnTaskSessionManagerTest,
   const SessionID kTabId_1 = SessionID::NewUnique();
   const SessionID kTabId_2 = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillOnce(Return(SessionID::InvalidValue()))  // Session init check.
       .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
       .WillOnce(Return(kTabId_1));
 
+  // Init session.
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
+
+  // Update bundle.
   ::boca::Bundle bundle_1;
   bundle_1.add_content_configs()->set_url(kTestUrl1);
   session_manager_->OnBundleUpdated(bundle_1);
+
+  // Simulate tab addition.
   const SessionID active_tab_id = kTabId_1;
   const SessionID tab_id = kTabId_2;
   session_manager_->OnTabAdded(active_tab_id, tab_id, GURL(kTestUrl1));
   EXPECT_THAT((*provider_url_tab_ids_map())[GURL(kTestUrl1)],
               UnorderedElementsAreArray({active_tab_id, tab_id}));
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsAddedOutsideAnActiveSession) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kActiveTabId = SessionID::NewUnique();
+  const SessionID kTabId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  bool tab_removed = false;
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              RemoveTabsWithTabIds(kWindowId, std::set<SessionID>{kTabId}))
+      .WillOnce([&]() { tab_removed = true; });
+  session_manager_->OnTabAdded(kActiveTabId, kTabId, GURL(kTestUrl1));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return tab_removed; }));
+  EXPECT_FALSE((*provider_url_tab_ids_map()).contains(GURL(kTestUrl1)));
 }
 
 TEST_F(OnTaskSessionManagerTest,

@@ -103,8 +103,10 @@ source_set("browser_tests") {
     ":on_task",
     "//ash/webui/boca_ui",
     "//base/test:test_support",
+    "//chrome/browser/ash/boca",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/boca/proto",
   ]
 }

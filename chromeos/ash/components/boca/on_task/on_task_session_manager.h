@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SESSION_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -125,6 +126,8 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  std::optional<std::string> active_session_id_
+      GUARDED_BY_CONTEXT(sequence_checker_) = std::nullopt;
   GURL active_tab_url_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool should_lock_window_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 

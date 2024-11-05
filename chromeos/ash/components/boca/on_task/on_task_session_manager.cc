@@ -5,10 +5,10 @@
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -61,6 +61,7 @@ OnTaskSessionManager::~OnTaskSessionManager() = default;
 void OnTaskSessionManager::OnSessionStarted(
     const std::string& session_id,
     const ::boca::UserIdentity& producer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
@@ -74,6 +75,7 @@ void OnTaskSessionManager::OnSessionStarted(
     OnSessionStarted(session_id, producer);
     return;
   }
+  active_session_id_ = session_id;
   system_web_app_launch_helper_->LaunchBocaSWA();
 }
 
@@ -84,6 +86,7 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
       window_id.is_valid()) {
     system_web_app_manager_->CloseSystemWebAppWindow(window_id);
   }
+  active_session_id_ = std::nullopt;
   provider_url_tab_ids_map_.clear();
   provider_url_restriction_level_map_.clear();
   should_lock_window_ = false;
@@ -288,6 +291,27 @@ void OnTaskSessionManager::OnTabAdded(const SessionID active_tab_id,
                                       const GURL url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(tab_id.is_valid());
+  if (!active_session_id_.has_value()) {
+    // No active session. Close the tab after the tab creation has been
+    // processed.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<OnTaskSessionManager> instance,
+               const SessionID window_id, const SessionID tab_id) {
+              if (!instance) {
+                return;
+              }
+              // Do not use `system_web_app_launch_helper_` here to ensure we
+              // are working with the right window. This will result in a no-op
+              // should the window be closed.
+              instance->system_web_app_manager_->RemoveTabsWithTabIds(window_id,
+                                                                      {tab_id});
+            },
+            weak_ptr_factory_.GetWeakPtr(),
+            system_web_app_manager_->GetActiveSystemWebAppWindowID(), tab_id));
+    return;
+  }
   if (active_tab_id == tab_id) {
     return;
   }
