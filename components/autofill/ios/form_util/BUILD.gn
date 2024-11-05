@@ -37,6 +37,7 @@ source_set("form_util_feature") {
     "form_util_java_script_feature.mm",
   ]
   deps = [
+    ":autofill_form_features",
     ":fill_js",
     ":form_js",
     "//base",
@@ -280,7 +281,6 @@ source_set("autofill_form_features") {
   deps = [
     ":autofill_form_features_ts_bundling",
     "//base",
-    "//components/autofill/ios/common:common",
     "//ios/web/public/js_messaging",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

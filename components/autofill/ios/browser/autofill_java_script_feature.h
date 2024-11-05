@@ -20,7 +20,6 @@ class WebFrame;
 
 namespace autofill {
 
-class AutofillFormFeaturesJavaScriptFeature;
 class AutofillRendererIDJavaScriptFeature;
 
 // Communicates with the JavaScript file, autofill_controller.js, which contains
@@ -104,8 +103,6 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   //  TODO(crbug.com/359538514): Remove test constructor once isolated world for
   //  Autofill is launched.
   AutofillJavaScriptFeature(
-      AutofillFormFeaturesJavaScriptFeature*
-          autofill_form_features_java_script_feature,
       AutofillRendererIDJavaScriptFeature* renderer_id_feature);
 };
 

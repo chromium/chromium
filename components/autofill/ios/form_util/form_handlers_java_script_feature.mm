@@ -98,8 +98,6 @@ void FormHandlersJavaScriptFeature::ScriptMessageReceived(
 }
 
 FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
-    AutofillFormFeaturesJavaScriptFeature*
-        autofill_form_features_java_script_feature,
     AutofillRendererIDJavaScriptFeature* renderer_id_feature,
     RemoteFrameRegistrationJavaScriptFeature*
         remote_frame_registration_java_script_feature)
@@ -109,7 +107,6 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
               FormUtilJavaScriptFeature::GetInstance(),
-              autofill_form_features_java_script_feature,
               renderer_id_feature,
               remote_frame_registration_java_script_feature,
           }) {}

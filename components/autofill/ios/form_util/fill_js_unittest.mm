@@ -16,7 +16,6 @@
 #import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
-#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
@@ -79,7 +78,6 @@ class FillJsTest : public web::WebTestWithWebState,
     }
 
     OverrideJavaScriptFeatures({FormUtilJavaScriptFeature::GetInstance(),
-                                autofill_form_features_java_script_feature(),
                                 renderer_id_java_script_feature(),
                                 GetDummyPageContentWorldFeature(),
                                 GetDummyIsolatedWorldFeature()});
@@ -90,11 +88,6 @@ class FillJsTest : public web::WebTestWithWebState,
     // features in `feature_container_`.
     OverrideJavaScriptFeatures({});
     web::WebTestWithWebState::TearDown();
-  }
-
-  AutofillFormFeaturesJavaScriptFeature*
-  autofill_form_features_java_script_feature() {
-    return feature_container_.autofill_form_features_java_script_feature();
   }
 
   AutofillRendererIDJavaScriptFeature* renderer_id_java_script_feature() {

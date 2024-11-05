@@ -67,19 +67,4 @@ void RemoteFrameRegistrationJavaScriptFeature::ScriptMessageReceived(
   }
 }
 
-RemoteFrameRegistrationJavaScriptFeature::
-    RemoteFrameRegistrationJavaScriptFeature(
-        AutofillFormFeaturesJavaScriptFeature*
-            autofill_form_features_java_script_feature)
-    : web::JavaScriptFeature(ContentWorldForAutofillJavascriptFeatures(),
-                             {FeatureScript::CreateWithFilename(
-                                 kRemoteFrameRegistrationScriptName,
-                                 FeatureScript::InjectionTime::kDocumentStart,
-                                 FeatureScript::TargetFrames::kAllFrames,
-                                 FeatureScript::ReinjectionBehavior::
-                                     kReinjectOnDocumentRecreation)},
-                             {
-                                 autofill_form_features_java_script_feature,
-                             }) {}
-
 }  // namespace autofill

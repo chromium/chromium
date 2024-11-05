@@ -10,7 +10,6 @@
 namespace autofill {
 
 class FormHandlersJavaScriptFeature;
-class AutofillFormFeaturesJavaScriptFeature;
 class AutofillRendererIDJavaScriptFeature;
 class AutofillJavaScriptFeature;
 class RemoteFrameRegistrationJavaScriptFeature;
@@ -38,8 +37,6 @@ class TestAutofillJavaScriptFeatureContainer {
   ~TestAutofillJavaScriptFeatureContainer();
 
   FormHandlersJavaScriptFeature* form_handlers_java_script_feature();
-  AutofillFormFeaturesJavaScriptFeature*
-  autofill_form_features_java_script_feature();
 
   AutofillRendererIDJavaScriptFeature*
   autofill_renderer_id_java_script_feature();
@@ -57,8 +54,6 @@ class TestAutofillJavaScriptFeatureContainer {
 
   raw_ptr<FormHandlersJavaScriptFeature> form_handlers_java_script_feature_ =
       nullptr;
-  raw_ptr<AutofillFormFeaturesJavaScriptFeature>
-      autofill_form_features_java_script_feature_ = nullptr;
   raw_ptr<AutofillRendererIDJavaScriptFeature>
       autofill_renderer_id_java_script_feature_ = nullptr;
   raw_ptr<AutofillJavaScriptFeature> autofill_java_script_feature_ = nullptr;

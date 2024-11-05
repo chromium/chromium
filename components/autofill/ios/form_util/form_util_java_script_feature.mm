@@ -6,6 +6,7 @@
 
 #import "base/no_destructor.h"
 #import "base/values.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
@@ -41,6 +42,8 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
               web::java_script_features::GetMessageJavaScriptFeature(),
+              // Form extraction logic requires feature flags.
+              AutofillFormFeaturesJavaScriptFeature::GetInstance(),
           }) {}
 
 FormUtilJavaScriptFeature::~FormUtilJavaScriptFeature() = default;

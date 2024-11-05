@@ -4,7 +4,6 @@
 
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 
-#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 namespace {

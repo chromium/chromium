@@ -826,7 +826,7 @@ TEST_P(FormSubmittedHookTest, TestFormSubmittedHook) {
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
-  feature_container_.autofill_form_features_java_script_feature()
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
       ->SetAutofillIsolatedContentWorld(main_frame, IsParamFeatureEnabled());
 
   web::test::ExecuteJavaScriptForFeature(

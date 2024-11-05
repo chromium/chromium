@@ -137,7 +137,6 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
-    "//components/autofill/ios/form_util:autofill_form_features",
     "//components/autofill/ios/form_util:autofill_renderer_id_feature",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:form_util_feature",

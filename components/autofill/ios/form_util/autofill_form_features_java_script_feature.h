@@ -31,13 +31,6 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
 
  private:
   friend class base::NoDestructor<AutofillFormFeaturesJavaScriptFeature>;
-  // Friend test feature container so it can create instances of this class.
-  // This JS feature is injected in different content worlds depending on a
-  // feature flag. Tests need to create new instances of the JS feature when the
-  // feature flag changes.
-  // TODO(crbug.com/359538514): Remove friend once isolated world for Autofill
-  // is launched.
-  friend class TestAutofillJavaScriptFeatureContainer;
 
   AutofillFormFeaturesJavaScriptFeature();
   ~AutofillFormFeaturesJavaScriptFeature() override;

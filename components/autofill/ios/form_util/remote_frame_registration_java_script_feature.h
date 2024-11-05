@@ -10,8 +10,6 @@
 
 namespace autofill {
 
-class AutofillFormFeaturesJavaScriptFeature;
-
 // Name of the message handler registered by
 // RemoteFrameRegistrationJavaScriptFeature.
 inline constexpr char kRemoteFrameRegistrationMessageHandlerName[] =
@@ -46,12 +44,6 @@ class RemoteFrameRegistrationJavaScriptFeature : public web::JavaScriptFeature {
       const RemoteFrameRegistrationJavaScriptFeature&) = delete;
   RemoteFrameRegistrationJavaScriptFeature& operator=(
       const RemoteFrameRegistrationJavaScriptFeature&) = delete;
-
-  // TODO(crbug.com/375168979): Remove testing constructor once
-  // AutofillFormFeaturesJavaScriptFeature is injected in both worlds.
-  RemoteFrameRegistrationJavaScriptFeature(
-      AutofillFormFeaturesJavaScriptFeature*
-          autofill_form_features_java_script_feature);
 };
 
 }  // namespace autofill
