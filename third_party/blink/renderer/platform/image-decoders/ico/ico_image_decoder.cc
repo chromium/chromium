@@ -10,7 +10,8 @@
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
 
 #include <algorithm>
-#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
+
+#include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
 
 namespace blink {
 
@@ -220,7 +221,7 @@ bool ICOImageDecoder::DecodeAtIndex(wtf_size_t index) {
   if (!png_decoders_[index]) {
     AlphaOption alpha_option =
         premultiply_alpha_ ? kAlphaPremultiplied : kAlphaNotPremultiplied;
-    png_decoders_[index] = std::make_unique<PNGImageDecoder>(
+    png_decoders_[index] = CreatePngImageDecoder(
         alpha_option, ImageDecoder::kDefaultBitDepth, color_behavior_,
         max_decoded_bytes_, dir_entry.image_offset_);
     SetDataForPNGDecoderAtIndex(index);

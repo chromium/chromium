@@ -7,8 +7,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
-
 #include <memory>
 
 #include "base/logging.h"
@@ -16,6 +14,7 @@
 #include "png.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -49,9 +48,9 @@ namespace {
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoder(
     ImageDecoder::AlphaOption alpha_option) {
-  return std::make_unique<PNGImageDecoder>(
-      alpha_option, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit);
+  return CreatePngImageDecoder(alpha_option, ImageDecoder::kDefaultBitDepth,
+                               ColorBehavior::kTransformToSRGB,
+                               ImageDecoder::kNoDecodedImageByteLimit);
 }
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
@@ -59,10 +58,10 @@ std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
 }
 
 std::unique_ptr<ImageDecoder> Create16BitPNGDecoder() {
-  return std::make_unique<PNGImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied,
-      ImageDecoder::kHighBitDepthToHalfFloat, ColorBehavior::kTag,
-      ImageDecoder::kNoDecodedImageByteLimit);
+  return CreatePngImageDecoder(ImageDecoder::kAlphaNotPremultiplied,
+                               ImageDecoder::kHighBitDepthToHalfFloat,
+                               ColorBehavior::kTag,
+                               ImageDecoder::kNoDecodedImageByteLimit);
 }
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoderWithPngData(
@@ -1037,7 +1036,7 @@ TEST(AnimatedPNGTests, Offset) {
 
   // Use the same defaults as CreatePNGDecoder, except use the (arbitrary)
   // non-zero offset.
-  auto decoder = std::make_unique<PNGImageDecoder>(
+  auto decoder = CreatePngImageDecoder(
       ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit,
       kOffset);
