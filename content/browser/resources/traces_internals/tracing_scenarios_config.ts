@@ -44,6 +44,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
       fieldConfig_: {type: Array},
       isEdited_: {type: Boolean},
       isLoading_: {type: Boolean},
+      privacyFilterEnabled_: {type: Boolean},
       toastMessage_: {type: String},
     };
   }
@@ -55,6 +56,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
   protected fieldConfig_: Config[] = [];
   protected isEdited_: boolean = false;
   protected isLoading_: boolean = false;
+  protected privacyFilterEnabled_: boolean = false;
   protected toastMessage_: string = '';
 
   override connectedCallback(): void {
@@ -67,6 +69,9 @@ export class TracingScenariosConfigElement extends CrLitElement {
     this.isEdited_ = false;
     this.presetConfig_ = [];
     this.fieldConfig_ = [];
+    this.privacyFilterEnabled_ =
+        (await this.traceReportProxy_.handler.getPrivacyFilterEnabled())
+            .enabled;
 
     const enabledList =
         await this.traceReportProxy_.handler.getEnabledScenarios();
@@ -97,6 +102,15 @@ export class TracingScenariosConfigElement extends CrLitElement {
     this.isLoading_ = false;
   }
 
+  protected privacyFilterDidChange_(event: CustomEvent<{value: boolean}>):
+      void {
+    if (this.privacyFilterEnabled_ === event.detail.value) {
+      return;
+    }
+    this.privacyFilterEnabled_ = event.detail.value;
+    this.isEdited_ = true;
+  }
+
   protected valueDidChange_(event: CustomEvent<{value: boolean}>): void {
     const index = Number((event.currentTarget as HTMLElement).dataset['index']);
     if (this.presetConfig_[index] === undefined) {
@@ -114,6 +128,9 @@ export class TracingScenariosConfigElement extends CrLitElement {
   }
 
   protected async onConfirmClick_(): Promise<void> {
+    await this.traceReportProxy_.handler.setPrivacyFilterEnabled(
+        this.privacyFilterEnabled_);
+
     const enabledScenarios: string[] = [];
     for (const scenario of this.presetConfig_) {
       if (scenario.selected) {
