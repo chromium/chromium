@@ -155,6 +155,9 @@ crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-har
 crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
+# Same with prefer-hardware
+crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
