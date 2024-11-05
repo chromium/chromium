@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -44,12 +43,24 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace views {
 
 namespace {
 
 static constexpr float kBackgroundBlurSigma = 30.f;
 static constexpr float kBackgroundBlurQuality = 0.33f;
+
+bool ShouldApplyBackgroundBlur() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return chromeos::features::IsSystemBlurEnabled();
+#else
+  return true;
+#endif
+}
 
 // MenuScrollButton ------------------------------------------------------------
 
@@ -233,8 +244,10 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
     background_view_->SetPaintToLayer();
     auto* background_layer = background_view_->layer();
     background_layer->SetFillsBoundsOpaquely(false);
-    background_layer->SetBackgroundBlur(kBackgroundBlurSigma);
-    background_layer->SetBackdropFilterQuality(kBackgroundBlurQuality);
+    if (ShouldApplyBackgroundBlur()) {
+      background_layer->SetBackgroundBlur(kBackgroundBlurSigma);
+      background_layer->SetBackdropFilterQuality(kBackgroundBlurQuality);
+    }
   }
 
   auto* layout =

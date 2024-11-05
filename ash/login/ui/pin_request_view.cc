@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -186,9 +187,15 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
   SetPaintToLayer();
-  layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
   SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id, kPinRequestViewRoundedCornerRadiusDp));
 

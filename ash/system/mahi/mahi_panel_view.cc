@@ -38,6 +38,7 @@
 #include "base/time/time.h"
 #include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -500,18 +501,25 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
 
   SetID(mahi_constants::ViewId::kMahiPanelView);
   SetUseDefaultFillLayout(true);
+
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevated,
-      mahi_constants::kPanelCornerRadius));
+      background_color_id, mahi_constants::kPanelCornerRadius));
 
   // Create a layer for the view for background blur and rounded corners.
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{mahi_constants::kPanelCornerRadius});
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
   SetBorder(std::make_unique<views::HighlightBorder>(
       mahi_constants::kPanelCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow,

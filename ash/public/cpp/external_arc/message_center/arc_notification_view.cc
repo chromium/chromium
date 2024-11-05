@@ -110,10 +110,12 @@ ArcNotificationView::ArcNotificationView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets()));
 
   if (shown_in_popup) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{kMessagePopupCornerRadius});
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    }
   }
 
   UpdateCornerRadius(message_center::kNotificationCornerRadius,
@@ -169,10 +171,14 @@ void ArcNotificationView::UpdateBackgroundPainter() {
   }
 
   const auto* color_provider = GetColorProvider();
-  const SkColor color_in_popup =
-      color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevated);
+  const SkColor color_in_popup = color_provider->GetColor(
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque);
   const SkColor color_in_message_center =
-      color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase);
+      color_provider->GetColor(chromeos::features::IsSystemBlurEnabled()
+                                   ? cros_tokens::kCrosSysSystemOnBase
+                                   : cros_tokens::kCrosSysSystemOnBaseOpaque);
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius(), bottom_radius(),

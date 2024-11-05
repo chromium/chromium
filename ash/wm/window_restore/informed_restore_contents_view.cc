@@ -23,6 +23,7 @@
 #include "ash/wm/window_restore/informed_restore_items_container_view.h"
 #include "ash/wm/window_restore/informed_restore_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -151,8 +152,10 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
   if (features::IsBackgroundBlurEnabled()) {
     layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
     layer->SetIsFastRoundedCorner(true);
-    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    }
   }
 
   return widget;

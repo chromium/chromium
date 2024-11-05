@@ -245,8 +245,12 @@ DeskMiniView::DeskMiniView(
         kShortcutViewBorderHeight, kShortcutViewBorderWidth,
         kShortcutViewBorderHeight, kShortcutViewBorderWidth)));
     desk_shortcut_view_->SetBetweenChildSpacing(3);
+    const ui::ColorId background_color_id =
+        chromeos::features::IsSystemBlurEnabled()
+            ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+            : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
     desk_shortcut_view_->SetBackground(
-        views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+        views::CreateThemedSolidBackground(background_color_id));
 
     desk_shortcut_view_->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -262,11 +266,14 @@ DeskMiniView::DeskMiniView(
         desk_shortcut_view_->AddChildView(std::make_unique<views::Label>());
 
     desk_shortcut_view_->SetPaintToLayer();
-    desk_shortcut_view_->layer()->SetFillsBoundsOpaquely(false);
-    desk_shortcut_view_->layer()->SetBackgroundBlur(
-        ColorProvider::kBackgroundBlurSigma);
-    desk_shortcut_view_->layer()->SetBackdropFilterQuality(
-        ColorProvider::kBackgroundBlurQuality);
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      desk_shortcut_view_->layer()->SetFillsBoundsOpaquely(false);
+      desk_shortcut_view_->layer()->SetBackgroundBlur(
+          ColorProvider::kBackgroundBlurSigma);
+      desk_shortcut_view_->layer()->SetBackdropFilterQuality(
+          ColorProvider::kBackgroundBlurQuality);
+    }
+
     desk_shortcut_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kShortcutViewHeight));
     desk_shortcut_view_->SetVisible(false);

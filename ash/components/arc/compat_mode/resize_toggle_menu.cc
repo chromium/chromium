@@ -308,23 +308,29 @@ ResizeToggleMenu::MakeBubbleDelegateView(
       kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
   // Add empty view for background blur.
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
   views::View* background_view = nullptr;
   delegate_view->AddChildView(
       views::Builder<views::View>()
           .CopyAddressTo(&background_view)
           .SetUseDefaultFillLayout(true)
           .SetBackground(views::CreateThemedRoundedRectBackground(
-              cros_tokens::kCrosSysSystemBaseElevated, kCornerRadius))
+              background_color_id, kCornerRadius))
           .Build());
 
   background_view->SetPaintToLayer();
-  background_view->layer()->SetBackgroundBlur(
-      ash::ColorProvider::kBackgroundBlurSigma);
-  background_view->layer()->SetBackdropFilterQuality(
-      ash::ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    background_view->layer()->SetBackgroundBlur(
+        ash::ColorProvider::kBackgroundBlurSigma);
+    background_view->layer()->SetBackdropFilterQuality(
+        ash::ColorProvider::kBackgroundBlurQuality);
+    background_view->layer()->SetFillsBoundsOpaquely(false);
+  }
   background_view->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kCornerRadius));
-  background_view->layer()->SetFillsBoundsOpaquely(false);
 
   auto* const container_view =
       delegate_view->AddChildView(std::make_unique<views::View>());
