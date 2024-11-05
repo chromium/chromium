@@ -324,7 +324,7 @@ if (forbid_non_component_debug_builds) {
   assert(
       symbol_level != 2 || current_toolchain != default_toolchain ||
           is_component_build || is_fuchsia || is_apple || use_debug_fission ||
-          is_android || is_chromeos || host_os == "win",
+          is_android || is_chromeos || is_win,
       "Can't do non-component builds at symbol_level=2 without use_debug_fission=true")
 }
 
