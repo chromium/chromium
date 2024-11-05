@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] @supports at-rule 29
-  assert_equals: CSS.supports(at-rule(@property; syntax: "<unknown>")) expected false but got true
-Harness: the test ran to completion.
-

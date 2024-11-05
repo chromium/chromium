@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
@@ -430,6 +431,15 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
     case AtRuleDescriptorID::Syntax:
       stream.ConsumeWhitespace();
       parsed_value = css_parsing_utils::ConsumeString(stream);
+      if (parsed_value) {
+        CSSSyntaxStringParser parser(To<CSSStringValue>(parsed_value)->Value());
+        if (!parser.Parse().has_value()) {
+          // Treat an invalid syntax string as a parse error.
+          // In particular, this means @supports at-rule() will reject
+          // descriptors we do not support.
+          parsed_value = nullptr;
+        }
+      }
       break;
     case AtRuleDescriptorID::InitialValue: {
       bool important_ignored;
