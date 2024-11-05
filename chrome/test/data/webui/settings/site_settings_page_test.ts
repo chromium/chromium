@@ -78,6 +78,17 @@ suite('SiteSettingsPage', function() {
     page.remove();
   });
 
+  function getCookiesLinkRow() {
+    const basicContentList =
+        page.shadowRoot!.querySelector('#basicContentList');
+    assertTrue(!!basicContentList);
+    const cookiesLinkRow =
+        basicContentList.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#cookies');
+    assertTrue(!!cookiesLinkRow);
+    return cookiesLinkRow;
+  }
+
   test('DefaultLabels', function() {
     assertEquals('a', defaultSettingLabel(ContentSetting.ALLOW, 'a', 'b'));
     assertEquals('b', defaultSettingLabel(ContentSetting.BLOCK, 'a', 'b'));
@@ -108,9 +119,7 @@ suite('SiteSettingsPage', function() {
       is3pcdCookieSettingsRedesignEnabled: false,
     });
     setupPage();
-    const cookiesLinkRow =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!;
+    const cookiesLinkRow = getCookiesLinkRow();
 
     page.set(
         'prefs.profile.cookie_controls_mode.value',
@@ -144,9 +153,7 @@ suite('SiteSettingsPage', function() {
       isTrackingProtectionUxEnabled: false,
     });
     setupPage();
-    const cookiesLinkRow =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!;
+    const cookiesLinkRow = getCookiesLinkRow();
 
     page.set(
         'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', true);
@@ -173,13 +180,7 @@ suite('SiteSettingsPage', function() {
       isAlwaysBlock3pcsIncognitoEnabled: true,
     });
     setupPage();
-    const basicContentList =
-        page.shadowRoot!.querySelector('#basicContentList');
-    assertTrue(!!basicContentList);
-    const cookiesLinkRow =
-        basicContentList.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#cookies');
-    assertTrue(!!cookiesLinkRow);
+    const cookiesLinkRow = getCookiesLinkRow();
 
     page.set(
         'prefs.profile.cookie_controls_mode.value',
@@ -196,9 +197,7 @@ suite('SiteSettingsPage', function() {
       isTrackingProtectionUxEnabled: true,
     });
     setupPage();
-    const cookiesLinkRow =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!;
+    const cookiesLinkRow = getCookiesLinkRow();
     assertEquals(
         loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
         cookiesLinkRow.subLabel);
@@ -221,9 +220,13 @@ suite('SiteSettingsPage', function() {
   });
 
   test('NotificationsLinkRowSublabel', async function() {
+    const basicPermissionsList =
+        page.shadowRoot!.querySelector('#basicPermissionsList');
+    assertTrue(!!basicPermissionsList);
     const notificationsLinkRow =
-        page.shadowRoot!.querySelector('#basicPermissionsList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#notifications')!;
+        basicPermissionsList.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#notifications')!;
+    assertTrue(!!notificationsLinkRow);
 
     page.set('prefs.generated.notification.value', SettingsState.BLOCK);
     await flushTasks();
@@ -251,19 +254,27 @@ suite('SiteSettingsPage', function() {
     assertTrue(!!expandButton);
     expandButton.click();
     await expandButton.updateComplete;
-    assertTrue(isChildVisible(
-        page.shadowRoot!.querySelector('#advancedContentList')!,
-        '#protected-content'));
+    const advancedContentList =
+        page.shadowRoot!.querySelector('#advancedContentList');
+    assertTrue(!!advancedContentList);
+    assertTrue(isChildVisible(advancedContentList, '#protected-content'));
   });
 
   test('SiteDataLinkRowSublabel', async function() {
     setupPage();
-    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
+    const expandContent =
+        page.shadowRoot!.querySelector<HTMLElement>('#expandContent');
+    assertTrue(!!expandContent);
+    expandContent.click();
     flush();
 
+    const advancedContentList =
+        page.shadowRoot!.querySelector('#advancedContentList');
+    assertTrue(!!advancedContentList);
     const siteDataLinkRow =
-        page.shadowRoot!.querySelector('#advancedContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#site-data')!;
+        advancedContentList.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#site-data');
+    assertTrue(!!siteDataLinkRow);
 
     page.set(
         'prefs.generated.cookie_default_content_setting.value',
@@ -315,7 +326,8 @@ suite('SiteSettingsPage', function() {
   test('UnusedSitePermissionsControlToggleUpdatesPrefs', function() {
     const unusedSitePermissionsRevocationToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#unusedSitePermissionsRevocationToggle')!;
+            '#unusedSitePermissionsRevocationToggle');
+    assertTrue(!!unusedSitePermissionsRevocationToggle);
 
     unusedSitePermissionsRevocationToggle.click();
     flush();
@@ -379,7 +391,10 @@ suite('UnusedSitePermissionsReview', function() {
         unusedSitePermissionMockData);
     await flushTasks();
 
-    page.shadowRoot!.querySelector<HTMLElement>('#safetyHubButton')!.click();
+    const safetyHubButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#safetyHubButton');
+    assertTrue(!!safetyHubButton);
+    safetyHubButton.click();
     // Ensure the safety hub page is shown.
     assertEquals(routes.SAFETY_HUB, Router.getInstance().getCurrentRoute());
   });
