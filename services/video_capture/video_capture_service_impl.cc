@@ -42,13 +42,11 @@
 #include "services/video_capture/lacros/device_factory_adapter_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "media/capture/capture_switches.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
 namespace video_capture {
 
@@ -111,8 +109,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
       this};
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 // Intended usage of this class is to create viz::Gpu in utility process and
 // connect to viz::GpuClient of browser process, which will call to Gpu service.
 // Also, this class holds the viz::ContextProvider to listen and monitor Gpu
@@ -230,8 +227,7 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
   scoped_refptr<viz::ContextProvider> context_provider_;
   base::WeakPtrFactory<VizGpuContextProvider> weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShouldUseVCDFromAsh() {
@@ -333,8 +329,7 @@ void VideoCaptureServiceImpl::LazyInitializeGpuDependenciesContext() {
   if (!gpu_dependencies_context_)
     gpu_dependencies_context_ = std::make_unique<GpuDependenciesContext>();
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   {
 #else
@@ -345,8 +340,7 @@ void VideoCaptureServiceImpl::LazyInitializeGpuDependenciesContext() {
           std::make_unique<VizGpuContextProvider>(std::move(viz_gpu_));
     }
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 }
 
 void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
@@ -467,12 +461,11 @@ void VideoCaptureServiceImpl::OnGpuInfoUpdate(const CHROME_LUID& luid) {
 }
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 void VideoCaptureServiceImpl::SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu) {
   viz_gpu_ = std::move(viz_gpu);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void VideoCaptureServiceImpl::OnDisconnectedFromVCDFactoryAsh() {

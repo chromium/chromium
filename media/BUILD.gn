@@ -67,6 +67,7 @@ buildflag_header("media_buildflags") {
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_CRAS=$use_cras",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
+    "ENABLE_GPU_CHANNEL_MEDIA_CAPTURE=$enable_gpu_channel_media_capture",
   ]
 
   if (enable_library_cdms) {
