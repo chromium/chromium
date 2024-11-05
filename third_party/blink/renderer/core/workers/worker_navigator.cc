@@ -54,9 +54,15 @@ String WorkerNavigator::GetAcceptLanguages() {
 }
 
 void WorkerNavigator::NotifyUpdate() {
-  SetLanguagesDirty();
   WorkerOrWorkletGlobalScope* global_scope =
       To<WorkerOrWorkletGlobalScope>(GetExecutionContext());
+  if (!global_scope) {
+    // In case of the context destruction, `GetExecutionContext()` returns
+    // nullptr. Then, there is no `global_scope` to execute the language
+    // event.
+    return;
+  }
+  SetLanguagesDirty();
   global_scope->DispatchEvent(
       *Event::Create(event_type_names::kLanguagechange));
 }
