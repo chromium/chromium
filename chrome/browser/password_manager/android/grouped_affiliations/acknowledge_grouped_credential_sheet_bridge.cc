@@ -57,24 +57,21 @@ AcknowledgeGroupedCredentialSheetBridge::JniDelegate::JniDelegate() = default;
 AcknowledgeGroupedCredentialSheetBridge::JniDelegate::~JniDelegate() = default;
 
 AcknowledgeGroupedCredentialSheetBridge::
-    AcknowledgeGroupedCredentialSheetBridge(const gfx::NativeWindow window)
-    : jni_delegate_(std::make_unique<JniDelegateImpl>()),
-      window_android_(window) {}
+    AcknowledgeGroupedCredentialSheetBridge()
+    : jni_delegate_(std::make_unique<JniDelegateImpl>()) {}
 
 AcknowledgeGroupedCredentialSheetBridge::
     AcknowledgeGroupedCredentialSheetBridge(
         base::PassKey<
             class AcknowledgeGroupedCredentialSheetControllerTestHelper>,
-        std::unique_ptr<JniDelegate> jni_delegate,
-        const gfx::NativeWindow window)
-    : jni_delegate_(std::move(jni_delegate)), window_android_(window) {}
+        std::unique_ptr<JniDelegate> jni_delegate)
+    : jni_delegate_(std::move(jni_delegate)) {}
 
 AcknowledgeGroupedCredentialSheetBridge::
     AcknowledgeGroupedCredentialSheetBridge(
         base::PassKey<class AcknowledgeGroupedCredentialSheetControllerTest>,
-        std::unique_ptr<JniDelegate> jni_delegate,
-        const gfx::NativeWindow window)
-    : jni_delegate_(std::move(jni_delegate)), window_android_(window) {}
+        std::unique_ptr<JniDelegate> jni_delegate)
+    : jni_delegate_(std::move(jni_delegate)) {}
 
 AcknowledgeGroupedCredentialSheetBridge::
     ~AcknowledgeGroupedCredentialSheetBridge() {
@@ -88,12 +85,13 @@ AcknowledgeGroupedCredentialSheetBridge::
 void AcknowledgeGroupedCredentialSheetBridge::Show(
     std::string current_origin,
     std::string credential_origin,
+    gfx::NativeWindow window,
     base::OnceCallback<void(bool)> closure_callback) {
-  if (!window_android_) {
+  if (!window) {
     return;
   }
   closure_callback_ = std::move(closure_callback);
-  jni_delegate_->Create(window_android_, this);
+  jni_delegate_->Create(window, this);
   jni_delegate_->Show(std::move(current_origin), std::move(credential_origin));
 }
 

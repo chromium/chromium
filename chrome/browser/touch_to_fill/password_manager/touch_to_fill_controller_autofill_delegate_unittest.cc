@@ -236,6 +236,7 @@ class TouchToFillControllerAutofillTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
     auto mock_view = std::make_unique<MockTouchToFillView>();
     mock_view_ = mock_view.get();
     visibility_controller_ = std::make_unique<
@@ -270,6 +271,8 @@ class TouchToFillControllerAutofillTest
   password_manager::PasswordForm form_to_fill_;
   AcknowledgeGroupedCredentialSheetControllerTestHelper
       grouped_credential_sheet_helper_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android_ = ui::WindowAndroid::CreateForTesting();
 };
 
 TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Submit) {

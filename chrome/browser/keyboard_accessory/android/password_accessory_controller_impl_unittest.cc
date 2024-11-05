@@ -24,6 +24,7 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller_test_helper.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
@@ -336,6 +337,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    window_android_ = ui::WindowAndroid::CreateForTesting();
 
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(), base::BindRepeating(&BuildFakePlusAddressService));
@@ -382,6 +384,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*password_client()->GetPasswordFeatureManager(),
             GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
+    window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
   }
 
   webauthn::WebAuthnCredManDelegate* cred_man_delegate() {
@@ -399,6 +402,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         mock_pwd_manager_client_.get(),
         base::BindRepeating(&PasswordAccessoryControllerTest::GetBaseDriver,
                             base::Unretained(this)),
+        grouped_credential_sheet_test_helper.CreateController(),
         show_migration_warning_callback_.Get(), std::move(access_loss_bridge));
 
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
@@ -456,6 +460,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
+  AcknowledgeGroupedCredentialSheetControllerTestHelper
+      grouped_credential_sheet_test_helper;
   base::MockCallback<
       PasswordAccessoryControllerImpl::ShowMigrationWarningCallback>
       show_migration_warning_callback_;
@@ -478,6 +484,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
       webauthn_credentials_delegate_;
   autofill::TestAutofillClientInjector<NiceMock<MockAutofillClient>>
       autofill_client_injector_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android_;
 };
 
 TEST_F(PasswordAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
@@ -1481,6 +1489,102 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
                                    Eq(selected_field.display_text())))
       .Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       ShowsAcknowledgementBeforeFillingGroupedPassword) {
+  CreateSheetController();
+
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kGrouped)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField);
+
+  AccessorySheetField selected_field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
+          .SetDisplayText(u"S3cur3")
+          .SetIsObfuscated(true)
+          .SetSelectable(true)
+          .Build();
+
+  // Should not call `driver()->FillIntoFocusedField` yet. Should show ack sheet
+  // instead.
+  base::OnceCallback<void(bool)> callback;
+  EXPECT_CALL(*grouped_credential_sheet_test_helper.jni_bridge(), Show);
+  EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+
+  // Ack sheet is accepted; should call `driver()->FillIntoFocusedField` now.
+  EXPECT_CALL(*driver(), FillIntoFocusedField);
+  grouped_credential_sheet_test_helper.DismissSheet(/*accepted=*/true);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       DontShowAcknowledgementBeforeFillingGroupedUsername) {
+  CreateSheetController();
+
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kGrouped)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField);
+
+  AccessorySheetField selected_field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCredentialUsername)
+          .SetDisplayText(u"Ben")
+          .SetIsObfuscated(false)
+          .SetSelectable(true)
+          .Build();
+
+  EXPECT_CALL(*grouped_credential_sheet_test_helper.jni_bridge(), Show)
+      .Times(0);
+  EXPECT_CALL(*driver(), FillIntoFocusedField);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       DontFillIfFocusChangedAfterAcknowledgement) {
+  CreateSheetController();
+
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kGrouped)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField);
+
+  AccessorySheetField selected_field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
+          .SetDisplayText(u"S3cur3")
+          .SetIsObfuscated(true)
+          .SetSelectable(true)
+          .Build();
+
+  // Should not call `driver()->FillIntoFocusedField` yet. Should show ack sheet
+  // instead.
+  base::OnceCallback<void(bool)> callback;
+  EXPECT_CALL(*grouped_credential_sheet_test_helper.jni_bridge(), Show);
+  EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+
+  // Pretend that the focus was lost or moved to an unfillable field.
+  NavigateAndCommit(GURL("https://random.other-site.org/"));
+
+  // Ack sheet is accepted; should call `driver()->FillIntoFocusedField` now.
+  EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
+  grouped_credential_sheet_test_helper.DismissSheet(/*accepted=*/true);
 }
 
 TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {

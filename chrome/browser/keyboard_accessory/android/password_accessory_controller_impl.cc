@@ -4,6 +4,7 @@
 
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller_impl.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -28,8 +29,10 @@
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -81,6 +84,7 @@ using BlocklistedStatus =
 using FillingSource = ManualFillingController::FillingSource;
 using IsExactMatch = autofill::UserInfo::IsExactMatch;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
+using password_manager_util::GetLoginMatchType;
 
 namespace {
 
@@ -175,6 +179,15 @@ ShouldShowAction ShouldShowCredManReentryAction(
       return ShouldShowAction(false);
   }
   NOTREACHED() << "Showing undefined for " << focused_field_type;
+}
+
+base::span<const UiCredential>::iterator GetUiCredentialForSelection(
+    base::span<const UiCredential> matching_creds,
+    const AccessorySheetField& suggestion) {
+  return base::ranges::find_if(matching_creds, [&](const auto& cred) {
+    return suggestion.display_text() ==
+           (suggestion.is_obfuscated() ? cred.password() : cred.username());
+  });
 }
 
 }  // namespace
@@ -306,23 +319,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 void PasswordAccessoryControllerImpl::OnFillingTriggered(
     autofill::FieldGlobalId focused_field_id,
     const AccessorySheetField& selection) {
-  authenticator_ = password_client_->GetDeviceAuthenticator();
-  if (!ShouldTriggerBiometricReauth(selection)) {
-    if (selection.suggestion_type() ==
-            autofill::AccessorySuggestionType::kPlusAddress &&
-        plus_address_service_) {
-      plus_address_service_->DidFillPlusAddress();
-    }
-    authenticator_.reset();
-    FillSelection(selection);
-    return;
-  }
-
-  // |this| cancels the authentication when it is destroyed if one is ongoing,
-  // which resets the callback, so it's safe to use base::Unretained(this) here.
-  authenticator_->AuthenticateWithMessage(
-      u"", base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
-                          base::Unretained(this), selection));
+  EnsureAcknowledgementBeforeFilling(selection);
 }
 
 void PasswordAccessoryControllerImpl::OnPasskeySelected(
@@ -366,6 +363,7 @@ void PasswordAccessoryControllerImpl::CreateForWebContents(
             web_contents, credential_cache, nullptr,
             ChromePasswordManagerClient::FromWebContents(web_contents),
             base::BindRepeating(GetPasswordManagerDriver),
+            std::make_unique<AcknowledgeGroupedCredentialSheetController>(),
             base::BindRepeating(&local_password_migration::ShowWarning),
             std::make_unique<PasswordAccessLossWarningBridgeImpl>())));
   }
@@ -378,6 +376,8 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
     base::WeakPtr<ManualFillingController> manual_filling_controller,
     password_manager::PasswordManagerClient* password_client,
     PasswordDriverSupplierForFocusedFrame driver_supplier,
+    std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+        grouped_credential_sheet_controller,
     ShowMigrationWarningCallback show_migration_warning_callback,
     std::unique_ptr<PasswordAccessLossWarningBridge>
         access_loss_warning_bridge) {
@@ -391,6 +391,7 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
       base::WrapUnique(new PasswordAccessoryControllerImpl(
           web_contents, credential_cache, std::move(manual_filling_controller),
           password_client, std::move(driver_supplier),
+          std::move(grouped_credential_sheet_controller),
           std::move(show_migration_warning_callback),
           std::move(access_loss_warning_bridge))));
 }
@@ -583,6 +584,8 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
     base::WeakPtr<ManualFillingController> manual_filling_controller,
     password_manager::PasswordManagerClient* password_client,
     PasswordDriverSupplierForFocusedFrame driver_supplier,
+    std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+        grouped_credential_sheet_controller,
     ShowMigrationWarningCallback show_migration_warning_callback,
     std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge)
     : content::WebContentsObserver(web_contents),
@@ -592,6 +595,8 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
       manual_filling_controller_(std::move(manual_filling_controller)),
       password_client_(password_client),
       driver_supplier_(std::move(driver_supplier)),
+      grouped_credential_sheet_controller_(
+          std::move(grouped_credential_sheet_controller)),
       show_migration_warning_callback_(
           std::move(show_migration_warning_callback)),
       access_loss_warning_bridge_(std::move(access_loss_warning_bridge)),
@@ -747,8 +752,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
 }
 
 bool PasswordAccessoryControllerImpl::AppearsInSuggestions(
-    const std::u16string& suggestion,
-    bool is_password,
+    const AccessorySheetField& suggestion,
     const url::Origin& origin) const {
   if (origin.opaque()) {
     return false;  // Don't proceed for invalid origins.
@@ -756,15 +760,15 @@ bool PasswordAccessoryControllerImpl::AppearsInSuggestions(
 
   // If the `suggestion` to fill is a valid plus address, it can be filled.
   if (plus_address_service_ &&
-      plus_address_service_->IsPlusAddress(base::UTF16ToUTF8(suggestion))) {
+      plus_address_service_->IsPlusAddress(
+          base::UTF16ToUTF8(suggestion.display_text()))) {
     return true;
   }
 
-  return base::ranges::any_of(
-      credential_cache_->GetCredentialStore(origin).GetCredentials(),
-      [&](const auto& cred) {
-        return suggestion == (is_password ? cred.password() : cred.username());
-      });
+  base::span<const UiCredential> best_matches =
+      credential_cache_->GetCredentialStore(origin).GetCredentials();
+  return GetUiCredentialForSelection(best_matches, suggestion) !=
+         best_matches.end();
 }
 
 bool PasswordAccessoryControllerImpl::ShouldShowRecoveryToggle(
@@ -834,21 +838,22 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
 
 void PasswordAccessoryControllerImpl::OnReauthCompleted(
     AccessorySheetField selection,
+    const url::Origin& origin_to_fill_on,
     bool auth_succeeded) {
   authenticator_.reset();
   if (!auth_succeeded) {
     return;
   }
-  FillSelection(selection);
+  FillSelection(selection, origin_to_fill_on);
 }
 
 void PasswordAccessoryControllerImpl::FillSelection(
-    const AccessorySheetField& selection) {
-  if (!AppearsInSuggestions(selection.display_text(), selection.is_obfuscated(),
-                            GetFocusedFrameOrigin())) {
-    DUMP_WILL_BE_NOTREACHED() << "Tried to fill '" << selection.display_text()
-                              << "' into " << GetFocusedFrameOrigin();
-    return;  // Never fill across different origins!
+    const AccessorySheetField& selection,
+    const url::Origin& origin_to_fill_on) {
+  if (origin_to_fill_on != GetFocusedFrameOrigin()) {
+    // If focused frame origin changed during the verification or
+    // authentication, don't fill.
+    return;
   }
   password_manager::PasswordManagerDriver* driver =
       driver_supplier_.Run(&GetWebContents());
@@ -961,6 +966,66 @@ void PasswordAccessoryControllerImpl::RefreshSuggestions() {
 
 void PasswordAccessoryControllerImpl::OnAffiliatedPlusProfilesFetched() {
   RefreshSuggestions();
+}
+
+void PasswordAccessoryControllerImpl::EnsureAcknowledgementBeforeFilling(
+    const autofill::AccessorySheetField& selection) {
+  url::Origin origin = GetFocusedFrameOrigin();
+  if (!AppearsInSuggestions(selection, origin)) {
+    DUMP_WILL_BE_NOTREACHED()
+        << "Tried to fill '" << selection.display_text() << "' into " << origin;
+    return;  // Never fill anything, that was not listed in suggestions.
+  }
+  // Show acknowledgement warning before filling password, which has grouped
+  // affiliation (username is filled right away).
+  base::span<const UiCredential> matching_creds =
+      credential_cache_->GetCredentialStore(origin).GetCredentials();
+  base::span<const UiCredential>::iterator cred =
+      GetUiCredentialForSelection(matching_creds, selection);
+  if (selection.is_obfuscated() && cred != matching_creds.end() &&
+      cred->match_type() == GetLoginMatchType::kGrouped) {
+    grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
+        GetDisplayOrigin(origin), GetDisplayOrigin(cred->origin()),
+        web_contents()->GetTopLevelNativeWindow(),
+        base::BindOnce(&PasswordAccessoryControllerImpl::
+                           OnAcknowledgementBeforeFillingReceived,
+                       weak_ptr_factory_.GetWeakPtr(), selection, origin));
+    return;
+  }
+  ReauthenticateAndFill(selection, origin);
+}
+
+void PasswordAccessoryControllerImpl::OnAcknowledgementBeforeFillingReceived(
+    const autofill::AccessorySheetField& selection,
+    const url::Origin& origin_to_fill_on,
+    bool accepted) {
+  if (!accepted) {
+    return;
+  }
+
+  ReauthenticateAndFill(selection, origin_to_fill_on);
+}
+
+void PasswordAccessoryControllerImpl::ReauthenticateAndFill(
+    const autofill::AccessorySheetField& selection,
+    const url::Origin& origin_to_fill_on) {
+  authenticator_ = password_client_->GetDeviceAuthenticator();
+  if (!ShouldTriggerBiometricReauth(selection)) {
+    if (selection.suggestion_type() ==
+            autofill::AccessorySuggestionType::kPlusAddress &&
+        plus_address_service_) {
+      plus_address_service_->DidFillPlusAddress();
+    }
+    authenticator_.reset();
+    FillSelection(selection, origin_to_fill_on);
+    return;
+  }
+  // |this| cancels the authentication when it is destroyed if one is ongoing,
+  // which resets the callback, so it's safe to use base::Unretained(this) here.
+  authenticator_->AuthenticateWithMessage(
+      u"",
+      base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
+                     base::Unretained(this), selection, origin_to_fill_on));
 }
 
 bool PasswordAccessoryControllerImpl::IsSecureSite() const {

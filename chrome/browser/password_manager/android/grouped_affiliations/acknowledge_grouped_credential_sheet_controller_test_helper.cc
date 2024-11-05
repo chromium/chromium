@@ -28,9 +28,11 @@ AcknowledgeGroupedCredentialSheetControllerTestHelper::CreateController() {
   auto bridge = std::make_unique<AcknowledgeGroupedCredentialSheetBridge>(
       base::PassKey<
           class AcknowledgeGroupedCredentialSheetControllerTestHelper>(),
-      std::move(jni_bridge), window_android_.get()->get());
+      std::move(jni_bridge));
   bridge_ = bridge.get();
   return std::make_unique<AcknowledgeGroupedCredentialSheetController>(
+      base::PassKey<
+          class AcknowledgeGroupedCredentialSheetControllerTestHelper>(),
       std::move(bridge));
 }
 

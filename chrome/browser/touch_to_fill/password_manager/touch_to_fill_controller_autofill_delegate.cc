@@ -14,9 +14,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
-#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
+#include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
@@ -47,20 +47,6 @@ bool ContainsNonEmptyUsername(
   return base::ranges::any_of(credentials, [](const UiCredential& credential) {
     return !credential.username().empty();
   });
-}
-
-std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
-CreateAcknowledgeGroupedCredentialSheetController(
-    content::WebContents* web_contents) {
-  auto bridge = std::make_unique<AcknowledgeGroupedCredentialSheetBridge>(
-      web_contents->GetTopLevelNativeWindow());
-  return std::make_unique<AcknowledgeGroupedCredentialSheetController>(
-      std::move(bridge));
-}
-
-std::string GetOrigin(const url::Origin& origin) {
-  return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
-      origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
 
 }  // namespace
@@ -121,7 +107,7 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       access_loss_warning_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
       grouped_credential_sheet_controller_(
-          CreateAcknowledgeGroupedCredentialSheetController(web_contents_)),
+          std::make_unique<AcknowledgeGroupedCredentialSheetController>()),
       source_id_(password_client->web_contents()
                      ->GetPrimaryMainFrame()
                      ->GetPageUkmSourceId()) {}
@@ -328,10 +314,12 @@ void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
 
   if (credential.match_type() ==
       password_manager_util::GetLoginMatchType::kGrouped) {
-    std::string current_origin = GetOrigin(url::Origin::Create(GetFrameUrl()));
-    std::string credential_origin = GetOrigin(credential.origin());
+    std::string current_origin =
+        GetDisplayOrigin(url::Origin::Create(GetFrameUrl()));
+    std::string credential_origin = GetDisplayOrigin(credential.origin());
     grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
         std::move(current_origin), std::move(credential_origin),
+        web_contents_->GetTopLevelNativeWindow(),
         base::BindOnce(
             &TouchToFillControllerAutofillDelegate::
                 OnVerificationBeforeFillingFinished,

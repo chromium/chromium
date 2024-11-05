@@ -316,13 +316,15 @@ class MockPasswordAccessoryControllerImpl
       base::WeakPtr<ManualFillingController> mf_controller,
       password_manager::PasswordManagerClient* password_client,
       PasswordDriverSupplierForFocusedFrame driver_supplier)
-      : PasswordAccessoryControllerImpl(web_contents,
-                                        credential_cache,
-                                        mf_controller,
-                                        password_client,
-                                        driver_supplier,
-                                        base::DoNothing(),
-                                        nullptr) {}
+      : PasswordAccessoryControllerImpl(
+            web_contents,
+            credential_cache,
+            mf_controller,
+            password_client,
+            driver_supplier,
+            /*grouped_credential_sheet_controller=*/nullptr,
+            base::DoNothing(),
+            nullptr) {}
 
   MOCK_METHOD(void,
               RefreshSuggestionsForField,

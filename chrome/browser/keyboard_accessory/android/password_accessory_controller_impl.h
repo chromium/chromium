@@ -17,6 +17,7 @@
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -101,6 +102,8 @@ class PasswordAccessoryControllerImpl
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
       PasswordDriverSupplierForFocusedFrame driver_supplier,
+      std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+          grouped_credential_sheet_controller,
       ShowMigrationWarningCallback show_migration_warning_callback,
       std::unique_ptr<PasswordAccessLossWarningBridge>
           access_loss_warning_bridge);
@@ -126,6 +129,8 @@ class PasswordAccessoryControllerImpl
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
       PasswordDriverSupplierForFocusedFrame driver_supplier,
+      std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+          grouped_credential_sheet_controller,
       ShowMigrationWarningCallback show_migration_warning_callback,
       std::unique_ptr<PasswordAccessLossWarningBridge>
           access_loss_warning_bridge);
@@ -164,9 +169,9 @@ class PasswordAccessoryControllerImpl
   // or adding blocklisted entry in the |PasswordStore|.
   void ChangeCurrentOriginSavePasswordsStatus(bool enabled);
 
-  // Returns true if |suggestion| matches a credential for |origin|.
-  bool AppearsInSuggestions(const std::u16string& suggestion,
-                            bool is_password,
+  // Always returns false for badly formed |origin|. Returns true if
+  // |suggestion| matches a credential for |origin| or if it's a shielded email.
+  bool AppearsInSuggestions(const autofill::AccessorySheetField& selection,
                             const url::Origin& origin) const;
 
   // Returns true if the `origin` of a focused field allows to show
@@ -190,11 +195,13 @@ class PasswordAccessoryControllerImpl
   // Called when the biometric authentication completes. If |auth_succeeded| is
   // true, |selection| will be passed on to be filled.
   void OnReauthCompleted(autofill::AccessorySheetField selection,
+                         const url::Origin& origin,
                          bool auth_succeeded);
 
   // Sends |selection| to the renderer to be filled, if it's a valid
   // entry for the origin of the frame that is currently focused.
-  void FillSelection(const autofill::AccessorySheetField& selection);
+  void FillSelection(const autofill::AccessorySheetField& selection,
+                     const url::Origin& origin);
 
   // Called From |AllPasswordsBottomSheetController| when
   // the Bottom Sheet view is destroyed.
@@ -214,6 +221,25 @@ class PasswordAccessoryControllerImpl
 
   // AffiliatedPlusProfilesProvider::Observer:
   void OnAffiliatedPlusProfilesFetched() override;
+
+  // Depending on the credential match type, there may be additional user
+  // confirmation needed (e. g. for grouped credentials). After confirmation,
+  // it will trigger `OnAcknowledgementBeforeFillingReceived`. If the credential
+  // doesn't require additional confirmation,
+  // `OnAcknowledgementBeforeFillingReceived` will be triggered immediately.
+  void EnsureAcknowledgementBeforeFilling(
+      const autofill::AccessorySheetField& selection);
+
+  // Triggered upon user confirmation to fill the credential.
+  void OnAcknowledgementBeforeFillingReceived(
+      const autofill::AccessorySheetField& selection,
+      const url::Origin& origin,
+      bool accepted);
+
+  // Checks if reauthentication is required; if yes, schedules re-auth, if no,
+  // fills right away.
+  void ReauthenticateAndFill(const autofill::AccessorySheetField& selection,
+                             const url::Origin& origin_to_fill_on);
 
   content::WebContents& GetWebContents() const;
 
@@ -261,6 +287,11 @@ class PasswordAccessoryControllerImpl
   // Security level used for testing only.
   security_state::SecurityLevel security_level_for_testing_ =
       security_state::NONE;
+
+  // Used to show the sheet to ask additional user verification before filling
+  // credential with the grouped match type.
+  std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+      grouped_credential_sheet_controller_;
 
   // Callback attempting to display the migration warning when invoked.
   // Used to facilitate injecting a mock bridge in tests.

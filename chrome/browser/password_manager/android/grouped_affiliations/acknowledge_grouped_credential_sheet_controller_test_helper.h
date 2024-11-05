@@ -52,8 +52,6 @@ class AcknowledgeGroupedCredentialSheetControllerTestHelper {
   MockJniDelegate* jni_bridge() { return jni_bridge_; }
 
  private:
-  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
-      window_android_ = ui::WindowAndroid::CreateForTesting();
   raw_ptr<AcknowledgeGroupedCredentialSheetBridge> bridge_;
   raw_ptr<MockJniDelegate> jni_bridge_;
 };

@@ -41,13 +41,15 @@ class MockJniDelegate
 class AcknowledgeGroupedCredentialSheetControllerTest : public testing::Test {
  public:
   AcknowledgeGroupedCredentialSheetControllerTest() {
+    window_android_ = ui::WindowAndroid::CreateForTesting();
     auto mock_jni_bridge = std::make_unique<MockJniDelegate>();
     mock_jni_bridge_ = mock_jni_bridge.get();
     auto bridge = std::make_unique<AcknowledgeGroupedCredentialSheetBridge>(
         base::PassKey<class AcknowledgeGroupedCredentialSheetControllerTest>(),
-        std::move(mock_jni_bridge), window_android_.get()->get());
+        std::move(mock_jni_bridge));
     bridge_ = bridge.get();
     controller_ = std::make_unique<AcknowledgeGroupedCredentialSheetController>(
+        base::PassKey<class AcknowledgeGroupedCredentialSheetControllerTest>(),
         std::move(bridge));
   }
 
@@ -57,11 +59,12 @@ class AcknowledgeGroupedCredentialSheetControllerTest : public testing::Test {
 
   std::unique_ptr<AcknowledgeGroupedCredentialSheetController> controller_;
 
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android_;
+
  private:
   raw_ptr<MockJniDelegate> mock_jni_bridge_;
   raw_ptr<AcknowledgeGroupedCredentialSheetBridge> bridge_;
-  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
-      window_android_ = ui::WindowAndroid::CreateForTesting();
 };
 
 TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
@@ -71,6 +74,7 @@ TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
   base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
   EXPECT_CALL(*mock_jni_bridge(), Show(kCurrentOrigin, kCredentialOrigin));
   controller_->ShowAcknowledgeSheet(kCurrentOrigin, kCredentialOrigin,
+                                    window_android_.get()->get(),
                                     mock_reply.Get());
 
   EXPECT_CALL(mock_reply, Run(false));
@@ -85,6 +89,7 @@ TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
   base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
   EXPECT_CALL(*mock_jni_bridge(), Show);
   controller_->ShowAcknowledgeSheet(kCurrentOrigin, kCurrentOrigin,
+                                    window_android_.get()->get(),
                                     mock_reply.Get());
 
   EXPECT_CALL(mock_reply, Run).Times(0);

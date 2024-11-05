@@ -15,7 +15,13 @@
 // the current web site.
 class AcknowledgeGroupedCredentialSheetController {
  public:
-  explicit AcknowledgeGroupedCredentialSheetController(
+  AcknowledgeGroupedCredentialSheetController();
+  AcknowledgeGroupedCredentialSheetController(
+      base::PassKey<
+          class AcknowledgeGroupedCredentialSheetControllerTestHelper>,
+      std::unique_ptr<AcknowledgeGroupedCredentialSheetBridge> bridge);
+  AcknowledgeGroupedCredentialSheetController(
+      base::PassKey<class AcknowledgeGroupedCredentialSheetControllerTest>,
       std::unique_ptr<AcknowledgeGroupedCredentialSheetBridge> bridge);
   AcknowledgeGroupedCredentialSheetController(
       const AcknowledgeGroupedCredentialSheetController&) = delete;
@@ -26,6 +32,7 @@ class AcknowledgeGroupedCredentialSheetController {
 
   void ShowAcknowledgeSheet(std::string current_origin,
                             std::string credential_origin,
+                            gfx::NativeWindow window,
                             base::OnceCallback<void(bool)> on_close_callback);
 
  private:
