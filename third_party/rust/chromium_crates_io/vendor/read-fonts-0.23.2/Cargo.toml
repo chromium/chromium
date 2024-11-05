@@ -12,12 +12,7 @@
 [package]
 edition = "2021"
 name = "read-fonts"
-version = "0.23.0"
-build = false
-autobins = false
-autoexamples = false
-autotests = false
-autobenches = false
+version = "0.23.2"
 description = "Reading OpenType font files."
 readme = "README.md"
 categories = [
@@ -35,22 +30,12 @@ features = [
     "std",
 ]
 
-[lib]
-name = "read_fonts"
-path = "src/lib.rs"
-
-[[bench]]
-name = "bench_helper"
-path = "benches/bench_helper.rs"
-
 [[bench]]
 name = "int_set_benchmark"
-path = "benches/int_set_benchmark.rs"
 harness = false
 
 [[bench]]
 name = "sparse_bit_set_benchmark"
-path = "benches/sparse_bit_set_benchmark.rs"
 harness = false
 
 [dependencies.bytemuck]
@@ -61,7 +46,7 @@ version = "0.1"
 optional = true
 
 [dependencies.font-types]
-version = "0.7.2"
+version = "0.7.3"
 features = ["bytemuck"]
 
 [dependencies.serde]

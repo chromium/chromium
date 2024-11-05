@@ -41,6 +41,19 @@ impl<'a> Loca<'a> {
         self.len() == 0
     }
 
+    pub fn all_offsets_are_ascending(&self) -> bool {
+        match self {
+            Loca::Short(data) => !data
+                .iter()
+                .zip(data.iter().skip(1))
+                .any(|(start, end)| start > end),
+            Loca::Long(data) => !data
+                .iter()
+                .zip(data.iter().skip(1))
+                .any(|(start, end)| start > end),
+        }
+    }
+
     /// Attempt to return the offset for a given glyph id.
     pub fn get_raw(&self, idx: usize) -> Option<u32> {
         match self {
@@ -119,5 +132,60 @@ impl<'a> traversal::SomeArray<'a> for Loca<'a> {
 impl<'a> std::fmt::Debug for Loca<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         (self as &dyn traversal::SomeTable<'a>).fmt(f)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use types::Scalar;
+
+    use crate::test_helpers::BeBuffer;
+
+    use super::Loca;
+
+    fn to_loca_bytes<T: Scalar + Copy>(values: &[T]) -> (BeBuffer, bool) {
+        let value_num_bytes = std::mem::size_of::<T>();
+        let is_long = if value_num_bytes == 2 {
+            false
+        } else if value_num_bytes == 4 {
+            true
+        } else {
+            panic!("invalid integer type must be u32 or u16")
+        };
+        let mut buffer = BeBuffer::default();
+
+        for v in values {
+            buffer = buffer.push(*v);
+        }
+
+        (buffer, is_long)
+    }
+
+    fn check_loca_sorting(values: &[u16], is_sorted: bool) {
+        let (bytes, is_long) = to_loca_bytes(values);
+        let loca = Loca::read(bytes.font_data(), is_long).unwrap();
+        assert_eq!(loca.all_offsets_are_ascending(), is_sorted);
+
+        let u32_values: Vec<u32> = values.iter().map(|v| *v as u32).collect();
+        let (bytes, is_long) = to_loca_bytes(&u32_values);
+        let loca = Loca::read(bytes.font_data(), is_long).unwrap();
+        assert_eq!(loca.all_offsets_are_ascending(), is_sorted);
+    }
+
+    #[test]
+    fn all_offsets_are_ascending() {
+        // Sorted
+        let empty: &[u16] = &[];
+        check_loca_sorting(empty, true);
+        check_loca_sorting(&[0], true);
+        check_loca_sorting(&[0, 0], true);
+        check_loca_sorting(&[0, 1], true);
+        check_loca_sorting(&[1, 2, 2, 3, 7], true);
+
+        // Unsorted
+        check_loca_sorting(&[1, 0], false);
+        check_loca_sorting(&[1, 3, 2], false);
+        check_loca_sorting(&[2, 1, 3], false);
+        check_loca_sorting(&[1, 2, 3, 2, 7], false);
     }
 }

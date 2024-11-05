@@ -248,6 +248,7 @@ impl<'a> GlyphPatches<'a> {
         GlyphDataIterator {
             patches: self,
             offset_iterator: it,
+            previous_gid: None,
             failed: false,
         }
     }
@@ -260,6 +261,7 @@ where
 {
     patches: &'a GlyphPatches<'a>,
     offset_iterator: T,
+    previous_gid: Option<GlyphId>,
     failed: bool,
 }
 
@@ -282,6 +284,16 @@ where
                 return Some(Err(err));
             }
         };
+
+        if let Some(previous_gid) = self.previous_gid {
+            if gid <= previous_gid {
+                self.failed = true;
+                return Some(Err(ReadError::MalformedData(
+                    "Glyph IDs are unsorted or duplicated.",
+                )));
+            }
+        }
+        self.previous_gid = Some(gid);
 
         let len = match end
             .to_u32()
@@ -503,6 +515,48 @@ mod tests {
     }
 
     #[test]
+    fn glyph_keyed_glyph_data_non_ascending_gids() {
+        let mut builder = test_data::glyf_u16_glyph_patches();
+        builder.write_at("gid_8", 6);
+        let table =
+            GlyphPatches::read(FontData::new(builder.as_slice()), GlyphKeyedFlags::NONE).unwrap();
+
+        let it = table.glyph_data_for_table(0);
+
+        assert_eq!(
+            it.collect::<Vec<_>>(),
+            vec![
+                Ok((GlyphId::new(2), b"abc".as_slice())),
+                Ok((GlyphId::new(7), b"defg".as_slice())),
+                Err(ReadError::MalformedData(
+                    "Glyph IDs are unsorted or duplicated."
+                )),
+            ]
+        );
+    }
+
+    #[test]
+    fn glyph_keyed_glyph_data_duplicate_gids() {
+        let mut builder = test_data::glyf_u16_glyph_patches();
+        builder.write_at("gid_8", 7);
+        let table =
+            GlyphPatches::read(FontData::new(builder.as_slice()), GlyphKeyedFlags::NONE).unwrap();
+
+        let it = table.glyph_data_for_table(0);
+
+        assert_eq!(
+            it.collect::<Vec<_>>(),
+            vec![
+                Ok((GlyphId::new(2), b"abc".as_slice())),
+                Ok((GlyphId::new(7), b"defg".as_slice())),
+                Err(ReadError::MalformedData(
+                    "Glyph IDs are unsorted or duplicated."
+                )),
+            ]
+        );
+    }
+
+    #[test]
     fn glyph_keyed_glyph_data_for_one_table_non_ascending_offsets() {
         let mut builder = test_data::glyf_u16_glyph_patches();
         let gid_13 = builder.offset_for("gid_13_data") as u32;
@@ -520,7 +574,7 @@ mod tests {
             vec![
                 Ok((GlyphId::new(2), b"abc".as_slice())),
                 Ok((GlyphId::new(7), b"defg".as_slice())),
-                Ok((GlyphId::new(8), b"hijkl".as_slice())), // TODO XXXXX
+                Ok((GlyphId::new(8), b"hijkl".as_slice())),
                 Err(ReadError::MalformedData(
                     "glyph data offsets are not ascending."
                 )),

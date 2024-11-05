@@ -1,12 +1,12 @@
 //! OpenType Layout common table formats
 
-#[path = "./lookupflag.rs"]
-mod lookupflag;
+mod feature;
+mod lookup_flag;
 mod script;
 
 use core::cmp::Ordering;
 
-pub use lookupflag::LookupFlag;
+pub use lookup_flag::LookupFlag;
 pub use script::{ScriptTags, SelectedScript, UNICODE_TO_NEW_OPENTYPE_SCRIPT_TAGS};
 
 use super::variations::DeltaSetIndex;
@@ -362,6 +362,31 @@ impl From<VariationIndex<'_>> for DeltaSetIndex {
             outer: src.delta_set_outer_index(),
             inner: src.delta_set_inner_index(),
         }
+    }
+}
+
+/// Combination of a tag and a child table.
+///
+/// Used in script and feature lists where a data structure has an array
+/// of records with each containing a tag and an offset to a table. This
+/// allows us to provide convenience methods that return both values.
+#[derive(Clone)]
+pub struct TaggedElement<T> {
+    pub tag: Tag,
+    pub element: T,
+}
+
+impl<T> TaggedElement<T> {
+    pub fn new(tag: Tag, element: T) -> Self {
+        Self { tag, element }
+    }
+}
+
+impl<T> std::ops::Deref for TaggedElement<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.element
     }
 }
 

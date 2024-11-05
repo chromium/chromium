@@ -1,6 +1,6 @@
-//! Additional support for working with OpenType scripts.
+//! Additional support for working with OpenType scripts and language systems.
 
-use super::{ScriptList, Tag};
+use super::{FeatureList, LangSys, ReadError, Script, ScriptList, Tag, TaggedElement};
 use std::ops::Deref;
 
 /// A script chosen from a set of candidate tags.
@@ -23,6 +23,19 @@ impl<'a> ScriptList<'a> {
             .binary_search_by_key(&tag, |rec| rec.script_tag())
             .map(|index| index as u16)
             .ok()
+    }
+
+    /// Returns the tag and script at the given index.
+    pub fn get(&self, index: u16) -> Result<TaggedElement<Script<'a>>, ReadError> {
+        self.script_records()
+            .get(index as usize)
+            .ok_or(ReadError::OutOfBounds)
+            .and_then(|rec| {
+                Ok(TaggedElement::new(
+                    rec.script_tag(),
+                    rec.script(self.offset_data())?,
+                ))
+            })
     }
 
     /// Finds the first available script that matches one of the given tags.
@@ -64,6 +77,51 @@ impl<'a> ScriptList<'a> {
             }
         }
         None
+    }
+}
+
+impl<'a> Script<'a> {
+    /// If the script contains a language system with the given tag, returns
+    /// the index.
+    pub fn lang_sys_index_for_tag(&self, tag: Tag) -> Option<u16> {
+        self.lang_sys_records()
+            .binary_search_by_key(&tag, |rec| rec.lang_sys_tag())
+            .map(|index| index as u16)
+            .ok()
+    }
+
+    /// Returns the language system with the given index.
+    pub fn lang_sys(&self, index: u16) -> Result<TaggedElement<LangSys<'a>>, ReadError> {
+        self.lang_sys_records()
+            .get(index as usize)
+            .ok_or(ReadError::OutOfBounds)
+            .and_then(|rec| {
+                Ok(TaggedElement::new(
+                    rec.lang_sys_tag(),
+                    rec.lang_sys(self.offset_data())?,
+                ))
+            })
+    }
+}
+
+impl<'a> LangSys<'a> {
+    /// If the language system references a feature with the given tag,
+    /// returns the index of that feature in the specified feature list.
+    ///
+    /// The feature list can be obtained from the `feature_list` method on
+    /// the parent [Gsub](crate::tables::gsub::Gsub) or
+    /// [Gpos](crate::tables::gpos::Gpos) tables.
+    pub fn feature_index_for_tag(&self, list: &FeatureList, tag: Tag) -> Option<u16> {
+        let records = list.feature_records();
+        self.feature_indices()
+            .iter()
+            .map(|ix| ix.get())
+            .find(|&feature_ix| {
+                records
+                    .get(feature_ix as usize)
+                    .map(|rec| rec.feature_tag())
+                    == Some(tag)
+            })
     }
 }
 
@@ -271,5 +329,57 @@ mod tests {
                 is_fallback: true,
             }
         );
+    }
+
+    #[test]
+    fn script_list_get() {
+        const LATN: Tag = Tag::new(b"latn");
+        let font = FontRef::new(font_test_data::CANTARELL_VF_TRIMMED).unwrap();
+        let gsub = font.gsub().unwrap();
+        let script_list = gsub.script_list().unwrap();
+        let latn_script_index = script_list.index_for_tag(LATN).unwrap();
+        assert_eq!(latn_script_index, 1);
+        let script = script_list.get(latn_script_index).unwrap();
+        assert_eq!(script.tag, LATN);
+    }
+
+    #[test]
+    fn script_lang_sys_helpers() {
+        const TRK: Tag = Tag::new(b"TRK ");
+        let font = FontRef::new(font_test_data::CANTARELL_VF_TRIMMED).unwrap();
+        let gsub = font.gsub().unwrap();
+        let script_list = gsub.script_list().unwrap();
+        let script = script_list.get(1).unwrap();
+        let lang_sys_index = script.lang_sys_index_for_tag(TRK).unwrap();
+        assert_eq!(lang_sys_index, 0);
+        assert_eq!(script.lang_sys(lang_sys_index).unwrap().tag, TRK);
+    }
+
+    #[test]
+    fn feature_index_for_tag() {
+        let font = FontRef::new(font_test_data::MATERIAL_SYMBOLS_SUBSET).unwrap();
+        let gsub = font.gsub().unwrap();
+        let script_list = gsub.script_list().unwrap();
+        let feature_list = gsub.feature_list().unwrap();
+        let lang_sys = script_list
+            .get(1)
+            .unwrap()
+            .default_lang_sys()
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            lang_sys.feature_index_for_tag(&feature_list, Tag::new(b"rclt")),
+            Some(0)
+        );
+        assert_eq!(
+            lang_sys.feature_index_for_tag(&feature_list, Tag::new(b"rlig")),
+            Some(1)
+        );
+        for tag in [b"locl", b"abvs", b"liga"] {
+            assert_eq!(
+                lang_sys.feature_index_for_tag(&feature_list, Tag::new(tag)),
+                None
+            );
+        }
     }
 }
