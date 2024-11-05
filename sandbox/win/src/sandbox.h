@@ -277,8 +277,8 @@ class [[clang::lto_visibility_public]] BrokerServicesTargetTracker {
 // Used internally by SpawnTarget() to return process launch info from a task.
 struct [[clang::lto_visibility_public]] CreateTargetResult {
   base::win::ScopedProcessInformation process_info;
-  DWORD last_error;
-  ResultCode result_code;
+  DWORD last_error = ERROR_SUCCESS;
+  ResultCode result_code = SBOX_ALL_OK;
 };
 
 // This class configures BrokerServices to use parallel or synchronous process
