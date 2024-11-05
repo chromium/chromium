@@ -24,14 +24,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_DECODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_DECODER_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 
@@ -91,8 +87,8 @@ class PLATFORM_EXPORT ImagePlanes final {
   //
   // TODO(crbug/910276): To support YUVA, ImagePlanes needs to support a
   // variable number of planes.
-  ImagePlanes(void* planes[cc::kNumYUVPlanes],
-              const wtf_size_t row_bytes[cc::kNumYUVPlanes],
+  ImagePlanes(base::span<void*, cc::kNumYUVPlanes> planes,
+              base::span<const wtf_size_t, cc::kNumYUVPlanes> row_bytes,
               SkColorType color_type);
 
   void* Plane(cc::YUVIndex);
@@ -102,9 +98,9 @@ class PLATFORM_EXPORT ImagePlanes final {
   bool HasCompleteScan() const { return has_complete_scan_; }
 
  private:
-  void* planes_[cc::kNumYUVPlanes];
-  wtf_size_t row_bytes_[cc::kNumYUVPlanes];
-  SkColorType color_type_;
+  std::array<void*, cc::kNumYUVPlanes> planes_;
+  std::array<wtf_size_t, cc::kNumYUVPlanes> row_bytes_;
+  SkColorType color_type_ = kUnknown_SkColorType;
   bool has_complete_scan_ = false;
 };
 
@@ -656,7 +652,7 @@ void ImageDecoder::UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
   DEFINE_BPP_HISTOGRAM(density_point_7_mp_histogram, "0.7MP");
   DEFINE_BPP_HISTOGRAM(density_point_8_mp_histogram, "0.8MP");
   DEFINE_BPP_HISTOGRAM(density_point_9_mp_histogram, "0.9MP");
-  static CustomCountHistogram* const density_histogram_small[9] = {
+  static std::array<CustomCountHistogram* const, 9> density_histogram_small = {
       &density_point_1_mp_histogram, &density_point_2_mp_histogram,
       &density_point_3_mp_histogram, &density_point_4_mp_histogram,
       &density_point_5_mp_histogram, &density_point_6_mp_histogram,
@@ -676,7 +672,7 @@ void ImageDecoder::UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
   DEFINE_BPP_HISTOGRAM(density_11_mp_histogram, "11MP");
   DEFINE_BPP_HISTOGRAM(density_12_mp_histogram, "12MP");
   DEFINE_BPP_HISTOGRAM(density_13_mp_histogram, "13MP");
-  static CustomCountHistogram* const density_histogram_big[13] = {
+  static std::array<CustomCountHistogram* const, 13> density_histogram_big = {
       &density_1_mp_histogram,  &density_2_mp_histogram,
       &density_3_mp_histogram,  &density_4_mp_histogram,
       &density_5_mp_histogram,  &density_6_mp_histogram,

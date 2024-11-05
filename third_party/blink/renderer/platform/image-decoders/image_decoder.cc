@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/heap_array.h"
@@ -996,21 +997,17 @@ void ImageDecoder::ApplyExifMetadata(const SkData* exif_data,
 }
 
 ImagePlanes::ImagePlanes() {
-  color_type_ = kUnknown_SkColorType;
-  for (int i = 0; i < cc::kNumYUVPlanes; ++i) {
-    planes_[i] = nullptr;
-    row_bytes_[i] = 0;
-  }
+  std::ranges::fill(planes_, nullptr);
+  std::ranges::fill(row_bytes_, 0);
 }
 
-ImagePlanes::ImagePlanes(void* planes[cc::kNumYUVPlanes],
-                         const wtf_size_t row_bytes[cc::kNumYUVPlanes],
-                         SkColorType color_type)
+ImagePlanes::ImagePlanes(
+    base::span<void*, cc::kNumYUVPlanes> planes,
+    base::span<const wtf_size_t, cc::kNumYUVPlanes> row_bytes,
+    SkColorType color_type)
     : color_type_(color_type) {
-  for (int i = 0; i < cc::kNumYUVPlanes; ++i) {
-    planes_[i] = planes[i];
-    row_bytes_[i] = row_bytes[i];
-  }
+  base::span(planes_).copy_from(planes);
+  base::span(row_bytes_).copy_from(row_bytes);
 }
 
 void* ImagePlanes::Plane(cc::YUVIndex index) {

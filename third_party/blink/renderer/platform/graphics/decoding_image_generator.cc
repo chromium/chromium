@@ -295,8 +295,8 @@ bool DecodingImageGenerator::GetYUVAPlanes(
   ScopedSegmentReaderDataLocker lock_data(data_.get());
   return frame_generator_->DecodeToYUV(
       data_.get(), static_cast<wtf_size_t>(frame_index),
-      pixmaps.plane(0).colorType(), plane_sizes.data(), plane_addrs.data(),
-      plane_row_bytes.data(), client_id);
+      pixmaps.plane(0).colorType(), plane_sizes, plane_addrs, plane_row_bytes,
+      client_id);
 }
 
 SkISize DecodingImageGenerator::GetSupportedDecodeSize(
