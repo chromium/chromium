@@ -938,18 +938,20 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   _extensionSearchEngineDataUpdaters.clear();
 
-  // _localStatePrefChangeRegistrar is observing the PrefService, which is owned
-  // indirectly by _chromeMain (through the ProfileIOS).
-  // Unregister the observer before the service is destroyed.
+  // _localStatePrefChangeRegistrar is observing the local state PrefService,
+  // which is owned indirectly by _chromeMain (through the ApplicationContext).
+  // Unregister the observer before the ApplicationContext is destroyed.
   _localStatePrefChangeRegistrar.RemoveAll();
 
-  // Under the UIScene API, the scene delegate does not receive
-  // sceneDidDisconnect: notifications on app termination. We mark remaining
-  // connected scene states as disconnected in order to allow services to
-  // properly unregister their observers and tear down remaining UI.
-  for (SceneState* sceneState in self.appState.connectedScenes) {
-    sceneState.activationLevel = SceneActivationLevelDisconnected;
+  // Inform all the ProfileControllers that they will be destroyed in order
+  // to allow them to perform all required cleanup before the application
+  // terminates.
+  for (const auto& pair : _profileControllers) {
+    ProfileController* controller = pair.second;
+    [controller shutdown];
   }
+
+  _profileControllers.clear();
 
 #if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
   // _chromeMain.reset() is a blocking call that regularly causes

@@ -43,6 +43,7 @@ source_set("profile_controller") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/device_orientation",
   ]

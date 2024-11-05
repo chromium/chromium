@@ -21,6 +21,10 @@
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Informs the ProfileController that it will be destroyed and that it
+// should perform any cleanup required.
+- (void)shutdown;
+
 @end
 
 #endif  // IOS_CHROME_APP_PROFILE_PROFILE_CONTROLLER_H_

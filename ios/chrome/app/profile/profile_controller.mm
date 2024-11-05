@@ -17,6 +17,7 @@
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 
@@ -35,6 +36,16 @@
     [_state addObserver:self];
   }
   return self;
+}
+
+- (void)shutdown {
+  // Under the UIScene API, -sceneDidDisconnect: notification is not sent to
+  // the UISceneDelegate on app termination. Mark all connected scene states
+  // as disconnected in order to allow the services to properly unregister
+  // their observers and tear down the remaining UI.
+  for (SceneState* sceneState in _state.connectedScenes) {
+    sceneState.activationLevel = SceneActivationLevelDisconnected;
+  }
 }
 
 #pragma mark ProfileStateObserver
