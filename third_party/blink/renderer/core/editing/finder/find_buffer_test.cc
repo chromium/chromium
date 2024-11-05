@@ -1123,4 +1123,15 @@ TEST_F(FindBufferTest, FindRubyOnAnnotation) {
   }
 }
 
+// crbug.com/376720481
+TEST_P(FindBufferParamTest, PositionAfterBlock) {
+  SetBodyContent("<div><p><ruby>境界面<rt>インターフェース</ruby></div>cw");
+  FindBuffer buffer(WholeDocumentRange(), GetParam());
+  FindResults results = buffer.FindMatches("cw", kCaseInsensitive);
+  EXPECT_EQ(0u, results.CountForTesting());
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(
+                *GetDocument().body()->lastChild()),
+            buffer.PositionAfterBlock());
+}
+
 }  // namespace blink

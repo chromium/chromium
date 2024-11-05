@@ -207,7 +207,7 @@ class ChunkGraphBuilder {
         }
       }
       if (node == &block_ancestor) {
-        node = FlatTreeTraversal::NextSibling(*node);
+        node = FlatTreeTraversal::NextSkippingChildren(*node);
         break;
       }
       node = FlatTreeTraversal::NextSibling(*node);
@@ -215,7 +215,7 @@ class ChunkGraphBuilder {
     if (chunk_text_list_.size() > 0) {
       parent_chunk_->Link(PushChunk(String(kAnyLevel)));
     }
-    return next_start.value_or(node);
+    return next_start.value_or(node ? node : just_after_block);
   }
 
   const HeapVector<Member<CorpusChunk>>& ChunkList() const {
