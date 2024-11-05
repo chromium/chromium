@@ -2166,8 +2166,8 @@ size_t CookieMonster::GarbageCollect(const Time& current,
 
       base::Time earliest_non_secure_access_time;
       size_t just_deleted = GarbageCollectLeastRecentlyAccessed(
-          current, safe_date, non_secure_purge_goal, non_secure_cookie_its,
-          &earliest_non_secure_access_time);
+          current, safe_date, non_secure_purge_goal,
+          std::move(non_secure_cookie_its), &earliest_non_secure_access_time);
       num_deleted += just_deleted;
 
       if (secure_cookie_its.size() == 0) {
@@ -2181,7 +2181,7 @@ size_t CookieMonster::GarbageCollect(const Time& current,
                                                     secure_cookie_its.size());
         base::Time earliest_secure_access_time;
         num_deleted += GarbageCollectLeastRecentlyAccessed(
-            current, safe_date, secure_purge_goal, secure_cookie_its,
+            current, safe_date, secure_purge_goal, std::move(secure_cookie_its),
             &earliest_secure_access_time);
 
         if (!earliest_non_secure_access_time.is_null() &&

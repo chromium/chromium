@@ -455,8 +455,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   auto cc = std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), parsed_cookie.Name(),
-      parsed_cookie.Value(), cookie_domain, cookie_path, creation_time,
-      cookie_expires, creation_time,
+      parsed_cookie.Value(), std::move(cookie_domain), std::move(cookie_path),
+      creation_time, cookie_expires, creation_time,
       /*last_update=*/base::Time::Now(), parsed_cookie.IsSecure(),
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
       cookie_partition_key, source_scheme, source_port, source_type);
@@ -668,8 +668,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     return nullptr;
 
   auto cc = std::make_unique<CanonicalCookie>(
-      base::PassKey<CanonicalCookie>(), name, value, cookie_domain,
-      encoded_cookie_path, creation_time, expiration_time, last_access_time,
+      base::PassKey<CanonicalCookie>(), name, value, std::move(cookie_domain),
+      std::move(encoded_cookie_path), creation_time, expiration_time,
+      last_access_time,
       /*last_update=*/base::Time::Now(), secure, http_only, same_site, priority,
       partition_key, source_scheme, source_port, CookieSourceType::kOther);
   DCHECK(cc->IsCanonical());

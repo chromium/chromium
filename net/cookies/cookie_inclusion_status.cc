@@ -379,13 +379,15 @@ std::string CookieInclusionStatus::GetDebugString() const {
 
 bool CookieInclusionStatus::HasExactlyExclusionReasonsForTesting(
     std::vector<CookieInclusionStatus::ExclusionReason> reasons) const {
-  CookieInclusionStatus expected = MakeFromReasonsForTesting(reasons);
+  CookieInclusionStatus expected =
+      MakeFromReasonsForTesting(std::move(reasons));
   return expected.exclusion_reasons_ == exclusion_reasons_;
 }
 
 bool CookieInclusionStatus::HasExactlyWarningReasonsForTesting(
     std::vector<WarningReason> reasons) const {
-  CookieInclusionStatus expected = MakeFromReasonsForTesting({}, reasons);
+  CookieInclusionStatus expected =
+      MakeFromReasonsForTesting({}, std::move(reasons));
   return expected.warning_reasons_ == warning_reasons_;
 }
 
