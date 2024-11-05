@@ -4,12 +4,14 @@
 
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 
+#import <Accessibility/Accessibility.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
 
 #include <ostream>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/stack_trace.h"
@@ -25,6 +27,31 @@
 // NSAccessibilityProtocols.h
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+namespace ui {
+
+// AXUIElementCopyAttributeValue("AXCustomContent") returns an NSData
+// that contains an NSDictionary in NSKeyedArchiver format.
+// This function unpacks the array of AXCustomContents contained within.
+NSArray<AXCustomContent*>* CustomContentFromArchive(NSData* archive_data) {
+  NSError* error = nil;
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:archive_data
+                                                  error:&error];
+
+  if (error) {
+    return nil;
+  }
+
+  id contents = [unarchiver
+      decodeObjectOfClasses:
+          [NSSet setWithArray:@[ NSArray.class, AXCustomContent.class ]]
+                     forKey:NSKeyedArchiveRootObjectKey];
+
+  return base::apple::ObjCCast<NSArray>(contents);
+}
+
+}  // namespace ui
 
 namespace ui {
 
@@ -212,6 +239,20 @@ AXOptionalNSObject AXElementWrapper::GetAttributeValue(
     AXError result = AXUIElementCopyAttributeValue(
         (__bridge AXUIElementRef)node_, (__bridge CFStringRef)attribute,
         value_ref.InitializeInto());
+
+    // AXCustomContent returns an NSData which contains a NSKeyedArchiver,
+    // which cannot be easily understood. Convert to NSArray of AXCustomContent
+    // objects.
+    if ([attribute isEqualToString:@"AXCustomContent"] &&
+        result == kAXErrorSuccess &&
+        CFGetTypeID(value_ref.get()) == CFDataGetTypeID()) {
+      NSData* data = (__bridge NSData*)value_ref.get();
+      NSArray<AXCustomContent*>* custom_contents =
+          CustomContentFromArchive(data);
+
+      return AXOptionalNSObject(custom_contents);
+    }
+
     return ToOptional(
         (__bridge id)value_ref.get(), result,
         "AXGetAttributeValue(" + base::SysNSStringToUTF8(attribute) + ")");
