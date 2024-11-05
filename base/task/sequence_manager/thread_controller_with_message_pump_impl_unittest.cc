@@ -1146,8 +1146,16 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
   ThreadControllerWithMessagePumpImpl::ResetFeatures();
 }
 
+// TODO(https://crbug.com/341965228): Deflake and re-enable.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThreadControllerActiveAdvancedNesting \
+  DISABLED_ThreadControllerActiveAdvancedNesting
+#else
+#define MAYBE_ThreadControllerActiveAdvancedNesting \
+  ThreadControllerActiveAdvancedNesting
+#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       ThreadControllerActiveAdvancedNesting) {
+       MAYBE_ThreadControllerActiveAdvancedNesting) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1287,8 +1295,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
+// TODO(https://crbug.com/341965228): Deflake and re-enable.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThreadControllerActiveNestedNativeLoop \
+  DISABLED_ThreadControllerActiveNestedNativeLoop
+#else
+#define MAYBE_ThreadControllerActiveNestedNativeLoop \
+  ThreadControllerActiveNestedNativeLoop
+#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       ThreadControllerActiveNestedNativeLoop) {
+       MAYBE_ThreadControllerActiveNestedNativeLoop) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1397,8 +1413,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
+// TODO(https://crbug.com/341965228): Deflake and re-enable.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThreadControllerActiveUnusedNativeLoop \
+  DISABLED_ThreadControllerActiveUnusedNativeLoop
+#else
+#define MAYBE_ThreadControllerActiveUnusedNativeLoop \
+  ThreadControllerActiveUnusedNativeLoop
+#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       ThreadControllerActiveUnusedNativeLoop) {
+       MAYBE_ThreadControllerActiveUnusedNativeLoop) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1473,8 +1497,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
+// TODO(https://crbug.com/341965228): Deflake and re-enable.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThreadControllerActiveNestedNativeLoopWithoutAllowance \
+  DISABLED_ThreadControllerActiveNestedNativeLoopWithoutAllowance
+#else
+#define MAYBE_ThreadControllerActiveNestedNativeLoopWithoutAllowance \
+  ThreadControllerActiveNestedNativeLoopWithoutAllowance
+#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       ThreadControllerActiveNestedNativeLoopWithoutAllowance) {
+       MAYBE_ThreadControllerActiveNestedNativeLoopWithoutAllowance) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1558,8 +1590,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
+// TODO(https://crbug.com/341965228): Deflake and re-enable.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask \
+  DISABLED_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask
+#else
+#define MAYBE_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask \
+  ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask
+#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask) {
+       MAYBE_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1646,8 +1686,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
+// TODO(https://crbug.com/341965228): Deflake and re-enable.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThreadControllerActiveNativeLoopsReachingIdle \
+  DISABLED_ThreadControllerActiveNativeLoopsReachingIdle
+#else
+#define MAYBE_ThreadControllerActiveNativeLoopsReachingIdle \
+  ThreadControllerActiveNativeLoopsReachingIdle
+#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       ThreadControllerActiveNativeLoopsReachingIdle) {
+       MAYBE_ThreadControllerActiveNativeLoopsReachingIdle) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1751,8 +1799,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
+// TODO(https://crbug.com/341965228): Deflake and re-enable.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThreadControllerActiveQuitNestedWhileApplicationIdle \
+  DISABLED_ThreadControllerActiveQuitNestedWhileApplicationIdle
+#else
+#define MAYBE_ThreadControllerActiveQuitNestedWhileApplicationIdle \
+  ThreadControllerActiveQuitNestedWhileApplicationIdle
+#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       ThreadControllerActiveQuitNestedWhileApplicationIdle) {
+       MAYBE_ThreadControllerActiveQuitNestedWhileApplicationIdle) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
