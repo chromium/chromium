@@ -216,6 +216,17 @@ void CountAudioConstraintUses(ExecutionContext* context,
   }
   if (RequestUsesDiscreteConstraint(
           constraints,
+          &MediaTrackConstraintSetPlatform::goog_echo_cancellation)) {
+    counter.Count(WebFeature::kMediaStreamConstraintsGoogEchoCancellation);
+  }
+  if (RequestUsesDiscreteConstraint(constraints,
+                                    &MediaTrackConstraintSetPlatform::
+                                        goog_experimental_echo_cancellation)) {
+    counter.Count(
+        WebFeature::kMediaStreamConstraintsGoogExperimentalEchoCancellation);
+  }
+  if (RequestUsesDiscreteConstraint(
+          constraints,
           &MediaTrackConstraintSetPlatform::goog_auto_gain_control)) {
     counter.Count(WebFeature::kMediaStreamConstraintsGoogAutoGainControl);
   }

@@ -274,6 +274,8 @@ struct MediaTrackConstraintSetPlatform {
   // the legacy name interface.
   StringConstraint media_stream_source;  // tab, screen, desktop, system
   BooleanConstraint render_to_associated_sink;
+  BooleanConstraint goog_echo_cancellation;
+  BooleanConstraint goog_experimental_echo_cancellation;
   BooleanConstraint goog_auto_gain_control;
   BooleanConstraint goog_noise_suppression;
   BooleanConstraint goog_highpass_filter;
