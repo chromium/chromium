@@ -59,7 +59,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
-#include "chrome/browser/ui/webui/certificate_viewer_ui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

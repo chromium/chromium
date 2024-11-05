@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "content/public/browser/web_contents.h"
 
 void ShowCertificateDialog(base::WeakPtr<content::WebContents> web_contents,

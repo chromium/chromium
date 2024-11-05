@@ -3649,10 +3649,10 @@ static_library("ui") {
     sources += [
       "certificate_dialogs.cc",
       "certificate_dialogs.h",
-      "webui/certificate_viewer_ui.cc",
-      "webui/certificate_viewer_ui.h",
-      "webui/certificate_viewer_webui.cc",
-      "webui/certificate_viewer_webui.h",
+      "webui/certificate_viewer/certificate_viewer_ui.cc",
+      "webui/certificate_viewer/certificate_viewer_ui.h",
+      "webui/certificate_viewer/certificate_viewer_webui.cc",
+      "webui/certificate_viewer/certificate_viewer_webui.h",
     ]
     deps += [ "//third_party/boringssl" ]
     if (use_nss_certs) {

@@ -7,10 +7,10 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/webui/certificate_viewer_ui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/certificate_viewer_resources.h"
@@ -69,5 +69,4 @@ CertificateViewerUI::CertificateViewerUI(content::WebUI* web_ui)
                               chrome::kChromeUICertificateViewerHost);
 }
 
-CertificateViewerUI::~CertificateViewerUI() {
-}
+CertificateViewerUI::~CertificateViewerUI() {}

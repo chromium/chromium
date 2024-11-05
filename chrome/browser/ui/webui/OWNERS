@@ -7,9 +7,6 @@ per-file device_log_ui*=stevenjb@chromium.org
 # on all platforms.
 per-file certificates*=file://net/cert/OWNERS
 per-file certificate_manager_localized_strings_provider*=file://net/cert/OWNERS
-# TODO(crbug.com/376709930): move certificate viewer files into a separate
-# directory.
-per-file certificate_viewer*=file://net/cert/OWNERS
 
 per-file inspect_ui*=dgozman@chromium.org
 per-file inspect_ui*=caseq@chromium.org

@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 
 #include <memory>
 #include <string_view>
@@ -27,7 +27,7 @@
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
-#include "chrome/browser/ui/webui/certificate_viewer_ui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "chrome/common/url_constants.h"
@@ -128,8 +128,9 @@ CertNodeBuilder& CertNodeBuilder::Child(base::Value::Dict child) {
 
 CertNodeBuilder& CertNodeBuilder::ChildIfNotNullopt(
     std::optional<base::Value::Dict> child) {
-  if (child)
+  if (child) {
     return Child(std::move(*child));
+  }
   return *this;
 }
 
@@ -144,10 +145,11 @@ base::Value::Dict CertNodeBuilder::Build() {
 
 std::string HandleOptionalOrError(
     const x509_certificate_model::OptionalStringOrError& s) {
-  if (absl::holds_alternative<x509_certificate_model::Error>(s))
+  if (absl::holds_alternative<x509_certificate_model::Error>(s)) {
     return l10n_util::GetStringUTF8(IDS_CERT_DUMP_ERROR);
-  else if (absl::holds_alternative<x509_certificate_model::NotPresent>(s))
+  } else if (absl::holds_alternative<x509_certificate_model::NotPresent>(s)) {
     return l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
+  }
   return absl::get<std::string>(s);
 }
 
@@ -220,8 +222,9 @@ std::string DialogArgsForCertList(
     cert_node.Set("label", base::Value(cert.GetTitle()));
     cert_node.SetByDottedPath("payload.index", base::Value(index));
     // Add the child from the previous iteration.
-    if (!children.empty())
+    if (!children.empty()) {
       cert_node.Set("children", std::move(children));
+    }
 
     // Add this node to the children list for the next iteration.
     children = base::Value::List();
@@ -412,8 +415,7 @@ CertificateViewerDialogHandler::CertificateViewerDialogHandler(
       certs_(std::move(certs)),
       cert_metadata_(std::move(cert_metadata)) {}
 
-CertificateViewerDialogHandler::~CertificateViewerDialogHandler() {
-}
+CertificateViewerDialogHandler::~CertificateViewerDialogHandler() {}
 
 void CertificateViewerDialogHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -441,8 +443,9 @@ void CertificateViewerDialogHandler::RegisterMessages() {
 void CertificateViewerDialogHandler::HandleExportCertificate(
     const base::Value::List& args) {
   int cert_index = GetCertificateIndex(args[0].GetInt());
-  if (cert_index < 0)
+  if (cert_index < 0) {
     return;
+  }
 
   gfx::NativeWindow window =
       platform_util::GetTopLevel(platform_util::GetViewForWindow(
@@ -461,8 +464,9 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
   AllowJavascript();
   const base::Value& callback_id = args[0];
   int cert_index = GetCertificateIndex(args[1].GetInt());
-  if (cert_index < 0)
+  if (cert_index < 0) {
     return;
+  }
 
   const x509_certificate_model::X509CertificateModel& model =
       certs_[cert_index];

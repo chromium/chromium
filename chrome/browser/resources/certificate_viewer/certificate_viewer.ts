@@ -38,7 +38,7 @@ enum CertificateTrust {
   CERTIFICATE_TRUST_DISTRUSTED = 0,
   CERTIFICATE_TRUST_UNSPECIFIED = 1,
   CERTIFICATE_TRUST_TRUSTED = 2,
-  // LINT.ThenChange(//chrome/browser/ui/webui/certificate_viewer_webui.cc:CertificateTrustType)
+  // LINT.ThenChange(//chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.cc:CertificateTrustType)
 }
 
 interface CertificateMetadata {
