@@ -68,7 +68,7 @@ export class GraduationApp extends PolymerElement {
     return getTemplate();
   }
 
-  private authResult: AuthResult;
+  private authResult: AuthResult|null = null;
   private currentScreen: Screens;
 
   override ready() {
