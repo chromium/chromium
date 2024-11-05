@@ -52,6 +52,9 @@ class CONTENT_EXPORT TraceReportHandler
   void GetEnabledScenarios(GetEnabledScenariosCallback callback) override;
   void SetEnabledScenarios(const std::vector<std::string>& new_config,
                            SetEnabledScenariosCallback callback) override;
+  void GetPrivacyFilterEnabled(
+      GetPrivacyFilterEnabledCallback callback) override;
+  void SetPrivacyFilterEnabled(bool enable) override;
 
  private:
   void OnGetAllReportsTaskComplete(GetAllTraceReportsCallback callback,

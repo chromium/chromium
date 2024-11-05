@@ -195,6 +195,7 @@ class BackgroundTracingManagerImpl
                            const std::string& scenario_name,
                            const std::string& rule_name,
                            bool privacy_filter_enabled,
+                           bool is_local_scenario,
                            bool force_upload,
                            const base::Token& uuid);
 

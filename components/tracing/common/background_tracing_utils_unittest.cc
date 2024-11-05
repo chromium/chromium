@@ -14,6 +14,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_proto_loader.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/tracing/common/background_tracing_state_manager.h"
+#include "components/tracing/common/pref_names.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -144,6 +147,11 @@ TEST(BackgroundTracingUtilsTest, SetupBackgroundTracingFromProtoConfigFile) {
 TEST(BackgroundTracingUtilsTest, SetupFieldTracingFromFieldTrialOutputPath) {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
+  tracing::RegisterPrefs(pref_service->registry());
+  auto state_manager_ = tracing::BackgroundTracingStateManager::CreateInstance(
+      pref_service.get());
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
 

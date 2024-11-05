@@ -79,7 +79,7 @@ class TRACING_EXPORT BackgroundTracingStateManager {
 
   raw_ptr<PrefService> local_state_ = nullptr;
   std::vector<std::string> enabled_scenarios_;
-  bool privacy_filter_enabled_ = true;
+  bool privacy_filter_enabled_ = false;
 
   BackgroundTracingState last_session_end_state_ =
       BackgroundTracingState::NOT_ACTIVATED;

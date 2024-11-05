@@ -483,6 +483,7 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
     // Startup tracing was already requested earlier for this scenario.
     auto startup_scenario = TracingScenario::Create(
         scenario_config, requires_anonymized_data, enable_package_name_filter,
+        /*is_local_scenario=*/false,
         /*request_startup_tracing=*/false, this);
     field_scenarios_.push_back(std::move(startup_scenario));
     enabled_scenarios_.push_back(field_scenarios_.back().get());
@@ -490,9 +491,9 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
   }
 
   for (const auto& scenario_config : config.scenarios()) {
-    auto scenario =
-        TracingScenario::Create(scenario_config, requires_anonymized_data,
-                                enable_package_name_filter, true, this);
+    auto scenario = TracingScenario::Create(
+        scenario_config, requires_anonymized_data,
+        /*is_local_scenario=*/false, enable_package_name_filter, true, this);
     if (!scenario) {
       return false;
     }
@@ -515,9 +516,9 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
 
   std::vector<std::string> added_scenarios;
   for (const auto& scenario_config : config.scenarios()) {
-    auto scenario =
-        TracingScenario::Create(scenario_config, enable_privacy_filter,
-                                enable_package_name_filter, true, this);
+    auto scenario = TracingScenario::Create(
+        scenario_config, enable_privacy_filter, /*is_local_scenario=*/true,
+        enable_package_name_filter, true, this);
     if (!scenario) {
       continue;
     }
@@ -679,6 +680,7 @@ void BackgroundTracingManagerImpl::SaveTrace(
   }
   OnProtoDataComplete(std::move(trace_data), scenario->scenario_name(),
                       rule_name, scenario->privacy_filter_enabled(),
+                      scenario->is_local_scenario(),
                       /*force_upload=*/force_uploads_, trace_uuid);
 }
 
@@ -823,6 +825,7 @@ void BackgroundTracingManagerImpl::SaveTraceForTesting(
   InitializeTraceReportDatabase(true);
   OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name,
                       /*privacy_filter_enabled*/ true,
+                      /*is_local_scenario=*/false,
                       /*force_upload=*/force_uploads_, uuid);
 }
 
@@ -852,6 +855,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     const std::string& scenario_name,
     const std::string& rule_name,
     bool privacy_filter_enabled,
+    bool is_local_scenario,
     bool force_upload,
     const base::Token& uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -868,6 +872,8 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     SkipUploadReason skip_reason = SkipUploadReason::kNoSkip;
     if (!privacy_filter_enabled) {
       skip_reason = SkipUploadReason::kNotAnonymized;
+    } else if (is_local_scenario) {
+      skip_reason = SkipUploadReason::kLocalScenario;
     } else if (serialized_trace.size() > upload_limit_kb_ * 1024) {
       skip_reason = SkipUploadReason::kSizeLimitExceeded;
     }

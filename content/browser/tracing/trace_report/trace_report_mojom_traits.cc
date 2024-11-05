@@ -19,6 +19,7 @@ EnumTraits<ReportUploadState, content::ReportUploadState>::ToMojom(
     case content::ReportUploadState::kUploaded:
       return ReportUploadState::kUploaded;
   }
+  NOTREACHED();
 }
 
 bool EnumTraits<ReportUploadState, content::ReportUploadState>::FromMojom(
@@ -54,7 +55,10 @@ EnumTraits<SkipUploadReason, content::SkipUploadReason>::ToMojom(
       return SkipUploadReason::kScenarioQuotaExceeded;
     case content::SkipUploadReason::kUploadTimedOut:
       return SkipUploadReason::kUploadTimedOut;
+    case content::SkipUploadReason::kLocalScenario:
+      return SkipUploadReason::kLocalScenario;
   }
+  NOTREACHED();
 }
 
 bool EnumTraits<SkipUploadReason, content::SkipUploadReason>::FromMojom(
@@ -75,6 +79,9 @@ bool EnumTraits<SkipUploadReason, content::SkipUploadReason>::FromMojom(
       return true;
     case SkipUploadReason::kUploadTimedOut:
       *output = content::SkipUploadReason::kUploadTimedOut;
+      return true;
+    case SkipUploadReason::kLocalScenario:
+      *output = content::SkipUploadReason::kLocalScenario;
       return true;
   }
   return false;

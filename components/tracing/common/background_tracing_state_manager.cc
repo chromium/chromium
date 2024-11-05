@@ -179,7 +179,7 @@ void BackgroundTracingStateManager::ResetForTesting() {
   state_ = BackgroundTracingState::NOT_ACTIVATED;
   last_session_end_state_ = BackgroundTracingState::NOT_ACTIVATED;
   enabled_scenarios_ = {};
-  privacy_filter_enabled_ = true;
+  privacy_filter_enabled_ = false;
   Initialize();
 }
 

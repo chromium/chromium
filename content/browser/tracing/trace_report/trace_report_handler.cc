@@ -127,4 +127,15 @@ void TraceReportHandler::SetEnabledScenarios(
   std::move(callback).Run(std::move(response));
 }
 
+void TraceReportHandler::GetPrivacyFilterEnabled(
+    GetPrivacyFilterEnabledCallback callback) {
+  std::move(callback).Run(tracing::BackgroundTracingStateManager::GetInstance()
+                              .privacy_filter_enabled());
+}
+
+void TraceReportHandler::SetPrivacyFilterEnabled(bool enable) {
+  tracing::BackgroundTracingStateManager::GetInstance().UpdatePrivacyFilter(
+      enable);
+}
+
 }  // namespace content

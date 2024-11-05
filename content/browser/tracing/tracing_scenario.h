@@ -169,6 +169,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   static std::unique_ptr<TracingScenario> Create(
       const perfetto::protos::gen::ScenarioConfig& config,
       bool enable_privacy_filter,
+      bool is_local_scenario,
       bool enable_package_name_filter,
       bool request_startup_tracing,
       Delegate* scenario_delegate);
@@ -189,6 +190,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
 
   State current_state() const { return current_state_; }
   bool privacy_filter_enabled() const { return privacy_filtering_enabled_; }
+  bool is_local_scenario() const { return is_local_scenario_; }
   std::string config_hash() const { return config_hash_; }
 
   base::Token GetSessionID() const { return session_id_; }
@@ -197,6 +199,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   TracingScenario(const perfetto::protos::gen::ScenarioConfig& config,
                   Delegate* scenario_delegate,
                   bool enable_privacy_filter,
+                  bool is_local_scenario,
                   bool request_startup_tracing);
 
   bool Initialize(const perfetto::protos::gen::ScenarioConfig& config,
@@ -251,6 +254,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
 
   const std::string config_hash_;
   const bool privacy_filtering_enabled_;
+  const bool is_local_scenario_;
   const bool request_startup_tracing_;
   State current_state_ = State::kDisabled;
   std::vector<std::unique_ptr<BackgroundTracingRule>> setup_rules_;

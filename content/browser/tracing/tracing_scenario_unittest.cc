@@ -226,6 +226,7 @@ class TracingScenarioForTesting : public TracingScenario {
       : TracingScenario(config,
                         delegate,
                         /*enable_privacy_filter=*/false,
+                        /*is_local_scenario=*/true,
                         /*request_startup_tracing=*/true) {
     EXPECT_TRUE(Initialize(config, false));
   }

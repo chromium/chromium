@@ -200,12 +200,13 @@ void NestedTracingScenario::SetState(State new_state) {
 std::unique_ptr<TracingScenario> TracingScenario::Create(
     const perfetto::protos::gen::ScenarioConfig& config,
     bool enable_privacy_filter,
+    bool is_local_scenario,
     bool enable_package_name_filter,
     bool request_startup_tracing,
     Delegate* scenario_delegate) {
   auto scenario = base::WrapUnique(
       new TracingScenario(config, scenario_delegate, enable_privacy_filter,
-                          request_startup_tracing));
+                          is_local_scenario, request_startup_tracing));
   if (!scenario->Initialize(config, enable_package_name_filter)) {
     return nullptr;
   }
@@ -216,10 +217,12 @@ TracingScenario::TracingScenario(
     const perfetto::protos::gen::ScenarioConfig& config,
     Delegate* scenario_delegate,
     bool enable_privacy_filter,
+    bool is_local_scenario,
     bool request_startup_tracing)
     : TracingScenarioBase(config.scenario_name()),
       config_hash_(base::MD5String(config.SerializeAsString())),
       privacy_filtering_enabled_(enable_privacy_filter),
+      is_local_scenario_(is_local_scenario),
       request_startup_tracing_(request_startup_tracing),
       trace_config_(config.trace_config()),
       scenario_delegate_(scenario_delegate) {}
