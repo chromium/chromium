@@ -59,16 +59,16 @@ using ::testing::VariantWith;
 constexpr base::TimeDelta kMetricMetricTime = base::Milliseconds(300);
 
 constexpr auto kAllCategories = std::to_array({
-    PickerCategory::kEditorWrite,
-    PickerCategory::kEditorRewrite,
-    PickerCategory::kLinks,
-    PickerCategory::kEmojisGifs,
-    PickerCategory::kEmojis,
-    PickerCategory::kClipboard,
-    PickerCategory::kDriveFiles,
-    PickerCategory::kLocalFiles,
-    PickerCategory::kDatesTimes,
-    PickerCategory::kUnitsMaths,
+    QuickInsertCategory::kEditorWrite,
+    QuickInsertCategory::kEditorRewrite,
+    QuickInsertCategory::kLinks,
+    QuickInsertCategory::kEmojisGifs,
+    QuickInsertCategory::kEmojis,
+    QuickInsertCategory::kClipboard,
+    QuickInsertCategory::kDriveFiles,
+    QuickInsertCategory::kLocalFiles,
+    QuickInsertCategory::kDatesTimes,
+    QuickInsertCategory::kUnitsMaths,
 });
 
 using MockSearchResultsCallback =
@@ -117,7 +117,7 @@ TEST_F(QuickInsertSearchRequestTest,
   EXPECT_CALL(client(), StartCrosSearch(_, _, _)).Times(0);
 
   QuickInsertSearchRequest request(
-      u"cat", {PickerCategory::kLinks},
+      u"cat", {QuickInsertCategory::kLinks},
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client());
@@ -198,7 +198,7 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
       .Times(AtLeast(1));
 
   QuickInsertSearchRequest request(
-      u"cat", PickerCategory::kLinks,
+      u"cat", QuickInsertCategory::kLinks,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
@@ -236,7 +236,7 @@ TEST_F(QuickInsertSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
       .Times(AtLeast(1));
 
   QuickInsertSearchRequest request(
-      u"cat", PickerCategory::kLinks,
+      u"cat", QuickInsertCategory::kLinks,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
@@ -282,7 +282,7 @@ TEST_F(QuickInsertSearchRequestTest,
   ON_CALL(client(), StartCrosSearch)
       .WillByDefault([&search_started, this](
                          const std::u16string& query,
-                         std::optional<PickerCategory> category,
+                         std::optional<QuickInsertCategory> category,
                          PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -351,7 +351,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -387,7 +387,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -430,7 +430,7 @@ TEST_F(
   ON_CALL(client(), StartCrosSearch)
       .WillByDefault([&search_started, this](
                          const std::u16string& query,
-                         std::optional<PickerCategory> category,
+                         std::optional<QuickInsertCategory> category,
                          PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -523,7 +523,7 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
       .Times(AtLeast(1));
 
   QuickInsertSearchRequest request(
-      u"cat", PickerCategory::kLocalFiles,
+      u"cat", QuickInsertCategory::kLocalFiles,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
@@ -569,7 +569,7 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -605,7 +605,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -700,7 +700,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(AtLeast(1));
 
   QuickInsertSearchRequest request(
-      u"cat", /*category=*/PickerCategory::kDriveFiles,
+      u"cat", /*category=*/QuickInsertCategory::kDriveFiles,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
@@ -748,7 +748,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -784,7 +784,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -863,7 +863,7 @@ TEST_F(QuickInsertSearchRequestTest,
   ASSERT_EQ(0, exploded.day_of_week);
 
   QuickInsertSearchRequest request(
-      u"next Friday", PickerCategory::kDatesTimes,
+      u"next Friday", QuickInsertCategory::kDatesTimes,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
@@ -911,7 +911,7 @@ TEST_F(QuickInsertSearchRequestTest,
       .Times(1);
 
   QuickInsertSearchRequest request(
-      u"1 + 1", PickerCategory::kUnitsMaths,
+      u"1 + 1", QuickInsertCategory::kUnitsMaths,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
@@ -919,27 +919,29 @@ TEST_F(QuickInsertSearchRequestTest,
 
 TEST_F(QuickInsertSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kLinks), _))
+              StartCrosSearch(Eq(u"ant"), Eq(QuickInsertCategory::kLinks), _))
       .Times(1);
-  EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"bat"), Eq(PickerCategory::kDriveFiles), _))
+  EXPECT_CALL(
+      client(),
+      StartCrosSearch(Eq(u"bat"), Eq(QuickInsertCategory::kDriveFiles), _))
       .Times(1);
-  EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kLocalFiles), _))
+  EXPECT_CALL(
+      client(),
+      StartCrosSearch(Eq(u"cat"), Eq(QuickInsertCategory::kLocalFiles), _))
       .Times(1);
 
   {
-    QuickInsertSearchRequest request(u"ant", PickerCategory::kLinks,
+    QuickInsertSearchRequest request(u"ant", QuickInsertCategory::kLinks,
                                      base::DoNothing(), base::DoNothing(),
                                      &client(), kAllCategories);
   }
   {
-    QuickInsertSearchRequest request(u"bat", PickerCategory::kDriveFiles,
+    QuickInsertSearchRequest request(u"bat", QuickInsertCategory::kDriveFiles,
                                      base::DoNothing(), base::DoNothing(),
                                      &client(), kAllCategories);
   }
   {
-    QuickInsertSearchRequest request(u"cat", PickerCategory::kLocalFiles,
+    QuickInsertSearchRequest request(u"cat", QuickInsertCategory::kLocalFiles,
                                      base::DoNothing(), base::DoNothing(),
                                      &client(), kAllCategories);
   }
@@ -1000,7 +1002,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsClipboardMetrics) {
 class QuickInsertSearchRequestEditorTest
     : public QuickInsertSearchRequestTest,
       public testing::WithParamInterface<
-          std::pair<PickerCategory, PickerSearchSource>> {};
+          std::pair<QuickInsertCategory, PickerSearchSource>> {};
 
 TEST_P(QuickInsertSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
   const auto& [category, source] = GetParam();
@@ -1049,15 +1051,15 @@ TEST_P(QuickInsertSearchRequestEditorTest, RecordsEditorMetrics) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     QuickInsertSearchRequestEditorTest,
-    testing::Values(std::make_pair(PickerCategory::kEditorWrite,
+    testing::Values(std::make_pair(QuickInsertCategory::kEditorWrite,
                                    PickerSearchSource::kEditorWrite),
-                    std::make_pair(PickerCategory::kEditorRewrite,
+                    std::make_pair(QuickInsertCategory::kEditorRewrite,
                                    PickerSearchSource::kEditorRewrite)));
 
 class QuickInsertSearchRequestLobsterTest
     : public QuickInsertSearchRequestTest,
       public testing::WithParamInterface<
-          std::pair<PickerCategory, PickerSearchSource>> {};
+          std::pair<QuickInsertCategory, PickerSearchSource>> {};
 
 TEST_P(QuickInsertSearchRequestLobsterTest, ShowsResultsFromLobsterSearch) {
   const auto& [category, source] = GetParam();
@@ -1107,9 +1109,9 @@ TEST_P(QuickInsertSearchRequestLobsterTest, RecordsLobsterMetrics) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     QuickInsertSearchRequestLobsterTest,
-    testing::Values(std::make_pair(PickerCategory::kLobster,
+    testing::Values(std::make_pair(QuickInsertCategory::kLobster,
                                    PickerSearchSource::kLobster),
-                    std::make_pair(PickerCategory::kLobster,
+                    std::make_pair(QuickInsertCategory::kLobster,
                                    PickerSearchSource::kLobster)));
 
 TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
@@ -1142,7 +1144,7 @@ TEST_F(QuickInsertSearchRequestTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.GetCallback(), &client(),
-      base::span_from_ref(PickerCategory::kUnitsMaths));
+      base::span_from_ref(QuickInsertCategory::kUnitsMaths));
 
   bool interrupted = done_callback.Get();
   EXPECT_FALSE(interrupted);
@@ -1179,7 +1181,7 @@ TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledAfterClipboard) {
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.GetCallback(), &client(),
-      base::span_from_ref(PickerCategory::kClipboard));
+      base::span_from_ref(QuickInsertCategory::kClipboard));
   EXPECT_FALSE(done_callback.IsReady());
   ClipboardHistoryController::GetHistoryValuesCallback get_history_values =
       get_history_values_future.Take();
@@ -1203,7 +1205,7 @@ TEST_F(QuickInsertSearchRequestTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.GetCallback(), &client(),
-      base::span_from_ref(PickerCategory::kLinks));
+      base::span_from_ref(QuickInsertCategory::kLinks));
   EXPECT_FALSE(done_callback.IsReady());
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox, {});
 
@@ -1221,8 +1223,9 @@ TEST_F(QuickInsertSearchRequestTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.GetCallback(), &client(),
-      std::to_array({PickerCategory::kLinks, PickerCategory::kDriveFiles,
-                     PickerCategory::kLocalFiles}));
+      std::to_array({QuickInsertCategory::kLinks,
+                     QuickInsertCategory::kDriveFiles,
+                     QuickInsertCategory::kLocalFiles}));
   EXPECT_FALSE(done_callback.IsReady());
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox, {});
   EXPECT_FALSE(done_callback.IsReady());
@@ -1253,7 +1256,8 @@ TEST_F(QuickInsertSearchRequestTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.GetCallback(), &client(),
-      std::to_array({PickerCategory::kClipboard, PickerCategory::kLinks}));
+      std::to_array(
+          {QuickInsertCategory::kClipboard, QuickInsertCategory::kLinks}));
   EXPECT_FALSE(done_callback.IsReady());
   ClipboardHistoryController::GetHistoryValuesCallback get_history_values =
       get_history_values_future.Take();
@@ -1284,7 +1288,7 @@ TEST_F(QuickInsertSearchRequestTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.Get(), &client(),
-      base::span_from_ref(PickerCategory::kUnitsMaths));
+      base::span_from_ref(QuickInsertCategory::kUnitsMaths));
 }
 
 TEST_F(QuickInsertSearchRequestTest,
@@ -1302,7 +1306,7 @@ TEST_F(QuickInsertSearchRequestTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.Get(), &client(),
-      base::span_from_ref(PickerCategory::kLinks));
+      base::span_from_ref(QuickInsertCategory::kLinks));
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox, {});
 }
 
@@ -1316,7 +1320,7 @@ TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledWhenDestructed) {
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
         done_callback.GetCallback(), &client(),
-        base::span_from_ref(PickerCategory::kLinks));
+        base::span_from_ref(QuickInsertCategory::kLinks));
     EXPECT_FALSE(done_callback.IsReady());
   }
 

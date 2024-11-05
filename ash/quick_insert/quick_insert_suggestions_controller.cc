@@ -60,12 +60,12 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
   }
 
   if (base::Contains(model.GetAvailableCategories(),
-                     PickerCategory::kEditorRewrite)) {
+                     QuickInsertCategory::kEditorRewrite)) {
     client.GetSuggestedEditorResults(callback);
   }
 
   if (base::Contains(model.GetAvailableCategories(),
-                     PickerCategory::kLobster) &&
+                     QuickInsertCategory::kLobster) &&
       model.GetMode() == PickerModeType::kHasSelection) {
     callback.Run({QuickInsertLobsterResult(/*display_name=*/u"")});
   }
@@ -83,7 +83,7 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
   }
 
   // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
-  for (PickerCategory category : model.GetRecentResultsCategories()) {
+  for (QuickInsertCategory category : model.GetRecentResultsCategories()) {
     // Special case certain categories where we can save computation by only
     // asking for 1 result.
     // TODO: b/357740941: Request only one Drive file once directory filtering
@@ -91,7 +91,7 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
     // TODO: b/366237507 - Request only one Link result once HistoryService
     // supports filtering.
     switch (category) {
-      case PickerCategory::kLinks:
+      case QuickInsertCategory::kLinks:
         client.GetSuggestedLinkResults(
             /*max_results=*/base::FeatureList::IsEnabled(
                 ash::features::kPickerFilterLinks)
@@ -99,7 +99,7 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
                 : 1,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
-      case PickerCategory::kLocalFiles: {
+      case QuickInsertCategory::kLocalFiles: {
         const size_t max_results =
             base::FeatureList::IsEnabled(ash::features::kPickerGrid) ? 3 : 1;
         client.GetRecentLocalFileResults(
@@ -108,7 +108,7 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
                 .Then(callback));
         break;
       }
-      case PickerCategory::kDriveFiles:
+      case QuickInsertCategory::kDriveFiles:
         client.GetRecentDriveFileResults(
             /*max_results=*/5,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
@@ -124,14 +124,14 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
 
 void PickerSuggestionsController::GetSuggestionsForCategory(
     PickerClient& client,
-    PickerCategory category,
+    QuickInsertCategory category,
     SuggestionsCallback callback) {
   switch (category) {
-    case PickerCategory::kEditorWrite:
-    case PickerCategory::kEditorRewrite:
-    case PickerCategory::kLobster:
+    case QuickInsertCategory::kEditorWrite:
+    case QuickInsertCategory::kEditorRewrite:
+    case QuickInsertCategory::kLobster:
       NOTREACHED_NORETURN();
-    case PickerCategory::kLinks:
+    case QuickInsertCategory::kLinks:
       // TODO: b/366237507 - Request only kMaxRecentLinks results once
       // HistoryService supports filtering.
       client.GetSuggestedLinkResults(
@@ -140,13 +140,13 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
               : kMaxRecentLinks,
           std::move(callback));
       return;
-    case PickerCategory::kEmojisGifs:
-    case PickerCategory::kEmojis:
+    case QuickInsertCategory::kEmojisGifs:
+    case QuickInsertCategory::kEmojis:
       NOTREACHED_NORETURN();
-    case PickerCategory::kDriveFiles:
+    case QuickInsertCategory::kDriveFiles:
       client.GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
       return;
-    case PickerCategory::kLocalFiles:
+    case QuickInsertCategory::kLocalFiles:
       client.GetRecentLocalFileResults(
           kMaxRecentFiles,
           base::FeatureList::IsEnabled(ash::features::kPickerRecentFiles)
@@ -154,13 +154,13 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
               : kMaxLocalFileSuggestionRecencyDelta,
           std::move(callback));
       return;
-    case PickerCategory::kDatesTimes:
+    case QuickInsertCategory::kDatesTimes:
       std::move(callback).Run(PickerSuggestedDateResults());
       break;
-    case PickerCategory::kUnitsMaths:
+    case QuickInsertCategory::kUnitsMaths:
       std::move(callback).Run(PickerMathExamples());
       break;
-    case PickerCategory::kClipboard:
+    case QuickInsertCategory::kClipboard:
       clipboard_provider_.FetchResults(std::move(callback));
       return;
   }

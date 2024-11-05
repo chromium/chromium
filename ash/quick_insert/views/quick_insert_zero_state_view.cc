@@ -92,7 +92,7 @@ EditorSubmenu GetEditorSubmenu(
 
 PickerZeroStateView::PickerZeroStateView(
     PickerZeroStateViewDelegate* delegate,
-    base::span<const PickerCategory> available_categories,
+    base::span<const QuickInsertCategory> available_categories,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher,
     PickerSubmenuController* submenu_controller,
@@ -106,13 +106,13 @@ PickerZeroStateView::PickerZeroStateView(
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
       picker_view_width, asset_fetcher, submenu_controller_));
 
-  for (PickerCategory category : available_categories) {
+  for (QuickInsertCategory category : available_categories) {
     // kEditorRewrite is not visible in the zero-state, since it's replaced with
     // the rewrite suggestions.
     // TODO: b/369701127 - Shows kLobster entry once its implementation is
     // ready.
-    if (category == PickerCategory::kEditorRewrite ||
-        category == PickerCategory::kLobster) {
+    if (category == QuickInsertCategory::kEditorRewrite ||
+        category == QuickInsertCategory::kLobster) {
       continue;
     }
 
@@ -188,7 +188,7 @@ bool PickerZeroStateView::ContainsItem(views::View* item) {
 }
 
 QuickInsertSectionView* PickerZeroStateView::GetOrCreateSectionView(
-    PickerCategoryType category_type) {
+    QuickInsertCategoryType category_type) {
   auto section_view_iterator = category_section_views_.find(category_type);
   if (section_view_iterator != category_section_views_.end()) {
     return section_view_iterator->second;
@@ -196,17 +196,17 @@ QuickInsertSectionView* PickerZeroStateView::GetOrCreateSectionView(
 
   auto* section_view = section_list_view_->AddSection();
   section_view->AddTitleLabel(
-      GetSectionTitleForPickerCategoryType(category_type));
+      GetSectionTitleForQuickInsertCategoryType(category_type));
   category_section_views_.insert({category_type, section_view});
   return section_view;
 }
 
 QuickInsertSectionView* PickerZeroStateView::GetOrCreateSectionView(
-    PickerCategory category) {
-  return GetOrCreateSectionView(GetPickerCategoryType(category));
+    QuickInsertCategory category) {
+  return GetOrCreateSectionView(GetQuickInsertCategoryType(category));
 }
 
-void PickerZeroStateView::OnCategorySelected(PickerCategory category) {
+void PickerZeroStateView::OnCategorySelected(QuickInsertCategory category) {
   delegate_->SelectZeroStateCategory(category);
 }
 
@@ -248,7 +248,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
         l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL),
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(),
-                            PickerCategory::kLocalFiles),
+                            QuickInsertCategory::kLocalFiles),
         l10n_util::GetStringUTF16(
             IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME));
   }
@@ -275,8 +275,8 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                              primary_section_view_));
           break;
         case PickerCapsLockPosition::kBottom:
-          AddResultToSection(result,
-                             GetOrCreateSectionView(PickerCategoryType::kMore));
+          AddResultToSection(
+              result, GetOrCreateSectionView(QuickInsertCategoryType::kMore));
           break;
       }
     } else if (std::holds_alternative<QuickInsertNewWindowResult>(result)) {
@@ -371,7 +371,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   }
 
   if (case_transform_submenu != nullptr && !case_transform_submenu->IsEmpty()) {
-    GetOrCreateSectionView(PickerCategoryType::kCaseTransformations)
+    GetOrCreateSectionView(QuickInsertCategoryType::kCaseTransformations)
         ->AddItemWithSubmenu(std::move(case_transform_submenu));
   }
 

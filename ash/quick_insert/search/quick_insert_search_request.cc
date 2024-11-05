@@ -112,11 +112,11 @@ DeduplicateGoogleCorpGotoDomains(
 
 QuickInsertSearchRequest::QuickInsertSearchRequest(
     std::u16string_view query,
-    std::optional<PickerCategory> category,
+    std::optional<QuickInsertCategory> category,
     SearchResultsCallback callback,
     DoneCallback done_callback,
     PickerClient* client,
-    base::span<const PickerCategory> available_categories,
+    base::span<const QuickInsertCategory> available_categories,
     bool caps_lock_state_to_search,
     bool search_case_transforms)
     : is_category_specific_search_(category.has_value()),
@@ -129,16 +129,16 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
 
   std::vector<PickerSearchSource> cros_search_sources;
   cros_search_sources.reserve(3);
-  if ((!category.has_value() || category == PickerCategory::kLinks) &&
-      base::Contains(available_categories, PickerCategory::kLinks)) {
+  if ((!category.has_value() || category == QuickInsertCategory::kLinks) &&
+      base::Contains(available_categories, QuickInsertCategory::kLinks)) {
     cros_search_sources.push_back(PickerSearchSource::kOmnibox);
   }
-  if ((!category.has_value() || category == PickerCategory::kLocalFiles) &&
-      base::Contains(available_categories, PickerCategory::kLocalFiles)) {
+  if ((!category.has_value() || category == QuickInsertCategory::kLocalFiles) &&
+      base::Contains(available_categories, QuickInsertCategory::kLocalFiles)) {
     cros_search_sources.push_back(PickerSearchSource::kLocalFile);
   }
-  if ((!category.has_value() || category == PickerCategory::kDriveFiles) &&
-      base::Contains(available_categories, PickerCategory::kDriveFiles)) {
+  if ((!category.has_value() || category == QuickInsertCategory::kDriveFiles) &&
+      base::Contains(available_categories, QuickInsertCategory::kDriveFiles)) {
     cros_search_sources.push_back(PickerSearchSource::kDrive);
   }
 
@@ -154,8 +154,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if ((!category.has_value() || category == PickerCategory::kClipboard) &&
-      base::Contains(available_categories, PickerCategory::kClipboard)) {
+  if ((!category.has_value() || category == QuickInsertCategory::kClipboard) &&
+      base::Contains(available_categories, QuickInsertCategory::kClipboard)) {
     clipboard_provider_ = std::make_unique<PickerClipboardHistoryProvider>();
     MarkSearchStarted(PickerSearchSource::kClipboard);
     clipboard_provider_->FetchResults(
@@ -164,15 +164,15 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
         query);
   }
 
-  if ((!category.has_value() || category == PickerCategory::kDatesTimes) &&
-      base::Contains(available_categories, PickerCategory::kDatesTimes)) {
+  if ((!category.has_value() || category == QuickInsertCategory::kDatesTimes) &&
+      base::Contains(available_categories, QuickInsertCategory::kDatesTimes)) {
     MarkSearchStarted(PickerSearchSource::kDate);
     // Date results is currently synchronous.
     HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
   }
 
-  if ((!category.has_value() || category == PickerCategory::kUnitsMaths) &&
-      base::Contains(available_categories, PickerCategory::kUnitsMaths)) {
+  if ((!category.has_value() || category == QuickInsertCategory::kUnitsMaths) &&
+      base::Contains(available_categories, QuickInsertCategory::kUnitsMaths)) {
     MarkSearchStarted(PickerSearchSource::kMath);
     // Math results is currently synchronous.
     HandleMathSearchResults(PickerMathSearch(query));
@@ -186,7 +186,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
         PickerActionSearch(available_categories, caps_lock_state_to_search,
                            search_case_transforms, query));
 
-    if (base::Contains(available_categories, PickerCategory::kEditorWrite)) {
+    if (base::Contains(available_categories,
+                       QuickInsertCategory::kEditorWrite)) {
       // Editor results are currently synchronous.
       MarkSearchStarted(PickerSearchSource::kEditorWrite);
       HandleEditorSearchResults(
@@ -194,7 +195,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
           PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, query));
     }
 
-    if (base::Contains(available_categories, PickerCategory::kEditorRewrite)) {
+    if (base::Contains(available_categories,
+                       QuickInsertCategory::kEditorRewrite)) {
       // Editor results are currently synchronous.
       MarkSearchStarted(PickerSearchSource::kEditorRewrite);
       HandleEditorSearchResults(
@@ -202,7 +204,7 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
           PickerEditorSearch(QuickInsertEditorResult::Mode::kRewrite, query));
     }
 
-    if (base::Contains(available_categories, PickerCategory::kLobster)) {
+    if (base::Contains(available_categories, QuickInsertCategory::kLobster)) {
       // Editor results are currently synchronous.
       MarkSearchStarted(PickerSearchSource::kLobster);
       HandleLobsterSearchResults(PickerSearchSource::kLobster,

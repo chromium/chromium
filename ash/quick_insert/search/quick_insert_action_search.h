@@ -14,10 +14,10 @@
 
 namespace ash {
 
-enum class PickerCategory;
+enum class QuickInsertCategory;
 
 ASH_EXPORT std::vector<QuickInsertSearchResult> PickerActionSearch(
-    base::span<const PickerCategory> available_categories,
+    base::span<const QuickInsertCategory> available_categories,
     bool caps_lock_state_to_search,
     bool search_case_transforms,
     std::u16string_view query);

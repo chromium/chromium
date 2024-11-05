@@ -197,7 +197,8 @@ QuickInsertBrowsingHistoryResult::~QuickInsertBrowsingHistoryResult() = default;
 bool QuickInsertBrowsingHistoryResult::operator==(
     const QuickInsertBrowsingHistoryResult&) const = default;
 
-QuickInsertCategoryResult::QuickInsertCategoryResult(PickerCategory category)
+QuickInsertCategoryResult::QuickInsertCategoryResult(
+    QuickInsertCategory category)
     : category(category) {}
 
 QuickInsertCategoryResult::QuickInsertCategoryResult(

@@ -33,7 +33,7 @@ class ASH_EXPORT MockPickerClient : public PickerClient {
   MOCK_METHOD(void,
               StartCrosSearch,
               (const std::u16string& query,
-               std::optional<PickerCategory> category,
+               std::optional<QuickInsertCategory> category,
                CrosSearchResultsCallback callback),
               (override));
   MOCK_METHOD(void, StopCrosQuery, (), (override));

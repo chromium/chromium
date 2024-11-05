@@ -210,9 +210,9 @@ struct ASH_EXPORT QuickInsertDriveFileResult {
 };
 
 struct ASH_EXPORT QuickInsertCategoryResult {
-  PickerCategory category;
+  QuickInsertCategory category;
 
-  explicit QuickInsertCategoryResult(PickerCategory category);
+  explicit QuickInsertCategoryResult(QuickInsertCategory category);
   QuickInsertCategoryResult(const QuickInsertCategoryResult&);
   QuickInsertCategoryResult& operator=(const QuickInsertCategoryResult&);
   ~QuickInsertCategoryResult();

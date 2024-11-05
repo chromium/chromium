@@ -658,14 +658,14 @@ TEST_F(QuickInsertClientImplTest,
   TestingProfile* secondary_profile = CreateMultiUserProfile("secondary@test");
   AddSearchToHistory(profile(), GURL("https://foo.com/primary"));
   AddSearchToHistory(secondary_profile, GURL("https://foo.com/secondary"));
-  client.StartCrosSearch(u"foo", ash::PickerCategory::kLinks,
+  client.StartCrosSearch(u"foo", ash::QuickInsertCategory::kLinks,
                          base::DoNothing());
   SwitchActiveUser("secondary@test");
 
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>>
       result_future;
   client.StartCrosSearch(
-      u"foo", ash::PickerCategory::kLinks,
+      u"foo", ash::QuickInsertCategory::kLinks,
       base::BindLambdaForTesting(
           [&result_future](ash::AppListSearchResultType result_type,
                            std::vector<ash::QuickInsertSearchResult> results) {

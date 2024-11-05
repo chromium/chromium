@@ -69,12 +69,13 @@ constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
 constexpr auto kSectionTitleTrailingLinkMargins =
     gfx::Insets::TLBR(4, 8, 4, 16);
 
-PickerCategory GetCategoryForEditorData(const QuickInsertEditorResult& data) {
+QuickInsertCategory GetCategoryForEditorData(
+    const QuickInsertEditorResult& data) {
   switch (data.mode) {
     case QuickInsertEditorResult::Mode::kWrite:
-      return PickerCategory::kEditorWrite;
+      return QuickInsertCategory::kEditorWrite;
     case QuickInsertEditorResult::Mode::kRewrite:
-      return PickerCategory::kEditorRewrite;
+      return QuickInsertCategory::kEditorRewrite;
   }
 }
 
@@ -328,8 +329,10 @@ QuickInsertSectionView::CreateItemFromResult(
           [&](const QuickInsertCategoryResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
-            item_view->SetPrimaryText(GetLabelForPickerCategory(data.category));
-            item_view->SetLeadingIcon(GetIconForPickerCategory(data.category));
+            item_view->SetPrimaryText(
+                GetLabelForQuickInsertCategory(data.category));
+            item_view->SetLeadingIcon(
+                GetIconForQuickInsertCategory(data.category));
             return item_view;
           },
           [&](const QuickInsertEditorResult& data) -> ReturnType {
@@ -344,9 +347,12 @@ QuickInsertSectionView::CreateItemFromResult(
                   cros_tokens::kCrosSysOnSurface));
             } else {
               // Freeform write or rewrite.
-              const PickerCategory category = GetCategoryForEditorData(data);
-              item_view->SetPrimaryText(GetLabelForPickerCategory(category));
-              item_view->SetLeadingIcon(GetIconForPickerCategory(category));
+              const QuickInsertCategory category =
+                  GetCategoryForEditorData(data);
+              item_view->SetPrimaryText(
+                  GetLabelForQuickInsertCategory(category));
+              item_view->SetLeadingIcon(
+                  GetIconForQuickInsertCategory(category));
             }
             return item_view;
           },
@@ -354,9 +360,9 @@ QuickInsertSectionView::CreateItemFromResult(
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
 
-            const PickerCategory category = PickerCategory::kLobster;
-            item_view->SetPrimaryText(GetLabelForPickerCategory(category));
-            item_view->SetLeadingIcon(GetIconForPickerCategory(category));
+            const QuickInsertCategory category = QuickInsertCategory::kLobster;
+            item_view->SetPrimaryText(GetLabelForQuickInsertCategory(category));
+            item_view->SetLeadingIcon(GetIconForQuickInsertCategory(category));
             return item_view;
           },
           [&](const QuickInsertNewWindowResult& data) -> ReturnType {

@@ -43,7 +43,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // must remain valid for the lifetime of this class.
   explicit PickerZeroStateView(
       PickerZeroStateViewDelegate* delegate,
-      base::span<const PickerCategory> available_categories,
+      base::span<const QuickInsertCategory> available_categories,
       int picker_view_width,
       PickerAssetFetcher* asset_fetcher,
       PickerSubmenuController* submenu_controller,
@@ -61,7 +61,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   views::View* GetItemRightOf(views::View* item) override;
   bool ContainsItem(views::View* item) override;
 
-  std::map<PickerCategoryType, raw_ptr<QuickInsertSectionView>>
+  std::map<QuickInsertCategoryType, raw_ptr<QuickInsertSectionView>>
   category_section_views_for_testing() const {
     return category_section_views_;
   }
@@ -71,16 +71,16 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   }
 
  private:
-  void OnCategorySelected(PickerCategory category);
+  void OnCategorySelected(QuickInsertCategory category);
   void OnResultSelected(const QuickInsertSearchResult& result);
   void RecordCapsLockIgnored(bool ignored);
 
   // Gets or creates the category type section for `category_type`.
   QuickInsertSectionView* GetOrCreateSectionView(
-      PickerCategoryType category_type);
+      QuickInsertCategoryType category_type);
 
   // Gets or creates the category type section to contain `category`.
-  QuickInsertSectionView* GetOrCreateSectionView(PickerCategory category);
+  QuickInsertSectionView* GetOrCreateSectionView(QuickInsertCategory category);
 
   void OnFetchSuggestedResults(std::vector<QuickInsertSearchResult> result);
   void AddResultToSection(const QuickInsertSearchResult& result,
@@ -99,7 +99,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   // Below the primary section, there is a set of sections for each category
   // type.
-  std::map<PickerCategoryType, raw_ptr<QuickInsertSectionView>>
+  std::map<QuickInsertCategoryType, raw_ptr<QuickInsertSectionView>>
       category_section_views_;
 
   std::unique_ptr<PickerClipboardHistoryProvider> clipboard_provider_;

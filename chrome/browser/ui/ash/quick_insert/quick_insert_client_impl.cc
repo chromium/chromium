@@ -291,7 +291,7 @@ PickerClientImpl::GetSharedURLLoaderFactory() {
 
 void PickerClientImpl::StartCrosSearch(
     const std::u16string& query,
-    std::optional<ash::PickerCategory> category,
+    std::optional<ash::QuickInsertCategory> category,
     CrosSearchResultsCallback callback) {
   ranker_manager_->Start(query, {{.category = app_list::Category::kWeb},
                                  {.category = app_list::Category::kFiles}});
@@ -305,20 +305,20 @@ void PickerClientImpl::StartCrosSearch(
   }
 
   switch (*category) {
-    case ash::PickerCategory::kEditorWrite:
-    case ash::PickerCategory::kEditorRewrite:
-    case ash::PickerCategory::kLobster:
-    case ash::PickerCategory::kEmojisGifs:
-    case ash::PickerCategory::kEmojis:
-    case ash::PickerCategory::kClipboard:
-    case ash::PickerCategory::kDatesTimes:
-    case ash::PickerCategory::kUnitsMaths:
+    case ash::QuickInsertCategory::kEditorWrite:
+    case ash::QuickInsertCategory::kEditorRewrite:
+    case ash::QuickInsertCategory::kLobster:
+    case ash::QuickInsertCategory::kEmojisGifs:
+    case ash::QuickInsertCategory::kEmojis:
+    case ash::QuickInsertCategory::kClipboard:
+    case ash::QuickInsertCategory::kDatesTimes:
+    case ash::QuickInsertCategory::kUnitsMaths:
       DLOG(FATAL) << "Unexpected category for StartCrosSearch: "
                   << static_cast<int>(*category);
       break;
-    case ash::PickerCategory::kLinks:
-    case ash::PickerCategory::kDriveFiles:
-    case ash::PickerCategory::kLocalFiles: {
+    case ash::QuickInsertCategory::kLinks:
+    case ash::QuickInsertCategory::kDriveFiles:
+    case ash::QuickInsertCategory::kLocalFiles: {
       if (filtered_search_engine_ == nullptr ||
           current_filter_category_ != category) {
         filtered_search_engine_ =
@@ -574,25 +574,25 @@ PickerClientImpl::CreateOmniboxProvider(bool bookmarks,
 
 std::unique_ptr<app_list::SearchProvider>
 PickerClientImpl::CreateSearchProviderForCategory(
-    ash::PickerCategory category) {
+    ash::QuickInsertCategory category) {
   switch (category) {
-    case ash::PickerCategory::kEditorWrite:
-    case ash::PickerCategory::kEditorRewrite:
-    case ash::PickerCategory::kLobster:
-    case ash::PickerCategory::kEmojisGifs:
-    case ash::PickerCategory::kEmojis:
-    case ash::PickerCategory::kClipboard:
-    case ash::PickerCategory::kDatesTimes:
-    case ash::PickerCategory::kUnitsMaths:
+    case ash::QuickInsertCategory::kEditorWrite:
+    case ash::QuickInsertCategory::kEditorRewrite:
+    case ash::QuickInsertCategory::kLobster:
+    case ash::QuickInsertCategory::kEmojisGifs:
+    case ash::QuickInsertCategory::kEmojis:
+    case ash::QuickInsertCategory::kClipboard:
+    case ash::QuickInsertCategory::kDatesTimes:
+    case ash::QuickInsertCategory::kUnitsMaths:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
                   << static_cast<int>(category);
       return nullptr;
-    case ash::PickerCategory::kLinks:
+    case ash::QuickInsertCategory::kLinks:
       return CreateOmniboxProvider(/*bookmarks=*/true, /*history=*/true,
                                    /*open_tabs=*/true);
-    case ash::PickerCategory::kDriveFiles:
+    case ash::QuickInsertCategory::kDriveFiles:
       return CreateDriveSearchProvider(profile_);
-    case ash::PickerCategory::kLocalFiles:
+    case ash::QuickInsertCategory::kLocalFiles:
       return CreateFileSearchProvider(profile_);
   }
 }

@@ -859,7 +859,7 @@ TEST_F(QuickInsertControllerTest,
       });
 
   controller().ToggleWidget();
-  controller().GetResultsForCategory(PickerCategory::kLinks,
+  controller().GetResultsForCategory(QuickInsertCategory::kLinks,
                                      future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Take(), IsEmpty());
@@ -878,7 +878,7 @@ TEST_F(QuickInsertControllerTest,
   controller().ToggleWidget();
 
   EXPECT_THAT(controller().GetAvailableCategories(),
-              Contains(PickerCategory::kEditorWrite));
+              Contains(QuickInsertCategory::kEditorWrite));
 }
 
 TEST_F(QuickInsertControllerTest,
@@ -889,7 +889,7 @@ TEST_F(QuickInsertControllerTest,
   controller().ToggleWidget();
 
   EXPECT_THAT(controller().GetAvailableCategories(),
-              Not(Contains(PickerCategory::kEditorWrite)));
+              Not(Contains(QuickInsertCategory::kEditorWrite)));
 }
 
 TEST_F(QuickInsertControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
@@ -1304,13 +1304,14 @@ INSTANTIATE_TEST_SUITE_P(
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = QuickInsertCategoryResult(PickerCategory::kEmojisGifs),
+            .result =
+                QuickInsertCategoryResult(QuickInsertCategory::kEmojisGifs),
             .unfocused_action = PickerActionType::kDo,
             .no_selection_action = PickerActionType::kDo,
             .has_selection_action = PickerActionType::kDo,
         },
         {
-            .result = QuickInsertCategoryResult(PickerCategory::kEmojis),
+            .result = QuickInsertCategoryResult(QuickInsertCategory::kEmojis),
             .unfocused_action = PickerActionType::kDo,
             .no_selection_action = PickerActionType::kDo,
             .has_selection_action = PickerActionType::kDo,

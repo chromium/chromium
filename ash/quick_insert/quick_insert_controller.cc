@@ -317,8 +317,9 @@ void QuickInsertController::ToggleWidget(
   }
 }
 
-std::vector<PickerCategory> QuickInsertController::GetAvailableCategories() {
-  return session_ == nullptr ? std::vector<PickerCategory>{}
+std::vector<QuickInsertCategory>
+QuickInsertController::GetAvailableCategories() {
+  return session_ == nullptr ? std::vector<QuickInsertCategory>{}
                              : session_->model.GetAvailableCategories();
 }
 
@@ -330,11 +331,11 @@ void QuickInsertController::GetZeroStateSuggestedResults(
 }
 
 void QuickInsertController::GetResultsForCategory(
-    PickerCategory category,
+    QuickInsertCategory category,
     SearchResultsCallback callback) {
   const PickerSectionType section_type =
-      (category == PickerCategory::kUnitsMaths ||
-       category == PickerCategory::kDatesTimes)
+      (category == QuickInsertCategory::kUnitsMaths ||
+       category == QuickInsertCategory::kDatesTimes)
           ? PickerSectionType::kExamples
           : PickerSectionType::kNone;
 
@@ -345,9 +346,10 @@ void QuickInsertController::GetResultsForCategory(
           .Then(std::move(callback)));
 }
 
-void QuickInsertController::StartSearch(std::u16string_view query,
-                                        std::optional<PickerCategory> category,
-                                        SearchResultsCallback callback) {
+void QuickInsertController::StartSearch(
+    std::u16string_view query,
+    std::optional<QuickInsertCategory> category,
+    SearchResultsCallback callback) {
   CHECK(session_);
   CHECK(client_);
   search_controller_.StartSearch(

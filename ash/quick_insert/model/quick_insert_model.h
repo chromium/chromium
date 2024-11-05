@@ -40,9 +40,9 @@ class ASH_EXPORT QuickInsertModel {
                             EditorStatus editor_status,
                             LobsterStatus lobster_status);
 
-  std::vector<PickerCategory> GetAvailableCategories() const;
+  std::vector<QuickInsertCategory> GetAvailableCategories() const;
 
-  std::vector<PickerCategory> GetRecentResultsCategories() const;
+  std::vector<QuickInsertCategory> GetRecentResultsCategories() const;
 
   std::u16string_view selected_text() const;
   bool should_do_learning() const;

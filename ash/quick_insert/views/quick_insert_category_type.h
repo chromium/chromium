@@ -11,7 +11,7 @@
 namespace ash {
 
 // Used to group related categories together.
-enum class ASH_EXPORT PickerCategoryType {
+enum class ASH_EXPORT QuickInsertCategoryType {
   kNone,
   kEditorWrite,
   kEditorRewrite,
@@ -21,7 +21,8 @@ enum class ASH_EXPORT PickerCategoryType {
   kCaseTransformations,
 };
 
-ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category);
+ASH_EXPORT QuickInsertCategoryType
+GetQuickInsertCategoryType(QuickInsertCategory category);
 
 }  // namespace ash
 

@@ -66,16 +66,16 @@ constexpr base::TimeDelta kAfterBurnIn = base::Milliseconds(700);
 static_assert(kBurnInPeriod < kAfterBurnIn);
 
 constexpr auto kAllCategories = std::to_array({
-    PickerCategory::kEditorWrite,
-    PickerCategory::kEditorRewrite,
-    PickerCategory::kLinks,
-    PickerCategory::kEmojisGifs,
-    PickerCategory::kEmojis,
-    PickerCategory::kClipboard,
-    PickerCategory::kDriveFiles,
-    PickerCategory::kLocalFiles,
-    PickerCategory::kDatesTimes,
-    PickerCategory::kUnitsMaths,
+    QuickInsertCategory::kEditorWrite,
+    QuickInsertCategory::kEditorRewrite,
+    QuickInsertCategory::kLinks,
+    QuickInsertCategory::kEmojisGifs,
+    QuickInsertCategory::kEmojis,
+    QuickInsertCategory::kClipboard,
+    QuickInsertCategory::kDriveFiles,
+    QuickInsertCategory::kLocalFiles,
+    QuickInsertCategory::kDatesTimes,
+    QuickInsertCategory::kUnitsMaths,
 });
 
 // Matcher for the last element of a collection.
@@ -224,7 +224,7 @@ TEST_F(QuickInsertSearchControllerTest,
   ON_CALL(client(), StartCrosSearch)
       .WillByDefault([&search_started, this](
                          const std::u16string& query,
-                         std::optional<PickerCategory> category,
+                         std::optional<QuickInsertCategory> category,
                          PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -333,7 +333,7 @@ TEST_F(QuickInsertSearchControllerTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -369,7 +369,7 @@ TEST_F(QuickInsertSearchControllerTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -412,7 +412,7 @@ TEST_F(
   EXPECT_CALL(client(), StartCrosSearch)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -512,7 +512,7 @@ TEST_F(QuickInsertSearchControllerTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -548,7 +548,7 @@ TEST_F(QuickInsertSearchControllerTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -649,7 +649,7 @@ TEST_F(QuickInsertSearchControllerTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -685,7 +685,7 @@ TEST_F(QuickInsertSearchControllerTest,
       .Times(1)
       .WillRepeatedly([&search_started, this](
                           const std::u16string& query,
-                          std::optional<PickerCategory> category,
+                          std::optional<QuickInsertCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client().StopCrosQuery();
         search_started = true;
@@ -813,21 +813,23 @@ TEST_F(QuickInsertSearchControllerTest, ShowResultsEvenAfterBurnIn) {
 TEST_F(QuickInsertSearchControllerTest,
        OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kLinks), _))
+              StartCrosSearch(Eq(u"ant"), Eq(QuickInsertCategory::kLinks), _))
       .Times(1);
-  EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"bat"), Eq(PickerCategory::kDriveFiles), _))
+  EXPECT_CALL(
+      client(),
+      StartCrosSearch(Eq(u"bat"), Eq(QuickInsertCategory::kDriveFiles), _))
       .Times(1);
-  EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kLocalFiles), _))
+  EXPECT_CALL(
+      client(),
+      StartCrosSearch(Eq(u"cat"), Eq(QuickInsertCategory::kLocalFiles), _))
       .Times(1);
   PickerSearchController controller(kBurnInPeriod);
 
-  controller.StartSearch(&client(), u"ant", PickerCategory::kLinks,
+  controller.StartSearch(&client(), u"ant", QuickInsertCategory::kLinks,
                          kAllCategories, false, false, base::DoNothing());
-  controller.StartSearch(&client(), u"bat", PickerCategory::kDriveFiles,
+  controller.StartSearch(&client(), u"bat", QuickInsertCategory::kDriveFiles,
                          kAllCategories, false, false, base::DoNothing());
-  controller.StartSearch(&client(), u"cat", PickerCategory::kLocalFiles,
+  controller.StartSearch(&client(), u"cat", QuickInsertCategory::kLocalFiles,
                          kAllCategories, false, false, base::DoNothing());
 }
 
@@ -848,7 +850,7 @@ TEST_F(QuickInsertSearchControllerTest,
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt,
-      base::span_from_ref(PickerCategory::kLinks), false, false,
+      base::span_from_ref(QuickInsertCategory::kLinks), false, false,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
@@ -874,7 +876,7 @@ TEST_F(QuickInsertSearchControllerTest,
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt,
-      base::span_from_ref(PickerCategory::kLinks), false, false,
+      base::span_from_ref(QuickInsertCategory::kLinks), false, false,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 

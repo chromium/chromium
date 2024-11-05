@@ -30,7 +30,7 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
   using SuggestedResultsCallback =
       base::RepeatingCallback<void(std::vector<QuickInsertSearchResult>)>;
 
-  virtual void SelectZeroStateCategory(PickerCategory category) = 0;
+  virtual void SelectZeroStateCategory(QuickInsertCategory category) = 0;
 
   virtual void SelectZeroStateResult(const QuickInsertSearchResult& result) = 0;
 

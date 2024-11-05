@@ -17,43 +17,45 @@
 namespace ash {
 namespace {
 
-const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
+const gfx::VectorIcon& GetVectorIconForQuickInsertCategory(
+    QuickInsertCategory category) {
   switch (category) {
-    case PickerCategory::kEditorWrite:
+    case QuickInsertCategory::kEditorWrite:
       // TODO: b/322926823 - Use correct icons.
       return kPencilIcon;
-    case PickerCategory::kEditorRewrite:
+    case QuickInsertCategory::kEditorRewrite:
       // TODO: b/322926823 - Use correct icons.
       return kPencilIcon;
-    case PickerCategory::kLobster:
+    case QuickInsertCategory::kLobster:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return kLobsterIcon;
 #else
       return kPencilIcon;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerCategory::kEmojisGifs:
-    case PickerCategory::kEmojis:
+    case QuickInsertCategory::kEmojisGifs:
+    case QuickInsertCategory::kEmojis:
       return kPickerEmojiIcon;
-    case PickerCategory::kLinks:
+    case QuickInsertCategory::kLinks:
       return kPickerBrowsingHistoryIcon;
-    case PickerCategory::kClipboard:
+    case QuickInsertCategory::kClipboard:
       return kPickerClipboardIcon;
-    case PickerCategory::kDriveFiles:
+    case QuickInsertCategory::kDriveFiles:
       return kPickerDriveFilesIcon;
-    case PickerCategory::kLocalFiles:
+    case QuickInsertCategory::kLocalFiles:
       return kFilesAppIcon;
-    case PickerCategory::kDatesTimes:
+    case QuickInsertCategory::kDatesTimes:
       return kPickerCalendarIcon;
-    case PickerCategory::kUnitsMaths:
+    case QuickInsertCategory::kUnitsMaths:
       return kPickerUnitsMathsIcon;
   }
 }
 
 }  // namespace
 
-ui::ImageModel GetIconForPickerCategory(PickerCategory category) {
+ui::ImageModel GetIconForQuickInsertCategory(QuickInsertCategory category) {
   return ui::ImageModel::FromVectorIcon(
-      GetVectorIconForPickerCategory(category), cros_tokens::kCrosSysOnSurface);
+      GetVectorIconForQuickInsertCategory(category),
+      cros_tokens::kCrosSysOnSurface);
 }
 
 }  // namespace ash

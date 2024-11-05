@@ -44,11 +44,11 @@ class ASH_EXPORT QuickInsertSearchRequest {
   // `callback`.
   QuickInsertSearchRequest(
       std::u16string_view query,
-      std::optional<PickerCategory> category,
+      std::optional<QuickInsertCategory> category,
       SearchResultsCallback callback,
       DoneCallback done_callback,
       PickerClient* client,
-      base::span<const PickerCategory> available_categories = {},
+      base::span<const QuickInsertCategory> available_categories = {},
       bool caps_lock_state_to_search = false,
       bool search_case_transforms = false);
   QuickInsertSearchRequest(const QuickInsertSearchRequest&) = delete;

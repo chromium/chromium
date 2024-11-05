@@ -195,7 +195,7 @@ TEST_F(QuickInsertSearchResultsViewTest, CreatesResultsSectionWithCategories) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kNone,
-      {{QuickInsertCategoryResult(PickerCategory::kEmojisGifs)}},
+      {{QuickInsertCategoryResult(QuickInsertCategory::kEmojisGifs)}},
       /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
@@ -322,13 +322,13 @@ TEST_F(QuickInsertSearchResultsViewTest, GetsItemAbove) {
                                &submenu_controller, &preview_controller);
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kNone,
-      {{QuickInsertCategoryResult(PickerCategory::kLinks),
-        QuickInsertCategoryResult(PickerCategory::kClipboard)}},
+      {{QuickInsertCategoryResult(QuickInsertCategory::kLinks),
+        QuickInsertCategoryResult(QuickInsertCategory::kClipboard)}},
       /*has_more_results=*/false));
 
   EXPECT_CALL(mock_delegate,
               SelectSearchResult(VariantWith<QuickInsertCategoryResult>(
-                  QuickInsertCategoryResult(PickerCategory::kLinks))));
+                  QuickInsertCategoryResult(QuickInsertCategory::kLinks))));
 
   EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(
       view.GetItemAbove(view.GetBottomItem())));
@@ -343,13 +343,13 @@ TEST_F(QuickInsertSearchResultsViewTest, GetsItemBelow) {
                                &submenu_controller, &preview_controller);
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kNone,
-      {{QuickInsertCategoryResult(PickerCategory::kLinks),
-        QuickInsertCategoryResult(PickerCategory::kClipboard)}},
+      {{QuickInsertCategoryResult(QuickInsertCategory::kLinks),
+        QuickInsertCategoryResult(QuickInsertCategory::kClipboard)}},
       /*has_more_results=*/false));
 
   EXPECT_CALL(mock_delegate,
               SelectSearchResult(VariantWith<QuickInsertCategoryResult>(
-                  QuickInsertCategoryResult(PickerCategory::kClipboard))));
+                  QuickInsertCategoryResult(QuickInsertCategory::kClipboard))));
 
   EXPECT_TRUE(
       DoPickerPseudoFocusedActionOnView(view.GetItemBelow(view.GetTopItem())));
@@ -807,7 +807,8 @@ INSTANTIATE_TEST_SUITE_P(
                     /*full_url=*/GURL(),
                     gfx::Size(20, 20),
                     u"cat gif")},
-        {"Category", QuickInsertCategoryResult(PickerCategory::kEmojisGifs)},
+        {"Category",
+         QuickInsertCategoryResult(QuickInsertCategory::kEmojisGifs)},
         {"LocalFile", QuickInsertLocalFileResult(u"local", base::FilePath())},
         {"DriveFile", QuickInsertDriveFileResult(std::nullopt,
                                                  u"drive",

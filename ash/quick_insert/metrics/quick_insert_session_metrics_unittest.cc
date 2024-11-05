@@ -144,7 +144,7 @@ TEST_F(QuickInsertSessionMetricsTest, RecordsDefaultFinishSessionEvent) {
 TEST_F(QuickInsertSessionMetricsTest, RecordsFinishSessionEventForInsert) {
   {
     PickerSessionMetrics metrics;
-    metrics.SetSelectedCategory(PickerCategory::kDatesTimes);
+    metrics.SetSelectedCategory(QuickInsertCategory::kDatesTimes);
     metrics.UpdateSearchQuery(u"abc");
     metrics.UpdateSearchQuery(u"abcdef");
     metrics.UpdateSearchQuery(u"abcde");

@@ -63,7 +63,7 @@ class ASH_EXPORT PickerClient {
   // Starts a search using the CrOS Search API
   // (`app_list::SearchEngine::StartSearch`).
   virtual void StartCrosSearch(const std::u16string& query,
-                               std::optional<PickerCategory> category,
+                               std::optional<QuickInsertCategory> category,
                                CrosSearchResultsCallback callback) = 0;
   // Stops a search using the CrOS Search API
   // (`app_list::SearchEngine::StopQuery`).

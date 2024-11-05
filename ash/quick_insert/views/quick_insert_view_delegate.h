@@ -38,7 +38,7 @@ class ASH_EXPORT PickerViewDelegate {
 
   virtual ~PickerViewDelegate() {}
 
-  virtual std::vector<PickerCategory> GetAvailableCategories() = 0;
+  virtual std::vector<QuickInsertCategory> GetAvailableCategories() = 0;
 
   // Gets suggested results for the zero-state. Results will be returned via
   // `callback`, which may be called multiples times to update the results.
@@ -47,7 +47,7 @@ class ASH_EXPORT PickerViewDelegate {
 
   // Gets initially suggested results for category. Results will be returned via
   // `callback`, which may be called multiples times to update the results.
-  virtual void GetResultsForCategory(PickerCategory category,
+  virtual void GetResultsForCategory(QuickInsertCategory category,
                                      SearchResultsCallback callback) = 0;
 
   // Starts a search for `query`. Results will be returned via `callback`,
@@ -55,7 +55,7 @@ class ASH_EXPORT PickerViewDelegate {
   // If `callback` is called with empty results, then it will never be called
   // again (i.e. all search results have been returned).
   virtual void StartSearch(std::u16string_view query,
-                           std::optional<PickerCategory> category,
+                           std::optional<QuickInsertCategory> category,
                            SearchResultsCallback callback) = 0;
 
   // Stops the previous search, if any.

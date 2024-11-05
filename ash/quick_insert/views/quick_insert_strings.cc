@@ -21,93 +21,93 @@
 
 namespace ash {
 
-std::u16string GetLabelForPickerCategory(PickerCategory category) {
+std::u16string GetLabelForQuickInsertCategory(QuickInsertCategory category) {
   switch (category) {
-    case PickerCategory::kEditorWrite:
+    case QuickInsertCategory::kEditorWrite:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_WRITE_CARD_TITLE);
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerCategory::kEditorRewrite:
+    case QuickInsertCategory::kEditorRewrite:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE);
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerCategory::kLobster:
+    case QuickInsertCategory::kLobster:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_PICKER_LOBSTER_SELECTION_LABEL);
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerCategory::kLinks:
+    case QuickInsertCategory::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
-    case PickerCategory::kEmojisGifs:
+    case QuickInsertCategory::kEmojisGifs:
       return l10n_util::GetStringUTF16(IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL);
-    case PickerCategory::kEmojis:
+    case QuickInsertCategory::kEmojis:
       return l10n_util::GetStringUTF16(IDS_PICKER_EMOJIS_CATEGORY_LABEL);
-    case PickerCategory::kClipboard:
+    case QuickInsertCategory::kClipboard:
       return l10n_util::GetStringUTF16(IDS_PICKER_CLIPBOARD_CATEGORY_LABEL);
-    case PickerCategory::kDriveFiles:
+    case QuickInsertCategory::kDriveFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);
-    case PickerCategory::kLocalFiles:
+    case QuickInsertCategory::kLocalFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
-    case PickerCategory::kDatesTimes:
+    case QuickInsertCategory::kDatesTimes:
       return l10n_util::GetStringUTF16(IDS_PICKER_DATES_TIMES_CATEGORY_LABEL);
-    case PickerCategory::kUnitsMaths:
+    case QuickInsertCategory::kUnitsMaths:
       return l10n_util::GetStringUTF16(IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL);
   }
 }
 
-std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
-    PickerCategory category) {
+std::u16string GetSearchFieldPlaceholderTextForQuickInsertCategory(
+    QuickInsertCategory category) {
   switch (category) {
-    case PickerCategory::kLinks:
+    case QuickInsertCategory::kLinks:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
-    case PickerCategory::kClipboard:
+    case QuickInsertCategory::kClipboard:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
-    case PickerCategory::kDriveFiles:
+    case QuickInsertCategory::kDriveFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
-    case PickerCategory::kLocalFiles:
+    case QuickInsertCategory::kLocalFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
-    case PickerCategory::kDatesTimes:
+    case QuickInsertCategory::kDatesTimes:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_DATES_TIMES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
-    case PickerCategory::kUnitsMaths:
+    case QuickInsertCategory::kUnitsMaths:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
-    case PickerCategory::kEditorWrite:
-    case PickerCategory::kEditorRewrite:
-    case PickerCategory::kLobster:
-    case PickerCategory::kEmojisGifs:
-    case PickerCategory::kEmojis:
+    case QuickInsertCategory::kEditorWrite:
+    case QuickInsertCategory::kEditorRewrite:
+    case QuickInsertCategory::kLobster:
+    case QuickInsertCategory::kEmojisGifs:
+    case QuickInsertCategory::kEmojis:
       NOTREACHED_NORETURN();
   }
 }
 
-std::u16string GetSectionTitleForPickerCategoryType(
-    PickerCategoryType category_type) {
+std::u16string GetSectionTitleForQuickInsertCategoryType(
+    QuickInsertCategoryType category_type) {
   switch (category_type) {
-    case PickerCategoryType::kEditorWrite:
+    case QuickInsertCategoryType::kEditorWrite:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EDITOR_WRITE_CATEGORY_TYPE_SECTION_TITLE);
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerCategoryType::kEditorRewrite:
+    case QuickInsertCategoryType::kEditorRewrite:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EDITOR_REWRITE_CATEGORY_TYPE_SECTION_TITLE);
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerCategoryType::kLobster:
+    case QuickInsertCategoryType::kLobster:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EDITOR_WRITE_CATEGORY_TYPE_SECTION_TITLE);
@@ -115,16 +115,16 @@ std::u16string GetSectionTitleForPickerCategoryType(
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-    case PickerCategoryType::kGeneral:
+    case QuickInsertCategoryType::kGeneral:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE);
-    case PickerCategoryType::kMore:
+    case QuickInsertCategoryType::kMore:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_MORE_CATEGORY_TYPE_SECTION_TITLE);
-    case PickerCategoryType::kCaseTransformations:
+    case QuickInsertCategoryType::kCaseTransformations:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EDIT_TEXT_CATEGORY_TYPE_SECTION_TITLE);
-    case PickerCategoryType::kNone:
+    case QuickInsertCategoryType::kNone:
       return u"";
   }
 }

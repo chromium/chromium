@@ -116,12 +116,12 @@ class ASH_EXPORT QuickInsertController : public PickerViewDelegate,
   }
 
   // PickerViewDelegate:
-  std::vector<PickerCategory> GetAvailableCategories() override;
+  std::vector<QuickInsertCategory> GetAvailableCategories() override;
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
-  void GetResultsForCategory(PickerCategory category,
+  void GetResultsForCategory(QuickInsertCategory category,
                              SearchResultsCallback callback) override;
   void StartSearch(std::u16string_view query,
-                   std::optional<PickerCategory> category,
+                   std::optional<QuickInsertCategory> category,
                    SearchResultsCallback callback) override;
   void StopSearch() override;
   void StartEmojiSearch(std::u16string_view,

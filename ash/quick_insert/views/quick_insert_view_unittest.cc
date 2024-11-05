@@ -159,12 +159,12 @@ class QuickInsertViewTest : public AshTestBase {
 // QuickInsertViewTest parameterized by the Emoji Category.
 class QuickInsertViewEmojiTest
     : public QuickInsertViewTest,
-      public testing::WithParamInterface<PickerCategory> {};
+      public testing::WithParamInterface<QuickInsertCategory> {};
 
 INSTANTIATE_TEST_SUITE_P(,
                          QuickInsertViewEmojiTest,
-                         testing::ValuesIn({PickerCategory::kEmojisGifs,
-                                            PickerCategory::kEmojis}));
+                         testing::ValuesIn({QuickInsertCategory::kEmojisGifs,
+                                            QuickInsertCategory::kEmojis}));
 
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
@@ -175,7 +175,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
       base::RepeatingCallback<void(SearchResultsCallback callback)>;
 
   struct Options {
-    std::vector<PickerCategory> available_categories;
+    std::vector<QuickInsertCategory> available_categories;
     std::vector<QuickInsertSearchResult> zero_state_suggested_results;
     FakeSearchFunction search_function;
     base::RepeatingClosure stop_search_function;
@@ -189,10 +189,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   FakePickerViewDelegate() = default;
   explicit FakePickerViewDelegate(Options options) : options_(options) {}
 
-  std::vector<PickerCategory> GetAvailableCategories() override {
+  std::vector<QuickInsertCategory> GetAvailableCategories() override {
     if (options_.available_categories.empty()) {
       // Use at least one category.
-      return {PickerCategory::kLinks};
+      return {QuickInsertCategory::kLinks};
     }
     return options_.available_categories;
   }
@@ -202,7 +202,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     callback.Run(options_.zero_state_suggested_results);
   }
 
-  void GetResultsForCategory(PickerCategory category,
+  void GetResultsForCategory(QuickInsertCategory category,
                              SearchResultsCallback callback) override {
     if (options_.category_results_function.is_null()) {
       std::move(callback).Run({});
@@ -212,7 +212,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   }
 
   void StartSearch(std::u16string_view query,
-                   std::optional<PickerCategory> category,
+                   std::optional<QuickInsertCategory> category,
                    SearchResultsCallback callback) override {
     if (options_.search_function.is_null()) {
       std::move(callback).Run({});
@@ -352,7 +352,7 @@ TEST_P(QuickInsertViewEmojiTest, SizeIsLessThanMaxWhenNoContentWithEmojiBar) {
 
 TEST_F(QuickInsertViewTest, SizeIsMaxWhenLotsOfContentWithoutEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
       .zero_state_suggested_results = std::vector<QuickInsertSearchResult>(
           10, QuickInsertTextResult(u"abc")),
   });
@@ -378,7 +378,7 @@ TEST_P(QuickInsertViewEmojiTest, SizeIsMaxWhenLotsOfContentWithEmojiBar) {
 
 TEST_F(QuickInsertViewTest, ShowsZeroStateView) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -410,7 +410,7 @@ TEST_F(QuickInsertViewTest, SearchPlaceholderMatchesUnfocusedMode) {
 
 TEST_F(QuickInsertViewTest, SearchPlaceholderMatchesNoSelectionModeWithEditor) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEditorWrite},
+      .available_categories = {QuickInsertCategory::kEditorWrite},
       .mode = PickerModeType::kNoSelection,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -444,7 +444,7 @@ TEST_F(QuickInsertViewTest,
 TEST_F(QuickInsertViewTest,
        SearchPlaceholderMatchesHasSelectionModeWithEditor) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEditorRewrite},
+      .available_categories = {QuickInsertCategory::kEditorRewrite},
       .mode = PickerModeType::kHasSelection,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -563,7 +563,7 @@ TEST_F(QuickInsertViewTest, LeftClickZeroStateSuggestedResultInsertsResult) {
   {
     base::test::TestFuture<void> future;
     FakePickerViewDelegate delegate({
-        .available_categories = {PickerCategory::kLinks},
+        .available_categories = {QuickInsertCategory::kLinks},
         .zero_state_suggested_results = std::vector<QuickInsertSearchResult>(
             10, QuickInsertTextResult(u"abc")),
         .action_type = PickerActionType::kInsert,
@@ -637,7 +637,7 @@ TEST_F(QuickInsertViewTest, LeftClickSearchResultOpensResult) {
 TEST_F(QuickInsertViewTest, SwitchesToCategoryView) {
   {
     FakePickerViewDelegate delegate({
-        .available_categories = {PickerCategory::kLinks},
+        .available_categories = {QuickInsertCategory::kLinks},
     });
     auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
     widget->Show();
@@ -668,7 +668,7 @@ TEST_F(QuickInsertViewTest, SwitchesToCategoryView) {
 TEST_F(QuickInsertViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
   base::test::TestFuture<void> search_called;
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
           [&](std::u16string_view query,
               FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -676,7 +676,7 @@ TEST_F(QuickInsertViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kNone,
-                    {{QuickInsertCategoryResult(PickerCategory::kLinks)}},
+                    {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
                     /*has_more_results=*/false),
             });
           }),
@@ -702,7 +702,7 @@ TEST_F(QuickInsertViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
 TEST_F(QuickInsertViewTest,
        SelectingCategoryUpdatesSearchFieldPlaceholderText) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -757,7 +757,7 @@ TEST_F(QuickInsertViewTest, SearchingWithCategoryKeepsShowingBackButton) {
 
 TEST_P(QuickInsertViewEmojiTest, SelectingCategoryHidesEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks, GetParam()},
+      .available_categories = {QuickInsertCategory::kLinks, GetParam()},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -774,7 +774,7 @@ TEST_P(QuickInsertViewEmojiTest, SelectingCategoryHidesEmojiBar) {
 TEST_P(QuickInsertViewEmojiTest,
        ReturningToZeroStateFromCategoryPageShowsEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks, GetParam()},
+      .available_categories = {QuickInsertCategory::kLinks, GetParam()},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -791,7 +791,7 @@ TEST_P(QuickInsertViewEmojiTest,
 
 TEST_F(QuickInsertViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -813,7 +813,7 @@ TEST_F(QuickInsertViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
 
 TEST_F(QuickInsertViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -1076,7 +1076,7 @@ TEST_F(QuickInsertViewTest,
        SearchingFromCategoryDoesNotImmediatelySwitchToResults) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
           [&](std::u16string_view query,
               FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -1111,7 +1111,7 @@ TEST_F(QuickInsertViewTest,
        SearchingFromCategorySwitchesToEmptyResultsAfterTimeout) {
   base::test::TestFuture<void> search_called;
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
           [&](std::u16string_view query,
               FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -1481,7 +1481,7 @@ TEST_F(QuickInsertViewTest, ClearsResultsWhenQueryClearedNoCategory) {
 TEST_F(QuickInsertViewTest, ClearsResultsWhenQueryClearedWithCategory) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
           [&](std::u16string_view query,
               FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -1543,7 +1543,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenQueryClearedWithCategory) {
   base::test::TestFuture<void> search_future;
   base::test::TestFuture<void> stop_search_future;
   FakePickerViewDelegate delegate(
-      {.available_categories = {PickerCategory::kLinks},
+      {.available_categories = {QuickInsertCategory::kLinks},
        .search_function = base::BindLambdaForTesting(
            [&](std::u16string_view query,
                FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -1581,7 +1581,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenBackButtonPressed) {
   base::test::TestFuture<void> search_future;
   base::test::TestFuture<void> stop_search_future;
   FakePickerViewDelegate delegate(
-      {.available_categories = {PickerCategory::kLinks},
+      {.available_categories = {QuickInsertCategory::kLinks},
        .search_function = base::BindLambdaForTesting(
            [&](std::u16string_view query,
                FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -1622,7 +1622,7 @@ TEST_F(QuickInsertViewTest,
   base::test::TestFuture<void> search_future;
   base::test::TestFuture<void> stop_search_future;
   FakePickerViewDelegate delegate(
-      {.available_categories = {PickerCategory::kLinks},
+      {.available_categories = {QuickInsertCategory::kLinks},
        .search_function = base::BindLambdaForTesting(
            [&](std::u16string_view query,
                FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -1669,7 +1669,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenCategorySelectedInSearchResults) {
   callback.Run({
       PickerSearchResultsSection(
           PickerSectionType::kNone,
-          {{QuickInsertCategoryResult(PickerCategory::kLinks)}},
+          {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
           /*has_more_results=*/false),
   });
 
@@ -1728,7 +1728,7 @@ TEST_P(QuickInsertViewEmojiTest, InitiallyShowsSuggestedEmojis) {
 
 TEST_F(QuickInsertViewTest, NoEmojiBarIfExpressionsCategoryNotAvailable) {
   FakePickerViewDelegate delegate(
-      {.available_categories = {PickerCategory::kLinks}});
+      {.available_categories = {QuickInsertCategory::kLinks}});
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
 
   EXPECT_EQ(GetPickerViewFromWidget(*widget)->emoji_bar_view_for_testing(),
@@ -2017,7 +2017,7 @@ TEST_P(QuickInsertViewEmojiTest, ShowsEmojiPickerWhenClickingOnExpressions) {
 
 TEST_F(QuickInsertViewTest, ShowsEditorWhenClickingOnEditor) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEditorWrite},
+      .available_categories = {QuickInsertCategory::kEditorWrite},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2080,7 +2080,7 @@ TEST_F(QuickInsertViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
 
 TEST_F(QuickInsertViewTest, ArrowKeysNavigateEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {QuickInsertCategory::kEmojisGifs},
       .emoji_results = {QuickInsertEmojiResult::Emoji(u"😊"),
                         QuickInsertEmojiResult::Symbol(u"♬")},
   });
@@ -2101,7 +2101,7 @@ TEST_F(QuickInsertViewTest, ArrowKeysNavigateEmojiBar) {
 
 TEST_F(QuickInsertViewTest, CanTypeQueryWhileEmojiBarIsPseudoFocused) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {QuickInsertCategory::kEmojisGifs},
       .emoji_results = {QuickInsertEmojiResult::Emoji(u"😊"),
                         QuickInsertEmojiResult::Symbol(u"♬")},
   });
@@ -2334,7 +2334,7 @@ TEST_F(QuickInsertViewTest, KeyEventsNavigateWithinSubmenu) {
 
 TEST_F(QuickInsertViewTest, LeftArrowKeyNavigatesToBackButton) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2405,7 +2405,7 @@ TEST_F(QuickInsertViewTest, TabKeyNavigatesSearchResults) {
 TEST_F(QuickInsertViewTest, ShiftTabKeyNavigatesSearchResultsWithEmojiBar) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {QuickInsertCategory::kEmojisGifs},
       .search_function = base::BindLambdaForTesting(
           [&](std::u16string_view query,
               FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -2583,7 +2583,7 @@ TEST_F(QuickInsertViewTest, ShowsSubmenuOnMouseHover) {
 TEST_F(QuickInsertViewTest,
        ClosesSubmenuWhenResumingKeyboardNavigationInMainView) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {QuickInsertCategory::kEmojisGifs},
       .zero_state_suggested_results =
           {QuickInsertNewWindowResult(QuickInsertNewWindowResult::Type::kDoc),
            QuickInsertNewWindowResult(
@@ -2625,7 +2625,7 @@ TEST_F(QuickInsertViewTest, ClearsSearchWhenClickingOnCategoryResult) {
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kNone,
-                    {{QuickInsertCategoryResult(PickerCategory::kLinks)}},
+                    {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
                     /*has_more_results=*/false),
             });
           }),
@@ -2742,7 +2742,7 @@ TEST_P(QuickInsertViewEmojiTest,
 
 TEST_F(QuickInsertViewTest, ClickingGifsButtonOpensGifPickerWithQuerySearch) {
   FakePickerViewDelegate delegate(
-      {.available_categories = {PickerCategory::kEmojisGifs}});
+      {.available_categories = {QuickInsertCategory::kEmojisGifs}});
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -2798,7 +2798,7 @@ TEST_F(QuickInsertViewTest,
        CategoryOnlySearchShowsNoResultsPageWithNoIllustration) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
           [&](std::u16string_view query,
               FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -2831,7 +2831,7 @@ TEST_F(QuickInsertViewTest,
 TEST_F(QuickInsertViewTest,
        CategoryZeroStateShowsNoResultsPageWithIllustration) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kLinks},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2859,8 +2859,8 @@ TEST_F(
     QuickInsertViewTest,
     ChangingPseudoFocusOnZeroStateNotifiesInitialActiveDescendantChangeAfterDelay) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kClipboard,
-                               PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kClipboard,
+                               QuickInsertCategory::kLinks},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2880,8 +2880,8 @@ TEST_F(
     QuickInsertViewTest,
     ChangingPseudoFocusOnZeroStateNotifiesActiveDescendantChangeImmediately) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kClipboard,
-                               PickerCategory::kLinks},
+      .available_categories = {QuickInsertCategory::kClipboard,
+                               QuickInsertCategory::kLinks},
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -3075,7 +3075,7 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kNone,
-                    {{QuickInsertCategoryResult(PickerCategory::kLinks)}},
+                    {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
                     /*has_more_results=*/false),
             });
           }),
@@ -3112,7 +3112,7 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateAfterPressingBrowserBack) {
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kNone,
-                    {{QuickInsertCategoryResult(PickerCategory::kLinks)}},
+                    {{QuickInsertCategoryResult(QuickInsertCategory::kLinks)}},
                     /*has_more_results=*/false),
             });
           }),

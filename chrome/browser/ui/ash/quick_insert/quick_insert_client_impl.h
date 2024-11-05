@@ -62,7 +62,7 @@ class PickerClientImpl
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   void StartCrosSearch(const std::u16string& query,
-                       std::optional<ash::PickerCategory> category,
+                       std::optional<ash::QuickInsertCategory> category,
                        CrosSearchResultsCallback callback) override;
   void StopCrosQuery() override;
   bool IsEligibleForEditor() override;
@@ -112,7 +112,7 @@ class PickerClientImpl
   std::unique_ptr<app_list::SearchProvider>
   CreateOmniboxProvider(bool bookmarks, bool history, bool open_tabs);
   std::unique_ptr<app_list::SearchProvider> CreateSearchProviderForCategory(
-      ash::PickerCategory category);
+      ash::QuickInsertCategory category);
 
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text);
@@ -128,7 +128,7 @@ class PickerClientImpl
 
   // A dedicated cros search engine for filtered searches.
   std::unique_ptr<app_list::SearchEngine> filtered_search_engine_;
-  std::optional<ash::PickerCategory> current_filter_category_;
+  std::optional<ash::QuickInsertCategory> current_filter_category_;
 
   std::unique_ptr<app_list::RankerManager> ranker_manager_;
 

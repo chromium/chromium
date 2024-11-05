@@ -25,7 +25,7 @@ using ::testing::VariantWith;
 using CaseTransformType = QuickInsertCaseTransformResult::Type;
 
 struct TestCase {
-  std::vector<PickerCategory> available_categories;
+  std::vector<QuickInsertCategory> available_categories;
   bool caps_lock_state_to_search = false;
   bool search_case_transforms = false;
   std::u16string query;
@@ -49,45 +49,45 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // Exact match
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .available_categories = {QuickInsertCategory::kLinks},
             .query = u"Browsing history",
             .expected_results = {QuickInsertCategoryResult(
-                PickerCategory::kLinks)},
+                QuickInsertCategory::kLinks)},
         },
         // Case-insensitive match
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .available_categories = {QuickInsertCategory::kLinks},
             .query = u"bRoWsInG hIsToRy",
             .expected_results = {QuickInsertCategoryResult(
-                PickerCategory::kLinks)},
+                QuickInsertCategory::kLinks)},
         },
         // Prefix match
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .available_categories = {QuickInsertCategory::kLinks},
             .query = u"b",
             .expected_results = {QuickInsertCategoryResult(
-                PickerCategory::kLinks)},
+                QuickInsertCategory::kLinks)},
         },
         // Prefix match in second word
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .available_categories = {QuickInsertCategory::kLinks},
             .query = u"hi",
             .expected_results = {QuickInsertCategoryResult(
-                PickerCategory::kLinks)},
+                QuickInsertCategory::kLinks)},
         },
         // Substring match
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .available_categories = {QuickInsertCategory::kLinks},
             .query = u"ist",
         },
         // Category unavailable
         TestCase{
-            .available_categories = {PickerCategory::kLocalFiles},
+            .available_categories = {QuickInsertCategory::kLocalFiles},
             .query = u"Browsing history",
         },
         // Not matched
         TestCase{
-            .available_categories = {PickerCategory::kLinks},
+            .available_categories = {QuickInsertCategory::kLinks},
             .query = u"Browsing history1",
         },
         // Caps Lock Off

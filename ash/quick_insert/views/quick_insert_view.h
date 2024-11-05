@@ -91,7 +91,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void Layout(PassKey) override;
 
   // PickerZeroStateViewDelegate:
-  void SelectZeroStateCategory(PickerCategory category) override;
+  void SelectZeroStateCategory(QuickInsertCategory category) override;
   void SelectZeroStateResult(const QuickInsertSearchResult& result) override;
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void RequestPseudoFocus(views::View* view) override;
@@ -176,16 +176,16 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // Selects a category. This shows the category view and fetches zero-state
   // results for the category, which are returned to `PublishCategoryResults`.
-  void SelectCategory(PickerCategory category);
+  void SelectCategory(QuickInsertCategory category);
 
   // Selects a category. This shows the category view and fetches search
   // results for the category based on `query`, which are returned to
   // `PublishSearchResults`.
-  void SelectCategoryWithQuery(PickerCategory category,
+  void SelectCategoryWithQuery(QuickInsertCategory category,
                                std::u16string_view query);
 
   // Displays `results` in the category view.
-  void PublishCategoryResults(PickerCategory category,
+  void PublishCategoryResults(QuickInsertCategory category,
                               std::vector<PickerSearchResultsSection> results);
 
   // Adds the main container, which includes the search field and contents
@@ -231,7 +231,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Should only be set to `std::nullopt` through `OnSearchBackButtonPressed`.
   // Should only be set to a value through `SelectCategory` and
   // `SelectCategoryWithQuery`.
-  std::optional<PickerCategory> selected_category_;
+  std::optional<QuickInsertCategory> selected_category_;
   // The category which `category_results_view_` has results for.
   // Used for caching results if the user did not change their selected
   // category.
@@ -242,13 +242,13 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // - When a user starts a non-filtered search from zero state, then filters
   //   results to a category, then clears the search query, new results will be
   //   fetched as the `last_suggested_results_category_ != selected_category_`.
-  std::optional<PickerCategory> last_suggested_results_category_;
+  std::optional<QuickInsertCategory> last_suggested_results_category_;
   // The whitespace-trimmed query and category when `UpdateActivePage()` was
   // last called.
   // Used for avoid unnecessary searches if `UpdateActivePage()` is called again
   // with the same {query, selected_category}.
   std::u16string last_query_;
-  std::optional<PickerCategory> last_selected_category_;
+  std::optional<QuickInsertCategory> last_selected_category_;
 
   PickerKeyEventHandler key_event_handler_;
   PickerSubmenuController submenu_controller_;

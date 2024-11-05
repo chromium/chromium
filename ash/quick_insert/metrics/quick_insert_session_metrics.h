@@ -59,7 +59,7 @@ class ASH_EXPORT PickerSessionMetrics {
 
   // Sets the last category selected by the user during the session.
   // This can be multiple times per session. Only the last category is recorded.
-  void SetSelectedCategory(PickerCategory category);
+  void SetSelectedCategory(QuickInsertCategory category);
 
   // Sets the search result which user selects to finish the session.
   // This is expected to be called at most once during a session.
@@ -85,7 +85,7 @@ class ASH_EXPORT PickerSessionMetrics {
 
   SessionOutcome outcome_ = SessionOutcome::kUnknown;
 
-  std::optional<PickerCategory> last_category_;
+  std::optional<QuickInsertCategory> last_category_;
 
   std::optional<QuickInsertSearchResult> selected_result_;
   int result_index_ = -1;

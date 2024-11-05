@@ -181,20 +181,20 @@ gfx::Rect GetPickerViewBoundsWithSelectedText(
   return picker_view_bounds;
 }
 
-PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
+QuickInsertCategory GetCategoryForMoreResults(PickerSectionType type) {
   switch (type) {
     case PickerSectionType::kNone:
     case PickerSectionType::kContentEditor:
     case PickerSectionType::kExamples:
       NOTREACHED_NORETURN();
     case PickerSectionType::kClipboard:
-      return PickerCategory::kClipboard;
+      return QuickInsertCategory::kClipboard;
     case PickerSectionType::kLinks:
-      return PickerCategory::kLinks;
+      return QuickInsertCategory::kLinks;
     case PickerSectionType::kLocalFiles:
-      return PickerCategory::kLocalFiles;
+      return QuickInsertCategory::kLocalFiles;
     case PickerSectionType::kDriveFiles:
-      return PickerCategory::kDriveFiles;
+      return QuickInsertCategory::kDriveFiles;
   }
 }
 
@@ -223,29 +223,29 @@ std::u16string GetSearchFieldPlaceholderText(PickerModeType mode,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-std::u16string GetNoResultsFoundDescription(PickerCategory category) {
+std::u16string GetNoResultsFoundDescription(QuickInsertCategory category) {
   switch (category) {
-    case PickerCategory::kLinks:
+    case QuickInsertCategory::kLinks:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT);
-    case PickerCategory::kClipboard:
+    case QuickInsertCategory::kClipboard:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_NO_RESULTS_FOR_CLIPBOARD_LABEL_TEXT);
-    case PickerCategory::kDriveFiles:
+    case QuickInsertCategory::kDriveFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_NO_RESULTS_FOR_DRIVE_FILES_LABEL_TEXT);
-    case PickerCategory::kLocalFiles:
+    case QuickInsertCategory::kLocalFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT);
-    case PickerCategory::kDatesTimes:
-    case PickerCategory::kUnitsMaths:
+    case QuickInsertCategory::kDatesTimes:
+    case QuickInsertCategory::kUnitsMaths:
       // TODO: b/345303965 - Add finalized strings for dates and maths.
       return l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT);
-    case PickerCategory::kEditorWrite:
-    case PickerCategory::kEditorRewrite:
-    case PickerCategory::kLobster:
-    case PickerCategory::kEmojisGifs:
-    case PickerCategory::kEmojis:
+    case QuickInsertCategory::kEditorWrite:
+    case QuickInsertCategory::kEditorRewrite:
+    case QuickInsertCategory::kLobster:
+    case QuickInsertCategory::kEmojisGifs:
+    case QuickInsertCategory::kEmojis:
       NOTREACHED_NORETURN();
   }
 }
@@ -259,9 +259,12 @@ ui::ImageModel GetNoResultsFoundIllustration() {
 #endif
 }
 
-bool IsEditorAvailable(base::span<const PickerCategory> available_categories) {
-  return base::Contains(available_categories, PickerCategory::kEditorWrite) ||
-         base::Contains(available_categories, PickerCategory::kEditorRewrite);
+bool IsEditorAvailable(
+    base::span<const QuickInsertCategory> available_categories) {
+  return base::Contains(available_categories,
+                        QuickInsertCategory::kEditorWrite) ||
+         base::Contains(available_categories,
+                        QuickInsertCategory::kEditorRewrite);
 }
 
 }  // namespace
@@ -292,9 +295,9 @@ PickerView::PickerView(PickerViewDelegate* delegate,
 
   AddMainContainerView(layout_type);
   if (base::Contains(delegate_->GetAvailableCategories(),
-                     PickerCategory::kEmojisGifs) ||
+                     QuickInsertCategory::kEmojisGifs) ||
       base::Contains(delegate_->GetAvailableCategories(),
-                     PickerCategory::kEmojis)) {
+                     QuickInsertCategory::kEmojis)) {
     AddEmojiBarView();
   }
 
@@ -359,7 +362,7 @@ void PickerView::Layout(PassKey) {
   }
 }
 
-void PickerView::SelectZeroStateCategory(PickerCategory category) {
+void PickerView::SelectZeroStateCategory(QuickInsertCategory category) {
   SelectCategory(category);
 }
 
@@ -452,7 +455,7 @@ void PickerView::ToggleGifs() {
 
 void PickerView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
   PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
-  session_metrics.SetSelectedCategory(PickerCategory::kEmojisGifs);
+  session_metrics.SetSelectedCategory(QuickInsertCategory::kEmojisGifs);
 
   if (auto* widget = GetWidget()) {
     widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
@@ -711,18 +714,18 @@ void PickerView::PublishSearchResults(
   performance_metrics_.MarkSearchResultsUpdated(update);
 }
 
-void PickerView::SelectCategory(PickerCategory category) {
+void PickerView::SelectCategory(QuickInsertCategory category) {
   SelectCategoryWithQuery(category, /*query=*/u"");
 }
 
-void PickerView::SelectCategoryWithQuery(PickerCategory category,
+void PickerView::SelectCategoryWithQuery(QuickInsertCategory category,
                                          std::u16string_view query) {
   PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
   session_metrics.SetSelectedCategory(category);
   selected_category_ = category;
 
-  if (category == PickerCategory::kEmojisGifs ||
-      category == PickerCategory::kEmojis) {
+  if (category == QuickInsertCategory::kEmojisGifs ||
+      category == QuickInsertCategory::kEmojis) {
     if (auto* widget = GetWidget()) {
       // TODO(b/316936394): Correctly handle opening of emoji picker. Probably
       // best to wait for the IME on focus event, or save some coordinates and
@@ -735,8 +738,8 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
     return;
   }
 
-  if (category == PickerCategory::kEditorWrite ||
-      category == PickerCategory::kEditorRewrite) {
+  if (category == QuickInsertCategory::kEditorWrite ||
+      category == QuickInsertCategory::kEditorRewrite) {
     if (auto* widget = GetWidget()) {
       // TODO: b/330267329 - Correctly handle opening of Editor. Probably
       // best to wait for the IME on focus event, or save some coordinates and
@@ -751,7 +754,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
     return;
   }
 
-  if (category == PickerCategory::kLobster) {
+  if (category == QuickInsertCategory::kLobster) {
     if (auto* widget = GetWidget()) {
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
@@ -762,14 +765,14 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
   }
 
   search_field_view_->SetPlaceholderText(
-      GetSearchFieldPlaceholderTextForPickerCategory(category));
+      GetSearchFieldPlaceholderTextForQuickInsertCategory(category));
   search_field_view_->SetBackButtonVisible(true);
   SetEmojiBarVisibleIfEnabled(false);
   UpdateSearchQueryAndActivePage(std::u16string(query));
 }
 
 void PickerView::PublishCategoryResults(
-    PickerCategory category,
+    QuickInsertCategory category,
     std::vector<PickerSearchResultsSection> results) {
   category_results_view_->ClearSearchResults();
 

@@ -100,31 +100,31 @@ cros_events::PickerSessionOutcome ConvertToCrosEventSessionOutcome(
 }
 
 cros_events::PickerAction ConvertToCrosEventAction(
-    std::optional<PickerCategory> action) {
+    std::optional<QuickInsertCategory> action) {
   if (!action.has_value()) {
     return cros_events::PickerAction::UNKNOWN;
   }
   switch (*action) {
-    case PickerCategory::kEditorWrite:
+    case QuickInsertCategory::kEditorWrite:
       return cros_events::PickerAction::OPEN_EDITOR_WRITE;
-    case PickerCategory::kEditorRewrite:
+    case QuickInsertCategory::kEditorRewrite:
       return cros_events::PickerAction::OPEN_EDITOR_REWRITE;
-    case PickerCategory::kLobster:
+    case QuickInsertCategory::kLobster:
       return cros_events::PickerAction::OPEN_LOBSTER;
-    case PickerCategory::kLinks:
+    case QuickInsertCategory::kLinks:
       return cros_events::PickerAction::OPEN_LINKS;
-    case PickerCategory::kEmojisGifs:
-    case PickerCategory::kEmojis:
+    case QuickInsertCategory::kEmojisGifs:
+    case QuickInsertCategory::kEmojis:
       return cros_events::PickerAction::OPEN_EXPRESSIONS;
-    case PickerCategory::kClipboard:
+    case QuickInsertCategory::kClipboard:
       return cros_events::PickerAction::OPEN_CLIPBOARD;
-    case PickerCategory::kDriveFiles:
+    case QuickInsertCategory::kDriveFiles:
       return cros_events::PickerAction::OPEN_DRIVE_FILES;
-    case PickerCategory::kLocalFiles:
+    case QuickInsertCategory::kLocalFiles:
       return cros_events::PickerAction::OPEN_LOCAL_FILES;
-    case PickerCategory::kDatesTimes:
+    case QuickInsertCategory::kDatesTimes:
       return cros_events::PickerAction::OPEN_DATES_TIMES;
-    case PickerCategory::kUnitsMaths:
+    case QuickInsertCategory::kUnitsMaths:
       return cros_events::PickerAction::OPEN_UNITS_MATHS;
   }
 }
@@ -286,7 +286,7 @@ void PickerSessionMetrics::SetOutcome(SessionOutcome outcome) {
   }
 }
 
-void PickerSessionMetrics::SetSelectedCategory(PickerCategory category) {
+void PickerSessionMetrics::SetSelectedCategory(QuickInsertCategory category) {
   if (!last_category_.has_value()) {
     last_category_ = category;
   }

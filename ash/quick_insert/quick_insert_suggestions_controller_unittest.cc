@@ -334,7 +334,7 @@ TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
-  controller.GetSuggestionsForCategory(client, PickerCategory::kLinks,
+  controller.GetSuggestionsForCategory(client, QuickInsertCategory::kLinks,
                                        future.GetRepeatingCallback());
 
   EXPECT_EQ(future.Take(), suggested_links);
@@ -354,7 +354,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
-  controller.GetSuggestionsForCategory(client, PickerCategory::kDriveFiles,
+  controller.GetSuggestionsForCategory(client, QuickInsertCategory::kDriveFiles,
                                        future.GetRepeatingCallback());
 
   EXPECT_EQ(future.Take(), suggested_files);
@@ -372,7 +372,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
-  controller.GetSuggestionsForCategory(client, PickerCategory::kLocalFiles,
+  controller.GetSuggestionsForCategory(client, QuickInsertCategory::kLocalFiles,
                                        future.GetRepeatingCallback());
 
   EXPECT_EQ(future.Take(), suggested_files);
@@ -384,7 +384,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
-  controller.GetSuggestionsForCategory(client, PickerCategory::kDatesTimes,
+  controller.GetSuggestionsForCategory(client, QuickInsertCategory::kDatesTimes,
                                        future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Take(), Not(IsEmpty()));
@@ -396,7 +396,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
-  controller.GetSuggestionsForCategory(client, PickerCategory::kUnitsMaths,
+  controller.GetSuggestionsForCategory(client, QuickInsertCategory::kUnitsMaths,
                                        future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Take(), Not(IsEmpty()));
@@ -417,7 +417,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
-  controller.GetSuggestionsForCategory(client, PickerCategory::kClipboard,
+  controller.GetSuggestionsForCategory(client, QuickInsertCategory::kClipboard,
                                        future.GetRepeatingCallback());
 
   EXPECT_THAT(future.Take(),

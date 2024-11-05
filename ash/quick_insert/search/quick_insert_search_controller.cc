@@ -156,8 +156,8 @@ void PickerSearchController::LoadEmojiLanguages(PrefService* prefs) {
 void PickerSearchController::StartSearch(
     PickerClient* client,
     std::u16string_view query,
-    std::optional<PickerCategory> category,
-    base::span<const PickerCategory> available_categories,
+    std::optional<QuickInsertCategory> category,
+    base::span<const QuickInsertCategory> available_categories,
     bool caps_lock_state_to_search,
     bool search_case_transforms,
     PickerViewDelegate::SearchResultsCallback callback) {

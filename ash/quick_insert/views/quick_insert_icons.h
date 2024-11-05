@@ -15,7 +15,7 @@ class ImageModel;
 
 namespace ash {
 
-ui::ImageModel GetIconForPickerCategory(PickerCategory category);
+ui::ImageModel GetIconForQuickInsertCategory(QuickInsertCategory category);
 
 }  // namespace ash
 
