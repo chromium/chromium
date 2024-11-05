@@ -26,11 +26,11 @@
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/product_messaging_controller.h"
-#include "components/user_education/common/session/user_education_session_policy.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/user_education_data.h"
 
@@ -220,7 +220,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       FeaturePromoRegistry* registry,
       HelpBubbleFactoryRegistry* help_bubble_registry,
       UserEducationStorageService* storage_service,
-      UserEducationSessionPolicy* session_policy,
+      FeaturePromoSessionPolicy* session_policy,
       TutorialService* tutorial_service,
       ProductMessagingController* messaging_controller);
   ~FeaturePromoControllerCommon() override;
@@ -518,7 +518,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Policy info about the most recent promo that was shown.
   // Updated when a new promo is shown.
-  UserEducationSessionPolicy::PromoInfo last_promo_info_;
+  FeaturePromoSessionPolicy::PromoInfo last_promo_info_;
 
   // Promo that is being continued during a tutorial launched from the promo
   // bubble.
@@ -530,7 +530,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   const raw_ptr<feature_engagement::Tracker> feature_engagement_tracker_;
   const raw_ptr<HelpBubbleFactoryRegistry> bubble_factory_registry_;
   const raw_ptr<UserEducationStorageService> storage_service_;
-  const raw_ptr<UserEducationSessionPolicy> session_policy_;
+  const raw_ptr<FeaturePromoSessionPolicy> session_policy_;
   const raw_ptr<TutorialService> tutorial_service_;
   const raw_ptr<ProductMessagingController> messaging_controller_;
 

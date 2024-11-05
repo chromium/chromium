@@ -23,11 +23,11 @@
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/product_messaging_controller.h"
-#include "components/user_education/common/session/user_education_session_policy.h"
 #include "components/user_education/common/tutorial/tutorial.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/common/user_education_data.h"
@@ -74,7 +74,7 @@ struct FeaturePromoControllerCommon::ShowPromoBubbleParams {
 };
 
 struct FeaturePromoControllerCommon::QueuedPromoData {
-  using PromoInfo = UserEducationSessionPolicy::PromoInfo;
+  using PromoInfo = FeaturePromoSessionPolicy::PromoInfo;
 
   QueuedPromoData(FeaturePromoParams params_, PromoInfo info_)
       : params(std::move(params_)), info(info_) {}
@@ -90,7 +90,7 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
     FeaturePromoRegistry* registry,
     HelpBubbleFactoryRegistry* help_bubble_registry,
     UserEducationStorageService* storage_service,
-    UserEducationSessionPolicy* session_policy,
+    FeaturePromoSessionPolicy* session_policy,
     TutorialService* tutorial_service,
     ProductMessagingController* messaging_controller)
     : in_iph_demo_mode_(
@@ -506,14 +506,14 @@ void FeaturePromoControllerCommon::MaybeShowQueuedPromo() {
 
   // If there is already a promo showing, it may be necessary to hold off trying
   // to show another.
-  const std::optional<UserEducationSessionPolicy::PromoInfo> current_promo =
+  const std::optional<FeaturePromoSessionPolicy::PromoInfo> current_promo =
       current_promo_ ? std::make_optional(last_promo_info_) : std::nullopt;
 
   // Also, if the next promo in queue cannot be shown and the current promo is
   // not high-priority, any messaging priority must be released.
   const bool must_release_on_failure =
       !current_promo || current_promo->priority !=
-                            UserEducationSessionPolicy::PromoPriority::kHigh;
+                            FeaturePromoSessionPolicy::PromoPriority::kHigh;
 
   // Fetch the next-highest-priority promo from the queue. If there's nothing,
   // then there's nothing to do.
@@ -536,7 +536,7 @@ void FeaturePromoControllerCommon::MaybeShowQueuedPromo() {
   }
 
   const bool is_high_priority =
-      next->info.priority == UserEducationSessionPolicy::PromoPriority::kHigh;
+      next->info.priority == FeaturePromoSessionPolicy::PromoPriority::kHigh;
 
   // Coordinate with the product messaging system to make sure a promo will not
   // attempt to be shown over a non-IPH legal notice.
@@ -696,11 +696,11 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
 #endif
 
   // Figure out if there's already a promo being shown.
-  std::optional<UserEducationSessionPolicy::PromoInfo> current_promo;
+  std::optional<FeaturePromoSessionPolicy::PromoInfo> current_promo;
   if (current_promo_) {
     current_promo = last_promo_info_;
   } else if (bubble_factory_registry_->is_any_bubble_showing()) {
-    current_promo = UserEducationSessionPolicy::PromoInfo();
+    current_promo = FeaturePromoSessionPolicy::PromoInfo();
   }
 
   // When not in demo mode, refer to the session policy to determine if the

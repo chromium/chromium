@@ -203,11 +203,11 @@ bool WebappsClientDesktop::IsMlPromotionBlockedByHistoryGuardrail(
   UserEducationService* const user_education_service =
       UserEducationServiceFactory::GetForBrowserContext(profile);
   user_education::FeaturePromoResult synthetic_result =
-      user_education_service->user_education_session_policy().CanShowPromo(
+      user_education_service->feature_promo_session_policy().CanShowPromo(
           {.weight =
-               user_education::UserEducationSessionPolicy::PromoWeight::kHeavy,
+               user_education::FeaturePromoSessionPolicy::PromoWeight::kHeavy,
            .priority =
-               user_education::UserEducationSessionPolicy::PromoPriority::kLow},
+               user_education::FeaturePromoSessionPolicy::PromoPriority::kLow},
           /*currently_showing=*/std::nullopt);
   return synthetic_result.failure() ==
          user_education::FeaturePromoResult::kBlockedByGracePeriod;

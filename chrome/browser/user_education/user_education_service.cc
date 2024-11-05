@@ -14,9 +14,9 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/new_badge/new_badge_policy.h"
-#include "components/user_education/common/session/user_education_session_policy.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 
@@ -29,13 +29,12 @@ UserEducationService::UserEducationService(
     bool allows_promos)
     : tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_),
       user_education_storage_service_(std::move(storage_service)),
-      user_education_session_policy_(
+      feature_promo_session_policy_(
           user_education::features::IsUserEducationV2()
-              ? std::make_unique<user_education::UserEducationSessionPolicyV2>()
-              : std::make_unique<
-                    user_education::UserEducationSessionPolicy>()) {
-  user_education_session_policy_->Init(&user_education_session_manager_,
-                                       user_education_storage_service_.get());
+              ? std::make_unique<user_education::FeaturePromoSessionPolicyV2>()
+              : std::make_unique<user_education::FeaturePromoSessionPolicy>()) {
+  feature_promo_session_policy_->Init(&user_education_session_manager_,
+                                      user_education_storage_service_.get());
   product_messaging_controller_.Init(user_education_session_manager_,
                                      *user_education_storage_service_);
 

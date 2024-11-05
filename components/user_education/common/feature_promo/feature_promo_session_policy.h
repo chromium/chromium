@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_EDUCATION_COMMON_SESSION_USER_EDUCATION_SESSION_POLICY_H_
-#define COMPONENTS_USER_EDUCATION_COMMON_SESSION_USER_EDUCATION_SESSION_POLICY_H_
+#ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_FEATURE_PROMO_SESSION_POLICY_H_
+#define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_FEATURE_PROMO_SESSION_POLICY_H_
 
 #include <optional>
 
@@ -24,7 +24,7 @@ class UserEducationSessionTestUtil;
 
 // Policy that defines how promos are allowed or disallowed due to the state of
 // the current session.
-class UserEducationSessionPolicy {
+class FeaturePromoSessionPolicy {
  public:
   // Describes whether the promotion is heavyweight (comparable to a non-toast
   // IPH in interactivity).
@@ -42,10 +42,10 @@ class UserEducationSessionPolicy {
 
   // Create a new policy which stores its state in `storage_service` and which
   // uses `session_manager` to determine the state of the current session.
-  UserEducationSessionPolicy();
-  UserEducationSessionPolicy(const UserEducationSessionPolicy&) = delete;
-  void operator=(const UserEducationSessionPolicy&) = delete;
-  virtual ~UserEducationSessionPolicy();
+  FeaturePromoSessionPolicy();
+  FeaturePromoSessionPolicy(const FeaturePromoSessionPolicy&) = delete;
+  void operator=(const FeaturePromoSessionPolicy&) = delete;
+  virtual ~FeaturePromoSessionPolicy();
 
   // Sets up the policy with its storage service.
   virtual void Init(UserEducationSessionManager* session_manager,
@@ -89,19 +89,19 @@ class UserEducationSessionPolicy {
 
 // Represents the promo policy for User Education Experience V2, above and
 // beyond the common promo logic.
-class UserEducationSessionPolicyV2 : public UserEducationSessionPolicy {
+class FeaturePromoSessionPolicyV2 : public FeaturePromoSessionPolicy {
  public:
-  UserEducationSessionPolicyV2();
-  ~UserEducationSessionPolicyV2() override;
+  FeaturePromoSessionPolicyV2();
+  ~FeaturePromoSessionPolicyV2() override;
 
-  // UserEducationSessionPolicyCommon:
+  // FeaturePromoSessionPolicyCommon:
   FeaturePromoResult CanShowPromo(
       PromoInfo to_show,
       std::optional<PromoInfo> currently_showing) const override;
 
  protected:
-  UserEducationSessionPolicyV2(base::TimeDelta session_start_grace_period,
-                               base::TimeDelta heavyweight_promo_cooldown);
+  FeaturePromoSessionPolicyV2(base::TimeDelta session_start_grace_period,
+                              base::TimeDelta heavyweight_promo_cooldown);
 
  private:
   const base::TimeDelta session_start_grace_period_;
@@ -110,4 +110,4 @@ class UserEducationSessionPolicyV2 : public UserEducationSessionPolicy {
 
 }  // namespace user_education
 
-#endif  // COMPONENTS_USER_EDUCATION_COMMON_SESSION_USER_EDUCATION_SESSION_POLICY_H_
+#endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_FEATURE_PROMO_SESSION_POLICY_H_

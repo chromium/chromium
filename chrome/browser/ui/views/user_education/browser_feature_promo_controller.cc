@@ -38,7 +38,7 @@ BrowserFeaturePromoController::BrowserFeaturePromoController(
     user_education::FeaturePromoRegistry* registry,
     user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
     user_education::UserEducationStorageService* storage_service,
-    user_education::UserEducationSessionPolicy* session_policy,
+    user_education::FeaturePromoSessionPolicy* session_policy,
     user_education::TutorialService* tutorial_service,
     user_education::ProductMessagingController* messaging_controller)
     : FeaturePromoControllerCommon(feature_engagement_tracker,

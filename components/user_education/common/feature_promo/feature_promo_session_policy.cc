@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_education/common/session/user_education_session_policy.h"
+#include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 
 #include "base/metrics/field_trial_params.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -20,22 +20,21 @@ enum class PromoPriority { kNone, kLow, kMedium, kHigh };
 
 }  // namespace
 
-UserEducationSessionPolicy::UserEducationSessionPolicy() = default;
-UserEducationSessionPolicy::~UserEducationSessionPolicy() = default;
+FeaturePromoSessionPolicy::FeaturePromoSessionPolicy() = default;
+FeaturePromoSessionPolicy::~FeaturePromoSessionPolicy() = default;
 
-void UserEducationSessionPolicy::Init(
+void FeaturePromoSessionPolicy::Init(
     UserEducationSessionManager* session_manager,
     UserEducationStorageService* storage_service) {
   session_manager_ = session_manager;
   storage_service_ = storage_service;
 }
 
-void UserEducationSessionPolicy::NotifyPromoShown(
-    const PromoInfo& promo_shown) {
+void FeaturePromoSessionPolicy::NotifyPromoShown(const PromoInfo& promo_shown) {
   current_promo_shown_time_ = storage_service_->GetCurrentTime();
 }
 
-void UserEducationSessionPolicy::NotifyPromoEnded(
+void FeaturePromoSessionPolicy::NotifyPromoEnded(
     const PromoInfo& promo_ended,
     FeaturePromoClosedReason close_reason) {
   // The close time may already have been recorded; for example, when a bubble
@@ -80,7 +79,7 @@ void UserEducationSessionPolicy::NotifyPromoEnded(
   }
 }
 
-FeaturePromoResult UserEducationSessionPolicy::CanShowPromo(
+FeaturePromoResult FeaturePromoSessionPolicy::CanShowPromo(
     PromoInfo to_show,
     std::optional<PromoInfo> currently_showing) const {
   return (!currently_showing || to_show.priority > currently_showing->priority)
@@ -88,20 +87,20 @@ FeaturePromoResult UserEducationSessionPolicy::CanShowPromo(
              : FeaturePromoResult::kBlockedByPromo;
 }
 
-UserEducationSessionPolicyV2::UserEducationSessionPolicyV2()
-    : UserEducationSessionPolicyV2(features::GetSessionStartGracePeriod(),
-                                   features::GetLowPriorityCooldown()) {}
+FeaturePromoSessionPolicyV2::FeaturePromoSessionPolicyV2()
+    : FeaturePromoSessionPolicyV2(features::GetSessionStartGracePeriod(),
+                                  features::GetLowPriorityCooldown()) {}
 
-UserEducationSessionPolicyV2::UserEducationSessionPolicyV2(
+FeaturePromoSessionPolicyV2::FeaturePromoSessionPolicyV2(
     base::TimeDelta session_start_grace_period,
     base::TimeDelta heavyweight_promo_cooldown)
     : session_start_grace_period_(session_start_grace_period),
       heavyweight_promo_cooldown_(heavyweight_promo_cooldown) {}
 
-UserEducationSessionPolicyV2::~UserEducationSessionPolicyV2() = default;
+FeaturePromoSessionPolicyV2::~FeaturePromoSessionPolicyV2() = default;
 
-UserEducationSessionPolicy::PromoInfo
-UserEducationSessionPolicy::SpecificationToPromoInfo(
+FeaturePromoSessionPolicy::PromoInfo
+FeaturePromoSessionPolicy::SpecificationToPromoInfo(
     const FeaturePromoSpecification& spec) const {
   PromoInfo promo_info;
   switch (spec.promo_subtype()) {
@@ -133,11 +132,11 @@ UserEducationSessionPolicy::SpecificationToPromoInfo(
   return promo_info;
 }
 
-FeaturePromoResult UserEducationSessionPolicyV2::CanShowPromo(
+FeaturePromoResult FeaturePromoSessionPolicyV2::CanShowPromo(
     PromoInfo to_show,
     std::optional<PromoInfo> currently_showing) const {
   const auto initial_result =
-      UserEducationSessionPolicy::CanShowPromo(to_show, currently_showing);
+      FeaturePromoSessionPolicy::CanShowPromo(to_show, currently_showing);
   if (!initial_result) {
     return initial_result;
   }

@@ -14,11 +14,11 @@
 #include "chrome/browser/user_education/recent_session_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
-#include "components/user_education/common/session/user_education_session_policy.h"
 #include "components/user_education/common/tutorial/tutorial.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/user_education_storage_service.h"
@@ -57,8 +57,8 @@ class UserEducationService : public KeyedService {
   user_education_session_manager() {
     return user_education_session_manager_;
   }
-  user_education::UserEducationSessionPolicy& user_education_session_policy() {
-    return *user_education_session_policy_;
+  user_education::FeaturePromoSessionPolicy& feature_promo_session_policy() {
+    return *feature_promo_session_policy_;
   }
   user_education::NewBadgeRegistry* new_badge_registry() {
     return new_badge_registry_.get();
@@ -97,8 +97,8 @@ class UserEducationService : public KeyedService {
   std::unique_ptr<BrowserUserEducationStorageService>
       user_education_storage_service_;
   user_education::UserEducationSessionManager user_education_session_manager_;
-  std::unique_ptr<user_education::UserEducationSessionPolicy>
-      user_education_session_policy_;
+  std::unique_ptr<user_education::FeaturePromoSessionPolicy>
+      feature_promo_session_policy_;
   user_education::ProductMessagingController product_messaging_controller_;
   std::unique_ptr<user_education::NewBadgeRegistry> new_badge_registry_;
   std::unique_ptr<user_education::NewBadgeController> new_badge_controller_;
