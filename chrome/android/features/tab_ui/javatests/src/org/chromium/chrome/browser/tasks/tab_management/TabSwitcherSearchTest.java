@@ -200,6 +200,44 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    // Regression test for the currently selected tab being included/excluded randomly.
+    public void testZeroPrefixSuggestions_IgnoresHiddenTabs() {
+        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
+        TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        SearchActivity searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+
+        // ZPS for open tabs only shows the most recent 4 tabs.
+        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
+        verifySuggestions(
+                suggestions,
+                Arrays.asList("/chrome/test/data/android/navigate/one.html", "about:blank"),
+                "Last open tabs");
+
+        // Check the header text.
+        onView(withText("Last open tabs")).check(matches(isCompletelyDisplayed()));
+
+        closeSearchAndVerify();
+        searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+
+        // ZPS for open tabs only shows the most recent 4 tabs.
+        suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
+        verifySuggestions(
+                suggestions,
+                Arrays.asList("/chrome/test/data/android/navigate/one.html", "about:blank"),
+                "Last open tabs");
+
+        // Check the header text.
+        onView(withText("Last open tabs")).check(matches(isCompletelyDisplayed()));
+    }
+
+    @Test
+    @MediumTest
     public void testZeroPrefixSuggestions_Incognito() {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ true);
@@ -350,7 +388,10 @@ public class TabSwitcherSearchTest {
         enterTabSwitcher(cta);
 
         TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        closeSearchAndVerify();
+    }
 
+    private void closeSearchAndVerify() {
         // Click the back button which is setup as the status view icon.
         onView(withId(R.id.location_bar_status)).perform(click());
 

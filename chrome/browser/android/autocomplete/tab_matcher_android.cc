@@ -183,8 +183,8 @@ TabMatcherAndroid::GetOpenAndroidTabs(const AutocompleteInput* input) const {
 
   // Retrieve all Tabs associated with previously built TabModels array.
   base::android::ScopedJavaLocalRef<jobjectArray> j_tabs =
-      Java_ChromeAutocompleteProviderClient_getAllHiddenTabs(env,
-                                                             j_tab_model_array);
+      Java_ChromeAutocompleteProviderClient_getAllEligibleTabs(
+          env, j_tab_model_array, input->current_page_classification());
   if (j_tabs.is_null())
     return std::vector<raw_ptr<TabAndroid, VectorExperimental>>();
 

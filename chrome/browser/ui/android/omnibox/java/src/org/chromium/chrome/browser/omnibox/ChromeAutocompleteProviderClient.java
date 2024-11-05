@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +18,19 @@ import java.util.List;
  */
 public class ChromeAutocompleteProviderClient {
     @CalledByNative
-    private static Tab[] getAllHiddenTabs(TabModel[] tabModels) {
+    // Returns all eligible tabs for the android tab matcher. For most {@link PageClassification}s
+    //  this is all hidden tabs, but for PageClassification.ANDROID_HUB it includes all tabs.
+    private static Tab[] getAllEligibleTabs(TabModel[] tabModels, int pageClassification) {
         if (tabModels == null) return null;
         List<Tab> tabList = new ArrayList<>();
-
         for (TabModel tabModel : tabModels) {
             if (tabModel == null) continue;
 
-            for (int i = 0; i < tabModel.getCount(); ++i) {
+            for (int i = 0; i < tabModel.getCount(); i++) {
                 Tab tab = tabModel.getTabAt(i);
-                if (tab.isHidden()) tabList.add(tab);
+                if (tab.isHidden() || pageClassification == PageClassification.ANDROID_HUB_VALUE) {
+                    tabList.add(tab);
+                }
             }
         }
         return tabList.isEmpty() ? null : tabList.toArray(new Tab[0]);
