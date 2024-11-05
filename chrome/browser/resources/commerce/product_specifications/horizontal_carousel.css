@@ -26,7 +26,8 @@
 }
 
 .carousel-button {
-  --cr-icon-button-fill-color: currentColor;
+  --cr-icon-button-fill-color: var(
+      --color-product-specifications-tonal-button-icon);
   --cr-icon-button-size: var(--horizontal-carousel-button-size);
   background-color: var(--color-button-background-tonal);
   margin: 0;

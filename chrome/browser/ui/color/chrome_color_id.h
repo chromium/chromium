@@ -429,11 +429,10 @@
   E_CPONLY(kColorProductSpecificationsIconButtonHoveredBackground) \
   E_CPONLY(kColorProductSpecificationsLink) \
   E_CPONLY(kColorProductSpecificationsPageBackground) \
-  E_CPONLY(kColorProductSpecificationsPrimaryTitle) \
-  E_CPONLY(kColorProductSpecificationsSecondaryTitle) \
   E_CPONLY(kColorProductSpecificationsSummaryBackground) \
   E_CPONLY(kColorProductSpecificationsSummaryBackgroundDragging) \
   E_CPONLY(kColorProductSpecificationsTonalButtonBackground) \
+  E_CPONLY(kColorProductSpecificationsTonalButtonIcon) \
   /* Profile Menu colors. */ \
   E_CPONLY(kColorProfileMenuBackground) \
   E_CPONLY(kColorProfileMenuHeaderBackground) \

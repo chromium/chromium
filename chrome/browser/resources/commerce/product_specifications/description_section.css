@@ -27,6 +27,11 @@
   width: fit-content;
 }
 
+.attribute-chip,
+.summary-text {
+  color: var(--cr-secondary-text-color);
+}
+
 .attribute-title {
   font-weight: 500;
 }
