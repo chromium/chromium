@@ -126,12 +126,18 @@ class AutofillAgentTests : public web::WebTest {
 
     fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetContentIsHTML(true);
-    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    fake_web_frames_manager_ = frames_manager.get();
-    web::ContentWorld content_world =
-        AutofillJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
-    fake_web_state_.SetWebFramesManager(content_world,
-                                        std::move(frames_manager));
+
+    for (auto content_world : {web::ContentWorld::kIsolatedWorld,
+                               web::ContentWorld::kPageContentWorld}) {
+      auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+      fake_web_state_.SetWebFramesManager(content_world,
+                                          std::move(frames_manager));
+    }
+
+    fake_web_frames_manager_ = static_cast<web::FakeWebFramesManager*>(
+        fake_web_state_.GetWebFramesManager(
+            AutofillJavaScriptFeature::GetInstance()
+                ->GetSupportedContentWorld()));
 
     GURL url("https://example.com");
     fake_web_state_.SetCurrentURL(url);

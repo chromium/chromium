@@ -47,6 +47,7 @@ source_set("browser") {
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:autofill_form_features",
+    "//components/autofill/ios/form_util:autofill_form_features_injector",
     "//components/autofill/ios/form_util:autofill_renderer_id_feature",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:form_handler_feature",

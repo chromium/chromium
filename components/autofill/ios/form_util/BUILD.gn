@@ -286,9 +286,28 @@ source_set("autofill_form_features") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("autofill_form_features_injector") {
+  sources = [
+    "autofill_form_features_injector.h",
+    "autofill_form_features_injector.mm",
+  ]
+  deps = [
+    ":autofill_form_features",
+    "//base",
+    "//components/autofill/core/common:features",
+    "//components/autofill/ios/common",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_form_features_injector_unittest.mm",
     "child_frame_registrar_unittest.mm",
     "fill_js_unittest.mm",
     "form_activity_observer_bridge_unittest.mm",
@@ -298,6 +317,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":autofill_form_features",
+    ":autofill_form_features_injector",
     ":autofill_renderer_id_feature",
     ":child_frame_registrar",
     ":fill_js",

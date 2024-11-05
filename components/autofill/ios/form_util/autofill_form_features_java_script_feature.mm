@@ -22,7 +22,7 @@ AutofillFormFeaturesJavaScriptFeature::GetInstance() {
 
 AutofillFormFeaturesJavaScriptFeature::AutofillFormFeaturesJavaScriptFeature()
     : web::JavaScriptFeature(
-          ContentWorldForAutofillJavascriptFeatures(),
+          web::ContentWorld::kAllContentWorlds,
           {FeatureScript::CreateWithFilename(
               kFeaturesScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
@@ -38,16 +38,18 @@ AutofillFormFeaturesJavaScriptFeature::
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillAcrossIframes(
     web::WebFrame* frame,
     bool enabled) {
-  CallJavaScriptFunction(frame,
-                         "autofill_form_features.setAutofillAcrossIframes",
-                         base::Value::List().Append(enabled));
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillAcrossIframes",
+      base::Value::List().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillIsolatedContentWorld(
     web::WebFrame* frame,
     bool enabled) {
-  CallJavaScriptFunction(
-      frame, "autofill_form_features.setAutofillIsolatedContentWorld",
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillIsolatedContentWorld",
       base::Value::List().Append(enabled));
 }
 

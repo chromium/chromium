@@ -62,6 +62,7 @@
 #import "components/autofill/ios/browser/password_autofill_agent.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
+#import "components/autofill/ios/form_util/autofill_form_features_injector.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -89,6 +90,7 @@
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
+using autofill::AutofillFormFeaturesInjector;
 using autofill::AutofillFormFeaturesJavaScriptFeature;
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
@@ -196,6 +198,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   // ID of the last Autofill query made. Used to discard outdated suggestions.
   FieldGlobalId _lastQueriedFieldID;
+
+  // Helper for setting feature flags in page content world WebFrames.
+  std::unique_ptr<AutofillFormFeaturesInjector> _page_world_features_injector;
 }
 
 @end
@@ -227,6 +232,15 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         autofill::prefs::kAutofillCreditCardEnabled, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         autofill::prefs::kAutofillProfileEnabled, &_prefChangeRegistrar);
+
+    // Inject feature flags in the page content world when running in the
+    // isolated world. Feature flags are needed for the form submission hook
+    // that is injected in that the page world.
+    if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
+      _page_world_features_injector =
+          std::make_unique<AutofillFormFeaturesInjector>(
+              webState, web::ContentWorld::kPageContentWorld);
+    }
   }
   return self;
 }
@@ -1297,15 +1311,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
   driver->set_processed(true);
 
-  AutofillFormFeaturesJavaScriptFeature::GetInstance()
-      ->SetAutofillAcrossIframes(
-          frame, base::FeatureList::IsEnabled(
-                     autofill::features::kAutofillAcrossIframesIos));
-
-  AutofillFormFeaturesJavaScriptFeature::GetInstance()
-      ->SetAutofillIsolatedContentWorld(
-          frame,
-          base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos));
+  // Inject feature flags in frame directly to make sure the flags are set
+  // before triggering form extraction. We could use
+  // AutofillFormFeaturesInjector but there is no guarantee that it will inject
+  // the flags before this code is run.
+  autofill::SetAutofillFormFeatureFlags(frame);
 
   if (frame->IsMainFrame()) {
     _suggestionDelegate.reset();
