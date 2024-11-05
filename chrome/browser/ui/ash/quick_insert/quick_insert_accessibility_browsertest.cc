@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
 IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        InsertingAnnouncesInsertionBeforeTextfieldRefocus) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager::UserManager::Get());
+  QuickInsertClientImpl client(&controller, user_manager::UserManager::Get());
   std::unique_ptr<views::Widget> textfield_widget =
       ash::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)

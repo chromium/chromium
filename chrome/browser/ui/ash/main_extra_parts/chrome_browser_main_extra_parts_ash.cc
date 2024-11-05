@@ -413,7 +413,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
 
-  picker_client_ = std::make_unique<PickerClientImpl>(
+  quick_insert_client_ = std::make_unique<QuickInsertClientImpl>(
       ash::Shell::Get()->quick_insert_controller(),
       user_manager::UserManager::Get());
 
@@ -518,7 +518,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // Initialized in PostProfileInit (which may not get called in some tests).
   game_mode_controller_.reset();
   oobe_dialog_util_.reset();
-  picker_client_.reset();
+  quick_insert_client_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
   display_settings_handler_.reset();

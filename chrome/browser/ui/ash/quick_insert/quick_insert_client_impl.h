@@ -45,18 +45,18 @@ class User;
 }
 
 // Implements the PickerClient used by Ash.
-class PickerClientImpl
+class QuickInsertClientImpl
     : public ash::PickerClient,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
   // Sets this instance as the client of `controller`.
   // Automatically unsets the client when this instance is destroyed.
   // `manager` needs to outlive this class.
-  explicit PickerClientImpl(ash::QuickInsertController* controller,
-                            user_manager::UserManager* user_manager);
-  PickerClientImpl(const PickerClientImpl&) = delete;
-  PickerClientImpl& operator=(const PickerClientImpl&) = delete;
-  ~PickerClientImpl() override;
+  explicit QuickInsertClientImpl(ash::QuickInsertController* controller,
+                                 user_manager::UserManager* user_manager);
+  QuickInsertClientImpl(const QuickInsertClientImpl&) = delete;
+  QuickInsertClientImpl& operator=(const QuickInsertClientImpl&) = delete;
+  ~QuickInsertClientImpl() override;
 
   // ash::PickerClient:
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
@@ -142,7 +142,7 @@ class PickerClientImpl
                           user_manager::UserManager::UserSessionStateObserver>
       user_session_state_observation_{this};
 
-  base::WeakPtrFactory<PickerClientImpl> weak_factory_{this};
+  base::WeakPtrFactory<QuickInsertClientImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_QUICK_INSERT_QUICK_INSERT_CLIENT_IMPL_H_

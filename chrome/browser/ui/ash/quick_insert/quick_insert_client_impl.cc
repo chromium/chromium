@@ -264,19 +264,20 @@ std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromPanelContext(
 
 }  // namespace
 
-PickerClientImpl::PickerClientImpl(ash::QuickInsertController* controller,
-                                   user_manager::UserManager* user_manager)
+QuickInsertClientImpl::QuickInsertClientImpl(
+    ash::QuickInsertController* controller,
+    user_manager::UserManager* user_manager)
     : announcer_(kAnnouncementViewName), controller_(controller) {
   controller_->SetClient(this);
 
-  // As `PickerClientImpl` is initialised in
+  // As `QuickInsertClientImpl` is initialised in
   // `ChromeBrowserMainExtraPartsAsh::PostProfileInit`, the user manager does
   // not notify us of the first user "change".
   ActiveUserChanged(user_manager->GetActiveUser());
   user_session_state_observation_.Observe(user_manager);
 }
 
-PickerClientImpl::~PickerClientImpl() {
+QuickInsertClientImpl::~QuickInsertClientImpl() {
   // Calling `QuickInsertController::SetClient` with null requires the old
   // client (this client) to be valid. This is fine as we have not started
   // destructing anything yet.
@@ -284,12 +285,12 @@ PickerClientImpl::~PickerClientImpl() {
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-PickerClientImpl::GetSharedURLLoaderFactory() {
+QuickInsertClientImpl::GetSharedURLLoaderFactory() {
   CHECK(profile_);
   return profile_->GetURLLoaderFactory();
 }
 
-void PickerClientImpl::StartCrosSearch(
+void QuickInsertClientImpl::StartCrosSearch(
     const std::u16string& query,
     std::optional<ash::QuickInsertCategory> category,
     CrosSearchResultsCallback callback) {
@@ -299,7 +300,7 @@ void PickerClientImpl::StartCrosSearch(
     CHECK(search_engine_);
     search_engine_->StartSearch(
         query, app_list::SearchOptions(),
-        base::BindRepeating(&PickerClientImpl::OnCrosSearchResultsUpdated,
+        base::BindRepeating(&QuickInsertClientImpl::OnCrosSearchResultsUpdated,
                             weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
@@ -330,14 +331,15 @@ void PickerClientImpl::StartCrosSearch(
 
       filtered_search_engine_->StartSearch(
           query, app_list::SearchOptions(),
-          base::BindRepeating(&PickerClientImpl::OnCrosSearchResultsUpdated,
-                              weak_factory_.GetWeakPtr(), std::move(callback)));
+          base::BindRepeating(
+              &QuickInsertClientImpl::OnCrosSearchResultsUpdated,
+              weak_factory_.GetWeakPtr(), std::move(callback)));
     } break;
   }
 }
 
-void PickerClientImpl::OnCrosSearchResultsUpdated(
-    PickerClientImpl::CrosSearchResultsCallback callback,
+void QuickInsertClientImpl::OnCrosSearchResultsUpdated(
+    QuickInsertClientImpl::CrosSearchResultsCallback callback,
     ash::AppListSearchResultType result_type,
     std::vector<std::unique_ptr<ChromeSearchResult>> results) {
   app_list::ResultsMap results_map;
@@ -349,12 +351,12 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
                ConvertSearchResults(std::move(results_map[result_type])));
 }
 
-void PickerClientImpl::StopCrosQuery() {
+void QuickInsertClientImpl::StopCrosQuery() {
   CHECK(search_engine_);
   search_engine_->StopQuery();
 }
 
-bool PickerClientImpl::IsEligibleForEditor() {
+bool QuickInsertClientImpl::IsEligibleForEditor() {
   ash::input_method::EditorMediator* editor_mediator =
       GetEditorMediator(profile_);
   if (editor_mediator == nullptr) {
@@ -365,7 +367,8 @@ bool PickerClientImpl::IsEligibleForEditor() {
          ash::input_method::EditorMode::kHardBlocked;
 }
 
-PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
+QuickInsertClientImpl::ShowEditorCallback
+QuickInsertClientImpl::CacheEditorContext() {
   ash::input_method::EditorMediator* editor_mediator =
       GetEditorMediator(profile_);
   if (editor_mediator == nullptr) {
@@ -380,12 +383,12 @@ PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
     return {};
   }
 
-  return base::BindOnce(&PickerClientImpl::ShowEditor,
+  return base::BindOnce(&QuickInsertClientImpl::ShowEditor,
                         weak_factory_.GetWeakPtr());
 }
 
-PickerClientImpl::ShowLobsterCallback PickerClientImpl::CacheLobsterContext(
-    bool support_image_insertion) {
+QuickInsertClientImpl::ShowLobsterCallback
+QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
   if (!ash::features::IsLobsterEnabled() ||
       !ash::LobsterController::IsEnabled()) {
     return base::NullCallback();
@@ -407,11 +410,11 @@ PickerClientImpl::ShowLobsterCallback PickerClientImpl::CacheLobsterContext(
     return base::NullCallback();
   }
 
-  return base::BindOnce(&PickerClientImpl::ShowLobster,
+  return base::BindOnce(&QuickInsertClientImpl::ShowLobster,
                         weak_factory_.GetWeakPtr());
 }
 
-void PickerClientImpl::GetSuggestedEditorResults(
+void QuickInsertClientImpl::GetSuggestedEditorResults(
     SuggestedEditorResultsCallback callback) {
   ash::input_method::EditorMediator* editor_mediator =
       GetEditorMediator(profile_);
@@ -433,41 +436,45 @@ void PickerClientImpl::GetSuggestedEditorResults(
           .Then(std::move(callback)));
 }
 
-void PickerClientImpl::GetRecentLocalFileResults(size_t max_files,
-                                                 base::TimeDelta now_delta,
-                                                 RecentFilesCallback callback) {
+void QuickInsertClientImpl::GetRecentLocalFileResults(
+    size_t max_files,
+    base::TimeDelta now_delta,
+    RecentFilesCallback callback) {
   file_suggester_->GetRecentLocalImages(
       max_files, now_delta,
       base::BindOnce(CreateSearchResultsForRecentLocalImages)
           .Then(std::move(callback)));
 }
 
-void PickerClientImpl::GetRecentDriveFileResults(size_t max_files,
-                                                 RecentFilesCallback callback) {
+void QuickInsertClientImpl::GetRecentDriveFileResults(
+    size_t max_files,
+    RecentFilesCallback callback) {
   file_suggester_->GetRecentDriveFiles(
       max_files, base::BindOnce(CreateSearchResultsForRecentDriveFiles)
                      .Then(std::move(callback)));
 }
 
-void PickerClientImpl::GetSuggestedLinkResults(
+void QuickInsertClientImpl::GetSuggestedLinkResults(
     size_t max_results,
     SuggestedLinksCallback callback) {
   link_suggester_->GetSuggestedLinks(max_results, std::move(callback));
 }
 
-void PickerClientImpl::FetchFileThumbnail(const base::FilePath& path,
-                                          const gfx::Size& size,
-                                          FetchFileThumbnailCallback callback) {
+void QuickInsertClientImpl::FetchFileThumbnail(
+    const base::FilePath& path,
+    const gfx::Size& size,
+    FetchFileThumbnailCallback callback) {
   CHECK(thumbnail_loader_);
   thumbnail_loader_->Load(path, size, std::move(callback));
 }
 
-PrefService* PickerClientImpl::GetPrefs() {
+PrefService* QuickInsertClientImpl::GetPrefs() {
   return profile_ == nullptr ? nullptr : profile_->GetPrefs();
 }
 
 // Forked from `ClipboardHistoryControllerDelegateImpl::Paste`.
-std::optional<ash::PickerWebPasteTarget> PickerClientImpl::GetWebPasteTarget() {
+std::optional<ash::PickerWebPasteTarget>
+QuickInsertClientImpl::GetWebPasteTarget() {
   std::unique_ptr<content::RenderWidgetHostIterator> widgets =
       content::RenderWidgetHost::GetRenderWidgetHosts();
   while (content::RenderWidgetHost* rwh = widgets->GetNextHost()) {
@@ -515,28 +522,28 @@ std::optional<ash::PickerWebPasteTarget> PickerClientImpl::GetWebPasteTarget() {
   return std::nullopt;
 }
 
-void PickerClientImpl::Announce(std::u16string_view message) {
+void QuickInsertClientImpl::Announce(std::u16string_view message) {
   announcer_.Announce(std::u16string(message));
 }
 
-void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
+void QuickInsertClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user) {
     SetProfile(nullptr);
     return;
   }
 
   active_user->AddProfileCreatedObserver(
-      base::BindOnce(&PickerClientImpl::SetProfileByUser,
+      base::BindOnce(&QuickInsertClientImpl::SetProfileByUser,
                      weak_factory_.GetWeakPtr(), active_user));
 }
 
-void PickerClientImpl::SetProfileByUser(const user_manager::User* user) {
+void QuickInsertClientImpl::SetProfileByUser(const user_manager::User* user) {
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
   SetProfile(profile);
 }
 
-void PickerClientImpl::SetProfile(Profile* profile) {
+void QuickInsertClientImpl::SetProfile(Profile* profile) {
   if (profile_ == profile) {
     return;
   }
@@ -564,16 +571,16 @@ void PickerClientImpl::SetProfile(Profile* profile) {
 }
 
 std::unique_ptr<app_list::SearchProvider>
-PickerClientImpl::CreateOmniboxProvider(bool bookmarks,
-                                        bool history,
-                                        bool open_tabs) {
+QuickInsertClientImpl::CreateOmniboxProvider(bool bookmarks,
+                                             bool history,
+                                             bool open_tabs) {
   return std::make_unique<app_list::OmniboxProvider>(
       profile_, GetEmptyAppListControllerDelegate(),
       LauncherSearchProviderTypes(bookmarks, history, open_tabs));
 }
 
 std::unique_ptr<app_list::SearchProvider>
-PickerClientImpl::CreateSearchProviderForCategory(
+QuickInsertClientImpl::CreateSearchProviderForCategory(
     ash::QuickInsertCategory category) {
   switch (category) {
     case ash::QuickInsertCategory::kEditorWrite:
@@ -597,8 +604,9 @@ PickerClientImpl::CreateSearchProviderForCategory(
   }
 }
 
-void PickerClientImpl::ShowEditor(std::optional<std::string> preset_query_id,
-                                  std::optional<std::string> freeform_text) {
+void QuickInsertClientImpl::ShowEditor(
+    std::optional<std::string> preset_query_id,
+    std::optional<std::string> freeform_text) {
   ash::input_method::EditorMediator* editor_mediator =
       GetEditorMediator(profile_);
   if (editor_mediator != nullptr) {
@@ -607,15 +615,15 @@ void PickerClientImpl::ShowEditor(std::optional<std::string> preset_query_id,
   }
 }
 
-void PickerClientImpl::ShowLobster(std::optional<std::string> query) {
+void QuickInsertClientImpl::ShowLobster(std::optional<std::string> query) {
   if (lobster_trigger_ != nullptr) {
     lobster_trigger_->Fire(query);
   }
 }
 
-int PickerClientImpl::LauncherSearchProviderTypes(bool bookmarks,
-                                                  bool history,
-                                                  bool open_tabs) {
+int QuickInsertClientImpl::LauncherSearchProviderTypes(bool bookmarks,
+                                                       bool history,
+                                                       bool open_tabs) {
   int providers = 0;
 
   if (bookmarks) {

@@ -281,14 +281,14 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
 
 TEST_F(QuickInsertClientImplTest, GetsSharedURLLoaderFactory) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
 
   EXPECT_EQ(client.GetSharedURLLoaderFactory(), GetSharedURLLoaderFactory());
 }
 
 TEST_F(QuickInsertClientImplTest, StartCrosSearch) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   AddSearchToHistory(profile(), GURL("http://foo.com/history"));
   AddBookmarks(profile(), u"Foobaz", GURL("http://foo.com/bookmarks"));
   AddTab(browser(), GURL("http://foo.com/tab"));
@@ -299,7 +299,7 @@ TEST_F(QuickInsertClientImplTest, StartCrosSearch) {
   ranker_manager->SetBestMatchString(u"tab");
   client.set_ranker_manager_for_test(std::move(ranker_manager));
 
-  base::MockCallback<PickerClientImpl::CrosSearchResultsCallback>
+  base::MockCallback<QuickInsertClientImpl::CrosSearchResultsCallback>
       mock_search_callback;
   EXPECT_CALL(mock_search_callback, Run(_, _)).Times(AnyNumber());
   EXPECT_CALL(
@@ -338,10 +338,10 @@ TEST_F(QuickInsertClientImplTest, StartCrosSearch) {
 
 TEST_F(QuickInsertClientImplTest, IgnoresWhatYouTypedResults) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<void> test_done;
 
-  base::MockCallback<PickerClientImpl::CrosSearchResultsCallback>
+  base::MockCallback<QuickInsertClientImpl::CrosSearchResultsCallback>
       mock_search_callback;
   EXPECT_CALL(mock_search_callback, Run(_, _)).Times(AnyNumber());
   EXPECT_CALL(mock_search_callback,
@@ -356,7 +356,7 @@ TEST_F(QuickInsertClientImplTest, IgnoresWhatYouTypedResults) {
 
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesWithNoFiles) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
 
   client.GetRecentLocalFileResults(
@@ -367,7 +367,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesWithNoFiles) {
 
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   const base::FilePath mount_path = GetFakeDriveFs().mount_path();
   SetRecentFiles(
@@ -402,7 +402,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesReturnsOnlyLocalFiles) {
 
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   SetRecentFiles(
       profile(),
@@ -427,7 +427,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
 
 TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesWithNoFiles) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
 
   client.GetRecentDriveFileResults(/*max_files=*/100, future.GetCallback());
@@ -437,7 +437,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesWithNoFiles) {
 
 TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   const base::FilePath mount_path = GetFakeDriveFs().mount_path();
   SetRecentFiles(
@@ -473,7 +473,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesReturnsOnlyDriveFiles) {
 
 TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   SetRecentFiles(
       profile(),
@@ -498,7 +498,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesDoesNotReturnOldFiles) {
 
 TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesTruncates) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   const base::FilePath mount_path = GetFakeDriveFs().mount_path();
   SetRecentFiles(
@@ -524,7 +524,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentLocalFilesTruncates) {
 
 TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesTruncates) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
   const base::FilePath mount_path = GetFakeDriveFs().mount_path();
   SetRecentFiles(
@@ -549,7 +549,7 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesTruncates) {
 
 TEST_F(QuickInsertClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   const base::Time now = base::Time::Now();
   AddSearchToHistory(profile(), GURL("http://a.com/history"),
                      now - base::Seconds(1));
@@ -575,7 +575,7 @@ TEST_F(QuickInsertClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
 TEST_F(QuickInsertClientImplTest,
        GetSuggestedLinkResultsAreTruncatedToMostRecent) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   const base::Time now = base::Time::Now();
   AddSearchToHistory(profile(), GURL("http://a.com/history"),
                      now - base::Seconds(1));
@@ -598,7 +598,7 @@ TEST_F(QuickInsertClientImplTest,
        GetSuggestedLinkResultsFiltersOutPersonalizedLinks) {
   base::test::ScopedFeatureList features(ash::features::kPickerFilterLinks);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   const base::Time now = base::Time::Now();
   AddSearchToHistory(profile(),
                      GURL("https://mail.google.com/mail/u/0/#inbox/aaa"), now);
@@ -621,7 +621,7 @@ TEST_F(QuickInsertClientImplTest,
 TEST_F(QuickInsertClientImplTest,
        SearchAfterSwitchingActiveUserReturnsResultsFromNewUser) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   TestingProfile* secondary_profile = CreateMultiUserProfile("secondary@test");
   AddSearchToHistory(profile(), GURL("https://foo.com/primary"));
   AddSearchToHistory(secondary_profile, GURL("https://foo.com/secondary"));
@@ -654,7 +654,7 @@ TEST_F(QuickInsertClientImplTest,
 TEST_F(QuickInsertClientImplTest,
        SearchCategoryAfterSwitchingActiveUserReturnsResultsFromNewUser) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   TestingProfile* secondary_profile = CreateMultiUserProfile("secondary@test");
   AddSearchToHistory(profile(), GURL("https://foo.com/primary"));
   AddSearchToHistory(secondary_profile, GURL("https://foo.com/secondary"));
@@ -713,7 +713,7 @@ class QuickInsertClientImplEditorTest : public QuickInsertClientImplTest {
 TEST_F(QuickInsertClientImplEditorTest,
        IsEligibleForEditorReturnsFalseIfEditorDisabled) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kHardBlocked);
 
@@ -724,7 +724,7 @@ TEST_F(QuickInsertClientImplEditorTest,
        IsEligibleForEditorReturnsFalseIfHardBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kHardBlocked);
 
@@ -735,7 +735,7 @@ TEST_F(QuickInsertClientImplEditorTest,
        IsEligibleForEditorReturnsTrueIfSoftBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kSoftBlocked);
 
@@ -745,7 +745,7 @@ TEST_F(QuickInsertClientImplEditorTest,
 TEST_F(QuickInsertClientImplEditorTest,
        CacheEditorContextReturnsNullCallbackWhenEditorFlagDisabled) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kHardBlocked);
 
@@ -756,7 +756,7 @@ TEST_F(QuickInsertClientImplEditorTest,
        CacheEditorContextReturnsNullCallbackWhenBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kSoftBlocked);
 
@@ -767,7 +767,7 @@ TEST_F(QuickInsertClientImplEditorTest,
        CacheEditorContextReturnsCallbackWhenNotBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kConsentNeeded);
 
@@ -777,7 +777,7 @@ TEST_F(QuickInsertClientImplEditorTest,
 TEST_F(QuickInsertClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kConsentNeeded);
   ui::FakeTextInputClient text_input_client(
@@ -798,7 +798,7 @@ TEST_F(QuickInsertClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
 TEST_F(QuickInsertClientImplEditorTest, GetSuggestedEditorResults) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kRewrite);
   ui::FakeTextInputClient text_input_client(&ime(),
@@ -817,7 +817,7 @@ TEST_F(QuickInsertClientImplEditorTest,
        GetSuggestedEditorResultsReturnsNothingWhenBlocked) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
       ash::input_method::EditorMode::kSoftBlocked);
   ui::FakeTextInputClient text_input_client(&ime(),
@@ -833,7 +833,7 @@ TEST_F(QuickInsertClientImplEditorTest,
 TEST_F(QuickInsertClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
   base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   views::test::AXEventCounter counter(views::AXEventManager::Get());
 
   client.Announce(u"hello");
@@ -843,7 +843,7 @@ TEST_F(QuickInsertClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
 
 TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesAll) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   const int types =
       client.LauncherSearchProviderTypes(/*bookmarks=*/true, /*history=*/true,
                                          /*open_tabs=*/true);
@@ -859,7 +859,7 @@ TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesAll) {
 
 TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesBookmarks) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   const int types =
       client.LauncherSearchProviderTypes(/*bookmarks=*/true, /*history=*/false,
                                          /*open_tabs=*/false);
@@ -874,7 +874,7 @@ TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesBookmarks) {
 
 TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesHistory) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   const int types =
       client.LauncherSearchProviderTypes(/*bookmarks=*/false, /*history=*/true,
                                          /*open_tabs=*/false);
@@ -889,7 +889,7 @@ TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesHistory) {
 
 TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesOpenTab) {
   ash::QuickInsertController controller;
-  PickerClientImpl client(&controller, user_manager());
+  QuickInsertClientImpl client(&controller, user_manager());
   const int types =
       client.LauncherSearchProviderTypes(/*bookmarks=*/false, /*history=*/false,
                                          /*open_tabs=*/true);
@@ -902,6 +902,6 @@ TEST_F(QuickInsertClientImplEditorTest, LauncherSearchProviderTypesOpenTab) {
   EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
 }
 
-// TODO: b/325540366 - Add PickerClientImpl tests.
+// TODO: b/325540366 - Add QuickInsertClientImpl tests.
 
 }  // namespace
