@@ -9671,22 +9671,37 @@
             ]
         }
     ],
-    "FeedPullToRefreshIph": [
+    "FeedMemoryImprovement": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_2GB_20241104",
                     "params": {
-                        "availability": "any",
-                        "event_trigger": "name:pulltorefresh_triggered;comparator:==0;window:360;storage:360",
-                        "event_used": "name:feed_swipe_refresh_shown;comparator:==0;window:7;storage:360",
-                        "session_rate": "==0"
+                        "low_memory_threshold": "2048"
                     },
                     "enable_features": [
-                        "IPH_FeedSwipeRefresh"
+                        "FeedLowMemoryImprovement"
+                    ]
+                },
+                {
+                    "name": "Enabled_4GB_20241104",
+                    "params": {
+                        "low_memory_threshold": "4096"
+                    },
+                    "enable_features": [
+                        "FeedLowMemoryImprovement"
+                    ]
+                },
+                {
+                    "name": "Enabled_All_20241104",
+                    "params": {
+                        "low_memory_threshold": "-1"
+                    },
+                    "enable_features": [
+                        "FeedLowMemoryImprovement"
                     ]
                 }
             ]
