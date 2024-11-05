@@ -7,6 +7,7 @@
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
+load("./ar.star", "ar")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
@@ -121,6 +122,22 @@ def __clang_compile_coverage(ctx, cmd):
     clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
     ctx.actions.fix(args = clang_command)
 
+def __clang_alink(ctx, cmd):
+    # check command line to see "-T" and "-S".
+    # rm -f obj/third_party/angle/libangle_common.a && "../../third_party/llvm-build/Release+Asserts/bin/llvm-ar" -T -S -r -c -D obj/third_party/angle/libangle_common.a @"obj/third_party/angle/libangle_common.a.rsp"
+    if not ("-T" in cmd.args[-1] and "-S" in cmd.args[-1]):
+        print("not thin archive without symbol table")
+        return
+
+    # create thin archive without symbol table by handler.
+    rspfile_content = str(cmd.rspfile_content)
+    inputs = []
+    for fname in rspfile_content.split(" "):
+        inputs.append(ctx.fs.canonpath(fname))
+    data = ar.create(ctx, path.dir(cmd.outputs[0]), inputs)
+    ctx.actions.write(cmd.outputs[0], data)
+    ctx.actions.exit(exit_status = 0)
+
 def __clang_link(ctx, cmd):
     inputs = []
     sysroot = ""
@@ -146,6 +163,7 @@ def __clang_link(ctx, cmd):
 
 __handlers = {
     "clang_compile_coverage": __clang_compile_coverage,
+    "clang_alink": __clang_alink,
     "clang_link": __clang_link,
 }
 
@@ -280,6 +298,7 @@ def __step_config(ctx, step_config):
                 "*.py",
                 "*.stamp",
             ],
+            "handler": "clang_alink",
             "remote": config.get(ctx, "remote-link"),
             "canonicalize_dir": True,
             "timeout": "2m",
