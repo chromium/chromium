@@ -27,6 +27,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_settings:build_ts",
     "//chrome/browser/resources/browser_switch:build_ts",
+    "//chrome/browser/resources/certificate_viewer:build_ts",
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
     "//chrome/browser/resources/downloads:build_ts",
     "//chrome/browser/resources/extensions:build_ts",

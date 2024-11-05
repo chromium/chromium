@@ -6,6 +6,7 @@ import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import './constraint_list.js';
 
 import type {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
@@ -96,6 +97,8 @@ function initialize() {
 
   // TODO(crbug.com/40928765): see if we can do this instead with dialog args
   // versus callbacks.
+  // TODO(crbug.com/40928765): add test for cert metadata after trying dialog
+  // args refactor.
   sendWithPromise('hasCertificateMetadata').then(onHasCertificateMetadata);
 }
 
@@ -117,6 +120,11 @@ function onGetCertificateMetadata(certMetadata: CertificateMetadata) {
       document.querySelector<HTMLSelectElement>('#trust-state-select');
   assert(trustStateSelect);
   trustStateSelect.value = certMetadata.trust.toString();
+
+  const constraintsElement = document.querySelector('constraint-list');
+  assert(constraintsElement);
+
+  constraintsElement.constraints = certMetadata.constraints;
 }
 
 /**

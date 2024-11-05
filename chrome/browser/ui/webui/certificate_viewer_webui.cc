@@ -590,7 +590,16 @@ void CertificateViewerDialogHandler::HandleGetCertificateMetadata(
   dict.Set(
       "trust",
       base::Value(ConvertTrustToInt(cert_metadata_->trust().trust_type())));
-  // TODO(crbug.com/40928765): pass constraints through.
+  if (cert_metadata_->has_constraints()) {
+    base::Value::List constraints;
+    for (auto& dns_constraint : cert_metadata_->constraints().dns_names()) {
+      constraints.Append(base::Value(dns_constraint));
+    }
+    for (auto& cidr_constraint : cert_metadata_->constraints().cidrs()) {
+      constraints.Append(base::Value(cidr_constraint));
+    }
+    dict.Set("constraints", std::move(constraints));
+  }
 
   ResolveJavascriptCallback(callback_id, std::move(dict));
 }
