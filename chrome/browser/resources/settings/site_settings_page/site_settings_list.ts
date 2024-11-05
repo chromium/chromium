@@ -81,7 +81,8 @@ class SettingsSiteSettingsListElement extends
       'updateLocationLabel_(prefs.generated.geolocation.*)',
       'updateSiteDataLabel_(prefs.generated.cookie_default_content_setting.*)',
       'updateThirdPartyCookiesLabel_(prefs.profile.cookie_controls_mode.*,' +
-          'prefs.tracking_protection.block_all_3pc_toggle_enabled.*)',
+          'prefs.tracking_protection.block_all_3pc_toggle_enabled.*,' +
+          'prefs.generated.third_party_cookie_blocking_setting.*)',
       'updateOfferWritingHelpLabel_(prefs.compose.proactive_nudge_enabled.*)',
     ];
   }
@@ -335,7 +336,9 @@ class SettingsSiteSettingsListElement extends
       if (state === CookieControlsMode.OFF) {
         label = 'thirdPartyCookiesLinkRowSublabelEnabled';
       } else if (state === CookieControlsMode.INCOGNITO_ONLY) {
-        label = 'thirdPartyCookiesLinkRowSublabelDisabledIncognito';
+        label = loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled') ?
+            'thirdPartyCookiesLinkRowSublabelEnabled' :
+            'thirdPartyCookiesLinkRowSublabelDisabledIncognito';
       } else if (state === CookieControlsMode.BLOCK_THIRD_PARTY) {
         label = 'thirdPartyCookiesLinkRowSublabelDisabled';
       }

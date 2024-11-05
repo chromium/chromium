@@ -86,6 +86,13 @@ suite('PrivacyPage', function() {
     return CrSettingsPrefs.initialized;
   });
 
+  function createPage() {
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -97,10 +104,7 @@ suite('PrivacyPage', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
+    return createPage();
   });
 
   teardown(function() {
@@ -156,6 +160,25 @@ suite('PrivacyPage', function() {
         page.shadowRoot!
             .querySelector<CrLinkRowElement>(
                 '#thirdPartyCookiesLinkRow')!.subLabel);
+  });
+
+  test('cookiesLinkRowSublabelAlwaysBlock3pcsIncognito', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: true,
+    });
+    resetRouterForTesting();
+    await createPage();
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.INCOGNITO_ONLY);
+    const thirdPartyCookiesLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#thirdPartyCookiesLinkRow');
+    assertTrue(!!thirdPartyCookiesLinkRow);
+    assertEquals(
+        page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
+        thirdPartyCookiesLinkRow.subLabel);
   });
 
   test('ContentSettingsVisibility', async function() {

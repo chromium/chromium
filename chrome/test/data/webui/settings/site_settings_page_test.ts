@@ -167,6 +167,29 @@ suite('SiteSettingsPage', function() {
         cookiesLinkRow.subLabel);
   });
 
+  test('CookiesLinkRowSublabelAlwaysBlock3pcsIncognito', async function() {
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+      isAlwaysBlock3pcsIncognitoEnabled: true,
+    });
+    setupPage();
+    const basicContentList =
+        page.shadowRoot!.querySelector('#basicContentList');
+    assertTrue(!!basicContentList);
+    const cookiesLinkRow =
+        basicContentList.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#cookies');
+    assertTrue(!!cookiesLinkRow);
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.INCOGNITO_ONLY);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
+        cookiesLinkRow.subLabel);
+  });
+
   test('TrackingProtectionLinkRowSubLabel', async function() {
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: true,
