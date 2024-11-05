@@ -7,7 +7,7 @@
  * controller. When loading it, it will populate data such as localized strings
  * into |loadTimeData| that is imported below.
  */
-import '../../strings.m.js';
+import '/strings.m.js';
 
 import {
   ColorChangeUpdater,

@@ -270,6 +270,9 @@ webui_ts_library("build_ts") {
   ]
 
   path_mappings = [
+    "*/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
     "chrome://chrome-signin/arc_account_picker/*|" +
         rebase_path("//chrome/browser/resources/chromeos/arc_account_picker/*",
                     target_gen_dir),

@@ -5,7 +5,7 @@
 /// <reference path="media_app.d.ts" />
 
 import './sandboxed_load_time_data.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';

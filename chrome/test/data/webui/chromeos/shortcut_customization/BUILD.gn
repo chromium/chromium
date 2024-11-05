@@ -5,11 +5,16 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
-  ts_path_mappings =
-      [ "chrome://shortcut-customization/*|" +
+  ts_path_mappings = [
+    "chrome://shortcut-customization/*|" +
         rebase_path(
             "$root_gen_dir/ash/webui/shortcut_customization_ui/resources/tsc/*",
-            target_gen_dir) ]
+            target_gen_dir),
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
+  ]
+
   files = [
     "accelerator_edit_dialog_test.ts",
     "accelerator_edit_view_test.ts",
@@ -33,9 +38,10 @@ build_webui_tests("build_webui_tests") {
   ]
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
-    "//ash/webui/shortcut_customization_ui/resources:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ash/webui/shortcut_customization_ui/resources:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
