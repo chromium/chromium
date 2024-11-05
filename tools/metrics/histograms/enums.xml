@@ -17254,6 +17254,8 @@ from previous Chrome versions.
   <int value="-1205391766" label="SupervisedUserProfileSigninIPH:disabled"/>
   <int value="-1205293795" label="NotificationImageDrag:disabled"/>
   <int value="-1205076560" label="EnableSearchBoxSelection:disabled"/>
+  <int value="-1204523106"
+      label="UseHardwareBufferUsageFlagsFromVulkan:enabled"/>
   <int value="-1203955801" label="enable-password-change-support:disabled"/>
   <int value="-1203742042" label="enable-gesture-selection"/>
   <int value="-1202556733" label="PermissionStorageAccessAPI:disabled"/>
@@ -19168,6 +19170,8 @@ from previous Chrome versions.
   <int value="-420347911" label="MobileIdentityConsistencyFRE:disabled"/>
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
   <int value="-419659180" label="ContextualSearchDelayedIntelligence:disabled"/>
+  <int value="-419199747"
+      label="UseHardwareBufferUsageFlagsFromVulkan:disabled"/>
   <int value="-418868128" label="enable-experimental-web-platform-features"/>
   <int value="-418717972"
       label="ClipboardWellFormedHtmlSanitizationWrite:enabled"/>

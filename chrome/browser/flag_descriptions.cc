@@ -4880,6 +4880,11 @@ const char kTouchDragAndContextMenuDescription[] =
     "Enables touch dragging and a context menu to start simultaneously, with"
     "the assumption that the menu is non-modal.";
 
+const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
+    "Use recommended AHardwareBuffer usage flags from Vulkan";
+const char kUseHardwareBufferUsageFlagsFromVulkanDescription[] =
+    "Allows querying recommeded AHardwareBuffer usage flags from Vulkan API";
+
 const char kUndoMigrationOfSyncingUserToSignedInName[] =
     "Undo the migration of syncing users to signed-in";
 const char kUndoMigrationOfSyncingUserToSignedInDescription[] =

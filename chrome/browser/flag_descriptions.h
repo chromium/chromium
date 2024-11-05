@@ -2841,6 +2841,9 @@ extern const char kUpdateMenuTypeNone[];
 extern const char kUpdateMenuTypeUpdateAvailable[];
 extern const char kUpdateMenuTypeUnsupportedOSVersion[];
 
+extern const char kUseHardwareBufferUsageFlagsFromVulkanName[];
+extern const char kUseHardwareBufferUsageFlagsFromVulkanDescription[];
+
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
 

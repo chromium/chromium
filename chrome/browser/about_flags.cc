@@ -11810,6 +11810,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableLocalCardMigration)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"use-ahardwarebuffer-usage-flags-from-vulkan",
+     flag_descriptions::kUseHardwareBufferUsageFlagsFromVulkanName,
+     flag_descriptions::kUseHardwareBufferUsageFlagsFromVulkanDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(::features::kUseHardwareBufferUsageFlagsFromVulkan)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

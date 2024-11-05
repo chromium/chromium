@@ -169,6 +169,10 @@ public final class ProductionSupportedFlagList {
                 GpuFeatures.PRUNE_OLD_TRANSFER_CACHE_ENTRIES,
                 "Prune old transfer cache entries and disable pruning from client"),
         Flag.baseFeature(
+                GpuFeatures.USE_HARDWARE_BUFFER_USAGE_FLAGS_FROM_VULKAN,
+                "Allows querying recommeded AHardwareBuffer usage flags from Vulkan API. Has effect"
+                        + " only if HWUI uses Vulkan."),
+        Flag.baseFeature(
                 VizFeatures.WEBVIEW_NEW_INVALIDATE_HEURISTIC,
                 "More robust heuristic for calling Invalidate"),
         Flag.baseFeature(VizFeatures.WEBVIEW_VULKAN_INTERMEDIATE_BUFFER, "For debugging vulkan"),
