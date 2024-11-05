@@ -110,7 +110,6 @@ void ToastController::OnWidgetActivationChanged(views::Widget* widget,
 #endif
 
 void ToastController::OnWidgetDestroyed(views::Widget* widget) {
-  current_ephemeral_params_ = std::nullopt;
   currently_showing_toast_id_ = std::nullopt;
   toast_view_ = nullptr;
   toast_widget_ = nullptr;
@@ -210,7 +209,6 @@ void ToastController::ShowToast(ToastParams params) {
   CHECK(current_toast_spec);
 
   currently_showing_toast_id_ = params.toast_id_;
-  current_ephemeral_params_ = std::move(params);
   base::TimeDelta timeout =
       current_toast_spec->action_button_string_id().has_value()
           ? toast_features::kToastTimeout.Get()
@@ -220,7 +218,7 @@ void ToastController::ShowToast(ToastParams params) {
       FROM_HERE, timeout,
       base::BindOnce(&ToastController::CloseToast, base::Unretained(this),
                      toasts::ToastCloseReason::kAutoDismissed));
-  CreateToast(current_ephemeral_params_.value(), current_toast_spec);
+  CreateToast(std::move(params), current_toast_spec);
 }
 
 void ToastController::CloseToast(toasts::ToastCloseReason reason) {
@@ -229,7 +227,7 @@ void ToastController::CloseToast(toasts::ToastCloseReason reason) {
   }
 }
 
-void ToastController::CreateToast(const ToastParams& params,
+void ToastController::CreateToast(ToastParams params,
                                   const ToastSpecification* spec) {
   // TODO(crbug.com/364730656): Replace this logic when improving
   // ToastController testability.
@@ -319,12 +317,10 @@ void ToastController::ClearTabScopedToasts() {
     }
   }
 
-  if (current_ephemeral_params_.has_value()) {
-    const ToastSpecification* const specification =
-        toast_registry_->GetToastSpecification(
-            current_ephemeral_params_.value().toast_id_);
-    if (!specification->is_global_scope()) {
-      CloseToast(toasts::ToastCloseReason::kAbort);
-    }
+  if (currently_showing_toast_id_.has_value() &&
+      !toast_registry_
+           ->GetToastSpecification(currently_showing_toast_id_.value())
+           ->is_global_scope()) {
+    CloseToast(toasts::ToastCloseReason::kAbort);
   }
 }

@@ -31,8 +31,10 @@ class TestToastController : public ToastController {
     }
   }
 
-  MOCK_METHOD2(CreateToast,
-               void(const ToastParams& params, const ToastSpecification* spec));
+  MOCK_METHOD(void,
+              CreateToast,
+              (ToastParams, const ToastSpecification*),
+              (override));
 };
 }  // namespace
 

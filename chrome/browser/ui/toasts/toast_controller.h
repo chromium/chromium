@@ -97,8 +97,7 @@ class ToastController : public views::WidgetObserver,
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
   void QueueToast(ToastParams params);
   void ShowToast(ToastParams params);
-  virtual void CreateToast(const ToastParams& params,
-                           const ToastSpecification* spec);
+  virtual void CreateToast(ToastParams params, const ToastSpecification* spec);
   virtual void CloseToast(toasts::ToastCloseReason reason);
   std::u16string FormatString(int string_id,
                               std::vector<std::u16string> replacement);
@@ -111,7 +110,6 @@ class ToastController : public views::WidgetObserver,
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<const ToastRegistry> toast_registry_;
-  std::optional<ToastParams> current_ephemeral_params_;
   std::optional<ToastParams> next_ephemeral_params_;
   std::optional<ToastId> currently_showing_toast_id_;
   base::OneShotTimer toast_close_timer_;
