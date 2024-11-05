@@ -85,8 +85,8 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     // steps.
     if (ShouldFlipSubmittedImage()) {
       projection_view.subImage.imageRect.offset.y = 0;
-      projection_view.fov.angleUp = view.fov.angleDown;
-      projection_view.fov.angleDown = view.fov.angleUp;
+      projection_view.fov.angleUp = -view.fov.angleUp;
+      projection_view.fov.angleDown = -view.fov.angleDown;
     }
   }
 }

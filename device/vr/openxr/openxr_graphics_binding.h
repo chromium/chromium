@@ -68,6 +68,11 @@ struct SwapChainInfo {
   // When shared images are being used, there is a corresponding MailboxHolder
   // and D3D11Fence for each D3D11 texture in the vector.
   raw_ptr<ID3D11Texture2D> d3d11_texture = nullptr;
+  // If a shared handle cannot be created for the swap chain texture, a second
+  // texture which is shareable will be created and passed to the renderer
+  // proceess. When the frame is complete it will be copied to the swap chain
+  // texture prior to submission.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_shared_texture = nullptr;
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
 #elif BUILDFLAG(IS_ANDROID)
   // Ideally this would be a gluint, but there are conflicting headers for GL
@@ -233,7 +238,7 @@ class OpenXrGraphicsBinding {
   // Called to indicate which graphics API produced the textures submitted to
   // OpenXR. Does not affect the API used for compositing.
   void SetWebGPUSession(bool is_webgpu) { webgpu_session_ = is_webgpu; }
-  bool IsWebGPUSession() { return webgpu_session_; }
+  bool IsWebGPUSession() const { return webgpu_session_; }
 
  protected:
   // Internal helper to clear the list of images allocated during
