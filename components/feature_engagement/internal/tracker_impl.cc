@@ -113,8 +113,8 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
       std::make_unique<SystemTimeProvider>(), nullptr, nullptr);
 }
 
-// This method is declared in //components/feature_engagement/public/
-//     feature_engagement.h
+// This method is declared in
+// //components/feature_engagement/public/tracker.h
 // and should be linked in to any binary using Tracker::Create.
 // static
 Tracker* Tracker::Create(
