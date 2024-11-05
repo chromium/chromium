@@ -18,11 +18,11 @@ BASE_DECLARE_FEATURE(kToastFramework);
 // is used for demo mode.
 extern const base::FeatureParam<bool> kToastDemoMode;
 
-// The amount of time an ephemeral toast should show before automatically
+// The amount of time a toast should show before automatically
 // closing.
 extern const base::FeatureParam<base::TimeDelta> kToastTimeout;
 
-// The amount of time an ephemeral toast without an action should show before
+// The amount of time a toast without an action should show before
 // automatically closing.
 extern const base::FeatureParam<base::TimeDelta> kToastWithoutActionTimeout;
 

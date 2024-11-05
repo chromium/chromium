@@ -146,15 +146,14 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowEphemeralToast) {
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowToast) {
   RunTestSequence(
       ShowToast(ToastParams(ToastId::kLinkCopied)),
       WaitForShow(toasts::ToastView::kToastViewId),
       Check([=, this]() { return GetToastController()->IsShowingToast(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
-                       ShowSameEphemeralToastTwice) {
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowSameToastTwice) {
   RunTestSequence(
       ShowToast(ToastParams(ToastId::kLinkCopied)),
       WaitForShow(toasts::ToastView::kToastViewId),
@@ -164,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
       Check([=, this]() { return GetToastController()->IsShowingToast(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptEphemeralToast) {
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptToast) {
   RunTestSequence(
       ShowToast(ToastParams(ToastId::kLinkCopied)),
       WaitForShow(toasts::ToastView::kToastViewId),

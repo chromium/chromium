@@ -60,7 +60,7 @@ class ToastControllerUnitTest : public testing::Test {
   std::unique_ptr<ToastRegistry> toast_registry_;
 };
 
-TEST_F(ToastControllerUnitTest, ShowEphemeralToast) {
+TEST_F(ToastControllerUnitTest, ShowToast) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
@@ -72,7 +72,6 @@ TEST_F(ToastControllerUnitTest, ShowEphemeralToast) {
   EXPECT_FALSE(controller->IsShowingToast());
   EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
 
-  // We can show the toast again because it is an ephemeral toast.
   EXPECT_CALL(*controller, CreateToast);
   EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
   ::testing::Mock::VerifyAndClear(controller.get());
@@ -92,7 +91,6 @@ TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
   EXPECT_FALSE(controller->IsShowingToast());
   EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
 
-  // We can show the toast again because it is an ephemeral toast.
   EXPECT_CALL(*controller, CreateToast);
 
   ToastParams params = ToastParams(ToastId::kLinkCopied);
@@ -105,14 +103,13 @@ TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
   EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
 }
 
-TEST_F(ToastControllerUnitTest, EphemeralToastAutomaticallyCloses) {
+TEST_F(ToastControllerUnitTest, ToastAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
       ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
-  // We can show the toast again because it is an ephemeral toast.
   EXPECT_CALL(*controller, CreateToast);
   EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
   ::testing::Mock::VerifyAndClear(controller.get());
@@ -124,15 +121,13 @@ TEST_F(ToastControllerUnitTest, EphemeralToastAutomaticallyCloses) {
   EXPECT_FALSE(controller->IsShowingToast());
 }
 
-TEST_F(ToastControllerUnitTest,
-       EphemeralToastWithActionButtonAutomaticallyCloses) {
+TEST_F(ToastControllerUnitTest, ToastWithActionButtonAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
       ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
-  // We can show the toast again because it is an ephemeral toast.
   EXPECT_CALL(*controller, CreateToast);
   EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
   ::testing::Mock::VerifyAndClear(controller.get());
@@ -154,7 +149,6 @@ TEST_F(ToastControllerUnitTest, CloseTimerResetsWhenToastShown) {
 
   auto controller = std::make_unique<TestToastController>(registry);
 
-  // We can show the toast again because it is an ephemeral toast.
   EXPECT_CALL(*controller, CreateToast);
   EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
   ::testing::Mock::VerifyAndClear(controller.get());

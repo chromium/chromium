@@ -122,13 +122,13 @@ void ToastController::OnWidgetDestroyed(views::Widget* widget) {
     // Clear any queued toasts to prevent them from showing
     // after an existing toast is destroyed while the browser is trying to
     // close.
-    next_ephemeral_params_ = std::nullopt;
+    next_toast_params_ = std::nullopt;
     omnibox_helper_observer_.Reset();
   }
 
-  if (next_ephemeral_params_.has_value()) {
-    ShowToast(std::move(next_ephemeral_params_.value()));
-    next_ephemeral_params_ = std::nullopt;
+  if (next_toast_params_.has_value()) {
+    ShowToast(std::move(next_toast_params_.value()));
+    next_toast_params_ = std::nullopt;
   }
 }
 
@@ -155,7 +155,7 @@ void ToastController::OnActiveTabChanged(
 }
 
 void ToastController::QueueToast(ToastParams params) {
-  next_ephemeral_params_ = std::move(params);
+  next_toast_params_ = std::move(params);
 }
 
 void ToastController::OnOmniboxInputInProgress(bool in_progress) {
@@ -307,13 +307,13 @@ void ToastController::OnFullscreenStateChanged() {
 
 void ToastController::ClearTabScopedToasts() {
   toast_close_timer_.Stop();
-  if (next_ephemeral_params_.has_value()) {
-    const ToastId toast_id = next_ephemeral_params_.value().toast_id_;
+  if (next_toast_params_.has_value()) {
+    const ToastId toast_id = next_toast_params_.value().toast_id_;
     const ToastSpecification* const specification =
         toast_registry_->GetToastSpecification(toast_id);
     RecordToastDismissReason(toast_id, toasts::ToastCloseReason::kAbort);
     if (!specification->is_global_scope()) {
-      next_ephemeral_params_ = std::nullopt;
+      next_toast_params_ = std::nullopt;
     }
   }
 

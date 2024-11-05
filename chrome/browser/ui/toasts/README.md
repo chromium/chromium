@@ -1,12 +1,11 @@
 # Toast UI
 The toast system allows features to surface a message and an optional action
-for users to take. These are short, ephemeral notifications that serve as
-confirmation of a successful user action or provide contextual information
-about a Chrome initiated action. Each toast must have an icon and a body text;
-feature teams can optionally add an action or close button to toasts. Feature
-teams that want to introduce a toast will need to introduce a new value to the
-toast id enum and create a toast specification that will be registered with the
-toast registry.
+for users to take. These are short notifications that serve as confirmation of a
+successful user action or provide contextual information about a Chrome
+initiated action. Each toast must have an icon and a body text; feature teams
+can optionally add an action or close button to toasts. Feature teams that want
+to introduce a toast will need to introduce a new value to the toast id enum and
+create a toast specification that will be registered with the toast registry.
 
 ## Getting Started
 ### 1. Add a new entry to the [ToastId enum](api/toast_id.h)

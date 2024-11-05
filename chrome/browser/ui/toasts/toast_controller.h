@@ -110,7 +110,7 @@ class ToastController : public views::WidgetObserver,
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<const ToastRegistry> toast_registry_;
-  std::optional<ToastParams> next_ephemeral_params_;
+  std::optional<ToastParams> next_toast_params_;
   std::optional<ToastId> currently_showing_toast_id_;
   base::OneShotTimer toast_close_timer_;
   bool is_omnibox_popup_showing_ = false;
