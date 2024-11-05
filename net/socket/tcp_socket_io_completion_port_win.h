@@ -69,10 +69,12 @@ class NET_EXPORT TcpSocketIoCompletionPortWin : public TCPSocketWin {
  private:
   class CoreImpl;
 
-  // Ensures that overlapped IO is initialized for `socket_`. This entails:
+  // Attempts to initialize overlapped IO for `socket_`, if not already
+  // initialized. This entails:
   // - Registering `core_` as an IO handler.
   // - Attempting to activate `FILE_SKIP_COMPLETION_PORT_ON_SUCCESS`.
-  void EnsureOverlappedIOInitialized();
+  // Returns true on success.
+  bool EnsureOverlappedIOInitialized();
 
   // Handles a completed read/write operation on `socket_`. `bytes_transferred`
   // is the number of bytes actually read/written. `error` is the error code for

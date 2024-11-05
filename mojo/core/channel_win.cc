@@ -182,7 +182,10 @@ class ChannelWin : public Channel,
 
   void StartOnIOThread() {
     base::CurrentThread::Get()->AddDestructionObserver(this);
-    base::CurrentIOThread::Get()->RegisterIOHandler(handle_.get(), this);
+    if (!base::CurrentIOThread::Get()->RegisterIOHandler(handle_.get(), this)) {
+      OnError(Error::kConnectionFailed);
+      return;
+    }
 
     // Now that we have registered our IOHandler, we can start writing.
     {

@@ -222,7 +222,10 @@ int TcpSocketIoCompletionPortWin::Read(IOBuffer* buf,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK_NE(socket_, INVALID_SOCKET);
 
-  EnsureOverlappedIOInitialized();
+  if (!EnsureOverlappedIOInitialized()) {
+    return net::ERR_FAILED;
+  }
+
   CoreImpl& core = GetCoreImpl();
 
   WSABUF read_buffer;
@@ -302,7 +305,10 @@ int TcpSocketIoCompletionPortWin::Write(
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  EnsureOverlappedIOInitialized();
+  if (!EnsureOverlappedIOInitialized()) {
+    return net::ERR_FAILED;
+  }
+
   CoreImpl& core = GetCoreImpl();
 
   WSABUF write_buffer;
@@ -373,18 +379,19 @@ bool TcpSocketIoCompletionPortWin::HasPendingRead() const {
 
 void TcpSocketIoCompletionPortWin::OnClosed() {}
 
-void TcpSocketIoCompletionPortWin::EnsureOverlappedIOInitialized() {
+bool TcpSocketIoCompletionPortWin::EnsureOverlappedIOInitialized() {
   CHECK_NE(socket_, INVALID_SOCKET);
   if (registered_as_io_handler_) {
-    return;
+    return true;
   }
 
   // Register the `CoreImpl` as an I/O handler for the socket.
   CoreImpl& core = GetCoreImpl();
-  auto hresult = base::CurrentIOThread::Get()->RegisterIOHandler(
+  registered_as_io_handler_ = base::CurrentIOThread::Get()->RegisterIOHandler(
       reinterpret_cast<HANDLE>(socket_), &core);
-  CHECK(SUCCEEDED(hresult));
-  registered_as_io_handler_ = true;
+  if (!registered_as_io_handler_) {
+    return false;
+  }
 
   // Activate an option to skip the completion port when an operation completes
   // immediately.
@@ -414,6 +421,8 @@ void TcpSocketIoCompletionPortWin::EnsureOverlappedIOInitialized() {
     base::UmaHistogramEnumeration(
         "Net.Socket.SkipCompletionPortOnSuccessOutcome", outcome);
   }
+
+  return true;
 }
 
 int TcpSocketIoCompletionPortWin::DidCompleteRead(

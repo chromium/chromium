@@ -427,7 +427,9 @@ TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal)
 }
 
 void TestIOHandler::Init() {
-  CurrentIOThread::Get()->RegisterIOHandler(file_.get(), this);
+  const bool success =
+      CurrentIOThread::Get()->RegisterIOHandler(file_.get(), this);
+  ASSERT_TRUE(success);
 
   DWORD read;
   EXPECT_FALSE(ReadFile(file_.get(), buffer_, size(), &read, context()));

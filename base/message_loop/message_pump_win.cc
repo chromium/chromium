@@ -14,11 +14,14 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/task_features.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
@@ -751,13 +754,28 @@ void MessagePumpForIO::ScheduleDelayedWork(
   // DoRunLoop() with the correct timeout when it's out of immediate tasks.
 }
 
-HRESULT MessagePumpForIO::RegisterIOHandler(HANDLE file_handle,
-                                            IOHandler* handler) {
+bool MessagePumpForIO::RegisterIOHandler(HANDLE file_handle,
+                                         IOHandler* handler) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   HANDLE port = ::CreateIoCompletionPort(
       file_handle, port_.get(), reinterpret_cast<ULONG_PTR>(handler), 1);
-  return (port != nullptr) ? S_OK : HRESULT_FROM_WIN32(GetLastError());
+
+  if (port == nullptr) {
+    const DWORD last_error = ::GetLastError();
+    // Use `debug::AllocateCrashKeyString` instead of `SCOPED_CRASH_KEY_NUMBER`
+    // so that the key is set for any crash report generated after this, not
+    // only for the crash report from the `debug::DumpWithoutCrashing` below.
+    static auto* const crash_key = debug::AllocateCrashKeyString(
+        "RegisterIOHandlerError", debug::CrashKeySize::Size32);
+    debug::SetCrashKeyString(crash_key, NumberToString(last_error));
+    // TODO(crbug.com/372194029): Remove when failures are well understood.
+    debug::DumpWithoutCrashing();
+
+    return false;
+  }
+
+  return true;
 }
 
 bool MessagePumpForIO::RegisterJobObject(HANDLE job_handle,

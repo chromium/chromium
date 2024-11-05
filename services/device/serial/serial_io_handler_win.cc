@@ -153,8 +153,10 @@ bool SerialIoHandlerWin::PostOpen() {
   DCHECK(!read_context_);
   DCHECK(!write_context_);
 
-  base::CurrentIOThread::Get()->RegisterIOHandler(file().GetPlatformFile(),
-                                                  this);
+  if (!base::CurrentIOThread::Get()->RegisterIOHandler(file().GetPlatformFile(),
+                                                       this)) {
+    return false;
+  }
 
   read_context_ = std::make_unique<base::MessagePumpForIO::IOContext>();
   write_context_ = std::make_unique<base::MessagePumpForIO::IOContext>();
