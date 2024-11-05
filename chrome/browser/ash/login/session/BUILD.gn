@@ -57,6 +57,7 @@ static_library("session") {
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/logging",
     "//chrome/browser/ash/login/demo_mode",

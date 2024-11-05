@@ -301,6 +301,15 @@ class FloatingWorkspaceService : public KeyedService,
   // time.
   void UpdateLocalDeviceInfo();
 
+  // Check if we should wait for cookies to be synced before restoring the
+  // workspace. If yes, it will set the callback for Floating SSO code to
+  // restore the workspace once cookies are ready.
+  bool ShouldWaitForCookies();
+
+  // Schedule restoration of floating workspace on app cache being ready. Will
+  // restore immediately if cache is ready at the moment of the call.
+  void LaunchWhenAppCacheIsReady();
+
   const raw_ptr<Profile> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;

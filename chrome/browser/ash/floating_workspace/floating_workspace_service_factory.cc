@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +47,9 @@ FloatingWorkspaceServiceFactory::FloatingWorkspaceServiceFactory()
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  if (ash::features::IsFloatingSsoAllowed()) {
+    DependsOn(ash::floating_sso::FloatingSsoServiceFactory::GetInstance());
+  }
 }
 
 FloatingWorkspaceServiceFactory::~FloatingWorkspaceServiceFactory() = default;

@@ -26,6 +26,8 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -275,14 +277,12 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
     MaybeSignOutOfCurrentSession();
     return;
   }
-  if (download_status_cache_.has_value() &&
-      download_status_cache_.value() ==
-          sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK)) {
-    return;
-  }
-  download_status_cache_ =
+  syncer::SyncService::DataTypeDownloadStatus workspace_download_status =
       sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK);
-  switch (sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK)) {
+  bool is_new_workspace_status =
+      download_status_cache_ != workspace_download_status;
+  download_status_cache_ = workspace_download_status;
+  switch (workspace_download_status) {
     case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates: {
       // Floating Workspace Service needs to wait until workspace desks are
       // up to date.
@@ -292,26 +292,79 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
       if (!first_uptodate_download_timeticks_.has_value()) {
         first_uptodate_download_timeticks_ = base::TimeTicks::Now();
       }
-      if (!is_cache_ready_) {
-        should_launch_on_ready_ = true;
-        VLOG(1) << "App cache is not ready. Don't restore floating "
-                   "workspace yet.";
-        return;
+      if (ShouldWaitForCookies()) {
+        // We can hit this code path repeatedly while waiting for cookies to be
+        // up to date. `ShouldWaitForCookies()` call is expected to schedule a
+        // call to `LaunchWhenAppCacheIsReady` which should be run once cookies
+        // are ready. This will result in `should_run_restore_` being set to
+        // `false`, which will enable an early return from `OnStateChanged`.
+        // In practice, cookies and desks usually become up to date at the same
+        // time.
+        // TODO(crbug.com/377327839): if we time out after hitting this code,
+        // then it's due to us waiting for cookies, not for desk templates. We
+        // should add a new version of timeout UI for that.
+        break;
       }
-      StopProgressBarAndRestoreFloatingWorkspace();
+      LaunchWhenAppCacheIsReady();
       break;
     }
     case syncer::SyncService::DataTypeDownloadStatus::kError: {
+      if (!is_new_workspace_status) {
+        // Don'h handle the error repeatedly.
+        break;
+      }
       // Sync is not expected to deliver the data, let user decide.
       // TODO: send notification to user asking if restore local.
       if (!should_run_restore_) {
-        return;
+        break;
       }
       StopProgressBarNotification();
       HandleSyncError();
       break;
     }
   }
+}
+
+bool FloatingWorkspaceService::ShouldWaitForCookies() {
+  if (!ash::features::IsFloatingSsoAllowed()) {
+    return false;
+  }
+  ash::floating_sso::FloatingSsoService* floating_sso_service =
+      ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile_);
+  if (!floating_sso_service || !floating_sso_service->IsFloatingSsoEnabled()) {
+    return false;
+  }
+  syncer::SyncService::DataTypeDownloadStatus cookies_download_status =
+      sync_service_->GetDownloadStatusFor(syncer::DataType::COOKIES);
+  switch (cookies_download_status) {
+    case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates: {
+      return true;
+    }
+    case syncer::SyncService::DataTypeDownloadStatus::kUpToDate: {
+      // Even when Sync status is "up to date", cookies might still be in the
+      // process of being applied to the cookie jar in the browser. Schedule a
+      // callback to restore the workspace once it's done. This call is cheap
+      // and it's ok to execute it multiple times.
+      floating_sso_service->RunWhenCookiesAreReady(
+          base::BindOnce(&FloatingWorkspaceService::LaunchWhenAppCacheIsReady,
+                         weak_pointer_factory_.GetWeakPtr()));
+      return true;
+    }
+    case syncer::SyncService::DataTypeDownloadStatus::kError: {
+      // TODO(crbug.com/377327839): add error handling for cookies.
+      return false;
+    }
+  }
+}
+
+void FloatingWorkspaceService::LaunchWhenAppCacheIsReady() {
+  if (!is_cache_ready_) {
+    should_launch_on_ready_ = true;
+    VLOG(1) << "App cache is not ready. Don't restore floating "
+               "workspace yet.";
+    return;
+  }
+  StopProgressBarAndRestoreFloatingWorkspace();
 }
 
 void FloatingWorkspaceService::DefaultNetworkChanged(

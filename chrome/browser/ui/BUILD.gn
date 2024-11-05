@@ -2226,6 +2226,7 @@ static_library("ui") {
       "//chrome/browser/ash/file_suggest",
       "//chrome/browser/ash/file_system_provider",
       "//chrome/browser/ash/floating_workspace",
+      "//chrome/browser/ash/floating_workspace:utils",
       "//chrome/browser/ash/geolocation",
       "//chrome/browser/ash/growth",
       "//chrome/browser/ash/guest_os",

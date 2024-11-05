@@ -155,6 +155,14 @@ bool FloatingSsoService::IsFloatingSsoEnabled() {
   return true;
 }
 
+void FloatingSsoService::RunWhenCookiesAreReady(base::OnceClosure callback) {
+  if (changes_in_progress_count_ == 0) {
+    std::move(callback).Run();
+  } else {
+    on_no_changes_in_progress_callback_ = std::move(callback);
+  }
+}
+
 void FloatingSsoService::MaybeStartListening() {
   if (!cookie_manager_) {
     return;
@@ -242,31 +250,39 @@ void FloatingSsoService::OnCookiesAddedOrUpdatedRemotely(
   options.set_include_httponly();
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+  changes_in_progress_count_ += cookies.size();
   for (const net::CanonicalCookie& cookie : cookies) {
     // Sync server might contain changes for cookies which should no longer be
     // synced due to a change of policies or a change in feature design and
     // implementation. In that case, ignore them on the client side and let
     // corresponding sync entities die on the server side based on TTL .
     if (!ShouldSyncCookie(cookie)) {
+      --changes_in_progress_count_;
       continue;
     }
     cookie_manager_->SetCanonicalCookie(
         cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
-        options, base::DoNothing());
+        options,
+        base::BindOnce(&FloatingSsoService::OnCookieSet,
+                       base::Unretained(this)));
   }
 }
 
 void FloatingSsoService::OnCookiesRemovedRemotely(
     const std::vector<net::CanonicalCookie>& cookies) {
+  changes_in_progress_count_ += cookies.size();
   for (const net::CanonicalCookie& cookie : cookies) {
     // Sync server might contain changes for cookies which should no longer be
     // synced due to a change of policies or a change in feature design and
     // implementation. In that case, ignore them on the client side.
     if (!ShouldSyncCookie(cookie)) {
+      --changes_in_progress_count_;
       continue;
     }
 
-    cookie_manager_->DeleteCanonicalCookie(cookie, base::DoNothing());
+    cookie_manager_->DeleteCanonicalCookie(
+        cookie, base::BindOnce(&FloatingSsoService::OnCookieDeleted,
+                               base::Unretained(this)));
   }
 }
 
@@ -318,6 +334,22 @@ bool FloatingSsoService::IsDomainAllowed(
 
   // The domain is not blocked if it doesn't have matches in the blocklist.
   return block_url_matcher_->MatchURL(cookie_domain_url).empty();
+}
+
+void FloatingSsoService::OnCookieSet(net::CookieAccessResult result) {
+  DecrementChangesCountAndMaybeNotify();
+}
+
+void FloatingSsoService::OnCookieDeleted(bool success) {
+  DecrementChangesCountAndMaybeNotify();
+}
+
+void FloatingSsoService::DecrementChangesCountAndMaybeNotify() {
+  CHECK(changes_in_progress_count_ > 0);
+  --changes_in_progress_count_;
+  if (changes_in_progress_count_ == 0 && on_no_changes_in_progress_callback_) {
+    std::move(on_no_changes_in_progress_callback_).Run();
+  }
 }
 
 void FloatingSsoService::OnConnectionError() {

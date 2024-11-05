@@ -158,7 +158,7 @@ source_set("impl") {
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/file_system_provider",
       "//chrome/browser/ash/first_run",
-      "//chrome/browser/ash/floating_workspace",
+      "//chrome/browser/ash/floating_workspace:utils",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/kerberos",
       "//chrome/browser/ash/lock_screen_apps",
