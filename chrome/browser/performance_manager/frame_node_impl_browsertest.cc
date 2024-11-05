@@ -275,7 +275,9 @@ class MockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
               (override));
 };
 
-IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, Bind_SimpleNavigation) {
+// TODO(https://crbug.com/376315752): Deflake and re-enable.
+IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
+                       DISABLED_Bind_SimpleNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
