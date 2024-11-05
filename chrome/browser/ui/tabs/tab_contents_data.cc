@@ -30,7 +30,7 @@ class TabContentsDataImpl : public TabContentsData {
   tabs::TabModel* GetTabAtIndexRecursive(size_t index) const override;
 
   std::optional<size_t> GetIndexOfTabRecursive(
-      const tabs::TabModel* tab_handle) const override;
+      const tabs::TabInterface* tab) const override;
 
   void AddTabRecursive(std::unique_ptr<tabs::TabModel> tab_model,
                        size_t index,
@@ -87,11 +87,10 @@ tabs::TabModel* TabContentsDataImpl::GetTabAtIndexRecursive(
 }
 
 std::optional<size_t> TabContentsDataImpl::GetIndexOfTabRecursive(
-    const tabs::TabModel* tab_model) const {
-  const auto is_same_tab =
-      [tab_model](const std::unique_ptr<tabs::TabModel>& other) {
-        return other.get() == tab_model;
-      };
+    const tabs::TabInterface* tab) const {
+  const auto is_same_tab = [tab](const std::unique_ptr<tabs::TabModel>& other) {
+    return other.get() == tab;
+  };
 
   const auto iter =
       std::find_if(contents_data_.cbegin(), contents_data_.cend(), is_same_tab);

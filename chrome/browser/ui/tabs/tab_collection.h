@@ -14,6 +14,7 @@
 
 namespace tabs {
 
+class TabInterface;
 class TabModel;
 
 // This is an interface that representing the hierarchical storage of tabs.
@@ -29,18 +30,18 @@ class TabCollection {
   TabCollection& operator=(const TabCollection&) = delete;
 
   // Returns true if the tab model is a direct child of the collection.
-  virtual bool ContainsTab(TabModel* tab_model) const = 0;
+  virtual bool ContainsTab(const TabInterface* tab) const = 0;
 
   // Returns true if the tab collection tree contains the tab.
-  virtual bool ContainsTabRecursive(TabModel* tab_model) const = 0;
+  virtual bool ContainsTabRecursive(const TabInterface* tab) const = 0;
 
   // Returns true is the tab collection contains the collection. This is a
   // non-recursive check.
   virtual bool ContainsCollection(TabCollection* collection) const = 0;
 
-  // Recursively get the index of the tab_model among all the leaf tab_models.
+  // Recursively get the index of the tab among all the leaf tabs.
   virtual std::optional<size_t> GetIndexOfTabRecursive(
-      const TabModel* tab_model) const = 0;
+      const TabInterface* tab) const = 0;
 
   // Non-recursively get the index of a collection.
   virtual std::optional<size_t> GetIndexOfCollection(

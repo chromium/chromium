@@ -2096,7 +2096,7 @@ int TabStripModel::InsertTabAtImpl(
   return index;
 }
 
-int TabStripModel::GetIndexOfTab(const tabs::TabModel* tab) const {
+int TabStripModel::GetIndexOfTab(const tabs::TabInterface* tab) const {
   if (tab == nullptr) {
     return kNoTab;
   }

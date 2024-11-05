@@ -80,13 +80,13 @@ class TabStripCollection : public TabCollection, public TabContentsData {
 
   // TabCollection:
   // This will be false as this does not contain a tab as a direct child.
-  bool ContainsTab(TabModel* tab_model) const override;
-  bool ContainsTabRecursive(TabModel* tab_model) const override;
+  bool ContainsTab(const TabInterface* tab) const override;
+  bool ContainsTabRecursive(const TabInterface* tab) const override;
   // Returns true if the collection is the pinned collection or the
   // unpinned collection.
   bool ContainsCollection(TabCollection* collection) const override;
   std::optional<size_t> GetIndexOfTabRecursive(
-      const TabModel* tab_model) const override;
+      const TabInterface* tab) const override;
   std::optional<size_t> GetIndexOfCollection(
       TabCollection* collection) const override;
   // Tabs and Collections are not allowed to be removed from TabStripCollection.

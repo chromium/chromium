@@ -48,14 +48,14 @@ tabs::TabModel* PinnedTabCollection::GetTabAtIndex(size_t index) const {
   return impl_->GetTabAtIndex(index);
 }
 
-bool PinnedTabCollection::ContainsTab(TabModel* tab_model) const {
-  CHECK(tab_model);
-  return impl_->ContainsTab(tab_model);
+bool PinnedTabCollection::ContainsTab(const TabInterface* tab) const {
+  CHECK(tab);
+  return impl_->ContainsTab(tab);
 }
 
-bool PinnedTabCollection::ContainsTabRecursive(TabModel* tab_model) const {
-  CHECK(tab_model);
-  return impl_->ContainsTab(tab_model);
+bool PinnedTabCollection::ContainsTabRecursive(const TabInterface* tab) const {
+  CHECK(tab);
+  return impl_->ContainsTab(tab);
 }
 
 bool PinnedTabCollection::ContainsCollection(TabCollection* collection) const {
@@ -64,9 +64,9 @@ bool PinnedTabCollection::ContainsCollection(TabCollection* collection) const {
 }
 
 std::optional<size_t> PinnedTabCollection::GetIndexOfTabRecursive(
-    const TabModel* tab_model) const {
-  CHECK(tab_model);
-  return impl_->GetIndexOfTab(tab_model);
+    const TabInterface* tab) const {
+  CHECK(tab);
+  return impl_->GetIndexOfTab(tab);
 }
 
 std::optional<size_t> PinnedTabCollection::GetIndexOfCollection(

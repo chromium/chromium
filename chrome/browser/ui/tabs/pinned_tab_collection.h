@@ -39,11 +39,11 @@ class PinnedTabCollection : public TabCollection {
   tabs::TabModel* GetTabAtIndex(size_t index) const;
 
   // TabCollection:
-  bool ContainsTab(TabModel* tab_model) const override;
+  bool ContainsTab(const TabInterface* tab) const override;
 
   // This is non-recursive for pinned tab collection as it does not contain
   // another collection.
-  bool ContainsTabRecursive(TabModel* tab_model) const override;
+  bool ContainsTabRecursive(const TabInterface* tab) const override;
 
   // This is false as pinned tab collection does not contain another collection.
   bool ContainsCollection(TabCollection* collection) const override;
@@ -51,7 +51,7 @@ class PinnedTabCollection : public TabCollection {
   // This is non-recursive for pinned tab collection as it does not contain
   // another collection.
   std::optional<size_t> GetIndexOfTabRecursive(
-      const TabModel* tab_model) const override;
+      const TabInterface* tab) const override;
 
   // This is nullopt as pinned tab collection does not contain another
   // collection.
