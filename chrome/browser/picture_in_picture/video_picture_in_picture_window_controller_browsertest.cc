@@ -103,6 +103,8 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(GetWebContents, content::WebContents*());
   MOCK_METHOD0(GetChildWebContents, content::WebContents*());
   MOCK_METHOD0(TogglePlayPause, bool());
+  MOCK_METHOD0(Play, void());
+  MOCK_METHOD0(Pause, void());
   MOCK_METHOD0(SkipAd, void());
   MOCK_METHOD0(NextTrack, void());
   MOCK_METHOD0(PreviousTrack, void());
@@ -111,6 +113,7 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(HangUp, void());
   MOCK_METHOD0(PreviousSlide, void());
   MOCK_METHOD0(NextSlide, void());
+  MOCK_METHOD1(SeekTo, void(base::TimeDelta time));
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
   MOCK_METHOD0(GetWindowBounds, std::optional<gfx::Rect>());
   MOCK_METHOD0(GetOrigin, std::optional<url::Origin>());

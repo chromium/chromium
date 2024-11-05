@@ -597,8 +597,13 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
       // On Windows, ui::EventType::kMouseExited is triggered when hovering over
       // the media controls because of the HitTest. This check ensures the
       // controls are visible if the mouse is still over the window.
+      // We also check that the user isn't currently dragging the progress bar,
+      // since setting visibility to false during the drag will prevent the drag
+      // from functioning properly (and we'll lose the drag end).
       const bool should_update_control_visibility =
-          !GetWindowBackgroundView()->bounds().Contains(event->location());
+          !GetWindowBackgroundView()->bounds().Contains(event->location()) &&
+          progress_view_drag_state_ ==
+              global_media_controls::DragState::kDragEnded;
       if (should_update_control_visibility)
         UpdateControlsVisibility(false);
       break;
@@ -788,7 +793,8 @@ bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
       GetToggleCameraButtonBounds().Contains(point) ||
       GetHangUpButtonBounds().Contains(point) ||
       GetPreviousSlideControlsBounds().Contains(point) ||
-      GetNextSlideControlsBounds().Contains(point)) {
+      GetNextSlideControlsBounds().Contains(point) ||
+      GetProgressViewBounds().Contains(point)) {
     return true;
   }
   return false;
@@ -837,6 +843,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   std::unique_ptr<ToggleMicrophoneButton> toggle_microphone_button;
   std::unique_ptr<ToggleCameraButton> toggle_camera_button;
   std::unique_ptr<HangUpButton> hang_up_button;
+  std::unique_ptr<global_media_controls::MediaProgressView> progress_view;
 
   if (Use2024UI()) {
     play_pause_controls_view->SetSize(
@@ -887,6 +894,30 @@ void VideoOverlayWindowViews::SetUpViews() {
         l10n_util::GetStringUTF16(
             IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
     next_track_controls_view->SetSize(kPreviousNextButtonSize);
+    // `base::Unretained()` is okay here since we own the progress view.
+    progress_view = std::make_unique<global_media_controls::MediaProgressView>(
+        /*use_squiggly_line=*/false,
+        /*playing_foreground_color_id=*/ui::kColorSysPrimary,
+        /*playing_background_color_id=*/ui::kColorSysStateDisabledContainer,
+        /*paused_foreground_color_id=*/ui::kColorSysStateDisabledContainer,
+        /*paused_background_color_id=*/ui::kColorSysStateDisabledContainer,
+        /*focus_ring_color_id=*/ui::kColorSysStateFocusRing,
+        /*drag_state_change_callback=*/
+        base::BindRepeating(
+            &VideoOverlayWindowViews::OnProgressDragStateChanged,
+            base::Unretained(this)),
+        /*playback_state_change_for_dragging_callback=*/
+        base::BindRepeating(
+            &VideoOverlayWindowViews::ChangePlaybackStateForProgressDrag,
+            base::Unretained(this)),
+        /*seek_callback=*/
+        base::BindRepeating(
+            &VideoOverlayWindowViews::SeekForProgressBarInteraction,
+            base::Unretained(this)),
+        /*on_update_progress_callback=*/
+        base::BindRepeating(
+            &VideoOverlayWindowViews::OnProgressViewUpdateCurrentTime,
+            base::Unretained(this)));
   } else {
     back_to_tab_label_button =
         std::make_unique<BackToTabLabelButton>(base::BindRepeating(
@@ -1025,7 +1056,11 @@ void VideoOverlayWindowViews::SetUpViews() {
   next_track_controls_view->layer()->SetFillsBoundsOpaquely(false);
   next_track_controls_view->layer()->SetName("NextTrackControlsView");
 
-  if (!Use2024UI()) {
+  if (Use2024UI()) {
+    progress_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+    progress_view->layer()->SetFillsBoundsOpaquely(false);
+    progress_view->layer()->SetName("ProgressView");
+  } else {
     // views::View that holds the skip-ad label button.
     // -------------------------
     skip_ad_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -1088,6 +1123,11 @@ void VideoOverlayWindowViews::SetUpViews() {
   }
   play_pause_controls_view_ = controls_container_view->AddChildView(
       std::move(play_pause_controls_view));
+
+  if (Use2024UI()) {
+    progress_view_ =
+        controls_container_view->AddChildView(std::move(progress_view));
+  }
 
   next_track_controls_view_ = controls_container_view->AddChildView(
       std::move(next_track_controls_view));
@@ -1203,6 +1243,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   if (Use2024UI()) {
     constexpr int kTopControlsHeight = 34;
     constexpr int kBottomControlsHeight = 64;
+    constexpr int kProgressBarHeight = 26;
     constexpr int kControlHorizontalMargin = 8;
     constexpr int kBottomControlsHorizontalMargin = 8;
     constexpr int kBottomControlsVerticalMargin = 4;
@@ -1244,6 +1285,28 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
              (kBottomControlsHorizontalMargin + kControlHorizontalMargin +
               kPreviousNextButtonSize.width()),
          bottom_controls_bounds.y() + kBottomControlsVerticalMargin});
+
+    // The progress bars should take up all the space that is left after the
+    // previous and next buttons. Here we calculate how much horizontal space
+    // one of those buttons takes up and use that to calculate the width and x
+    // position of the progress view.
+    constexpr int kPreviousNextTrackWidthPlusHorizontalMargins =
+        kBottomControlsHorizontalMargin + (2 * kControlHorizontalMargin) +
+        kPreviousNextButtonSize.width();
+    progress_view_->SetPosition(
+        {bottom_controls_bounds.x() +
+             kPreviousNextTrackWidthPlusHorizontalMargins,
+         bottom_controls_bounds.y() + kBottomControlsVerticalMargin});
+    progress_view_->SetSize(
+        {bounds.width() - (2 * kPreviousNextTrackWidthPlusHorizontalMargins),
+         kProgressBarHeight});
+
+    // The play/pause button should not be visible while dragging the progress
+    // bar.
+    play_pause_controls_view_->SetVisible(
+        show_play_pause_button_ &&
+        progress_view_drag_state_ !=
+            global_media_controls::DragState::kDragStarted);
 
     // The previous and next track buttons are always visible, but disabled if
     // there is no action handler for them.
@@ -1573,6 +1636,15 @@ void VideoOverlayWindowViews::SetHangUpButtonVisibility(bool is_visible) {
   UpdateControlsBounds();
 }
 
+void VideoOverlayWindowViews::SetMediaPosition(
+    const media_session::MediaPosition& position) {
+  if (!Use2024UI()) {
+    return;
+  }
+  position_ = position;
+  progress_view_->UpdateProgress(position);
+}
+
 void VideoOverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
   // The PiP window may have a previous surface set. If the window stays open
   // since then, we need to unregister the previous frame sink; otherwise the
@@ -1741,6 +1813,13 @@ gfx::Rect VideoOverlayWindowViews::GetNextSlideControlsBounds() {
   return next_slide_controls_view_->GetMirroredBounds();
 }
 
+gfx::Rect VideoOverlayWindowViews::GetProgressViewBounds() {
+  if (!Use2024UI()) {
+    return gfx::Rect();
+  }
+  return progress_view_->GetMirroredBounds();
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 int VideoOverlayWindowViews::GetResizeHTComponent() const {
   return resize_handle_view_->GetHTComponent();
@@ -1808,6 +1887,11 @@ VideoOverlayWindowViews::previous_slide_controls_view_for_testing() const {
   return previous_slide_controls_view_;
 }
 
+global_media_controls::MediaProgressView*
+VideoOverlayWindowViews::progress_view_for_testing() const {
+  return progress_view_;
+}
+
 CloseImageButton* VideoOverlayWindowViews::close_button_for_testing() const {
   return close_controls_view_;
 }
@@ -1869,4 +1953,32 @@ void VideoOverlayWindowViews::RemoveOverlayViewIfExists() {
     GetContentsView()->RemoveChildViewT(overlay_view_.ExtractAsDangling());
     OnSizeConstraintsChanged();
   }
+}
+
+void VideoOverlayWindowViews::OnProgressDragStateChanged(
+    global_media_controls::DragState drag_state) {
+  progress_view_drag_state_ = drag_state;
+  OnUpdateControlsBounds();
+}
+
+void VideoOverlayWindowViews::ChangePlaybackStateForProgressDrag(
+    global_media_controls::PlaybackStateChangeForDragging
+        playback_state_change) {
+  if (playback_state_change ==
+      global_media_controls::PlaybackStateChangeForDragging::
+          kPauseForDraggingStarted) {
+    controller_->Pause();
+  } else {
+    controller_->Play();
+  }
+}
+
+void VideoOverlayWindowViews::SeekForProgressBarInteraction(
+    double seek_progress) {
+  controller_->SeekTo(seek_progress * position_.duration());
+}
+
+void VideoOverlayWindowViews::OnProgressViewUpdateCurrentTime(
+    base::TimeDelta current_time) {
+  // TODO(crbug.com/360357715): Update current time view once it exists.
 }

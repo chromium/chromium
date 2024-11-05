@@ -72,6 +72,7 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
   void SetHangUpButtonVisibility(bool is_visible) override {}
   void SetNextSlideButtonVisibility(bool is_visible) override {}
   void SetPreviousSlideButtonVisibility(bool is_visible) override {}
+  void SetMediaPosition(const media_session::MediaPosition&) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
 
   const std::optional<PlaybackState>& playback_state() const {

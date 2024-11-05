@@ -72,6 +72,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   WebContents* GetWebContents() override;
   WebContents* GetChildWebContents() override;
   bool TogglePlayPause() override;
+  void Play() override;
+  void Pause() override;
   void SkipAd() override;
   void NextTrack() override;
   void PreviousTrack() override;
@@ -80,6 +82,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void HangUp() override;
   void PreviousSlide() override;
   void NextSlide() override;
+  void SeekTo(base::TimeDelta time) override;
   void SetOnWindowCreatedNotifyObserversCallback(
       base::OnceClosure on_window_created_notify_observers_callback) override;
 
@@ -168,6 +171,12 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   // Returns the web_contents() as a WebContentsImpl*.
   WebContentsImpl* GetWebContentsImpl();
 
+  // Returns true if the player is active after this call.
+  bool PlayInternal();
+
+  // Returns true if the player is active after this call.
+  bool PauseInternal();
+
   std::unique_ptr<VideoOverlayWindow> window_;
 
   viz::SurfaceId surface_id_;
@@ -184,6 +193,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   bool media_session_action_hang_up_handled_ = false;
   bool media_session_action_previous_slide_handled_ = false;
   bool media_session_action_next_slide_handled_ = false;
+  bool media_session_action_seek_to_handled_ = false;
 
   // Tracks the current microphone state.
   bool microphone_muted_ = false;
