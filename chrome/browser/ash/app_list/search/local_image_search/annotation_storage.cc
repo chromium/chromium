@@ -32,6 +32,11 @@ using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
 constexpr double kRelevanceThreshold = 0.79;
+// The default score of annotation if it's null it the database. The default
+// score is used for ocr annotations, which do not have a score by default.
+constexpr double kDefaultScore = 0.7;
+// The weight of fuzzy match relevance, in range [0,1].
+constexpr double kRelevanceWeight = 0.9;
 constexpr int kVersionNumber = 6;
 
 constexpr char kSqlDatabaseUmaTag[] =
@@ -406,12 +411,15 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT a.term, d.directory_path, d.file_name, d.last_modified_time "
+      "SELECT a.term, d.directory_path, d.file_name, d.last_modified_time, "
+          "MAX(IFNULL(ii.score,?)) "
           "FROM annotations AS a "
           "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
           "JOIN documents AS d ON ii.document_id = d.document_id "
           "WHERE a.term LIKE ? "
-          "ORDER BY d.directory_path, d.file_name";
+          "GROUP BY a.term, d.directory_path, d.file_name "
+          "ORDER BY d.directory_path, d.file_name "
+          "LIMIT 1000";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -421,7 +429,8 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
     LogErrorUma(ErrorStatus::kFailedToPrefixSearch);
     return {};
   }
-  statement->BindString(0, base::StrCat({base::UTF16ToUTF8(query_term), "%"}));
+  statement->BindDouble(0, kDefaultScore);
+  statement->BindString(1, base::StrCat({base::UTF16ToUTF8(query_term), "%"}));
 
   std::vector<FileSearchResult> matched_paths;
   TokenizedString tokenized_query(query_term, Mode::kWords);
@@ -438,11 +447,15 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
     base::FilePath file_path(statement->ColumnString(1));
     file_path = file_path.Append(statement->ColumnString(2));
     const base::Time time = statement->ColumnTime(3);
+    // Updates the relevance as a weighted average of the query-term relevance
+    // and the image annotation relevance score.
+    relevance = kRelevanceWeight * relevance +
+                (1 - kRelevanceWeight) * statement->ColumnDouble(4);
     DVLOG(1) << "Select: " << statement->ColumnString(0) << ", " << file_path
              << ", " << time << " rl: " << relevance;
 
     if (matched_paths.empty() || matched_paths.back().file_path != file_path) {
-      matched_paths.push_back({file_path, std::move(time), relevance});
+      matched_paths.emplace_back(file_path, std::move(time), relevance);
     } else if (matched_paths.back().relevance < relevance) {
       matched_paths.back().relevance = relevance;
     }
