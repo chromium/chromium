@@ -403,17 +403,15 @@ targets.mixin(
     shards = 20,
 )
 
-# TODO(b/375974548): add multiple shards back
-#
-# targets.mixin(
-#     name = "shards-30",
-#     shards = 30,
-# )
-#
-# targets.mixin(
-#     name = "shards-50",
-#     shards = 50,
-# )
+targets.mixin(
+    name = "shards-30",
+    shards = 30,
+)
+
+targets.mixin(
+    name = "shards-50",
+    shards = 50,
+)
 
 targets.mixin(
     name = "chromeos-generic-vm",
