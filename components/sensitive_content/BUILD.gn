@@ -91,33 +91,6 @@ if (is_android) {
     ]
   }
 
-  android_library("javatests") {
-    testonly = true
-    sources = [ "android/javatests/src/org/chromium/components/sensitive_content/SensitiveContentTest.java" ]
-    deps = [
-      ":java",
-      ":sensitive_content_features_java",
-      "//base:base_java_test_support",
-      "//base:supplier_java",
-      "//chrome/android:chrome_java",
-      "//chrome/android/features/tab_ui:test_support_javalib",
-      "//chrome/browser/flags:java",
-      "//chrome/browser/tab:java",
-      "//chrome/test/android:chrome_java_integration_test_support",
-      "//chrome/test/android:chrome_java_transit",
-      "//components/browser_ui/widget/android:java",
-      "//components/embedder_support/android:content_view_java",
-      "//content/public/android:content_full_java",
-      "//content/public/test/android:content_java_test_support",
-      "//net/android:net_java_test_support",
-      "//third_party/androidx:androidx_test_espresso_espresso_core_java",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/hamcrest:hamcrest_core_java",
-      "//third_party/hamcrest:hamcrest_library_java",
-      "//third_party/junit",
-    ]
-  }
-
   java_cpp_features("java_features_srcjar") {
     visibility = [ ":*" ]
     sources = [ "//components/sensitive_content/features.cc" ]
