@@ -432,7 +432,10 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         '#shelfNavigationButtonsEnabledControl')));
 
     const subpageLinks = page.root!.querySelectorAll('cr-link-row');
-    subpageLinks.forEach(subpageLink => assertFalse(isVisible(subpageLink)));
+    subpageLinks.forEach(subpageLink => {
+      assertFalse(
+          isVisible(subpageLink), `expected ${subpageLink.id} to be invisible`);
+    });
   });
 
   test('large cursor options appear when large cursor enabled', async () => {
@@ -605,6 +608,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   test(
       'face control feature shows if the feature flag is enabled', async () => {
         loadTimeData.overrideValues({
+          isKioskModeActive: false,
           isAccessibilityFaceGazeEnabled: true,
         });
 
@@ -620,6 +624,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
       'can reach face control settings from row when feature flag is enabled',
       async () => {
         loadTimeData.overrideValues({
+          isKioskModeActive: false,
           isAccessibilityFaceGazeEnabled: true,
         });
 

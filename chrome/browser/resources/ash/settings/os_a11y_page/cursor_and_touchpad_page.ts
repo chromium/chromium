@@ -239,6 +239,12 @@ export class SettingsCursorAndTouchpadPageElement extends
             'computeShowShelfNavigationButtonsSettings_(isKioskModeActive_)',
       },
 
+      /** Whether or not the facegaze settings row should be displayed. */
+      showFaceGazeRow_: {
+        type: Boolean,
+        computed: 'computeShowFaceGazeRow_(isKioskModeActive_)',
+      },
+
       /**
        * Boolean indicating whether shelf navigation buttons should implicitly
        * be enabled in tablet mode - the navigation buttons are implicitly
@@ -274,17 +280,6 @@ export class SettingsCursorAndTouchpadPageElement extends
         value() {
           return loadTimeData.getBoolean(
               'isAccessibilityDisableTouchpadEnabled');
-        },
-      },
-
-      /**
-       * Whether the face movements mouse cursor and keyboard control feature is
-       * enabled.
-       */
-      isAccessibilityFaceGazeEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isAccessibilityFaceGazeEnabled');
         },
       },
 
@@ -533,6 +528,11 @@ export class SettingsCursorAndTouchpadPageElement extends
   private computeShowShelfNavigationButtonsSettings_(): boolean {
     return !this.isKioskModeActive_ &&
         loadTimeData.getBoolean('showTabletModeShelfNavigationButtonsSettings');
+  }
+
+  private computeShowFaceGazeRow_(): boolean {
+    return !this.isKioskModeActive_ &&
+        loadTimeData.getBoolean('isAccessibilityFaceGazeEnabled');
   }
 
   /**
