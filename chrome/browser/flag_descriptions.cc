@@ -3422,6 +3422,11 @@ const char kTabStripCollectionStorageName[] =
 const char kTabStripCollectionStorageDescription[] =
     "Enables the collection based storage of tabstrip model.";
 
+const char kTabstripComboButtonFlagId[] = "tabstrip-combo-button";
+const char kTabstripComboButtonName[] = "Tabstrip Combo Button";
+const char kTabstripComboButtonDescription[] =
+    "Combines tab search and the new tab button into a single combo button.";
+
 const char kTabScrollingButtonPositionFlagId[] =
     "tab-scrolling-button-position";
 const char kTabScrollingButtonPositionName[] = "Tab Scrolling Buttons";

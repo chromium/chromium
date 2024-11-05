@@ -39,7 +39,8 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
 
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kTabstripDeclutter}, {});
+        {features::kTabOrganization, features::kTabstripDeclutter},
+        {features::kTabstripComboButton});
 
     tab_strip_controller_ =
         std::make_unique<FakeBaseTabStripControllerWithProfile>();
@@ -95,15 +96,17 @@ TEST_F(TabSearchContainerTest, OrdersButtonsCorrectly) {
 }
 
 TEST_F(TabSearchContainerTest, ButtonsHaveFlatEdges) {
-  ASSERT_EQ(Edge::kRight,
-            container_before_tab_strip_->tab_search_button()->flat_edge());
-  ASSERT_EQ(Edge::kLeft,
-            container_before_tab_strip_->auto_tab_group_button()->flat_edge());
+  ASSERT_EQ(
+      Edge::kRight,
+      container_before_tab_strip_->tab_search_button()->animated_flat_edge());
+  ASSERT_EQ(Edge::kLeft, container_before_tab_strip_->auto_tab_group_button()
+                             ->animated_flat_edge());
 
-  ASSERT_EQ(Edge::kLeft,
-            container_after_tab_strip_->tab_search_button()->flat_edge());
-  ASSERT_EQ(Edge::kRight,
-            container_after_tab_strip_->auto_tab_group_button()->flat_edge());
+  ASSERT_EQ(
+      Edge::kLeft,
+      container_after_tab_strip_->tab_search_button()->animated_flat_edge());
+  ASSERT_EQ(Edge::kRight, container_after_tab_strip_->auto_tab_group_button()
+                              ->animated_flat_edge());
 }
 
 TEST_F(TabSearchContainerTest, AnimatesToExpanded) {

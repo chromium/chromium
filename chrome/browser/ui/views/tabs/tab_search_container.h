@@ -114,7 +114,7 @@ class TabSearchContainer : public views::View,
 
   TabSearchContainer(TabStripController* tab_strip_controller,
                      TabStripModel* tab_strip_model,
-                     bool before_tab_strip,
+                     bool tab_search_before_chips,
                      View* locked_expansion_view,
                      BrowserWindowInterface* browser_window_interface,
                      tabs::TabDeclutterController* tab_declutter_controller);
@@ -177,12 +177,12 @@ class TabSearchContainer : public views::View,
 
   std::unique_ptr<TabOrganizationButton> CreateAutoTabGroupButton(
       TabStripController* tab_strip_controller,
-      bool before_tab_strip);
+      bool tab_search_before_chips);
   std::unique_ptr<TabOrganizationButton> CreateTabDeclutterButton(
       TabStripController* tab_strip_controller,
-      bool before_tab_strip);
+      bool tab_search_before_chips);
   void SetupButtonProperties(TabOrganizationButton* button,
-                             bool before_tab_strip);
+                             bool tab_search_before_chips);
   DeclutterTriggerCTRBucket GetDeclutterTriggerBucket(bool clicked);
   void LogDeclutterTriggerBucket(bool clicked);
 

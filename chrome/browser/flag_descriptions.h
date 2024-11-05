@@ -1949,6 +1949,10 @@ extern const char kTabStripCollectionStorageFlagId[];
 extern const char kTabStripCollectionStorageName[];
 extern const char kTabStripCollectionStorageDescription[];
 
+extern const char kTabstripComboButtonFlagId[];
+extern const char kTabstripComboButtonName[];
+extern const char kTabstripComboButtonDescription[];
+
 extern const char kTabScrollingButtonPositionFlagId[];
 extern const char kTabScrollingButtonPositionName[];
 extern const char kTabScrollingButtonPositionDescription[];

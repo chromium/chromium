@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -55,10 +56,10 @@ constexpr char kDeclutterTriggerOutcomeName[] =
 constexpr char kDeclutterTriggerBucketedCTRName[] =
     "Tab.Organization.Declutter.Trigger.BucketedCTR";
 
-Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
+Edge GetFlatEdge(bool is_search_button, bool tab_search_before_chips) {
   const bool is_rtl = base::i18n::IsRTL();
-  if ((!is_search_button && before_tab_strip) ||
-      (is_search_button && !before_tab_strip)) {
+  if ((!is_search_button && tab_search_before_chips) ||
+      (is_search_button && !tab_search_before_chips)) {
     return is_rtl ? Edge::kRight : Edge::kLeft;
   }
   return is_rtl ? Edge::kLeft : Edge::kRight;
@@ -204,7 +205,7 @@ void TabSearchContainer::TabOrganizationAnimationSession::MarkAnimationDone(
 TabSearchContainer::TabSearchContainer(
     TabStripController* tab_strip_controller,
     TabStripModel* tab_strip_model,
-    bool before_tab_strip,
+    bool tab_search_before_chips,
     View* locked_expansion_view,
     BrowserWindowInterface* browser_window_interface,
     tabs::TabDeclutterController* tab_declutter_controller)
@@ -224,23 +225,30 @@ TabSearchContainer::TabSearchContainer(
   }
 
   std::unique_ptr<TabSearchButton> tab_search_button =
-      std::make_unique<TabSearchButton>(tab_strip_controller,
-                                        browser_window_interface,
-                                        GetFlatEdge(true, before_tab_strip));
+      std::make_unique<TabSearchButton>(
+          tab_strip_controller, browser_window_interface,
+          features::IsTabstripComboButtonEnabled()
+              ? (base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft)
+              : Edge::kNone,
+          GetFlatEdge(true, tab_search_before_chips));
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
+  if (features::IsTabstripComboButtonEnabled()) {
+    tab_search_button->SetFlatEdgeFactor(1);
+  }
 
   tab_search_button_ = AddChildView(std::move(tab_search_button));
 
   int tab_search_button_index = GetIndexOf(tab_search_button_).value();
-  int index =
-      before_tab_strip ? tab_search_button_index + 1 : tab_search_button_index;
+  int index = tab_search_before_chips ? tab_search_button_index + 1
+                                      : tab_search_button_index;
   // TODO(crbug.com/40925230): Consider hiding the button when the request has
   // started, vs. when the button as clicked.
   auto_tab_group_button_ = AddChildViewAt(
-      CreateAutoTabGroupButton(tab_strip_controller, before_tab_strip), index);
+      CreateAutoTabGroupButton(tab_strip_controller, tab_search_before_chips),
+      index);
 
-  SetupButtonProperties(auto_tab_group_button_, before_tab_strip);
+  SetupButtonProperties(auto_tab_group_button_, tab_search_before_chips);
 
   browser_ = tab_strip_controller->GetBrowser();
 
@@ -248,10 +256,10 @@ TabSearchContainer::TabSearchContainer(
   // feature is not enabled.
   if (tab_declutter_controller_) {
     tab_declutter_button_ = AddChildViewAt(
-        CreateTabDeclutterButton(tab_strip_controller, before_tab_strip),
+        CreateTabDeclutterButton(tab_strip_controller, tab_search_before_chips),
         index);
 
-    SetupButtonProperties(tab_declutter_button_, before_tab_strip);
+    SetupButtonProperties(tab_declutter_button_, tab_search_before_chips);
 
     tab_declutter_observation_.Observe(tab_declutter_controller_);
   }
@@ -266,11 +274,11 @@ TabSearchContainer::~TabSearchContainer() {
 }
 
 void TabSearchContainer::SetupButtonProperties(TabOrganizationButton* button,
-                                               bool before_tab_strip) {
+                                               bool tab_search_before_chips) {
   // Set the margins for the button
   const int space_between_buttons = 2;
   gfx::Insets margin;
-  if (before_tab_strip) {
+  if (tab_search_before_chips) {
     margin.set_left(space_between_buttons);
   } else {
     margin.set_right(space_between_buttons);
@@ -284,7 +292,7 @@ void TabSearchContainer::SetupButtonProperties(TabOrganizationButton* button,
 std::unique_ptr<TabOrganizationButton>
 TabSearchContainer::CreateAutoTabGroupButton(
     TabStripController* tab_strip_controller,
-    bool before_tab_strip) {
+    bool tab_search_before_chips) {
   auto button = std::make_unique<TabOrganizationButton>(
       tab_strip_controller,
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonClicked,
@@ -294,7 +302,8 @@ TabSearchContainer::CreateAutoTabGroupButton(
       l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
       l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE),
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE),
-      kAutoTabGroupButtonElementId, GetFlatEdge(false, before_tab_strip));
+      kAutoTabGroupButtonElementId,
+      GetFlatEdge(false, tab_search_before_chips));
 
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);
@@ -304,7 +313,7 @@ TabSearchContainer::CreateAutoTabGroupButton(
 std::unique_ptr<TabOrganizationButton>
 TabSearchContainer::CreateTabDeclutterButton(
     TabStripController* tab_strip_controller,
-    bool before_tab_strip) {
+    bool tab_search_before_chips) {
   auto button = std::make_unique<TabOrganizationButton>(
       tab_strip_controller,
       base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonClicked,
@@ -314,7 +323,8 @@ TabSearchContainer::CreateTabDeclutterButton(
       l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER),
       l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER),
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER),
-      kTabDeclutterButtonElementId, GetFlatEdge(false, before_tab_strip));
+      kTabDeclutterButtonElementId,
+      GetFlatEdge(false, tab_search_before_chips));
 
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);

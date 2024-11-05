@@ -40,6 +40,7 @@ TabOrganizationButton::TabOrganizationButton(
     : TabStripControlButton(tab_strip_controller,
                             std::move(pressed_callback),
                             label_text,
+                            Edge::kNone,
                             flat_edge) {
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());

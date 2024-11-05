@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -24,6 +25,9 @@
 using std::make_unique;
 
 namespace {
+constexpr int kTabstripComboButtonCornerRadius = 10;
+constexpr int kTabstripComboButtonFlatCornerRadius = 4;
+
 class ControlButtonHighlightPathGenerator
     : public views::HighlightPathGenerator {
  public:
@@ -61,33 +65,39 @@ TabStripControlButton::TabStripControlButton(
     TabStripController* tab_strip_controller,
     PressedCallback callback,
     const gfx::VectorIcon& icon,
-    Edge flat_edge)
+    Edge fixed_flat_edge,
+    Edge animated_flat_edge)
     : TabStripControlButton(tab_strip_controller,
                             std::move(callback),
                             icon,
                             std::u16string(),
-                            flat_edge) {}
+                            fixed_flat_edge,
+                            animated_flat_edge) {}
 
 TabStripControlButton::TabStripControlButton(
     TabStripController* tab_strip_controller,
     PressedCallback callback,
     const std::u16string& text,
-    Edge flat_edge)
+    Edge fixed_flat_edge,
+    Edge animated_flat_edge)
     : TabStripControlButton(tab_strip_controller,
                             std::move(callback),
                             kEmptyIcon,
                             text,
-                            flat_edge) {}
+                            fixed_flat_edge,
+                            animated_flat_edge) {}
 
 TabStripControlButton::TabStripControlButton(
     TabStripController* tab_strip_controller,
     PressedCallback callback,
     const gfx::VectorIcon& icon,
     const std::u16string& text,
-    Edge flat_edge)
+    Edge fixed_flat_edge,
+    Edge animated_flat_edge)
     : views::LabelButton(std::move(callback), text),
       icon_(icon),
-      flat_edge_(flat_edge),
+      fixed_flat_edge_(fixed_flat_edge),
+      animated_flat_edge_(animated_flat_edge),
       tab_strip_controller_(tab_strip_controller) {
   SetImageCentered(true);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -225,20 +235,28 @@ void TabStripControlButton::UpdateBackground() {
 }
 
 int TabStripControlButton::GetCornerRadius() const {
-  return TabStripControlButton::kButtonSize.width() / 2;
+  return features::IsTabstripComboButtonEnabled()
+             ? kTabstripComboButtonCornerRadius
+             : TabStripControlButton::kButtonSize.width() / 2;
 }
 
 int TabStripControlButton::GetFlatCornerRadius() const {
-  return 0;
+  return features::IsTabstripComboButtonEnabled()
+             ? kTabstripComboButtonFlatCornerRadius
+             : 0;
 }
 
 float TabStripControlButton::GetScaledCornerRadius(float initial_radius,
                                                    Edge edge) const {
   const int flat_corner_radius = GetFlatCornerRadius();
-  return flat_edge_ == edge
-             ? ((initial_radius - flat_corner_radius) * flat_edge_factor_) +
-                   flat_corner_radius
-             : initial_radius;
+  if (fixed_flat_edge_ == edge) {
+    return flat_corner_radius;
+  } else if (animated_flat_edge_ == edge) {
+    return ((initial_radius - flat_corner_radius) * flat_edge_factor_) +
+           flat_corner_radius;
+  } else {
+    return initial_radius;
+  }
 }
 
 void TabStripControlButton::AddedToWidget() {

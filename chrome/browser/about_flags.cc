@@ -6769,6 +6769,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripCollectionStorageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kTabStripCollectionStorage)},
 
+    {flag_descriptions::kTabstripComboButtonFlagId,
+     flag_descriptions::kTabstripComboButtonName,
+     flag_descriptions::kTabstripComboButtonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabstripComboButton)},
+
     {flag_descriptions::kScrollableTabStripOverflowFlagId,
      flag_descriptions::kScrollableTabStripOverflowName,
      flag_descriptions::kScrollableTabStripOverflowDescription, kOsDesktop,

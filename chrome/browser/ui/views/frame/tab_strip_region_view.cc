@@ -98,7 +98,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
                    ? tab_strip->GetBrowserWindowInterface()->GetProfile()
                    : nullptr),
       render_tab_search_before_tab_strip_(
-          !tabs::GetTabSearchTrailingTabstrip(profile_)),
+          !tabs::GetTabSearchTrailingTabstrip(profile_) &&
+          !features::IsTabstripComboButtonEnabled()),
       tab_search_position_metrics_logger_(
           std::make_unique<TabSearchPositionMetricsLogger>(profile_)) {
   views::SetCascadingColorProviderColor(
@@ -114,30 +115,29 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   tab_strip_ = tab_strip.get();
   BrowserWindowInterface* browser = tab_strip->GetBrowserWindowInterface();
 
-  // Add and configure the TabSearchContainer.
+  // Add and configure the TabSearchContainer and ProductSpecificationsButton.
   std::unique_ptr<TabSearchContainer> tab_search_container;
+  std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
   if (browser &&
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
     tab_search_container = std::make_unique<TabSearchContainer>(
         tab_strip_->controller(), browser->GetTabStripModel(),
-        render_tab_search_before_tab_strip_, this, browser,
-        browser->GetFeatures().tab_declutter_controller());
+        render_tab_search_before_tab_strip_ ||
+            features::IsTabstripComboButtonEnabled(),
+        this, browser, browser->GetFeatures().tab_declutter_controller());
     tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                       views::LayoutAlignment::kCenter);
-  }
 
-  // Add and configure the ProductSpecificationsButton.
-  std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
-  if (tab_search_container &&
-      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    product_specifications_button =
-        std::make_unique<ProductSpecificationsButton>(
-            tab_strip_->controller(), browser->GetTabStripModel(),
-            browser->GetFeatures()
-                .product_specifications_entry_point_controller(),
-            render_tab_search_before_tab_strip_, this);
-    product_specifications_button->SetProperty(views::kCrossAxisAlignmentKey,
-                                               views::LayoutAlignment::kCenter);
+    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+      product_specifications_button =
+          std::make_unique<ProductSpecificationsButton>(
+              tab_strip_->controller(), browser->GetTabStripModel(),
+              browser->GetFeatures()
+                  .product_specifications_entry_point_controller(),
+              render_tab_search_before_tab_strip_, this);
+      product_specifications_button->SetProperty(
+          views::kCrossAxisAlignmentKey, views::LayoutAlignment::kCenter);
+    }
   }
 
   if (tab_search_container && render_tab_search_before_tab_strip_) {
@@ -194,9 +194,23 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
             tab_strip_->controller(),
             base::BindRepeating(&TabStrip::NewTabButtonPressed,
                                 base::Unretained(tab_strip_)),
-            vector_icons::kAddIcon);
+            vector_icons::kAddIcon,
+            features::IsTabstripComboButtonEnabled()
+                ? (base::i18n::IsRTL() ? Edge::kLeft : Edge::kRight)
+                : Edge::kNone);
     tab_strip_control_button->SetProperty(views::kElementIdentifierKey,
                                           kNewTabButtonElementId);
+
+    if (features::IsTabstripComboButtonEnabled()) {
+      tab_strip_control_button->SetForegroundFrameActiveColorId(
+          kColorNewTabButtonForegroundFrameActive);
+      tab_strip_control_button->SetForegroundFrameInactiveColorId(
+          kColorNewTabButtonForegroundFrameInactive);
+      tab_strip_control_button->SetBackgroundFrameActiveColorId(
+          kColorNewTabButtonCRBackgroundFrameActive);
+      tab_strip_control_button->SetBackgroundFrameInactiveColorId(
+          kColorNewTabButtonCRBackgroundFrameInactive);
+    }
 
     new_tab_button_ = AddChildView(std::move(tab_strip_control_button));
 
@@ -211,6 +225,18 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         new_tab_button_->GetTriggerableEventFlags() |
         ui::EF_MIDDLE_MOUSE_BUTTON);
 #endif
+
+    if (features::IsTabstripComboButtonEnabled()) {
+      tab_search_container_ = AddChildView(std::move(tab_search_container));
+      tab_search_container_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+
+      if (product_specifications_button) {
+        product_specifications_button_ =
+            AddChildView(std::move(product_specifications_button));
+      }
+    }
   }
 
   reserved_grab_handle_space_ =
@@ -223,7 +249,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
   SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 
-  if (browser && tab_search_container && !render_tab_search_before_tab_strip_) {
+  if (browser && tab_search_container && !render_tab_search_before_tab_strip_ &&
+      !features::IsTabstripComboButtonEnabled()) {
     if (product_specifications_button) {
       product_specifications_button_ =
           AddChildView(std::move(product_specifications_button));
@@ -518,8 +545,15 @@ void TabStripRegionView::UpdateTabStripMargin() {
     // account for extra spacing.
     new_tab_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-    tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
-                             GetLayoutConstant(TAB_STRIP_PADDING);
+    if (features::IsTabstripComboButtonEnabled()) {
+      const int space_between_combo_buttons = 2;
+      tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() -
+                               GetLayoutConstant(TAB_STRIP_PADDING) +
+                               space_between_combo_buttons;
+    } else {
+      tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
+                               GetLayoutConstant(TAB_STRIP_PADDING);
+    }
   }
 
   // If the tab search button is before the tab strip, it also overlaps the
