@@ -14600,7 +14600,12 @@
     "OcclusionCullingQuadSplitLimit": [
         {
             "platforms": [
-                "chromeos"
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
