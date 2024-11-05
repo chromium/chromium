@@ -27,8 +27,10 @@ import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -157,6 +159,11 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     protected Supplier<Tab> mActivityTabSupplier;
     protected Supplier<Tab> mSelectedTabSupplier;
     protected Supplier<Tab> mPageLoadedSupplier;
+
+    /** Prefer the PageStation's subclass |newBuilder()|. */
+    public static Builder<PageStation> newGenericBuilder() {
+        return new Builder<>(PageStation::new);
+    }
 
     /** Use the PageStation's subclass |newBuilder()|. */
     protected <T extends PageStation> PageStation(Builder<T> builder) {
@@ -343,6 +350,26 @@ public class PageStation extends Station<ChromeTabbedActivity> {
                                 InstrumentationRegistry.getInstrumentation(),
                                 getActivity(),
                                 R.id.new_incognito_tab_menu_id));
+    }
+
+    /** Shortcut to select a different tab programmatically. */
+    public <T extends PageStation> T selectTabFast(
+            Tab tabToSelect, Supplier<Builder<T>> pageStationFactory) {
+        return travelToSync(
+                pageStationFactory
+                        .get()
+                        .withIncognito(tabToSelect.isIncognitoBranded())
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
+                        .build(),
+                () ->
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> {
+                                    TabModelUtils.selectTabById(
+                                            getActivity().getTabModelSelector(),
+                                            tabToSelect.getId(),
+                                            TabSelectionType.FROM_USER);
+                                }));
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */

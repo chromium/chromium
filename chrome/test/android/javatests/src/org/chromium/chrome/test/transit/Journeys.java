@@ -4,22 +4,15 @@
 
 package org.chromium.chrome.test.transit;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.TravelException;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabThumbnailCondition;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 
 /* Helper class for extended multi-stage Trips. */
 public class Journeys {
@@ -99,35 +92,22 @@ public class Journeys {
         assert numTabs > 0;
 
         TabModelSelector tabModelSelector = startingPage.getActivity().getTabModelSelector();
-        TabModel tabModel = tabModelSelector.getModel(isIncognito);
 
         PageStation currentPage = startingPage;
         for (int i = 0; i < numTabs; i++) {
-            final ChromeTabbedActivity activity = currentPage.getActivity();
             PageStation previousPage = currentPage;
             Tab previousTab = previousPage.getLoadedTab();
             currentPage =
-                    currentPage.travelToSync(
-                            pageStationFactory
-                                    .get()
-                                    .withIsOpeningTabs(1)
-                                    .withIsSelectingTabs(1)
-                                    .withIncognito(isIncognito)
-                                    .withExpectedUrlSubstring(url)
-                                    .build(),
-                            () -> {
-                                ChromeTabUtils.fullyLoadUrlInNewTab(
-                                        InstrumentationRegistry.getInstrumentation(),
-                                        activity,
-                                        url,
-                                        isIncognito);
-                            });
+                    isIncognito
+                            ? currentPage.openNewIncognitoTabFast()
+                            : currentPage.openNewTabFast();
+            currentPage = currentPage.loadPageProgrammatically(url, pageStationFactory.get());
             boolean tryToFixThumbnail = false;
             try {
                 Condition.runAndWaitFor(
                         null,
-                        TabThumbnailCondition.etc1(tabModel, i),
-                        TabThumbnailCondition.jpeg(tabModel, i));
+                        TabThumbnailCondition.etc1(tabModelSelector, previousTab),
+                        TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
             } catch (TravelException e) {
                 tryToFixThumbnail = true;
             }
@@ -141,39 +121,16 @@ public class Journeys {
                         previousTab.getId());
 
                 Tab tabToComeBackTo = currentPage.getLoadedTab();
-                T previousPageAgain =
-                        currentPage.travelToSync(
-                                pageStationFactory
-                                        .get()
-                                        .withIncognito(isIncognito)
-                                        .withIsOpeningTabs(0)
-                                        .withIsSelectingTabs(1)
-                                        .build(),
-                                () -> selectTab(tabModelSelector, previousTab));
-                currentPage =
-                        previousPageAgain.travelToSync(
-                                pageStationFactory
-                                        .get()
-                                        .withIncognito(isIncognito)
-                                        .withIsOpeningTabs(0)
-                                        .withIsSelectingTabs(1)
-                                        .build(),
-                                () -> selectTab(tabModelSelector, tabToComeBackTo));
+                PageStation previousPageAgain =
+                        currentPage.selectTabFast(previousTab, PageStation::newGenericBuilder);
+                currentPage = previousPageAgain.selectTabFast(tabToComeBackTo, pageStationFactory);
 
                 Condition.runAndWaitFor(
                         null,
-                        TabThumbnailCondition.etc1(tabModel, i),
-                        TabThumbnailCondition.jpeg(tabModel, i));
+                        TabThumbnailCondition.etc1(tabModelSelector, previousTab),
+                        TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
             }
         }
         return (T) currentPage;
-    }
-
-    private static void selectTab(TabModelSelector tabModelSelector, Tab tab) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            tabModelSelector, tab.getId(), TabSelectionType.FROM_USER);
-                });
     }
 }
