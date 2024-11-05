@@ -46,6 +46,19 @@ bool HasAXRole(const char* role, const AXUIElementRef node) {
   return base::SysNSStringToUTF8(node_role) == role;
 }
 
+bool HasIDOrClass(const std::string& idOrClass, const AXUIElementRef node) {
+  AXElementWrapper nsNode((__bridge id)node);
+  NSString* nsIDOrClass = base::SysUTF8ToNSString(idOrClass);
+  NSString* idValue =
+      *nsNode.GetAttributeValue(NSAccessibilityDOMIdentifierAttribute);
+  if ([idValue isEqualToString:nsIDOrClass]) {
+    return true;
+  }
+
+  NSArray* classList = *nsNode.GetAttributeValue(NSAccessibilityDOMClassList);
+  return [classList containsObject:nsIDOrClass];
+}
+
 }  // namespace
 
 bool IsValidAXAttribute(const std::string& attribute) {
@@ -140,10 +153,19 @@ std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
   std::tie(node, pid) = FindAXApplication(selector);
 
   // ActiveTab selector.
-  if (node && selector.types & AXTreeSelector::ActiveTab) {
+  if (!node) {
+    return {node, pid};
+  }
+
+  if (selector.types & AXTreeSelector::ActiveTab) {
     // Only active tab in exposed in browsers, thus find first
     // AXWebArea role.
     node = FindAXUIElement(node.get(), "AXWebArea");
+  }
+
+  if (selector.types & AXTreeSelector::IDOrClass) {
+    node = FindAXUIElement(
+        node.get(), base::BindRepeating(&HasIDOrClass, selector.pattern));
   }
 
   return {node, pid};

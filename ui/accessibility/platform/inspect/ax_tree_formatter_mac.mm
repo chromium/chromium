@@ -170,6 +170,16 @@ base::Value::Dict AXTreeFormatterMac::BuildNode(
   return BuildNode(node->GetNativeViewAccessible());
 }
 
+base::Value::Dict AXTreeFormatterMac::BuildNodeForSelector(
+    const AXTreeSelector& selector) const {
+  base::apple::ScopedCFTypeRef<AXUIElementRef> node;
+  std::tie(node, std::ignore) = FindAXUIElement(selector);
+  if (!node) {
+    return base::Value::Dict();
+  }
+  return BuildNode((__bridge id)node.get());
+}
+
 base::Value::Dict AXTreeFormatterMac::BuildNode(const id node) const {
   DCHECK(node);
 

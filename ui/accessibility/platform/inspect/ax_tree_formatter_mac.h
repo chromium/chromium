@@ -23,6 +23,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
       const AXTreeSelector& selector) const override;
 
   base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNodeForSelector(
+      const AXTreeSelector& selector) const override;
 
   std::string EvaluateScript(const AXTreeSelector& selector,
                              const AXInspectScenario& scenario) const override;

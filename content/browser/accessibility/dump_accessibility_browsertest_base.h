@@ -193,10 +193,17 @@ class DumpAccessibilityTestBase
       const ax::mojom::StringAttribute attr,
       const std::string& value) const;
 
+  std::string FormatWebContentsTestNode(const ui::AXTreeFormatter&) const;
+
+  // Returns true if the tests should run against the external accessibility
+  // tree.
+  bool IsTestingExternalTree() const;
+
  protected:
   ui::AXInspectTestHelper test_helper_;
 
   WebContentsImpl* GetWebContents() const;
+  gfx::AcceleratedWidget GetAcceleratedWidget() const;
 
   // Wait until all accessibility events and dirty objects have been processed
   // with the given AXMode.
