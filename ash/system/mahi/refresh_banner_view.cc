@@ -222,6 +222,7 @@ std::unique_ptr<IconButton> RefreshBannerView::CreateRefreshButton() {
 
 void RefreshBannerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   SetClipPath(GetClipPath(GetContentsBounds().size()));
+  layer()->SetClipRect(GetLocalBounds());
 }
 
 void RefreshBannerView::ViewHierarchyChanged(

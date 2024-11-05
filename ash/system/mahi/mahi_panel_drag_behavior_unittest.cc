@@ -69,7 +69,7 @@ TEST_F(MahiPanelDragBehaviorTest, MouseDragRepositionsPanel) {
   panel_widget->SetBounds(kInitialBounds);
 
   GetEventGenerator()->set_current_screen_location(
-      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(20, 20));
+      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(30, 30));
   constexpr gfx::Vector2d kDragOffset(20, 10);
   GetEventGenerator()->DragMouseBy(kDragOffset.x(), kDragOffset.y());
 
@@ -82,7 +82,7 @@ TEST_F(MahiPanelDragBehaviorTest, GestureDragRepositionsPanel) {
   panel_widget->SetBounds(kInitialBounds);
 
   GetEventGenerator()->set_current_screen_location(
-      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(20, 20));
+      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(30, 30));
   constexpr gfx::Vector2d kDragOffset(20, 10);
   GetEventGenerator()->PressMoveAndReleaseTouchBy(kDragOffset.x(),
                                                   kDragOffset.y());
@@ -97,7 +97,7 @@ TEST_F(MahiPanelDragBehaviorTest, MouseDragOutOfTheScreenEdge) {
   panel_widget->SetBounds(kInitialBounds);
 
   GetEventGenerator()->set_current_screen_location(
-      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(20, 20));
+      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(30, 30));
   constexpr gfx::Vector2d kDragOffset(1100, 600);
   GetEventGenerator()->DragMouseBy(kDragOffset.x(), kDragOffset.y());
 
@@ -137,7 +137,7 @@ TEST_F(MahiPanelDragBehaviorTest, MouseDragInMultiScreens) {
 
   // Drags the panel from the first screen to the second screen.
   GetEventGenerator()->set_current_screen_location(
-      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(20, 20));
+      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(30, 30));
   constexpr gfx::Vector2d kDragOffset1(1500, 50);
   GetEventGenerator()->DragMouseBy(kDragOffset1.x(), kDragOffset1.y());
 
@@ -148,7 +148,7 @@ TEST_F(MahiPanelDragBehaviorTest, MouseDragInMultiScreens) {
 
   // Drags the panel from the second screen to the third screen.
   GetEventGenerator()->set_current_screen_location(
-      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(20, 20));
+      panel_widget->GetWindowBoundsInScreen().origin() + gfx::Vector2d(30, 30));
   constexpr gfx::Vector2d kDragOffset2(50, 600);
   GetEventGenerator()->DragMouseBy(kDragOffset2.x(), kDragOffset2.y());
 

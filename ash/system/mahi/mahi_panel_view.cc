@@ -51,6 +51,7 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
@@ -948,6 +949,10 @@ void MahiPanelView::OnSendButtonPressed() {
         mahi_constants::kMahiButtonClickHistogramName,
         mahi_constants::PanelButton::kAskQuestionSendButton);
   }
+}
+
+void MahiPanelView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  layer()->SetClipRect(GetLocalBounds());
 }
 
 void MahiPanelView::OnThumbsUpButtonActive() {

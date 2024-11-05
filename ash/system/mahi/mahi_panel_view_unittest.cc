@@ -21,8 +21,10 @@
 #include "ash/style/system_textfield.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_content_source_button.h"
+#include "ash/system/mahi/mahi_question_answer_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_utils.h"
+#include "ash/system/mahi/summary_outlines_elucidation_section.h"
 #include "ash/system/mahi/test/mahi_test_util.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
@@ -36,6 +38,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -46,6 +49,7 @@
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -648,6 +652,20 @@ TEST_F(MahiPanelViewTest, AnswerLoadingAnimationsMetricsRecord) {
   ASSERT_TRUE(answer_waiter.Wait());
   histogram_tester.ExpectTimeBucketCount(
       mahi_constants::kAnswerLoadingTimeHistogramName, delay_time, 1);
+}
+
+// Tests that the correct behaviour occurs when the panel is resized.
+TEST_F(MahiPanelViewTest, ResizePanel) {
+  MahiPanelView mahi_view(ui_controller());
+
+  const gfx::Rect resized_bounds = gfx::Rect(20, 20, 150, 140);
+  panel_view()->SetBounds(resized_bounds.x(), resized_bounds.y(),
+                          resized_bounds.width(), resized_bounds.height());
+
+  // Check that the panel clip rect has been resized.
+  // X and Y positions should be 0 as they are relative to the panel.
+  EXPECT_EQ(panel_view()->layer()->GetTargetClipRect(),
+            gfx::Rect(0, 0, resized_bounds.width(), resized_bounds.height()));
 }
 
 // Tests that pressing on the send button with a valid textfield takes the user

@@ -168,6 +168,12 @@ BASE_FEATURE(kFeatureManagementMahi,
              "FeatureManagementMahi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the Mahi resize feature
+// Does nothing if "Mahi" and "FeatureManagementMahi" are disabled.
+BASE_FEATURE(kMahiPanelResizable,
+             "MahiPanelResizable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether mahi sends url when making request to the server.
 BASE_FEATURE(kMahiSendingUrl,
              "MahiSendingUrl",

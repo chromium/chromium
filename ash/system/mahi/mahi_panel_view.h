@@ -50,6 +50,9 @@ class ASH_EXPORT MahiPanelView : public SystemPanelView,
   // Shows the pop in animation for the panel.
   void AnimatePopIn(const gfx::Rect& start_bounds);
 
+  // SystemPanelView:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
  private:
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* textfield,

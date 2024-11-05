@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_panel_view.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
@@ -135,7 +136,7 @@ TEST_P(MahiErrorStatusViewPixelTest, Basics) {
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/5,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/6,
       error_status_view));
 }
 
@@ -164,7 +165,7 @@ TEST_P(MahiErrorStatusViewPixelTest, QuestionAnswerView) {
   LeftClickOn(send_button);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/3,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/4,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
