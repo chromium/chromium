@@ -1395,8 +1395,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("MATERIALIZED_VIEWS", base::FeatureList::IsEnabled(
                                       ash::features::kFilesMaterializedViews));
 
-  if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
     policy::DlpRulesManager* rules_manager =
         policy::DlpRulesManagerFactory::GetForPrimaryProfile();

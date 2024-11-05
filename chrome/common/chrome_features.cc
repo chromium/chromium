@@ -207,13 +207,6 @@ BASE_FEATURE(kCryptohomeUserDataAuthKillswitch,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Enables parsing and enforcing Data Leak Prevention policy rules that
-// restricts usage of some system features, e.g.clipboard, screenshot, etc.
-// for confidential content.
-BASE_FEATURE(kDataLeakPreventionPolicy,
-             "DataLeakPreventionPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables starting of Data Leak Prevention Files Daemon by sending the
 // DLP policy there. The daemon might restrict access to some protected files.
 BASE_FEATURE(kDataLeakPreventionFilesRestriction,

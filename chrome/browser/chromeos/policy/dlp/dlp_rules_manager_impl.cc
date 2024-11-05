@@ -324,10 +324,6 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
   files_controller_ = nullptr;
 #endif
 
-  if (!base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy)) {
-    return;
-  }
-
   const base::Value::List& rules_list =
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 

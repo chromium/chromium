@@ -532,46 +532,6 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
       DlpRulesManager::RuleMetadata(kRuleName2, kRuleId2));
 }
 
-TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
-  dlp_test_util::DlpRule rule1(kRuleName1, "Block", kRuleId1);
-  rule1.AddSrcUrl(kExampleUrl)
-      .AddDstUrl(kWildCardMatching)
-      .AddRestriction(data_controls::kRestrictionClipboard,
-                      data_controls::kLevelBlock)
-      .AddRestriction(data_controls::kRestrictionScreenshot,
-                      data_controls::kLevelBlock);
-
-  UpdatePolicyPref({rule1});
-
-  CheckIsRestrictedDestination(
-      kExampleUrl, kWildCardMatching, DlpRulesManager::Restriction::kClipboard,
-      DlpRulesManager::Level::kBlock, kExampleUrl, kWildCardMatching,
-      DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
-
-  EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestricted(
-                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
-
-  // Disable feature
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kDataLeakPreventionPolicy);
-
-  dlp_test_util::DlpRule rule2(kRuleName2, "Block", kRuleId2);
-  rule2.AddSrcUrl(kExampleUrl)
-      .AddDstUrl(kWildCardMatching)
-      .AddRestriction(data_controls::kRestrictionClipboard,
-                      data_controls::kLevelBlock);
-
-  UpdatePolicyPref({rule2});
-
-  CheckIsRestrictedDestination(
-      kExampleUrl, kWildCardMatching, DlpRulesManager::Restriction::kClipboard,
-      DlpRulesManager::Level::kAllow,
-      /*expected_src_pattern=*/"", /*expected_dst_pattern=*/"",
-      DlpRulesManager::RuleMetadata(/*name=*/"", /*obfuscated_id=*/""));
-}
-
 TEST_F(DlpRulesManagerImplTest, WarnPriority) {
   dlp_test_util::DlpRule rule1(kRuleName1, "Warn on every copy from google.com",
                                kRuleId1);
