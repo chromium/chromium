@@ -99,6 +99,9 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     if (log_message) {
       SCOPED_CRASH_KEY_STRING256("Javascript", "error", *log_message);
 
+      static auto* const stack_crash_key = base::debug::AllocateCrashKeyString(
+          "Javascript-stack", base::debug::CrashKeySize::Size1024);
+
       script_error_stack_util::FrameComponents top_stack_frame;
 
       if (stack) {
@@ -108,8 +111,7 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
           stack_crash_key_value = script_error_stack_util::TruncateMiddle(
               stack_crash_key_value, kStackMaxSize);
         }
-        SCOPED_CRASH_KEY_STRING1024("Javascript", "stack",
-                                    stack_crash_key_value);
+        base::debug::SetCrashKeyString(stack_crash_key, stack_crash_key_value);
 
         top_stack_frame =
             script_error_stack_util::TopFrameComponentsFromStack(*stack);
@@ -129,6 +131,8 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
       } else {
         base::debug::DumpWithoutCrashing();
       }
+
+      base::debug::ClearCrashKeyString(stack_crash_key);
     }
   }
 
