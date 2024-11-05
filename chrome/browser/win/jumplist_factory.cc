@@ -39,7 +39,8 @@ JumpListFactory::JumpListFactory()
 
 JumpListFactory::~JumpListFactory() = default;
 
-KeyedService* JumpListFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+JumpListFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new JumpList(Profile::FromBrowserContext(context));
+  return base::WrapUnique(new JumpList(Profile::FromBrowserContext(context)));
 }
