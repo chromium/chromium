@@ -5,7 +5,7 @@ use super::super::{
     metrics::{self, UnscaledWidths, WidthMetrics, MAX_WIDTHS},
     outline::Outline,
     shape::{ShapedCluster, Shaper},
-    style::{ScriptClass, ScriptGroup},
+    style::{ScriptGroup, StyleClass},
 };
 use crate::MetadataProvider;
 use raw::{types::F2Dot14, TableProvider};
@@ -19,7 +19,7 @@ use raw::{types::F2Dot14, TableProvider};
 pub(super) fn compute_widths(
     shaper: &Shaper,
     coords: &[F2Dot14],
-    script: &ScriptClass,
+    style: &StyleClass,
 ) -> [(WidthMetrics, UnscaledWidths); 2] {
     let mut result: [(WidthMetrics, UnscaledWidths); 2] = Default::default();
     let font = shaper.font();
@@ -30,13 +30,15 @@ pub(super) fn compute_widths(
         .unwrap_or_default();
     let mut outline = Outline::default();
     let mut axis = Axis::default();
+    let mut cluster_shaper = shaper.cluster_shaper(style);
     let mut shaped_cluster = ShapedCluster::default();
     // We take the first available glyph from the standard character set.
-    let glyph = script
+    let glyph = style
+        .script
         .std_chars
         .split(' ')
         .filter_map(|cluster| {
-            shaper.shape_cluster(cluster, &mut shaped_cluster);
+            cluster_shaper.shape(cluster, &mut shaped_cluster);
             // Reject input that maps to more than a single glyph
             // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/aflatin.c#L128>
             match shaped_cluster.as_slice() {
@@ -110,7 +112,7 @@ mod tests {
         // from a debugger
         check_widths(
             font_test_data::NOTOSERIFHEBREW_AUTOHINT_METRICS,
-            super::ScriptClass::HEBR,
+            super::StyleClass::HEBR,
             [
                 (
                     WidthMetrics {
@@ -138,7 +140,7 @@ mod tests {
         // from a debugger
         check_widths(
             font_test_data::CANTARELL_VF_TRIMMED,
-            super::ScriptClass::LATN,
+            super::StyleClass::LATN,
             [
                 (
                     WidthMetrics {
@@ -166,7 +168,7 @@ mod tests {
         // from a debugger
         check_widths(
             font_test_data::NOTOSERIFTC_AUTOHINT_METRICS,
-            super::ScriptClass::HANI,
+            super::StyleClass::HANI,
             [
                 (
                     WidthMetrics {
@@ -188,10 +190,10 @@ mod tests {
         );
     }
 
-    fn check_widths(font_data: &[u8], script_class: usize, expected: [(WidthMetrics, &[i32]); 2]) {
+    fn check_widths(font_data: &[u8], style_class: usize, expected: [(WidthMetrics, &[i32]); 2]) {
         let font = FontRef::new(font_data).unwrap();
         let shaper = Shaper::new(&font, ShaperMode::Nominal);
-        let script = &style::SCRIPT_CLASSES[script_class];
+        let script = &style::STYLE_CLASSES[style_class];
         let [(hori_metrics, hori_widths), (vert_metrics, vert_widths)] =
             compute_widths(&shaper, Default::default(), script);
         assert_eq!(hori_metrics, expected[0].0);

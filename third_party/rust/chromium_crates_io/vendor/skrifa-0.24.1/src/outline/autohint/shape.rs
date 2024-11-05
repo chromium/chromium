@@ -9,12 +9,16 @@ use raw::{
             ChainedSequenceContext, Gsub, SequenceContext, SingleSubst, SubstitutionLookupList,
             SubstitutionSubtables,
         },
-        layout::ScriptTags,
+        layout::{Feature, ScriptTags},
         varc::CoverageTable,
     },
     types::Tag,
     ReadError, TableProvider,
 };
+
+// To prevent infinite recursion in contextual lookups. Matches HB
+// <https://github.com/harfbuzz/harfbuzz/blob/c7ef6a2ed58ae8ec108ee0962bef46f42c73a60c/src/hb-limits.hh#L53>
+const MAX_NESTING_DEPTH: u32 = 64;
 
 /// Determines the fidelity with which we apply shaping in the
 /// autohinter.
@@ -103,22 +107,35 @@ impl<'a> Shaper<'a> {
         &self.charmap
     }
 
-    /// Shapes the given input text with the current mode and stores the
-    /// resulting glyphs in the output cluster.
-    pub fn shape_cluster(&self, input: &str, output: &mut ShapedCluster) {
-        output.clear();
-        for (i, ch) in input.chars().enumerate() {
-            if i > 0 {
-                // In nominal mode, we reject input clusters with multiple
-                // characters
-                // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afshaper.c#L639>
-                output.clear();
-                return;
+    pub fn cluster_shaper(&'a self, style: &StyleClass) -> ClusterShaper<'a> {
+        if self.mode == ShaperMode::BestEffort {
+            // For now, only apply substitutions for styles with an associated
+            // feature
+            if let Some(feature_tag) = style.feature {
+                if let Some((lookup_list, feature)) = self.gsub.as_ref().and_then(|gsub| {
+                    let script_list = gsub.script_list().ok()?;
+                    let selected_script =
+                        script_list.select(&ScriptTags::from_unicode(style.script.tag))?;
+                    let script = script_list.get(selected_script.index).ok()?;
+                    let lang_sys = script.default_lang_sys()?.ok()?;
+                    let feature_list = gsub.feature_list().ok()?;
+                    let feature_ix = lang_sys.feature_index_for_tag(&feature_list, feature_tag)?;
+                    let feature = feature_list.get(feature_ix).ok()?.element;
+                    let lookup_list = gsub.lookup_list().ok()?;
+                    Some((lookup_list, feature))
+                }) {
+                    return ClusterShaper {
+                        shaper: self,
+                        lookup_list: Some(lookup_list),
+                        kind: ClusterShaperKind::SingleFeature(feature),
+                    };
+                }
             }
-            output.push(ShapedGlyph {
-                id: self.charmap.map(ch).unwrap_or_default(),
-                y_offset: 0,
-            });
+        }
+        ClusterShaper {
+            shaper: self,
+            lookup_list: None,
+            kind: ClusterShaperKind::Nominal,
         }
     }
 
@@ -227,6 +244,122 @@ impl<'a> Shaper<'a> {
     }
 }
 
+pub(crate) struct ClusterShaper<'a> {
+    shaper: &'a Shaper<'a>,
+    lookup_list: Option<SubstitutionLookupList<'a>>,
+    kind: ClusterShaperKind<'a>,
+}
+
+impl<'a> ClusterShaper<'a> {
+    pub(crate) fn shape(&mut self, input: &str, output: &mut ShapedCluster) {
+        // First fill the output cluster with the nominal character
+        // to glyph id mapping
+        output.clear();
+        for ch in input.chars() {
+            output.push(ShapedGlyph {
+                id: self.shaper.charmap.map(ch).unwrap_or_default(),
+                y_offset: 0,
+            });
+        }
+        match self.kind.clone() {
+            ClusterShaperKind::Nominal => {
+                // In nominal mode, reject clusters with multiple glyphs
+                // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afshaper.c#L639>
+                if self.shaper.mode == ShaperMode::Nominal && output.len() > 1 {
+                    output.clear();
+                }
+            }
+            ClusterShaperKind::SingleFeature(feature) => {
+                let mut did_subst = false;
+                for lookup_ix in feature.lookup_list_indices() {
+                    let mut glyph_ix = 0;
+                    while glyph_ix < output.len() {
+                        did_subst |= self.apply_lookup(lookup_ix.get(), output, glyph_ix, 0);
+                        glyph_ix += 1;
+                    }
+                }
+                // Reject clusters that weren't modified by the feature.
+                // FreeType detects this by shaping twice and comparing gids
+                // but we just track substitutions
+                // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afshaper.c#L528>
+                if !did_subst {
+                    output.clear();
+                }
+            }
+        }
+    }
+
+    fn apply_lookup(
+        &self,
+        lookup_index: u16,
+        cluster: &mut ShapedCluster,
+        glyph_ix: usize,
+        nesting_depth: u32,
+    ) -> bool {
+        if nesting_depth > MAX_NESTING_DEPTH {
+            return false;
+        }
+        let Some(glyph) = cluster.get_mut(glyph_ix) else {
+            return false;
+        };
+        let Some(subtables) = self
+            .lookup_list
+            .as_ref()
+            .and_then(|list| list.lookups().get(lookup_index as usize).ok())
+            .and_then(|lookup| lookup.subtables().ok())
+        else {
+            return false;
+        };
+        match subtables {
+            // For now, just applying single substitutions because we're
+            // currently only handling shaping for "feature" styles like
+            // c2sc (caps to small caps) which are (almost?) always
+            // single substs
+            SubstitutionSubtables::Single(tables) => {
+                for table in tables.iter().filter_map(|table| table.ok()) {
+                    match table {
+                        SingleSubst::Format1(table) => {
+                            let Some(_) = table.coverage().ok().and_then(|cov| cov.get(glyph.id))
+                            else {
+                                continue;
+                            };
+                            let delta = table.delta_glyph_id() as i32;
+                            glyph.id = GlyphId::from((glyph.id.to_u32() as i32 + delta) as u16);
+                            return true;
+                        }
+                        SingleSubst::Format2(table) => {
+                            let Some(cov_ix) =
+                                table.coverage().ok().and_then(|cov| cov.get(glyph.id))
+                            else {
+                                continue;
+                            };
+                            let Some(subst) = table.substitute_glyph_ids().get(cov_ix as usize)
+                            else {
+                                continue;
+                            };
+                            glyph.id = subst.get().into();
+                            return true;
+                        }
+                    }
+                }
+            }
+            SubstitutionSubtables::Multiple(_tables) => {}
+            SubstitutionSubtables::Ligature(_tables) => {}
+            SubstitutionSubtables::Alternate(_tables) => {}
+            SubstitutionSubtables::Contextual(_tables) => {}
+            SubstitutionSubtables::ChainContextual(_tables) => {}
+            SubstitutionSubtables::Reverse(_tables) => {}
+        }
+        false
+    }
+}
+
+#[derive(Clone)]
+enum ClusterShaperKind<'a> {
+    Nominal,
+    SingleFeature(Feature<'a>),
+}
+
 /// Captures glyphs from the GSUB table that aren't present in cmap.
 ///
 /// FreeType does this in a few phases:
@@ -282,9 +415,6 @@ impl<'a> GsubHandler<'a> {
     }
 
     fn process_lookup(&mut self, lookup_index: u16, nesting_depth: u32) {
-        // To prevent infinite recursion in contextual lookups. Matches HB
-        // <https://github.com/harfbuzz/harfbuzz/blob/c7ef6a2ed58ae8ec108ee0962bef46f42c73a60c/src/hb-limits.hh#L53>
-        const MAX_NESTING_DEPTH: u32 = 64;
         if nesting_depth > MAX_NESTING_DEPTH {
             return;
         }
@@ -511,5 +641,36 @@ impl<'a> GsubHandler<'a> {
             self.min_gid = gid.min(self.min_gid);
             self.max_gid = gid.max(self.max_gid);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{super::style, *};
+
+    #[test]
+    fn small_caps_subst() {
+        let font = FontRef::new(font_test_data::NOTOSERIF_AUTOHINT_SHAPING).unwrap();
+        let shaper = Shaper::new(&font, ShaperMode::BestEffort);
+        let style = &style::STYLE_CLASSES[style::StyleClass::LATN_C2SC];
+        let mut cluster_shaper = shaper.cluster_shaper(style);
+        let mut cluster = ShapedCluster::new();
+        cluster_shaper.shape("H", &mut cluster);
+        assert_eq!(cluster.len(), 1);
+        // from ttx, gid 8 is small caps "H"
+        assert_eq!(cluster[0].id, GlyphId::new(8));
+    }
+
+    #[test]
+    fn small_caps_nominal() {
+        let font = FontRef::new(font_test_data::NOTOSERIF_AUTOHINT_SHAPING).unwrap();
+        let shaper = Shaper::new(&font, ShaperMode::Nominal);
+        let style = &style::STYLE_CLASSES[style::StyleClass::LATN_C2SC];
+        let mut cluster_shaper = shaper.cluster_shaper(style);
+        let mut cluster = ShapedCluster::new();
+        cluster_shaper.shape("H", &mut cluster);
+        assert_eq!(cluster.len(), 1);
+        // from ttx, gid 1 is "H"
+        assert_eq!(cluster[0].id, GlyphId::new(1));
     }
 }

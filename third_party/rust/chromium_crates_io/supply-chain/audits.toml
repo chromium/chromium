@@ -2292,6 +2292,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.23.0 -> 0.24.0"
 notes = "Skrifa updates for using wrapping arithmetic in CFF private dict parsing."
 
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.24.0 -> 0.24.1"
+notes = "COLRv1 bounds fix, fixes for underflows/overflows."
+
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

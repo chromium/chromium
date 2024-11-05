@@ -47,7 +47,7 @@ pub(crate) fn compute_unscaled_style_metrics(
             ..Default::default()
         };
     }
-    let [hwidths, vwidths] = super::widths::compute_widths(shaper, coords, style.script);
+    let [hwidths, vwidths] = super::widths::compute_widths(shaper, coords, style);
     let [hblues, vblues] = super::blues::compute_unscaled_blues(shaper, coords, style);
     let glyph_metrics = shaper.font().glyph_metrics(Size::unscaled(), coords);
     let mut digit_advance = None;

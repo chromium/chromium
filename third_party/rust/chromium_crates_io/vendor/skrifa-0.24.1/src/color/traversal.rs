@@ -221,10 +221,12 @@ pub(crate) fn traverse_with_callbacks(
             // the last color, depending on the direction.
             // For now, just use the first color.
             if p1 == p0 || p2 == p0 || cross_product(p1 - p0, p2 - p0) == 0.0 {
-                painter.fill(Brush::Solid {
-                    palette_index: resolved_stops[0].palette_index,
-                    alpha: resolved_stops[0].alpha,
-                });
+                if let Some(stop) = resolved_stops.first() {
+                    painter.fill(Brush::Solid {
+                        palette_index: stop.palette_index,
+                        alpha: stop.alpha,
+                    });
+                };
                 return Ok(());
             }
 
@@ -612,13 +614,16 @@ pub(crate) fn traverse_v0_range(
 
 #[cfg(test)]
 mod tests {
+    use raw::types::GlyphId;
     use read_fonts::{types::BoundingBox, FontRef, TableProvider};
 
     use crate::{
         color::{
             instance::ColrInstance, traversal::get_clipbox_font_units,
-            traversal_tests::test_glyph_defs::CLIPBOX,
+            traversal_tests::test_glyph_defs::CLIPBOX, Brush, ColorGlyphFormat, ColorPainter,
+            CompositeMode, Transform,
         },
+        prelude::LocationRef,
         MetadataProvider,
     };
 
@@ -672,5 +677,77 @@ mod tests {
                 axis_test.2
             );
         }
+    }
+
+    struct NopPainter;
+
+    impl ColorPainter for NopPainter {
+        fn push_transform(&mut self, _transform: Transform) {
+            // nop
+        }
+
+        fn pop_transform(&mut self) {
+            // nop
+        }
+
+        fn push_clip_glyph(&mut self, _glyph_id: GlyphId) {
+            // nop
+        }
+
+        fn push_clip_box(&mut self, _clip_box: BoundingBox<f32>) {
+            // nop
+        }
+
+        fn pop_clip(&mut self) {
+            // nop
+        }
+
+        fn fill(&mut self, _brush: Brush<'_>) {
+            // nop
+        }
+
+        fn push_layer(&mut self, _composite_mode: CompositeMode) {
+            // nop
+        }
+
+        fn pop_layer(&mut self) {
+            // nop
+        }
+    }
+
+    #[test]
+    fn no_panic_on_empty_colorline() {
+        // Minimized test case from <https://issues.oss-fuzz.com/issues/375768991>.
+        let test_case = &[
+            0, 1, 0, 0, 0, 3, 32, 32, 32, 32, 32, 32, 0, 32, 32, 32, 32, 32, 32, 32, 255, 32, 32,
+            32, 32, 32, 32, 32, 67, 79, 76, 82, 32, 32, 32, 32, 0, 0, 0, 229, 0, 0, 0, 178, 99,
+            109, 97, 112, 32, 32, 32, 32, 0, 0, 0, 10, 0, 0, 1, 32, 32, 32, 32, 255, 32, 32, 32, 0,
+            4, 32, 255, 32, 32, 0, 32, 32, 32, 32, 32, 32, 32, 255, 32, 32, 32, 32, 32, 32, 32, 32,
+            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 255, 32, 0, 0,
+            32, 32, 0, 0, 0, 57, 32, 32, 32, 32, 32, 32, 32, 255, 32, 32, 32, 32, 32, 32, 32, 32,
+            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+            32, 0, 0, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+            32, 32, 32, 32, 32, 32, 32, 32, 32, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 0, 0, 4, 32, 32, 32, 32, 32, 32, 32,
+            32, 32, 0, 0, 0, 1, 32, 32, 32, 32, 32, 32, 255, 0, 0, 0, 40, 32, 32, 32, 32, 32, 32,
+            32, 255, 255, 32, 32, 32, 4, 0, 0, 32, 32, 32, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32,
+            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 0, 32, 32, 32, 255, 255,
+            255, 255, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+            255, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+        ];
+
+        let font = FontRef::new(test_case).unwrap();
+        font.cmap().unwrap();
+        font.colr().unwrap();
+
+        let color_glyph = font
+            .color_glyphs()
+            .get_with_format(GlyphId::new(8447), ColorGlyphFormat::ColrV1)
+            .unwrap();
+        let _ = color_glyph.paint(LocationRef::default(), &mut NopPainter);
     }
 }

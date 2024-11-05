@@ -50,6 +50,7 @@ fn compute_default_blues(shaper: &Shaper, coords: &[F2Dot14], style: &StyleClass
     let (mut outline_buf, mut flats, mut rounds) = buffers();
     let (glyphs, units_per_em) = things_all_blues_need(shaper.font());
     let flat_threshold = units_per_em / 14;
+    let mut cluster_shaper = shaper.cluster_shaper(style);
     let mut shaped_cluster = ShapedCluster::default();
     // Walk over each of the blue character sets for our script.
     for (blue_str, blue_flags) in style.script.blues {
@@ -65,7 +66,7 @@ fn compute_default_blues(shaper: &Shaper, coords: &[F2Dot14], style: &StyleClass
         for cluster in blue_str.split(' ') {
             let mut best_y_extremum = if is_top { i32::MIN } else { i32::MAX };
             let mut best_is_round = false;
-            shaper.shape_cluster(cluster, &mut shaped_cluster);
+            cluster_shaper.shape(cluster, &mut shaped_cluster);
             for (glyph, y_offset) in shaped_cluster
                 .iter()
                 .filter(|g| g.id.to_u32() != 0)
@@ -183,7 +184,11 @@ fn compute_default_blues(shaper: &Shaper, coords: &[F2Dot14], style: &StyleClass
                         - best_contour[segment_first].x as i32)
                         .abs();
                     if dist < length_threshold
-                        && segment_last - segment_first + 2 <= best_contour.len()
+                        && satisfies_min_long_segment_len(
+                            segment_first,
+                            segment_last,
+                            best_contour.len() - 1,
+                        )
                     {
                         // heuristic threshold value
                         let height_threshold = units_per_em / 4;
@@ -432,6 +437,26 @@ fn compute_default_blues(shaper: &Shaper, coords: &[F2Dot14], style: &StyleClass
     blues
 }
 
+/// Given inclusive indices and a contour length, returns true if the segment
+/// is of sufficient size to test for bumps when detecting "long" Hebrew
+/// alignment zones.
+fn satisfies_min_long_segment_len(first_ix: usize, last_ix: usize, contour_last: usize) -> bool {
+    let inclusive_diff = if first_ix <= last_ix {
+        last_ix - first_ix
+    } else {
+        // If first_ix > last_ix, then we want to capture the sum of the ranges
+        // [first_ix, contour_last] and [0, last_ix]
+        // We add 1 here to ensure the element that crosses the boundary is
+        // included. For example, if first_ix == contour_last and
+        // last_ix == 0, then we want the result to be 1
+        contour_last - first_ix + 1 + last_ix
+    };
+    // The +2 matches FreeType. The assumption is that this includes sufficient
+    // points to detect a bump and extend the segment?
+    // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/aflatin.c#L663>
+    inclusive_diff + 2 <= contour_last
+}
+
 /// Compute unscaled blue values for the CJK script set.
 ///
 /// Note: unlike the default code above, this produces two sets of blues,
@@ -449,6 +474,7 @@ fn compute_cjk_blues(
     let mut blues = [UnscaledBlues::new(), UnscaledBlues::new()];
     let (mut outline_buf, mut flats, mut fills) = buffers();
     let (glyphs, _) = things_all_blues_need(shaper.font());
+    let mut cluster_shaper = shaper.cluster_shaper(style);
     let mut shaped_cluster = ShapedCluster::default();
     // Walk over each of the blue character sets for our script.
     for (blue_str, blue_flags) in style.script.blues {
@@ -477,7 +503,7 @@ fn compute_cjk_blues(
                 is_fill = false;
                 continue;
             }
-            shaper.shape_cluster(cluster, &mut shaped_cluster);
+            cluster_shaper.shape(cluster, &mut shaped_cluster);
             for glyph in shaped_cluster
                 .iter()
                 .filter(|g| g.id.to_u32() != 0)
@@ -582,7 +608,7 @@ mod tests {
             shape::{Shaper, ShaperMode},
             style,
         },
-        blue_flags, UnscaledBlue,
+        blue_flags, satisfies_min_long_segment_len, UnscaledBlue,
     };
     use raw::FontRef;
 
@@ -699,5 +725,44 @@ mod tests {
             },
         ];
         assert_eq!(values, &expected);
+    }
+
+    #[test]
+    fn c2sc_shaped_blues() {
+        let font = FontRef::new(font_test_data::NOTOSERIF_AUTOHINT_SHAPING).unwrap();
+        let shaper = Shaper::new(&font, ShaperMode::BestEffort);
+        let style = &style::STYLE_CLASSES[super::StyleClass::LATN_C2SC];
+        let blues = super::compute_default_blues(&shaper, &[], style);
+        let values = blues.as_slice();
+        // Captured from FreeType with HarfBuzz enabled
+        let expected = [
+            UnscaledBlue {
+                position: 571,
+                overshoot: 571,
+                ascender: 571,
+                descender: 0,
+                flags: blue_flags::TOP,
+            },
+            UnscaledBlue {
+                position: 0,
+                overshoot: 0,
+                ascender: 571,
+                descender: 0,
+                flags: 0,
+            },
+        ];
+        assert_eq!(values, &expected);
+    }
+
+    /// Avoid subtraction overflow raised in
+    /// <https://github.com/googlefonts/fontations/issues/1218>
+    #[test]
+    fn long_segment_len_avoid_overflow() {
+        // Test font in issue above triggers overflow with
+        // first = 22, last = 0, contour_last = 22 (all inclusive).
+        // FreeType succeeds on this with suspicious signed
+        // arithmetic and we should too with our code that
+        // takes the boundary into account
+        assert!(satisfies_min_long_segment_len(22, 0, 22));
     }
 }
