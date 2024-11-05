@@ -369,12 +369,11 @@ bool HeadlessContentBrowserClient::IsSharedStorageSelectURLAllowed(
   return true;
 }
 
-bool HeadlessContentBrowserClient::
-    IsFencedFramesLocalUnpartitionedDataAccessAllowed(
-        content::BrowserContext* browser_context,
-        content::RenderFrameHost* rfh,
-        const url::Origin& top_frame_origin,
-        const url::Origin& accessing_origin) {
+bool HeadlessContentBrowserClient::IsFencedStorageReadAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
   return true;
 }
 

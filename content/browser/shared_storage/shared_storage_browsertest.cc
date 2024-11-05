@@ -7093,8 +7093,8 @@ class SharedStorageFencedFrameDocumentGetBrowserTest
   void SetUpOnMainThread() override {
     SharedStorageFencedFrameInteractionBrowserTest::SetUpOnMainThread();
 
-    // Bypass local unpartitioned data access attestation check.
-    ON_CALL(browser_client(), IsFencedFramesLocalUnpartitionedDataAccessAllowed)
+    // Bypass fenced storage read attestation check.
+    ON_CALL(browser_client(), IsFencedStorageReadAllowed)
         .WillByDefault(testing::Return(true));
   }
 

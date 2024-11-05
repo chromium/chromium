@@ -298,18 +298,17 @@ TEST_F(PrivacySandboxAttestationsParserTest, InvalidAllAPIsProto) {
 }
 
 // When 'FencedFramesLocalUnpartitionedDataAccess' feature is enabled, there
-// will be a new attestation API `LOCAL_UNPARTITIONED_DATA_ACCESS`.
-class FencedFramesLocalUnpartitionedDataAccessAttestationTest
+// will be a new attestation API `FENCED_STORAGE_READ`.
+class FencedStorageReadAttestationTest
     : public base::test::WithFeatureOverride,
       public PrivacySandboxAttestationsParserTest {
  public:
-  FencedFramesLocalUnpartitionedDataAccessAttestationTest()
+  FencedStorageReadAttestationTest()
       : base::test::WithFeatureOverride(
             blink::features::kFencedFramesLocalUnpartitionedDataAccess) {}
 };
 
-TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
-       LocalUnpartitionedDataAccessAttestationEnum) {
+TEST_P(FencedStorageReadAttestationTest, FencedStorageReadAttestationEnum) {
   PrivacySandboxAttestationsProto proto;
   ASSERT_EQ(proto.site_attestations_size(), 0);
 
@@ -317,11 +316,11 @@ TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
   std::string site2 = "https://b.com";
 
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation1;
-  attestation1.add_attested_apis(LOCAL_UNPARTITIONED_DATA_ACCESS);
+  attestation1.add_attested_apis(FENCED_STORAGE_READ);
 
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation2;
   attestation2.add_attested_apis(SHARED_STORAGE);
-  attestation2.add_attested_apis(LOCAL_UNPARTITIONED_DATA_ACCESS);
+  attestation2.add_attested_apis(FENCED_STORAGE_READ);
 
   (*proto.mutable_site_attestations())[site1] = attestation1;
   (*proto.mutable_site_attestations())[site2] = attestation2;
@@ -337,8 +336,7 @@ TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
   const PrivacySandboxAttestationsGatedAPISet& site1apis =
       (*optional_map)[net::SchemefulSite(GURL(site1))];
   EXPECT_EQ(
-      site1apis.Has(
-          PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess),
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kFencedStorageRead),
       IsParamFeatureEnabled());
   EXPECT_EQ(site1apis.size(), IsParamFeatureEnabled() ? 1UL : 0UL);
 
@@ -347,18 +345,16 @@ TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
   ASSERT_TRUE(
       site2apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
   EXPECT_EQ(
-      site2apis.Has(
-          PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess),
+      site2apis.Has(PrivacySandboxAttestationsGatedAPI::kFencedStorageRead),
       IsParamFeatureEnabled());
   EXPECT_EQ(site2apis.size(), IsParamFeatureEnabled() ? 2UL : 1UL);
 }
 
-TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest, AllAPIs) {
+TEST_P(FencedStorageReadAttestationTest, AllAPIs) {
   PrivacySandboxAttestationsProto proto;
   ASSERT_EQ(proto.site_attestations_size(), 0);
 
-  // There were 5 attestation enums before the local unpartitioned data access
-  // change.
+  // There were 5 attestation enums before the fenced storage read change.
   proto.add_all_apis(TOPICS);
   proto.add_all_apis(PROTECTED_AUDIENCE);
   proto.add_all_apis(PRIVATE_AGGREGATION);
@@ -389,24 +385,23 @@ TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest, AllAPIs) {
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_FALSE(site1apis.Has(
-      PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess));
+  ASSERT_FALSE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kFencedStorageRead));
   ASSERT_EQ(site1apis.size(), 5UL);
 }
 
-TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
-       AllAPIsWithLocalUnpartitionedDataAccess) {
+TEST_P(FencedStorageReadAttestationTest, AllAPIsWithFencedStorageRead) {
   PrivacySandboxAttestationsProto proto;
   ASSERT_EQ(proto.site_attestations_size(), 0);
 
-  // With the local unpartitioned data access change, all APIs will include the
-  // new attestation enum.
+  // With the fenced storage read change, all APIs will include the new
+  // attestation enum.
   proto.add_all_apis(TOPICS);
   proto.add_all_apis(PROTECTED_AUDIENCE);
   proto.add_all_apis(PRIVATE_AGGREGATION);
   proto.add_all_apis(ATTRIBUTION_REPORTING);
   proto.add_all_apis(SHARED_STORAGE);
-  proto.add_all_apis(LOCAL_UNPARTITIONED_DATA_ACCESS);
+  proto.add_all_apis(FENCED_STORAGE_READ);
 
   std::string site1 = "https://a.com";
   proto.add_sites_attested_for_all_apis(site1);
@@ -421,7 +416,7 @@ TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
 
   // If feature enabled, the attestation map should have the site attested for
   // all 6 APIs. Otherwise, the site is attested for the 5 pre-existing APIs,
-  // excluding `LOCAL_UNPARTITIONED_DATA_ACCESS`.
+  // excluding `FENCED_STORAGE_READ`.
   const PrivacySandboxAttestationsGatedAPISet& site1apis =
       (*optional_map)[net::SchemefulSite(GURL(site1))];
   ASSERT_TRUE(site1apis.Has(PrivacySandboxAttestationsGatedAPI::kTopics));
@@ -434,13 +429,11 @@ TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
   ASSERT_EQ(
-      site1apis.Has(
-          PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess),
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kFencedStorageRead),
       IsParamFeatureEnabled());
   ASSERT_EQ(site1apis.size(), IsParamFeatureEnabled() ? 6UL : 5UL);
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    FencedFramesLocalUnpartitionedDataAccessAttestationTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FencedStorageReadAttestationTest);
 
 }  // namespace privacy_sandbox

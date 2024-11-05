@@ -61,14 +61,13 @@ using GetResult = storage::SharedStorageManager::GetResult;
 
 }  // namespace
 
-const char kFencedFrameLocalUnpartitionedDataAccessDisabledMessage[] =
-    "Fenced frame local unpartitioned data access is disabled";
+const char kFencedStorageReadDisabledMessage[] =
+    "Fenced storage read is disabled";
 
-const char
-    kFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage[] =
-        "sharedStorage.get() is not allowed in a fenced frame until network "
-        "access for it and all descendent frames has been revoked with "
-        "window.fence.disableUntrustedNetwork()";
+const char kFencedStorageReadWithoutRevokeNetworkMessage[] =
+    "sharedStorage.get() is not allowed in a fenced frame until network "
+    "access for it and all descendent frames has been revoked with "
+    "window.fence.disableUntrustedNetwork()";
 
 const char kSharedStorageDisabledMessage[] = "sharedStorage is disabled";
 
@@ -230,23 +229,21 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
     return;
   }
 
-  if (!IsLocalUnpartitionedDataAccessAllowed(
+  if (!IsFencedStorageReadAllowed(
           /*accessing_origin=*/render_frame_host().GetLastCommittedOrigin())) {
-    std::move(callback).Run(
-        blink::mojom::SharedStorageGetStatus::kError,
-        /*error_message=*/
-        kFencedFrameLocalUnpartitionedDataAccessDisabledMessage,
-        /*value=*/{});
+    std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kError,
+                            /*error_message=*/
+                            kFencedStorageReadDisabledMessage,
+                            /*value=*/{});
     return;
   }
 
   if (!(static_cast<RenderFrameHostImpl&>(render_frame_host())
             .CanReadFromSharedStorage())) {
-    std::move(callback).Run(
-        blink::mojom::SharedStorageGetStatus::kError,
-        /*error_message=*/
-        kFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage,
-        /*value=*/{});
+    std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kError,
+                            /*error_message=*/
+                            kFencedStorageReadWithoutRevokeNetworkMessage,
+                            /*value=*/{});
     return;
   }
 
@@ -464,14 +461,12 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowedForOrigin(
       out_block_is_site_setting_specific);
 }
 
-bool SharedStorageDocumentServiceImpl::IsLocalUnpartitionedDataAccessAllowed(
+bool SharedStorageDocumentServiceImpl::IsFencedStorageReadAllowed(
     const url::Origin& accessing_origin) {
-  return GetContentClient()
-      ->browser()
-      ->IsFencedFramesLocalUnpartitionedDataAccessAllowed(
-          render_frame_host().GetBrowserContext(), &render_frame_host(),
-          /*top_frame_origin=*/main_frame_origin_,
-          /*accessing_origin=*/accessing_origin);
+  return GetContentClient()->browser()->IsFencedStorageReadAllowed(
+      render_frame_host().GetBrowserContext(), &render_frame_host(),
+      /*top_frame_origin=*/main_frame_origin_,
+      /*accessing_origin=*/accessing_origin);
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowedForOrigin(

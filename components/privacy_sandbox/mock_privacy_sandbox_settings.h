@@ -89,7 +89,7 @@ class MockPrivacySandboxSettings
               (const url::Origin&, const url::Origin&, std::string*, bool*),
               (override, const));
   MOCK_METHOD(bool,
-              IsLocalUnpartitionedDataAccessAllowed,
+              IsFencedStorageReadAllowed,
               (const url::Origin&,
                const url::Origin&,
                content::RenderFrameHost*),

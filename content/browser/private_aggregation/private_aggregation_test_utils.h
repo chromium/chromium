@@ -158,7 +158,7 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
                bool* out_block_is_site_setting_specific),
               (override));
   MOCK_METHOD(bool,
-              IsFencedFramesLocalUnpartitionedDataAccessAllowed,
+              IsFencedStorageReadAllowed,
               (content::BrowserContext * browser_context,
                content::RenderFrameHost* rfh,
                const url::Origin& top_frame_origin,

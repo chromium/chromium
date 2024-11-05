@@ -96,7 +96,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       const url::Origin& accessing_origin,
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) const override;
-  bool IsLocalUnpartitionedDataAccessAllowed(
+  bool IsFencedStorageReadAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
       content::RenderFrameHost* console_frame) const override;
@@ -225,7 +225,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
 
   // Whether fenced frame local unpartitioned data access is enabled.
-  Status GetLocalUnpartitionedDataAccessEnabledStatus() const;
+  Status GetFencedStorageReadEnabledStatus() const;
 
   // From TrackingProtectionSettingsObserver.
   void OnBlockAllThirdPartyCookiesChanged() override;

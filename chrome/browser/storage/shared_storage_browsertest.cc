@@ -159,13 +159,11 @@ constexpr char
         "PrivacySandbox.PrivateAggregation.Host."
         "TimeToGenerateReportRequestWithContextId";
 
-constexpr char
-    kFencedFrameLocalUnpartitionedDataAccessAttestationErrorPrefix[] =
-        "Attestation check for local unpartitioned data access on";
-constexpr char
-    kFencedFrameLocalUnpartitionedDataAccessDisabledBy3pcSettingError[] =
-        "Fenced frame local unpartitioned data access is disabled because all "
-        "third-party cookies are blocked.";
+constexpr char kFencedStorageReadAttestationErrorPrefix[] =
+    "Attestation check for fenced storage read on";
+constexpr char kFencedStorageReadDisabledBy3pcSettingError[] =
+    "Fenced storage read is disabled because all third-party cookies are "
+    "blocked.";
 
 const double kBudgetAllowed = 5.0;
 
@@ -207,18 +205,15 @@ MakeFilter(std::vector<std::string> possible_last_messages) {
       std::move(possible_last_messages));
 }
 
-std::string GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage() {
-  return base::StrCat(
-      {"a JavaScript error: \"OperationError: ",
-       content::GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage()});
+std::string GetFencedStorageReadDisabledMessage() {
+  return base::StrCat({"a JavaScript error: \"OperationError: ",
+                       content::GetFencedStorageReadDisabledMessage()});
 }
 
-std::string
-GetFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage() {
+std::string GetFencedStorageReadWithoutRevokeNetworkMessage() {
   return base::StrCat(
       {"a JavaScript error: \"OperationError: ",
-       content::
-           GetFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage()});
+       content::GetFencedStorageReadWithoutRevokeNetworkMessage()});
 }
 
 std::string GetSharedStorageDisabledErrorMessage() {
@@ -4671,11 +4666,10 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-class SharedStorageLocalUnpartitionedDataAccessBrowserTest
-    : public SharedStoragePrefBrowserTest {
+class FencedStorageReadBrowserTest : public SharedStoragePrefBrowserTest {
  public:
-  SharedStorageLocalUnpartitionedDataAccessBrowserTest() = default;
-  ~SharedStorageLocalUnpartitionedDataAccessBrowserTest() override = default;
+  FencedStorageReadBrowserTest() = default;
+  ~FencedStorageReadBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     // Fenced frame test helper should enable the feature
@@ -4688,8 +4682,8 @@ class SharedStorageLocalUnpartitionedDataAccessBrowserTest
   }
 
   // This always enrolls the host for Shared Storage, but only enrolls the host
-  // for fenced frame local unpartitioned data access exactly when enforcement
-  // and enrollment status is `kAttestationsEnforcedMainHostEnrolled`.
+  // for fenced storage read exactly when enforcement and enrollment status is
+  // `kAttestationsEnforcedMainHostEnrolled`.
   void MaybeEnrollMainHost(const GURL& main_url) override {
     auto attestations_set =
         privacy_sandbox::PrivacySandboxAttestationsGatedAPISet(
@@ -4698,7 +4692,7 @@ class SharedStorageLocalUnpartitionedDataAccessBrowserTest
     if (GetEnforcementAndEnrollmentStatus() ==
         EnforcementAndEnrollmentStatus::kAttestationsEnforcedMainHostEnrolled) {
       attestations_set.Put(privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                               kLocalUnpartitionedDataAccess);
+                               kFencedStorageRead);
     }
 
     privacy_sandbox::PrivacySandboxAttestationsMap attestations_map{
@@ -4748,8 +4742,7 @@ class SharedStorageLocalUnpartitionedDataAccessBrowserTest
     return EnablePrivacySandbox() && AllowThirdPartyCookies();
   }
 
-  bool
-  SuccessExpectedForFFLocalUnpartitionedDataAccessWhenUntrustedNetworkAccessRevoked()
+  bool SuccessExpectedForFencedStorageReadWhenUntrustedNetworkAccessRevoked()
       const {
     return SuccessExpected();
   }
@@ -4764,10 +4757,10 @@ class SharedStorageLocalUnpartitionedDataAccessBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(
-    SharedStorageLocalUnpartitionedDataAccessBrowserTest,
-    LocalUnpartitionedDataAccessAttestationWithoutUntrustedNetworkDisabled) {
+    FencedStorageReadBrowserTest,
+    FencedStorageReadAttestationWithoutUntrustedNetworkDisabled) {
   // This always enrolls the fenced frame host for Shared Storage, but only
-  // enrolls the host for fenced frame local unpartitioned data access exactly
+  // enrolls the host for fenced frame fenced storage read exactly
   // when `ShouldEnrollMainHost()` is true.
   content::RenderFrameHost* fenced_frame_rfh =
       CreateFencedFrameAndSet3rdPartyCookieAndFencedFrameHostAttestationSettings();
@@ -4796,9 +4789,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // Set up console observer.
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
-  console_observer.SetFilter(MakeFilter(
-      {kFencedFrameLocalUnpartitionedDataAccessAttestationErrorPrefix,
-       kFencedFrameLocalUnpartitionedDataAccessDisabledBy3pcSettingError}));
+  console_observer.SetFilter(
+      MakeFilter({kFencedStorageReadAttestationErrorPrefix,
+                  kFencedStorageReadDisabledBy3pcSettingError}));
 
   // Attempt to access local unpartitioned data without revoking fenced frame
   // untrusted network access.
@@ -4806,63 +4799,53 @@ IN_PROC_BROWSER_TEST_P(
       sharedStorage.get('customKey');
     )");
 
-  if (SuccessExpectedForFFLocalUnpartitionedDataAccessWhenUntrustedNetworkAccessRevoked()) {
-    // Fenced frame local unpartitioned data access is disabled when untrusted
-    // network access is not revoked.
+  if (SuccessExpectedForFencedStorageReadWhenUntrustedNetworkAccessRevoked()) {
+    // Fenced storage read is disabled when untrusted network access is not
+    // revoked.
     ASSERT_FALSE(get_result.error.empty());
     EXPECT_TRUE(base::StartsWith(
-        get_result.error,
-        GetFencedFrameLocalUnpartitionedDataAccessWithoutRevokeNetworkMessage()));
+        get_result.error, GetFencedStorageReadWithoutRevokeNetworkMessage()));
     EXPECT_TRUE(console_observer.messages().empty());
   } else if (!AllowThirdPartyCookies()) {
-    // Fenced frame local unpartitioned data access is disabled. A JavaScript
-    // error is shown.
-    EXPECT_TRUE(base::StartsWith(
-        get_result.error,
-        GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage()));
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
 
-    // Fenced frame local unpartitioned data access is disabled when all third
-    // party cookies are blocked. Site cookie setting does not have effect.
+    // Fenced storage read is disabled when all third party cookies are blocked.
+    // Site cookie setting does not have effect.
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
-    EXPECT_EQ(kFencedFrameLocalUnpartitionedDataAccessDisabledBy3pcSettingError,
+    EXPECT_EQ(kFencedStorageReadDisabledBy3pcSettingError,
               base::UTF16ToUTF8(console_observer.messages()[0].message));
   } else if (GetEnforcementAndEnrollmentStatus() ==
              EnforcementAndEnrollmentStatus::
                  kAttestationsEnforcedMainHostUnenrolled) {
-    // Fenced frame local unpartitioned data access is disabled. A JavaScript
-    // error is shown.
-    EXPECT_TRUE(base::StartsWith(
-        get_result.error,
-        GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage()));
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
 
-    // Fenced frame local unpartitioned data access is disabled when the
-    // accessing site is not enrolled. A console message is shown.
+    // Fenced storage read is disabled when the accessing site is not enrolled.
+    // A console message is shown.
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
-    EXPECT_EQ(
-        base::StrCat(
-            {kFencedFrameLocalUnpartitionedDataAccessAttestationErrorPrefix,
-             " ", url::Origin::Create(fenced_frame_url()).Serialize(),
-             " failed."}),
-        base::UTF16ToUTF8(console_observer.messages()[0].message));
+    EXPECT_EQ(base::StrCat({kFencedStorageReadAttestationErrorPrefix, " ",
+                            url::Origin::Create(fenced_frame_url()).Serialize(),
+                            " failed."}),
+              base::UTF16ToUTF8(console_observer.messages()[0].message));
   } else {
-    // Shared storage is disabled. A JavaScript error is shown.
-    // Fenced frame local unpartitioned data access is disabled. A JavaScript
-    // error is shown.
+    // Fenced storage read is disabled. A JavaScript error is shown.
     ASSERT_FALSE(EnablePrivacySandbox());
-    EXPECT_TRUE(base::StartsWith(
-        get_result.error,
-        GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage()));
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
   }
 }
 
 IN_PROC_BROWSER_TEST_P(
-    SharedStorageLocalUnpartitionedDataAccessBrowserTest,
-    LocalUnpartitionedDataAccessAttestationWithUntrustedNetworkDisabled) {
+    FencedStorageReadBrowserTest,
+    FencedStorageReadAttestationWithUntrustedNetworkDisabled) {
   // This always enrolls the fenced frame host for Shared Storage, but only
-  // enrolls the host for fenced frame local unpartitioned data access exactly
-  // when `ShouldEnrollMainHost()` is true.
+  // enrolls the host for fenced storage read exactly when
+  // `ShouldEnrollMainHost()` is true.
   content::RenderFrameHost* fenced_frame_rfh =
       CreateFencedFrameAndSet3rdPartyCookieAndFencedFrameHostAttestationSettings();
 
@@ -4890,9 +4873,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // Set up console observer.
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
-  console_observer.SetFilter(MakeFilter(
-      {kFencedFrameLocalUnpartitionedDataAccessAttestationErrorPrefix,
-       kFencedFrameLocalUnpartitionedDataAccessDisabledBy3pcSettingError}));
+  console_observer.SetFilter(
+      MakeFilter({kFencedStorageReadAttestationErrorPrefix,
+                  kFencedStorageReadDisabledBy3pcSettingError}));
 
   // Disable untrusted network access.
   EXPECT_TRUE(ExecJs(fenced_frame_rfh, R"(
@@ -4905,60 +4888,51 @@ IN_PROC_BROWSER_TEST_P(
       sharedStorage.get('customKey');
     )");
 
-  if (SuccessExpectedForFFLocalUnpartitionedDataAccessWhenUntrustedNetworkAccessRevoked()) {
-    // Fenced frame local unpartitioned data access is allowed when untrusted
-    // network access is revoked.
+  if (SuccessExpectedForFencedStorageReadWhenUntrustedNetworkAccessRevoked()) {
+    // Fenced storage read is allowed when untrusted network access is revoked.
     ASSERT_TRUE(get_result.error.empty());
     EXPECT_EQ(get_result.ExtractString(), "customValue");
     EXPECT_TRUE(console_observer.messages().empty());
     WaitForHistograms({kTimingDocumentGetHistogram});
     histogram_tester_.ExpectTotalCount(kTimingDocumentGetHistogram, 1);
   } else if (!AllowThirdPartyCookies()) {
-    // Fenced frame local unpartitioned data access is disabled. A JavaScript
-    // error is shown.
-    EXPECT_TRUE(base::StartsWith(
-        get_result.error,
-        GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage()));
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
 
-    // Fenced frame local unpartitioned data access is disabled when all third
-    // party cookies are blocked. Site cookie setting does not have effect.
+    // Fenced storage read is disabled when all third party cookies are blocked.
+    // Site cookie setting does not have effect.
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
-    EXPECT_EQ(kFencedFrameLocalUnpartitionedDataAccessDisabledBy3pcSettingError,
+    EXPECT_EQ(kFencedStorageReadDisabledBy3pcSettingError,
               base::UTF16ToUTF8(console_observer.messages()[0].message));
   } else if (GetEnforcementAndEnrollmentStatus() ==
              EnforcementAndEnrollmentStatus::
                  kAttestationsEnforcedMainHostUnenrolled) {
-    // Fenced frame local unpartitioned data access is disabled. A JavaScript
-    // error is shown.
-    EXPECT_TRUE(base::StartsWith(
-        get_result.error,
-        GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage()));
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
 
-    // Fenced frame local unpartitioned data access is disabled when the
-    // accessing site is not enrolled. A console message is shown.
+    // Fenced storage read is disabled when the accessing site is not enrolled.
+    // A console message is shown.
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
-    EXPECT_EQ(
-        base::StrCat(
-            {kFencedFrameLocalUnpartitionedDataAccessAttestationErrorPrefix,
-             " ", url::Origin::Create(fenced_frame_url()).Serialize(),
-             " failed."}),
-        base::UTF16ToUTF8(console_observer.messages()[0].message));
+    EXPECT_EQ(base::StrCat({kFencedStorageReadAttestationErrorPrefix, " ",
+                            url::Origin::Create(fenced_frame_url()).Serialize(),
+                            " failed."}),
+              base::UTF16ToUTF8(console_observer.messages()[0].message));
   } else {
-    // Shared storage is disabled. A JavaScript error is shown.
-    // Fenced frame local unpartitioned data access is disabled. A JavaScript
+    // Fenced storage read is disabled. A JavaScript
     // error is shown.
     ASSERT_FALSE(EnablePrivacySandbox());
-    EXPECT_TRUE(base::StartsWith(
-        get_result.error,
-        GetFencedFrameLocalUnpartitionedDataAccessDisabledMessage()));
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SharedStorageLocalUnpartitionedDataAccessBrowserTest,
+    FencedStorageReadBrowserTest,
     testing::Combine(
         testing::Bool(),
         testing::Bool(),
