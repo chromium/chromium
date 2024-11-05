@@ -203,8 +203,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
       pending.pop_back();
 
       if (!visited_trackers.insert(tracker_id).second) {
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
       }
 
       AppendContents(
@@ -382,8 +381,7 @@ void MetadataDatabaseIndexOnDisk::RemoveFileMetadata(
 void MetadataDatabaseIndexOnDisk::RemoveFileTracker(int64_t tracker_id) {
   FileTracker tracker;
   if (!GetFileTracker(tracker_id, &tracker)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   DVLOG(1) << "Removing tracker: "
@@ -868,8 +866,7 @@ void MetadataDatabaseIndexOnDisk::AddToPathIndexes(
       if (!base::StringToInt64(id_str, &tracker_id))
         continue;
       if (tracker_id == new_tracker.tracker_id()) {
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
       }
 
       const std::string multi_key =

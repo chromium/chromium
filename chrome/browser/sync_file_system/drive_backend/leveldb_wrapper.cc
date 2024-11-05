@@ -176,8 +176,7 @@ leveldb::Status LevelDBWrapper::Get(const std::string& key,
     case DELETE_OPERATION:
       return leveldb::Status::NotFound(leveldb::Slice());
   }
-  NOTREACHED_IN_MIGRATION();
-  return leveldb::Status::NotSupported("Not supported operation.");
+  NOTREACHED();
 }
 
 std::unique_ptr<LevelDBWrapper::Iterator> LevelDBWrapper::NewIterator() {

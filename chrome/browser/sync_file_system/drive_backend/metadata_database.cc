@@ -233,9 +233,7 @@ SyncStatusCode MigrateDatabaseIfNeeded(LevelDBWrapper* db) {
     case 0:
     case 1:
     case 2:
-      // Drop all data in old database and refetch them from the remote service.
-      NOTREACHED_IN_MIGRATION();
-      return SYNC_DATABASE_ERROR_FAILED;
+      NOTREACHED();
     case 3:
       DCHECK_EQ(3, kCurrentDatabaseVersion);
       // If MetadataDatabaseOnDisk is enabled, migration will be done in
@@ -348,8 +346,7 @@ bool FilterFileTrackersByParent(const MetadataDatabaseIndexInterface* index,
   FileTracker tracker;
   for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     if (!index->GetFileTracker(*itr, &tracker)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     if (tracker.parent_tracker_id() == parent_tracker_id) {
@@ -371,8 +368,7 @@ bool FilterFileTrackersByParentAndTitle(
   for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     FileTracker tracker;
     if (!index->GetFileTracker(*itr, &tracker)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     if (tracker.parent_tracker_id() != parent_tracker_id)
@@ -404,8 +400,7 @@ bool FilterFileTrackersByFileID(
   FileTracker tracker;
   for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     if (!index->GetFileTracker(*itr, &tracker)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     if (tracker.file_id() == file_id) {
@@ -734,8 +729,7 @@ bool MetadataDatabase::FindAppRootTracker(const std::string& app_id,
 
   if (tracker_out &&
       !index_->GetFileTracker(app_root_tracker_id, tracker_out)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   return true;
@@ -924,8 +918,7 @@ SyncStatusCode MetadataDatabase::ReplaceActiveTrackerWithNewResource(
   FileTracker to_be_activated;
   if (!FilterFileTrackersByFileID(index_.get(), same_path_trackers,
                                   resource.file_id(), &to_be_activated)) {
-    NOTREACHED_IN_MIGRATION();
-    return SYNC_STATUS_FAILED;
+    NOTREACHED();
   }
 
   int64_t tracker_id = to_be_activated.tracker_id();
@@ -953,8 +946,7 @@ SyncStatusCode MetadataDatabase::PopulateFolderByChildList(
   std::unique_ptr<FileTracker> folder_tracker(new FileTracker);
   if (!index_->GetFileTracker(trackers.active_tracker(),
                               folder_tracker.get())) {
-    NOTREACHED_IN_MIGRATION();
-    return SYNC_STATUS_FAILED;
+    NOTREACHED();
   }
 
   std::unordered_set<std::string> children(child_file_ids.begin(),
@@ -965,8 +957,7 @@ SyncStatusCode MetadataDatabase::PopulateFolderByChildList(
   for (size_t i = 0; i < known_children.size(); ++i) {
     FileTracker tracker;
     if (!index_->GetFileTracker(known_children[i], &tracker)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     children.erase(tracker.file_id());
   }
@@ -1082,9 +1073,7 @@ MetadataDatabase::ActivationStatus MetadataDatabase::TryActivateTracker(
     SyncStatusCode* status_out) {
   FileMetadata metadata;
   if (!index_->GetFileMetadata(file_id, &metadata)) {
-    NOTREACHED_IN_MIGRATION();
-    *status_out = SYNC_STATUS_FAILED;
-    return ACTIVATION_PENDING;
+    NOTREACHED();
   }
   std::string title = metadata.details().title();
   DCHECK(!HasInvalidTitle(title));
@@ -1122,7 +1111,7 @@ MetadataDatabase::ActivationStatus MetadataDatabase::TryActivateTracker(
 
         MarkTrackersDirtyByFileID(tracker_file_id, index_.get());
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
@@ -1166,8 +1155,7 @@ bool MetadataDatabase::GetDirtyTracker(
 
   if (tracker_out) {
     if (!index_->GetFileTracker(dirty_tracker_id, tracker_out)) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
   }
   return true;
@@ -1196,8 +1184,7 @@ bool MetadataDatabase::GetMultiParentFileTrackers(std::string* file_id_out,
 
   TrackerIDSet trackers = index_->GetFileTrackerIDsByFileID(file_id);
   if (trackers.size() <= 1) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   *file_id_out = file_id;
@@ -1223,8 +1210,7 @@ bool MetadataDatabase::GetConflictingTrackers(TrackerIDSet* trackers_out) {
   TrackerIDSet trackers = index_->GetFileTrackerIDsByParentAndTitle(
       parent_and_title.parent_id, parent_and_title.title);
   if (trackers.size() <= 1) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   std::swap(*trackers_out, trackers);
@@ -1360,8 +1346,7 @@ void MetadataDatabase::MaybeAddTrackersForNewFile(
        ++itr) {
     FileTracker tracker;
     if (!index_->GetFileTracker(*itr, &tracker)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     int64_t parent_tracker_id = tracker.parent_tracker_id();
@@ -1465,8 +1450,7 @@ bool MetadataDatabase::HasDisabledAppRoot(const FileTracker& tracker) const {
 
   FileTracker app_root_tracker;
   if (!index_->GetFileTracker(app_root_tracker_id, &app_root_tracker)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   return app_root_tracker.tracker_kind() == TRACKER_KIND_DISABLED_APP_ROOT;
 }
@@ -1488,8 +1472,7 @@ void MetadataDatabase::RemoveUnneededTrackersForMissingFile(
   for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     FileTracker tracker;
     if (!index_->GetFileTracker(*itr, &tracker)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     if (!tracker.has_synced_details() || tracker.synced_details().missing()) {
