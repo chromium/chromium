@@ -29,7 +29,7 @@ source_set("android") {
     "//components/subresource_filter/android",
     "//components/user_prefs",
     "//content/public/browser",
-    "//services/device/public/cpp:device_feature_list",
+    "//services/device/public/cpp:device_features",
     "//services/network/public/mojom",
     "//storage/browser",
     "//url",

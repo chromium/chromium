@@ -20,15 +20,9 @@ component("device_features") {
   public_deps = [ "//base" ]
 
   defines = [ "DEVICE_FEATURES_IMPLEMENTATION" ]
-}
-
-if (is_android) {
-  source_set("device_feature_list") {
-    sources = [ "device_feature_map.cc" ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-    deps = [
-      ":device_features",
-      "//base",
+  if (is_android) {
+    sources += [ "device_feature_map.cc" ]
+    deps += [
       "//device/fido",
       "//services/device/public/java:device_feature_list_jni",
     ]

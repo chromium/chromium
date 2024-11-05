@@ -3409,7 +3409,6 @@ static_library("browser") {
       "//rlz:rlz_utils",
       "//sandbox",
       "//sandbox:sandbox_buildflags",
-      "//services/device/public/cpp:device_feature_list",
       "//services/device/public/cpp/geolocation",
       "//services/proxy_resolver:lib",
       "//third_party/android_opengl/etc1",
