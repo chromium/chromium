@@ -87,7 +87,7 @@ public class CustomTabHistoryIphControllerUnitTest {
     @Test
     public void testShowsIphOnPageLoad() {
         var tabObserver = mController.getTabObserverForTesting();
-        tabObserver.onPageLoadStarted(mTab, JUnitTestGURLs.EXAMPLE_URL);
+        tabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
         var captor = ArgumentCaptor.forClass(IphCommand.class);
         verify(mUserEducationHelper).requestShowIph(captor.capture());
         var cmd = captor.getValue();

@@ -55,7 +55,7 @@ public class CustomTabHistoryIphController {
         mTabObserver =
                 new ActivityTabTabObserver(mTabProvider) {
                     @Override
-                    public void onPageLoadStarted(Tab tab, GURL url) {
+                    public void onPageLoadFinished(Tab tab, GURL url) {
                         maybeShowIph();
                     }
                 };
