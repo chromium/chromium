@@ -99,9 +99,7 @@ ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
 
 void ExtensionsMenuSitePermissionsPageViewInteractiveUITest::ShowUi(
     const std::string& extension_id) {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // The extensions menu can appear offscreen on Linux, so verifying bounds
   // makes the tests flaky (crbug.com/1050012).
   set_should_verify_dialog_bounds(false);

@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // close. Note that some platforms don't implement Widget::Deactivate() so we
   // activate another window (the browser window in this case) to trigger that.
   extension_popup_widget->Activate();
-  // However, on Lacros activating the browser window does not cause the
+  // However, on Linux activating the browser window does not cause the
   // extension popup to deactivate, thus we also explicitly call Deactivate().
   extension_popup_widget->Deactivate();
   browser()->window()->Activate();

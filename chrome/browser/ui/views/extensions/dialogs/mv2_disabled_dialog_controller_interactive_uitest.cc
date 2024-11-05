@@ -25,7 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #endif
@@ -95,7 +95,7 @@ class Mv2DisabledDialogControllerInteractiveUITest
   }
 
   void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Disable overviews in ChromeOS, so they don't appear if you had a windows
     // opened previously (which affects the dialog visibility).
     auto* prefs = browser()->profile()->GetPrefs();

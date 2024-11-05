@@ -10,7 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/platform_util.h"
@@ -44,7 +43,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
 #endif
 
@@ -84,7 +83,7 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
   return reference_view;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<views::View> CreateSigninPromoView(
     Profile* profile,
     BubbleSignInPromoDelegate* delegate) {
@@ -136,7 +135,7 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
       model_(std::move(model)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   if (model_->show_sign_in_promo()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     SetFootnoteView(CreateSigninPromoView(browser->profile(), this));
 #endif
   }
