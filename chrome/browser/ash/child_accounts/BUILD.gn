@@ -25,8 +25,6 @@ static_library("child_accounts") {
     "event_based_status_reporting_service.h",
     "event_based_status_reporting_service_factory.cc",
     "event_based_status_reporting_service_factory.h",
-    "family_features.cc",
-    "family_features.h",
     "family_user_app_metrics.cc",
     "family_user_app_metrics.h",
     "family_user_chrome_activity_metrics.cc",
