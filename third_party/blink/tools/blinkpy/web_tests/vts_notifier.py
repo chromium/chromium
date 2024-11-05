@@ -40,7 +40,7 @@ Please review this virtual test suite, [**{prefix}**](https://source.chromium.or
 
 1. Delete: If the virtual test suite is no longer needed, please remove the entry from [//third_party/blink/web_tests/VirtualTestSuites](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/VirtualTestSuites) ([Example CL](https://crrev.com/c/5741322))
 
-2. Update: If the virtual test suite is still in use, update the expiration date at **{prefix}**. ([Example CL] ((https://crrev.com/c/5104889)))
+2. Update: If the virtual test suite is still in use, update the expiration date at **{prefix}**. ([Example CL](https://crrev.com/c/5104889))
 
 Note:
 * Test suite owners are automatically added to CC.
@@ -103,7 +103,8 @@ class VTSNotifier:
                 _log.info('[dry_run] would have created the following bug:\n'
                           f'{bug}')
             else:
-                bug = self.buganizer_client.NewIssue(bug)
+                bug = self.buganizer_client.NewIssue(issue=bug,
+                                                     use_markdown=True)
                 _log.info(f'Filed bug: {bug.link}')
         except BuganizerError as e:
             _log.exception(f'Failed to process bug: {e}')

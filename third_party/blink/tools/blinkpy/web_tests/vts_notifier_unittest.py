@@ -132,7 +132,7 @@ class VTSNotifierTest(unittest.TestCase):
         self.notifier.buganizer_client.GetIssueList.return_value = []
         self.notifier.process_draft_bug(draft_bug)
         self.notifier.buganizer_client.NewIssue.assert_called_once_with(
-            draft_bug)
+            issue=draft_bug, use_markdown=True)
 
     def test_process_draft_bug_with_existing_bug(self):
         draft_bug = self.notifier.create_draft_bug(
