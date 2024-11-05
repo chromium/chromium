@@ -50,6 +50,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -82,6 +83,8 @@ constexpr float kEmptyChipSize = 12.0f;
 constexpr float kEmptyChipInsets = 4.0f;
 // The radius of the squircle (rounded rect).
 constexpr float kEmptyChipCornerRadius = 2.0f;
+// The amount of insets before and after the share icon when the title is empty.
+constexpr float kSharedEmptyChipInsets = 2.0f;
 }  // namespace
 
 SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
@@ -89,6 +92,7 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
                                          Browser* browser,
                                          bool animations_enabled)
     : MenuButton(std::move(callback), group.title()),
+      is_shared_(group.is_shared_tab_group()),
       tab_group_color_id_(group.color()),
       guid_(group.saved_guid()),
       local_group_id_(group.local_group_id()),
@@ -104,7 +108,7 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
   GetViewAccessibility().SetName(GetAccessibleNameForButton());
   GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF16(
       IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
-  SetTextProperties(group);
+  UpdateButtonData(group);
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupButtonElementId);
   SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, kButtonSize));
@@ -120,8 +124,10 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
   }
 
   ConfigureInkDropForToolbar(this);
-  SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      ChromeDistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+  SetImageLabelSpacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL_LIST) /
+      2);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(0),
                                                 kButtonRadius);
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -139,6 +145,7 @@ void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
   guid_ = group.saved_guid();
   tabs_.clear();
   tabs_ = group.saved_tabs();
+  is_shared_ = group.is_shared_tab_group();
 
   UpdateButtonLayout();
   UpdateAccessibleName();
@@ -169,6 +176,10 @@ bool SavedTabGroupButton::IsTriggerableEvent(const ui::Event& e) {
 
 void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
   if (!GetText().empty()) {
+    return;
+  } else if (is_shared_) {
+    // Not title shared groups display a share icon in place of the squircle we
+    // draw for un-shared groups. See SavedTabGroupButton::UpdateButtonLayout.
     return;
   }
 
@@ -221,17 +232,18 @@ void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
 }
 
 void SavedTabGroupButton::UpdateButtonLayout() {
-  // Relies on logic in theme_helper.cc to determine dark/light palette.
-  ui::ColorId background_color =
-      GetTabGroupBookmarkColorId(tab_group_color_id_);
-
   SetEnabledTextColorIds(
       GetSavedTabGroupForegroundColorId(tab_group_color_id_));
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color,
-                                                         kButtonRadius));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      GetTabGroupBookmarkColorId(tab_group_color_id_), kButtonRadius));
 
+  // Adjust the insets so the share icon can fit within the bounds of this
+  // button if the group has no title.
+  bool use_shared_empty_chip_insets = is_shared_ && GetText().empty();
+  int horizontal_insets =
+      use_shared_empty_chip_insets ? kSharedEmptyChipInsets : kHorizontalInsets;
   const gfx::Insets& insets =
-      gfx::Insets::VH(kVerticalInsets, kHorizontalInsets);
+      gfx::Insets::VH(kVerticalInsets, horizontal_insets);
 
   // Only draw a border if the group is open in the tab strip.
   if (!local_group_id_.has_value()) {
@@ -242,6 +254,15 @@ void SavedTabGroupButton::UpdateButtonLayout() {
             kBorderThickness, kButtonRadius,
             GetSavedTabGroupOutlineColorId(tab_group_color_id_));
     SetBorder(views::CreatePaddedBorder(std::move(border), insets));
+  }
+
+  if (is_shared_) {
+    const ui::ColorId icon_color =
+        GetText().empty() ? GetSavedTabGroupOutlineColorId(tab_group_color_id_)
+                          : ui::kColorMenuIcon;
+    SetImageModel(ButtonState::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(kPeopleGroupIcon, icon_color,
+                                                 gfx::kFaviconSize));
   }
 
   if (GetText().empty()) {

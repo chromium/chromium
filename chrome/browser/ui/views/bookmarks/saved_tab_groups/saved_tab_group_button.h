@@ -89,6 +89,9 @@ class SavedTabGroupButton : public views::MenuButton,
   // The animations for button movement.
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
 
+  // The shared state of the TabGroup.
+  bool is_shared_;
+
   // The color of the TabGroup this button is associated with.
   tab_groups::TabGroupColorId tab_group_color_id_;
 
