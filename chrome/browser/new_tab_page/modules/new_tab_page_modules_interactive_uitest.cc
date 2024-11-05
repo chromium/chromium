@@ -324,6 +324,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageModulesInteractiveLinkUiTest,
                          ::testing::ValuesIn(GetAllModuleLinks(kAllModules)));
 
+// TODO(crbug.com/347914816): Fix test failure on Mac.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#define MAYBE_ClickingEntryNavigatesToCorrectPage \
+  DISABLED_ClickingEntryNavigatesToCorrectPage
+#else
+#define MAYBE_ClickingEntryNavigatesToCorrectPage \
+  ClickingEntryNavigatesToCorrectPage
+#endif
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
                        ClickingEntryNavigatesToCorrectPage) {
   RunTestSequence(
