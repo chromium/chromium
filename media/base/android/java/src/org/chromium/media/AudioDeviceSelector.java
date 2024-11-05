@@ -44,6 +44,9 @@ abstract class AudioDeviceSelector {
     /** Gets whether the speakerphone is currently active. */
     public abstract boolean isSpeakerphoneOn();
 
+    /** Gets whether the bluetooth microphone is currently active. */
+    public abstract boolean isBluetoothMicrophoneOn();
+
     /**
      * Sets speakerphone on or off.
      *

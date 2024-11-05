@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/android_buildflags.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
 #include "media/audio/android/audio_track_output_stream.h"
@@ -220,17 +221,32 @@ AudioInputStream* AudioManagerAndroid::MakeAudioInputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  bool has_no_input_streams = HasNoAudioInputStreams();
+  bool has_input_streams = !HasNoAudioInputStreams();
+  bool force_communication_mode = false;
   AudioInputStream* stream = AudioManagerBase::MakeAudioInputStream(
       params, device_id, AudioManager::LogCallback());
+  // Avoid changing the communication mode if there are existing input streams.
+  if (!stream || has_input_streams) {
+    return stream;
+  }
 
   // By default, the audio manager for Android creates streams intended for
   // real-time VoIP sessions and therefore sets the audio mode to
   // MODE_IN_COMMUNICATION. However, the user might have asked for a special
   // mode where all audio input processing is disabled, and if that is the case
   // we avoid changing the mode.
-  if (stream && has_no_input_streams &&
-      params.effects() != AudioParameters::NO_EFFECTS) {
+
+  // To ensure proper audio routing when a Bluetooth microphone is in use,
+  // Android's audio manager must switch the output from TYPE_BLUETOOTH_A2DP to
+  // TYPE_BLUETOOTH_SCO. This switch is triggered by setting the audio mode to
+  // MODE_IN_COMMUNICATION. Failing to activate communication mode can result
+  // in audio being routed incorrectly, leading to no sound output from the
+  // Bluetooth headset.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  force_communication_mode = IsBluetoothMicrophoneOn();
+#endif
+  if (params.effects() != AudioParameters::NO_EFFECTS ||
+      force_communication_mode) {
     communication_mode_is_on_ = true;
     SetCommunicationAudioModeOn(true);
   }
@@ -460,6 +476,11 @@ bool AudioManagerAndroid::SetAudioDevice(const std::string& device_id) {
                                                                  : device_id);
   return Java_AudioManagerAndroid_setDevice(env, GetJavaAudioManager(),
                                             j_device_id);
+}
+
+bool AudioManagerAndroid::IsBluetoothMicrophoneOn() {
+  return Java_AudioManagerAndroid_isBluetoothMicrophoneOn(
+      base::android::AttachCurrentThread(), GetJavaAudioManager());
 }
 
 int AudioManagerAndroid::GetNativeOutputSampleRate() {

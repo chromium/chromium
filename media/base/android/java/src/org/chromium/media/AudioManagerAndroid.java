@@ -279,6 +279,11 @@ class AudioManagerAndroid {
     }
 
     @CalledByNative
+    private boolean isBluetoothMicrophoneOn() {
+        return mAudioDeviceSelector.isBluetoothMicrophoneOn();
+    }
+
+    @CalledByNative
     private int getNativeOutputSampleRate() {
         String sampleRateString =
                 mAudioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);

@@ -103,6 +103,14 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
     }
 
     @Override
+    public boolean isBluetoothMicrophoneOn() {
+        // TODO(crbug.com/376166935): Consider BLE headset as well.
+        AudioDeviceInfo currentDevice = mAudioManager.getCommunicationDevice();
+        return currentDevice != null
+                && currentDevice.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO;
+    }
+
+    @Override
     public void setSpeakerphoneOn(boolean on) {
         boolean isCurrentlyOn = isSpeakerphoneOn();
 
