@@ -810,6 +810,47 @@ TEST_F(ProductSpecificationsSyncMultiSpecsBridgeTest,
   EXPECT_FALSE(trimmed_specifics.has_product_comparison_item());
 }
 
+TEST_F(ProductSpecificationsSyncMultiSpecsBridgeTest,
+       TestSyncEntriesOnFirstDownload) {
+  entries().clear();
+  sync_pb::ProductComparisonSpecifics client_specifics;
+  client_specifics.set_uuid("70000000-0000-0000-0000-000000000000");
+  client_specifics.set_creation_time_unix_epoch_millis(3000000000000);
+  client_specifics.set_update_time_unix_epoch_millis(4000000000000);
+  client_specifics.mutable_product_comparison()->set_name("local_name");
+
+  entries().emplace(client_specifics.uuid(), client_specifics);
+
+  syncer::EntityChangeList server_entities;
+  sync_pb::ProductComparisonSpecifics server_specifics;
+  server_specifics.set_uuid("80000000-0000-0000-0000-000000000000");
+  server_specifics.set_creation_time_unix_epoch_millis(1000000000000);
+  server_specifics.set_update_time_unix_epoch_millis(2000000000000);
+  server_specifics.mutable_product_comparison()->set_name("server_name");
+  server_entities.push_back(syncer::EntityChange::CreateUpdate(
+      server_specifics.uuid(), MakeEntityData(server_specifics)));
+  std::string storage_key;
+  EXPECT_CALL(processor(), Put).WillOnce(testing::SaveArg<0>(&storage_key));
+  bridge().MergeFullSyncData(
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList(),
+      std::move(server_entities));
+  // Check change processor is called with client side specifics.
+  EXPECT_EQ(client_specifics.uuid(), storage_key);
+}
+
+TEST_F(ProductSpecificationsSyncMultiSpecsBridgeTest,
+       TestSyncEntriesOnFirstDownloadNotTrackingMetadata) {
+  ProcessorNotTrackingMetadata();
+  sync_pb::ProductComparisonSpecifics client_specifics;
+  client_specifics.set_uuid("70000000-0000-0000-0000-000000000000");
+  client_specifics.set_creation_time_unix_epoch_millis(3000000000000);
+  client_specifics.set_update_time_unix_epoch_millis(4000000000000);
+  client_specifics.mutable_product_comparison()->set_name("local_name");
+  EXPECT_CALL(processor(), Put).Times(0);
+  AddSpecifics({client_specifics});
+  VerifySpecificsExists(client_specifics);
+}
+
 // TODO(crbug.com/354165274) write a test that ensures no single specifics
 // format specifics are written when the multi specifics flag is on.
 
