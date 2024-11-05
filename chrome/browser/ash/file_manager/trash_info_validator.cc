@@ -69,10 +69,9 @@ base::File::Error ValidationErrorToFileError(ValidationError error) {
   }
 }
 
-TrashInfoValidator::TrashInfoValidator(Profile* profile,
-                                       const base::FilePath& base_path) {
+TrashInfoValidator::TrashInfoValidator(Profile* profile) {
   enabled_trash_locations_ =
-      trash::GenerateEnabledTrashLocationsForProfile(profile, base_path);
+      trash::GenerateEnabledTrashLocationsForProfile(profile);
 
   parser_ = std::make_unique<ash::trash_service::TrashInfoParser>();
 }

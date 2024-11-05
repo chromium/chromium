@@ -1326,8 +1326,7 @@ void FileManagerPrivateInternalSearchFilesFunction::RunFileSearchByName(
   std::vector<base::FilePath> excluded_paths;
   if (file_manager::trash::IsTrashEnabledForProfile(profile)) {
     auto enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile, /*base_path=*/base::FilePath());
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile);
     for (const auto& it : enabled_trash_locations) {
       excluded_paths.emplace_back(
           it.first.Append(it.second.relative_folder_path));
@@ -1545,8 +1544,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
         task = std::make_unique<file_manager::io_task::EmptyTrashIOTask>(
             blink::StorageKey::CreateFirstParty(
                 render_frame_host()->GetLastCommittedOrigin()),
-            profile, file_system_context,
-            /*base_path=*/base::FilePath(), show_notification);
+            profile, file_system_context, show_notification);
       }
       break;
     case file_manager::io_task::OperationType::kRestore:
@@ -1758,8 +1756,8 @@ FileManagerPrivateInternalParseTrashInfoFilesFunction::Run() {
     trash_info_paths.push_back(cracked_url.path());
   }
 
-  validator_ = std::make_unique<file_manager::trash::TrashInfoValidator>(
-      profile, /*base_path=*/base::FilePath());
+  validator_ =
+      std::make_unique<file_manager::trash::TrashInfoValidator>(profile);
 
   auto barrier_callback =
       base::BarrierCallback<file_manager::trash::ParsedTrashInfoDataOrError>(

@@ -102,9 +102,7 @@ const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
 // parents folders preceding children. The `mount_point_path` is used to
 // identify locations that share the same volume.
 using TrashPathsMap = std::map<const base::FilePath, TrashLocation>;
-TrashPathsMap GenerateEnabledTrashLocationsForProfile(
-    Profile* profile,
-    const base::FilePath& base_path);
+TrashPathsMap GenerateEnabledTrashLocationsForProfile(Profile* profile);
 
 // Enum of possible UMA values for histogram FileBrowser.Trash.DirectorySetup.
 // Keep the order of this in sync with FileManagerTrashDirectorySetupStep in

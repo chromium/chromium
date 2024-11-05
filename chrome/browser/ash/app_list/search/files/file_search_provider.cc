@@ -176,8 +176,7 @@ void FileSearchProvider::Start(const std::u16string& query) {
   // precomputed.
   if (trash_paths_.empty()) {
     auto enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile_, /*base_path=*/base::FilePath());
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile_);
     for (const auto& it : enabled_trash_locations) {
       trash_paths_.emplace_back(
           it.first.Append(it.second.relative_folder_path));

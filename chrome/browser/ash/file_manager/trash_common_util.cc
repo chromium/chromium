@@ -60,9 +60,7 @@ const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
   return path;
 }
 
-TrashPathsMap GenerateEnabledTrashLocationsForProfile(
-    Profile* profile,
-    const base::FilePath& base_path) {
+TrashPathsMap GenerateEnabledTrashLocationsForProfile(Profile* profile) {
   TrashPathsMap enabled_trash_locations;
 
   enabled_trash_locations.try_emplace(
