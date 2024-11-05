@@ -1018,6 +1018,12 @@ Profile* ProfileImpl::GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
 
   if (!create_if_needed)
     return nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsGuestSession()) {
+    // ChromeOS Guest Session has only one primary OTR.
+    CHECK_EQ(otr_profile_id, OTRProfileID::PrimaryID());
+  }
+#endif
 
   // Create a new OffTheRecordProfile
   std::unique_ptr<Profile> otr_profile =

@@ -843,29 +843,6 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest,
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ASSERT_EQ(guest_profile_service, primary_otr_guest_profile_service);
-
-  // Construct a second OTR profile from `guest_profile`.
-  TestingProfile::Builder secondary_otr_guest_profile_builder;
-  secondary_otr_guest_profile_builder.SetGuestSession();
-  secondary_otr_guest_profile_builder.SetProfileName(
-      guest_profile->GetProfileUserName());
-  TestingProfile* const secondary_otr_guest_profile =
-      secondary_otr_guest_profile_builder.BuildOffTheRecord(
-          guest_profile, Profile::OTRProfileID::CreateUniqueForTesting());
-  ASSERT_TRUE(secondary_otr_guest_profile);
-  ASSERT_TRUE(secondary_otr_guest_profile->IsOffTheRecord());
-
-  // Service instances should be created for non-primary OTR guest session
-  // profiles but as stated earlier the service factory will redirect to use the
-  // primary OTR profile. This means that the secondary OTR profile service
-  // instance should be equal to that explicitly created for the primary OTR
-  // profile.
-  HoldingSpaceKeyedService* const secondary_otr_guest_profile_service =
-      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-          secondary_otr_guest_profile);
-  ASSERT_TRUE(secondary_otr_guest_profile_service);
-  ASSERT_EQ(primary_otr_guest_profile_service,
-            secondary_otr_guest_profile_service);
 }
 
 TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,

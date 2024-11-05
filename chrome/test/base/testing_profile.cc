@@ -667,6 +667,12 @@ Profile* TestingProfile::GetOffTheRecordProfile(
     if (!create_if_needed)
       return nullptr;
 
+#if BUILDFLAG(IS_CHROMEOS)
+    if (IsGuestSession()) {
+      CHECK_EQ(otr_profile_id, OTRProfileID::PrimaryID());
+    }
+#endif
+
     TestingProfile::Builder builder;
     if (IsGuestSession() && otr_profile_id == OTRProfileID::PrimaryID())
       builder.SetGuestSession();
@@ -1232,6 +1238,13 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
   DCHECK(!build_called_);
   DCHECK(original_profile);
   build_called_ = true;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (original_profile->IsGuestSession()) {
+    // ChromeOS Guest Session has only one primary OTR.
+    CHECK_EQ(otr_profile_id, OTRProfileID::PrimaryID());
+  }
+#endif
 
   // Note: Owned by |original_profile|.
   return new TestingProfile(
