@@ -381,10 +381,7 @@ void CampaignsManagerSession::OnSessionStateChanged() {
     return;
   }
 
-  if (ash::features::IsGrowthCampaignsRecordSessionUnlockEventEnabled()) {
-    RecordSessionUnlockEvent();
-  }
-
+  RecordSessionUnlockEvent();
   SetCampaignManagerPrefService(GetProfile());
 
   ash::OwnerSettingsServiceAsh* service =

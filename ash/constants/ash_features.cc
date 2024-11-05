@@ -1396,11 +1396,6 @@ BASE_FEATURE(kGrowthCampaignsShowNudgeInsideWindowBounds,
              "GrowthCampaignsShowNudgeInsideWindowBounds",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Control weather session unlock event is recorded.
-BASE_FEATURE(kGrowthCampaignsRecordSessionUnlockEvent,
-             "GrowthCampaignsRecordSessionUnlockEvent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether growth campaigns triggering when loading campaigns complete.
 BASE_FEATURE(kGrowthCampaignsTriggerAtLoadComplete,
              "GrowthCampaignsTriggerAtLoadComplete",
@@ -3937,10 +3932,6 @@ bool IsGrowthCampaignsInDemoModeEnabled() {
 bool IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled() {
   return base::FeatureList::IsEnabled(
       kGrowthCampaignsShowNudgeInsideWindowBounds);
-}
-
-bool IsGrowthCampaignsRecordSessionUnlockEventEnabled() {
-  return base::FeatureList::IsEnabled(kGrowthCampaignsRecordSessionUnlockEvent);
 }
 
 bool IsGrowthCampaignsTriggerAtLoadComplete() {
