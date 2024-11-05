@@ -72,30 +72,21 @@ class IsolatedWebAppFileHandlingBrowserTest
 
   // Attach the launchParams to the window so we can inspect them easily.
   void AttachTestConsumer(content::WebContents* web_contents) {
-    ASSERT_TRUE(content::ExecJs(web_contents,
-                                "launchQueue.setConsumer(launchParams => {"
-                                "  window.launchParams = launchParams;"
-                                "});"));
+    ASSERT_TRUE(ExecJs(web_contents, R"(
+        launchQueue.setConsumer(launchParams => {
+          window.launchParams = launchParams;
+        }))"));
   }
 
   void VerifyIwaDidReceiveFileLaunchParams(
       content::WebContents* web_contents,
       const base::FilePath& expected_file_path) {
-    ASSERT_TRUE(
-        content::EvalJs(web_contents, "!!window.launchParams").ExtractBool());
-    EXPECT_EQ(
-        1, content::EvalJs(web_contents, "window.launchParams.files.length"));
-    EXPECT_EQ(
-        expected_file_path.BaseName().AsUTF8Unsafe(),
-        content::EvalJs(web_contents, "window.launchParams.files[0].name"));
-    EXPECT_TRUE(
-        content::EvalJs(
-            web_contents,
-            "(async () => {"
-            "  return await window.launchParams.files[0].queryPermission("
-            "             {mode: 'readwrite'}) === 'granted';"
-            "})()")
-            .ExtractBool());
+    ASSERT_EQ(true, EvalJs(web_contents, "!!window.launchParams"));
+    EXPECT_EQ(1, EvalJs(web_contents, "window.launchParams.files.length"));
+    EXPECT_EQ(expected_file_path.BaseName().AsUTF8Unsafe(),
+              EvalJs(web_contents, "window.launchParams.files[0].name"));
+    EXPECT_EQ("granted", EvalJs(web_contents, R"(
+        window.launchParams.files[0].queryPermission({mode: 'readwrite'}))"));
   }
 };
 
