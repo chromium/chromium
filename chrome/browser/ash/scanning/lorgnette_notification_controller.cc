@@ -52,7 +52,8 @@ LorgnetteNotificationController::LorgnetteNotificationController(
     Profile* profile)
     : dlc_observer_(this),
       supported_dlc_ids_(
-          std::set<std::string>({lorgnette::kSaneBackendsPfuDlcId})),
+          std::set<std::string>({lorgnette::kSaneBackendsPfuDlcId,
+                                 lorgnette::kSaneBackendsCanonDlcId})),
       profile_(profile) {
   DCHECK(profile);
   dlc_observer_.Observe(DlcserviceClient::Get());
