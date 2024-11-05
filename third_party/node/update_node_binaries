@@ -19,7 +19,7 @@ set -eu
 cd "$(dirname "$0")"
 
 BASE_URL="https://nodejs.org/dist"
-NODE_VERSION="v20.11.0"
+NODE_VERSION="v22.11.0"
 
 upload=false  # Default value
 

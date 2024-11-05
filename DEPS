@@ -703,10 +703,10 @@ deps = {
       'bucket': 'chromium-nodejs',
       'objects': [
           {
-              'object_name': '20.11.0/f9a337cfa0e2b92d3e5c671c26b454bd8e99769e',
-              'sha256sum': '0ba9cc91698c1f833a1fdc1fe0cb392d825ad484c71b0d84388ac80bfd3d6079',
-              'size_bytes': 43716484,
-              'generation': 1711567575687220,
+              'object_name': 'fa98c6432de572206bc5519f85e9c96bd518b039',
+              'sha256sum': 'fb563633b5bfe2d4307075c54c6bb54664a3b5ec6bc811f5b15742720549007a',
+              'size_bytes': 50288755,
+              'generation': 1730835522207929,
               'output_file': 'node-linux-x64.tar.gz',
           },
       ],
@@ -721,10 +721,10 @@ deps = {
       'bucket': 'chromium-nodejs',
       'objects': [
           {
-              'object_name': '20.11.0/e3c0fd53caae857309815f3f8de7c2dce49d7bca',
-              'sha256sum': '20affacca2480c368b75a1d91ec1a2720604b325207ef0cf39cfef3c235dad19',
-              'size_bytes': 40649378,
-              'generation': 1711567481181885,
+              'object_name': '4c8952a65a1ce7a2e4cff6db68f9b7454c46349f',
+              'sha256sum': 'fadb4530fbe6e35ed298848c66102a0aa7d92974789e6222c4eadee26a381e7e',
+              'size_bytes': 45672893,
+              'generation': 1730835514382259,
               'output_file': 'node-darwin-x64.tar.gz',
           },
       ],
@@ -735,10 +735,10 @@ deps = {
       'bucket': 'chromium-nodejs',
       'objects': [
           {
-              'object_name': '20.11.0/5b5681e12a21cda986410f69e03e6220a21dd4d2',
-              'sha256sum': 'cecb99fbb369a9090dddc27e228b66335cd72555b44fa8839ef78e56c51682c5',
-              'size_bytes': 38989321,
-              'generation': 1711567557161126,
+              'object_name': '0886aa6a146cb5c213cb09b59ed1075982e4cb57',
+              'sha256sum': 'd39e2d44d58bb89740b9aca1073959fc92edbdbbe810a5e48448e331cf72c196',
+              'size_bytes': 44929037,
+              'generation': 1730835518292126,
               'output_file': 'node-darwin-arm64.tar.gz',
           },
       ],
@@ -749,10 +749,10 @@ deps = {
       'bucket': 'chromium-nodejs',
       'objects': [
           {
-              'object_name': '20.11.0/2cb36010af52bc5e2a2d1e3675c10361c80d8f8d',
-              'sha256sum': '5da5e201155bb3ea99134b404180adebcfa696b0dbc09571d01a09ca5489f53e',
-              'size_bytes': 70017688,
-              'generation': 1705443750949255,
+              'object_name': '907d7e104e7389dc74cec7d32527c1db704b7f96',
+              'sha256sum': '7447c4ece014aa41fb2ff866c993c708e5a8213a00913cc2ac5049ea3ffc230d',
+              'size_bytes': 80511640,
+              'generation': 1730835526374028,
               'output_file': 'node.exe',
           },
       ],
