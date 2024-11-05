@@ -249,8 +249,7 @@ LayoutUnit InlineBoxState::TextTop(FontBaseline baseline_type) const {
     return text_top;
   if (const SimpleFontData* font_data = font->PrimaryFont())
     return -font_data->GetFontMetrics().FixedAscent(baseline_type);
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 bool InlineBoxState::CanAddTextOfStyle(const ComputedStyle& text_style) const {
@@ -1097,8 +1096,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
           has_top_or_bottom = true;
           continue;
         default:
-          NOTREACHED_IN_MIGRATION();
-          continue;
+          NOTREACHED();
       }
       child.metrics.Move(baseline_shift);
       box->metrics.Unite(child.metrics);
@@ -1122,8 +1120,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
           case EVerticalAlign::kTextBottom:
             continue;
           default:
-            NOTREACHED_IN_MIGRATION();
-            continue;
+            NOTREACHED();
         }
         child.metrics.Move(baseline_shift);
         box->metrics.Unite(child.metrics);

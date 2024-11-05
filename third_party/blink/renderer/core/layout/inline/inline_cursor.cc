@@ -108,8 +108,7 @@ bool ShouldIgnoreForPositionForPoint(const FragmentItem& item) {
     case FragmentItem::kText:
       if (item.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
         // See http://crbug.com/1217079
-        NOTREACHED_IN_MIGRATION() << item;
-        return true;
+        NOTREACHED() << item;
       }
       // Returns true when |item.GetLayoutObject().IsStyleGenerated()|.
       // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
@@ -117,8 +116,7 @@ bool ShouldIgnoreForPositionForPoint(const FragmentItem& item) {
     case FragmentItem::kLine:
       return true;
     case FragmentItem::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return false;
 }
@@ -257,15 +255,13 @@ const LayoutBlockFlow* InlineCursor::GetLayoutBlockFlow() const {
     DCHECK(!layout_object->IsLayoutFlowThread());
     return To<LayoutBlockFlow>(layout_object);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool InlineCursorPosition::HasChildren() const {
   if (item_)
     return item_->HasChildren();
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 InlineCursor InlineCursor::CursorForDescendants() const {
@@ -280,8 +276,7 @@ InlineCursor InlineCursor::CursorForDescendants() const {
     }
     return InlineCursor();
   }
-  NOTREACHED_IN_MIGRATION();
-  return InlineCursor();
+  NOTREACHED();
 }
 
 InlineCursor InlineCursor::CursorForMovingAcrossFragmentainer() const {
@@ -308,7 +303,7 @@ void InlineCursor::ExpandRootToContainingBlock() {
     MoveToItem(items_.begin() + item_index + index_diff);
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool InlineCursorPosition::HasSoftWrapToNextLine() const {
@@ -408,16 +403,14 @@ bool InlineCursorPosition::CanHaveChildren() const {
     return item_->Type() == FragmentItem::kLine ||
            (item_->Type() == FragmentItem::kBox && !item_->IsAtomicInline());
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 TextDirection InlineCursorPosition::BaseDirection() const {
   DCHECK(IsLineBox());
   if (item_)
     return item_->BaseDirection();
-  NOTREACHED_IN_MIGRATION();
-  return TextDirection::kLtr;
+  NOTREACHED();
 }
 
 UBiDiLevel InlineCursorPosition::BidiLevel() const {
@@ -456,8 +449,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
     return item->BidiLevel();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const DisplayItemClient* InlineCursorPosition::GetSelectionDisplayItemClient()
@@ -493,8 +485,7 @@ StringView InlineCursorPosition::Text(const InlineCursor& cursor) const {
   cursor.CheckValid(*this);
   if (item_)
     return item_->Text(cursor.Items());
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 PhysicalRect InlineCursor::CurrentLocalRect(unsigned start_offset,
@@ -504,8 +495,7 @@ PhysicalRect InlineCursor::CurrentLocalRect(unsigned start_offset,
     return current_.item_->LocalRect(current_.item_->Text(*fragment_items_),
                                      start_offset, end_offset);
   }
-  NOTREACHED_IN_MIGRATION();
-  return PhysicalRect();
+  NOTREACHED();
 }
 
 PhysicalRect InlineCursor::CurrentLocalSelectionRectForText(
@@ -592,8 +582,7 @@ LayoutUnit InlineCursor::CaretInlinePositionForOffset(unsigned offset) const {
     return current_.item_->CaretInlinePositionForOffset(
         current_.item_->Text(*fragment_items_), offset);
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 LogicalRect InlineCursorPosition::ConvertChildToLogical(
@@ -869,8 +858,7 @@ PositionWithAffinity InlineCursor::PositionForPointInChild(
       break;
     case FragmentItem::kLine:
     case FragmentItem::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return PositionWithAffinity();
 }
@@ -897,9 +885,7 @@ PositionWithAffinity InlineCursor::PositionForStartOfLine() const {
                                   : *first_leaf.Current().GetLayoutObject();
   Node* const node = layout_object.NonPseudoNode();
   if (!node) {
-    NOTREACHED_IN_MIGRATION()
-        << "MoveToFirstLeaf returns invalid node: " << first_leaf;
-    return PositionWithAffinity();
+    NOTREACHED() << "MoveToFirstLeaf returns invalid node: " << first_leaf;
   }
   if (!IsA<Text>(node))
     return PositionWithAffinity(Position::BeforeNode(*node));
@@ -924,9 +910,7 @@ PositionWithAffinity InlineCursor::PositionForEndOfLine() const {
                                   : *last_leaf.Current().GetLayoutObject();
   Node* const node = layout_object.NonPseudoNode();
   if (!node) {
-    NOTREACHED_IN_MIGRATION()
-        << "MoveToLastLeaf returns invalid node: " << last_leaf;
-    return PositionWithAffinity();
+    NOTREACHED() << "MoveToLastLeaf returns invalid node: " << last_leaf;
   }
   if (IsA<HTMLBRElement>(node))
     return PositionWithAffinity(Position::BeforeNode(*node));
@@ -976,7 +960,7 @@ inline wtf_size_t InlineCursor::SpanIndexFromItemIndex(unsigned index) const {
 void InlineCursor::MoveTo(const FragmentItem& fragment_item) {
   if (TryMoveTo(fragment_item))
     return;
-  NOTREACHED_IN_MIGRATION() << *this << " " << fragment_item;
+  NOTREACHED() << *this << " " << fragment_item;
 }
 
 bool InlineCursor::TryMoveTo(const FragmentItem& fragment_item) {
@@ -1021,7 +1005,7 @@ void InlineCursor::MoveToContainingLine() {
       MoveToPrevious();
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool InlineCursor::IsAtFirst() const {
@@ -1036,7 +1020,7 @@ void InlineCursor::MoveToFirst() {
     MoveToItem(items_.begin());
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InlineCursor::MoveToFirstChild() {
@@ -1056,7 +1040,7 @@ void InlineCursor::MoveToFirstLine() {
     MakeNull();
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InlineCursor::MoveToFirstLogicalLeaf() {
@@ -1243,7 +1227,7 @@ void InlineCursor::MoveToNextLine() {
     } while (Current() && !Current().IsLineBox());
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InlineCursor::MoveToNextLineIncludingFragmentainer() {
@@ -1288,7 +1272,7 @@ void InlineCursor::MoveToPreviousLine() {
     } while (Current() && !Current().IsLineBox());
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool InlineCursor::TryMoveToFirstChild() {
@@ -1555,8 +1539,7 @@ void InlineCursor::MoveToNextForSameLayoutObjectExceptCulledInline() {
 
       MoveToNextFragmentainer();
       if (!Current()) {
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
       DCHECK_GE(delta, delta_to_end);
       delta -= delta_to_end;
@@ -1813,8 +1796,7 @@ InlineCursor InlineBackwardCursor::CursorForDescendants() const {
     cursor.MoveToItem(sibling_item_iterators_[current_index_]);
     return cursor.CursorForDescendants();
   }
-  NOTREACHED_IN_MIGRATION();
-  return InlineCursor();
+  NOTREACHED();
 }
 
 void InlineBackwardCursor::MoveToPreviousSibling() {
@@ -1823,7 +1805,7 @@ void InlineBackwardCursor::MoveToPreviousSibling() {
       current_.Set(sibling_item_iterators_[--current_index_]);
       return;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   current_.Clear();
 }

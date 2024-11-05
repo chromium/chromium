@@ -164,7 +164,7 @@ PhysicalRect InkOverflow::Self(Type type, const PhysicalSize& size) const {
     case Type::kInvalidated:
 #if defined(DISALLOW_READING_UNSET)
       if (!read_unset_as_none_)
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       [[fallthrough]];
 #endif
     case Type::kNone:
@@ -178,8 +178,7 @@ PhysicalRect InkOverflow::Self(Type type, const PhysicalSize& size) const {
       DCHECK(single_);
       return single_->ink_overflow;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {PhysicalOffset(), size};
+  NOTREACHED();
 }
 
 PhysicalRect InkOverflow::Contents(Type type, const PhysicalSize& size) const {
@@ -189,8 +188,7 @@ PhysicalRect InkOverflow::Contents(Type type, const PhysicalSize& size) const {
     case Type::kInvalidated:
 #if defined(DISALLOW_READING_UNSET)
       if (!read_unset_as_none_)
-        NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+        NOTREACHED();
 #endif
     case Type::kNone:
     case Type::kSmallSelf:
@@ -205,8 +203,7 @@ PhysicalRect InkOverflow::Contents(Type type, const PhysicalSize& size) const {
       DCHECK(container_);
       return container_->contents_ink_overflow;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PhysicalRect();
+  NOTREACHED();
 }
 
 PhysicalRect InkOverflow::SelfAndContents(Type type,
@@ -217,8 +214,7 @@ PhysicalRect InkOverflow::SelfAndContents(Type type,
     case Type::kInvalidated:
 #if defined(DISALLOW_READING_UNSET)
       if (!read_unset_as_none_)
-        NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+        NOTREACHED();
 #endif
     case Type::kNone:
       return {PhysicalOffset(), size};
@@ -233,8 +229,7 @@ PhysicalRect InkOverflow::SelfAndContents(Type type,
       DCHECK(container_);
       return container_->SelfAndContentsInkOverflow();
   }
-  NOTREACHED_IN_MIGRATION();
-  return {PhysicalOffset(), size};
+  NOTREACHED();
 }
 
 // Store |ink_overflow| as |SmallRawValue| if possible and returns |true|.
@@ -302,7 +297,7 @@ InkOverflow::Type InkOverflow::SetSingle(Type type,
       single_->ink_overflow = adjusted_ink_overflow;
       return SetType(new_type);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 InkOverflow::Type InkOverflow::SetSelf(Type type,
@@ -357,7 +352,7 @@ InkOverflow::Type InkOverflow::Set(Type type,
       container_->contents_ink_overflow = contents;
       return Type::kSelfAndContents;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 InkOverflow::Type InkOverflow::SetTextInkOverflow(

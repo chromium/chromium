@@ -102,10 +102,8 @@ GridPlacementData GridPlacement::RunAutoPlacementAlgorithm(
         break;
       case AutoPlacementType::kMinor:
       case AutoPlacementType::kNotNeeded:
-        NOTREACHED_IN_MIGRATION()
-            << "Placement of non-auto placed items and items locked "
-               "to a major axis should've already occurred.";
-        break;
+        NOTREACHED() << "Placement of non-auto placed items and items locked "
+                        "to a major axis should've already occurred.";
     }
     if (!HasSparsePacking()) {
       // For dense packing, set the cursor’s major and minor positions to the

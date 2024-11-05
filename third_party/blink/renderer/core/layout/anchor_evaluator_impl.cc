@@ -393,8 +393,7 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
     case CSSAnchorValue::kSelfEnd:
       // These logical values should have been converted to corresponding
       // physical values in `PhysicalAnchorValueFromLogicalOrAuto`.
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 
   // The |value| is for the "start" side of insets. For the "end" side of
@@ -436,8 +435,7 @@ LayoutUnit LogicalAnchorQuery::EvaluateSize(
     case CSSAnchorSizeValue::kImplicit:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {

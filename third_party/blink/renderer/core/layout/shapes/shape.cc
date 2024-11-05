@@ -237,7 +237,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   shape->writing_mode_ = writing_mode;

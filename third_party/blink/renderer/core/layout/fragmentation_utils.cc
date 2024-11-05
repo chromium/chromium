@@ -37,8 +37,7 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
 
   switch (break_value) {
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case EBreakBetween::kAuto:
       return 0;
     case EBreakBetween::kAvoidColumn:
@@ -1510,8 +1509,7 @@ wtf_size_t PreviousInnerFragmentainerIndex(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return idx;
+  NOTREACHED();
 }
 
 PhysicalOffset OffsetInStitchedFragments(

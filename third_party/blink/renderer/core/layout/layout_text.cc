@@ -413,8 +413,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
             results.push_back(TextBoxInfo{rect, *box_start, box_length});
             continue;
           }
-          NOTREACHED_IN_MIGRATION();
-          continue;
+          NOTREACHED();
         }
         // Handle CSS generated content, e.g. ::before/::after
         const OffsetMappingUnit* const mapping_unit =
@@ -1472,8 +1471,9 @@ void LayoutText::RecalcVisualOverflow() {
   // |RecalcVisualOverflow| for each layer, and the containing |LayoutObject|
   // should recalculate its |FragmentItem|s without traversing descendant
   // |LayoutObject|s.
-  if (IsInline() && IsInLayoutNGInlineFormattingContext())
-    NOTREACHED_IN_MIGRATION();
+  if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
+    NOTREACHED();
+  }
 
   LayoutObject::RecalcVisualOverflow();
 }

@@ -423,8 +423,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutCustom>(element);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // static
@@ -632,7 +631,7 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
 
   if (PaintInvalidationStateIsDirty()) {
     ShowLayoutTreeForThis();
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Assert that the number of FragmentData and PhysicalBoxFragment objects
@@ -1063,8 +1062,7 @@ bool LayoutObject::IsBeforeInPreOrder(const LayoutObject& other) const {
     if (child == data.other_last)
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 LayoutObject* LayoutObject::LastLeafChild() const {
@@ -2554,8 +2552,7 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
       }
       return FirstLineStyleRef();
   }
-  NOTREACHED_IN_MIGRATION();
-  return StyleRef();
+  NOTREACHED();
 }
 
 // Called when an object that was floating or positioned becomes a normal flow
@@ -4583,26 +4580,22 @@ SVGLayoutResult LayoutObject::UpdateSVGLayout(const SVGLayoutInfo&) {
 
 gfx::RectF LayoutObject::ObjectBoundingBox() const {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
-  return gfx::RectF();
+  NOTREACHED();
 }
 
 gfx::RectF LayoutObject::StrokeBoundingBox() const {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
-  return gfx::RectF();
+  NOTREACHED();
 }
 
 gfx::RectF LayoutObject::DecoratedBoundingBox() const {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
-  return gfx::RectF();
+  NOTREACHED();
 }
 
 gfx::RectF LayoutObject::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
-  return gfx::RectF();
+  NOTREACHED();
 }
 
 AffineTransform LayoutObject::LocalSVGTransform() const {

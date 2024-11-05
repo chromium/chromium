@@ -59,8 +59,7 @@ inline LineBreakStrictness StrictnessFromLineBreak(LineBreak line_break) {
     case LineBreak::kLoose:
       return LineBreakStrictness::kLoose;
   }
-  NOTREACHED_IN_MIGRATION();
-  return LineBreakStrictness::kDefault;
+  NOTREACHED();
 }
 
 // Returns smallest negative left and right bearing in `box_fragment`.
@@ -1054,21 +1053,14 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
     if (item.Type() == InlineItem::kOutOfFlowPositioned) {
       HandleOutOfFlowPositioned(item, line_info);
     } else if (item.Length()) {
-      NOTREACHED_IN_MIGRATION();
-      // For other items with text (e.g., bidi controls), use their text to
-      // determine the break opportunity.
-      InlineItemResult* item_result = AddItem(item, line_info);
-      item_result->can_break_after =
-          break_iterator_.IsBreakable(item_result->EndOffset());
-      MoveToNextOf(item);
+      NOTREACHED();
     } else if (item.Type() == InlineItem::kListMarker) {
       InlineItemResult* item_result = AddItem(item, line_info);
       force_non_empty_if_last_line_ = true;
       DCHECK(!item_result->can_break_after);
       MoveToNextOf(item);
     } else {
-      NOTREACHED_IN_MIGRATION();
-      MoveToNextOf(item);
+      NOTREACHED();
     }
   }
 }
@@ -2816,9 +2808,7 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
       HandleEmptyText(item, line_info);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      HandleEmptyText(item, line_info);
-      return;
+      NOTREACHED();
   }
   MoveToNextOf(item);
 }
@@ -4193,9 +4183,7 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
     // we're in the infinite loop.
     if (current_.item_index == last_rewind_->from_item_index &&
         new_end == last_rewind_->to_index) {
-      NOTREACHED_IN_MIGRATION();
-      state_ = LineBreakState::kDone;
-      return;
+      NOTREACHED();
     }
     last_rewind_.emplace(RewindIndex{current_.item_index, new_end});
   }

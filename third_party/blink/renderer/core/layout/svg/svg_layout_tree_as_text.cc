@@ -234,8 +234,7 @@ static void WriteSVGPaintingResource(StringBuilder& ts,
       ts << "[type=RADIAL-GRADIENT]";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   ts << " [id=\"" << resource.Target()->GetIdAttribute() << "\"]";
 }
@@ -399,7 +398,7 @@ static StringBuilder& operator<<(StringBuilder& ts,
         ts, "data",
         BuildStringFromByteStream(path.ByteStream(), kNoTransformation));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return ts;
 }

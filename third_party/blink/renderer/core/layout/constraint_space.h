@@ -212,8 +212,7 @@ class CORE_EXPORT ConstraintSpace final {
     switch (
         static_cast<PercentageStorage>(bitfields_.percentage_inline_storage)) {
       default:
-        NOTREACHED_IN_MIGRATION();
-        [[fallthrough]];
+        NOTREACHED();
       case kSameAsAvailable:
         return available_size_.inline_size;
       case kZero:
@@ -230,8 +229,7 @@ class CORE_EXPORT ConstraintSpace final {
     switch (
         static_cast<PercentageStorage>(bitfields_.percentage_block_storage)) {
       default:
-        NOTREACHED_IN_MIGRATION();
-        [[fallthrough]];
+        NOTREACHED();
       case kSameAsAvailable:
         return available_size_.block_size;
       case kZero:
@@ -265,10 +263,8 @@ class CORE_EXPORT ConstraintSpace final {
         DCHECK(HasRareData());
         return rare_data_->replaced_percentage_resolution_block_size;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-
-    return available_size_.block_size;
   }
 
   // The size to use for percentage resolution of replaced elements.
@@ -1039,7 +1035,7 @@ class CORE_EXPORT ConstraintSpace final {
           new (&subgrid_data_) SubgridData(other.subgrid_data_);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
     ~RareData() {
@@ -1068,7 +1064,7 @@ class CORE_EXPORT ConstraintSpace final {
           subgrid_data_.~SubgridData();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
 
@@ -1127,8 +1123,7 @@ class CORE_EXPORT ConstraintSpace final {
         case DataUnionType::kSubgridData:
           return subgrid_data_.MaySkipLayout(other.subgrid_data_);
       }
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
 
     // Must be kept in sync with members checked within |MaySkipLayout|.
@@ -1170,8 +1165,7 @@ class CORE_EXPORT ConstraintSpace final {
         case DataUnionType::kSubgridData:
           return subgrid_data_.IsInitialForMaySkipLayout();
       }
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
 
     LayoutUnit BlockStartAnnotationSpace() const {

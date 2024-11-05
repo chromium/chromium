@@ -396,15 +396,14 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // See the class comment as to why we shouldn't call this function directly.
   void Paint(const PaintInfo&) const final {
     NOT_DESTROYED();
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset&,
                    HitTestPhase) final {
     NOT_DESTROYED();
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   void DeleteTextBoxes();

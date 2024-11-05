@@ -1977,8 +1977,7 @@ void SortNonOverflowingCandidates(
           case EPositionTryOrder::kMostWidth:
           case EPositionTryOrder::kMostHeight:
             // We should have already converted to logical.
-            NOTREACHED_IN_MIGRATION();
-            return false;
+            NOTREACHED();
         }
       });
 }

@@ -1962,8 +1962,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         positioned_state_ = kIsStickyPositioned;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   void ClearPositionedState() {

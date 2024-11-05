@@ -283,7 +283,7 @@ bool LineInfo::ShouldHangTrailingSpaces() const {
     case ETextAlign::kWebkitRight:
       return IsRtl(BaseDirection());
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool LineInfo::IsHyphenated() const {

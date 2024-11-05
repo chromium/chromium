@@ -260,7 +260,7 @@ class CORE_EXPORT FragmentItem final {
       line_.descendants_count = count;
       return;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Returns |PhysicalBoxFragment| if one is associated with this item.
@@ -308,8 +308,7 @@ class CORE_EXPORT FragmentItem final {
   LineBoxType GetLineBoxType() const {
     if (Type() == kLine)
       return static_cast<LineBoxType>(sub_type_);
-    NOTREACHED_IN_MIGRATION() << this;
-    return LineBoxType::kNormalLineBox;
+    NOTREACHED() << this;
   }
 
   static PhysicalRect LocalVisualRectFor(const LayoutObject& layout_object);
@@ -381,8 +380,7 @@ class CORE_EXPORT FragmentItem final {
     }
     if (Type() == kGeneratedText)
       return TextItemType::kLayoutGenerated;
-    NOTREACHED_IN_MIGRATION() << this;
-    return TextItemType::kNormal;
+    NOTREACHED() << this;
   }
 
   // True if this is a forced line break.

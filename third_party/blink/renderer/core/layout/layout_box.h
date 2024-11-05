@@ -1004,8 +1004,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject*) const {
     NOT_DESTROYED();
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   ShapeOutsideInfo* GetShapeOutsideInfo() const;

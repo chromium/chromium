@@ -85,8 +85,7 @@ LogicalOffset ComputeRelativeOffset(
       return container_writing_direction.IsLtr() ? LogicalOffset(*bottom, *left)
                                                  : LogicalOffset(*top, *left);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return LogicalOffset();
+      NOTREACHED();
   }
 }
 

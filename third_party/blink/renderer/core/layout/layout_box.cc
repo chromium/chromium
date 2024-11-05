@@ -1398,9 +1398,8 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
     case EFillBox::kContent:
       return PhysicalContentBoxRect();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return PhysicalRect();
 }
 
 void LayoutBox::AddOutlineRects(OutlineRectCollector& collector,
@@ -3302,8 +3301,7 @@ void LayoutBox::SetScrollableOverflowFromLayoutResults() {
         offset_adjust = {consumed_block_size, LayoutUnit()};
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     PhysicalRect fragment_scrollable_overflow = fragment.ScrollableOverflow();

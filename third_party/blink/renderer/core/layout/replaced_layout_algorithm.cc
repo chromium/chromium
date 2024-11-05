@@ -37,8 +37,7 @@ const LayoutResult* ReplacedLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult ReplacedLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
-  NOTREACHED_IN_MIGRATION();
-  return MinMaxSizesResult();
+  NOTREACHED();
 }
 
 // This is necessary for CanvasRenderingContext2D.placeElement().

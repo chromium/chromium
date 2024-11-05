@@ -133,8 +133,7 @@ inline const LayoutResult* LayoutInflow(
 AdjoiningObjectTypes ToAdjoiningObjectTypes(EClear clear) {
   switch (clear) {
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case EClear::kNone:
       return kAdjoiningNone;
     case EClear::kLeft:
@@ -2106,8 +2105,7 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
     return layout_result;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 LayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(

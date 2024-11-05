@@ -871,7 +871,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           new (&table_data) TableData(rare_data.table_data);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
 
@@ -898,7 +898,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           table_data.~TableData();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
 

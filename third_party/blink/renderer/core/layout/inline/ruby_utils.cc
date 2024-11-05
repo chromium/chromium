@@ -399,8 +399,7 @@ std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(LayoutUnit available_line_size,
     case ETextAlign::kStart:
     case ETextAlign::kEnd:
     case ETextAlign::kJustify:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return {LayoutUnit(), LayoutUnit()};
 }
@@ -526,9 +525,8 @@ void UpdateRubyColumnInlinePositions(
         inline_offset = inline_size;
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << " LogicalLineItems::size()=" << line_items.size()
-          << " LogicalRubyColumn::start_index=" << start_index;
+      NOTREACHED() << " LogicalLineItems::size()=" << line_items.size()
+                   << " LogicalRubyColumn::start_index=" << start_index;
     }
     // TODO(crbug.com/324111880): Handle overhang.
     column->annotation_items->MoveInInlineDirection(inline_offset);

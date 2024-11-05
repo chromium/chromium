@@ -120,8 +120,7 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
     case ETransformBox::kBorderBox:
       return bbox_changed;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,

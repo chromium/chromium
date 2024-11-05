@@ -34,8 +34,7 @@ LogicalOffset WritingModeConverter::SlowToLogical(
       }
       return LogicalOffset(offset.top, offset.left);
   }
-  NOTREACHED_IN_MIGRATION();
-  return LogicalOffset();
+  NOTREACHED();
 }
 
 gfx::PointF WritingModeConverter::SlowToLogical(
@@ -66,8 +65,7 @@ gfx::PointF WritingModeConverter::SlowToLogical(
       }
       return {offset.y(), offset.x()};
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 PhysicalOffset WritingModeConverter::SlowToPhysical(
@@ -103,8 +101,7 @@ PhysicalOffset WritingModeConverter::SlowToPhysical(
       }
       return PhysicalOffset(offset.block_offset, offset.inline_offset);
   }
-  NOTREACHED_IN_MIGRATION();
-  return PhysicalOffset();
+  NOTREACHED();
 }
 
 LogicalRect WritingModeConverter::SlowToLogical(

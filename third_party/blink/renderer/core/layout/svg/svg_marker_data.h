@@ -52,8 +52,7 @@ struct MarkerPosition {
       case kEndMarker:
         return marker_end;
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   SVGMarkerType type;

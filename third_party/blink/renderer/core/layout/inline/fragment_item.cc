@@ -202,8 +202,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
   }
 
   // CanCreateFragmentItem()
-  NOTREACHED_IN_MIGRATION();
-  CHECK(false);
+  NOTREACHED();
 }
 
 FragmentItem::FragmentItem(const FragmentItem& source)
@@ -308,7 +307,7 @@ bool FragmentItem::IsInlineBox() const {
     if (const PhysicalBoxFragment* box = BoxFragment()) {
       return box->IsInlineBox();
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return false;
 }
@@ -561,8 +560,7 @@ const ShapeResultView* FragmentItem::TextShapeResult() const {
     return text_.shape_result.Get();
   if (Type() == kGeneratedText)
     return generated_text_.shape_result.Get();
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 TextOffsetRange FragmentItem::TextOffset() const {
@@ -570,8 +568,7 @@ TextOffsetRange FragmentItem::TextOffset() const {
     return text_.text_offset;
   if (Type() == kGeneratedText)
     return {0, generated_text_.text.length()};
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 unsigned FragmentItem::StartOffsetInContainer(
@@ -602,8 +599,7 @@ StringView FragmentItem::Text(const FragmentItems& items) const {
   }
   if (Type() == kGeneratedText)
     return GeneratedText();
-  NOTREACHED_IN_MIGRATION();
-  return StringView();
+  NOTREACHED();
 }
 
 TextFragmentPaintInfo FragmentItem::TextPaintInfo(
@@ -616,8 +612,7 @@ TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     return {generated_text_.text, 0, generated_text_.text.length(),
             generated_text_.shape_result.Get()};
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 TextDirection FragmentItem::BaseDirection() const {
@@ -886,8 +881,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
   if (IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
     // TODO(crbug.com/1099613): This should not happen, as long as it is really
     // layout-clean. It looks like there are cases where the layout is dirty.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (IsText()) {
@@ -982,7 +976,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 PhysicalRect FragmentItem::RecalcInkOverflowForDescendantsOf(
@@ -1136,8 +1130,7 @@ PhysicalRect FragmentItem::LocalRect(StringView text,
     case WritingMode::kSidewaysLr:
       return {LayoutUnit(), height - end_position, width, inline_size};
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 PhysicalRect FragmentItem::ComputeTextBoundsRectForHitTest(

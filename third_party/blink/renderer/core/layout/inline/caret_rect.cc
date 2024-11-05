@@ -95,8 +95,7 @@ bool ShouldAlignCaretRight(ETextAlign text_align, TextDirection direction) {
     case ETextAlign::kEnd:
       return IsLtr(direction);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 LayoutUnit ClampAndRound(LayoutUnit value, LayoutUnit min, LayoutUnit max) {
@@ -215,8 +214,7 @@ LocalCaretRect ComputeLocalCaretRect(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return {layout_object, PhysicalRect()};
+  NOTREACHED();
 }
 
 LocalCaretRect ComputeLocalSelectionRect(

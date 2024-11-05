@@ -125,8 +125,7 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
       return AxisEdge::kStart;
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:
-      NOTREACHED_IN_MIGRATION();
-      return AxisEdge::kStart;
+      NOTREACHED();
   }
 }
 

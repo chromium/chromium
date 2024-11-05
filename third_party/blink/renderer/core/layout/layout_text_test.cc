@@ -58,8 +58,7 @@ class LayoutTextTest : public RenderingTest {
       if (node.GetLayoutObject() && node.GetLayoutObject()->IsText())
         return To<LayoutText>(node.GetLayoutObject());
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   PhysicalRect GetSelectionRectFor(const std::string& selection_text) {

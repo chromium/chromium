@@ -723,8 +723,7 @@ LayoutBox* LayoutBlock::CreateAnonymousBoxWithSameTypeAs(
 
 const char* LayoutBlock::GetName() const {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
-  return "LayoutBlock";
+  NOTREACHED();
 }
 
 LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(

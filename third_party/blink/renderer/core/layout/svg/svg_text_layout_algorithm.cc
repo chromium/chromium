@@ -572,8 +572,7 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
       const bool is_ltr = style.IsLeftToRightDirection();
       switch (style.TextAnchor()) {
         default:
-          NOTREACHED_IN_MIGRATION();
-          [[fallthrough]];
+          NOTREACHED();
         case ETextAnchor::kStart:
           shift = is_ltr ? shift - min_position : shift - max_position;
           break;

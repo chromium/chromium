@@ -431,7 +431,7 @@ LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
 
 void LayoutInline::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 template <typename PhysicalRectCollector>

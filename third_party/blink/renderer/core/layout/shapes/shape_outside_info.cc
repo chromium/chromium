@@ -147,8 +147,7 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
       break;
     }
     case CSSBoxType::kMissing:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   new_reference_box_logical_size.ClampNegativeToZero();
@@ -351,8 +350,7 @@ LayoutUnit ShapeOutsideInfo::BlockStartOffset() const {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 LayoutUnit ShapeOutsideInfo::InlineStartOffset() const {
@@ -372,8 +370,7 @@ LayoutUnit ShapeOutsideInfo::InlineStartOffset() const {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {

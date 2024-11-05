@@ -423,8 +423,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
           RestoreTrailingCollapsibleSpace(last_item);
           return false;
         case InlineItem::kOpaqueToCollapsing:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } else if (last_item->EndCollapseType() == InlineItem::kCollapsed) {
       RestoreTrailingCollapsibleSpace(last_item);
@@ -533,8 +532,7 @@ template <>
 bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     const InlineNodeData&,
     LayoutText*) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 template <typename MappingBuilder>

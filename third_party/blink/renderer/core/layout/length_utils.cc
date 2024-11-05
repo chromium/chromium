@@ -130,14 +130,11 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kNone:
       return kIndefiniteSize;
     case Length::kFlex:
-      NOTREACHED_IN_MIGRATION() << "Should only be used for grid.";
-      return kIndefiniteSize;
+      NOTREACHED() << "Should only be used for grid.";
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
-      NOTREACHED_IN_MIGRATION()
-          << "Should only be used for viewport definitions.";
-      return kIndefiniteSize;
+      NOTREACHED() << "Should only be used for viewport definitions.";
   }
 }
 
@@ -236,14 +233,11 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kNone:
       return kIndefiniteSize;
     case Length::kFlex:
-      NOTREACHED_IN_MIGRATION() << "Should only be used for grid.";
-      return kIndefiniteSize;
+      NOTREACHED() << "Should only be used for grid.";
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
-      NOTREACHED_IN_MIGRATION()
-          << "Should only be used for viewport definitions.";
-      return kIndefiniteSize;
+      NOTREACHED() << "Should only be used for viewport definitions.";
   }
 }
 
@@ -1056,10 +1050,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       // Stretch to the available-size if it is definite.
       size = ResolveMainInlineLength(
           space, style, border_padding,
-          [](SizeType) -> MinMaxSizesResult {
-            NOTREACHED_IN_MIGRATION();
-            return MinMaxSizesResult();
-          },
+          [](SizeType) -> MinMaxSizesResult { NOTREACHED(); },
           Length::Stretch(), /* auto_length */ nullptr,
           /* override_available_size */ kIndefiniteSize);
     }
@@ -1562,8 +1553,7 @@ LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,
       return space_left;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return LayoutUnit();
+      NOTREACHED();
   }
 }
 

@@ -743,7 +743,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
             remaining_deficit -= delta;
             *computed_size = *column->max_inline_size + delta;
           } else {
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
           }
         }
         if (remaining_deficit != LayoutUnit()) {
