@@ -8295,6 +8295,21 @@
             ]
         }
     ],
+    "DisableSystemBlur": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "DisableSystemBlur",
+                    "enable_features": [
+                        "DisableSystemBlur"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableTrimmingWhileSuspended": [
         {
             "platforms": [
