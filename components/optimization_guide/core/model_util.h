@@ -41,17 +41,6 @@ base::FilePath GetBaseFileNameForModels();
 // metadata.
 base::FilePath GetBaseFileNameForModelInfo();
 
-// Returns the separator used in the model override switch below, which differs
-// between platforms.
-std::string ModelOverrideSeparator();
-
-// Returns the file path string and metadata for the model provided via
-// command-line for |optimization_target|, if applicable.
-std::optional<
-    std::pair<std::string, std::optional<optimization_guide::proto::Any>>>
-GetModelOverrideForOptimizationTarget(
-    optimization_guide::proto::OptimizationTarget optimization_target);
-
 // Checks all the files in |file_paths_to_check| exists.
 bool CheckAllPathsExist(const std::vector<base::FilePath>& file_paths_to_check);
 

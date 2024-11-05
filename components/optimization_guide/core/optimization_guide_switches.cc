@@ -232,11 +232,6 @@ bool ShouldSkipModelDownloadVerificationForTesting() {
   return command_line->HasSwitch(kDisableModelDownloadVerificationForTesting);
 }
 
-bool IsModelOverridePresent() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kModelOverride);
-}
-
 bool ShouldValidateModel() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kModelValidate);
@@ -245,13 +240,6 @@ bool ShouldValidateModel() {
 bool ShouldValidateModelExecution() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kModelExecutionValidate);
-}
-
-std::optional<std::string> GetModelOverride() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kModelOverride))
-    return std::nullopt;
-  return command_line->GetSwitchValueASCII(kModelOverride);
 }
 
 std::optional<std::string> GetOnDeviceModelExecutionOverride() {

@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/prediction_model_override.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "content/public/test/browser_test.h"
 

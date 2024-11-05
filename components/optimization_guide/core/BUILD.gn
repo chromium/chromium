@@ -503,6 +503,7 @@ source_set("unit_tests") {
     "prediction_model_download_manager_unittest.cc",
     "prediction_model_fetch_timer_unittest.cc",
     "prediction_model_fetcher_unittest.cc",
+    "prediction_model_override_unittest.cc",
     "prediction_model_store_unittest.cc",
     "push_notification_manager_unittest.cc",
     "store_update_data_unittest.cc",
