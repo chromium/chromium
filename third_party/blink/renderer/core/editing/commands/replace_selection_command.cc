@@ -2064,7 +2064,7 @@ Node* ReplaceSelectionCommand::InsertAsListItems(HTMLElement* list_element,
       inserted_nodes.RespondToNodeInsertion(*list_item);
       last_node = list_item;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   if (is_start || is_middle) {

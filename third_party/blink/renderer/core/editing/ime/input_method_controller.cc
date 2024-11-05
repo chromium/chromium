@@ -299,7 +299,7 @@ int ComputeAutocapitalizeFlags(const Element* element) {
       flags |= kWebTextInputFlagAutocapitalizeSentences;
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return flags;
@@ -492,7 +492,7 @@ void InputMethodController::InsertTextDuringCompositionWithEvents(
                                                    kTextEventInputComposition);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

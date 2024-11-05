@@ -163,7 +163,7 @@ class Parser final {
       HandleCharacterData(data);
       return;
     }
-    NOTREACHED_IN_MIGRATION() << node;
+    NOTREACHED() << node;
   }
 
   Node* anchor_node_ = nullptr;
@@ -310,7 +310,7 @@ class Serializer final {
       builder_.Append("?>");
       return;
     }
-    NOTREACHED_IN_MIGRATION() << node;
+    NOTREACHED() << node;
   }
 
   void HandleSelection(const ContainerNode& node, int offset) {

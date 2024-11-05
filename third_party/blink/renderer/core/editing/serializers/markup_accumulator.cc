@@ -167,8 +167,7 @@ void MarkupAccumulator::AppendStartMarkup(const Node& node) {
       formatter_.AppendText(markup_, To<Text>(node));
       break;
     case Node::kElementNode:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case Node::kAttributeNode:
       // Only XMLSerializer can pass an Attr.  So, |documentIsHTML| flag is
       // false.

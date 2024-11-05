@@ -84,18 +84,13 @@ ForwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
     case InternalState::kStartForwardWaitTrailSurrgate:  // Fallthrough
     case InternalState::kSearch:                         // Fallthrough
     case InternalState::kSearchWaitTrailSurrogate:       // Fallthrough
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call feedPrecedingCodeUnit() once "
-          << TextSegmentationMachineState::kNeedFollowingCodeUnit
-          << " is returned. InternalState: " << internal_state_;
-      return Finish();
+      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once "
+                   << TextSegmentationMachineState::kNeedFollowingCodeUnit
+                   << " is returned. InternalState: " << internal_state_;
     case InternalState::kFinished:
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call feedPrecedingCodeUnit() once it finishes.";
-      return Finish();
+      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once it finishes.";
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << internal_state_;
-  return Finish();
+  NOTREACHED() << "Unhandled state: " << internal_state_;
 }
 
 TextSegmentationMachineState
@@ -103,11 +98,9 @@ ForwardGraphemeBoundaryStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
   switch (internal_state_) {
     case InternalState::kCountRIS:  // Fallthrough
     case InternalState::kCountRISWaitLeadSurrogate:
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call feedFollowingCodeUnit() until "
-          << TextSegmentationMachineState::kNeedFollowingCodeUnit
-          << " is returned. InternalState: " << internal_state_;
-      return Finish();
+      NOTREACHED() << "Do not call feedFollowingCodeUnit() until "
+                   << TextSegmentationMachineState::kNeedFollowingCodeUnit
+                   << " is returned. InternalState: " << internal_state_;
     case InternalState::kStartForward:
       DCHECK_EQ(prev_code_point_, kUnsetCodePoint);
       DCHECK_EQ(boundary_offset_, 0);
@@ -178,12 +171,9 @@ ForwardGraphemeBoundaryStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
         return MoveToNextState(InternalState::kSearch);
       }
     case InternalState::kFinished:
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call feedFollowingCodeUnit() once it finishes.";
-      return Finish();
+      NOTREACHED() << "Do not call feedFollowingCodeUnit() once it finishes.";
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled staet: " << internal_state_;
-  return Finish();
+  NOTREACHED() << "Unhandled state: " << internal_state_;
 }
 
 TextSegmentationMachineState
@@ -253,9 +243,8 @@ void ForwardGraphemeBoundaryStateMachine::FinishWithEndOfText() {
     case InternalState::kSearchWaitTrailSurrogate:  // Fallthrough
       return;
     case InternalState::kFinished:  // Fallthrough
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call finishWithEndOfText() once it finishes.";
+      NOTREACHED() << "Do not call finishWithEndOfText() once it finishes.";
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << internal_state_;
+  NOTREACHED() << "Unhandled state: " << internal_state_;
 }
 }  // namespace blink

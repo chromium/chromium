@@ -731,7 +731,7 @@ PositionTemplate<Strategy> PreviousPositionOfAlgorithm(
         return PositionTemplate<Strategy>(
             node, PreviousGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED_IN_MIGRATION() << "Unhandled moveType: " << move_type;
+        NOTREACHED() << "Unhandled moveType: " << move_type;
     }
   }
 
@@ -787,15 +787,13 @@ PositionTemplate<Strategy> NextPositionOfAlgorithm(
       case PositionMoveType::kCodeUnit:
         return PositionTemplate<Strategy>::EditingPositionOf(node, offset + 1);
       case PositionMoveType::kBackwardDeletion:
-        NOTREACHED_IN_MIGRATION()
-            << "BackwardDeletion is only available for prevPositionOf "
-            << "functions.";
-        return PositionTemplate<Strategy>::EditingPositionOf(node, offset + 1);
+        NOTREACHED() << "BackwardDeletion is only available for prevPositionOf "
+                     << "functions.";
       case PositionMoveType::kGraphemeCluster:
         return PositionTemplate<Strategy>::EditingPositionOf(
             node, NextGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED_IN_MIGRATION() << "Unhandled moveType: " << move_type;
+        NOTREACHED() << "Unhandled moveType: " << move_type;
     }
   }
 
@@ -1145,8 +1143,7 @@ HTMLElement* CreateDefaultParagraphElement(Document& document) {
       return MakeGarbageCollected<HTMLParagraphElement>(document);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool IsTabHTMLSpanElement(const Node* node) {
@@ -1359,8 +1356,7 @@ Position ComputePositionForNodeRemoval(const Position& position,
         return position;
       return Position::InParentBeforeNode(node);
   }
-  NOTREACHED_IN_MIGRATION() << "We should handle all PositionAnchorType";
-  return position;
+  NOTREACHED() << "We should handle all PositionAnchorType";
 }
 
 bool IsMailHTMLBlockquoteElement(const Node* node) {

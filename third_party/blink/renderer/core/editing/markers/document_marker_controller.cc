@@ -88,8 +88,7 @@ DocumentMarker::MarkerTypeIndex MarkerTypeToMarkerIndex(
       return DocumentMarker::kCustomHighlightMarkerIndex;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return DocumentMarker::kSpellingMarkerIndex;
+  NOTREACHED();
 }
 
 DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
@@ -112,8 +111,7 @@ DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
       return MakeGarbageCollected<CustomHighlightMarkerListImpl>();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void InvalidateVisualOverflowForNode(const Node& node,

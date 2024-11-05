@@ -288,8 +288,7 @@ static bool ExecuteApplyParagraphStyle(LocalFrame& frame,
       frame.GetEditor().ApplyParagraphStyle(style, input_type);
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ExpandSelectionToGranularity(LocalFrame& frame,
@@ -437,8 +436,7 @@ static bool ExecuteDelete(LocalFrame& frame,
               : 0);
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool DeleteWithDirection(LocalFrame& frame,
@@ -662,8 +660,7 @@ static bool ExecuteForwardDelete(LocalFrame& frame,
         return false;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool ExecuteIgnoreSpelling(LocalFrame& frame,
@@ -1172,8 +1169,7 @@ static bool EnabledDelete(LocalFrame& frame,
       // range if non-empty, otherwise removes a character
       return EnabledInEditableText(frame, event, source);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool EnabledInRichlyEditableText(LocalFrame& frame,
@@ -1362,8 +1358,7 @@ static String ValueDefaultParagraphSeparator(const EditorInternalCommand&,
       return html_names::kPTag.LocalName();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 static String ValueFormatBlock(const EditorInternalCommand&,
@@ -2132,8 +2127,7 @@ bool EditorCommand::IsSupported() const {
     case EditorCommandSource::kDOM:
       return command_->is_supported_from_dom(frame_);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool EditorCommand::IsEnabled(Event* triggering_event) const {

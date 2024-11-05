@@ -80,8 +80,7 @@ PositionWithAffinityTemplate<Strategy> AdjustForInlineCaretPosition(
           position_with_affinity.Affinity());
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return position_with_affinity;
+  NOTREACHED();
 }
 
 template <typename Strategy>

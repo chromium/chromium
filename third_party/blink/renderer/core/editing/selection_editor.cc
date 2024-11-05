@@ -365,8 +365,7 @@ static Position UpdatePostionAfterAdoptingTextNodesMerged(
       return position;
     }
   }
-  NOTREACHED_IN_MIGRATION() << position;
-  return position;
+  NOTREACHED() << position;
 }
 
 void SelectionEditor::DidMergeTextNodes(

@@ -330,7 +330,7 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
     case State::kInactive:
     case State::kInHotModeInvocation:
     case State::kInColdModeInvocation:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

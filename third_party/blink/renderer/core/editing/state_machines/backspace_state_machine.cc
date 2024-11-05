@@ -195,14 +195,10 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       code_units_to_be_deleted_ -= 2;  // Code units of RIS
       return MoveToNextState(BackspaceState::kOddNumberedRIS);
     case BackspaceState::kFinished:
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call feedPrecedingCodeUnit() once it finishes.";
-      break;
+      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once it finishes.";
     default:
-      NOTREACHED_IN_MIGRATION() << "Unhandled state: " << state_;
+      NOTREACHED() << "Unhandled state: " << state_;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << state_;
-  return TextSegmentationMachineState::kInvalid;
 }
 
 TextSegmentationMachineState BackspaceStateMachine::TellEndOfPrecedingText() {
@@ -216,8 +212,7 @@ TextSegmentationMachineState BackspaceStateMachine::TellEndOfPrecedingText() {
 
 TextSegmentationMachineState BackspaceStateMachine::FeedFollowingCodeUnit(
     UChar code_unit) {
-  NOTREACHED_IN_MIGRATION();
-  return TextSegmentationMachineState::kInvalid;
+  NOTREACHED();
 }
 
 int BackspaceStateMachine::FinalizeAndGetBoundaryOffset() {

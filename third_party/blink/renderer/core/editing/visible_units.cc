@@ -1258,8 +1258,7 @@ static VisiblePositionTemplate<Strategy> NextPositionOfAlgorithm(
       return CreateVisiblePosition(SkipToEndOfEditingBoundary(
           next.DeepEquivalent(), position.GetPosition()));
   }
-  NOTREACHED_IN_MIGRATION();
-  return next;
+  NOTREACHED();
 }
 
 VisiblePosition NextPositionOf(const Position& position,
@@ -1345,8 +1344,7 @@ static VisiblePositionTemplate<Strategy> PreviousPositionOfAlgorithm(
           SkipToStartOfEditingBoundary(prev.DeepEquivalent(), position));
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return prev;
+  NOTREACHED();
 }
 
 VisiblePosition PreviousPositionOf(const VisiblePosition& visible_position,

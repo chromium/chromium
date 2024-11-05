@@ -1455,8 +1455,7 @@ static MutableCSSPropertyValueSet* ExtractEditingProperties(
                                    kOnlyInheritableEditingProperties);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void EditingStyle::MergeInlineAndImplicitStyleOfElement(

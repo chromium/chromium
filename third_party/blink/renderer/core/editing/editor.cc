@@ -868,8 +868,7 @@ static Range* FindStringBetweenPositions(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 Range* Editor::FindRangeOfString(

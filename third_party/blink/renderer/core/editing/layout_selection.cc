@@ -156,8 +156,7 @@ static EphemeralRangeInFlatTree CalcSelectionInFlatTree(
                              : EphemeralRangeInFlatTree(focus, anchor);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 // OldSelectedNodes is current selected Nodes with
@@ -421,8 +420,7 @@ static OldSelectedNodes ResetOldSelectedNodes(
           break;
         }
         default: {
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
         }
       }
     }
@@ -614,8 +612,7 @@ static LayoutTextSelectionStatus ComputeSelectionStatusForNode(
       return {start_offset.value(), end_offset.value(),
               SelectionIncludeEnd::kNotInclude};
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {0, 0, SelectionIncludeEnd::kNotInclude};
+      NOTREACHED();
   }
 }
 

@@ -370,7 +370,7 @@ void SpellChecker::MarkAndReplaceFor(
         }
         continue;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

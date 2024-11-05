@@ -140,10 +140,9 @@ void TextIteratorTextState::UpdatePositionOffsets(
     case PositionNodeType::kBeforeChildren:
     case PositionNodeType::kInText:
     case PositionNodeType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(position_node_type_);
+  NOTREACHED() << static_cast<int>(position_node_type_);
 }
 
 void TextIteratorTextState::EmitAltText(const HTMLElement& element) {
