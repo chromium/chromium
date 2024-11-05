@@ -137,8 +137,6 @@ TEST_F(DeviceSectionTest, SearchResultIncludeAudio) {
 
 // Verify registry updated with Printing search tags.
 TEST_F(DeviceSectionTest, SearchResultIncludePrinting) {
-  feature_list_.InitAndEnableFeature(
-      ash::features::kOsSettingsRevampWayfinding);
   device_section_ = std::make_unique<DeviceSection>(
       profile(), search_tag_registry(), printers_manager(), pref_service());
 

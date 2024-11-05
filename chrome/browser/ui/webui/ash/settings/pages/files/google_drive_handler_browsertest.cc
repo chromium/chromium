@@ -284,8 +284,7 @@ const TestParam kTestParams[] = {
     {
         .test_suffix = "BulkPinning_Revamp",
         .enabled_features =
-            {ash::features::kOsSettingsRevampWayfinding,
-             ash::features::kDriveFsBulkPinning,
+            {ash::features::kDriveFsBulkPinning,
              ash::features::kFeatureManagementDriveFsBulkPinning},
         .disabled_features = {},
     },

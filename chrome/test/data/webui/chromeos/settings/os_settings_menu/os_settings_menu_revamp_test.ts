@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Runs tests for the left menu of CrOS Settings, assuming the
- * kOsSettingsRevampWayfinding feature flag is enabled.
+ * @fileoverview Runs tests for the left menu of CrOS Settings.
  */
 
 import 'chrome://os-settings/os_settings.js';

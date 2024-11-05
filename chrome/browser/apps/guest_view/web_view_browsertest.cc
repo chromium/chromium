@@ -3140,26 +3140,18 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuInspectElement) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class WebViewSettingsRevampTest
-    : public WebViewTestBase,
-      public testing::WithParamInterface<testing::tuple<bool, bool>> {
+class WebViewSettingsRevampTest : public WebViewTestBase,
+                                  public testing::WithParamInterface<bool> {
  public:
   WebViewSettingsRevampTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{ash::features::kOsSettingsRevampWayfinding,
-          testing::get<0>(GetParam())},
-         {features::kGuestViewMPArch, testing::get<1>(GetParam())}});
+        {{features::kGuestViewMPArch, GetParam()}});
   }
   ~WebViewSettingsRevampTest() override = default;
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    const auto [revamp_wayfinding, mparch] = info.param;
-    return base::StringPrintf("%s_%s",
-                              revamp_wayfinding
-                                  ? "OsSettingsRevampWayfindingEnabled"
-                                  : "OsSettingsRevampWayfindingDisabled",
-                              mparch ? "MPArch" : "InnerWebContents");
+    return base::StringPrintf("%s", info.param ? "MPArch" : "InnerWebContents");
   }
 
  private:
@@ -3168,7 +3160,7 @@ class WebViewSettingsRevampTest
 
 INSTANTIATE_TEST_SUITE_P(WebViewTests,
                          WebViewSettingsRevampTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
+                         testing::Bool(),
                          WebViewSettingsRevampTest::DescribeParams);
 #endif
 
