@@ -655,6 +655,19 @@ void BrowserAccessibilityManager::OnLocationChanges(
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.BrowserAccessibilityManager::"
       "OnLocationChanges");
+
+  // Track as both a location change and a deserialization, so that we 'get
+  // credit' for the performance moving location-only changes to this
+  // lightweight code path (average time of OnAccessibilityEvents will go down).
+  TRACE_EVENT0(
+      "accessibility",
+      is_post_load_
+          ? "BrowserAccessibilityManager::OnAccessibilityEvents"
+          : "BrowserAccessibilityManager::OnAccessibilityEventsLoading");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.BrowserAccessibilityManager::"
+      "OnAccessibilityEvents2");
+
   bool can_fire_events = CanFireEvents();
   for (auto& change : changes.scroll_changes) {
     BrowserAccessibility* obj = GetFromID(change.id);
