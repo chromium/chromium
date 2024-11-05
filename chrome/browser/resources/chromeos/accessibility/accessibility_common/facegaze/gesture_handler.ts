@@ -39,19 +39,23 @@ export class GestureHandler {
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
   private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
   private mouseController_: MouseController;
+  private bubbleController_: BubbleController;
   private repeatDelayMs_ = GestureHandler.DEFAULT_REPEAT_DELAY_MS;
   private prefsListener_: (prefs: any) => void;
   private toggleInfoListener_: (enabled: boolean) => void;
   // The most recently detected gestures. We track this to know when a gesture
   // has ended.
   private previousGestures_: FacialGesture[] = [];
-  private macrosToCompleteLater_: Map<FacialGesture, Macro> = new Map();
+  private macrosToCompleteLater_:
+      Map<FacialGesture, {macro: Macro, displayText: string}> = new Map();
   private paused_ = false;
   private isDictationActive_: () => boolean;
 
   constructor(
-      mouseController: MouseController, isDictationActive: () => boolean) {
+      mouseController: MouseController, bubbleController: BubbleController,
+      isDictationActive: () => boolean) {
     this.mouseController_ = mouseController;
+    this.bubbleController_ = bubbleController;
     this.isDictationActive_ = isDictationActive;
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.toggleInfoListener_ = enabled =>
@@ -76,8 +80,8 @@ export class GestureHandler {
     this.gestureLastRecognized_.clear();
     // Executing these macros clears their state, so that we aren't left in a
     // mouse down or key down state.
-    this.macrosToCompleteLater_.forEach((macro) => {
-      macro.run();
+    this.macrosToCompleteLater_.forEach((entry) => {
+      entry.macro.run();
     });
     this.macrosToCompleteLater_.clear();
   }
@@ -162,11 +166,27 @@ export class GestureHandler {
     });
   }
 
+  getHeldMacroDisplayStrings(): string[] {
+    const displayStrings: string[] = [];
+    for (const entry of this.macrosToCompleteLater_.values()) {
+      displayStrings.push(entry.displayText);
+    }
+    return displayStrings;
+  }
+
   detectMacros(result: FaceLandmarkerResult): DetectMacrosResult {
     const gestures = GestureDetector.detect(result, this.gestureToConfidence_);
     const {macros, displayText} = this.gesturesToMacros_(gestures);
-    macros.push(
-        ...this.popMacrosOnGestureEnd(gestures, this.previousGestures_));
+    const macrosOnGestureEnd =
+        this.popMacrosOnGestureEnd(gestures, this.previousGestures_);
+    // Because these macros are finished when the gesture is released rather
+    // than when the gesture is triggered for the second time, the bubble needs
+    // to be manually reset here to ensure the corresponding macro description
+    // is cleared rather than waiting for another FaceLandmarkerResult.
+    if (macrosOnGestureEnd.length > 0) {
+      this.bubbleController_.resetBubble();
+    }
+    macros.push(...macrosOnGestureEnd);
     this.previousGestures_ = gestures;
     return {macros, displayText};
   }
@@ -240,11 +260,13 @@ export class GestureHandler {
       const macro = this.macroFromName_(macroName, gesture);
       if (macro) {
         result.push(macro);
-        displayStrings.push(BubbleController.getDisplayText(gesture, macro));
+        const displayText = BubbleController.getDisplayText(gesture, macro);
+        displayStrings.push(displayText);
         if (macro.triggersAtActionStartAndEnd()) {
           // Cache this macro to be run a second time later,
           // e.g. for key release.
-          this.macrosToCompleteLater_.set(gesture, macro);
+          this.macrosToCompleteLater_.set(
+              gesture, {macro: macro, displayText: displayText});
         }
       }
     }
@@ -267,11 +289,11 @@ export class GestureHandler {
       if (!gestures.includes(previousGesture)) {
         // The gesture has stopped being recognized. Run the second half of this
         // macro, and stop saving it.
-        const macro = this.macrosToCompleteLater_.get(previousGesture);
-        if (!macro) {
+        const entry = this.macrosToCompleteLater_.get(previousGesture);
+        if (!entry || !entry.macro) {
           return;
         }
-        macrosForLater.push(macro);
+        macrosForLater.push(entry.macro);
         this.macrosToCompleteLater_.delete(previousGesture);
       }
     });

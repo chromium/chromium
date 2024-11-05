@@ -47,12 +47,13 @@ export class FaceGaze {
         dictation: isDictationActive() ?
             this.gestureHandler_.getGestureForDictation() :
             undefined,
+        heldActions: this.gestureHandler_.getHeldMacroDisplayStrings(),
       };
     });
 
     this.mouseController_ = new MouseController(this.bubbleController_);
-    this.gestureHandler_ =
-        new GestureHandler(this.mouseController_, isDictationActive);
+    this.gestureHandler_ = new GestureHandler(
+        this.mouseController_, this.bubbleController_, isDictationActive);
     this.metricsUtils_ = new MetricsUtils();
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init_();
