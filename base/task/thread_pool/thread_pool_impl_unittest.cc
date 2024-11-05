@@ -121,9 +121,9 @@ void VerifyTaskEnvironment(const TaskTraits& traits,
             PlatformThread::GetCurrentThreadType());
 
   if (traits.may_block())
-    internal::AssertBlockingAllowed();
+    AssertBlockingAllowed();
   else
-    internal::AssertBlockingDisallowedForTesting();
+    AssertBlockingDisallowedForTesting();
 
   // Verify that the thread the task is running on is named as expected.
   EXPECT_THAT(thread_name, ::testing::HasSubstr("ThreadPool"));

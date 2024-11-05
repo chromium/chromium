@@ -537,15 +537,9 @@ class BooleanWithOptionalStack {
 #endif
 };
 
-namespace internal {
-
-// Asserts that blocking calls are allowed in the current scope. This is an
-// internal call, external code should use ScopedBlockingCall instead, which
-// serves as a precise annotation of the scope that may/will block.
+// Asserts that blocking calls are allowed in the current scope.
 NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingAllowed();
 NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingDisallowedForTesting();
-
-}  // namespace internal
 
 // Disallows blocking on the current thread.
 NOT_TAIL_CALLED BASE_EXPORT void DisallowBlocking();

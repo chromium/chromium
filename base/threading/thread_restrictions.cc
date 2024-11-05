@@ -51,8 +51,6 @@ constinit thread_local BooleanWithOptionalStack
 
 }  // namespace
 
-namespace internal {
-
 void AssertBlockingAllowed() {
   DUMP_OR_DCHECK(!tls_blocking_disallowed)
       << "Function marked as blocking was called from a scope that disallows "
@@ -67,8 +65,6 @@ void AssertBlockingDisallowedForTesting() {
   DCHECK(tls_blocking_disallowed)
       << "tls_blocking_disallowed " << tls_blocking_disallowed;
 }
-
-}  // namespace internal
 
 void DisallowBlocking() {
   tls_blocking_disallowed = BooleanWithOptionalStack(true);

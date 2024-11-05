@@ -42,7 +42,7 @@ ScopedBlockingCall::ScopedBlockingCall(const Location& from_here,
   const AutoReset<bool> resetter(&construction_in_progress, true, false);
 #endif
 
-  internal::AssertBlockingAllowed();
+  AssertBlockingAllowed();
   TRACE_EVENT_BEGIN(
       "base", "ScopedBlockingCall", [&](perfetto::EventContext ctx) {
         ctx.event()->set_source_location_iid(
