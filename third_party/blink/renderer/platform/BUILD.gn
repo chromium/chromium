@@ -2550,6 +2550,7 @@ test("blink_platform_perftests") {
     "//testing/perf",
     "//third_party:freetype_harfbuzz",
   ]
+  data = [ "testing/data/" ]
 }
 
 group("blink_platform_unittests_data") {
