@@ -400,6 +400,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has client"/>
 </enum>
 
+<enum name="SchedulingLifecycleState">
+  <int value="0" label="Not throttled"/>
+  <int value="1" label="Hidden"/>
+  <int value="2" label="Throttled"/>
+  <int value="3" label="Stopped"/>
+</enum>
+
 <enum name="V8CodeCacheGetMetadataType">
   <int value="0" label="None"/>
   <int value="1" label="Hot timestamp"/>

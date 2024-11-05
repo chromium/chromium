@@ -749,6 +749,20 @@ void IDBRequest::SendResult(IDBAny* result) {
 void IDBRequest::AssignNewMetrics(AsyncTraceState metrics) {
   DCHECK(metrics_.IsEmpty());
   metrics_ = std::move(metrics);
+
+  // Grab the lifecycle state for metrics. This should be temporary code.
+  // `transaction_` only keeps track of an integral `scheduling_priority`.
+  if (GetExecutionContext()) {
+    std::ignore = GetExecutionContext()->GetScheduler()->AddLifecycleObserver(
+        FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
+        WTF::BindRepeating(
+            [](scheduler::SchedulingLifecycleState lifecycle_state) {
+              base::UmaHistogramEnumeration(
+                  "WebCore.IndexedDB.SchedulingLifecycleState", lifecycle_state,
+                  scheduler::SchedulingLifecycleState::kStopped);
+            }));
+  }
+
   metrics_.set_is_fg_client(transaction_ &&
                             (transaction_->db().scheduling_priority() == 0));
 }

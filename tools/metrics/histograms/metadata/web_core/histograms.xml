@@ -486,6 +486,17 @@ chromium-metrics-reviews@google.com.
   <token key="RequestType" variants="IdbRequestType"/>
 </histogram>
 
+<histogram name="WebCore.IndexedDB.SchedulingLifecycleState"
+    enum="SchedulingLifecycleState" expires_after="2025-01-29">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The scheduling lifecycle state of the Execution Context for a request. This
+    is recorded whenever metrics state is snapshotted for
+    WebCore.IndexedDB.Request* histograms.
+  </summary>
+</histogram>
+
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive"
     units="ms" expires_after="2024-12-08">
   <owner>estade@chromium.org</owner>

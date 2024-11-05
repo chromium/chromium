@@ -152,6 +152,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
       other.start_time_ = base::TimeTicks();
       id_ = other.id_;
       other.id_ = 0;
+      is_fg_client_ = other.is_fg_client_;
     }
     AsyncTraceState& operator=(AsyncTraceState&& rhs) {
       DCHECK(IsEmpty());
@@ -161,6 +162,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
       rhs.start_time_ = base::TimeTicks();
       id_ = rhs.id_;
       rhs.id_ = 0;
+      is_fg_client_ = rhs.is_fg_client_;
       return *this;
     }
 
