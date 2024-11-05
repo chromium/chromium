@@ -525,6 +525,15 @@ class GnParser(object):
       target.sources.update(desc.get('sources', {}))
       target.local_aidl_includes = _extract_includes_from_aidl_args(
           desc.get('args', ''))
+    elif target.script == "//build/rust/run_bindgen.py":
+      # rust_bindgen is a supported module in Soong but GN depend on actions
+      # so we need to copy the action fields (sources, outputs and args) in
+      # order to correctly generate the `rust_bindgen` module.
+      target.sources.update(desc.get('sources', []))
+      outs = [re.sub('^//out/.+?/gen/', '', x) for x in desc['outputs']]
+      target.outputs.update(outs)
+      target.args = desc['args']
+      target.type = "rust_bindgen"
     elif target.type in ['action', 'action_foreach']:
       target.arch[arch].inputs.update(desc.get('inputs', []))
       target.arch[arch].sources.update(desc.get('sources', []))
@@ -618,7 +627,9 @@ class GnParser(object):
         target.deps.add(dep.name)
         target.transitive_jni_java_sources.update(
             dep.transitive_jni_java_sources)
-      elif dep.type in ['rust_binary', "rust_library", "rust_proc_macro"]:
+      elif dep.type in [
+          'rust_binary', "rust_library", "rust_proc_macro", "rust_bindgen"
+      ]:
         target.arch[arch].deps.add(dep.name)
       if dep.type in ['static_library', 'source_set']:
         # Bubble up static_libs and source_set. Necessary, since soong does not propagate

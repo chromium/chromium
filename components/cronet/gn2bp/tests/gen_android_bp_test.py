@@ -42,17 +42,52 @@ class GenerateAndroidBpTest(unittest.TestCase):
             '--cfg': {'feature=X', 'feature2=Y'}
         })
 
-  def test_rust_flags_throw_invalid(self):
-    self.assertRaisesRegex(
-        ValueError, "Field feature=float_roundtrip does not relate to any key",
-        lambda: gen_android_bp.normalize_rust_flags(['feature=float_roundtrip']
-                                                    ))
+  def test_rust_flags_throw_invalid_value_no_key(self):
+    with self.assertRaisesRegex(
+        ValueError, "Field feature=float_roundtrip does not relate to any key"):
+      gen_android_bp.normalize_rust_flags(['feature=float_roundtrip'])
 
-  def test_rust_flags_throw_invalid(self):
-    self.assertRaisesRegex(
+  def test_rust_flags_throw_invalid_unexpected_equal_signs(self):
+    with self.assertRaisesRegex(
         ValueError,
-        "Could not normalize flag --cfg=feature=A=B as it has multiple equal signs.",
-        lambda: gen_android_bp.normalize_rust_flags(['--cfg=feature=A=B']))
+        "Could not normalize flag --cfg=feature=A=B as it has multiple equal signs."
+    ):
+      gen_android_bp.normalize_rust_flags(['--cfg=feature=A=B'])
+
+  def test_get_bindgen_flags(self):
+    self.assertEqual(
+        gen_android_bp.get_bindgen_flags(["--bindgen-flags", "flag1", "flag2"]),
+        ["--flag1", "--flag2"])
+
+  def test_get_bindgen_flags_empty_should_throw(self):
+    with self.assertRaisesRegex(ValueError, "no flags were found"):
+      gen_android_bp.get_bindgen_flags(
+          ["--bindgen-flags", "--some_non_bindgen_flag"])
+
+  def test_get_bindgen_source_stem(self):
+    self.assertEqual(
+        gen_android_bp.get_bindgen_source_stem(["a.rs", "foo.cc", "bar.ff"]),
+        "a")
+
+  def test_get_bindgen_source_stem_complex(self):
+    self.assertEqual(
+        gen_android_bp.get_bindgen_source_stem(
+            ["foo/bar/file.rs", "path/foo.cc", "bar.ff"]), "file")
+
+  def test_get_bindgen_source_stem_multiple_rs_file_throws(self):
+    with self.assertRaisesRegex(
+        ValueError,
+        "Expected a single rust file in the target output but found more than one!"
+    ):
+      gen_android_bp.get_bindgen_source_stem(
+          ["foo/bar/file.rs", "path/foo.rs", "bar.ff"])
+
+  def test_get_bindgen_source_stem_no_rs_file_throws(self):
+    with self.assertRaisesRegex(
+        ValueError,
+        "Expected a single rust file in the target output but found none!"):
+      gen_android_bp.get_bindgen_source_stem(
+          ["foo/bar/file.cc", "path/foo.h", "bar.ff"])
 
   def test_rust_flag_at_symbol(self):
     # @filepath is allowed in rustflags to tell the compiler to write the output

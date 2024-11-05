@@ -47,6 +47,8 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 CRONET_LICENSE_NAME = "external_cronet_license"
 
+CPP_VERSION = 'c++17'
+
 # Default targets to translate to the blueprint file.
 DEFAULT_TARGETS = [
     "//components/cronet/android:cronet_api_java",
@@ -69,7 +71,9 @@ DEFAULT_TESTS = [
     '//third_party/netty-tcnative:netty-tcnative-so',
     '//third_party/netty4:netty_all_java',
     "//build/rust/tests/test_rust_static_library:test_rust_static_library",  # Added to make sure that rust still compiles
-    "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient__library",
+    "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient__library",  # Added to make sure that rust still compiles
+    "//build/rust/tests/bindgen_test:bindgen_test",  # Added to make sure that rust still compiles
+    '//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test'  # Added to make sure that rust still compiles
 ]
 
 EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
@@ -727,6 +731,11 @@ class Module(object):
     self.edition = None
     self.rustlibs = set()
     self.proc_macros = set()
+    self.wrapper_src = ""
+    self.source_stem = ""
+    self.bindgen_flags = set()
+    self.handle_static_inline = None
+    self.static_inline_library = ""
 
   def to_string(self, output):
     if self.comment:
@@ -791,9 +800,13 @@ class Module(object):
     self._output_field(output, 'crate_root')
     self._output_field(output, 'rustlibs')
     self._output_field(output, 'proc_macros')
+    self._output_field(output, 'source_stem')
+    self._output_field(output, 'bindgen_flags')
+    self._output_field(output, 'wrapper_src')
+    self._output_field(output, 'handle_static_inline')
+    self._output_field(output, 'static_inline_library')
     if self.rtti:
       self._output_field(output, 'rtti')
-
     target_out = []
     for arch, target in sorted(self.target.items()):
       # _output_field calls getattr(self, arch).
@@ -840,7 +853,7 @@ class Module(object):
     return self.type == "cc_genrule"
 
   def has_input_files(self):
-    if self.type in ["java_library", "java_import"]:
+    if self.type in ["java_library", "java_import", "rust_bindgen"]:
       return True
     if len(self.srcs) > 0:
       return True
@@ -1923,6 +1936,7 @@ def get_cmd_condition(arch):
   else:
     raise Exception(f'Unknown architecture type {arch}')
 
+
 def merge_cmd(modules, genrule_type):
   '''
   :param modules: dictionary whose key is arch name and value is module
@@ -1964,6 +1978,98 @@ def merge_modules(modules, genrule_type):
 
   merged_module.cmd = merge_cmd(modules, genrule_type)
   return merged_module
+
+
+def get_bindgen_source_stem(outputs: List[str]) -> str:
+  """Returns the appropriate source_stem for a bindgen module
+
+  Args:
+    outputs: The appropriate source stem to be used.
+
+  Returns:
+    source stem to be used for the bindgen module or raises
+    ValueError if more than a single .rs file is found
+  """
+  rs_output = None
+  for output in outputs:
+    if output.endswith(".rs"):
+      if rs_output:
+        raise ValueError(
+            f"Expected a single rust file in the target output but found more than one! Outputs: {outputs}"
+        )
+      rs_output = output
+  if not rs_output:
+    raise ValueError(
+        f"Expected a single rust file in the target output but found none! Outputs: {outputs}"
+    )
+  file_name = rs_output[:-3]
+  if "/" in file_name:
+    file_name = file_name.rsplit("/", 1)[1]
+  return file_name
+
+
+def get_bindgen_flags(args: List[str]) -> List[str]:
+  """Gets the appropriate bindgen_flags from the GN target args
+
+  Args:
+    args: GN target args
+
+  Raises:
+    ValueError: If --bindgen-flags was found but no args followed it.
+
+  Returns:
+    Gets the appropriate bindgen_flags from the GN target args
+  """
+  if "--bindgen-flags" not in args:
+    return []
+
+  bindgen_flags = []
+  for arg in args[args.index("--bindgen-flags") + 1:]:
+    if arg.startswith("--"):
+      # This is a new argument for the python script and not a bindgen argument.
+      break
+    bindgen_flags.append("--" + arg)
+
+  if len(bindgen_flags) == 0:
+    raise ValueError(
+        f"Found --bindgen-flags in bindgen args but no flags were found! args: {args}"
+    )
+  return bindgen_flags
+
+
+def create_bindgen_module(blueprint: Blueprint, target,
+                          module_name: str) -> Module:
+  module = Module("rust_bindgen", "lib" + module_name, target.name)
+  if len(target.sources) > 1:
+    raise ValueError(
+        f"Expected a single source file for bindgen but found {target.sources}."
+    )
+
+  if len(target.outputs) > 2:
+    raise ValueError(
+        f"Expected at most two output files for bindgen but found {target.outputs}"
+    )
+  module.wrapper_src = gn_utils.label_to_path(list(target.sources)[0])
+  module.crate_name = module_name
+
+  if "c++" in target.args:
+    # This is defined in the rust_bindgen templates where "C++" will
+    # be added to the args if `cpp` field is defined. Soong depends
+    # on `cpp_std` field to identify that this is a C++ header.
+    module.cpp_std = CPP_VERSION
+
+  module.source_stem = get_bindgen_source_stem(target.outputs)
+
+  if "--wrap-static-fns" in target.args:
+    module.handle_static_inline = True
+
+  module.bindgen_flags = get_bindgen_flags(target.args)
+  module.header_libs = ["fake_header_libs"]
+  module.min_sdk_version = 31
+  module.apex_available = [tethering_apex]
+  blueprint.add_module(module)
+  return module
+
 
 def create_action_module(blueprint, gn, target, genrule_type, is_test_target):
   '''
@@ -2123,6 +2229,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     module = create_proto_modules(blueprint, gn, target)
     if module is None:
       return None
+  elif target.type == "rust_bindgen":
+    module = create_bindgen_module(blueprint, target, bp_module_name)
   elif target.type == 'action':
     module = create_action_module(
         blueprint, gn, target,
@@ -2212,7 +2320,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   # in AOSP. Make every module visible to any module in external/cronet.
   module.visibility = {"//external/cronet:__subpackages__"}
 
-  if module.type.startswith("rust"):
+  if module.type in [
+      "rust_library_rlib", "rust_proc_macro", "rust_binary", "rust_ffi_static"
+  ]:
     module.crate_name = target.crate_name
     module.crate_root = gn_utils.label_to_path(target.crate_root)
     module.min_sdk_version = 30
@@ -2339,6 +2449,15 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         raise Exception(
             f"Trying to add an unknown type {dep_module.type} to a type of {module.type}"
         )
+    elif dep_module.type == "rust_bindgen":
+      module.srcs.add(":" + dep_module.name)
+      if module_target.type == "cc_library_static":
+        # rust_bindgen generates a .c / .cc file which has include
+        # defined from the root of the android tree.
+        module_target.include_dirs.append(".")
+        # The rust_bindgen has to know the name of the cc library which is going to
+        # consume it. We don't know that until we add the `rust_bindgen` as a dep.
+        dep_module.static_inline_library = module.name
     elif dep_module.type == "rust_library_rlib":
       module_target.rustlibs.add(dep_module.name)
     elif dep_module.type == "rust_ffi_static":
@@ -2437,7 +2556,7 @@ def create_cc_defaults_module():
       '-UANDROID',
   ]
   defaults.stl = 'none'
-  defaults.cpp_std = 'c++17'
+  defaults.cpp_std = CPP_VERSION
   defaults.min_sdk_version = 29
   defaults.apex_available.add(tethering_apex)
   return defaults
@@ -2556,6 +2675,12 @@ def _rebase_module(module: Module, blueprint_path: str) -> Union[Module, None]:
     module_copy.crate_root = _rebase_file(module_copy.crate_root,
                                           blueprint_path)
     if module_copy.crate_root is None:
+      return None
+
+  if module_copy.wrapper_src:
+    module_copy.wrapper_src = _rebase_file(module_copy.wrapper_src,
+                                           blueprint_path)
+    if module_copy.wrapper_src is None:
       return None
 
   if module_copy.srcs:
@@ -2752,6 +2877,7 @@ def _break_down_blueprint(top_level_blueprint: Blueprint):
           README_MAPPING[blueprint.get_buildgn_location()])
   return blueprints
 
+
 def main():
   parser = argparse.ArgumentParser(
       description='Generate Android.bp from a GN description.')
@@ -2834,7 +2960,7 @@ def main():
 // limitations under the License.
 //
 // This file is automatically generated by %s. Do not edit.
-""" % (tool_name)
+""" % (Path(__file__).name)
 
   for (path, blueprint) in final_blueprints.items():
     android_bp_file = Path(os.path.join(args.repo_root, path, "Android.bp"))
