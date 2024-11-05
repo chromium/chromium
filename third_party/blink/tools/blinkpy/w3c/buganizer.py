@@ -299,7 +299,9 @@ class BuganizerClient:
                                    http=ServiceAccountHttp(BUGANIZER_SCOPES))
         return response
 
-    def NewIssue(self, issue: BuganizerIssue) -> BuganizerIssue:
+    def NewIssue(self,
+                 issue: BuganizerIssue,
+                 use_markdown: bool = False) -> BuganizerIssue:
         """File a new bug with the `CreateIssue` RPC [0].
 
         [0]: ///depot/google3/google/devtools/issuetracker/v1/issuetracker_service.proto
@@ -323,6 +325,9 @@ class BuganizerClient:
                 'comment': issue.description,
             },
         }
+
+        if use_markdown:
+            new_issue['issueComment']['formattingMode'] = 'MARKDOWN'
 
         logging.warning('[BuganizerClient] PostIssue request: %s', new_issue)
         request = self._service.issues().create(body=new_issue)
