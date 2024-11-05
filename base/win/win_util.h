@@ -29,6 +29,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/strings/cstring_view.h"
 #include "base/win/windows_types.h"
@@ -125,6 +126,52 @@ BASE_EXPORT void SetAbortBehaviorForCrashReporting();
 // While tablet mode isn't officially supported in Windows 11, the function will
 // make an attempt to inspect other signals for tablet mode.
 BASE_EXPORT bool IsWindows10OrGreaterTabletMode(HWND hwnd);
+
+// The device convertibility functions below return references to cached data
+// to allow for complete test scenarios. See:
+// ScopedDeviceConvertibilityStateForTesting.
+//
+// Returns a reference to a cached value computed on first-use that is true only
+// if the device is a tablet, convertible, or detachable according to
+// RtlGetDeviceFamilyInfoEnum. Looks for the following values: Tablet(2),
+// Convertible(5), or Detachable(6).
+// https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-deployment-deviceform
+BASE_EXPORT bool& IsDeviceFormConvertible();
+
+// Returns a reference to a cached boolean that is true if the device hardware
+// is convertible. The value is determined via a WMI query for
+// Win32_SystemEnclosure. This should only be executed for a small amount of
+// devices that don't have ConvertibleChassis or ConvertibilityEnabled keys set.
+// https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-systemenclosure
+BASE_EXPORT bool& IsChassisConvertible();
+
+// Returns a reference to a cached boolean optional. If a value exists, it means
+// that the queried registry key, ConvertibilityEnabled, exists. Used by Surface
+// for devices that can't set deviceForm or ChassisType. The RegKey need not
+// exist, but if it does it will override other checks.
+BASE_EXPORT std::optional<bool>& GetConvertibilityEnabledOverride();
+
+// Returns a reference to a cached boolean optional. If a value exists, it means
+// that the queried registry key, ConvertibleChassis, exists. Windows may cache
+// the results of convertible chassis queries, preventing the need for running
+// the expensive WMI query. This should always be checked prior to running
+// `IsChassisConvertible()`.
+BASE_EXPORT std::optional<bool>& GetConvertibleChassisKeyValue();
+
+// Returns a function pointer that points to the lambda function that
+// tracks if the device's convertible slate mode state has ever changed, which
+// would indicate that proper GPIO drivers are available for a convertible
+// machine. A pointer is used so that the function at the address can be
+// replaced for testing purposes.
+bool (*&HasCSMStateChanged(void))();
+
+// Returns true if the device can be converted between table and desktop modes.
+// This function may make blocking calls to system facilities to make this
+// determination. As such, it must not be called from contexts that disallow
+// blocking (i.e., the UI thread). The steps to determine the convertibility are
+// based on the following publication:
+// https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/settings-for-better-tablet-experiences?source=recommendations
+BASE_EXPORT BASE_EXPORT bool QueryDeviceConvertibility();
 
 // A tablet is a device that is touch enabled and also is being used
 // "like a tablet". This is used by the following:
@@ -313,6 +360,32 @@ class BASE_EXPORT ScopedAzureADJoinStateForTesting {
 
  private:
   const bool initial_state_;
+};
+
+// Allows changing the return values of convertibility functions for the
+// lifetime of the object. The original state is restored upon destruction.
+class BASE_EXPORT
+    [[maybe_unused, nodiscard]] ScopedDeviceConvertibilityStateForTesting {
+ public:
+  using QueryFunction = bool (*)();
+  ScopedDeviceConvertibilityStateForTesting(
+      bool form_convertible,
+      bool chassis_convertible,
+      QueryFunction csm_changed,
+      std::optional<bool> convertible_chassis_key,
+      std::optional<bool> convertibility_enabled);
+  ScopedDeviceConvertibilityStateForTesting(
+      const ScopedDeviceConvertibilityStateForTesting&) = delete;
+  ScopedDeviceConvertibilityStateForTesting& operator=(
+      const ScopedDeviceConvertibilityStateForTesting&) = delete;
+  ~ScopedDeviceConvertibilityStateForTesting();
+
+ private:
+  AutoReset<bool> initial_form_convertible_;
+  AutoReset<bool> initial_chassis_convertible_;
+  AutoReset<QueryFunction> initial_csm_changed_;
+  AutoReset<std::optional<bool>> initial_convertible_chassis_key_;
+  AutoReset<std::optional<bool>> initial_convertibility_enabled_;
 };
 
 }  // namespace win

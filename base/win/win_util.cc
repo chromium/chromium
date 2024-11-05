@@ -33,6 +33,7 @@
 #include <strsafe.h>
 #include <tpcshrd.h>
 #include <uiviewsettingsinterop.h>
+#include <wbemidl.h>
 #include <windows.ui.viewmanagement.h>
 #include <winstring.h>
 #include <wrl/client.h>
@@ -54,25 +55,34 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/win/access_token.h"
+#include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/propvarutil.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_propvariant.h"
+#include "base/win/scoped_safearray.h"
+#include "base/win/scoped_variant.h"
 #include "base/win/shlwapi.h"
 #include "base/win/static_constants.h"
 #include "base/win/windows_version.h"
+#include "base/win/wmi.h"
 
 namespace base {
 namespace win {
 
 namespace {
+
+using QueryKeyFunction =
+    ScopedDeviceConvertibilityStateForTesting::QueryFunction;
 
 // Sets the value of |property_key| to |property_value| in |property_store|.
 bool SetPropVariantValueForPropertyStore(
@@ -217,6 +227,155 @@ NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
 
 }  // namespace
 
+// The device convertibility functions below return references to cached data
+// to allow for complete test scenarios. See:
+// ScopedDeviceConvertibilityStateForTesting.
+//
+// Returns a reference to a cached value computed on first-use that is true only
+// if the device is a tablet, convertible, or detachable according to
+// RtlGetDeviceFamilyInfoEnum. Looks for the following values: Tablet(2),
+// Convertible(5), or Detachable(6).
+// https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-deployment-deviceform
+bool& IsDeviceFormConvertible() {
+  static bool is_convertible = [] {
+    DWORD deviceForm = DEVICEFAMILYDEVICEFORM_UNKNOWN;
+    using lpfnRtlGetDeviceFamilyInfo =
+        VOID(WINAPI*)(ULONGLONG*, DWORD*, DWORD*);
+    static const lpfnRtlGetDeviceFamilyInfo get_device_family_info_fn =
+        reinterpret_cast<lpfnRtlGetDeviceFamilyInfo>(GetProcAddress(
+            ::GetModuleHandle(L"ntdll.dll"), "RtlGetDeviceFamilyInfoEnum"));
+    PCHECK(get_device_family_info_fn);
+    get_device_family_info_fn(/*pullUAPInfo=*/nullptr,
+                              /*pulDeviceFamily=*/nullptr, &deviceForm);
+
+    // Is not reliable for all devices. Surface Book 3 for instance has Chassis
+    // Type 9 (Laptop) and DeviceForm 0 (Unknown).
+    return (deviceForm == DEVICEFAMILYDEVICEFORM_TABLET) ||
+           (deviceForm == DEVICEFAMILYDEVICEFORM_CONVERTIBLE) ||
+           (deviceForm == DEVICEFAMILYDEVICEFORM_DETACHABLE);
+  }();
+  return is_convertible;
+}
+
+// Returns a reference to a cached boolean that is true if the device hardware
+// is convertible. The value is determined via a WMI query for
+// Win32_SystemEnclosure. This should only be executed for a small amount of
+// devices that don't have ConvertibleChassis or ConvertibilityEnabled keys set.
+// https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-systemenclosure
+bool& IsChassisConvertible() {
+  static bool chassis_convertible = [] {
+    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+    AssertComApartmentType(ComApartmentType::STA);
+
+    constexpr std::wstring_view kQuery =
+        L"select ChassisTypes from Win32_SystemEnclosure";
+    Microsoft::WRL::ComPtr<IEnumWbemClassObject> enumerator;
+    if (RunWmiQuery(kCimV2ServerName, std::wstring(kQuery), &enumerator)
+            .has_value()) {
+      return false;
+    }
+
+    ULONG obj_count = 0;
+    Microsoft::WRL::ComPtr<IWbemClassObject> info;
+    HRESULT hr = E_FAIL;
+    hr = enumerator->Next(25, 1, &info, &obj_count);
+    if (FAILED(hr)) {
+      return false;
+    }
+
+    // The accepted values for a convertible device are Tablet (30), Convertible
+    // (31), and Detachable (32).
+    enum ChassisType : int32_t {
+      kUnknownChassisType = 2,
+      kTabletChassisType = 30,
+      kConvertibleChassisType = 31,
+      kDetachableChassisType = 32,
+    };
+    int32_t chassis_type_id = kUnknownChassisType;
+
+    if (obj_count >= 1) {
+      ScopedVariant chassisTypeVariant;
+      hr = info->Get(L"ChassisTypes", 0, chassisTypeVariant.Receive(), nullptr,
+                     nullptr);
+      if (FAILED(hr)) {
+        return false;
+      }
+
+      // Although chassisType is documented as uint16[], the type in reality is
+      // a 32bit integer array.
+      if (chassisTypeVariant.type() == (VT_ARRAY | VT_I4)) {
+        ScopedSafearray safearray(chassisTypeVariant.Release().parray);
+        auto lock_scope = safearray.CreateLockScope<VT_I4>();
+        if (!lock_scope) {
+          return false;
+        }
+        chassis_type_id = (*lock_scope)[0];
+      }
+    }
+
+    return (chassis_type_id == kTabletChassisType) ||
+           (chassis_type_id == kConvertibleChassisType) ||
+           (chassis_type_id == kDetachableChassisType);
+  }();
+  return chassis_convertible;
+}
+
+// Returns a reference to a cached boolean optional. If a value exists, it means
+// that the queried registry key, ConvertibilityEnabled, exists. Used by Surface
+// for devices that can't set deviceForm or ChassisType. The RegKey need not
+// exist, but if it does it will override other checks.
+std::optional<bool>& GetConvertibilityEnabledOverride() {
+  static std::optional<bool> convertibility_enabled =
+      []() -> std::optional<bool> {
+    DWORD data;
+    base::win::RegKey key(
+        HKEY_LOCAL_MACHINE,
+        L"System\\CurrentControlSet\\Control\\PriorityControl",
+        KEY_QUERY_VALUE);
+    return key.ReadValueDW(L"ConvertibilityEnabled", &data) == ERROR_SUCCESS
+               ? std::make_optional(data != 0)
+               : std::nullopt;
+  }();
+  return convertibility_enabled;
+}
+
+// Returns a reference to a cached boolean optional. If a value exists, it means
+// that the queried registry key, ConvertibleChassis, exists. Windows may cache
+// the results of convertible chassis queries, preventing the need for running
+// the expensive WMI query. This should always be checked prior to running
+// `IsChassisConvertible()`.
+std::optional<bool>& GetConvertibleChassisKeyValue() {
+  static std::optional<bool> convertible_chassis = []() -> std::optional<bool> {
+    DWORD data;
+    base::win::RegKey key(HKEY_CURRENT_USER,
+                          L"SOFTWARE\\Microsoft\\TabletTip\\ConvertibleChassis",
+                          KEY_QUERY_VALUE);
+    return key.ReadValueDW(L"ConvertibleChassis", &data) == ERROR_SUCCESS
+               ? std::make_optional(data != 0)
+               : std::nullopt;
+  }();
+  return convertible_chassis;
+}
+
+// Returns a function pointer that points to the lambda function that
+// tracks if the device's convertible slate mode state has ever changed, which
+// would indicate that proper GPIO drivers are available for a convertible
+// machine. A pointer is used so that the function at the address can be
+// replaced for testing purposes.
+QueryKeyFunction& HasCSMStateChanged() {
+  static QueryKeyFunction state = []() {
+    DWORD data;
+    base::win::RegKey key(
+        HKEY_CURRENT_USER,
+        L"SOFTWARE\\Microsoft\\TabletTip\\ConvertibleSlateModeChanged",
+        KEY_QUERY_VALUE);
+    bool value_exists =
+        key.ReadValueDW(L"ConvertibleSlateModeChanged", &data) == ERROR_SUCCESS;
+    return (value_exists && data != 0);
+  };
+  return state;
+}
+
 // Uses the Windows 10 WRL API's to query the current system state. The API's
 // we are using in the function below are supported in Win32 apps as per msdn.
 // It looks like the API implementation is buggy at least on Surface 4 causing
@@ -233,7 +392,8 @@ bool IsWindows10OrGreaterTabletMode(HWND hwnd) {
     constexpr int kKeyboardPresent = 1;
     base::win::RegKey registry_key(
         HKEY_LOCAL_MACHINE,
-        L"System\\CurrentControlSet\\Control\\PriorityControl", KEY_READ);
+        L"System\\CurrentControlSet\\Control\\PriorityControl",
+        KEY_QUERY_VALUE);
     DWORD slate_mode = 0;
     bool value_exists = registry_key.ReadValueDW(L"ConvertibleSlateMode",
                                                  &slate_mode) == ERROR_SUCCESS;
@@ -263,6 +423,26 @@ bool IsWindows10OrGreaterTabletMode(HWND hwnd) {
       ABI::Windows::UI::ViewManagement::UserInteractionMode_Mouse;
   view_settings->get_UserInteractionMode(&mode);
   return mode == ABI::Windows::UI::ViewManagement::UserInteractionMode_Touch;
+}
+
+bool QueryDeviceConvertibility() {
+  // Ensure this function runs on a thread that allows blocking in the event
+  // that the WMI query in the chassis convertibility check is executed.
+  AssertBlockingAllowed();
+
+  if (const auto& convertibility_enabled = GetConvertibilityEnabledOverride()) {
+    return *convertibility_enabled;
+  }
+
+  if (const auto& convertible_chassis_key = GetConvertibleChassisKeyValue()) {
+    return *convertible_chassis_key;
+  }
+
+  if (IsDeviceFormConvertible() || IsChassisConvertible()) {
+    return true;
+  }
+
+  return (HasCSMStateChanged())();
 }
 
 // Returns true if a physical keyboard is detected on Windows 8 and up.
@@ -867,6 +1047,25 @@ ScopedAzureADJoinStateForTesting::ScopedAzureADJoinStateForTesting(bool state)
 ScopedAzureADJoinStateForTesting::~ScopedAzureADJoinStateForTesting() {
   *GetAzureADJoinStateStorage() = initial_state_;
 }
+
+ScopedDeviceConvertibilityStateForTesting::
+    ScopedDeviceConvertibilityStateForTesting(
+        bool form_convertible,
+        bool chassis_convertible,
+        QueryKeyFunction csm_changed,
+        std::optional<bool> convertible_chassis_key,
+        std::optional<bool> convertibility_enabled)
+    : initial_form_convertible_(&IsDeviceFormConvertible(), form_convertible),
+      initial_chassis_convertible_(&IsChassisConvertible(),
+                                   chassis_convertible),
+      initial_csm_changed_(&HasCSMStateChanged(), csm_changed),
+      initial_convertible_chassis_key_(&GetConvertibleChassisKeyValue(),
+                                       convertible_chassis_key),
+      initial_convertibility_enabled_(&GetConvertibilityEnabledOverride(),
+                                      convertibility_enabled) {}
+
+ScopedDeviceConvertibilityStateForTesting::
+    ~ScopedDeviceConvertibilityStateForTesting() = default;
 
 }  // namespace win
 }  // namespace base
