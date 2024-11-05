@@ -34,17 +34,6 @@ class VideoFrameYUVMailboxesHolder;
 // images.
 class MEDIA_EXPORT VideoFrameYUVConverter {
  public:
-  // These parameters are only supported by ConvertYUVVideoFrame et al when the
-  // specified RasterContextProvider also has a GrContext (equivalently, when
-  // OOP-R is disabled). Isolate them in their own structure, so they can
-  // eventually be removed once OOP-R is universal.
-  struct GrParams {
-    unsigned int internal_format = GL_RGBA;
-    unsigned int type = GL_UNSIGNED_BYTE;
-    bool flip_y = false;
-    bool use_visible_rect = false;
-  };
-
   VideoFrameYUVConverter();
   ~VideoFrameYUVConverter();
   static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
@@ -54,7 +43,7 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
   bool ConvertYUVVideoFrame(const VideoFrame* video_frame,
                             viz::RasterContextProvider* raster_context_provider,
                             const gpu::MailboxHolder& dest_mailbox_holder,
-                            std::optional<GrParams> gr_params = std::nullopt);
+                            bool use_visible_rect = false);
   void ReleaseCachedData();
 
  private:

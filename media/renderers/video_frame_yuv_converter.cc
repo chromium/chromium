@@ -28,7 +28,7 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
-    std::optional<GrParams> gr_params) {
+    bool use_visible_rect) {
   CHECK(video_frame);
   CHECK(!video_frame->HasSharedImage());
   DCHECK(IsVideoFrameFormatSupported(*video_frame))
@@ -37,21 +37,16 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
       << "|video_frame| must have an area > 0";
   DCHECK(raster_context_provider);
 
-  if (!holder_)
+  if (!holder_) {
     holder_ = std::make_unique<VideoFrameYUVMailboxesHolder>();
-
-  // The RasterInterface path does not support flip_y.
-  if (gr_params) {
-    DCHECK(!gr_params->flip_y);
   }
 
   auto* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
 
-  auto source_rect = gr_params && gr_params->use_visible_rect
-                         ? video_frame->visible_rect()
-                         : gfx::Rect(video_frame->coded_size());
+  auto source_rect = use_visible_rect ? video_frame->visible_rect()
+                                      : gfx::Rect(video_frame->coded_size());
 
   // For pure software pixel upload path with video frame that does not have
   // textures.

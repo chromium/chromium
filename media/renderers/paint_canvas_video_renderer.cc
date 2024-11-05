@@ -1970,13 +1970,10 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
                         source_rect.x(), source_rect.y(), source_rect.width(),
                         source_rect.height(), GL_FALSE, GL_FALSE);
   } else {
-    VideoFrameYUVConverter::GrParams yuv_gr_params;
-    yuv_gr_params.use_visible_rect = use_visible_rect;
-
     // TODO(vasilyt): Add caching support
     VideoFrameYUVConverter converter;
     converter.ConvertYUVVideoFrame(video_frame.get(), raster_context_provider,
-                                   destination, yuv_gr_params);
+                                   destination, use_visible_rect);
   }
 
   gpu::SyncToken sync_token;
