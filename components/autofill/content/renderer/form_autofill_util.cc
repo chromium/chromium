@@ -294,8 +294,8 @@ bool IsTraversableContainerElement(const WebNode& node) {
          HasTagName<kTable>(element);
 }
 
-// This function checks whether the children of |element|
-// are of the type <script>, <meta>, or <title>.
+// This function checks whether the children of `element` are of the type
+// <script>, <meta>, <title> or <style>.
 bool IsWebElementEmpty(const WebElement& root) {
   if (!root) {
     return true;
@@ -315,7 +315,8 @@ bool IsWebElementEmpty(const WebElement& root) {
     WebElement element = child.To<WebElement>();
     if (!element.HasHTMLTagName(GetWebString<kScript>()) &&
         !element.HasHTMLTagName(GetWebString<kMeta>()) &&
-        !element.HasHTMLTagName(GetWebString<kTitle>())) {
+        !element.HasHTMLTagName(GetWebString<kTitle>()) &&
+        !element.HasHTMLTagName(GetWebString<kStyle>())) {
       return false;
     }
   }
