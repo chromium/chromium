@@ -109,8 +109,9 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
   coalesce_next_target_deletion_ = false;
   coalesce_next_target_creation_ = false;
 
-  for (const auto& [event_id, event] : events) {
-    const auto& [event_flags, event_path, event_inode] = event;
+  for (auto it = events.begin(); it != events.end(); it++) {
+    auto event_id = it->first;
+    const auto& [event_flags, event_path, event_inode] = it->second;
 
     // Skip coalesced events.
     if (base::Contains(coalesced_event_ids, event_id)) {
@@ -166,65 +167,82 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
     // Use the `kFSEventStreamEventFlagItemRenamed` flag to identify a 'move'
     // event.
     if (event_flags & kFSEventStreamEventFlagItemRenamed) {
-      // Based on testing, moves within-scope for FSEvents will have
-      // consecutive event ids that differ by 1, and the event with the higher
-      // event id represents the "moved to" part of a move event. This allows
-      // us to check if there's a "matching" rename event, based on event id,
-      // that needs to be coalesced in the case that a move within-scope has
-      // occurred.
-      const auto next_event_it = events.find(event_id + 1);
-      if (next_event_it != events.end()) {
-        ChangeEvent next_event = next_event_it->second;
-        std::optional<uint64_t> next_event_inode = next_event.event_inode;
-        const base::FilePath next_event_path = next_event.event_path;
-
-        if ((next_event.event_flags & kFSEventStreamEventFlagItemRenamed) &&
-            event_inode.has_value() && next_event_inode.has_value() &&
-            event_inode == next_event_inode) {
-          bool next_event_in_scope =
-              IsPathInScope(target_, next_event_path, recursive_watch_);
-
-          // Both the current event and the next event must be in-scope for a
-          // move within-scope to be reported.
-          if (event_in_scope && next_event_in_scope) {
-            coalesced_event_ids.push_back(event_id + 1);
-            FilePathWatcher::ChangeInfo change_info = {
-                file_path_type, FilePathWatcher::ChangeType::kMoved,
-                next_event_path, event_path};
-            callback_.Run(std::move(change_info),
-                          report_modified_path_ ? next_event_path : target_,
-                          /*error=*/false);
-            continue;
-          }
-
-          // It can occur in non-recursive watches that a "matching" move
-          // event is found (passes all checks for event id, event flags, and
-          // inode comparison), but either the current event path or the next
-          // event path is out of scope, from the implementation's
-          // perspective. When this is the case, determine if a move in or
-          // out-of-scope has taken place.
-          if (event_in_scope && !next_event_in_scope) {
-            coalesced_event_ids.push_back(event_id + 1);
-            FilePathWatcher::ChangeInfo change_info = {
-                file_path_type, FilePathWatcher::ChangeType::kDeleted,
-                event_path};
-            callback_.Run(std::move(change_info),
-                          report_modified_path_ ? event_path : target_,
-                          /*error=*/false);
-            continue;
-          }
-          if (!event_in_scope && next_event_in_scope) {
-            coalesced_event_ids.push_back(event_id + 1);
-            FilePathWatcher::ChangeInfo change_info = {
-                file_path_type, FilePathWatcher::ChangeType::kCreated,
-                next_event_path};
-            callback_.Run(std::move(change_info),
-                          report_modified_path_ ? next_event_path : target_,
-                          /*error=*/false);
-            continue;
-          }
+      // Find the matching moved_to event via inode.
+      auto move_to_event_it = std::find_if(
+          std::next(it, 1), events.end(),
+          [event_inode](
+              const std::pair<FSEventStreamEventId, ChangeEvent>& entry) {
+            ChangeEvent change_event = entry.second;
+            return change_event.event_inode == event_inode &&
+                   (change_event.event_flags &
+                    kFSEventStreamEventFlagItemRenamed);
+          });
+      if (move_to_event_it != events.end()) {
+        const base::FilePath& move_to_event_path =
+            move_to_event_it->second.event_path;
+        bool move_to_event_in_scope =
+            IsPathInScope(target_, move_to_event_path, recursive_watch_);
+        if (!event_in_scope && !move_to_event_in_scope) {
+          continue;
         }
+        auto move_to_event_id = move_to_event_it->first;
+        coalesced_event_ids.push_back(move_to_event_id);
+
+        // In some cases such as an overwrite, FSEvents send additional event
+        // with kFSEventStreamEventFlagItemRenamed on the moved_to path. This
+        // causes additional "deleted" events on the next iteration, so we
+        // want to ignore this event.
+        auto ignore_event_it = std::find_if(
+            std::next(it, 1), events.end(),
+            [move_to_event_id, move_to_event_path](
+                const std::pair<FSEventStreamEventId, ChangeEvent>& entry) {
+              ChangeEvent change_event = entry.second;
+              return move_to_event_id != entry.first &&
+                     change_event.event_path == move_to_event_path &&
+                     (change_event.event_flags &
+                      kFSEventStreamEventFlagItemRenamed);
+            });
+        if (ignore_event_it != events.end()) {
+          coalesced_event_ids.push_back(ignore_event_it->first);
+        }
+
+        // It can occur in non-recursive watches that a "matching" move
+        // event is found (passes all checks for event id, event flags, and
+        // inode comparison), but either the current event path or the next
+        // event path is out of scope, from the implementation's
+        // perspective. When this is the case, determine if a move in or
+        // out-of-scope has taken place.
+        if (!move_to_event_in_scope) {
+          FilePathWatcher::ChangeInfo change_info = {
+              file_path_type, FilePathWatcher::ChangeType::kDeleted,
+              event_path};
+          callback_.Run(std::move(change_info),
+                        report_modified_path_ ? event_path : target_,
+                        /*error=*/false);
+          continue;
+        }
+
+        if (!event_in_scope) {
+          FilePathWatcher::ChangeInfo change_info = {
+              file_path_type, FilePathWatcher::ChangeType::kCreated,
+              move_to_event_path};
+          callback_.Run(std::move(change_info),
+                        report_modified_path_ ? move_to_event_path : target_,
+                        /*error=*/false);
+          continue;
+        }
+
+        // Both the current event and the next event must be in-scope for a
+        // move within-scope to be reported.
+        FilePathWatcher::ChangeInfo change_info = {
+            file_path_type, FilePathWatcher::ChangeType::kMoved,
+            move_to_event_path, event_path};
+        callback_.Run(std::move(change_info),
+                      report_modified_path_ ? move_to_event_path : target_,
+                      /*error=*/false);
+        continue;
       }
+
       if (!event_in_scope) {
         continue;
       }

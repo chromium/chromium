@@ -227,6 +227,75 @@ TEST_F(FilePathWatcherFSEventsChangeTrackerTest, MoveFile) {
               testing::ElementsAre(MovedFile(a_path, b_path)));
 }
 
+TEST_F(FilePathWatcherFSEventsChangeTrackerTest, MoveWithOverwriteFile) {
+  base::FilePath a_path = temp_dir_.GetPath().AppendASCII("a");
+  base::FilePath b_path = temp_dir_.GetPath().AppendASCII("b");
+  uint64_t old_file_inode = 12345;
+  uint64_t file_inode = CreateFile(b_path);
+
+  DispatchEvents({
+      {156251254,
+       {
+           kFSEventStreamEventFlagItemIsFile |
+               kFSEventStreamEventFlagItemRenamed,
+           a_path,
+           file_inode,
+       }},
+      {156251256,  // FSEvents generates additional rename event for overwrite
+       {
+           kFSEventStreamEventFlagItemIsFile |
+               kFSEventStreamEventFlagItemRenamed,
+           b_path,
+           old_file_inode,
+       }},
+      {156251259,
+       {
+           kFSEventStreamEventFlagItemIsFile |
+               kFSEventStreamEventFlagItemRenamed,
+           b_path,
+           file_inode,
+       }},
+  });
+
+  EXPECT_THAT(file_path_watcher_events_,
+              testing::ElementsAre(MovedFile(a_path, b_path)));
+}
+
+TEST_F(FilePathWatcherFSEventsChangeTrackerTest,
+       MoveWithOverwriteFileOnDifferentOrder) {
+  base::FilePath a_path = temp_dir_.GetPath().AppendASCII("a");
+  base::FilePath b_path = temp_dir_.GetPath().AppendASCII("b");
+  uint64_t old_file_inode = 12345;
+  uint64_t file_inode = CreateFile(b_path);
+
+  DispatchEvents({
+      {156251254,
+       {
+           kFSEventStreamEventFlagItemIsFile |
+               kFSEventStreamEventFlagItemRenamed,
+           a_path,
+           file_inode,
+       }},
+      {156251256,
+       {
+           kFSEventStreamEventFlagItemIsFile |
+               kFSEventStreamEventFlagItemRenamed,
+           b_path,
+           file_inode,
+       }},
+      {156251259,  // FSEvents generates additional rename event for overwrite
+       {
+           kFSEventStreamEventFlagItemIsFile |
+               kFSEventStreamEventFlagItemRenamed,
+           b_path,
+           old_file_inode,
+       }},
+  });
+
+  EXPECT_THAT(file_path_watcher_events_,
+              testing::ElementsAre(MovedFile(a_path, b_path)));
+}
+
 TEST_F(FilePathWatcherFSEventsChangeTrackerTest, CreateDirectory) {
   base::FilePath a_path = temp_dir_.GetPath().AppendASCII("a");
   uint64_t dir_inode = CreateDirectory(a_path);
@@ -295,6 +364,40 @@ TEST_F(FilePathWatcherFSEventsChangeTrackerTest, MoveDirectory) {
            dir_inode,
        }},
       {156348259,
+       {
+           kFSEventStreamEventFlagItemIsDir |
+               kFSEventStreamEventFlagItemRenamed,
+           b_path,
+           dir_inode,
+       }},
+  });
+
+  EXPECT_THAT(file_path_watcher_events_,
+              testing::ElementsAre(MovedDirectory(a_path, b_path)));
+}
+
+TEST_F(FilePathWatcherFSEventsChangeTrackerTest, MoveWithOverwriteDirectory) {
+  base::FilePath a_path = temp_dir_.GetPath().AppendASCII("a");
+  base::FilePath b_path = temp_dir_.GetPath().AppendASCII("b");
+  uint64_t old_dir_inode = 12345;
+  uint64_t dir_inode = CreateDirectory(b_path);
+
+  DispatchEvents({
+      {156251254,
+       {
+           kFSEventStreamEventFlagItemIsDir |
+               kFSEventStreamEventFlagItemRenamed,
+           a_path,
+           dir_inode,
+       }},
+      {156251256,  // FSEvents generates additional rename event for overwrite
+       {
+           kFSEventStreamEventFlagItemIsDir |
+               kFSEventStreamEventFlagItemRenamed,
+           b_path,
+           old_dir_inode,
+       }},
+      {156251259,
        {
            kFSEventStreamEventFlagItemIsDir |
                kFSEventStreamEventFlagItemRenamed,
