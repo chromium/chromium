@@ -168,7 +168,7 @@ void DeduplicateDriveFilesFromLinks(std::vector<QuickInsertSearchResult>& files,
 
 }  // namespace
 
-PickerSearchAggregator::PickerSearchAggregator(
+QuickInsertSearchAggregator::QuickInsertSearchAggregator(
     base::TimeDelta burn_in_period,
     PickerViewDelegate::SearchResultsCallback callback) {
   current_callback_ = std::move(callback);
@@ -176,12 +176,12 @@ PickerSearchAggregator::PickerSearchAggregator(
 
   // TODO: b/324154537 - Show a loading animation while waiting for results.
   burn_in_timer_.Start(FROM_HERE, burn_in_period, this,
-                       &PickerSearchAggregator::PublishBurnInResults);
+                       &QuickInsertSearchAggregator::PublishBurnInResults);
 }
 
-PickerSearchAggregator::~PickerSearchAggregator() = default;
+QuickInsertSearchAggregator::~QuickInsertSearchAggregator() = default;
 
-void PickerSearchAggregator::HandleSearchSourceResults(
+void QuickInsertSearchAggregator::HandleSearchSourceResults(
     PickerSearchSource source,
     std::vector<QuickInsertSearchResult> results,
     bool has_more_results) {
@@ -237,7 +237,7 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   accumulated = UnpublishedResults(std::move(results), has_more_results);
 }
 
-void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
+void QuickInsertSearchAggregator::HandleNoMoreResults(bool interrupted) {
   // Only call the callback if it wasn't interrupted.
   if (!interrupted) {
     // We could get a "no more results" signal before burn-in finishes.
@@ -251,27 +251,28 @@ void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
   current_callback_.Reset();
 }
 
-PickerSearchAggregator::UnpublishedResults::UnpublishedResults() = default;
+QuickInsertSearchAggregator::UnpublishedResults::UnpublishedResults() = default;
 
-PickerSearchAggregator::UnpublishedResults::UnpublishedResults(
+QuickInsertSearchAggregator::UnpublishedResults::UnpublishedResults(
     std::vector<QuickInsertSearchResult> results,
     bool has_more)
     : results(std::move(results)), has_more(has_more) {}
 
-PickerSearchAggregator::UnpublishedResults::UnpublishedResults(
+QuickInsertSearchAggregator::UnpublishedResults::UnpublishedResults(
     UnpublishedResults&& other) = default;
 
-PickerSearchAggregator::UnpublishedResults&
-PickerSearchAggregator::UnpublishedResults::operator=(
+QuickInsertSearchAggregator::UnpublishedResults&
+QuickInsertSearchAggregator::UnpublishedResults::operator=(
     UnpublishedResults&& other) = default;
 
-PickerSearchAggregator::UnpublishedResults::~UnpublishedResults() = default;
+QuickInsertSearchAggregator::UnpublishedResults::~UnpublishedResults() =
+    default;
 
-bool PickerSearchAggregator::IsPostBurnIn() const {
+bool QuickInsertSearchAggregator::IsPostBurnIn() const {
   return !burn_in_timer_.IsRunning();
 }
 
-void PickerSearchAggregator::PublishBurnInResults() {
+void QuickInsertSearchAggregator::PublishBurnInResults() {
   // This variable should only be set after burn-in.
   CHECK(std::holds_alternative<std::monostate>(link_drive_dedupe_state_));
 
@@ -340,12 +341,14 @@ void PickerSearchAggregator::PublishBurnInResults() {
   }
 }
 
-base::WeakPtr<PickerSearchAggregator> PickerSearchAggregator::GetWeakPtr() {
+base::WeakPtr<QuickInsertSearchAggregator>
+QuickInsertSearchAggregator::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-PickerSearchAggregator::UnpublishedResults*
-PickerSearchAggregator::AccumulatedResultsForSection(PickerSectionType type) {
+QuickInsertSearchAggregator::UnpublishedResults*
+QuickInsertSearchAggregator::AccumulatedResultsForSection(
+    PickerSectionType type) {
   UnpublishedResults& accumulated =
       accumulated_results_[base::to_underlying(type)];
   if (accumulated.results.empty()) {

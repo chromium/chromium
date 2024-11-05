@@ -75,7 +75,7 @@ class ASH_EXPORT PickerSearchController {
   emoji::EmojiSearch emoji_search_;
   // The search request calls the aggregator, so the search request should be
   // destructed first.
-  std::unique_ptr<PickerSearchAggregator> aggregator_;
+  std::unique_ptr<QuickInsertSearchAggregator> aggregator_;
   std::unique_ptr<QuickInsertSearchRequest> search_request_;
 
   base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};

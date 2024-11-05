@@ -162,15 +162,16 @@ void PickerSearchController::StartSearch(
     bool search_case_transforms,
     PickerViewDelegate::SearchResultsCallback callback) {
   StopSearch();
-  aggregator_ = std::make_unique<PickerSearchAggregator>(burn_in_period_,
-                                                         std::move(callback));
+  aggregator_ = std::make_unique<QuickInsertSearchAggregator>(
+      burn_in_period_, std::move(callback));
 
   // TODO: b/348067874 - Hook `done_closure` up to `aggregator_`.
   search_request_ = std::make_unique<QuickInsertSearchRequest>(
       query, std::move(category),
-      base::BindRepeating(&PickerSearchAggregator::HandleSearchSourceResults,
-                          aggregator_->GetWeakPtr()),
-      base::BindOnce(&PickerSearchAggregator::HandleNoMoreResults,
+      base::BindRepeating(
+          &QuickInsertSearchAggregator::HandleSearchSourceResults,
+          aggregator_->GetWeakPtr()),
+      base::BindOnce(&QuickInsertSearchAggregator::HandleNoMoreResults,
                      aggregator_->GetWeakPtr()),
       client, available_categories, caps_lock_state_to_search,
       search_case_transforms);

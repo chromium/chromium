@@ -137,7 +137,7 @@ TEST_P(QuickInsertSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       /*burn_in_period=*/base::Milliseconds(100),
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -153,7 +153,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       /*burn_in_period=*/base::Milliseconds(100),
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -175,7 +175,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
                                 GetParam().section_type))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       /*burn_in_period=*/base::Milliseconds(100),
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -201,7 +201,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
                        u"test"))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -225,7 +225,7 @@ TEST_P(QuickInsertSearchAggregatorTest, PublishesResultsPostBurnIn) {
                        u"test"))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -244,7 +244,7 @@ TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySectionsAfterBurnIn) {
                                      GetParam().section_type))))
       .Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -262,7 +262,7 @@ TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySectionsPostBurnIn) {
                                      GetParam().section_type))))
       .Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -276,7 +276,7 @@ TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySearchAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -290,7 +290,7 @@ TEST_P(QuickInsertSearchAggregatorTest, DoNotPublishEmptySearchPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -313,7 +313,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       /*burn_in_period=*/base::Milliseconds(100),
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -338,7 +338,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -365,7 +365,7 @@ TEST_P(QuickInsertSearchAggregatorNamedSectionTest,
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -383,7 +383,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       /*burn_in_period=*/base::Milliseconds(100),
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -401,7 +401,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -419,7 +419,7 @@ TEST_P(QuickInsertSearchAggregatorTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -447,7 +447,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(_)).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -459,7 +459,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call(_)).Times(0);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -543,7 +543,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                           u"lobster"))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -623,7 +623,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                            u"write"))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -685,7 +685,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                            u"write"))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -759,7 +759,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                        u"local"))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -805,7 +805,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                  &PickerSearchResultsSection::has_more_results,
                                  true))));
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -833,7 +833,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                          &PickerSearchResultsSection::has_more_results, true))))
       .Times(3);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -889,7 +889,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                     "notmatched")))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -969,7 +969,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                     "notmatched")))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -1052,7 +1052,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                    "notmatched")))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -1135,7 +1135,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                    "notmatched")))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -1221,7 +1221,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                          Optional(Eq("driveid3"))))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
@@ -1307,7 +1307,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                                          Optional(Eq("driveid3"))))))))))
       .Times(1);
 
-  PickerSearchAggregator aggregator(
+  QuickInsertSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
