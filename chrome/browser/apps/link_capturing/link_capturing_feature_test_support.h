@@ -9,9 +9,14 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
 
 namespace apps::test {
 
@@ -38,6 +43,32 @@ base::expected<void, std::string> EnableLinkCapturingByUser(
 base::expected<void, std::string> DisableLinkCapturingByUser(
     Profile* profile,
     const webapps::AppId& app_id);
+
+// Observer which waits for navigation events and blocks until a specific URL
+// navigation is complete.
+class NavigationCommittedForUrlObserver
+    : public ui_test_utils::AllTabsObserver {
+ public:
+  // `url` is the URL to look for.
+  explicit NavigationCommittedForUrlObserver(const GURL& url);
+  ~NavigationCommittedForUrlObserver() override;
+
+  // Returns the WebContents which navigated to `url`.
+  content::WebContents* web_contents() const { return web_contents_; }
+
+ protected:
+  // AllTabsObserver
+  std::unique_ptr<base::CheckedObserver> ProcessOneContents(
+      content::WebContents* web_contents) override;
+
+  void DidFinishNavigation(content::NavigationHandle* handle);
+
+ private:
+  friend class LoadStopObserver;
+
+  GURL url_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+};
 
 }  // namespace apps::test
 

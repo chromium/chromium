@@ -7,13 +7,16 @@
 #include <optional>
 
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
@@ -100,6 +103,39 @@ base::expected<void, std::string> DisableLinkCapturingByUser(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return base::ok();
+}
+
+NavigationCommittedForUrlObserver::NavigationCommittedForUrlObserver(
+    const GURL& url)
+    : url_(url) {
+  AddAllBrowsers();
+}
+
+NavigationCommittedForUrlObserver::~NavigationCommittedForUrlObserver() =
+    default;
+
+std::unique_ptr<base::CheckedObserver>
+NavigationCommittedForUrlObserver::ProcessOneContents(
+    content::WebContents* web_contents) {
+  return std::make_unique<content::DidFinishNavigationObserver>(
+      web_contents, base::BindRepeating(
+                        &NavigationCommittedForUrlObserver::DidFinishNavigation,
+                        base::Unretained(this)));
+}
+
+void NavigationCommittedForUrlObserver::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  if (!handle->HasCommitted()) {
+    return;
+  }
+  if (!handle->IsInMainFrame() || handle->GetURL() != url_) {
+    return;
+  }
+  // Record the first match.
+  if (!web_contents_) {
+    web_contents_ = handle->GetWebContents();
+  }
+  ConditionMet();
 }
 
 }  // namespace apps::test
