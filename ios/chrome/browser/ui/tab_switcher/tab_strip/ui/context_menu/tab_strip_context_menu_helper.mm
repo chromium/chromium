@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
@@ -187,22 +189,29 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
   __weak __typeof(self) weakSelf = self;
 
   base::WeakPtr<const TabGroup> tabGroup = tabGroupItem.tabGroup->GetWeakPtr();
-  BOOL isShared = tab_groups::utils::IsTabGroupShared(
-      tabGroup.get(),
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(_profile);
+  BOOL isSharedTabGroupSupported =
+      shareKitService && shareKitService->IsSupported();
+  BOOL isTabGroupShared =
+      isSharedTabGroupSupported &&
+      tab_groups::utils::IsTabGroupShared(
+          tabGroup.get(),
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   // Shared actions.
   NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
-  if (isShared) {
+  if (isTabGroupShared) {
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.handler manageTabGroup:tabGroup];
                    }]];
     [sharedActions addObject:[actionFactory actionToShowRecentActivity:^{
                      [weakSelf.handler showRecentActivityForTabGroup:tabGroup];
                    }]];
-  } else if (IsSharedTabGroupsCreateEnabled(_profile)) {
+  } else if (isSharedTabGroupSupported &&
+             IsSharedTabGroupsCreateEnabled(_profile)) {
     [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
                      [weakSelf.handler shareTabGroup:tabGroup];
                    }]];
@@ -219,7 +228,7 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
   [editActions addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
                  [weakSelf.mutator addNewTabInGroup:tabGroupItem];
                }]];
-  if (!isShared) {
+  if (!isTabGroupShared) {
     [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                    [weakSelf.mutator ungroupGroup:tabGroupItem
                                        sourceView:originView];

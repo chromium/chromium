@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -320,15 +322,22 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   CHECK(group);
   base::WeakPtr<const TabGroup> weakGroup = group->GetWeakPtr();
   BOOL incognito = self.incognito;
-  BOOL isShared = tab_groups::utils::IsTabGroupShared(
-      group, tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(_profile);
+  BOOL isSharedTabGroupSupported =
+      shareKitService && shareKitService->IsSupported();
+  BOOL isTabGroupShared =
+      isSharedTabGroupSupported &&
+      tab_groups::utils::IsTabGroupShared(
+          group,
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
   __weak __typeof(self) weakSelf = self;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   // Shared actions.
   NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
-  if (isShared) {
+  if (isTabGroupShared) {
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
                    }]];
@@ -336,7 +345,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                      [weakSelf.contextMenuDelegate
                          showRecentActivityForTabGroup:weakGroup];
                    }]];
-  } else if (IsSharedTabGroupsCreateEnabled(_profile)) {
+  } else if (isSharedTabGroupSupported &&
+             IsSharedTabGroupsCreateEnabled(_profile)) {
     [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
                      [weakSelf.contextMenuDelegate shareTabGroup:weakGroup];
                    }]];
@@ -356,7 +366,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                                   incognito:incognito];
                }]];
 
-  if (!isShared) {
+  if (!isTabGroupShared) {
     [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                    [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
                                                        incognito:incognito
