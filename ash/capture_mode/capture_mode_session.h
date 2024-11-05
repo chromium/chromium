@@ -418,6 +418,11 @@ class ASH_EXPORT CaptureModeSession
   // `action_container_widget_` exists,
   void RemoveAllActionButtons();
 
+  // Called back when a Scanner action, which was executed from the user
+  // clicking an action button added by `AddScannerActionButtons`, finishes
+  // executing.
+  void OnScannerActionExecuted(bool success);
+
   // Creates the feedback button widget if it wasn't previously created, and
   // updates the widget's bounds.
   void UpdateFeedbackButtonWidget();

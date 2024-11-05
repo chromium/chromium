@@ -71,6 +71,7 @@ using ::testing::DoDefault;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::WithArg;
@@ -1272,6 +1273,119 @@ TEST_F(ScannerTest,
 
   // The callback for the stale actions should not affect the current actions.
   EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
+TEST_F(ScannerTest, ActionButtonsEndSessionOnActionSuccess) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  manta::proto::ScannerOutput output;
+  output.add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event 1");
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_action_details_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionDetailsForImage)
+      .WillOnce(WithArg<2>(InvokeFuture(fetch_action_details_future)));
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(
+      action_buttons,
+      ElementsAre(Property(&ActionButtonView::label_for_testing,
+                           Property(&views::Label::GetText, u"New event"))));
+  LeftClickOn(action_buttons[0]);
+  fetch_action_details_future.Take().Run(
+      std::make_unique<manta::proto::ScannerOutput>(output),
+      manta::MantaStatus());
+
+  EXPECT_FALSE(capture_mode_controller->IsActive());
+}
+
+TEST_F(ScannerTest, ActionButtonsEndSessionOnActionSuccessAfterFailure) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  manta::proto::ScannerOutput output;
+  output.add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event 1");
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_action_details_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionDetailsForImage)
+      .Times(2)
+      .WillRepeatedly(WithArg<2>(InvokeFuture(fetch_action_details_future)));
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(
+      action_buttons,
+      ElementsAre(Property(&ActionButtonView::label_for_testing,
+                           Property(&views::Label::GetText, u"New event"))));
+  LeftClickOn(action_buttons[0]);
+  fetch_action_details_future.Take().Run(nullptr, manta::MantaStatus());
+  LeftClickOn(action_buttons[0]);
+  fetch_action_details_future.Take().Run(
+      std::make_unique<manta::proto::ScannerOutput>(output),
+      manta::MantaStatus());
+
+  EXPECT_FALSE(capture_mode_controller->IsActive());
+}
+
+TEST_F(ScannerTest, ActionButtonsDoNotEndSessionOnActionFailure) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  output->add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event 1");
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(std::move(output), manta::MantaStatus()));
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_action_details_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionDetailsForImage)
+      .WillOnce(WithArg<2>(InvokeFuture(fetch_action_details_future)));
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(
+      action_buttons,
+      ElementsAre(Property(&ActionButtonView::label_for_testing,
+                           Property(&views::Label::GetText, u"New event"))));
+  LeftClickOn(action_buttons[0]);
+  fetch_action_details_future.Take().Run(nullptr, manta::MantaStatus());
+
+  EXPECT_TRUE(capture_mode_controller->IsActive());
 }
 
 // Tests that the copy text button is shown in default capture mode if text is

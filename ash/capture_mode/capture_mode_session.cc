@@ -1426,12 +1426,23 @@ void CaptureModeSession::AddScannerActionButtons(
     ScannerActionViewModel& action = scanner_actions[i];
     std::u16string text = action.GetText();
     const gfx::VectorIcon& icon = action.GetIcon();
-    // TODO(b/369470078): Replace the placeholder action finished callback with
-    // a callback that closes the capture mode session.
-    AddActionButton(std::move(action).ToCallback(
-                        /*action_finished_callback=*/base::DoNothing()),
-                    std::move(text), &icon,
-                    ActionButtonRank{ActionButtonType::kScanner, i});
+    // TODO: b/376578793 - Disable all action buttons in the button pressed
+    // callback to prevent multiple actions from being performed simultaneously.
+    base::RepeatingClosure pressed_callback = std::move(action).ToCallback(
+        base::BindRepeating(&CaptureModeSession::OnScannerActionExecuted,
+                            weak_ptr_factory_.GetWeakPtr()));
+
+    capture_mode_util::AddActionButton(
+        std::move(pressed_callback), std::move(text), &icon,
+        ActionButtonRank{ActionButtonType::kScanner, i});
+  }
+}
+
+void CaptureModeSession::OnScannerActionExecuted(bool success) {
+  // Note that the currently selected region may not be the same as the region
+  // which had the Scanner action button which triggered this.
+  if (success) {
+    controller_->Stop();
   }
 }
 
