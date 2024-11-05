@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
+#include "components/user_prefs/user_prefs.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -29,7 +30,7 @@ MediaCoordinator::MediaCoordinator(
     views::View& parent_view,
     bool is_subsection,
     EligibleDevices eligible_devices,
-    PrefService& prefs,
+    base::WeakPtr<content::BrowserContext> browser_context,
     bool allow_device_selection,
     const media_preview_metrics::Context& metrics_context) {
   media_view_ =
@@ -53,13 +54,15 @@ MediaCoordinator::MediaCoordinator(
 
   if (view_type != ViewType::kMicOnly) {
     camera_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
-                                eligible_devices.cameras, prefs,
-                                allow_device_selection, metrics_context);
+                                eligible_devices.cameras,
+                                allow_device_selection, browser_context,
+                                metrics_context);
   }
 
   if (view_type != ViewType::kCameraOnly) {
     mic_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
-                             eligible_devices.mics, prefs,
+                             eligible_devices.mics,
+                             *user_prefs::UserPrefs::Get(browser_context.get()),
                              allow_device_selection, metrics_context);
   }
 }

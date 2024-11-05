@@ -89,7 +89,7 @@ void ActiveDevicesMediaCoordinator::UpdateDevicePreferenceRanking() {
 }
 
 void ActiveDevicesMediaCoordinator::UpdateMediaCoordinatorList() {
-  if (!web_contents_.MaybeValid()) {
+  if (!web_contents_) {
     return;
   }
 
@@ -154,7 +154,7 @@ void ActiveDevicesMediaCoordinator::CreateImmutableCoordinators(
 
 void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
     const std::optional<std::string>& active_device_id) {
-  if (!web_contents_.MaybeValid()) {
+  if (!web_contents_ || !web_contents_->GetBrowserContext()) {
     return;
   }
 
@@ -170,12 +170,12 @@ void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
   }
 
   auto coordinator_key = active_device_id.value_or(kMutableCoordinatorId);
-  auto* prefs = user_prefs::UserPrefs::Get(web_contents_->GetBrowserContext());
   media_coordinators_.emplace(
       coordinator_key,
       std::make_unique<MediaCoordinator>(
           view_type_, *container_,
-          /*is_subsection=*/true, eligible_devices, *prefs,
+          /*is_subsection=*/true, eligible_devices,
+          web_contents_->GetBrowserContext()->GetWeakPtr(),
           /*allow_device_selection=*/!active_device_id.has_value(),
           media_preview_metrics_context_));
   separators_.emplace(coordinator_key,
@@ -187,7 +187,7 @@ void ActiveDevicesMediaCoordinator::OnRequestUpdate(
     int render_frame_id,
     blink::mojom::MediaStreamType stream_type,
     const content::MediaRequestState state) {
-  if (!web_contents_.MaybeValid() || stream_type != stream_type_) {
+  if (!web_contents_ || stream_type != stream_type_) {
     return;
   }
 

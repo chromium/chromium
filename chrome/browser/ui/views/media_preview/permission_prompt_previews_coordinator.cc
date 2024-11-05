@@ -58,7 +58,7 @@ PermissionPromptPreviewsCoordinator::PermissionPromptPreviewsCoordinator(
 
   media_preview_coordinator_.emplace(view_type_, *container_view,
                                      /*is_subsection=*/false, eligible_devices,
-                                     *browser->profile()->GetPrefs(),
+                                     browser->profile()->GetWeakPtr(),
                                      /*allow_device_selection=*/true,
                                      metrics_context);
 
