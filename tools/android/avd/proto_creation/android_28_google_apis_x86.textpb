@@ -30,6 +30,9 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  # Tests can run into low memory issue with the default ram size 1536MB
+  # Incease to 2048MB, which is the same as that on other emulators
+  ram_size: 2048
 }
 avd_variants {
   key: "swarming"
