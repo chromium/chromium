@@ -90,6 +90,16 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     app_restore::AppRestoreData* full_restore_app_restore_data =
         GetFirstAppRestoreData(full_restore_restore_data, app_id, window_id);
     if (!full_restore_app_restore_data) {
+      // TODO(sammiequon): PWA's need a window id to be identified. For now we
+      // will launch apps without full restore data at default positions.
+      auto& new_launch_list =
+          restore_data->mutable_app_id_to_launch_list()[app_id];
+      auto& new_app_restore_data = new_launch_list[/*window_id=*/0];
+      new_app_restore_data = std::make_unique<app_restore::AppRestoreData>();
+      new_app_restore_data->container = 0;
+      new_app_restore_data->display_id =
+          display::Screen::GetScreen()->GetPrimaryDisplay().id();
+      new_app_restore_data->disposition = 3;
       continue;
     }
     auto& launch_list = restore_data->mutable_app_id_to_launch_list()[app_id];

@@ -134,6 +134,10 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginLaunch) {
   ASSERT_TRUE(settings_window);
   WindowState::Get(settings_window)->Maximize();
 
+  test::InstallAndLaunchPWA(profile, GURL("https://www.nba.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"NBA");
+
   // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();
 }
@@ -157,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   BirchChipButtonBase* coral_chip = GetBirchChipButton();
   ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
 
-  test::BrowsersWaiter waiter(/*expected_count=*/3);
+  test::BrowsersWaiter waiter(/*expected_count=*/4);
   test::Click(coral_chip);
   waiter.Wait();
 
@@ -165,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   // `switches::kForceBirchFakeCoral`. Update to use a test coral provider
   // instead.
   BrowserList* browsers = BrowserList::GetInstance();
-  ASSERT_EQ(browsers->size(), 3u);
+  ASSERT_EQ(browsers->size(), 4u);
+  // Verify the chrome browser.
   EXPECT_TRUE(
       base::ranges::any_of(*browsers, [](Browser* browser) {
         TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -177,6 +182,17 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
                tab_strip_model->GetWebContentsAt(2)->GetVisibleURL() ==
                    GURL("https://www.notion.so/");
       }));
+
+  // Verify the PWA.
+  EXPECT_TRUE(base::ranges::any_of(*browsers, [](Browser* browser) {
+    if (browser->type() != Browser::TYPE_APP) {
+      return false;
+    }
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    return tab_strip_model->count() == 1 &&
+           tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
+               GURL("https://www.nba.com/");
+  }));
 
   // Tests that the files and settings SWAs are launched and have their previous
   // session window bounds.

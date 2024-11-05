@@ -193,9 +193,9 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
         coral::mojom::Tab::New("Figma", GURL("https://www.figma.com/"))));
     fake_group->entities.push_back(coral::mojom::Entity::NewTab(
         coral::mojom::Tab::New("Notion", GURL("https://www.notion.so/"))));
-    // nhl.com PWA.
+    // nba.com PWA.
     fake_group->entities.push_back(coral::mojom::Entity::NewApp(
-        coral::mojom::App::New("NHL", "ikemcggffkeigegkomkifdbhddiognji")));
+        coral::mojom::App::New("NBA", "ikemcggffkeigegkomkifdbhddiognji")));
     // OS settings.
     fake_group->entities.push_back(
         coral::mojom::Entity::NewApp(coral::mojom::App::New(
