@@ -172,6 +172,12 @@ bool IsKoreanLocale(const std::string& locale) {
   return locale == "ko" || locale == "ko-KR";
 }
 
+#if !BUILDFLAG(IS_IOS)
+bool IsEnglishLocale(const std::string& locale) {
+  return base::StartsWith(locale, "en", base::CompareCase::SENSITIVE);
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 HUPScoringParams::ScoreBuckets::ScoreBuckets()
@@ -565,10 +571,24 @@ bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode() {
          IsOnDeviceHeadSuggestEnabledForNonIncognito();
 }
 
-bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled() {
+bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(
+    const std::string& locale) {
   // Tail model will only be enabled when head provider is also enabled.
-  return base::FeatureList::IsEnabled(omnibox::kOnDeviceTailModel) &&
-         IsOnDeviceHeadSuggestEnabledForAnyMode();
+  if (!IsOnDeviceHeadSuggestEnabledForAnyMode()) {
+    return false;
+  }
+
+  // Currently only launch for English locales. Remove this flag once i18n is
+  // also launched.
+  // Do not launch for iOS since the feature is not supported in iOS yet.
+#if !BUILDFLAG(IS_IOS)
+  if (IsEnglishLocale(locale)) {
+    return !base::FeatureList::IsEnabled(
+        omnibox::kDisableOnDeviceTailEnglishModel);
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
+  return base::FeatureList::IsEnabled(omnibox::kOnDeviceTailModel);
 }
 
 bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {

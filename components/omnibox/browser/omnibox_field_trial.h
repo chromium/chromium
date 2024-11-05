@@ -295,7 +295,7 @@ bool IsOnDeviceHeadSuggestEnabledForIncognito();
 bool IsOnDeviceHeadSuggestEnabledForNonIncognito();
 bool IsOnDeviceHeadSuggestEnabledForAnyMode();
 bool IsOnDeviceHeadSuggestEnabledForLocale(const std::string& locale);
-bool IsOnDeviceTailSuggestEnabled();
+bool IsOnDeviceTailSuggestEnabled(const std::string& locale);
 bool ShouldEncodeLeadingSpaceForOnDeviceTailSuggest();
 bool ShouldApplyOnDeviceHeadModelSelectionFix();
 // Functions can be used in both non-incognito and incognito.
