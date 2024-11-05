@@ -134,4 +134,8 @@ message ModelPrototypingResponse {
 message ModelPrototypingMetadata {
   // An optional tag to use for querying the record from MQLS logs.
   string logging_tag = 1;
+
+  // An optional description to provide more context about the data uploaded by
+  // the user.
+  string logging_description = 2;
 }
