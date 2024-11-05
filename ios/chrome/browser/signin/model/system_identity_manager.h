@@ -254,9 +254,6 @@ class SystemIdentityManager {
   // Invokes `OnIdentityUpdated(...)` for all observers.
   void FireIdentityUpdated(id<SystemIdentity> identity);
 
-  // Invokes OnIdentityRefreshTokenUpdated(...)` for all observers.
-  void FireIdentityRefreshTokenUpdated(id<SystemIdentity> identity);
-
   // Invokes OnIdentityAccessTokenRefreshFailed(...)` for all observers.
   void FireIdentityAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                             id<RefreshAccessTokenError> error);

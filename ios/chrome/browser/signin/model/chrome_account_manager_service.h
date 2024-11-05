@@ -46,10 +46,6 @@ class ChromeAccountManagerService : public KeyedService,
     // Called when the identity is updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
 
-    // Handles refresh token updated events.
-    // `identity` is the identity for which the refresh token was updated.
-    virtual void OnRefreshTokenUpdated(id<SystemIdentity> identity) {}
-
     // Handles access token refresh failed events.
     // `identity` is the the identity for which the access token refresh failed.
     // `error` is an opaque type containing information about the error.
@@ -115,7 +111,6 @@ class ChromeAccountManagerService : public KeyedService,
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() override;
   void OnIdentityUpdated(id<SystemIdentity> identity) override;
-  void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) override;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
       id<RefreshAccessTokenError> error) override;

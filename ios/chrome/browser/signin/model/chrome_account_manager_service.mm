@@ -301,16 +301,6 @@ void ChromeAccountManagerService::OnIdentityUpdated(
   }
 }
 
-void ChromeAccountManagerService::OnIdentityRefreshTokenUpdated(
-    id<SystemIdentity> identity) {
-  if (!this->IsValidIdentity(identity)) {
-    return;
-  }
-  for (auto& observer : observer_list_) {
-    observer.OnRefreshTokenUpdated(identity);
-  }
-}
-
 void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error) {

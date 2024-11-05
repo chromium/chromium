@@ -446,7 +446,6 @@ source_set("unit_tests") {
     "resized_avatar_cache_unittest.mm",
     "signin_profile_info_updater_unittest.mm",
     "signin_util_unittest.mm",
-    "system_identity_manager_unittest.mm",
   ]
   deps = [
     ":authentication_service",
