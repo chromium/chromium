@@ -538,8 +538,7 @@ void ReportingCacheImpl::RemoveClient(
 
 void ReportingCacheImpl::RemoveClientsForOrigin(const url::Origin& origin) {
   ConsistencyCheckClients();
-  std::string domain = origin.host();
-  const auto domain_range = clients_.equal_range(domain);
+  const auto domain_range = clients_.equal_range(origin.host());
   ClientMap::iterator it = domain_range.first;
   while (it != domain_range.second) {
     if (it->second.origin == origin) {
@@ -989,7 +988,7 @@ void ReportingCacheImpl::SetEndpointForTesting(
     DCHECK(group_key.origin.has_value());
     Client new_client(group_key.network_anonymization_key,
                       group_key.origin.value());
-    std::string domain = group_key.origin.value().host();
+    const std::string& domain = group_key.origin.value().host();
     client_it = clients_.emplace(domain, std::move(new_client));
   }
 
