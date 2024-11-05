@@ -274,14 +274,10 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
   // Open Web and Search Results Page.
   if (omnibox::IsOtherWebPage(page_class) ||
       omnibox::IsSearchResultsPage(page_class)) {
-    if (focus_type_input_type ==
-            std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL) &&
-        is_ios) {
+    if (focus_type_input_type.second == OIT::URL && is_ios) {
       return ResultType::kRemoteSendURL;
     }
-    if (focus_type_input_type ==
-            std::make_pair(OFT::INTERACTION_CLOBBER, OIT::EMPTY) &&
-        !is_ios) {
+    if (focus_type_input_type.second == OIT::EMPTY && !is_ios) {
       return ResultType::kRemoteSendURL;
     }
   }

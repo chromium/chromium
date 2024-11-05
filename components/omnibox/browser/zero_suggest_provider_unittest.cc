@@ -185,9 +185,7 @@ class ZeroSuggestProviderTest : public testing::Test,
                                 : metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     input.set_current_url(GURL(input_url));
-    input.set_focus_type(is_ios
-                             ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                             : metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
@@ -203,9 +201,7 @@ class ZeroSuggestProviderTest : public testing::Test,
                           SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
         TestSchemeClassifier());
     input.set_current_url(GURL(input_url));
-    input.set_focus_type(is_ios
-                             ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                             : metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
@@ -665,7 +661,7 @@ TEST_F(ZeroSuggestProviderTest, StartStopSRP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
 
@@ -681,9 +677,7 @@ TEST_F(ZeroSuggestProviderTest, StartStopSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-      input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_FOCUS, input.current_url().spec());
 
   // Make sure valid input starts the provider.
   provider_->Start(input, false);
@@ -732,7 +726,7 @@ TEST_F(ZeroSuggestProviderTest, StartStopWeb) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
 
@@ -747,11 +741,9 @@ TEST_F(ZeroSuggestProviderTest, StartStopWeb) {
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
       prefs, input.current_url().spec(), json_response);
 
-  GURL suggest_url =
-      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-                    input.current_url().spec());
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                                   metrics::OmniboxFocusType::INTERACTION_FOCUS,
+                                   input.current_url().spec());
 
   // Make sure valid input starts the provider.
   provider_->Start(input, false);
@@ -863,7 +855,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
+  // Enable prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
@@ -879,9 +871,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-      input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_FOCUS, input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
   std::string json_response(
@@ -931,7 +921,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunWeb) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
+  // Enable prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
@@ -944,11 +934,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunWeb) {
 
   EXPECT_TRUE(provider_->matches().empty());
 
-  GURL suggest_url =
-      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-                    input.current_url().spec());
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                                   metrics::OmniboxFocusType::INTERACTION_FOCUS,
+                                   input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
   std::string json_response(
@@ -1034,7 +1022,7 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
 
@@ -1043,9 +1031,7 @@ TEST_F(ZeroSuggestProviderTest,
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-      input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_FOCUS, input.current_url().spec());
 
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
@@ -1073,18 +1059,16 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching.
+  // Disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
 
   AutocompleteInput input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
   input.set_omit_asynchronous_matches(true);
 
-  GURL suggest_url =
-      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-                    input.current_url().spec());
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                                   metrics::OmniboxFocusType::INTERACTION_FOCUS,
+                                   input.current_url().spec());
 
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
@@ -1269,7 +1253,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
+  // Enable prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
@@ -1297,9 +1281,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-      input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_FOCUS, input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
       R"(["",["search4", "search5", "search6"],)"
@@ -1354,7 +1336,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable in-memory ZPS caching and on-clobber ZPS and prefetching on SRP.
+  // Enable in-memory ZPS caching and prefetching on SRP.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
@@ -1383,9 +1365,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-      input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_FOCUS, input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
       R"(["",["search4", "search5", "search6"],)"
@@ -1440,7 +1420,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
+  // Enable prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
@@ -1466,11 +1446,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url =
-      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-                    input.current_url().spec());
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                                   metrics::OmniboxFocusType::INTERACTION_FOCUS,
+                                   input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
       R"(["",["search4", "search5", "search6"],)"
@@ -1525,7 +1503,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable in-memory caching and on-clobber ZPS and prefetching on Web.
+  // Enable in-memory caching and prefetching on Web.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
@@ -1552,11 +1530,9 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url =
-      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-                    input.current_url().spec());
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                                   metrics::OmniboxFocusType::INTERACTION_FOCUS,
+                                   input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
       R"(["",["search4", "search5", "search6"],)"
@@ -1689,7 +1665,7 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
+  // Enable prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
@@ -1717,9 +1693,7 @@ TEST_F(ZeroSuggestProviderTest,
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-      input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_FOCUS, input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response(R"(["",[],[],[],{}])");
   test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);
@@ -1771,7 +1745,7 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
+  // Enable prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
@@ -1797,11 +1771,9 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url =
-      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                    is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                           : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-                    input.current_url().spec());
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                                   metrics::OmniboxFocusType::INTERACTION_FOCUS,
+                                   input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response(R"(["",[],[],[],{}])");
   test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);
@@ -2144,12 +2116,11 @@ TEST_F(ZeroSuggestProviderTest, TestMultipleZeroSuggestPrefetchesInFlight) {
   ASSERT_TRUE(stored_response && *stored_response == json_response2);
 }
 
-TEST_F(ZeroSuggestProviderTest,
-       TestPsuggestZeroSuggestPrefetchThenSRPOnClobber) {
+TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenSRP) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching and prefetching on SRP.
+  // Disable in-memory caching and prefetching on SRP.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{},
@@ -2233,8 +2204,7 @@ TEST_F(ZeroSuggestProviderTest,
     GURL suggest_url =
         GetSuggestURL(metrics::OmniboxEventProto::
                           SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-                      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                      metrics::OmniboxFocusType::INTERACTION_FOCUS,
                       input.current_url().spec());
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response3(
@@ -2281,12 +2251,11 @@ TEST_F(ZeroSuggestProviderTest,
   }
 }
 
-TEST_F(ZeroSuggestProviderTest,
-       TestPsuggestZeroSuggestPrefetchThenWebOnClobber) {
+TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenWeb) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  // Enable on-clobber ZPS and disable in-memory caching and prefetching on Web.
+  // Disable in-memory caching and prefetching on Web.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{},
@@ -2369,8 +2338,7 @@ TEST_F(ZeroSuggestProviderTest,
 
     GURL suggest_url =
         GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                      is_ios ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                             : metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                      metrics::OmniboxFocusType::INTERACTION_FOCUS,
                       input.current_url().spec());
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response3(

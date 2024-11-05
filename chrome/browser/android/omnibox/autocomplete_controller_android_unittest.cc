@@ -120,7 +120,7 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
                   Property(&AutocompleteInput::current_url, Eq(GURL(url))),
                   Property(&AutocompleteInput::current_title, Eq(u"title")),
                   Property(&AutocompleteInput::focus_type,
-                           Eq(OFT::INTERACTION_CLOBBER)))));
+                           Eq(OFT::INTERACTION_FOCUS)))));
 
   controller()->OnOmniboxFocused(
       env, base::android::JavaParamRef<jstring>(env, j_omnibox_text.obj()),

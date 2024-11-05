@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
   auto input_is_correct = [](const AutocompleteInput& input) {
     return input.current_page_classification() ==
                metrics::OmniboxEventProto::SRP_ZPS_PREFETCH &&
-           input.focus_type() == metrics::OmniboxFocusType::INTERACTION_CLOBBER;
+           input.focus_type() == metrics::OmniboxFocusType::INTERACTION_FOCUS;
   };
 
   {
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
   auto input_is_correct = [](const AutocompleteInput& input) {
     return input.current_page_classification() ==
                metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH &&
-           input.focus_type() == metrics::OmniboxFocusType::INTERACTION_CLOBBER;
+           input.focus_type() == metrics::OmniboxFocusType::INTERACTION_FOCUS;
   };
 
   {

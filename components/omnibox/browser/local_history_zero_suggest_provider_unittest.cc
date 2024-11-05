@@ -328,7 +328,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
         /*current_url=*/"https://example.com/");
 #else
     StartProviderAndWaitUntilDone(
-        /*text=*/"", metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+        /*text=*/"", metrics::OmniboxFocusType::INTERACTION_FOCUS,
         OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
         /*current_url=*/"https://example.com/");
 #endif

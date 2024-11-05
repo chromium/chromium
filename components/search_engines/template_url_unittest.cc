@@ -980,9 +980,6 @@ TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
       {u"foo", metrics::OmniboxFocusType::INTERACTION_FOCUS,
        "{google:baseURL}?{searchTerms}&{google:omniboxFocusType}",
        "http://www.google.com/?foo&oft=1&"},
-      {u"foo", metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-       "{google:baseURL}?{searchTerms}&{google:omniboxFocusType}",
-       "http://www.google.com/?foo&oft=2&"},
   };
   TemplateURLData data;
   data.input_encodings.push_back("UTF-8");

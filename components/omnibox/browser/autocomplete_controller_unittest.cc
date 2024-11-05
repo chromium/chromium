@@ -655,7 +655,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
 
   // Create a zero-suggest input.
   auto zps_input = FakeAutocompleteController::CreateInput(u"");
-  zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   {
     SCOPED_TRACE("Zero-prefix suggestions are offered synchronously");

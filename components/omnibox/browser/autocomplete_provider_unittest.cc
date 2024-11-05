@@ -657,7 +657,7 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
     // Prepare the input.
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                             TestingSchemeClassifier());
-    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     controller_->input_ = input;
   }
 
