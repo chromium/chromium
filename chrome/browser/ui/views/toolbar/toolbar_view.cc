@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -453,15 +451,8 @@ void ToolbarView::Init() {
 
   if (performance_manager::features::
           ShouldUsePerformanceInterventionBackend()) {
-    if (performance_manager::user_tuning::PerformanceDetectionManager::
-            HasInstance()) {
-      performance_intervention_button_ = container_view_->AddChildView(
-          std::make_unique<PerformanceInterventionButton>(browser_view_));
-    } else {
-      // The `PerformanceDetectionManager` is undefined in unit tests because it
-      // is constructed in `ChromeContentBrowserClient::CreateBrowserMainParts`.
-      CHECK_IS_TEST();
-    }
+    performance_intervention_button_ = container_view_->AddChildView(
+        std::make_unique<PerformanceInterventionButton>(browser_view_));
   }
 
   if (cast)
