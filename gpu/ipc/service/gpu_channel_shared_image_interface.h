@@ -185,7 +185,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   const CommandBufferId command_buffer_id_;
   raw_ptr<Scheduler> scheduler_;
   const SequenceId sequence_;
-  scoped_refptr<gpu::SyncPointClientState> sync_point_client_state_;
   SharedImageCapabilities shared_image_capabilities_;
 };
 

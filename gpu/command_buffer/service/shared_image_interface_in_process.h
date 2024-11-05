@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -26,9 +27,7 @@ class SharedContextState;
 class SharedImageFactory;
 class SharedImageManager;
 class SingleTaskSequence;
-class SyncPointClientState;
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
-class SyncPointManager;
 struct GpuPreferences;
 class GpuDriverBugWorkarounds;
 struct GpuFeatureInfo;
@@ -62,7 +61,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // order to complete construction/destruction.
   SharedImageInterfaceInProcess(
       SingleTaskSequence* task_sequence,
-      SyncPointManager* sync_point_manager,
       const GpuPreferences& gpu_preferences,
       const GpuDriverBugWorkarounds& gpu_workarounds,
       const GpuFeatureInfo& gpu_feature_info,
@@ -151,7 +149,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   }
 
   void ScheduleGpuTask(base::OnceClosure task,
-                       std::vector<SyncToken> sync_token_fences);
+                       std::vector<SyncToken> sync_token_fences,
+                       const SyncToken& release);
 
   // Only called on the gpu thread.
   bool MakeContextCurrent(bool needs_gl = false);
@@ -169,27 +168,21 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
 
   void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     SharedImageInfo si_info,
-                                    gpu::SurfaceHandle surface_handle,
-                                    const SyncToken& sync_token);
+                                    gpu::SurfaceHandle surface_handle);
   void CreateSharedImageWithDataOnGpuThread(const Mailbox& mailbox,
                                             SharedImageInfo si_info,
-                                            const SyncToken& sync_token,
                                             std::vector<uint8_t> pixel_data);
   void CreateSharedImageWithBufferUsageOnGpuThread(
       const Mailbox& mailbox,
       SharedImageInfo si_info,
       SurfaceHandle surface_handle,
-      gfx::BufferUsage buffer_usage,
-      const SyncToken& sync_token);
+      gfx::BufferUsage buffer_usage);
   void CreateSharedImageWithBufferOnGpuThread(
       const Mailbox& mailbox,
       SharedImageInfo si_info,
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      const SyncToken& sync_token);
-  void UpdateSharedImageOnGpuThread(const Mailbox& mailbox,
-                                    const SyncToken& sync_token);
+      gfx::GpuMemoryBufferHandle buffer_handle);
+  void UpdateSharedImageOnGpuThread(const Mailbox& mailbox);
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
-  void WaitSyncTokenOnGpuThread(const SyncToken& sync_token);
   void WrapTaskWithGpuUrl(base::OnceClosure task);
   void GetCapabilitiesOnGpu(base::WaitableEvent* completion,
                             SharedImageCapabilities* out_capabilities);
@@ -219,10 +212,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
 
   // Accessed on GPU thread.
   scoped_refptr<SharedContextState> context_state_;
-  // This is a raw pointer for now since the ownership of SyncPointManager would
-  // be the same as the SharedImageInterfaceInProcess.
-  raw_ptr<SyncPointManager> sync_point_manager_;
-  scoped_refptr<SyncPointClientState> sync_point_client_state_;
+  ScopedSyncPointClientState sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
   std::unique_ptr<SharedImageCapabilities> shared_image_capabilities_;
   // Specifies which thread owns this object.

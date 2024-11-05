@@ -83,8 +83,7 @@ void SharedImageInterfaceProvider::CreateSharedImageInterfaceOnGpu(
 
   shared_image_interface_ =
       base::MakeRefCounted<gpu::SharedImageInterfaceInProcess>(
-          scheduler_sequence_.get(), gpu_service_->sync_point_manager(),
-          gpu_service_->gpu_preferences(),
+          scheduler_sequence_.get(), gpu_service_->gpu_preferences(),
           gpu_service_->gpu_driver_bug_workarounds(),
           gpu_service_->gpu_feature_info(), shared_context_state_.get(),
           gpu_service_->shared_image_manager(),
