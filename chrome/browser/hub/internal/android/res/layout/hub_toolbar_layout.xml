@@ -53,11 +53,11 @@ found in the LICENSE file.
           android:id="@+id/search_loupe"
           android:visibility="gone"
           android:gravity="center_vertical"
-          android:layout_width="wrap_content"
+          android:layout_width="44dp"
           android:layout_height="match_parent"
           android:contentDescription="@string/search"
           android:src="@drawable/ic_search"
-          style="@style/ToolbarButton" />
+          style="@style/ToolbarMenuButton" />
         <include layout="@layout/menu_button" />
     </LinearLayout>
 
