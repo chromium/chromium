@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
-#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -16,6 +15,7 @@
 #include "net/quic/address_utils.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {

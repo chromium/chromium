@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "net/base/http_user_agent_settings.h"
-#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_session_pool_job.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 

@@ -8,7 +8,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
-#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -18,6 +17,7 @@
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_session_pool_job.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {

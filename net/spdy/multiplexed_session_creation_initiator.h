@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_BASE_MULTIPLEXED_SESSION_CREATION_INITIATOR_H_
-#define NET_BASE_MULTIPLEXED_SESSION_CREATION_INITIATOR_H_
+#ifndef NET_SPDY_MULTIPLEXED_SESSION_CREATION_INITIATOR_H_
+#define NET_SPDY_MULTIPLEXED_SESSION_CREATION_INITIATOR_H_
 
 namespace net {
 
@@ -17,4 +17,4 @@ enum class MultiplexedSessionCreationInitiator {
 
 }  // namespace net
 
-#endif  // NET_BASE_MULTIPLEXED_SESSION_CREATION_INITIATOR_H_
+#endif  // NET_SPDY_MULTIPLEXED_SESSION_CREATION_INITIATOR_H_

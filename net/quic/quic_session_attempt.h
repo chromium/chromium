@@ -13,12 +13,12 @@
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_endpoint.h"
-#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_session_alias_key.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 #ifndef NET_QUIC_QUIC_SESSION_ATTEMPT_H_

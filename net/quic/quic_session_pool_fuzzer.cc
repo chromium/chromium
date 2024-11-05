@@ -10,7 +10,6 @@
 
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
-#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
@@ -34,6 +33,7 @@
 #include "net/socket/fuzzed_datagram_client_socket.h"
 #include "net/socket/fuzzed_socket_factory.h"
 #include "net/socket/socket_tag.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"

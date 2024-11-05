@@ -6,7 +6,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
-#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
@@ -19,6 +18,7 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
