@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -18,6 +19,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
@@ -163,14 +166,30 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
   StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
 
-  // Activate the existing NTP tab for the Start surface.
+  StartupRemediationsType startUpRemediationFeatureType =
+      GetIOSStartTimeStartupRemediationsEnabledType();
   WebStateList* webStateList = browser->GetWebStateList();
-  for (int i = 0; i < webStateList->count(); i++) {
-    web::WebState* webState = webStateList->GetWebStateAt(i);
-    if (IsUrlNtp(webState->GetVisibleURL())) {
-      NewTabPageTabHelper::FromWebState(webState)->SetShowStartSurface(true);
-      webStateList->ActivateWebStateAt(i);
-      return;
+  if (startUpRemediationFeatureType == StartupRemediationsType::kDisabled) {
+    // Iterate through the WebStateList and activate the existing NTP tab for
+    // the Start surface (if any).
+    for (int i = webStateList->count() - 1; i >= 0; --i) {
+      if ([self activateNTPForWebStateList:webStateList atIndex:i]) {
+        return;
+      }
+    }
+  } else if (startUpRemediationFeatureType ==
+             StartupRemediationsType::kSaveNewNTPWebState) {
+    // If the tab at index kIOSLastKnownNTPWebStateIndex is still a valid NTP
+    // page, activate it and return early.
+    PrefService* prefService = browser->GetProfile()->GetPrefs();
+    int knownNTPWebStateIndex =
+        prefService->GetInteger(prefs::kIOSLastKnownNTPWebStateIndex);
+    prefService->ClearPref(prefs::kIOSLastKnownNTPWebStateIndex);
+    if (webStateList->ContainsIndex(knownNTPWebStateIndex)) {
+      if ([self activateNTPForWebStateList:webStateList
+                                   atIndex:knownNTPWebStateIndex]) {
+        return;
+      }
     }
   }
 
@@ -198,6 +217,10 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 //
 // NTPs with navigation are all preserved. If there are none, an empty NTP is
 // preserved.
+//
+// Also sets pref kIOSLastKnownNTPWebStateIndex with the post-removal index of
+// an NTP tab. The pref will be used to find an existing active NTP page in
+// -showStartSurfaceIfNecessary.
 - (void)removeExcessNTPsInBrowser:(id<BrowserProvider>)browserProvider {
   Browser* browser = browserProvider.browser;
   if (!browser) {
@@ -210,27 +233,39 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   // Map groups to the indices of its empty NTPs, and whether the group contains
   // at least one non-empty NTP (an NTP with navigation), which will be kept.
   // Ungrouped tabs correspond to the `nullptr` entry in the map.
+  int numberOfTabsToDelete = 0;
+  int knownNTPWebStateIndex = -1;
   std::map<const TabGroup*, std::pair<std::vector<int>, bool>> groupsToNTPs;
   for (int index = 0; index < webStateList->count(); ++index) {
     const web::WebState* webState = webStateList->GetWebStateAt(index);
     const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
     if (IsEmptyNTP(webState)) {
       groupsToNTPs[tabGroup].first.push_back(index);
+      numberOfTabsToDelete++;
     } else if (IsNTP(webState)) {
       groupsToNTPs[tabGroup].second = true;
+      // This NTP tab will be kept, so save its future index (index after the
+      // prior tabs are deleted).
+      knownNTPWebStateIndex = index - numberOfTabsToDelete;
     }
   }
 
   // For each group (respectively the ungrouped tabs case), if there are only
   // empty NTPs, preserve one NTP by removing it from the list of indices to
   // close for the group (respectively the ungrouped tabs case).
+  numberOfTabsToDelete = 0;
   for (auto& [group, NTPs] : groupsToNTPs) {
     auto& indicesToRemoveInGroup = NTPs.first;
+    numberOfTabsToDelete += indicesToRemoveInGroup.size();
     const bool groupHasNonEmptyNTP = NTPs.second;
     if (indicesToRemoveInGroup.empty() || groupHasNonEmptyNTP) {
       continue;
     }
-    // Remove the last empty NTP from the list of tabs to close.
+    // Remove the last empty NTP from the list of tabs to close and save its
+    // future index.
+    numberOfTabsToDelete--;
+    knownNTPWebStateIndex =
+        indicesToRemoveInGroup.back() - numberOfTabsToDelete;
     indicesToRemoveInGroup.pop_back();
   }
 
@@ -248,6 +283,13 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   // Perform the operations on the WebStateList, if needed.
   if (indicesToRemove.empty()) {
+    // If knownNTPWebStateIndex was set, save it to
+    // kIOSLastKnownNTPWebStateIndex.
+    if (browserProvider.browser->type() != Browser::Type::kIncognito &&
+        knownNTPWebStateIndex >= 0) {
+      browser->GetProfile()->GetPrefs()->SetInteger(
+          prefs::kIOSLastKnownNTPWebStateIndex, knownNTPWebStateIndex);
+    }
     return;
   }
   const WebStateList::ScopedBatchOperation batch =
@@ -276,13 +318,37 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       tabInsertionParams.should_skip_new_tab_animation = true;
       TabInsertionBrowserAgent::FromBrowser(browser)->InsertWebState(
           webLoadParams, tabInsertionParams);
+      // This NTP tab will be kept, so save its future index.
+      knownNTPWebStateIndex =
+          webStateList->count() - indicesToRemove.size() - 1;
     }
+  }
+
+  // Set kIOSLastKnownNTPWebStateIndex if knownNTPWebStateIndex was set.
+  if (browserProvider.browser->type() != Browser::Type::kIncognito &&
+      knownNTPWebStateIndex >= 0) {
+    browser->GetProfile()->GetPrefs()->SetInteger(
+        prefs::kIOSLastKnownNTPWebStateIndex, knownNTPWebStateIndex);
   }
 
   // Close the excessive NTPs.
   webStateList->CloseWebStatesAtIndices(
       WebStateList::CLOSE_NO_FLAGS,
       RemovingIndexes(std::move(indicesToRemove)));
+}
+
+// Returns YES if the WebState at the given index has been activated. Only
+// activates NTPs.
+- (BOOL)activateNTPForWebStateList:(WebStateList*)webStateList
+                           atIndex:(int)index {
+  web::WebState* lastKnownWebState = webStateList->GetWebStateAt(index);
+  if (IsUrlNtp(lastKnownWebState->GetVisibleURL())) {
+    NewTabPageTabHelper::FromWebState(lastKnownWebState)
+        ->SetShowStartSurface(true);
+    webStateList->ActivateWebStateAt(index);
+    return YES;
+  }
+  return NO;
 }
 
 - (void)logBackgroundDurationMetricForActivationLevel:

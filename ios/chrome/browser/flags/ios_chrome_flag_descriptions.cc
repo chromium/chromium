@@ -600,6 +600,12 @@ const char kIOSSharedHighlightingV2Description[] =
 const char kIOSSoftLockName[] = "Soft Lock on iOS";
 const char kIOSSoftLockDescription[] = "Enables experimental Soft Lock on iOS.";
 
+const char kIOSStartTimeStartupRemediationsName[] =
+    "Startup remediations for the Bling Start 4 hour reduction";
+const char kIOSStartTimeStartupRemediationsDescription[] =
+    "Enables potential remediations for startup regressions caused by the "
+    "reduction of Bling Start time from 6 hours to 4.";
+
 const char kIOSTipsNotificationsName[] = "Tips Notifications";
 const char kIOSTipsNotificationsDescription[] =
     "Enables Notifications with content to help new users get the most out of "

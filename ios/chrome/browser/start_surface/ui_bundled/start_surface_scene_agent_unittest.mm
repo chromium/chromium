@@ -427,3 +427,44 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
                   ->GetVisibleCapabilities(identity)
                   .AreAllCapabilitiesKnown());
 }
+
+// Tests that the StartSurfaceSceneAgent saves the index of a valid NTP WebState
+// during excess NTP cleanup and reuses the saved WebState when showing the
+// Start Surface.
+TEST_F(StartSurfaceSceneAgentTest, ActivateSavedNTPWebStateIndex) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
+  base::FieldTrialParams startup_remediation_params = {
+      {kIOSStartTimeStartupRemediationsSaveNTPWebState, "true"}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kIOSStartTimeStartupRemediations, startup_remediation_params}},
+      /*disabled_features=*/{});
+
+  InsertNewWebState(0, GURL(kChromeUINewTabURL));
+  InsertNewWebState(1, GURL(kChromeUINewTabURL));
+  InsertNewWebState(2, GURL(kURL));
+  InsertNewWebState(3, GURL(kChromeUINewTabURL));
+
+  WebStateList* web_state_list =
+      scene_state_.browserProviderInterface.mainBrowserProvider.browser
+          ->GetWebStateList();
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  web_state_list->ActivateWebStateAt(2);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  // Transition to the background, triggering the NTP clean up.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  ASSERT_EQ(2, web_state_list->count());
+
+  // Transition again to foreground, triggering activating the start surface.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // The existing NTP should be the active WebState (no new NTPs added).
+  EXPECT_TRUE(IsUrlNtp(web_state_list->GetActiveWebState()->GetVisibleURL()));
+  ASSERT_EQ(2, web_state_list->count());
+}

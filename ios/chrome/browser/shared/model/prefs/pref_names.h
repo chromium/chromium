@@ -241,6 +241,11 @@ inline constexpr char kIosDockingPromoEligibilityMet[] =
 // A list of the latest fetched Most Visited Sites.
 inline constexpr char kIosLatestMostVisitedSites[] = "ios.most_visited_sites";
 
+// The last saved index of an NTP WebState. Only updated on app background, so
+// it does not always reflect the current WebStateList.
+inline constexpr char kIOSLastKnownNTPWebStateIndex[] =
+    "ios.last_known_ntp_web_state_index";
+
 // Integer representing the number of impressions of the Most Visited Site since
 // a freshness signal.
 inline constexpr char kIosMagicStackSegmentationMVTImpressionsSinceFreshness[] =

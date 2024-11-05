@@ -1126,6 +1126,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(
       send_tab_to_self::prefs::kIOSSendTabToSelfLastReceivedTabURLPref,
       std::string());
+
+  registry->RegisterIntegerPref(prefs::kIOSLastKnownNTPWebStateIndex, -1);
 }
 
 // This method should be periodically pruned of year+ old migrations.
