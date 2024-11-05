@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/boca/boca_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +52,8 @@ BocaManagerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(boca_util::IsEnabled(
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)));
-  auto service = std::make_unique<BocaManager>(profile);
+  auto service = std::make_unique<BocaManager>(
+      profile, g_browser_process->GetApplicationLocale());
   return service;
 }
 

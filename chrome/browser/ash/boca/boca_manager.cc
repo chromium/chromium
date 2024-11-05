@@ -95,7 +95,8 @@ BocaManager::BocaManager(
   AddObservers(nullptr);
 }
 
-BocaManager::BocaManager(Profile* profile)
+BocaManager::BocaManager(Profile* profile,
+                         const std::string& application_locale)
     : session_client_impl_(std::make_unique<boca::SessionClientImpl>()) {
   auto* user =
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
@@ -103,11 +104,8 @@ BocaManager::BocaManager(Profile* profile)
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetAccountId(),
       /*is_producer=*/!is_consumer);
-  // TODO(crbug.com/373692250): use system application locale instead of
-  // hardcoded en-US.
-  const std::string kApplicationLocale = "en-US";
   babel_orca_manager_ =
-      CreateBabelOrcaManager(profile, kApplicationLocale, is_consumer);
+      CreateBabelOrcaManager(profile, application_locale, is_consumer);
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),

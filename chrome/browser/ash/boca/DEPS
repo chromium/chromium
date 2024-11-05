@@ -51,6 +51,7 @@ include_rules = [
   "+chrome/browser/speech/speech_recognition_client_browser_interface.h",
   "+chrome/browser/speech/speech_recognition_client_browser_interface_factory.h",
   "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
+  "+chrome/browser/browser_process.h",
 ]
 
 specific_include_rules = {

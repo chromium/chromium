@@ -33,7 +33,7 @@ class BocaManager : public KeyedService {
       std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
       std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager);
 
-  explicit BocaManager(Profile* profile);
+  BocaManager(Profile* profile, const std::string& application_locale);
   ~BocaManager() override;
 
   // KeyedService:

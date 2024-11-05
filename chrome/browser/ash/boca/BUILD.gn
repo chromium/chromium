@@ -23,6 +23,7 @@ static_library("boca") {
     "//ash/constants",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/boca/babelorca",
     "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
