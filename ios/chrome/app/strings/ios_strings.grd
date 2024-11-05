@@ -6172,10 +6172,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_SELECT_LANGUAGE_HINT" desc="Text alongside the language to indicate to the user change the language by selecting the row. [iOS only]">
         Tap to change to this language.
       </message>
-      <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_SOURCE_LANGUAGE_FIELD_NAME" desc="The text field name for the source language in the Translate Infobar modal. [iOS only]">
+      <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_SOURCE_LANGUAGE_FIELD_NAME" desc="The text field name for the source language in the Translate Infobar modal. [iOS only]" meaning="Translate *From* source language">
         From
       </message>
-      <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_TARGET_LANGUAGE_FIELD_NAME" desc="The text field name for the target language in the Translate Infobar modal. [iOS only]">
+      <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_TARGET_LANGUAGE_FIELD_NAME" desc="The text field name for the target language in the Translate Infobar modal. [iOS only]" meaning="Translate *To* destination language">
         To
       </message>
       <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE" desc="The title of the Translate Infobar Modal. [iOS only]">
