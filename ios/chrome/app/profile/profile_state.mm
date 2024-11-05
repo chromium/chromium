@@ -49,7 +49,6 @@
 #pragma mark - ProfileState
 
 @interface ProfileState () <SceneStateObserver>
-
 @end
 
 @implementation ProfileState {
@@ -266,6 +265,9 @@
 }
 
 - (id<UIBlockerTarget>)currentUIBlocker {
+  if (_appState.currentUIBlocker) {
+    return _appState.currentUIBlocker;
+  }
   return _uiBlockerTarget;
 }
 

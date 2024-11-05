@@ -8,7 +8,6 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -30,9 +29,9 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
-@interface SigninPolicySceneAgent () <ProfileStateObserver,
-                                      AuthenticationServiceObserving,
+@interface SigninPolicySceneAgent () <AuthenticationServiceObserving,
                                       IdentityManagerObserverBridgeDelegate,
+                                      ProfileStateObserver,
                                       UIBlockerManagerObserver> {
   // Observes changes in identity to make sure that the sign-in state matches
   // the BrowserSignin policy.
@@ -80,7 +79,7 @@
   [super setSceneState:sceneState];
 
   [self.sceneState.profileState addObserver:self];
-  [self.sceneState.profileState.appState addUIBlockerManagerObserver:self];
+  [self.sceneState.profileState addUIBlockerManagerObserver:self];
 }
 
 #pragma mark - SceneStateObserver
@@ -89,7 +88,7 @@
   // Tear down objects tied to the scene state before it is deleted.
   [self tearDownObservers];
   [self.sceneState.profileState removeObserver:self];
-  [self.sceneState.profileState.appState removeUIBlockerManagerObserver:self];
+  [self.sceneState.profileState removeUIBlockerManagerObserver:self];
   [self.sceneState removeObserver:self];
   self.mainBrowser = nullptr;
 }
@@ -129,8 +128,8 @@
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
-  // Monitor the app intialization stages to consider showing the sign-in
-  // prompts at a point in the initialization of the app that allows it.
+  // Monitor the profile initialization stages to consider showing the sign-in
+  // prompts at a point in the initialization of the profile that allows it.
   [self handleSigninPromptsIfUIAvailable];
 }
 
@@ -206,19 +205,18 @@
     return;
   }
 
-  if (self.sceneState.profileState.appState.shouldShowForceSignOutPrompt) {
+  if (self.sceneState.profileState.shouldShowForceSignOutPrompt) {
     // Show the sign-out prompt if the user was signed out due to policy.
     [self.policyChangeCommandsHandler showForceSignedOutPrompt];
-    self.sceneState.profileState.appState.shouldShowForceSignOutPrompt = NO;
+    self.sceneState.profileState.shouldShowForceSignOutPrompt = NO;
   }
 
   if ([self isForcedSignInRequiredByPolicy]) {
     // Sanity check that when the policy is handled while there is a UIBlocker
     // that the scene that will show the sign-in prompt corresponds to the
     // target of the UI blocker.
-    if (self.sceneState.profileState.appState.currentUIBlocker) {
-      DCHECK(self.sceneState.profileState.appState.currentUIBlocker ==
-             self.sceneState);
+    if (self.sceneState.profileState.currentUIBlocker) {
+      CHECK_EQ(self.sceneState.profileState.currentUIBlocker, self.sceneState);
     }
 
     // Put a UI blocker to stop the other scenes from handling the policy.
@@ -271,7 +269,7 @@
     return NO;
   }
 
-  if (self.sceneState.profileState.appState.currentUIBlocker) {
+  if (self.sceneState.profileState.currentUIBlocker) {
     // Return NO when the scene cannot present views because it is blocked.
     return NO;
   }

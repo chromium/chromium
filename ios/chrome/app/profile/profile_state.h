@@ -50,6 +50,12 @@ class ProfileIOS;
 // Container for startup information.
 @property(nonatomic, weak, readonly) id<StartupInformation> startupInformation;
 
+// YES if the sign-out prompt should be shown to the user when the scene becomes
+// active and enters the foreground. This can happen if the policies have
+// changed since the last cold start, meaning the user was signed out during
+// startup.
+@property(nonatomic) BOOL shouldShowForceSignOutPrompt;
+
 // The designated initializer.
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

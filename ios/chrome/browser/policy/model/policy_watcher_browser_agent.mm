@@ -193,6 +193,7 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
     [handler_ showForceSignedOutPrompt];
   } else {
     scene_state.profileState.appState.shouldShowForceSignOutPrompt = YES;
+    scene_state.profileState.shouldShowForceSignOutPrompt = YES;
   }
 }
 
