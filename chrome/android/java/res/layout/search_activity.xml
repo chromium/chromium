@@ -15,7 +15,7 @@ found in the LICENSE file.
     <org.chromium.ui.AsyncViewStub
             android:id="@+id/omnibox_results_container_stub"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_anchor="@id/toolbar"
             android:background="@android:color/white"
             app:layout="@layout/omnibox_results_container" />

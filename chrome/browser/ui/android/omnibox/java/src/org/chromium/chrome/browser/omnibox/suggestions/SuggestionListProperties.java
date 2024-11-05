@@ -64,6 +64,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     /** Whether the dropdown should draw over top of the anchor view. */
     static final WritableBooleanPropertyKey DRAW_OVER_ANCHOR = new WritableBooleanPropertyKey();
 
+    /**
+     * Whether the dropdown container should always be visible, even if there's no suggestions to
+     * show.
+     */
+    static final WritableBooleanPropertyKey CONTAINER_ALWAYS_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ALPHA,
@@ -77,6 +84,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 DROPDOWN_SCROLL_LISTENER,
                 DROPDOWN_SCROLL_TO_TOP_LISTENER,
                 LIST_IS_FINAL,
-                DRAW_OVER_ANCHOR
+                DRAW_OVER_ANCHOR,
+                CONTAINER_ALWAYS_VISIBLE
             };
 }

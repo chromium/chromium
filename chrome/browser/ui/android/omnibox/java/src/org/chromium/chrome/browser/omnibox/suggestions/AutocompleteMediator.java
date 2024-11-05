@@ -79,6 +79,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /** Handles updating the model state for the currently visible omnibox suggestions. */
 class AutocompleteMediator
@@ -1139,6 +1140,13 @@ class AutocompleteMediator
      */
     @VisibleForTesting
     void propagateOmniboxSessionStateChange(boolean isActive) {
+        OptionalInt pageClassification = mAutocompleteInput.getPageClassification();
+        if (isActive && pageClassification.isPresent()) {
+            mListPropertyModel.set(
+                    SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE,
+                    pageClassification.getAsInt() == PageClassification.ANDROID_HUB_VALUE);
+        }
+
         boolean wasActive = mListPropertyModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE);
         mListPropertyModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, isActive);
 
