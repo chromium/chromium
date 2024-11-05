@@ -56,6 +56,7 @@ extern const char kCastCoreIsAudioOnly[];
 extern const char kCastCoreIsRemoteControlMode[];
 extern const char kCastCoreLogJsConsoleMessages[];
 extern const char kCastCoreTurnOnScreen[];
+extern const char kCastCoreKeepScreenOn[];
 
 }  // namespace feature
 }  // namespace chromecast

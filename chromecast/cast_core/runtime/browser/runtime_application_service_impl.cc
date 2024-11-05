@@ -330,7 +330,6 @@ CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
   params->handle_inner_contents = true;
   params->session_id = runtime_application_->GetCastSessionId();
   params->use_media_blocker = true;
-  params->keep_screen_on = false;
   params->gesture_priority = mojom::GesturePriority::MAIN_ACTIVITY;
   params->log_prefix =
       base::StringPrintf("Cast App (%s)", config_.app_id().c_str());
@@ -361,6 +360,9 @@ CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
 #endif  // BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
   params->turn_on_screen =
       GetFlagEntry(feature::kCastCoreTurnOnScreen, config_.extra_features(),
+                   /*default_value=*/false);
+  params->keep_screen_on =
+      GetFlagEntry(feature::kCastCoreKeepScreenOn, config_.extra_features(),
                    /*default_value=*/false);
   params->activity_id =
       params->is_remote_control_mode ? params->session_id : config_.app_id();
