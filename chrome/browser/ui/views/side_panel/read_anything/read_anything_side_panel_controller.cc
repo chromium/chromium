@@ -153,7 +153,7 @@ ReadAnythingSidePanelController::CreateContainerView(
   }
 
   auto web_view = std::make_unique<ReadAnythingSidePanelWebView>(
-      tab_->GetBrowserWindowInterface()->GetProfile());
+      tab_->GetBrowserWindowInterface()->GetProfile(), scope);
 
   ReadAnythingSidePanelControllerGlue::CreateForWebContents(
       web_view->contents_wrapper()->web_contents(), this);

@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -22,7 +24,8 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
+SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
+                                       base::RepeatingClosure on_show_cb,
                                        base::RepeatingClosure close_cb,
                                        WebUIContentsWrapper* contents_wrapper)
     : on_show_cb_(std::move(on_show_cb)),
@@ -34,6 +37,13 @@ SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
   SetID(kSidePanelWebViewId);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
+
+  // For per-window side panels the scoped browser does not change. The browser
+  // is cleared automatically when the browser is closed.
+  if (scope.get_scope_type() == SidePanelEntryScope::ScopeType::kBrowser) {
+    webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
+                                     &scope.GetBrowserWindowInterface());
+  }
 }
 
 SidePanelWebUIView::~SidePanelWebUIView() = default;

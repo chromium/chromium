@@ -28,8 +28,10 @@ namespace {
 
 LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
     content::BrowserContext* browser_context,
-    lens::LensOverlaySidePanelCoordinator* coordinator)
+    lens::LensOverlaySidePanelCoordinator* coordinator,
+    SidePanelEntryScope& scope)
     : SidePanelWebUIViewT(
+          scope,
           base::RepeatingClosure(),
           base::RepeatingClosure(),
           std::make_unique<

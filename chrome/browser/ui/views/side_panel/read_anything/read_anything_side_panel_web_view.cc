@@ -21,8 +21,11 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
 
 END_METADATA
 
-ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(Profile* profile)
+ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(
+    Profile* profile,
+    SidePanelEntryScope& scope)
     : SidePanelWebUIViewT(
+          scope,
           base::RepeatingClosure(),
           base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(

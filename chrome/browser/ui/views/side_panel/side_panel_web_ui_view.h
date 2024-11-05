@@ -22,6 +22,8 @@ namespace views {
 class MenuRunner;
 }  // namespace views
 
+class SidePanelEntryScope;
+
 // SidePanelWebUIView holds generic behavior for side panel entry views hosting
 // WebUI. This includes keyboard event handling, context menu triggering, and
 // handling visibility updates.
@@ -31,7 +33,8 @@ class SidePanelWebUIView : public views::WebView,
 
  public:
   static inline constexpr int kSidePanelWebViewId = 777;
-  SidePanelWebUIView(base::RepeatingClosure on_show_cb,
+  SidePanelWebUIView(SidePanelEntryScope& scope,
+                     base::RepeatingClosure on_show_cb,
                      base::RepeatingClosure close_cb,
                      WebUIContentsWrapper* contents_wrapper);
   SidePanelWebUIView(const SidePanelWebUIView&) = delete;
@@ -70,10 +73,12 @@ class SidePanelWebUIViewT : public SidePanelWebUIView {
 
  public:
   SidePanelWebUIViewT(
+      SidePanelEntryScope& scope,
       base::RepeatingClosure on_show_cb,
       base::RepeatingClosure close_cb,
       std::unique_ptr<WebUIContentsWrapperT<T>> contents_wrapper)
-      : SidePanelWebUIView(std::move(on_show_cb),
+      : SidePanelWebUIView(scope,
+                           std::move(on_show_cb),
                            std::move(close_cb),
                            contents_wrapper.get()),
         contents_wrapper_(std::move(contents_wrapper)) {}

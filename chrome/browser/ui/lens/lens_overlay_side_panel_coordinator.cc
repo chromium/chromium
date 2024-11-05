@@ -302,7 +302,7 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
       lens_overlay_controller_->GetTabInterface()
           ->GetContents()
           ->GetBrowserContext(),
-      this);
+      this, scope);
   view->SetProperty(views::kElementIdentifierKey,
                     LensOverlayController::kOverlaySidePanelWebViewId);
   side_panel_web_view_ = view.get();

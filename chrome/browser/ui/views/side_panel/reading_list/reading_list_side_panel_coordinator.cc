@@ -37,7 +37,7 @@ void ReadingListSidePanelCoordinator::CreateAndRegisterEntry(
 std::unique_ptr<views::View>
 ReadingListSidePanelCoordinator::CreateReadingListWebView(
     SidePanelEntryScope& scope) {
-  return std::make_unique<ReadLaterSidePanelWebView>(&GetBrowser(),
+  return std::make_unique<ReadLaterSidePanelWebView>(&GetBrowser(), scope,
                                                      base::RepeatingClosure());
 }
 

@@ -35,7 +35,8 @@ class LensOverlaySidePanelWebView
  public:
   LensOverlaySidePanelWebView(
       content::BrowserContext* browser_context,
-      lens::LensOverlaySidePanelCoordinator* coordinator);
+      lens::LensOverlaySidePanelCoordinator* coordinator,
+      SidePanelEntryScope& scope);
   LensOverlaySidePanelWebView(const LensOverlaySidePanelWebView&) = delete;
   LensOverlaySidePanelWebView& operator=(const LensOverlaySidePanelWebView&) =
       delete;
