@@ -60,6 +60,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -74,7 +75,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=BackForwardTransitions,BackGestureRefactorAndroid",
+    "enable-features=BackForwardTransitions",
     "force-prefers-no-reduced-motion",
     // Resampling can make scroll offsets non-deterministic so turn it off.
     "disable-features=ResamplingScrollEvents",
@@ -596,5 +597,85 @@ public class NavigationTransitionsTest {
         // After the transition is finished, the dialog is resumed.
         waitForModalDialogShown();
         Assert.assertTrue(dialogQueuedToShow.get());
+    }
+
+    /**
+     * Test that it doesn't crash when handleOnBackProgressed is called without handleOnBackStarted.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testNoCrashWhenGestureIsNotInProgress() throws TimeoutException {
+        if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
+            return;
+        }
+        String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
+        String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
+        String url3 = mTestServer.getURL("/chrome/test/data/android/simple.html");
+        mActivityTestRule.loadUrl(url1);
+        mActivityTestRule.loadUrl(url2);
+        mActivityTestRule.loadUrl(url3);
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+
+        // Perform a back gesture transition from the left edge.
+        performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
+        waitForTransitionFinished();
+
+        Assert.assertEquals(url2, getCurrentUrl());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackPressManager manager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    var backEvent = new BackEventCompat(1, 0, .8f, BackEventCompat.EDGE_LEFT);
+                    // BackPressManager will prevent this from triggering because of no active
+                    // handler.
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+                    manager.getCallback().handleOnBackPressed();
+                });
+
+        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(), url1);
+    }
+
+    /**
+     * Test that it doesn't crash when the edge is somehow changed in the mid of swipe gesture.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testNoCrashWhenGestureEdgeIsChangedUnexpectedly() throws TimeoutException {
+        if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
+            return;
+        }
+        String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
+        String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
+        String url3 = mTestServer.getURL("/chrome/test/data/android/simple.html");
+        mActivityTestRule.loadUrl(url1);
+        mActivityTestRule.loadUrl(url2);
+        mActivityTestRule.loadUrl(url3);
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+
+        // Perform a back gesture transition from the left edge.
+        performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
+        waitForTransitionFinished();
+
+        Assert.assertEquals(url2, getCurrentUrl());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackPressManager manager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackStarted(backEvent);
+                    backEvent = new BackEventCompat(1, 0, .8f, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+                    backEvent = new BackEventCompat(2, 0, .9f, BackEventCompat.EDGE_RIGHT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+                    manager.getCallback().handleOnBackPressed();
+                });
+
+        waitForTransitionFinished();
+
+        Assert.assertEquals(url1, getCurrentUrl());
     }
 }

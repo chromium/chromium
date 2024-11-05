@@ -293,7 +293,8 @@ class NavigationHandler implements TouchEventObserver {
                                 mTab, BrowserControlsState.SHOWN, /* animate= */ true);
                     }
                     mTabOnBackGestureHandler = TabOnBackGestureHandler.from(mTab);
-                    mTabOnBackGestureHandler.onBackStarted(getProgress(), mInitiatingEdge, forward);
+                    mTabOnBackGestureHandler.onBackStarted(
+                            getProgress(), mInitiatingEdge, forward, false);
                 }
                 BackPressMetrics.recordNavStatusOnGestureStart(
                         mTab.getWebContents().hasUncommittedNavigationInPrimaryMainFrame(),
@@ -385,9 +386,9 @@ class NavigationHandler implements TouchEventObserver {
         mPullOffsetX = 0.f;
         if (mTabOnBackGestureHandler != null) {
             if (allowNav && mWillNavigateSupplier.get()) {
-                mTabOnBackGestureHandler.onBackInvoked();
+                mTabOnBackGestureHandler.onBackInvoked(false);
             } else {
-                mTabOnBackGestureHandler.onBackCancelled();
+                mTabOnBackGestureHandler.onBackCancelled(false);
             }
             mTabOnBackGestureHandler = null;
         }
@@ -415,7 +416,8 @@ class NavigationHandler implements TouchEventObserver {
             mModel.set(BUBBLE_OFFSET, mPullOffsetX);
         }
         if (mTabOnBackGestureHandler != null) {
-            mTabOnBackGestureHandler.onBackProgressed(getProgress(), mInitiatingEdge, isForward());
+            mTabOnBackGestureHandler.onBackProgressed(
+                    getProgress(), mInitiatingEdge, isForward(), false);
         }
     }
 
