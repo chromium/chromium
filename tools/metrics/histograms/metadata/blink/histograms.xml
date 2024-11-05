@@ -4514,6 +4514,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.UpdateViewportIntersection.RemoteFrameNeedsUpdate"
+    enum="BooleanYesNo" expires_after="2025-04-13">
+  <owner>lizeb@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    When propagating intersection information to remote frames, whether the
+    update can be skipped or not, resulting in no IPC being sent.
+  </summary>
+</histogram>
+
 <histogram name="Blink.UpdateViewportIntersection.UpdateTime"
     units="microseconds" expires_after="2025-04-13">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->

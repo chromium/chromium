@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -149,6 +150,8 @@ void RemoteFrameView::SetViewportIntersection(
     needs_update = !last_intersection_state_.Equals(new_state);
   }
 
+  UMA_HISTOGRAM_BOOLEAN(
+      "Blink.UpdateViewportIntersection.RemoteFrameNeedsUpdate", needs_update);
   if (needs_update) {
     last_intersection_state_ = new_state;
     remote_frame_->SetViewportIntersection(new_state);
