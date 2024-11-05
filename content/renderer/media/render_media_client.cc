@@ -167,12 +167,18 @@ RenderMediaClient::RenderMediaClient()
                      // RenderMediaClient is never destructed.
                      base::Unretained(this)),
       main_task_runner_);
-  video_encoder_for_supported_profiles_
-      ->GetVideoEncodeAcceleratorSupportedProfiles(
-          base::BindOnce(&RenderMediaClient::OnGetSupportedVideoEncoderConfigs,
-                         // base::Unretained(this) is safe because the
-                         // RenderMediaClient is never destructed.
-                         base::Unretained(this)));
+  // In case this causing too much jank on the gpu main thread at startup,
+  // query the configs 1s later.
+  //
+  // NOTE: The side effect of this approach is that for non-main threads,
+  // it is likely have to be blocked for up to a second to complete.
+  main_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&RenderMediaClient::GetSupportedVideoEncoderConfigs,
+                     // base::Unretained(this) is safe because the
+                     // RenderMediaClient is never destructed.
+                     base::Unretained(this)),
+      base::Milliseconds(1000));
 #endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
 }
 
@@ -279,6 +285,21 @@ RenderMediaClient::GetAudioRendererAlgorithmParameters(
     media::AudioParameters audio_parameters) {
   return GetContentClient()->renderer()->GetAudioRendererAlgorithmParameters(
       audio_parameters);
+}
+
+void RenderMediaClient::GetSupportedVideoEncoderConfigs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
+  if (!video_encoder_for_supported_profiles_) {
+    return;
+  }
+  video_encoder_for_supported_profiles_
+      ->GetVideoEncodeAcceleratorSupportedProfiles(
+          base::BindOnce(&RenderMediaClient::OnGetSupportedVideoEncoderConfigs,
+                         // base::Unretained(this) is safe because the
+                         // RenderMediaClient is never destructed.
+                         base::Unretained(this)));
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
 }
 
 void RenderMediaClient::OnInterfaceFactoryDisconnected() {

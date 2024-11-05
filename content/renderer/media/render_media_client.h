@@ -50,6 +50,8 @@ class RenderMediaClient : public media::MediaClient {
   RenderMediaClient();
   ~RenderMediaClient() override;
 
+  void GetSupportedVideoEncoderConfigs();
+
   void OnInterfaceFactoryDisconnected();
   void OnGpuDisconnected();
   void OnAudioDecoderDisconnected();
