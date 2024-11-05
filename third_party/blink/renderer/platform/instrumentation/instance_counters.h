@@ -28,15 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_INSTANCE_COUNTERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_INSTANCE_COUNTERS_H_
 
+#include <array>
 #include <atomic>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -105,7 +102,8 @@ class InstanceCounters {
   PLATFORM_EXPORT static int CounterValue(CounterType);
 
  private:
-  PLATFORM_EXPORT static std::atomic_int counters_[];
+  PLATFORM_EXPORT static std::array<std::atomic_int, kCounterTypeLength>
+      counters_;
   PLATFORM_EXPORT static int node_counter_;
 };
 
