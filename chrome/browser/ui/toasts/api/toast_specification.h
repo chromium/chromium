@@ -46,10 +46,6 @@ class ToastSpecification {
     // dismiss.
     Builder& AddGlobalScoped();
 
-    // Toast should only dismiss when explicitly instructed to by feature.
-    // There can only be one persistent toast shown at a time.
-    Builder& AddPersistance();
-
     std::unique_ptr<ToastSpecification> Build();
 
    private:
@@ -74,13 +70,11 @@ class ToastSpecification {
   }
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
   bool is_global_scope() const { return is_global_scope_; }
-  bool is_persistent_toast() const { return is_persistent_toast_; }
 
   void AddCloseButton();
   void AddActionButton(int string_id, base::RepeatingClosure closure);
   void AddMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model);
   void AddGlobalScope();
-  void AddPersistance();
 
  private:
   const base::raw_ref<const gfx::VectorIcon> icon_;
@@ -90,7 +84,6 @@ class ToastSpecification {
   base::RepeatingClosure action_button_closure_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   bool is_global_scope_ = false;
-  bool is_persistent_toast_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_API_TOAST_SPECIFICATION_H_

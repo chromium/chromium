@@ -103,57 +103,6 @@ TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
   EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
 }
 
-TEST_F(ToastControllerUnitTest, ShowPersistentToast) {
-  ToastRegistry* const registry = toast_registry();
-  registry->RegisterToast(ToastId::kLinkCopied, ToastSpecification::Builder(
-                                                    vector_icons::kEmailIcon, 0)
-                                                    .AddPersistance()
-                                                    .Build());
-
-  registry->RegisterToast(
-      ToastId::kImageCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0)
-          .AddPersistance()
-          .Build());
-
-  auto controller = std::make_unique<TestToastController>(registry);
-
-  // We should be able to show the toast because there is no toast showing.
-  EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
-  EXPECT_CALL(*controller, CreateToast);
-  EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
-  ::testing::Mock::VerifyAndClear(controller.get());
-  EXPECT_TRUE(controller->IsShowingToast());
-
-  // We should not be able to trigger the same same toast to show or another
-  // persistent toast because we are already showing a persistent toast.
-  EXPECT_FALSE(controller->CanShowToast(ToastId::kLinkCopied));
-  EXPECT_FALSE(controller->CanShowToast(ToastId::kImageCopied));
-}
-
-TEST_F(ToastControllerUnitTest, PreemptPersistentToast) {
-  ToastRegistry* const registry = toast_registry();
-  registry->RegisterToast(
-      ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
-  registry->RegisterToast(
-      ToastId::kImageCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0)
-          .AddPersistance()
-          .Build());
-
-  auto controller = std::make_unique<TestToastController>(registry);
-  EXPECT_CALL(*controller, CreateToast);
-  EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kImageCopied)));
-  ::testing::Mock::VerifyAndClear(controller.get());
-  EXPECT_TRUE(controller->IsShowingToast());
-
-  // The ephemeral toast can show but the persistent toast cannot show while we
-  // are currently showing a persistent toast.
-  EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
-  EXPECT_FALSE(controller->CanShowToast(ToastId::kImageCopied));
-}
-
 TEST_F(ToastControllerUnitTest, EphemeralToastAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
@@ -224,47 +173,4 @@ TEST_F(ToastControllerUnitTest, CloseTimerResetsWhenToastShown) {
   // toast should have timed out by now.
   task_environment().FastForwardBy(toast_features::kToastTimeout.Get() / 2);
   EXPECT_TRUE(controller->IsShowingToast());
-}
-
-TEST_F(ToastControllerUnitTest, PersistentToastStaysOpen) {
-  ToastRegistry* const registry = toast_registry();
-  registry->RegisterToast(ToastId::kLinkCopied, ToastSpecification::Builder(
-                                                    vector_icons::kEmailIcon, 0)
-                                                    .AddPersistance()
-                                                    .Build());
-
-  auto controller = std::make_unique<TestToastController>(registry);
-
-  EXPECT_CALL(*controller, CreateToast);
-  EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
-  ::testing::Mock::VerifyAndClear(controller.get());
-  EXPECT_TRUE(controller->IsShowingToast());
-
-  // The toast should remain showing even after past the toast timeout time.
-  task_environment().FastForwardBy(toast_features::kToastTimeout.Get());
-  EXPECT_TRUE(controller->IsShowingToast());
-
-  // Persistent toasts should close when explicitly called to close.
-  controller->ClosePersistentToast(ToastId::kLinkCopied);
-  EXPECT_FALSE(controller->IsShowingToast());
-}
-
-TEST_F(ToastControllerUnitTest, ClosePersistentToast) {
-  ToastRegistry* const registry = toast_registry();
-  registry->RegisterToast(ToastId::kLinkCopied, ToastSpecification::Builder(
-                                                    vector_icons::kEmailIcon, 0)
-                                                    .AddPersistance()
-                                                    .Build());
-
-  auto controller = std::make_unique<TestToastController>(registry);
-  EXPECT_CALL(*controller, CreateToast);
-  EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
-  ::testing::Mock::VerifyAndClear(controller.get());
-  EXPECT_TRUE(controller->IsShowingToast());
-
-  controller->ClosePersistentToast(ToastId::kLinkCopied);
-  EXPECT_FALSE(controller->IsShowingToast());
-  // Trying to close the persistent toast should crash since the toast is
-  // already closed.
-  EXPECT_DEATH(controller->ClosePersistentToast(ToastId::kLinkCopied), "");
 }

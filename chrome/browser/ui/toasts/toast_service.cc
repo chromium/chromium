@@ -93,7 +93,6 @@ void ToastService::RegisterToasts(
       ToastId::kLensOverlay,
       ToastSpecification::Builder(vector_icons::kSearchChromeRefreshIcon,
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE)
-          .AddPersistance()
           .Build());
 
   // TODO(crbug.com/357930023): This registration only partially implements the

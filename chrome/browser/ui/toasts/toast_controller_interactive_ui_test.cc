@@ -172,41 +172,6 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptEphemeralToast) {
       ShowToast(ToastParams(ToastId::kImageCopied)));
 }
 
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowPersistentToast) {
-  RunTestSequence(ShowToast(ToastParams(ToastId::kLensOverlay)),
-                  WaitForShow(toasts::ToastView::kToastViewId), Check([=, this]() {
-                    return GetToastController()->IsShowingToast();
-                  }));
-}
-
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PersistentToastHides) {
-  RunTestSequence(
-      ShowToast(ToastParams(ToastId::kLensOverlay)),
-      WaitForShow(toasts::ToastView::kToastViewId), Do([=, this]() {
-        GetToastController()->ClosePersistentToast(ToastId::kLensOverlay);
-      }),
-      WaitForHide(toasts::ToastView::kToastViewId));
-}
-
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptPersistentToast) {
-  RunTestSequence(
-      ShowToast(ToastParams(ToastId::kLensOverlay)),
-      WaitForShow(toasts::ToastView::kToastViewId),
-      Check([=, this]() { return GetToastController()->IsShowingToast(); }),
-      CheckShowingToastId(ToastId::kLensOverlay),
-      ShowToast(ToastParams(ToastId::kLinkCopied)),
-      // Ephemeral Toast should force the persistent toast to close
-      WaitForHide(toasts::ToastView::kToastViewId),
-      // After the persistent toast closes, the ephemeral toast should show
-      WaitForShow(toasts::ToastView::kToastViewId),
-      CheckShowingToastId(ToastId::kLinkCopied),
-      // Simulate the ephemeral toast timing out and auto dismiss
-      FireToastCloseTimer(), WaitForHide(toasts::ToastView::kToastViewId),
-      // Persistent toast should reshow
-      WaitForShow(toasts::ToastView::kToastViewId),
-      CheckShowingToastId(ToastId::kLensOverlay));
-}
-
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, FocusNextPane) {
   ui::Accelerator next_pane;
   ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(

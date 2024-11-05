@@ -66,19 +66,7 @@ bool ToastController::IsShowingToast() const {
 }
 
 bool ToastController::CanShowToast(ToastId id) const {
-  if (!base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
-    return false;
-  }
-
-  if (!IsShowingToast()) {
-    return true;
-  }
-
-  const ToastSpecification* potential_toast_spec =
-      toast_registry_->GetToastSpecification(id);
-
-  return !(persistent_params_.has_value() &&
-           potential_toast_spec->is_persistent_toast());
+  return base::FeatureList::IsEnabled(toast_features::kToastFramework);
 }
 
 std::optional<ToastId> ToastController::GetCurrentToastId() const {
@@ -100,20 +88,6 @@ bool ToastController::MaybeShowToast(ToastParams params) {
   }
 
   return true;
-}
-
-void ToastController::ClosePersistentToast(ToastId id) {
-  CHECK(persistent_params_.has_value());
-  CHECK_EQ(persistent_params_.value().toast_id_, id);
-  std::optional<ToastId> current_toast_id = GetCurrentToastId();
-  persistent_params_ = std::nullopt;
-
-  // Close the toast if we are currently showing a persistent toast.
-  if (current_toast_id.has_value() &&
-      toast_registry_->GetToastSpecification(current_toast_id.value())
-          ->is_persistent_toast()) {
-    CloseToast(toasts::ToastCloseReason::kFeatureDismiss);
-  }
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -150,15 +124,12 @@ void ToastController::OnWidgetDestroyed(views::Widget* widget) {
     // after an existing toast is destroyed while the browser is trying to
     // close.
     next_ephemeral_params_ = std::nullopt;
-    persistent_params_ = std::nullopt;
     omnibox_helper_observer_.Reset();
   }
 
   if (next_ephemeral_params_.has_value()) {
     ShowToast(std::move(next_ephemeral_params_.value()));
     next_ephemeral_params_ = std::nullopt;
-  } else if (persistent_params_.has_value()) {
-    ShowToast(std::move(persistent_params_.value()));
   }
 }
 
@@ -185,28 +156,7 @@ void ToastController::OnActiveTabChanged(
 }
 
 void ToastController::QueueToast(ToastParams params) {
-  if (next_ephemeral_params_.has_value()) {
-    // TODO(crbug.com/358610190): Record that next_ephemeral_params_ was
-    // preempted.
-    next_ephemeral_params_ = std::nullopt;
-  } else if (persistent_params_.has_value()) {
-    // TODO(crbug.com/358610190): Record that persistent_params_ was
-    // preempted.
-  } else {
-    // Since we are queuing a toast, current_ephemeral_params must have a value
-    // if we do not already have another ephemeral toast queued up.
-    CHECK(current_ephemeral_params_.has_value());
-    // TODO(crbug.com/358610190): Record that current_ephemeral_params was
-    // preempted.
-  }
-
-  if (toast_registry_->GetToastSpecification(params.toast_id_)
-          ->is_persistent_toast()) {
-    CHECK(!persistent_params_.has_value());
-    persistent_params_ = std::move(params);
-  } else {
-    next_ephemeral_params_ = std::move(params);
-  }
+  next_ephemeral_params_ = std::move(params);
 }
 
 void ToastController::OnOmniboxInputInProgress(bool in_progress) {
@@ -260,25 +210,17 @@ void ToastController::ShowToast(ToastParams params) {
   CHECK(current_toast_spec);
 
   currently_showing_toast_id_ = params.toast_id_;
-  if (current_toast_spec->is_persistent_toast()) {
-    persistent_params_ = std::move(params);
-  } else {
-    current_ephemeral_params_ = std::move(params);
-    base::TimeDelta timeout =
-        current_toast_spec->action_button_string_id().has_value()
-            ? toast_features::kToastTimeout.Get()
-            : toast_features::kToastWithoutActionTimeout.Get();
+  current_ephemeral_params_ = std::move(params);
+  base::TimeDelta timeout =
+      current_toast_spec->action_button_string_id().has_value()
+          ? toast_features::kToastTimeout.Get()
+          : toast_features::kToastWithoutActionTimeout.Get();
 
-    toast_close_timer_.Start(
-        FROM_HERE, timeout,
-        base::BindOnce(&ToastController::CloseToast, base::Unretained(this),
-                       toasts::ToastCloseReason::kAutoDismissed));
-  }
-
-  CreateToast(current_toast_spec->is_persistent_toast()
-                  ? persistent_params_.value()
-                  : current_ephemeral_params_.value(),
-              current_toast_spec);
+  toast_close_timer_.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&ToastController::CloseToast, base::Unretained(this),
+                     toasts::ToastCloseReason::kAutoDismissed));
+  CreateToast(current_ephemeral_params_.value(), current_toast_spec);
 }
 
 void ToastController::CloseToast(toasts::ToastCloseReason reason) {

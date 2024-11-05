@@ -49,18 +49,7 @@ ToastSpecification::Builder& ToastSpecification::Builder::AddGlobalScoped() {
   return *this;
 }
 
-ToastSpecification::Builder& ToastSpecification::Builder::AddPersistance() {
-  toast_specification_->AddPersistance();
-  return *this;
-}
-
 std::unique_ptr<ToastSpecification> ToastSpecification::Builder::Build() {
-  // Persistent toast is global scoped by default since it should only be
-  // dismissed when explicitly told to do so.
-  if (toast_specification_->is_persistent_toast()) {
-    AddGlobalScoped();
-  }
-
   ValidateSpecification();
   return std::move(toast_specification_);
 }
@@ -105,8 +94,4 @@ void ToastSpecification::AddMenu(
 
 void ToastSpecification::AddGlobalScope() {
   is_global_scope_ = true;
-}
-
-void ToastSpecification::AddPersistance() {
-  is_persistent_toast_ = true;
 }
