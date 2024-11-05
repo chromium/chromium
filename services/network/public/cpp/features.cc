@@ -514,7 +514,4 @@ BASE_FEATURE(kStorageAccessHeaders,
 BASE_FEATURE(kStorageAccessHeadersTrial,
              "StorageAccessHeadersTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables socket tagging functionality.
-BASE_FEATURE(kUseSocketTag, "UseSocketTag", base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace network::features

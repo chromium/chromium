@@ -7955,9 +7955,6 @@ TEST_F(URLLoaderTest, SocketTaggingWorks) {
   if (!net::CanGetTaggedBytes()) {
     GTEST_SKIP() << "Skipping test - GetTaggedBytes unsupported.";
   }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(network::features::kUseSocketTag);
-
   GURL url = test_server()->GetURL("/empty.html");
   ResourceRequest request = CreateResourceRequest("GET", url);
   request.request_initiator = url::Origin::Create(url);
@@ -7969,16 +7966,5 @@ TEST_F(URLLoaderTest, SocketTaggingWorks) {
   EXPECT_GT(net::GetTaggedBytes(tag_val), old_traffic);
 }
 #endif
-
-TEST_F(URLLoaderTest, WorksWithNoSocketTagSet) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(network::features::kUseSocketTag);
-
-  GURL url = test_server()->GetURL("/empty.html");
-  ResourceRequest request = CreateResourceRequest("GET", url);
-  request.request_initiator = url::Origin::Create(url);
-
-  EXPECT_EQ(net::OK, LoadRequest(request));
-}
 
 }  // namespace network

@@ -887,8 +887,7 @@ void URLLoader::ConfigureRequest(
         std::move(shared_dictionary_getter).value());
   }
 
-  if (base::FeatureList::IsEnabled(features::kUseSocketTag) &&
-      socket_tag != net::SocketTag()) {
+  if (socket_tag != net::SocketTag()) {
     url_request_->set_socket_tag(std::move(socket_tag));
   }
 }
