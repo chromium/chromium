@@ -22954,21 +22954,6 @@
             ]
         }
     ],
-    "TabStripGroupContextMenuAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabStripGroupContextMenuAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabStripIncognitoMigration": [
         {
             "platforms": [
