@@ -184,6 +184,7 @@ class ASH_EXPORT CaptureModeSession
                        ActionButtonRank rank) override;
   void AddScannerActionButtons(
       std::vector<ScannerActionViewModel> scanner_actions) override;
+  void OnTextDetected() override;
   gfx::Rect GetFeedbackWidgetScreenBounds() const override;
 
   // ui::LayerDelegate:
@@ -422,6 +423,10 @@ class ASH_EXPORT CaptureModeSession
   // Sets the enabled state of all existing action buttons. Action buttons that
   // are added after this is called will still be enabled by default.
   void SetActionButtonsEnabled(bool enabled);
+
+  // Called back when the smart actions button is pressed. This will trigger a
+  // request to fetch and show Scanner actions.
+  void OnSmartActionsButtonPressed();
 
   // Called back when a Scanner action button is pressed.
   void OnScannerActionButtonPressed(

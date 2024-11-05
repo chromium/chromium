@@ -171,6 +171,10 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   virtual void AddScannerActionButtons(
       std::vector<ScannerActionViewModel> scanner_actions) = 0;
 
+  // Called when text has been detected in the selected region during an active
+  // session.
+  virtual void OnTextDetected() = 0;
+
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
 

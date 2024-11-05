@@ -122,6 +122,8 @@ void NullCaptureModeSession::AddActionButton(
 void NullCaptureModeSession::AddScannerActionButtons(
     std::vector<ScannerActionViewModel> scanner_actions) {}
 
+void NullCaptureModeSession::OnTextDetected() {}
+
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");
 }

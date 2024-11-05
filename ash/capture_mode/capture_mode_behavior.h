@@ -99,6 +99,7 @@ class CaptureModeBehavior {
   // Returns true if the behavior should show default action buttons such as
   // search and copy text after region selection.
   virtual bool ShouldShowDefaultActionButtonsAfterRegionSelected() const;
+  virtual bool CanShowSmartActionsButton() const;
   virtual bool ShouldShowCaptureButtonAfterRegionSelected() const;
   virtual bool ShouldEndSessionOnShowingSearchResults() const;
   virtual bool ShouldEndSessionOnSearchResultClicked() const;

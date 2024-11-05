@@ -91,8 +91,11 @@ class DefaultBehavior : public CaptureModeBehavior {
     // source and type may have been set before the session was started and
     // initialized.
   }
-  void DetachFromSession() override {}
-
+  void DetachFromSession() override {
+    if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
+      scanner_controller->OnSessionUIClosed();
+    }
+  }
   bool ShouldRegionOverlayBeAllowed() const override {
     // TODO(crbug.com/376103983): Verify `CaptureRegionOverlayController` works
     // correctly. It is always created in Sunfish session to paint the region
@@ -105,6 +108,10 @@ class DefaultBehavior : public CaptureModeBehavior {
            controller->source() == CaptureModeSource::kRegion;
   }
   bool ShouldEndSessionOnShowingSearchResults() const override { return true; }
+  bool CanShowSmartActionsButton() const override {
+    auto* scanner_controller = Shell::Get()->scanner_controller();
+    return scanner_controller && scanner_controller->CanStartSession();
+  }
   void OnRegionSelectedOrAdjusted() override {
     if (ShouldShowDefaultActionButtonsAfterRegionSelected() &&
         features::IsScannerEnabled()) {
@@ -511,6 +518,7 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
   // the case of video recording, we need to reshow the UIs so that we can start
   // the 3-second count down animation.
   return capture_type == PerformCaptureType::kTextDetection ||
+         capture_type == PerformCaptureType::kScanner ||
          (capture_type != PerformCaptureType::kSearch &&
           CaptureModeController::Get()->type() != CaptureModeType::kImage);
 }
@@ -520,6 +528,10 @@ bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
   auto* controller = CaptureModeController::Get();
   return controller->type() == CaptureModeType::kImage &&
          controller->source() == CaptureModeSource::kRegion;
+}
+
+bool CaptureModeBehavior::CanShowSmartActionsButton() const {
+  return false;
 }
 
 bool CaptureModeBehavior::ShouldShowCaptureButtonAfterRegionSelected() const {

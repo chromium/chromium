@@ -38,6 +38,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -1416,6 +1417,21 @@ void CaptureModeSession::AddActionButton(
   UpdateActionContainerWidget();
 }
 
+void CaptureModeSession::OnTextDetected() {
+  if (active_behavior_->CanShowSmartActionsButton()) {
+    // TODO(crbug.com/374356291): Use the correct icon for the smart actions
+    // button.
+    // TODO(crbug.com/374356291): Collapse the smart actions button.
+    // TODO(crbug.com/375967525): Finalize and translate the smart actions
+    // button accessible name.
+    AddActionButton(
+        base::BindOnce(&CaptureModeSession::OnSmartActionsButtonPressed,
+                       weak_ptr_factory_.GetWeakPtr()),
+        u"Smart actions", &kAiWandIcon,
+        ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0});
+  }
+}
+
 void CaptureModeSession::AddScannerActionButtons(
     std::vector<ScannerActionViewModel> scanner_actions) {
   // This is inefficient, as we repeatedly sort, insert and recalculate the
@@ -1452,6 +1468,14 @@ void CaptureModeSession::SetActionButtonsEnabled(bool enabled) {
   // `UpdateActionContainerWidgetBounds()`.
   // Setting the enabled state of a button does not affect any bounds, so there
   // is no need to call either method here.
+}
+
+void CaptureModeSession::OnSmartActionsButtonPressed() {
+  // TODO(crbug.com/374356291): Collapse existing action buttons.
+  auto* scanner_controller = Shell::Get()->scanner_controller();
+  CHECK(scanner_controller);
+  scanner_controller->StartNewSession();
+  controller_->PerformImageSearch(PerformCaptureType::kScanner);
 }
 
 void CaptureModeSession::OnScannerActionButtonPressed(

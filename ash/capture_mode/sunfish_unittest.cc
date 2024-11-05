@@ -68,6 +68,7 @@ namespace ash {
 
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::DoDefault;
@@ -1512,14 +1513,14 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
   std::vector<ActionButtonView*> action_buttons =
       session_test_api.GetActionButtons();
   ASSERT_THAT(action_buttons,
-              ElementsAre(ActionButtonTypeIs(ActionButtonType::kCopyText)));
+              ElementsAre(_, ActionButtonTypeIs(ActionButtonType::kCopyText)));
   // Clipboard should currently be empty.
   std::u16string clipboard_data;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
   EXPECT_EQ(clipboard_data, u"");
   // Clicking on the button should copy text to clipboard.
-  LeftClickOn(action_buttons[0]);
+  LeftClickOn(action_buttons[1]);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
   EXPECT_EQ(clipboard_data, u"detected text");
@@ -1568,6 +1569,37 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
       controller->capture_mode_session());
   EXPECT_THAT(session_test_api.GetActionButtons(),
               Not(Contains(ActionButtonTypeIs(ActionButtonType::kCopyText))));
+}
+
+// Tests that the smart actions button is shown in default capture mode if text
+// is detected in the selected region.
+TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  // Smart actions button should have been created.
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(action_buttons,
+              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+  // Clicking the smart actions button should fetch Scanner actions.
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage);
+  LeftClickOn(action_buttons[0]);
+  WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
 }
 
 }  // namespace ash
