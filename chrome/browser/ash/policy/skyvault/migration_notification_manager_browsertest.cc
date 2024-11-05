@@ -77,8 +77,8 @@ class MigrationNotificationManagerParamTest
   CloudProvider CloudProvider() { return GetParam(); }
 };
 
-// Tests that a progress notification is shown, and closed when CloseAll() is
-// called.
+// Tests that a progress notification is shown, and closed when
+// CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
                        ShowMigrationProgressNotification) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
@@ -86,12 +86,12 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
   manager()->ShowMigrationProgressNotification(CloudProvider());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 }
 
-// Tests that a completed notification is shown, and closed when CloseAll() is
-// called.
+// Tests that a completed notification is shown, and closed when
+// CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
                        ShowMigrationCompletedNotification) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
@@ -101,12 +101,12 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
       /*destination_path=*/base::FilePath());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 }
 
-// Tests that an error notification is shown, and closed when CloseAll() is
-// called.
+// Tests that an error notification is shown, and closed when
+// CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
                        ShowMigrationErrorNotification) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
@@ -116,12 +116,12 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
       /*error_log_path=*/base::FilePath());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 }
 
 // Tests that a policy configuration error notification is shown, and closed
-// when CloseAll() is called.
+// when CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
                        ShowConfigurationErrorNotification) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
   manager()->ShowConfigurationErrorNotification(CloudProvider());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 }
 
@@ -167,10 +167,10 @@ IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
   EXPECT_EQ(sign_in_future_2.Get(), base::File::Error::FILE_ERROR_FAILED);
 }
 
-// Tests that when a sign in notification is closed by CloseAll(), all
+// Tests that when a sign in notification is closed by CloseNotifications(), all
 // requesters to sign in are notified.
 IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
-                       ShowSignInNotification_CloseAll) {
+                       ShowSignInNotification_CloseNotifications) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
   // Check that only one notification is added.
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
       manager()->ShowOneDriveSignInNotification(sign_in_future_2.GetCallback());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
   // Both callbacks should run.
@@ -197,7 +197,8 @@ IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
   EXPECT_EQ(sign_in_future_2.Get(), base::File::Error::FILE_ERROR_FAILED);
 }
 
-// Tests that a migration dialog is shown, and closed when CloseAll() is called.
+// Tests that a migration dialog is shown, and closed when CloseDialog() is
+// called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest, ShowDialog) {
   EXPECT_FALSE(LocalFilesMigrationDialog::GetDialog());
 
@@ -220,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest, ShowDialog) {
   content::WebContents* web_contents = web_ui->GetWebContents();
   content::WebContentsDestroyedWatcher watcher(web_contents);
 
-  manager()->CloseAll();
+  manager()->CloseDialog();
   watcher.Wait();
 
   EXPECT_FALSE(LocalFilesMigrationDialog::GetDialog());

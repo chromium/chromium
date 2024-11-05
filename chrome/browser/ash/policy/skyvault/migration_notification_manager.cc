@@ -224,14 +224,13 @@ MigrationNotificationManager::ShowOneDriveSignInNotification(
   return sign_in_callbacks_.Add(std::move(callback));
 }
 
-void MigrationNotificationManager::CloseAll() {
+void MigrationNotificationManager::CloseNotifications() {
   // TODO(b/349097807): Potential race condition. When migration stopping is
   // fully implemented, make sure this runs after uploads were already stopped
   // (otherwise upload might fail before it's cancelled) and/or post this to
   // same sequence & fail new requests that come in (if closing exactly when an
   // upload job was getting paused for sign in).
   CloseNotification(profile());
-  CloseDialog();
 }
 
 void MigrationNotificationManager::CloseDialog() {

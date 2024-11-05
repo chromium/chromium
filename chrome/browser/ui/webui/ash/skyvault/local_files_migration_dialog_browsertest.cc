@@ -100,23 +100,40 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_Dismiss) {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(widget->IsStackedAbove(dialog->GetDialogWindowForTesting()));
 
-  // Show dialog again - the same instance should just be shown on top.
-  ASSERT_FALSE(LocalFilesMigrationDialog::Show(
+  content::TestNavigationObserver navigation_observer_dialog_2(
+      (GURL(chrome::kChromeUILocalFilesMigrationURL)));
+  navigation_observer_dialog_2.StartWatchingNewWebContents();
+
+  // Show dialog again - should be shown on top.
+  ASSERT_TRUE(LocalFilesMigrationDialog::Show(
       CloudProvider::kOneDrive, base::Time::Now() + delay, base::DoNothing()));
-  ASSERT_FALSE(widget->IsStackedAbove(dialog->GetDialogWindowForTesting()));
+
+  // Wait for chrome://local-files-migration to load.
+  navigation_observer_dialog_2.Wait();
+  ASSERT_TRUE(navigation_observer_dialog_2.last_navigation_succeeded());
+  content::WebContents* web_contents_2 = GetDialogWebContents();
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(
+               web_contents_2,
+               "!!document.querySelector('local-files-migration-dialog')")
+        .ExtractBool();
+  }));
+
+  auto* dialog_2 = LocalFilesMigrationDialog::GetDialog();
+  EXPECT_TRUE(dialog_2);
+
+  ASSERT_FALSE(widget->IsStackedAbove(dialog_2->GetDialogWindowForTesting()));
 
   // Click the OK button and wait for the dialog to close.
-  content::WebContentsDestroyedWatcher watcher(web_contents);
+  content::WebContentsDestroyedWatcher watcher(web_contents_2);
   EXPECT_TRUE(
-      content::ExecJs(web_contents,
+      content::ExecJs(web_contents_2,
                       "document.querySelector('local-files-migration-dialog')"
                       ".$('#dismiss-button').click()"));
   watcher.Wait();
 
   histogram_tester_.ExpectBucketCount(
-      "Enterprise.SkyVault.Migration.OneDrive.DialogShown", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Enterprise.SkyVault.Migration.OneDrive.DialogShown", false, 1);
+      "Enterprise.SkyVault.Migration.OneDrive.DialogShown", true, 2);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.SkyVault.Migration.OneDrive.DialogAction",
       DialogAction::kUploadLater, 1);

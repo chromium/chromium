@@ -77,8 +77,8 @@ class MigrationNotificationManager : public KeyedService {
   base::CallbackListSubscription ShowOneDriveSignInNotification(
       SignInCallback callback);
 
-  // Closes any open notification or dialog.
-  void CloseAll();
+  // Closes any open notification.
+  void CloseNotifications();
 
   // Closes the migration dialog. No-op if dialog isn't opened.
   void CloseDialog();

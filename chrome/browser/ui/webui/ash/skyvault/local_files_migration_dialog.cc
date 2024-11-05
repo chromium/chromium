@@ -33,16 +33,15 @@ bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
   ash::SystemWebDialogDelegate* existing_dialog =
       SystemWebDialogDelegate::FindInstance(
           chrome::kChromeUILocalFilesMigrationURL);
+  // TODO(368242690): Returning bool isn't needed now that we show a new dialog.
   if (existing_dialog) {
-    // TODO(crbug.com/368242690): Better handling for re-showing a dialog.
-    existing_dialog->StackAtTop();
-    SkyVaultMigrationDialogShownHistogram(cloud_provider, false);
-    return false;
+    existing_dialog->Close();
   }
   // This pointer is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
   LocalFilesMigrationDialog* dialog = new LocalFilesMigrationDialog(
       cloud_provider, migration_start_time, std::move(migration_callback));
   dialog->ShowSystemDialog();
+  dialog->StackAtTop();
   SkyVaultMigrationDialogShownHistogram(cloud_provider, true);
   return true;
 }

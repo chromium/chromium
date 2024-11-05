@@ -244,7 +244,8 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 
   // If the destination changed, stop ongoing migration or timers if any.
   if (cloud_provider_ != cloud_provider_old) {
-    MaybeStopMigration(cloud_provider_old);
+    // Don't close the dialog as it'll be reshown.
+    MaybeStopMigration(cloud_provider_old, /*close_dialog=*/false);
   }
 
   // Check if the destination cloud provider is enabled.
@@ -507,7 +508,8 @@ void LocalFilesMigrationManager::OnFilesWriteRestricted(
 }
 
 void LocalFilesMigrationManager::MaybeStopMigration(
-    CloudProvider previous_provider) {
+    CloudProvider previous_provider,
+    bool close_dialog) {
   // Stop the timer. No-op if not running.
   scheduling_timer_->Stop();
 
@@ -515,7 +517,10 @@ void LocalFilesMigrationManager::MaybeStopMigration(
     coordinator_->Cancel();
   }
 
-  notification_manager_->CloseAll();
+  notification_manager_->CloseNotifications();
+  if (close_dialog) {
+    notification_manager_->CloseDialog();
+  }
   if (state_ == State::kPending || state_ == State::kInProgress) {
     SkyVaultMigrationStoppedHistogram(previous_provider, true);
   }

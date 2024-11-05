@@ -134,7 +134,8 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
       std::optional<user_data_auth::SetUserDataStorageWriteEnabledReply> reply);
 
   // Stops the migration if currently ongoing.
-  void MaybeStopMigration(CloudProvider previous_provider);
+  void MaybeStopMigration(CloudProvider previous_provider,
+                          bool close_dialog = true);
 
   // Sets and stores the state on the device.
   void SetState(State new_state);
