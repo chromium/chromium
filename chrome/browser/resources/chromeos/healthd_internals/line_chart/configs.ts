@@ -6,7 +6,7 @@
  * The default scale of the line chart. The scale means how many milliseconds
  * per pixel.
  */
-export const DEFAULT_TIME_SCALE: number = 100;
+export const DEFAULT_TIME_SCALE: number = 80;
 
 /**
  * The minimum scale of the line chart.

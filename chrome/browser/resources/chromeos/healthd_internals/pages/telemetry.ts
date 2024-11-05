@@ -61,6 +61,10 @@ export class HealthdInternalsTelemetryElement extends PolymerElement implements
   // Latest raw data from healthd.
   private healthdData?: HealthdApiTelemetryResult = undefined;
 
+  // Other latest data.
+  private cpuUsageData?: (CpuUsage|null)[][] = undefined;
+  private zramData?: SystemZramInfo = undefined;
+
   // Helper for updating UI regularly. Init in `connectedCallback`.
   private updateHelper: UiUpdateHelper;
 
@@ -74,15 +78,24 @@ export class HealthdInternalsTelemetryElement extends PolymerElement implements
       // Display data as soon as we first receive it.
       this.refreshTelemetryPage();
     }
-    this.lastUpdateTime = new Date().toLocaleTimeString();
   }
 
   updateCpuUsageData(physcialCpuUsage: (CpuUsage|null)[][]) {
-    this.$.cpuCard.updateCpuUsageData(physcialCpuUsage);
+    const isInitilized: boolean = this.cpuUsageData !== undefined;
+    this.cpuUsageData = physcialCpuUsage;
+    if (!isInitilized) {
+      // Display data as soon as we first receive it.
+      this.refreshTelemetryPage();
+    }
   }
 
   updateZramData(zram: SystemZramInfo) {
-    this.$.memoryCard.updateZramData(zram);
+    const isInitilized: boolean = this.zramData !== undefined;
+    this.zramData = zram;
+    if (!isInitilized) {
+      // Display data as soon as we first receive it.
+      this.refreshTelemetryPage();
+    }
   }
 
   updateVisibility(isVisible: boolean) {
@@ -94,14 +107,20 @@ export class HealthdInternalsTelemetryElement extends PolymerElement implements
   }
 
   private refreshTelemetryPage() {
-    if (this.healthdData === undefined) {
-      return;
+    if (this.healthdData !== undefined) {
+      this.$.cpuCard.updateTelemetryData(this.healthdData);
+      this.$.fanCard.updateTelemetryData(this.healthdData);
+      this.$.memoryCard.updateTelemetryData(this.healthdData);
+      this.$.powerCard.updateTelemetryData(this.healthdData);
+      this.$.thermalCard.updateTelemetryData(this.healthdData);
     }
-    this.$.cpuCard.updateTelemetryData(this.healthdData);
-    this.$.fanCard.updateTelemetryData(this.healthdData);
-    this.$.memoryCard.updateTelemetryData(this.healthdData);
-    this.$.powerCard.updateTelemetryData(this.healthdData);
-    this.$.thermalCard.updateTelemetryData(this.healthdData);
+    if (this.cpuUsageData !== undefined) {
+      this.$.cpuCard.updateCpuUsageData(this.cpuUsageData);
+    }
+    if (this.zramData !== undefined) {
+      this.$.memoryCard.updateZramData(this.zramData);
+    }
+    this.lastUpdateTime = new Date().toLocaleTimeString();
   }
 
   private onExpandAllButtonClick() {
