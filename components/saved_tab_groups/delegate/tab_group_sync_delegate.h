@@ -42,13 +42,16 @@ class TabGroupSyncDelegate {
   virtual void CloseLocalTabGroup(const LocalTabGroupID& local_id) = 0;
 
   // Called to start listening for changes to a local group. The local group
-  // must have less or equal number of tabs than the saved group. Desktop only.
+  // will be updated based on the connected saved group. Desktop only.
   virtual void ConnectLocalTabGroup(const SavedTabGroup& group) = 0;
 
-  // Called to stop listening for changes to a local group.
+  // Called to stop listening for changes to a local group. Desktop only.
   virtual void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) = 0;
 
-  // Called to update a given tab group to match its sync representation.
+  // Called to update local tab group to match the given saved tab group. This
+  // will open new tabs, close tabs, and navigate tabs to match the saved group.
+  // Connects to the local tab group if it is not already connected and begins
+  // listening for changes to the local group.
   virtual void UpdateLocalTabGroup(const SavedTabGroup& group) = 0;
 
   // Called to get all the local tab group IDs across all local tab models.

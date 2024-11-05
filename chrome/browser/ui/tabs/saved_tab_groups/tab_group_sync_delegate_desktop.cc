@@ -54,6 +54,23 @@ ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
   listener_->ResumeLocalObservation();
 }
 
+// Removes the tab from the group and closes it.
+void RemoveTabFromGroup(TabStripModel& tab_strip_model,
+                        const tabs::TabModel& local_tab) {
+  // Unload listeners can delay or prevent a tab closing. Remove the tab from
+  // the group first so the local and saved groups can be consistent even if
+  // this happens. Do not store the index of the tab before removing it from the
+  // group because removing it from the group may have moved the tab to maintain
+  // group contiguity.
+  tab_strip_model.RemoveFromGroup(
+      {tab_strip_model.GetIndexOfTab(local_tab.GetHandle())});
+
+  // Find the tab again and close it.
+  tab_strip_model.CloseWebContentsAt(
+      tab_strip_model.GetIndexOfTab(local_tab.GetHandle()),
+      TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+}
+
 TabStripModel* GetTabStripModelForLocalGroup(const LocalTabGroupID& group_id) {
   Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
   CHECK(browser);
@@ -63,6 +80,53 @@ TabStripModel* GetTabStripModelForLocalGroup(const LocalTabGroupID& group_id) {
   CHECK(tab_strip_model->SupportsTabGroups());
 
   return tab_strip_model;
+}
+
+// Removes the last tabs from the local group so that it has the same number of
+// tabs as the saved group. Does nothing if the local group has less or equal
+// number of tabs than the saved group.
+void RemoveExtraTabsFromLocalGroupBeforeConnecting(
+    const SavedTabGroup& saved_group) {
+  CHECK(saved_group.local_group_id().has_value());
+
+  const LocalTabGroupID& group_id = saved_group.local_group_id().value();
+  TabStripModel* tab_strip_model = GetTabStripModelForLocalGroup(group_id);
+  TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
+  CHECK(tab_group);
+
+  // Collect the tabs to close because the range and tab indexes may change
+  // during removing the tabs from the group.
+  gfx::Range tab_range = tab_group->ListTabs();
+  std::vector<const tabs::TabModel*> tabs_to_close;
+  for (size_t i = saved_group.saved_tabs().size(); i < tab_range.length();
+       ++i) {
+    tabs_to_close.push_back(
+        tab_strip_model->GetTabAtIndex(i + tab_range.start()));
+  }
+  for (const tabs::TabModel* tab : tabs_to_close) {
+    CHECK(tab);
+    RemoveTabFromGroup(*tab_strip_model, *tab);
+  }
+}
+
+// Try to open the `saved_tab`. Returns the opened tab if successful, otherwise
+// returns nullptr.
+tabs::TabModel* MaybeOpenTabFromSavedTab(const SavedTabGroupTab& saved_tab,
+                                         Browser* browser) {
+  if (!saved_tab.url().is_valid()) {
+    return nullptr;
+  }
+
+  content::NavigationHandle* navigation_handle =
+      SavedTabGroupUtils::OpenTabInBrowser(
+          saved_tab.url(), browser, browser->profile(),
+          WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  if (!navigation_handle) {
+    return nullptr;
+  }
+
+  return browser->tab_strip_model()->GetTabForWebContents(
+      navigation_handle->GetWebContents());
 }
 
 }  // namespace
@@ -140,6 +204,11 @@ void TabGroupSyncDelegateDesktop::ConnectLocalTabGroup(
     return;
   }
 
+  // Before tracking, the local group needs to close tabs if there are more tabs
+  // than in the saved group. This is needed because ConnectToLocalTabGroup()
+  // expects that there exists a corresponding saved tab for each local tab.
+  RemoveExtraTabsFromLocalGroupBeforeConnecting(group);
+
   TabStripModel* tab_strip_model = GetTabStripModelForLocalGroup(group_id);
   TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
   CHECK(tab_group);
@@ -156,6 +225,10 @@ void TabGroupSyncDelegateDesktop::ConnectLocalTabGroup(
   }
 
   listener_->ConnectToLocalTabGroup(group, std::move(tab_guid_mapping));
+  CHECK(listener_->IsTrackingLocalTabGroup(group_id));
+
+  // Update the local tab group based on the new connected saved group.
+  UpdateLocalTabGroup(group);
 }
 
 void TabGroupSyncDelegateDesktop::DisconnectLocalTabGroup(
@@ -171,9 +244,11 @@ void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
 
   const LocalTabGroupID& group_id = group.local_group_id().value();
   if (!listener_->IsTrackingLocalTabGroup(group_id)) {
-    // Start tracking this TabGroup if we are not already tracking it.
+    // Start tracking the `group` before applying updates.
     ConnectLocalTabGroup(group);
   } else {
+    // Update the local group with the new data. This will open new tabs, close
+    // tabs, and navigate tabs to match the saved group.
     listener_->UpdateLocalGroupFromSync(group_id);
   }
 }
@@ -215,23 +290,10 @@ TabGroupSyncDelegateDesktop::OpenTabsAndMapToUuids(
     const SavedTabGroup& saved_group) {
   std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
   for (const SavedTabGroupTab& saved_tab : saved_group.saved_tabs()) {
-    if (!saved_tab.url().is_valid()) {
-      continue;
+    tabs::TabModel* tab = MaybeOpenTabFromSavedTab(saved_tab, browser);
+    if (tab) {
+      tab_guid_mapping.emplace(tab, saved_tab.saved_tab_guid());
     }
-
-    auto* navigation_handle = SavedTabGroupUtils::OpenTabInBrowser(
-        saved_tab.url(), browser, browser->profile(),
-        WindowOpenDisposition::NEW_BACKGROUND_TAB);
-    tabs::TabModel* tab =
-        navigation_handle ? browser->tab_strip_model()->GetTabForWebContents(
-                                navigation_handle->GetWebContents())
-                          : nullptr;
-
-    if (!tab) {
-      continue;
-    }
-
-    tab_guid_mapping.emplace(tab, saved_tab.saved_tab_guid());
   }
 
   return tab_guid_mapping;
