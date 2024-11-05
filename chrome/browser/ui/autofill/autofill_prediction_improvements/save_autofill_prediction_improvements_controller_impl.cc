@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace autofill {
@@ -99,7 +99,7 @@ void SaveAutofillPredictionImprovementsControllerImpl::OnBubbleClosed(
 void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsUpClicked() {
   if (!user_feedback_callback_.is_null()) {
     std::move(user_feedback_callback_)
-        .Run(AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsUp);
+        .Run(AutofillAiDelegate::UserFeedback::kThumbsUp);
   }
   did_trigger_thumbs_up_ = true;
 }
@@ -107,7 +107,7 @@ void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsUpClicked() {
 void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsDownClicked() {
   if (!user_feedback_callback_.is_null()) {
     std::move(user_feedback_callback_)
-        .Run(AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsDown);
+        .Run(AutofillAiDelegate::UserFeedback::kThumbsDown);
   }
   did_trigger_thumbs_down_ = true;
 }

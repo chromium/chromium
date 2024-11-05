@@ -22,7 +22,7 @@ class ContentPasswordManagerDriver;
 namespace autofill {
 
 class AutofillField;
-class AutofillPredictionImprovementsDelegate;
+class AutofillAiDelegate;
 class PersonalDataManager;
 
 // `AutofillContextMenuManager` is responsible for adding/executing Autofill
@@ -82,9 +82,8 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
       ContentAutofillDriver& autofill_driver);
 
   // Returns if the item to trigger prediction improvements should be added.
-  bool ShouldAddPredictionImprovementsItem(
-      AutofillPredictionImprovementsDelegate* delegate,
-      const GURL& url);
+  bool ShouldAddPredictionImprovementsItem(AutofillAiDelegate* delegate,
+                                           const GURL& url);
 
   // Checks if the manual fallback context menu entry can be shown for the
   // currently focused field.

@@ -927,9 +927,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   CHECK(!client().IsOffTheRecord() || !submitted_form);
   // Try to import the `form` into user annotations via the
-  // `AutofillPredictionImprovementsDelegate`. `MaybeImportFromSubmittedForm()`
-  // will be called if the import was not successful.
-  if (AutofillPredictionImprovementsDelegate* delegate =
+  // `AutofillAiDelegate`. `MaybeImportFromSubmittedForm()` will be called if
+  // the import was not successful.
+  if (AutofillAiDelegate* delegate =
           client().GetAutofillPredictionImprovementsDelegate();
       delegate && delegate->IsUserEligible() && submitted_form) {
     // Only upload server statistics and UMA metrics if at least some local data
@@ -990,7 +990,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     //   called below and in the lambda above.
     // - It should be guaranteed that they are always called. Currently, it is
     //   hard to see that all codepaths in
-    //   AutofillPredictionImprovementsDelegate::MaybeImportForm() calls it.
+    //   AutofillAiDelegate::MaybeImportForm() calls it.
     MaybeImportFromSubmittedForm(form, submitted_form.get(),
                                  /*autofill_ai_shows_bubble=*/false);
     OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
@@ -1290,7 +1290,7 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     if (logger) {
       logger->OnEditedAutofilledField();
     }
-    if (AutofillPredictionImprovementsDelegate* delegate =
+    if (AutofillAiDelegate* delegate =
             client().GetAutofillPredictionImprovementsDelegate();
         delegate && autofill_field->filling_product() ==
                         FillingProduct::kPredictionImprovements) {
@@ -1452,12 +1452,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       &BrowserAutofillManager::OnGenerateSuggestionsComplete,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
 
-  // Check via the `AutofillPredictionImprovementsDelegate` if there's data
-  // stored in user annotations.
-  // IMPORTANT NOTE: If there's no data stored in user annotations,
+  // Check via the `AutofillAiDelegate` if there's data stored in user
+  // annotations. IMPORTANT NOTE: If there's no data stored in user annotations,
   // `GenerateSuggestionsAndMaybeShowUI()` will be called and Autofill's regular
   // flow will continue.
-  AutofillPredictionImprovementsDelegate* delegate =
+  AutofillAiDelegate* delegate =
       client().GetAutofillPredictionImprovementsDelegate();
 
   if (delegate && form_structure && autofill_field &&
@@ -1475,9 +1474,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   // If user annotations wasn't checked for readiness above, synchronously move
   // on with generating suggestions and maybe showing the UI.
-  GenerateSuggestionsAndMaybeShowUIPhase1(
-      form, field, trigger_source, context, std::move(callback),
-      AutofillPredictionImprovementsDelegate::HasData(false));
+  GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source, context,
+                                          std::move(callback),
+                                          AutofillAiDelegate::HasData(false));
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
@@ -1486,8 +1485,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback,
-    AutofillPredictionImprovementsDelegate::HasData
-        has_prediction_improvements_data) {
+    AutofillAiDelegate::HasData has_prediction_improvements_data) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // Note that this function cannot exit early in case GetCachedFormAndField()
@@ -1533,8 +1531,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    AutofillPredictionImprovementsDelegate::HasData
-        has_prediction_improvements_data,
+    AutofillAiDelegate::HasData has_prediction_improvements_data,
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback,
     std::vector<std::string> plus_addresses) {
@@ -1563,7 +1560,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     }
     return;
   }
-  AutofillPredictionImprovementsDelegate* delegate =
+  AutofillAiDelegate* delegate =
       client().GetAutofillPredictionImprovementsDelegate();
   if (delegate && has_prediction_improvements_data &&
       (trigger_source ==
@@ -1978,7 +1975,7 @@ void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
   form_filler_->FillOrPreviewFormWithPredictionImprovements(
       action_persistence, field_types_to_fill, ignorable_skip_reasons, form,
       trigger_field, *form_structure, *autofill_trigger_field, values_to_fill);
-  if (AutofillPredictionImprovementsDelegate* delegate =
+  if (AutofillAiDelegate* delegate =
           client().GetAutofillPredictionImprovementsDelegate()) {
     delegate->OnDidFillSuggestion(form.global_id());
   }
@@ -3231,7 +3228,7 @@ void BrowserAutofillManager::OnFormProcessed(
         form_structure, client().GetPersonalDataManager());
   }
 
-  if (AutofillPredictionImprovementsDelegate* delegate =
+  if (AutofillAiDelegate* delegate =
           client().GetAutofillPredictionImprovementsDelegate()) {
     delegate->OnFormSeen(form_structure);
   }

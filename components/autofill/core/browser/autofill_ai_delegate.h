@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_AI_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_AI_DELEGATE_H_
 
 #include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -19,8 +19,8 @@ class FormFieldData;
 class FormStructure;
 
 // The interface for communication from //components/autofill to
-// //components/autofill/autofill_prediction_improvements.
-class AutofillPredictionImprovementsDelegate {
+// //components/autofill_ai.
+class AutofillAiDelegate {
  public:
   using HasData = base::StrongAlias<class HasDataTag, bool>;
   using HasDataCallback = base::OnceCallback<void(HasData)>;
@@ -32,7 +32,7 @@ class AutofillPredictionImprovementsDelegate {
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    autofill::AutofillSuggestionTriggerSource)>;
 
-  virtual ~AutofillPredictionImprovementsDelegate() = default;
+  virtual ~AutofillAiDelegate() = default;
 
   // Returns Autofill prediction improvements suggestions combined with
   // `autofill_suggestions`. May return an empty vector.
@@ -117,4 +117,4 @@ class AutofillPredictionImprovementsDelegate {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_AI_DELEGATE_H_

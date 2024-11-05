@@ -150,7 +150,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"  // nogncheck
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -305,7 +305,7 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
       web_contents()->GetBrowserContext());
 }
 
-AutofillPredictionImprovementsDelegate*
+AutofillAiDelegate*
 ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
   if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(

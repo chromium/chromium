@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
@@ -40,8 +40,7 @@ inline constexpr base::TimeDelta kMinTimeToShowLoading =
 
 // The class for embedder-independent, tab-specific Autofill AI logic. This
 // class is an interface.
-class AutofillAiManager
-    : public autofill::AutofillPredictionImprovementsDelegate {
+class AutofillAiManager : public autofill::AutofillAiDelegate {
  public:
   // Enum specifying the states of retrieving prediction improvements.
   enum class PredictionRetrievalState {

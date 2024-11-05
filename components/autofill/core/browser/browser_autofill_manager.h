@@ -24,12 +24,12 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -615,14 +615,12 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       OnGenerateSuggestionsCallback callback,
-      AutofillPredictionImprovementsDelegate::HasData
-          has_prediction_improvements_data);
+      AutofillAiDelegate::HasData has_prediction_improvements_data);
   void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      AutofillPredictionImprovementsDelegate::HasData
-          has_prediction_improvements_data,
+      AutofillAiDelegate::HasData has_prediction_improvements_data,
       SuggestionsContext context,
       OnGenerateSuggestionsCallback callback,
       std::vector<std::string> plus_addresses);

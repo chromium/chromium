@@ -352,8 +352,7 @@ class AutofillAiBrowserBaseTest : public InteractiveBrowserTest {
         web_contents());
   }
 
-  autofill::AutofillPredictionImprovementsDelegate*
-  GetAutofillPredictionImprovementsDelegate() {
+  autofill::AutofillAiDelegate* GetAutofillPredictionImprovementsDelegate() {
     return autofill_client()
                ? autofill_client()->GetAutofillPredictionImprovementsDelegate()
                : nullptr;

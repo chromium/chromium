@@ -40,9 +40,9 @@
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/mock_autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_fill_router.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -2692,8 +2692,7 @@ TEST_F(
   // feedback will be its own suggestion.
   EXPECT_CALL(
       *client().GetAutofillPredictionImprovementsDelegate(),
-      UserFeedbackReceived(
-          AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsUp));
+      UserFeedbackReceived(AutofillAiDelegate::UserFeedback::kThumbsUp));
 
   external_delegate().DidPerformButtonActionForSuggestion(
       Suggestion(SuggestionType::kPredictionImprovementsFeedback),
@@ -2709,8 +2708,7 @@ TEST_F(
   // feedback will be its own suggestion.
   EXPECT_CALL(
       *client().GetAutofillPredictionImprovementsDelegate(),
-      UserFeedbackReceived(
-          AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsDown));
+      UserFeedbackReceived(AutofillAiDelegate::UserFeedback::kThumbsDown));
 
   external_delegate().DidPerformButtonActionForSuggestion(
       Suggestion(SuggestionType::kPredictionImprovementsFeedback),

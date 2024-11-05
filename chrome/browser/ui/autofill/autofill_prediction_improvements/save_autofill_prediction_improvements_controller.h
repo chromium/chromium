@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/web_contents.h"
 
@@ -23,8 +23,8 @@ namespace autofill {
 class SaveAutofillPredictionImprovementsController {
  public:
   using LearnMoreClickedCallback = base::RepeatingCallback<void()>;
-  using UserFeedbackCallback = base::RepeatingCallback<void(
-      AutofillPredictionImprovementsDelegate::UserFeedback)>;
+  using UserFeedbackCallback =
+      base::RepeatingCallback<void(AutofillAiDelegate::UserFeedback)>;
 
   enum class PredictionImprovementsBubbleClosedReason {
     // Bubble closed reason not specified.

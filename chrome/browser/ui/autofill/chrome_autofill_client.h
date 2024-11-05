@@ -53,7 +53,7 @@ class SaveUpdateAddressProfileFlowManager;
 #endif
 
 class AutofillOptimizationGuide;
-class AutofillPredictionImprovementsDelegate;
+class AutofillAiDelegate;
 class FormFieldData;
 enum class SuggestionType;
 
@@ -103,8 +103,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
-  AutofillPredictionImprovementsDelegate*
-  GetAutofillPredictionImprovementsDelegate() override;
+  AutofillAiDelegate* GetAutofillPredictionImprovementsDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
   void ShowPlusAddressError(PlusAddressErrorDialogType error_dialog_type,

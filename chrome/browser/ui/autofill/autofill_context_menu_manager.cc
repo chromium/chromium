@@ -30,9 +30,9 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -512,7 +512,7 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
 }
 
 bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem(
-    AutofillPredictionImprovementsDelegate* delegate,
+    AutofillAiDelegate* delegate,
     const GURL& url) {
   // TODO(crbug.com/372158654): Implement suitable criteria or remove the entry.
   return false;

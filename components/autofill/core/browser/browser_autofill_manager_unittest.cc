@@ -56,10 +56,10 @@
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/mock_autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_fill_router.h"
 #include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -555,7 +555,7 @@ class MockAutofillClient : public TestAutofillClient {
               NotifyIphFeatureUsed,
               (AutofillClient::IphFeature),
               (override));
-  MOCK_METHOD(MockAutofillPredictionImprovementsDelegate*,
+  MOCK_METHOD(MockAutofillAiDelegate*,
               GetAutofillPredictionImprovementsDelegate,
               (),
               (override));
@@ -7213,14 +7213,13 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  NiceMock<MockAutofillAiDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsPredictionImprovementsEligible)
       .WillByDefault(Return(true));
   EXPECT_CALL(delegate, HasDataStored)
-      .WillOnce(RunOnceCallback<0>(
-          AutofillPredictionImprovementsDelegate::HasData(true)));
+      .WillOnce(RunOnceCallback<0>(AutofillAiDelegate::HasData(true)));
   EXPECT_CALL(delegate, GetSuggestions)
       .WillOnce(Return(std::vector<Suggestion>{Suggestion(
           u"Autocomplete", SuggestionType::kRetrievePredictionImprovements)}));
@@ -7240,7 +7239,7 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsIPH) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  NiceMock<MockAutofillAiDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsPredictionImprovementsEligible)
@@ -7265,7 +7264,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  NiceMock<MockAutofillAiDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
@@ -7302,7 +7301,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  NiceMock<MockAutofillAiDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(true));
@@ -7337,7 +7336,7 @@ TEST_F(BrowserAutofillManagerTest, CC) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
+  NiceMock<MockAutofillAiDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, IsUserEligible).WillByDefault(Return(false));

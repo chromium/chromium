@@ -27,12 +27,12 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -904,7 +904,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kRetrievePredictionImprovements:
-      if (AutofillPredictionImprovementsDelegate* delegate =
+      if (AutofillAiDelegate* delegate =
               manager_->client().GetAutofillPredictionImprovementsDelegate()) {
         delegate->OnClickedTriggerSuggestion(query_form_, query_field_,
                                              CreateUpdateSuggestionsCallback());
@@ -914,7 +914,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       FillPredictionImprovements(suggestion);
       break;
     case SuggestionType::kEditPredictionImprovementsInformation:
-      if (AutofillPredictionImprovementsDelegate* delegate =
+      if (AutofillAiDelegate* delegate =
               manager_->client().GetAutofillPredictionImprovementsDelegate()) {
         delegate->GoToSettings();
       }
@@ -977,7 +977,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       }
       return;
     case SuggestionType::kPredictionImprovementsFeedback: {
-      AutofillPredictionImprovementsDelegate* delegate =
+      AutofillAiDelegate* delegate =
           manager_->client().GetAutofillPredictionImprovementsDelegate();
       if (!delegate) {
         break;
@@ -989,12 +989,11 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       switch (action) {
         case PredictionImprovementsButtonActions::kThumbsUpClicked:
           delegate->UserFeedbackReceived(
-              AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsUp);
+              AutofillAiDelegate::UserFeedback::kThumbsUp);
           break;
         case PredictionImprovementsButtonActions::kThumbsDownClicked:
           delegate->UserFeedbackReceived(
-              AutofillPredictionImprovementsDelegate::UserFeedback::
-                  kThumbsDown);
+              AutofillAiDelegate::UserFeedback::kThumbsDown);
           break;
         case PredictionImprovementsButtonActions::kLearnMoreClicked:
           delegate->UserClickedLearnMore();

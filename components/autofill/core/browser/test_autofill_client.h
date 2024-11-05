@@ -32,8 +32,8 @@
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
+#include "components/autofill/core/browser/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
-#include "components/autofill/core/browser/mock_autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -134,8 +134,7 @@ class TestAutofillClientTemplate : public T {
     mock_autofill_optimization_guide_.reset();
   }
 
-  MockAutofillPredictionImprovementsDelegate*
-  GetAutofillPredictionImprovementsDelegate() override {
+  MockAutofillAiDelegate* GetAutofillPredictionImprovementsDelegate() override {
     return mock_autofill_prediction_improvements_delegate_.get();
   }
 
@@ -503,10 +502,9 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
       mock_autofill_optimization_guide_ =
           std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
-  std::unique_ptr<
-      ::testing::NiceMock<MockAutofillPredictionImprovementsDelegate>>
-      mock_autofill_prediction_improvements_delegate_ = std::make_unique<
-          testing::NiceMock<MockAutofillPredictionImprovementsDelegate>>();
+  std::unique_ptr<::testing::NiceMock<MockAutofillAiDelegate>>
+      mock_autofill_prediction_improvements_delegate_ =
+          std::make_unique<testing::NiceMock<MockAutofillAiDelegate>>();
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;

@@ -81,7 +81,7 @@ class AutofillSnackbarControllerImpl;
 #endif  // BUILDFLAG(IS_ANDROID)
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
-class AutofillPredictionImprovementsDelegate;
+class AutofillAiDelegate;
 class AutofillProfile;
 class FieldClassificationModelHandler;
 class FormDataImporter;
@@ -261,8 +261,7 @@ class AutofillClient {
   // the tab of this client.
   // Returns `nullptr` if, at the time of the AutofillClient's construction, the
   // Autofill Prediction Improvements feature is unsupported.
-  virtual AutofillPredictionImprovementsDelegate*
-  GetAutofillPredictionImprovementsDelegate();
+  virtual AutofillAiDelegate* GetAutofillPredictionImprovementsDelegate();
 
   // Returns the `AutofillPlusAddressDelegate` associated with the profile of
   // the window of this tab.

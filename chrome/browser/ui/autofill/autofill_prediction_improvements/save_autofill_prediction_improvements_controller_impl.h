@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
