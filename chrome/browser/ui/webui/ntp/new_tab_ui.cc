@@ -182,10 +182,7 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
   if (!path.empty() && path[0] != '#') {
     // A path under new-tab was requested; it's likely a bad relative
     // URL from the new tab page, but in any case it's an error.
-    NOTREACHED_IN_MIGRATION()
-        << path << " should not have been requested on the NTP";
-    std::move(callback).Run(nullptr);
-    return;
+    NOTREACHED() << path << " should not have been requested on the NTP";
   }
 
   // Sometimes the |profile_| is the parent (non-incognito) version of the user

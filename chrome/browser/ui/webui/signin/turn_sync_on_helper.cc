@@ -314,9 +314,7 @@ void TurnSyncOnHelper::OnMergeAccountConfirmation(signin::SigninChoice choice) {
       AbortAndDelete();
       break;
     case signin::SIGNIN_CHOICE_SIZE:
-      NOTREACHED_IN_MIGRATION();
-      AbortAndDelete();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -352,9 +350,7 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
       CreateNewSignedInProfile();
       break;
     case signin::SIGNIN_CHOICE_SIZE:
-      NOTREACHED_IN_MIGRATION();
-      AbortAndDelete();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -576,8 +572,7 @@ void TurnSyncOnHelper::OnSyncStartupStateChanged(
     SyncStartupTracker::ServiceStartupState state) {
   switch (state) {
     case SyncStartupTracker::ServiceStartupState::kPending:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case SyncStartupTracker::ServiceStartupState::kTimeout:
       DVLOG(1) << "Waiting for Sync Service to start timed out.";
       [[fallthrough]];

@@ -275,8 +275,7 @@ class SigninViewControllerTestUtil {
       Browser* browser,
       SyncConfirmationDialogAction action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
         browser->signin_view_controller();
@@ -306,8 +305,7 @@ class SigninViewControllerTestUtil {
       Browser* browser,
       SigninEmailConfirmationDialog::Action action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
         browser->signin_view_controller();
@@ -341,8 +339,7 @@ class SigninViewControllerTestUtil {
   static bool TryCompleteReauthConfirmationDialog(Browser* browser,
                                                   ReauthDialogAction action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
         browser->signin_view_controller();
@@ -371,8 +368,7 @@ class SigninViewControllerTestUtil {
 
   static bool TryCompleteProfileCustomizationDialog(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
         browser->signin_view_controller();
@@ -399,8 +395,7 @@ class SigninViewControllerTestUtil {
 
   static bool ShowsModalDialog(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #else
     return browser->signin_view_controller()->ShowsModalDialog();
 #endif
@@ -475,8 +470,7 @@ bool SignInWithUI(Browser* browser,
                   const std::string& password,
                   signin::ConsentLevel consent_level) {
 #if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 #else
   SignInObserver signin_observer;
   base::ScopedObservation<signin::IdentityManager,

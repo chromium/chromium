@@ -210,8 +210,7 @@ std::string IdentityInternalsUIMessageHandler::GetStatus(
     case extensions::IdentityTokenCacheValue::CACHE_STATUS_TOKEN:
       return "Token Present";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::u16string IdentityInternalsUIMessageHandler::GetExpirationTime(

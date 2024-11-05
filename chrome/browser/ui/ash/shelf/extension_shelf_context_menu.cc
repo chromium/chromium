@@ -149,8 +149,7 @@ bool ExtensionShelfContextMenu::IsCommandIdChecked(int command_id) const {
       [[fallthrough]];
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     default:
       if (command_id < ash::COMMAND_ID_COUNT)
         return ShelfContextMenu::IsCommandIdChecked(command_id);
@@ -215,8 +214,7 @@ void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
       [[fallthrough]];
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
       ash::NewWindowDelegate::GetInstance()->NewWindow(
           /*incognito=*/false,

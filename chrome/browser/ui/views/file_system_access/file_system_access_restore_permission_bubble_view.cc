@@ -187,7 +187,7 @@ void FileSystemAccessRestorePermissionBubbleView::OnButtonPressed(
       std::move(callback_).Run(permissions::PermissionAction::DENIED);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FileSystemAccessRestorePermissionBubbleView::OnPromptDismissed() {

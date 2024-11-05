@@ -114,8 +114,7 @@ void LocalCardMigrationBubbleControllerImpl::OnBubbleClosed(
       metric = autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN;
       break;
     case PaymentsUiClosedReason::kCancelled:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   autofill_metrics::LogLocalCardMigrationBubbleResultMetric(metric, is_reshow_);
 }

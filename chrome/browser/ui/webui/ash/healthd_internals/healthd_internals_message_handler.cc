@@ -306,8 +306,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag(
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   base::Value callback_id = list[0].Clone();
   base::Value::Dict result;
@@ -321,8 +320,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo(
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   base::Value callback_id = list[0].Clone();
@@ -380,8 +378,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdProcessInfo(
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   base::Value callback_id = list[0].Clone();
@@ -424,8 +421,7 @@ void HealthdInternalsMessageHandler::HandleGetCrosSystemInfo(
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   base::Value callback_id = list[0].Clone();
   base::Value::Dict result;

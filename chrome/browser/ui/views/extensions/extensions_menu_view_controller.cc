@@ -292,8 +292,7 @@ void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
           base::UserMetricsAction("Extensions.Menu.OnAllSitesSelected"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown site access";
-      break;
+      NOTREACHED() << "Unknown site access";
   }
 }
 

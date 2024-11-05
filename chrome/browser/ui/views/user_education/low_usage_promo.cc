@@ -72,8 +72,8 @@ constexpr char kThemesWebStoreUrl[] =
 Browser* ContextToBrowser(ui::ElementContext ctx) {
   Browser* const browser = chrome::FindBrowserWithUiElementContext(ctx);
   if (!browser) {
-    NOTREACHED_IN_MIGRATION() << "Promo attempted to open a side panel but the "
-                                 "browser context was invalid.";
+    NOTREACHED() << "Promo attempted to open a side panel but the browser "
+                    "context was invalid.";
   }
   return browser;
 }
@@ -93,9 +93,8 @@ content::WebContents* NavigateToPage(Browser* browser, const GURL& url) {
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
   if (!navigate_params.navigated_or_inserted_contents) {
-    NOTREACHED_IN_MIGRATION()
-        << "Promo attempted to open a page, but did not receive a "
-           "navigation handle.";
+    NOTREACHED() << "Promo attempted to open a page, but did not receive a "
+                    "navigation handle.";
   }
   return navigate_params.navigated_or_inserted_contents;
 }

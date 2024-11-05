@@ -172,8 +172,7 @@ class HistoryClustersSidePanelContextMenu
                          ->root_action_item());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

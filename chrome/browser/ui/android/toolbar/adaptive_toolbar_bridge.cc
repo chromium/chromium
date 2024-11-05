@@ -97,7 +97,7 @@ void RunGetSelectedSegmentCallback(
         button_variant = AdaptiveToolbarButtonVariant::kUnknown;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

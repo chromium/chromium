@@ -247,7 +247,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       sent_request_id_.CopyFrom(
           request->interaction_request().request_context().request_id());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     if (request) {
       sent_client_logs_.CopyFrom(request->client_logs());

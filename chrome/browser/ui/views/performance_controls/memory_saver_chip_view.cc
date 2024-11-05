@@ -133,7 +133,7 @@ void MemorySaverChipView::UpdateImpl() {
         break;
       }
       default: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   } else {

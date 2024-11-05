@@ -393,7 +393,7 @@ void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
                          weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   select_file_dialog_.reset();

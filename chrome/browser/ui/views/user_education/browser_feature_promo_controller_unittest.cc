@@ -359,7 +359,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
         failure_action_name.append("BlockedByNewProfile");
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     EXPECT_EQ(not_shown_count,

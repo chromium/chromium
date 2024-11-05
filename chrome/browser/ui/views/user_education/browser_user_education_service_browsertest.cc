@@ -133,8 +133,7 @@ std::ostream& operator<<(std::ostream& os, const IPHFailure& failure) {
   os << failure.feature->name;
   switch (failure.reason) {
     case IPHFailureReason::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case IPHFailureReason::kUnlisted:
       os << " is not registered in feature_engagement::kAllFeatures in "
             "feature_list.cc. This will cause most attempts to show or access "
@@ -494,8 +493,7 @@ std::ostream& operator<<(std::ostream& os, const TutorialFailure& failure) {
   os << failure.tutorial_id;
   switch (failure.reason) {
     case TutorialFailureReason::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case TutorialFailureReason::kLikelySkippedStep:
       os << " shows a bubble anchored to an always-visible UI element "
          << failure.identifier << " (step " << failure.step_number

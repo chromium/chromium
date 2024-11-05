@@ -555,10 +555,8 @@ searchbox::mojom::SelectionLineState ConvertLineState(
       return searchbox::mojom::SelectionLineState::
           kFocusedButtonRemoveSuggestion;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return searchbox::mojom::SelectionLineState::kNormal;
 }
 
 void RealboxHandler::SetInputText(const std::string& input_text) {

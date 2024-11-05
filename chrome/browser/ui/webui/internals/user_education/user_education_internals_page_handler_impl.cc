@@ -456,7 +456,7 @@ void UserEducationInternalsPageHandlerImpl::GetTutorials(
           GetTutorialInstructions(*description),
           /*followed_by=*/"", std::vector<FeaturePromoDemoPageDataPtr>()));
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   std::move(callback).Run(std::move(info_list));

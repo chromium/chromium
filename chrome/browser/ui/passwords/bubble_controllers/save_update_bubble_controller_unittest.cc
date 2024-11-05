@@ -568,7 +568,7 @@ TEST_P(SaveUpdateBubbleControllerUKMTest, RecordUKMs) {
       EXPECT_CALL(*delegate(), SavePassword(_, _)).Times(0);
       EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     DestroyModelAndVerifyControllerExpectations();
   }

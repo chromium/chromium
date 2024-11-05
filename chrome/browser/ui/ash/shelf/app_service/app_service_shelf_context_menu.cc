@@ -86,8 +86,7 @@ extensions::LaunchType ConvertLaunchTypeCommandToExtensionLaunchType(
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       [[fallthrough]];
     default:
-      NOTREACHED_IN_MIGRATION();
-      return extensions::LAUNCH_TYPE_INVALID;
+      NOTREACHED();
   }
 }
 
@@ -245,8 +244,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case ash::CROSTINI_USE_LOW_DENSITY:
     case ash::CROSTINI_USE_HIGH_DENSITY: {
@@ -600,8 +598,7 @@ void AppServiceShelfContextMenu::SetExtensionLaunchType(int command_id) {
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
       return;
   }

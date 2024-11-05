@@ -964,8 +964,7 @@ download::DownloadItem* DownloadsDOMHandler::GetDownloadByStringId(
     const std::string& id) {
   uint64_t id_num;
   if (!base::StringToUint64(id, &id_num)) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   return GetDownloadById(static_cast<uint32_t>(id_num));

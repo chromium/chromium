@@ -180,7 +180,7 @@ void ParseConfigurationArguments(const base::Value::List& args,
   if ((*callback_id = &args[0]) && !json.empty()) {
     CHECK(GetConfiguration(json, config));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -200,8 +200,7 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
       return "noAction";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Returns the base::Value associated with the account, to use in the stored
@@ -712,11 +711,11 @@ void PeopleHandler::HandleAttemptUserExit(const base::Value::List& args) {
 }
 
 void PeopleHandler::HandleTurnOnSync(const base::Value::List& args) {
-  NOTREACHED_IN_MIGRATION() << "It is not possible to toggle Sync on Ash";
+  NOTREACHED() << "It is not possible to toggle Sync on Ash";
 }
 
 void PeopleHandler::HandleTurnOffSync(const base::Value::List& args) {
-  NOTREACHED_IN_MIGRATION() << "It is not possible to toggle Sync on Ash";
+  NOTREACHED() << "It is not possible to toggle Sync on Ash";
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -762,10 +761,9 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
   if (!is_clear_primary_account_allowed) {
     // 'Signout' should not be offered in the UI if clear primary account is
     // not allowed.
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Signout should not be offered if clear primary account is not "
            "allowed.";
-    return;
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());

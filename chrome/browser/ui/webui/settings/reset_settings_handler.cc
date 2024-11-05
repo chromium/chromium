@@ -58,8 +58,9 @@ ResetRequestOriginFromString(const std::string& request_origin) {
     return reset_report::ChromeResetReport::
         RESET_REQUEST_ORIGIN_TRIGGERED_RESET;
   }
-  if (!request_origin.empty())
-    NOTREACHED_IN_MIGRATION();
+  if (!request_origin.empty()) {
+    NOTREACHED();
+  }
 
   return reset_report::ChromeResetReport::RESET_REQUEST_ORIGIN_UNKNOWN;
 }

@@ -145,8 +145,7 @@ permissions::ElementAnchoredBubbleVariant GetVariant(
       return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return permissions::ElementAnchoredBubbleVariant::UNINITIALIZED;
+  NOTREACHED();
 }
 }  // namespace
 
@@ -293,7 +292,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
           permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED);
       break;
     case Variant::kUninitialized:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (prompt_view) {
@@ -571,7 +570,7 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
         RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_ALLOWED);
         break;
       case system_permission_settings::SystemPermission::kNotDetermined:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -581,7 +580,7 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
       FinalizePrompt();
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

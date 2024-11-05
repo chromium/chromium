@@ -380,8 +380,7 @@ void CrostiniHandler::OnCrostiniDialogStatusChanged(
                           base::Value(status));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

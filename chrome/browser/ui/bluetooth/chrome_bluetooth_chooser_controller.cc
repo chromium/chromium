@@ -80,7 +80,7 @@ void ChromeBluetoothChooserController::OpenPermissionPreferences() const {
   base::mac::OpenSystemSettingsPane(
       base::mac::SystemSettingsPane::kPrivacySecurity_Bluetooth);
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

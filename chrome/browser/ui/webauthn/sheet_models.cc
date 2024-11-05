@@ -71,8 +71,7 @@ std::u16string PossibleResidentKeyWarning(
     case device::ResidentKeyRequirement::kRequired:
       return l10n_util::GetStringUTF16(IDS_WEBAUTHN_RESIDENT_KEY_PRIVACY);
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 // Return a warning about attestation if attestation was requested, otherwise
@@ -182,7 +181,7 @@ void AuthenticatorSheetModelBase::OnBack() {
 }
 
 void AuthenticatorSheetModelBase::OnAccept() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AuthenticatorSheetModelBase::OnCancel() {

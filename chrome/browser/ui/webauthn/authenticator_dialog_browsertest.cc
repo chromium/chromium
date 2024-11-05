@@ -795,7 +795,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMLockedPin);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     controller_->StartFlow(std::move(transport_availability),
                            /*is_conditional_mediation=*/false);

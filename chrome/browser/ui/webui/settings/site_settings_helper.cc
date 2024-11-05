@@ -353,8 +353,7 @@ SiteSettingSource CalculateSiteSettingSource(
     return SiteSettingSource::kPreference;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SiteSettingSource::kPreference;
+  NOTREACHED();
 }
 
 bool IsFromWebUIAllowlistSource(const ContentSettingPatternSource& pattern) {
@@ -537,9 +536,8 @@ std::string_view ContentSettingsTypeToGroupName(ContentSettingsType type) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION() << static_cast<int32_t>(type)
-                            << " is not a recognized content settings type.";
-  return std::string_view();
+  NOTREACHED() << static_cast<int32_t>(type)
+               << " is not a recognized content settings type.";
 }
 
 std::vector<ContentSettingsType> GetVisiblePermissionCategories(
@@ -690,8 +688,7 @@ std::string SiteSettingSourceToString(const SiteSettingSource source) {
     case SiteSettingSource::kPreference:
       return "preference";
     case SiteSettingSource::kNumSources:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -717,8 +714,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      NOTREACHED_IN_MIGRATION();
-      return SiteSettingSource::kPreference;
+      NOTREACHED();
   }
 }
 
@@ -742,8 +738,7 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      NOTREACHED_IN_MIGRATION();
-      return "preference";
+      NOTREACHED();
   }
 }
 

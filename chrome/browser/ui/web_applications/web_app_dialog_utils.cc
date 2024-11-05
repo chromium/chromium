@@ -111,9 +111,9 @@ void OnWebAppInstallShowInstallDialog(
                                std::move(web_app_acceptance_callback));
       return;
     case WebAppInstallFlow::kUnknown:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 WebAppInstalledCallback& GetInstalledCallbackForTesting() {

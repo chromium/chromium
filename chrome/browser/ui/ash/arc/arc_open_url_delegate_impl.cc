@@ -416,7 +416,7 @@ void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ArcOpenUrlDelegateImpl::OpenAppWithIntent(

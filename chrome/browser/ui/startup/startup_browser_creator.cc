@@ -762,14 +762,14 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 
   if (profile_info.mode == StartupProfileMode::kProfilePicker) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #else
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         process_startup == chrome::startup::IsProcessStartup::kYes
             ? ProfilePicker::EntryPoint::kOnStartup
             : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   // `last_opened_profiles` will be empty in the following circumstances:
@@ -817,15 +817,15 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 
     // Show ProfilePicker if `profile` can't be auto opened.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #else
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         process_startup == chrome::startup::IsProcessStartup::kYes
             ? ProfilePicker::EntryPoint::kOnStartupNoProfile
             : ProfilePicker::EntryPoint::
                   kNewSessionOnExistingProcessNoProfile));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   ProcessLastOpenedProfiles(command_line, cur_dir, process_startup,
                             is_first_run, profile, last_opened_profiles);
@@ -1094,10 +1094,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     if (profile_info.mode == StartupProfileMode::kProfilePicker) {
       // TODO(http://crbug.com/1293024): Refactor command line processing logic
       // to validate the flag sets and reliably determine the startup mode.
-      LOG(ERROR)
+      NOTREACHED()
           << "Failed to launch a native message host: couldn't pick a profile";
-      NOTREACHED_IN_MIGRATION();
-      base::debug::DumpWithoutCrashing();
     } else {
       extensions::LaunchNativeMessageHostFromNativeApp(
           command_line.GetSwitchValueASCII(

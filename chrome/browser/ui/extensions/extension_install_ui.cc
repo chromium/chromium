@@ -125,7 +125,7 @@ void ShowAppInstalledNotification(
   ShowInstalledNotification(extension, profile);
 #elif BUILDFLAG(IS_CHROMEOS)
   // chrome://apps/ is not available on ChromeOS.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
   Profile* current_profile = profile->GetOriginalProfile();
   Browser* browser = FindOrCreateVisibleBrowser(current_profile);

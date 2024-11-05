@@ -79,8 +79,7 @@ std::string FaviconSource::GetSource() {
     case chrome::FaviconUrlFormat::kFavicon2:
       return chrome::kChromeUIFavicon2Host;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void FaviconSource::StartDataRequest(

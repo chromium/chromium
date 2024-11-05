@@ -58,7 +58,7 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
                                         bool from_profile_picker) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS doesn't have the avatar bubble so it never calls this function.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
   last_login_error_ = error;
   // TODO(crbug.com/40225985): Check if the condition should be `!error.IsOk()`
@@ -76,7 +76,7 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
 
 void LoginUIService::SetProfileBlockingErrorMessage() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
   last_login_error_ = SigninUIError::ProfileIsBlocked();
 #endif

@@ -29,18 +29,15 @@ bool AppWindowBase::IsActive() const {
 }
 
 bool AppWindowBase::IsMaximized() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool AppWindowBase::IsMinimized() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool AppWindowBase::IsFullscreen() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 gfx::NativeWindow AppWindowBase::GetNativeWindow() const {
@@ -48,18 +45,15 @@ gfx::NativeWindow AppWindowBase::GetNativeWindow() const {
 }
 
 gfx::Rect AppWindowBase::GetRestoredBounds() const {
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Rect();
+  NOTREACHED();
 }
 
 ui::mojom::WindowShowState AppWindowBase::GetRestoredState() const {
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::WindowShowState::kNormal;
+  NOTREACHED();
 }
 
 gfx::Rect AppWindowBase::GetBounds() const {
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Rect();
+  NOTREACHED();
 }
 
 void AppWindowBase::Show() {
@@ -67,16 +61,15 @@ void AppWindowBase::Show() {
 }
 
 void AppWindowBase::ShowInactive() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppWindowBase::Hide() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool AppWindowBase::IsVisible() const {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 void AppWindowBase::Close() {
@@ -88,11 +81,11 @@ void AppWindowBase::Activate() {
 }
 
 void AppWindowBase::Deactivate() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppWindowBase::Maximize() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppWindowBase::Minimize() {
@@ -100,22 +93,21 @@ void AppWindowBase::Minimize() {
 }
 
 void AppWindowBase::Restore() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppWindowBase::SetBounds(const gfx::Rect& bounds) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppWindowBase::FlashFrame(bool flash) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ui::ZOrderLevel AppWindowBase::GetZOrderLevel() const {
-  NOTREACHED_IN_MIGRATION();
-  return ui::ZOrderLevel::kNormal;
+  NOTREACHED();
 }
 
 void AppWindowBase::SetZOrderLevel(ui::ZOrderLevel level) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

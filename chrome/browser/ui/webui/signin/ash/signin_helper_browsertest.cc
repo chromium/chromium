@@ -83,7 +83,7 @@ constexpr char kSecondaryGoogleAccountUsageLatencyHistogramName[] =
     "Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency";
 
 void NotReached() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 class TestSigninHelper : public SigninHelper {

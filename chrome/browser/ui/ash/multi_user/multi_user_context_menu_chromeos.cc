@@ -144,6 +144,6 @@ void ExecuteVisitDesktopCommand(int command_id, aura::Window* window) {
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }

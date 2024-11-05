@@ -223,8 +223,7 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
     for (const auto item : keycodes) {
       int key_code;
       if (!base::StringToInt(item.first, &key_code)) {
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       }
       for (const base::Value& device_type : item.second.GetList()) {
         base::Value::Dict key;

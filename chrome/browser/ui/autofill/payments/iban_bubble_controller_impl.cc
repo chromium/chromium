@@ -152,8 +152,7 @@ std::u16string IbanBubbleControllerImpl::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_IBAN_SAVED);
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -175,8 +174,7 @@ std::u16string IbanBubbleControllerImpl::GetAcceptButtonText() const {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_DONE);
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -189,8 +187,7 @@ std::u16string IbanBubbleControllerImpl::GetDeclineButtonText() const {
     case IbanBubbleType::kManageSavedIban:
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -256,7 +253,7 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
       return;
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -315,9 +312,7 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
         metric = autofill_metrics::SaveIbanPromptResult::kLostFocus;
         break;
       case PaymentsUiClosedReason::kUnknown:
-        metric = autofill_metrics::SaveIbanPromptResult::kUnknown;
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     autofill_metrics::LogSaveIbanPromptResultMetric(
         metric, is_reshow_,
@@ -434,7 +429,7 @@ void IbanBubbleControllerImpl::DoShowBubble() {
       break;
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (observer_for_testing_) {
@@ -478,7 +473,7 @@ void IbanBubbleControllerImpl::ShowIconOnly() {
     case IbanBubbleType::kUploadCompleted:
       break;
     case IbanBubbleType::kInactive:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (observer_for_testing_) {

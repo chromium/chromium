@@ -73,8 +73,7 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
   if (tab_node->is_capturing) {
     switch (old_data.priority) {
       case TabCapturePriority::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case TabCapturePriority::kLow:
         lo_prio_capture_count_ -= 1;
         break;

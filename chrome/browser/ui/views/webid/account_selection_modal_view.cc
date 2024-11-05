@@ -596,7 +596,7 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
 void AccountSelectionModalView::ShowFailureDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "ShowFailureDialog is only implemented for AccountSelectionBubbleView";
 }
 
@@ -729,9 +729,8 @@ void AccountSelectionModalView::OnContinueButtonClicked(
 void AccountSelectionModalView::ShowSingleReturningAccountDialog(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list) {
-  NOTREACHED_IN_MIGRATION()
-      << "ShowSingleReturningAccountDialog is only implemented for "
-         "AccountSelectionBubbleView";
+  NOTREACHED() << "ShowSingleReturningAccountDialog is only implemented for "
+                  "AccountSelectionBubbleView";
 }
 
 std::unique_ptr<views::View> AccountSelectionModalView::CreateIconHeaderView() {

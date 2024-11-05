@@ -1046,8 +1046,7 @@ class StateManager : public StateObserver,
       }
     }
 
-    NOTREACHED_IN_MIGRATION()
-        << "There should at least be one active state in the map.";
+    NOTREACHED() << "There should at least be one active state in the map.";
   }
 
   // `AvatarToolbarButton::UpdateIcon()` will notify observers, the

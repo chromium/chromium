@@ -174,12 +174,10 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
       } else if (*action_string == kSigninEmailConfirmationActionStartSync) {
         action = START_SYNC;
       } else {
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected action value [" << *action_string << "]";
+        NOTREACHED() << "Unexpected action value [" << *action_string << "]";
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "No action in the dialog close return arguments";
+      NOTREACHED() << "No action in the dialog close return arguments";
     }
   } else {
     // If the dialog is dismissed without any return value, then simply close

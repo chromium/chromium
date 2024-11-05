@@ -90,8 +90,7 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value& value) {
     }
 
     case base::Value::Type::BINARY:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case base::Value::Type::DICT: {
       NSAppleEventDescriptor* keyValuePairs =

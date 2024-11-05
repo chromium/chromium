@@ -135,8 +135,7 @@ void ExclusiveAccessPermissionManager::HandleRequestResult(
     const std::vector<blink::mojom::PermissionStatus>& status) {
   auto requests_it = pending_requests_.find(rfh_id);
   if (requests_it == pending_requests_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   PendingRequests& requests = requests_it->second;
   CHECK_EQ(status.size(), 1u);

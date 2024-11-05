@@ -944,19 +944,19 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_CHROME_TIPS:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       ShowChromeTips(browser_);
-#else
-      NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       break;
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDC_CHROME_WHATS_NEW:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
       ShowChromeWhatsNew(browser_);
+      break;
 #else
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
         // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-      break;
     case IDC_SHOW_BETA_FORUM:
       ShowBetaForum(browser_);
       break;

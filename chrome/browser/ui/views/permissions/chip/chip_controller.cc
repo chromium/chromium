@@ -240,7 +240,7 @@ void ChipController::OnWidgetDestroyed(views::Widget* widget) {
       active_chip_permission_request_manager_.value()->Deny();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -75,8 +75,7 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
           IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE);
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -150,8 +149,7 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   autofill_metrics::LogOfferNotificationBubbleResultMetric(
       offer_.GetOfferType(), metric, is_user_gesture_);

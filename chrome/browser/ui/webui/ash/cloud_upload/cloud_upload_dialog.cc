@@ -717,8 +717,7 @@ bool CloudOpenTask::ShouldShowConfirmationDialog() {
     return force_show_confirmation_dialog ||
            !fm_tasks::GetAlwaysMoveOfficeFilesToOneDrive(profile_);
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool CloudOpenTask::ConfirmMoveOrStartUpload() {
@@ -1550,7 +1549,7 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
     size->set_width(kDialogWidthForConnectToOneDrive);
     size->set_height(kDialogHeightForConnectToOneDrive);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

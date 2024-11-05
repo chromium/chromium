@@ -133,7 +133,7 @@ void OpenURLAfterCheckIsDefaultBrowser(
     case shell_integration::NUM_DEFAULT_STATES:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -78,7 +78,7 @@ void OnEmailConfirmation(signin::SigninChoiceCallback callback,
       std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -292,8 +292,7 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
               : IDS_AUTOFILL_CARD_SAVED);
     case BubbleType::UPLOAD_COMPLETED:
     case BubbleType::INACTIVE:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -527,7 +526,7 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::UPLOAD_COMPLETED:
     case BubbleType::INACTIVE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -647,7 +646,7 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
         case BubbleType::INACTIVE:
         case BubbleType::UPLOAD_IN_PROGRESS:
         case BubbleType::UPLOAD_COMPLETED:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
       break;
     case PaymentsUiClosedReason::kCancelled:
@@ -839,7 +838,7 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     case BubbleType::UPLOAD_IN_PROGRESS:
       break;
     case BubbleType::INACTIVE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -896,7 +895,7 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
     case BubbleType::UPLOAD_COMPLETED:
     case BubbleType::MANAGE_CARDS:
     case BubbleType::INACTIVE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

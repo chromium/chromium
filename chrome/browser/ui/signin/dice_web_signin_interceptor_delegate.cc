@@ -188,8 +188,7 @@ class ForcedEnterpriseSigninInterceptionHandle
         break;
       case signin::SIGNIN_CHOICE_SIZE:
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
         bubble_parameters_, browser_->profile(), interception_result);

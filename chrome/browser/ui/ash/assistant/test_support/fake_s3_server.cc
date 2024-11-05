@@ -79,7 +79,7 @@ std::string FakeS3ModeToString(FakeS3Mode mode) {
     case FakeS3Mode::kReplay:
       return "REPLAY";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppendArgument(base::CommandLine* command_line,

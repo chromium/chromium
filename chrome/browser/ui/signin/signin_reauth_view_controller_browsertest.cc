@@ -115,8 +115,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReauthURL(
     return CreateNonEmptyResponse(net::HTTP_NOT_IMPLEMENTED);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 class ReauthTestObserver : SigninReauthViewController::Observer {

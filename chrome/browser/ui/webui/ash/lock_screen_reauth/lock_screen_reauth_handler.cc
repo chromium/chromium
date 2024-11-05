@@ -317,8 +317,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
     auto challenge_response_key_or_error = login::ExtractClientCertificates(
         *extension_provided_client_cert_usage_observer_);
     if (!challenge_response_key_or_error.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     challenge_response_key = challenge_response_key_or_error.value();
   }
@@ -368,9 +367,7 @@ void LockScreenReauthHandler::FinishAuthentication(
 }
 
 void LockScreenReauthHandler::OnCookieWaitTimeout() {
-  NOTREACHED_IN_MIGRATION()
-      << "Cookie has timed out while attempting to login in.";
-  LockScreenStartReauthDialog::Dismiss();
+  NOTREACHED() << "Cookie has timed out while attempting to login in.";
 }
 
 void LockScreenReauthHandler::OnReauthDialogReadyForTesting() {

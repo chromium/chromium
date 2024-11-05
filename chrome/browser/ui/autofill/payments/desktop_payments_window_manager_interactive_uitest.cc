@@ -95,7 +95,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
               });
       window_manager().InitVcn3dsAuthentication(std::move(context));
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -126,7 +126,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
         return false;
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     return true;

@@ -956,7 +956,7 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
           web_contents_.get());
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1037,7 +1037,7 @@ void NewTabPageHandler::OnCustomizeDialogAction(
       event = NTP_CUSTOMIZE_SHORTCUT_VISIBILITY_TOGGLE_CLICKED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   LogEvent(event);
 }
@@ -1057,8 +1057,7 @@ void NewTabPageHandler::OnDoodleImageClicked(
       event = NTP_STATIC_LOGO_CLICKED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   LogEvent(event);
 
@@ -1106,8 +1105,7 @@ void NewTabPageHandler::OnDoodleShared(
       channel_id = 6;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   std::string query =
       base::StringPrintf("gen_204?atype=i&ct=doodle&ntp=2&cad=sh,%d,ct:%s",

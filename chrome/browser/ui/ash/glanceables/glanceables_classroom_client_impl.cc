@@ -145,8 +145,7 @@ void GlanceablesClassroomClientImpl::CourseListState::FinalizeFetch(
       case FetchStatus::kNotFetched:
       case FetchStatus::kFetched:
       case FetchStatus::kFetchingInvalidated:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FetchStatus::kFetching:
         fetch_status_ = FetchStatus::kFetched;
         break;
@@ -819,8 +818,7 @@ void GlanceablesClassroomClientImpl::OnStudentDataFetched(
     switch (student_data_fetch_status_) {
       case FetchStatus::kNotFetched:
       case FetchStatus::kFetched:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FetchStatus::kFetching:
         student_data_fetch_status_ = FetchStatus::kFetched;
         break;

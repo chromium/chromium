@@ -345,9 +345,8 @@ std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
     case WindowOpenDisposition::IGNORE_ACTION:
       return {nullptr, -1};
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return {nullptr, -1};
 }
 
 // Fix disposition and other parameter values depending on prevailing

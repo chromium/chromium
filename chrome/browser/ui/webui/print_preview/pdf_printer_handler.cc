@@ -259,7 +259,7 @@ void PdfPrinterHandler::Reset() {
 void PdfPrinterHandler::StartGetPrinters(
     AddedPrintersCallback added_printers_callback,
     GetPrintersDoneCallback done_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PdfPrinterHandler::StartGetCapability(const std::string& destination_id,

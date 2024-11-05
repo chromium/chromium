@@ -500,7 +500,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
       ShowAutofillCreditCardSettings(web_contents());
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 #else
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
@@ -521,7 +521,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

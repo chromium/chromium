@@ -265,8 +265,7 @@ void ExtensionEnableFlow::InstallPromptDone(
       break;
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:
       // This dialog doesn't support the "withhold permissions" checkbox.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case ExtensionInstallPrompt::Result::USER_CANCELED:
     case ExtensionInstallPrompt::Result::ABORTED:
       delegate_->ExtensionEnableFlowAborted(/*user_initiated=*/

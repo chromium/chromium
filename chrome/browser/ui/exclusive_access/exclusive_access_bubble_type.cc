@@ -34,8 +34,7 @@ bool IsHoldRequiredToExit(ExclusiveAccessBubbleType type) {
       return base::FeatureList::IsEnabled(
           features::kPressAndHoldEscToExitBrowserFullscreen);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -88,8 +87,7 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
       }
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -104,11 +102,9 @@ bool IsExclusiveAccessModeBrowserFullscreen(ExclusiveAccessBubbleType type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION:
       return false;
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace exclusive_access_bubble

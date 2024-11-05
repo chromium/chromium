@@ -720,8 +720,7 @@ void ChromePaymentsAutofillClient::OnUnmaskVerificationResult(
       // Do nothing
       break;
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -919,7 +918,7 @@ void ChromePaymentsAutofillClient::HideTouchToFillPaymentMethod() {
   touch_to_fill_payment_method_controller_.Hide();
 #else
   // Touch To Fill is not supported on Desktop.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

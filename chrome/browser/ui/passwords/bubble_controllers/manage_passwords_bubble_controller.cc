@@ -238,8 +238,7 @@ void ManagePasswordsBubbleController::
   }
   if (updated_form.username_value.empty()) {
     // The UI doesn't allow clearing the username.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   // The UI allows updating the username for credentials with an empty username.
   // Since the username is part of the the unique key, updating it requires

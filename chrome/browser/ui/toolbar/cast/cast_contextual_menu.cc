@@ -152,7 +152,7 @@ void CastContextualMenu::ExecuteCommand(int command_id,
       ToggleMediaRemoting();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

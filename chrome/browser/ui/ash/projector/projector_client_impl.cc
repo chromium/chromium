@@ -97,8 +97,7 @@ ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
     case ash::OnDeviceRecognitionAvailability::kAvailable:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ash::OnDeviceToServerSpeechRecognitionFallbackReason::kMaxValue;
+  NOTREACHED();
 }
 
 }  // namespace

@@ -165,8 +165,7 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
     case DeviceReportingType::kFileEvents:
       return "file events";
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown device reporting type";
-      return "device";
+      NOTREACHED() << "Unknown device reporting type";
   }
 }
 

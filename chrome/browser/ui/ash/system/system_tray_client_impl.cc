@@ -199,8 +199,7 @@ ash::ManagementDeviceMode GetManagementDeviceMode(
       return ash::ManagementDeviceMode::kChromeEducation;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ash::ManagementDeviceMode::kOther;
+  NOTREACHED();
 }
 
 }  // namespace

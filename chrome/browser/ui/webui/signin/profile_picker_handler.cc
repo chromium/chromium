@@ -433,8 +433,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(*profile_path);
   if (!entry) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // If a browser window cannot be opened for profile, load the profile to
@@ -681,8 +680,7 @@ void ProfilePickerHandler::HandleSetProfileName(const base::Value::List& args) {
       base::ValueToFilePath(profile_path_value);
 
   if (!profile_path) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   std::u16string profile_name = base::UTF8ToUTF16(args[1].GetString());
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
@@ -702,8 +700,7 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::Value::List& args) {
       base::ValueToFilePath(profile_path_value);
 
   if (!profile_path) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   RecordProfilePickerAction(ProfilePickerAction::kDeleteProfile);

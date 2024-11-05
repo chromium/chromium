@@ -164,13 +164,7 @@ std::u16string BrowserFeaturePromoController::GetTutorialScreenReaderHint()
   if (browser_view_->GetAccelerator(kAccelerator, &accelerator)) {
     accelerator_text = accelerator.GetShortcutText();
   } else {
-    // TODO(crbug.com/40903127): GetAccelerator appears to be failing
-    // sporadically on Windows, for unknown reasons. Since we can't have this
-    // code crashing in release, it's being returned to the original NOTREACHED
-    // before everything was changed to CHECKs. This bug will continue to be
-    // researched for a more correct fix.
-    accelerator_text = u"F6";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION,
                                     accelerator.GetShortcutText());

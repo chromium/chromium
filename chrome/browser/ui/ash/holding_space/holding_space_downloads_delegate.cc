@@ -425,8 +425,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
         delegate_->OnDownloadFailed(this);  // NOTE: Destroys `this`.
         break;
       case download::DownloadItem::MAX_DOWNLOAD_STATE:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -585,8 +584,7 @@ void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
       file_manager::util::GetDownloadsFolderForProfile(profile()));
   if (!base::FilePath("Download/")
            .AppendRelativePath(relative_path.Append(display_name), &path)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   service()->AddItemOfType(HoldingSpaceItem::Type::kArcDownload, path);

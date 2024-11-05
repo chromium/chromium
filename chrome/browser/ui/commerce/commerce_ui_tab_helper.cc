@@ -775,7 +775,7 @@ void CommerceUiTabHelper::MaybeRecordShoppingInformationUKM(
       promoted_feature =
           static_cast<int64_t>(ShoppingContextualFeature::kPriceTracking);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     ukm_builder.SetPromotedFeature(promoted_feature);
   }

@@ -638,8 +638,7 @@ bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
 
   // When a new menu item is introduced, it should be added to one of the cases
   // above.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void HistoryMenuBridge::OnProfileMarkedForPermanentDeletion(Profile* profile) {

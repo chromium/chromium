@@ -2129,7 +2129,7 @@ void SiteSettingsHandler::SendZoomLevels() {
         // start. Therefore, we don't care for them.
         continue;
       case content::HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

@@ -95,8 +95,7 @@ IconAndColor IconAndColorForTailoredWarning(const DownloadUIModel& model) {
     case DownloadUIModel::TailoredWarningType::kCookieTheftWithAccountInfo:
       return IconAndColorForDangerousUiPattern();
     case DownloadUIModel::TailoredWarningType::kNoTailoredWarning: {
-      NOTREACHED_IN_MIGRATION();
-      return IconAndColor{};
+      NOTREACHED();
     }
   }
 }

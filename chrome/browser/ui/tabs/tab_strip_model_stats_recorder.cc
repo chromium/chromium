@@ -73,8 +73,7 @@ void TabStripModelStatsRecorder::TabInfo::UpdateState(TabState new_state) {
       break;
     case TabState::CLOSED:
     case TabState::MAX:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   current_state_ = new_state;

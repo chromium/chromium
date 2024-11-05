@@ -24,8 +24,7 @@ std::u16string GetCommandIdLabel(int command_id) {
       return l10n_util::GetStringUTF16(
           IDS_WEBAUTHN_GPM_PIN_OPTION_ALPHANUMERIC);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -70,8 +69,7 @@ void PinOptionsButton::ExecuteCommand(int command_id, int event_flags) {
       callback_.Run(/*is_arbitrary=*/true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

@@ -451,16 +451,15 @@ void AccountSelectionBubbleView::ShowErrorDialog(
 }
 
 void AccountSelectionBubbleView::ShowLoadingDialog() {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "ShowLoadingDialog is only implemented for AccountSelectionModalView";
 }
 
 void AccountSelectionBubbleView::ShowRequestPermissionDialog(
     const content::IdentityRequestAccount& account,
     const content::IdentityProviderData& idp_data) {
-  NOTREACHED_IN_MIGRATION()
-      << "ShowRequestPermissionDialog is only implemented for "
-         "AccountSelectionModalView";
+  NOTREACHED() << "ShowRequestPermissionDialog is only implemented for "
+                  "AccountSelectionModalView";
 }
 
 void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(

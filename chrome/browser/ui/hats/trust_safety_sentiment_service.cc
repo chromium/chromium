@@ -194,7 +194,7 @@ std::map<std::string, bool> BuildProductSpecificDataForPasswordProtection(
       product_specific_data["Is interstitial UI"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   product_specific_data["User completed password change"] = false;
   product_specific_data["User clicked change password"] = false;
@@ -212,7 +212,7 @@ std::map<std::string, bool> BuildProductSpecificDataForPasswordProtection(
       product_specific_data["User marked as legitimate"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return product_specific_data;
 }
@@ -477,7 +477,7 @@ void TrustSafetySentimentService::InteractedWithDownloadWarningUI(
       product_specific_data["Is download prompt UI"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   switch (action) {
     case DownloadItemWarningData::WarningAction::PROCEED:
@@ -487,7 +487,7 @@ void TrustSafetySentimentService::InteractedWithDownloadWarningUI(
       product_specific_data["User proceeded past warning"] = false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   TriggerOccurred(FeatureArea::kDownloadWarningUI, product_specific_data);
 }
@@ -721,8 +721,7 @@ bool TrustSafetySentimentService::VersionCheck(FeatureArea feature_area) {
     case (FeatureArea::kIneligible):
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -754,8 +753,7 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
       case (FeatureArea::kPasswordProtectionUI):
         return kHatsSurveyTriggerTrustSafetyV2PasswordProtectionUI;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return "";
+        NOTREACHED();
     }
   }
   switch (feature_area) {
@@ -766,8 +764,7 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
     case (FeatureArea::kTransactions):
       return kHatsSurveyTriggerTrustSafetyTransactions;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -829,8 +826,7 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
                    kTrustSafetySentimentSurveyV2PasswordProtectionUIProbability
                        .Get();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
   }
 
@@ -847,7 +843,6 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
       return base::RandDouble() <
              features::kTrustSafetySentimentSurveyTransactionsProbability.Get();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }

@@ -158,8 +158,7 @@ const char* FullscreenControllerStateTest::GetStateString(State state) {
     ENUM_TO_STRING(STATE_TO_TAB_FULLSCREEN);
     ENUM_TO_STRING(STATE_INVALID);
     default:
-      NOTREACHED_IN_MIGRATION() << "No string for state " << state;
-      return "State-Unknown";
+      NOTREACHED() << "No string for state " << state;
   }
 }
 
@@ -173,8 +172,7 @@ const char* FullscreenControllerStateTest::GetEventString(Event event) {
     ENUM_TO_STRING(WINDOW_CHANGE);
     ENUM_TO_STRING(EVENT_INVALID);
     default:
-      NOTREACHED_IN_MIGRATION() << "No string for event " << event;
-      return "Event-Unknown";
+      NOTREACHED() << "No string for event " << event;
   }
 }
 
@@ -209,12 +207,11 @@ bool FullscreenControllerStateTest::TransitionAStepTowardState(
                                                           destination_state,
                                                           NUM_STATES);
   if (next.state == STATE_INVALID) {
-    NOTREACHED_IN_MIGRATION()
-        << "TransitionAStepTowardState unable to transition. "
-        << "NextTransitionInShortestPath(" << GetStateString(source_state)
-        << ", " << GetStateString(destination_state)
-        << ") returned STATE_INVALID." << GetAndClearDebugLog();
-    return false;
+    NOTREACHED() << "TransitionAStepTowardState unable to transition. "
+                 << "NextTransitionInShortestPath("
+                 << GetStateString(source_state) << ", "
+                 << GetStateString(destination_state)
+                 << ") returned STATE_INVALID." << GetAndClearDebugLog();
   }
 
   return InvokeEvent(next.event);
@@ -307,10 +304,8 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "InvokeEvent needs a handler for event " << GetEventString(event)
-          << GetAndClearDebugLog();
-      return false;
+      NOTREACHED() << "InvokeEvent needs a handler for event "
+                   << GetEventString(event) << GetAndClearDebugLog();
   }
 
   if (GetWindowStateString())
@@ -362,7 +357,7 @@ void FullscreenControllerStateTest::VerifyWindowState() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << GetAndClearDebugLog();
+      NOTREACHED() << GetAndClearDebugLog();
   }
 }
 

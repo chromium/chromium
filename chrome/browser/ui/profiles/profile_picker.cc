@@ -37,9 +37,8 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
     case 2:
       return ProfilePicker::AvailabilityOnStartup::kForced;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ProfilePicker::AvailabilityOnStartup::kEnabled;
 }
 
 }  // namespace

@@ -60,8 +60,7 @@ const char* TypeToString(extensions::Manifest::Type type) {
     case extensions::Manifest::NUM_LOAD_TYPES:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* LocationToString(ManifestLocation loc) {
@@ -89,8 +88,7 @@ const char* LocationToString(ManifestLocation loc) {
     case ManifestLocation::kExternalComponent:
       return "EXTERNAL_COMPONENT";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 base::Value::List CreationFlagsToList(int creation_flags) {

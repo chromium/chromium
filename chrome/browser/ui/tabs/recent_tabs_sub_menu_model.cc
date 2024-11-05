@@ -904,6 +904,5 @@ bool RecentTabsSubMenuModel::IsCommandType(CommandType command_type,
       return remote_sub_menu_items_.contains(command_id);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }

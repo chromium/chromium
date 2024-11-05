@@ -419,9 +419,7 @@ std::string GetDisplayType(const GURL& url) {
        OobeUI::kOobeDisplay, OobeUI::kOobeTestLoader});
 
   if (!kKnownDisplayTypes.contains(path)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unknown display type '" << path << "'. Setting default.";
-    return OobeUI::kOobeDisplay;
+    NOTREACHED() << "Unknown display type '" << path << "'. Setting default.";
   }
   return path;
 }

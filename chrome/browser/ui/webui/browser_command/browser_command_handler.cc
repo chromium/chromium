@@ -229,8 +229,7 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       ShowCustomizeChromeToolbar();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unspecified behavior for command " << id;
-      break;
+      NOTREACHED() << "Unspecified behavior for command " << id;
   }
 }
 
