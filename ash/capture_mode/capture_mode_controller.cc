@@ -536,8 +536,9 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
 // Returns true if text detection should be performed on a captured image with
 // the given `capture_type`.
 bool ShouldPerformTextDetection(PerformCaptureType capture_type) {
-  return capture_type == PerformCaptureType::kSunfish ||
-         capture_type == PerformCaptureType::kTextDetection;
+  return Shell::Get()->scanner_controller() &&
+         (capture_type == PerformCaptureType::kSunfish ||
+          capture_type == PerformCaptureType::kTextDetection);
 }
 
 // Returns true if Scanner actions should be fetched for a captured image with
