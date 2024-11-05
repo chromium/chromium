@@ -86,8 +86,7 @@ void RecordInterestGroupsResultStatusUma(InterestGroupsResultStatus status) {
 
 void ScriptValueToObject(ScriptState* script_state,
                          ScriptValue value,
-                         v8::Local<v8::Object>* object,
-                         ExceptionState& exception_state) {
+                         v8::Local<v8::Object>* object) {
   auto* isolate = script_state->GetIsolate();
   DCHECK(!value.IsEmpty());
   auto v8_value = value.V8Value();
@@ -97,7 +96,6 @@ void ScriptValueToObject(ScriptState* script_state,
     *object = v8::Object::New(isolate);
     return;
   }
-  TryRethrowScope rethrow_scope(isolate, exception_state);
   std::ignore = v8_value->ToObject(script_state->GetContext()).ToLocal(object);
 }
 
@@ -1013,18 +1011,11 @@ SharedStorageWorkletGlobalScope::interestGroups(
                 {
                   auto context = resolver->GetScriptState()->GetContext();
 
-                  ExceptionState exception_state(
-                      isolate, v8::ExceptionContext::kUnknown, "", "");
-
                   v8::Local<v8::Object> ad_dict;
                   ScriptValueToObject(resolver->GetScriptState(),
-                                      ad_script_value, &ad_dict,
-                                      exception_state);
-                  DCHECK(!exception_state.HadException());
+                                      ad_script_value, &ad_dict);
 
                   v8::Local<v8::Value> v8_metadata_string;
-
-                  TryRethrowScope rethrow_scope(isolate, exception_state);
                   if (ad_dict->Get(context, V8AtomicString(isolate, "metadata"))
                           .ToLocal(&v8_metadata_string)) {
                     ScriptValue metadata_script_value = JsonStringToScriptValue(
@@ -1040,12 +1031,8 @@ SharedStorageWorkletGlobalScope::interestGroups(
                   }
                 }
 
-                ExceptionState exception_state(
-                    isolate, v8::ExceptionContext::kConstructor,
-                    "AuctionAdConstructor");
                 AuctionAd* ad = AuctionAd::Create(
-                    isolate, ad_script_value.V8Value(), exception_state);
-                DCHECK(!exception_state.HadException());
+                    isolate, ad_script_value.V8Value(), ASSERT_NO_EXCEPTION);
 
                 HeapVector<Member<V8UnionAuctionAdOrLongLong>> previous_win;
                 previous_wins.reserve(2);

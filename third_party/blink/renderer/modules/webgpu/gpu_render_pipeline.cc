@@ -390,14 +390,11 @@ GPURenderPipeline* GPURenderPipeline::Create(
   DCHECK(webgpu_desc);
 
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "GPURenderPipeline");
-
   GPURenderPipeline* pipeline;
   OwnedRenderPipelineDescriptor dawn_desc_info;
   ConvertToDawnType(isolate, device, webgpu_desc, &dawn_desc_info,
-                    exception_state);
-  if (exception_state.HadException()) {
+                    PassThroughException(isolate));
+  if (isolate->HasPendingException()) {
     return nullptr;
   }
 

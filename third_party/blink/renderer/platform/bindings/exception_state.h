@@ -31,14 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_STATE_H_
 
-#include <utility>
-
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -66,28 +63,17 @@ class PLATFORM_EXPORT ExceptionState {
 
   // If `isolate` is nullptr, this ExceptionState will ignore all exceptions.
   explicit ExceptionState(v8::Isolate* isolate)
-      : context_(v8::ExceptionContext::kUnknown, nullptr, nullptr),
-        isolate_(isolate) {}
-
-  ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
-      : context_(context), isolate_(isolate) {}
-
-  ExceptionState(v8::Isolate* isolate, ExceptionContext&& context)
-      : context_(std::move(context)), isolate_(isolate) {}
+      : ExceptionState(isolate,
+                       v8::ExceptionContext::kUnknown,
+                       nullptr,
+                       nullptr) {}
 
   ExceptionState(v8::Isolate* isolate,
                  v8::ExceptionContext context_type,
                  const char* interface_name,
                  const char* property_name)
-      : ExceptionState(
-            isolate,
-            ExceptionContext(context_type, interface_name, property_name)) {}
-
-  ExceptionState(v8::Isolate* isolate,
-                 v8::ExceptionContext context_type,
-                 const char* interface_name)
-      : ExceptionState(isolate,
-                       ExceptionContext(context_type, interface_name)) {}
+      : context_(context_type, interface_name, property_name),
+        isolate_(isolate) {}
 
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;

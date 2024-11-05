@@ -173,7 +173,6 @@ class Cache::BarrierCallbackForPutResponse final
         cache_(cache),
         method_name_(method_name),
         request_list_(request_list),
-        exception_context_(exception_context),
         trace_id_(trace_id),
         response_list_(request_list_.size()),
         blob_list_(request_list_.size()) {
@@ -204,11 +203,9 @@ class Cache::BarrierCallbackForPutResponse final
     num_complete_ += 1;
 
     if (num_complete_ == request_list_.size()) {
-      ScriptState* script_state = resolver_->GetScriptState();
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     exception_context_);
+      v8::Isolate* isolate = resolver_->GetScriptState()->GetIsolate();
       cache_->PutImpl(resolver_, method_name_, request_list_, response_list_,
-                      blob_list_, exception_state, trace_id_);
+                      blob_list_, PassThroughException(isolate), trace_id_);
       blob_list_.clear();
       stopped_ = true;
     }
@@ -271,7 +268,6 @@ class Cache::BarrierCallbackForPutResponse final
   Member<Cache> cache_;
   const String method_name_;
   const HeapVector<Member<Request>> request_list_;
-  const ExceptionContext exception_context_;
   const int64_t trace_id_;
   HeapVector<Member<Response>> response_list_;
   WTF::Vector<scoped_refptr<BlobDataHandle>> blob_list_;

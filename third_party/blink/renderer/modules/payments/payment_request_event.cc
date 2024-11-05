@@ -389,9 +389,6 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
   ScriptState* script_state =
       change_payment_request_details_resolver_->GetScriptState();
   ScriptState::Scope scope(script_state);
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kConstructor,
-                                 "PaymentDetailsModifier");
 
   if (response->modifiers) {
     HeapVector<Member<PaymentDetailsModifier>> modifiers;
