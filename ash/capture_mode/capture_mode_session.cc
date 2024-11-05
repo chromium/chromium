@@ -1471,7 +1471,30 @@ void CaptureModeSession::SetActionButtonsEnabled(bool enabled) {
 }
 
 void CaptureModeSession::OnSmartActionsButtonPressed() {
-  // TODO(crbug.com/374356291): Collapse existing action buttons.
+  // Remove Scanner action buttons and keep other buttons. We need to copy
+  // `children()` since we will be removing buttons from the original vector.
+  std::vector<std::unique_ptr<ActionButtonView>> action_buttons_to_keep;
+  views::View::Views children = action_container_view_->children();
+  for (views::View* child : children) {
+    auto action_button = action_container_view_->RemoveChildViewT(
+        AsViewClass<ActionButtonView>(child));
+    if (action_button->rank().type != ActionButtonType::kScanner) {
+      action_buttons_to_keep.push_back(std::move(action_button));
+    }
+  }
+  CHECK(action_container_view_->children().empty());
+
+  // Add the buttons to keep back into the action button container and collapse
+  // them into icon buttons.
+  for (std::unique_ptr<ActionButtonView>& action_button :
+       action_buttons_to_keep) {
+    action_button->CollapseToIconButton();
+    action_container_view_->AddChildView(std::move(action_button));
+  }
+
+  UpdateActionContainerWidget();
+
+  // Fetch Scanner actions.
   auto* scanner_controller = Shell::Get()->scanner_controller();
   CHECK(scanner_controller);
   scanner_controller->StartNewSession();

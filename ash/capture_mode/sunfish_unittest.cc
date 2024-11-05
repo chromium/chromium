@@ -114,6 +114,13 @@ Matcher<ActionButtonView*> ActionButtonTypeIs(ActionButtonType type) {
                   Field(&ActionButtonRank::type, type));
 }
 
+// Returns a matcher for an action button that returns true if the action button
+// is collapsed.
+Matcher<ActionButtonView*> ActionButtonIsCollapsed() {
+  return Property(&ActionButtonView::label_for_testing,
+                  Property(&views::Label::GetVisible, false));
+}
+
 class SunfishTest : public AshTestBase {
  public:
   SunfishTest() = default;
@@ -1630,14 +1637,38 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
   std::vector<ActionButtonView*> action_buttons =
       session_test_api.GetActionButtons();
   ASSERT_THAT(action_buttons,
-              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
-  // Clicking the smart actions button should fetch Scanner actions.
+              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner),
+                          ActionButtonTypeIs(ActionButtonType::kCopyText)));
+
+  // Click the smart actions button.
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
-              FetchActionsForImage);
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
   LeftClickOn(action_buttons[0]);
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
+
+  // Smart actions button should have been removed, and the copy text button
+  // should be collapsed.
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
+                                ActionButtonIsCollapsed())));
+
+  // Simulate a single fetched Scanner action.
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event");
+  fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
+
+  // Check for a Scanner action button and a collapsed copy text button.
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kScanner),
+                                Not(ActionButtonIsCollapsed())),
+                          AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
+                                ActionButtonIsCollapsed())));
 }
 
 }  // namespace ash
