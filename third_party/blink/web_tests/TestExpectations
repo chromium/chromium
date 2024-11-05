@@ -8388,6 +8388,9 @@ crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint
 # Flaky Test Disable 2024-10-31
 crbug.com/376675482 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-permissions-policy-default.tentative.https.sub.html [ Failure Pass ]
 
+# Fails on linux-win-cross-rel
+crbug.com/377507247 [ Win10.20h2 ] external/wpt/webidl/ecmascript-binding/window-named-properties-object.html [ Failure ]
+
 # These tests can complete but take too long and timeout.
 crbug.com/376931817 external/wpt/file-system-access/local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
 crbug.com/376931817 external/wpt/file-system-access/local_FileSystemFileHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]

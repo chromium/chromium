@@ -124,3 +124,6 @@ crbug.com/375587482 external/wpt/css/css-transitions/properties-value-001.html [
 
 # Chrome crashes on start up
 crbug.com/359319433 external/wpt/secure-payment-confirmation/constructor-validate-payment-method-data.https.html [ Crash Skip ]
+
+# Fails on headless shell
+crbug.com/377507247 external/wpt/webidl/ecmascript-binding/window-named-properties-object.html [ Failure ]
