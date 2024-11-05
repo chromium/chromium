@@ -1242,7 +1242,7 @@ ci.builder(
         ],
         mixins = [
             "has_native_resultdb_integration",
-            "oreo-x86-emulator",
+            "pie-x86-emulator",
             "emulator-8-cores",
             "linux-jammy",
             "x86-64",
@@ -1250,7 +1250,7 @@ ci.builder(
         per_test_modifications = {
             "bf_cache_content_browsertests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
                 ],
                 swarming = targets.swarming(
                     shards = 15,
@@ -1258,6 +1258,8 @@ ci.builder(
             ),
         },
     ),
+    # TODO(crbug.com/375275132): Remove after O migration is complete.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
