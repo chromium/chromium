@@ -240,7 +240,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool {
         base::RunLoop().RunUntilIdle();
-        return scene_state_.profileState.appState.shouldShowForceSignOutPrompt;
+        return scene_state_.profileState.shouldShowForceSignOutPrompt;
       }));
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));

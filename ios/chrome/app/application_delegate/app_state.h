@@ -72,12 +72,6 @@ enum class PostCrashAction {
 // YES if the sign-in upgrade promo has been presented to the user, once.
 @property(nonatomic) BOOL signinUpgradePromoPresentedOnce;
 
-// YES if the sign-out prompt should be shown to the user when the scene becomes
-// active and enters the foreground. This can happen if the policies have
-// changed since the last cold start, meaning the user was signed out during
-// startup.
-@property(nonatomic) BOOL shouldShowForceSignOutPrompt;
-
 // Indicates what action, if any, is taken after a crash (stash tabs, show NTP,
 // show safe mode).
 @property(nonatomic, assign) PostCrashAction postCrashAction;

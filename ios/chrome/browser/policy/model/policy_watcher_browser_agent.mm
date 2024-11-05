@@ -192,7 +192,6 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
     // in in progress, the UI will prevent the prompt from showing.
     [handler_ showForceSignedOutPrompt];
   } else {
-    scene_state.profileState.appState.shouldShowForceSignOutPrompt = YES;
     scene_state.profileState.shouldShowForceSignOutPrompt = YES;
   }
 }
