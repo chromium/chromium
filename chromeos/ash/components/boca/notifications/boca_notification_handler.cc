@@ -14,30 +14,26 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 
 namespace ash::boca {
-void BocaNotificationHandler::HandleSessionStartedNotification(
-    message_center::MessageCenter* message_center) {
-  if (!message_center) {
-    return;
-  }
-  if (message_center->FindNotificationById(kNotificationId)) {
-    return;
-  }
+
+namespace {
+std::unique_ptr<message_center::Notification> CreateBaseNotificationForMessage(
+    std::string notification_id,
+    int message_id) {
   message_center::RichNotificationData optional_fields;
   optional_fields.pinned = true;
-  optional_fields.priority = message_center::HIGH_PRIORITY;
-
   optional_fields.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT));
-  auto notification = CreateSystemNotificationPtr(
+  return CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      kNotificationId, l10n_util::GetStringUTF16(IDS_BOCA_NOTIFICATION_TITLE),
-      l10n_util::GetStringUTF16(
-          IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE),
+      notification_id,
+      /*title=*/l10n_util::GetStringUTF16(IDS_BOCA_NOTIFICATION_TITLE),
+      l10n_util::GetStringUTF16(message_id),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kPrivacyIndicatorsNotifierId,
-                                 NotificationCatalogName::kPrivacyIndicators),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          BocaNotificationHandler::kSessionNotificationId,
+          NotificationCatalogName::kPrivacyIndicators),
       optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([](std::optional<int> button_index) {
@@ -46,37 +42,72 @@ void BocaNotificationHandler::HandleSessionStartedNotification(
             }
             BocaAppClient::Get()->LaunchApp();
           })),
-      kSecurityIcon,
-      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
-
-  message_center->AddNotification(std::move(notification));
+      kSecurityIcon, message_center::SystemNotificationWarningLevel::NORMAL);
 }
+}  // namespace
+
+void BocaNotificationHandler::HandleSessionStartedNotification(
+    message_center::MessageCenter* message_center) {
+  is_session_started_ = true;
+  if (!message_center) {
+    return;
+  }
+  message_center->RemoveNotification(kCaptionNotificationId,
+                                     /*by_user=*/false);
+  if (message_center->FindNotificationById(kSessionNotificationId)) {
+    return;
+  }
+  message_center->AddNotification(CreateBaseNotificationForMessage(
+      kSessionNotificationId,
+      IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE));
+}
+
 void BocaNotificationHandler::HandleSessionEndedNotification(
     message_center::MessageCenter* message_center) {
+  is_session_started_ = false;
   if (!message_center) {
     return;
   }
-
-  auto* notification_exists =
-      message_center->FindNotificationById(kNotificationId);
-  if (notification_exists) {
-    message_center->RemoveNotification(kNotificationId, /*by_user=*/false);
+  message_center->RemoveNotification(kSessionNotificationId,
+                                     /*by_user=*/false);
+  // Remove session caption notification when session ended.
+  if (!is_local_caption_enabled_) {
+    message_center->RemoveNotification(kCaptionNotificationId,
+                                       /*by_user=*/false);
   }
 }
+
 void BocaNotificationHandler::HandleCaptionNotification(
     message_center::MessageCenter* message_center,
-    bool is_caption_enabled) {
+    bool is_local_caption_enabled,
+    bool is_session_caption_enabled) {
+  is_local_caption_enabled_ = is_local_caption_enabled;
+  is_session_caption_enabled_ = is_session_caption_enabled;
   if (!message_center) {
     return;
   }
-  auto* notification = message_center->FindNotificationById(kNotificationId);
-  if (!notification) {
-    return;
+  auto* notification =
+      message_center->FindNotificationById(kCaptionNotificationId);
+
+  if (is_local_caption_enabled || is_session_caption_enabled) {
+    if (notification) {
+      return;
+    }
+    message_center->RemoveNotification(kSessionNotificationId,
+                                       /*by_user=*/false);
+    message_center->AddNotification(CreateBaseNotificationForMessage(
+        kCaptionNotificationId,
+        IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE));
+  } else {
+    message_center->RemoveNotification(kCaptionNotificationId,
+                                       /*by_user=*/false);
+
+    if (is_session_started_) {
+      message_center->AddNotification(CreateBaseNotificationForMessage(
+          kSessionNotificationId,
+          IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE));
+    }
   }
-  is_caption_enabled ? notification->set_message(l10n_util::GetStringUTF16(
-                           IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE))
-                     : notification->set_message(l10n_util::GetStringUTF16(
-                           IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE));
 }
 
 }  // namespace ash::boca

@@ -11,17 +11,26 @@ namespace ash::boca {
 // Handles Class hub notifications.
 class BocaNotificationHandler {
  public:
-  inline static constexpr char kNotificationId[] = "school-tools";
+  inline static constexpr char kSessionNotificationId[] =
+      "school-tools-session";
+  inline static constexpr char kCaptionNotificationId[] =
+      "school-tools-caption";
+
   // Handle session started notification.
-  static void HandleSessionStartedNotification(
+  void HandleSessionStartedNotification(
       message_center::MessageCenter* message_center);
   // Handle session ended notification.
-  static void HandleSessionEndedNotification(
+  void HandleSessionEndedNotification(
       message_center::MessageCenter* message_center);
   // Handle caption notification.
-  static void HandleCaptionNotification(
-      message_center::MessageCenter* message_center,
-      bool is_caption_enabled);
+  void HandleCaptionNotification(message_center::MessageCenter* message_center,
+                                 bool is_local_caption_enabled,
+                                 bool is_session_caption_enabled);
+
+ private:
+  bool is_local_caption_enabled_ = false;
+  bool is_session_caption_enabled_ = false;
+  bool is_session_started_ = false;
 };
 }  // namespace ash::boca
 

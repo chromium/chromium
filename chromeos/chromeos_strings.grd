@@ -6913,7 +6913,7 @@
 
       <!-- Strings for Class Hub notifications -->
       <message name="IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that they're currently connected to a school tools session.">
-        School tools is connected to students
+        School Tools is connected to students
       </message>
             <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open school tools app.">
         Open app

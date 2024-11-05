@@ -222,13 +222,12 @@ void BocaSessionManager::NotifyLocalCaptionEvents(
     observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
   }
   is_local_caption_enabled_ = caption_config.captions_enabled();
-  bool is_caption_enabled =
-      is_local_caption_enabled_ || GetSessionConfigSafe(current_session_.get())
-                                       .captions_config()
-                                       .captions_enabled();
   if (is_producer_) {
-    BocaNotificationHandler::HandleCaptionNotification(
-        message_center::MessageCenter::Get(), is_caption_enabled);
+    notification_handler_.HandleCaptionNotification(
+        message_center::MessageCenter::Get(), is_local_caption_enabled_,
+        GetSessionConfigSafe(current_session_.get())
+            .captions_config()
+            .captions_enabled());
   }
 }
 
@@ -292,7 +291,7 @@ void BocaSessionManager::NotifySessionUpdate() {
       StartSessionPolling(/*in_session=*/false);
       observer.OnSessionEnded(previous_session_->session_id());
       if (is_producer_) {
-        BocaNotificationHandler::HandleSessionEndedNotification(
+        notification_handler_.HandleSessionEndedNotification(
             message_center::MessageCenter::Get());
       }
     }
@@ -305,7 +304,7 @@ void BocaSessionManager::NotifySessionUpdate() {
       observer.OnSessionStarted(current_session_->session_id(),
                                 current_session_->teacher());
       if (is_producer_) {
-        BocaNotificationHandler::HandleSessionStartedNotification(
+        notification_handler_.HandleSessionStartedNotification(
             message_center::MessageCenter::Get());
       }
     }
@@ -362,11 +361,9 @@ void BocaSessionManager::NotifySessionCaptionConfigUpdate() {
                            : std::string());
     }
     if (is_producer_) {
-      bool is_caption_enabled =
-          is_local_caption_enabled_ ||
-          current_session_caption_config.captions_enabled();
-      BocaNotificationHandler::HandleCaptionNotification(
-          message_center::MessageCenter::Get(), is_caption_enabled);
+      notification_handler_.HandleCaptionNotification(
+          message_center::MessageCenter::Get(), is_local_caption_enabled_,
+          current_session_caption_config.captions_enabled());
     }
   }
 }

@@ -91,6 +91,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_config/public/cpp",
+    "//chromeos/strings:strings_grit",
     "//components/gcm_driver",
     "//components/gcm_driver:test_support",
     "//components/prefs",

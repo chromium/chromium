@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
 
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,23 +43,14 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
   // message_center::FakeMessageCenter:
   void AddNotification(
       std::unique_ptr<message_center::Notification> notification) override {
-    EXPECT_FALSE(notification_);
-    notification_ = std::move(notification);
-  }
-
-  void UpdateNotification(
-      const std::string& id,
-      std::unique_ptr<message_center::Notification> new_notification) override {
-    EXPECT_TRUE(notification_);
-    EXPECT_EQ(notification_->id(), id);
-    EXPECT_EQ(new_notification->id(), id);
-    notification_ = std::move(new_notification);
+    notifications_.emplace(notification->id(), *notification);
   }
 
   void RemoveNotification(const std::string& id, bool by_user) override {
-    EXPECT_TRUE(notification_);
-    EXPECT_EQ(notification_->id(), id);
-    notification_.reset();
+    if (!notifications_.contains(id)) {
+      return;
+    }
+    notifications_.erase(id);
     for (auto& observer : observer_list()) {
       observer.OnNotificationRemoved(id, by_user);
     }
@@ -66,16 +58,15 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
   message_center::Notification* FindVisibleNotificationById(
       const std::string& id) override {
-    if (notification_) {
-      EXPECT_EQ(notification_->id(), id);
-      return notification_.get();
+    if (notifications_.contains(id)) {
+      return &notifications_.at(id);
     }
     return nullptr;
   }
 
   void ClickOnNotification(const std::string& id) override {
-    EXPECT_TRUE(notification_);
-    EXPECT_EQ(id, notification_->id());
+    auto* notification = &notifications_.at(id);
+    EXPECT_TRUE(notification);
     for (auto& observer : observer_list()) {
       observer.OnNotificationClicked(id, std::nullopt, std::nullopt);
     }
@@ -83,9 +74,10 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
   void ClickOnNotificationButton(const std::string& id,
                                  int button_index) override {
-    EXPECT_TRUE(notification_);
-    EXPECT_EQ(id, notification_->id());
-    notification_->delegate()->Click(button_index, std::nullopt);
+    auto* notification = &notifications_.at(id);
+    EXPECT_TRUE(notification);
+    EXPECT_EQ(id, notification->id());
+    notification->delegate()->Click(button_index, std::nullopt);
 
     for (auto& observer : observer_list()) {
       observer.OnNotificationClicked(id, button_index, std::nullopt);
@@ -93,60 +85,99 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
   }
 
  private:
-  std::unique_ptr<message_center::Notification> notification_;
+  std::map<std::string, message_center::Notification> notifications_;
 };
 
 class BocaNotificationHandlerTest : public testing::Test {
  protected:
   BocaNotificationHandlerTest() = default;
   TestMessageCenter test_message_center_;
+  BocaNotificationHandler handler_;
   StrictMock<MockBocaAppClient> boca_app_client_;
 };
 
 TEST_F(BocaNotificationHandlerTest,
        HandleSessionStartShouldCreateNotification) {
-  BocaNotificationHandler::HandleSessionStartedNotification(
-      &test_message_center_);
-  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
-      BocaNotificationHandler::kNotificationId));
+  handler_.HandleSessionStartedNotification(&test_message_center_);
+  auto* notification = test_message_center_.FindVisibleNotificationById(
+      handler_.kSessionNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE),
+            notification->message());
 }
 
 TEST_F(BocaNotificationHandlerTest, HandleClickButtonShouldOpenApp) {
-  BocaNotificationHandler::HandleSessionStartedNotification(
-      &test_message_center_);
+  handler_.HandleSessionStartedNotification(&test_message_center_);
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
-      BocaNotificationHandler::kNotificationId));
+      handler_.kSessionNotificationId));
   EXPECT_CALL(boca_app_client_, LaunchApp()).Times(1);
   test_message_center_.ClickOnNotificationButton(
-      /*id=*/BocaNotificationHandler::kNotificationId, /*button_index=*/0);
+      /*id=*/handler_.kSessionNotificationId,
+      /*button_index=*/0);
 }
 
 TEST_F(BocaNotificationHandlerTest,
        HandleSessionStartShouldRemoveNotification) {
-  BocaNotificationHandler::HandleSessionEndedNotification(
-      &test_message_center_);
+  handler_.HandleSessionEndedNotification(&test_message_center_);
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
-      BocaNotificationHandler::kNotificationId));
+      handler_.kSessionNotificationId));
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      handler_.kCaptionNotificationId));
 }
 
-TEST_F(BocaNotificationHandlerTest, HandleCaptionOnShouldUpdateNotification) {
-  BocaNotificationHandler::HandleSessionStartedNotification(
-      &test_message_center_);
+TEST_F(BocaNotificationHandlerTest,
+       HandleCaptionOnShouldAddCaptionNotification) {
+  handler_.HandleSessionStartedNotification(&test_message_center_);
 
-  BocaNotificationHandler::HandleCaptionNotification(
-      &test_message_center_, /*is_caption_enabled=*/true);
+  handler_.HandleCaptionNotification(&test_message_center_,
+                                     /*is_local_caption_enabled=*/true,
+                                     /*is_session_caption_enabled=*/true);
+  auto* notification = test_message_center_.FindVisibleNotificationById(
+      handler_.kCaptionNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE),
+            notification->message());
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      handler_.kSessionNotificationId));
+}
+TEST_F(BocaNotificationHandlerTest, HandleCaptionOffShouldRemoveNotification) {
+  handler_.HandleSessionStartedNotification(&test_message_center_);
+
+  handler_.HandleCaptionNotification(&test_message_center_, false, false);
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      handler_.kCaptionNotificationId));
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
-      BocaNotificationHandler::kNotificationId));
+      handler_.kSessionNotificationId));
 }
-TEST_F(BocaNotificationHandlerTest, HandleCaptionOffShouldUpdateNotification) {
-  BocaNotificationHandler::HandleSessionStartedNotification(
-      &test_message_center_);
 
-  BocaNotificationHandler::HandleCaptionNotification(
-      &test_message_center_, /*is_caption_enabled=*/false);
+TEST_F(BocaNotificationHandlerTest,
+       HandleSessionEndShouldRemoveSessionCaptionNotification) {
+  handler_.HandleSessionStartedNotification(&test_message_center_);
+
+  handler_.HandleCaptionNotification(&test_message_center_,
+                                     /*is_local_caption_enabled=*/false,
+                                     /*is_session_caption_enabled=*/true);
+  handler_.HandleSessionEndedNotification(&test_message_center_);
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      handler_.kCaptionNotificationId));
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      handler_.kSessionNotificationId));
+}
+
+TEST_F(BocaNotificationHandlerTest,
+       HandleSessionEndShouldNotRemoveLocalCaptionNotification) {
+  handler_.HandleSessionStartedNotification(&test_message_center_);
+
+  handler_.HandleCaptionNotification(&test_message_center_,
+                                     /*is_local_caption_enabled=*/true,
+                                     /*is_session_caption_enabled=*/true);
+  handler_.HandleSessionEndedNotification(&test_message_center_);
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
-      BocaNotificationHandler::kNotificationId));
+      handler_.kCaptionNotificationId));
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      handler_.kSessionNotificationId));
 }
-
 }  // namespace
 }  // namespace ash::boca
