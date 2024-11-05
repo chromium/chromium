@@ -343,6 +343,8 @@ class UserFeedbackView : public views::BoxLayoutView {
             l10n_util::GetStringUTF16(
                 IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME),
             /*is_togglable=*/true, /*has_border=*/false));
+    thumb_up_button_->SetIconToggledColor(cros_tokens::kCrosSysOnPrimary);
+    thumb_up_button_->SetBackgroundToggledColor(cros_tokens::kCrosSysPrimary);
     StyleUtil::SetUpInkDropForButton(thumb_up_button_, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/false);
@@ -355,6 +357,8 @@ class UserFeedbackView : public views::BoxLayoutView {
             l10n_util::GetStringUTF16(
                 IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME),
             /*is_togglable=*/true, /*has_border=*/false));
+    thumb_down_button_->SetIconToggledColor(cros_tokens::kCrosSysOnPrimary);
+    thumb_down_button_->SetBackgroundToggledColor(cros_tokens::kCrosSysPrimary);
     StyleUtil::SetUpInkDropForButton(thumb_down_button_, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/false);
