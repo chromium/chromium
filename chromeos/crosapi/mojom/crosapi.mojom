@@ -1520,6 +1520,7 @@ struct BrowserInitParams {
   [MinVersion=65, RenamedFrom="is_drivefs_bulk_pinning_enabled"]
   bool is_drivefs_bulk_pinning_available@65;
 
+  // Deprecated, always true since M132
   // Tell lacros whether the device is available to enable Floss.
   [MinVersion=66]
   bool is_floss_available@66;
@@ -1534,6 +1535,7 @@ struct BrowserInitParams {
   [MinVersion=68]
   bool is_cros_battery_saver_available@68;
 
+  // Deprecated, always false since M132
   // Tells lacros whether to check Floss availability of the machine. The check
   // is used to block Floss from enabling if the machine is indicated
   // unavailable.

@@ -4531,11 +4531,6 @@ const FeatureEntry kFeatureEntries[] = {
     {kBluetoothUseFlossInternalName, flag_descriptions::kBluetoothUseFlossName,
      flag_descriptions::kBluetoothUseFlossDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(floss::features::kFlossEnabled)},
-    {"bluetooth-floss-availability-check",
-     flag_descriptions::kBluetoothFlossIsAvailabilityCheckNeededName,
-     flag_descriptions::kBluetoothFlossIsAvailabilityCheckNeededDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(floss::features::kFlossIsAvailabilityCheckNeeded)},
     {kBluetoothUseLLPrivacyInternalName,
      flag_descriptions::kBluetoothUseLLPrivacyName,
      flag_descriptions::kBluetoothUseLLPrivacyDescription, kOsCrOS,
@@ -11928,22 +11923,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::UNKNOWN;
   }
 
-  // Disable and prevent users from enabling Floss on boards that were
-  // explicitly built without it (b/228902194 for more info).
-  if (!strcmp(kBluetoothUseFlossInternalName, entry.internal_name)) {
-    return floss::features::IsFlossAvailabilityCheckNeeded() &&
-           base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-               floss::features::kFlossIsAvailable.name,
-               base::FeatureList::OVERRIDE_DISABLE_FEATURE);
-  }
-
   // Disable and prevent users from enabling LL privacy on boards that were
   // explicitly built without floss or hardware does not support LL privacy.
   if (!strcmp(kBluetoothUseLLPrivacyInternalName, entry.internal_name)) {
     return (
-        base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-            floss::features::kFlossIsAvailable.name,
-            base::FeatureList::OVERRIDE_DISABLE_FEATURE) ||
         base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
             floss::features::kLLPrivacyIsAvailable.name,
             base::FeatureList::OVERRIDE_DISABLE_FEATURE));

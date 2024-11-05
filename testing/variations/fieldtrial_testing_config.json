@@ -9944,21 +9944,6 @@
             ]
         }
     ],
-    "FlossIsAvailabilityCheckNeeded": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "disable_features": [
-                        "FlossIsAvailabilityCheckNeeded"
-                    ]
-                }
-            ]
-        }
-    ],
     "FlushPersistentSystemProfileOnWrite": [
         {
             "platforms": [

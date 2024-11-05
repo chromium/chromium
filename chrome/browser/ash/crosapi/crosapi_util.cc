@@ -854,9 +854,8 @@ void InjectBrowserInitParams(
   params->ash_chrome_version = version_info::GetVersionNumber();
   params->use_cups_for_printing = GetUseCupsForPrinting();
   params->use_floss_bluetooth = floss::features::IsFlossEnabled();
-  params->is_floss_available = floss::features::IsFlossAvailable();
-  params->is_floss_availability_check_needed =
-      floss::features::IsFlossAvailabilityCheckNeeded();
+  params->is_floss_available = true;
+  params->is_floss_availability_check_needed = false;
   params->is_llprivacy_available = floss::features::IsLLPrivacyAvailable();
 
   params->is_cloud_gaming_device =
