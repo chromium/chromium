@@ -463,8 +463,7 @@ SkColor ShelfConfig::GetDefaultShelfColor(const views::Widget* widget) const {
   DCHECK(widget);
 
   const auto* color_provider = widget->GetColorProvider();
-  if (!features::IsBackgroundBlurEnabled() ||
-      !chromeos::features::IsSystemBlurEnabled()) {
+  if (!features::IsBackgroundBlurEnabled()) {
     return color_provider->GetColor(kColorAshShieldAndBase90);
   }
 

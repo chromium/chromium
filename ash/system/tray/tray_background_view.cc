@@ -1051,13 +1051,14 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
 
   // The shelf is not transparent when 1)the shelf is in app mode OR 2) the
   // shelf is in the regular logged in page (not session blocked).
-  bool is_shelf_opaque =
+  const bool is_shelf_opaque =
       (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) &&
-      !Shell::Get()->session_controller()->IsUserSessionBlocked() &&
-      chromeos::features::IsSystemBlurEnabled();
-  ui::ColorId non_active_color_id =
-      is_shelf_opaque ? cros_tokens::kCrosSysSystemOnBase
-                      : cros_tokens::kCrosSysSystemBaseElevated;
+      !Shell::Get()->session_controller()->IsUserSessionBlocked();
+
+  const ui::ColorId non_active_color_id =
+      (is_shelf_opaque || !chromeos::features::IsSystemBlurEnabled())
+          ? cros_tokens::kCrosSysSystemOnBase
+          : cros_tokens::kCrosSysSystemBaseElevated;
   layer()->SetColor(widget->GetColorProvider()->GetColor(
       active ? cros_tokens::kCrosSysSystemPrimaryContainer
              : non_active_color_id));
