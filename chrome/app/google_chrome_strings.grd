@@ -1025,6 +1025,11 @@ Permissions you've already given to websites and apps may apply to this account.
         Multiple organizations manage Chrome
       </message>
 
+      <!-- Managed profile required interstitial -->
+      <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH" desc="The main text of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
+        You can sign in to get your stuff, or use Chrome without an account
+      </message>
+
       <!-- Extension requests sign in to Chrome through chrome.identity API -->
       <if expr="enable_extensions">
         <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">

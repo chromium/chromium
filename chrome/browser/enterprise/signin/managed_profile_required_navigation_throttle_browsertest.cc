@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/signin/interstitials/managed_profile_required_controller_client.h"
 #include "chrome/browser/enterprise/signin/interstitials/managed_profile_required_page.h"
@@ -100,8 +99,7 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileRequiredNavigationThrottleTest,
   interceptor->state_->web_contents_ = web_contents->GetWeakPtr();
 
   auto managed_profile_required = std::make_unique<ManagedProfileRequiredPage>(
-      mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL(), u"Manager",
-      base::UTF8ToUTF16(interceptor->intercepted_account_info().email),
+      mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL(),
       std::make_unique<ManagedProfileRequiredControllerClient>(
           mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL()));
   std::string error_page_content = managed_profile_required->GetHTMLContents();
@@ -113,7 +111,6 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileRequiredNavigationThrottleTest,
       ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
           &mock_nav_handle);
   ASSERT_TRUE(throttle);
-  throttle->SetManagerForTesting(u"Manager");
   EXPECT_TRUE(Equals(expected_result, throttle->WillStartRequest()));
   EXPECT_TRUE(Equals(expected_result, throttle->WillRedirectRequest()));
   EXPECT_TRUE(Equals(expected_result, throttle->WillProcessResponse()));

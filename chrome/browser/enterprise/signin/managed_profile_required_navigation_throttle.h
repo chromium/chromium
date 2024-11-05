@@ -34,7 +34,6 @@ class ManagedProfileRequiredNavigationThrottle
 
   ManagedProfileRequiredNavigationThrottle(
       content::NavigationHandle* navigation_handle,
-      const std::u16string& profile_management_domain,
       DiceWebSigninInterceptor* signin_interceptor);
 
   ManagedProfileRequiredNavigationThrottle(
@@ -48,13 +47,9 @@ class ManagedProfileRequiredNavigationThrottle
   ThrottleCheckResult WillProcessResponse() override;
   ThrottleCheckResult WillFailRequest() override;
   const char* GetNameForLogging() override;
-  void SetManagerForTesting(const std::u16string& manager_for_testing) {
-    profile_management_domain_ = manager_for_testing;
-  }
 
  private:
   ThrottleCheckResult ProcessThrottleEvent();
-  std::u16string profile_management_domain_;
   raw_ptr<DiceWebSigninInterceptor> signin_interceptor_;
   base::WeakPtrFactory<ManagedProfileRequiredNavigationThrottle>
       weak_ptr_factory_{this};

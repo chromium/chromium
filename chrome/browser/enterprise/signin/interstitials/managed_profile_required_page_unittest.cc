@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/signin/interstitials/managed_profile_required_controller_client.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -22,8 +23,6 @@ namespace {
 constexpr char kBlockDecisionHistogram[] =
     "interstitial.managed_profile_required.decision";
 constexpr char kTestUrl[] = "http://example.com";
-constexpr char16_t kTestManager[] = u"manager";
-constexpr char16_t kTestEmail[] = u"email@manager.com";
 
 class ManagedProfileRequiredPageTest : public testing::Test {
  public:
@@ -56,7 +55,7 @@ TEST_F(ManagedProfileRequiredPageTest, ShownAndMetricsRecorded) {
   histograms.ExpectTotalCount(kBlockDecisionHistogram, 0);
 
   ManagedProfileRequiredPage test_page = ManagedProfileRequiredPage(
-      web_contents(), GURL(kTestUrl), kTestManager, kTestEmail,
+      web_contents(), GURL(kTestUrl),
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents(),
                                                                GURL(kTestUrl)));
 
@@ -71,36 +70,34 @@ TEST_F(ManagedProfileRequiredPageTest, ShownAndMetricsRecorded) {
 
 TEST_F(ManagedProfileRequiredPageTest, UnknownManager) {
   ManagedProfileRequiredPage test_page = ManagedProfileRequiredPage(
-      web_contents(), GURL(kTestUrl), std::u16string(), kTestEmail,
+      web_contents(), GURL(kTestUrl),
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents(),
                                                                GURL(kTestUrl)));
 
   base::Value::Dict load_time_data = test_page.GetLoadTimeDataForTesting();
-  EXPECT_EQ(base::UTF8ToUTF16(*load_time_data.FindString("heading")),
-            l10n_util::GetStringUTF16(
-                IDS_MANAGED_PROFILE_INTERSTITIAL_UNKNOWN_MANAGER_HEADING));
-
   EXPECT_EQ(
-      base::UTF8ToUTF16(*load_time_data.FindString("primaryParagraph")),
-      l10n_util::GetStringFUTF16(
-          IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH, kTestEmail));
+      base::UTF8ToUTF16(*load_time_data.FindString("heading")),
+      l10n_util::GetStringUTF16(IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING));
+
+  EXPECT_EQ(base::UTF8ToUTF16(*load_time_data.FindString("primaryParagraph")),
+            l10n_util::GetStringUTF16(
+                IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH));
 }
 
 TEST_F(ManagedProfileRequiredPageTest, KnownManager) {
   ManagedProfileRequiredPage test_page = ManagedProfileRequiredPage(
-      web_contents(), GURL(kTestUrl), kTestManager, kTestEmail,
+      web_contents(), GURL(kTestUrl),
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents(),
                                                                GURL(kTestUrl)));
 
   base::Value::Dict load_time_data = test_page.GetLoadTimeDataForTesting();
-  EXPECT_EQ(base::UTF8ToUTF16(*load_time_data.FindString("heading")),
-            l10n_util::GetStringFUTF16(IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING,
-                                       kTestManager));
-
   EXPECT_EQ(
-      base::UTF8ToUTF16(*load_time_data.FindString("primaryParagraph")),
-      l10n_util::GetStringFUTF16(
-          IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH, kTestEmail));
+      base::UTF8ToUTF16(*load_time_data.FindString("heading")),
+      l10n_util::GetStringUTF16(IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING));
+
+  EXPECT_EQ(base::UTF8ToUTF16(*load_time_data.FindString("primaryParagraph")),
+            l10n_util::GetStringUTF16(
+                IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH));
 }
 
 }  // namespace

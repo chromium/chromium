@@ -7,42 +7,16 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/signin/interstitials/managed_profile_required_controller_client.h"
 #include "chrome/browser/enterprise/signin/interstitials/managed_profile_required_page.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-
-namespace {
-
-std::u16string GetManagerRequestingProfileSeparation(
-    const DiceWebSigninInterceptor& interceptor,
-    const std::u16string& profile_management_domain) {
-  const std::string& email = interceptor.intercepted_account_info().email;
-  std::u16string manager;
-  if (signin_util::IsProfileSeparationEnforcedByPolicies(
-          interceptor.intercepted_account_profile_separation_policies()
-              .value_or(policy::ProfileSeparationPolicies()))) {
-    manager = base::UTF8ToUTF16(enterprise_util::GetDomainFromEmail(email));
-  } else if (!profile_management_domain.empty()) {
-    manager = profile_management_domain;
-  } else if (auto device_manager = chrome::GetDeviceManagerIdentity();
-             device_manager) {
-    manager = base::UTF8ToUTF16(*device_manager);
-  }
-
-  return manager;
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<ManagedProfileRequiredNavigationThrottle>
@@ -65,18 +39,14 @@ ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
   }
   return std::make_unique<ManagedProfileRequiredNavigationThrottle>(
       navigation_handle,
-      base::UTF8ToUTF16(
-          chrome::GetEnterpriseAccountDomain(*profile).value_or(std::string())),
       interceptor);
 }
 
 ManagedProfileRequiredNavigationThrottle::
     ManagedProfileRequiredNavigationThrottle(
         content::NavigationHandle* navigation_handle,
-        const std::u16string& profile_management_domain,
         DiceWebSigninInterceptor* signin_interceptor)
     : content::NavigationThrottle(navigation_handle),
-      profile_management_domain_(profile_management_domain),
       signin_interceptor_(signin_interceptor) {}
 
 ManagedProfileRequiredNavigationThrottle::
@@ -112,9 +82,6 @@ ManagedProfileRequiredNavigationThrottle::ProcessThrottleEvent() {
 
   auto managed_profile_required = std::make_unique<ManagedProfileRequiredPage>(
       navigation_handle()->GetWebContents(), navigation_handle()->GetURL(),
-      GetManagerRequestingProfileSeparation(*signin_interceptor_,
-                                            profile_management_domain_),
-      base::UTF8ToUTF16(signin_interceptor_->intercepted_account_info().email),
       std::make_unique<ManagedProfileRequiredControllerClient>(
           navigation_handle()->GetWebContents(),
           navigation_handle()->GetURL()));
