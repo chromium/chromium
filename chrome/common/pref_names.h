@@ -2423,10 +2423,16 @@ inline constexpr char kNtpModulesLoadedCountDict[] =
 // Dictionary of number of times the user has interacted with a module.
 inline constexpr char kNtpModulesInteractedCountDict[] =
     "NewTabPage.ModulesInteractedCountDict";
+// Whether NTP Outlook Calendar module is visible.
+inline constexpr char kNtpOutlookModuleVisible[] =
+    "NewTabPage.OutlookModuleVisible";
 // List of promos that the user has dismissed while on the NTP.
 inline constexpr char kNtpPromoBlocklist[] = "ntp.promo_blocklist";
 // Whether the promo is visible.
 inline constexpr char kNtpPromoVisible[] = "ntp.promo_visible";
+// Whether NTP Sharepoint module is visible.
+inline constexpr char kNtpSharepointModuleVisible[] =
+    "NewTabPage.SharepointModuleVisible";
 // Number of times NTP wallpaper search button animation has been visible.
 inline constexpr char kNtpWallpaperSearchButtonShownCount[] =
     "NewTabPage.WallpaperSearchButtonShownCount";

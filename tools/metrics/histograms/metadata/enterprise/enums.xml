@@ -2175,6 +2175,8 @@ chromium-metrics-reviews@google.com.
   <int value="1308" label="EnterpriseSearchAggregatorSettings"/>
   <int value="1309" label="TranslatorAPIAllowed"/>
   <int value="1310" label="WebAudioOutputBufferingEnabled"/>
+  <int value="1311" label="NTPOutlookCardVisible"/>
+  <int value="1312" label="NTPSharepointCardVisible"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

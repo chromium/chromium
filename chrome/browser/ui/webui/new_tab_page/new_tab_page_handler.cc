@@ -578,6 +578,8 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kNtpModulesInteractedCountDict);
   registry->RegisterDictionaryPref(prefs::kNtpModulesLoadedCountDict);
   registry->RegisterIntegerPref(prefs::kNtpWallpaperSearchButtonShownCount, 0);
+  registry->RegisterBooleanPref(prefs::kNtpOutlookModuleVisible, false);
+  registry->RegisterBooleanPref(prefs::kNtpSharepointModuleVisible, false);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
