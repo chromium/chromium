@@ -20,8 +20,22 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
+
+// arg is of type net::test_server::HttpRequest
+MATCHER_P(Classifies, url, "") {
+  kidsmanagement::ClassifyUrlRequest request;
+  CHECK(request.ParseFromString(arg.content));
+  return GURL(request.url()) == url;
+}
+// arg is of type net::test_server::HttpRequest
+MATCHER_P(SetsRegionCode, region_code, "") {
+  kidsmanagement::ClassifyUrlRequest request;
+  CHECK(request.ParseFromString(arg.content));
+  return request.region_code() == region_code;
+}
 
 extern const std::multimap<kidsmanagement::FamilyRole, std::string>
     kSimpsonFamily;
@@ -72,12 +86,6 @@ class KidsManagementApiServerMock {
   // Caution: installed handlers are executed until one matches the request.
   void InstallOn(net::test_server::EmbeddedTestServer& test_server_);
 
-  // Subscribes a monitor to this api server. The monitor will be notified about
-  // every request, to all of its endpoints.
-  base::CallbackListSubscription Subscribe(
-      base::RepeatingCallback<
-          void(const net::test_server::HttpRequest& request)> monitor);
-
   // Set the mock to respond with allow or restrict url for all subsequent
   // requests to ClassifyUrl.
   void AllowSubsequentClassifyUrl();
@@ -94,12 +102,6 @@ class KidsManagementApiServerMock {
   // Api handler for /kidsmanagement/v1/families/mine/members
   std::unique_ptr<net::test_server::HttpResponse> ListFamilyMembers(
       const net::test_server::HttpRequest& request);
-
-  void RequestMonitorDispatcher(const net::test_server::HttpRequest& request);
-
-  base::RepeatingCallbackList<void(
-      const net::test_server::HttpRequest& request)>
-      request_monitors_;
 
   KidsManagementClassifyUrlMock classify_url_mock_;
 };

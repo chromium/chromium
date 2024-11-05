@@ -115,12 +115,6 @@ class SupervisedUserPendingStateNavigationTest
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  MOCK_METHOD(void,
-              ClassifyUrlRequestMonitor,
-              (const net::test_server::HttpRequest& request_content));
-
-  base::CallbackListSubscription request_monitor_subscription_;
-
  protected:
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();
@@ -533,8 +527,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
 }
 
-// This matcher accepts a net::test_server::HttpRequest and checks if the google
-// api key is present in its headers.
+// Accepts a net::test_server::HttpRequest and checks if the google
+// api key is present in the headers.
 MATCHER(ContainsGoogleApiKey, "") {
   return base::Contains(arg.headers, "X-Goog-Api-Key");
 }
@@ -559,13 +553,6 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
               GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
   kids_management_api_mock().AllowSubsequentClassifyUrl();
 
-  // When a request is made ClassifyUrlRequestMonitor will verify if the
-  // google_api is available.
-  request_monitor_subscription_ =
-      kids_management_api_mock().Subscribe(base::BindRepeating(
-          &SupervisedUserPendingStateNavigationTest::ClassifyUrlRequestMonitor,
-          base::Unretained(this)));
-
   ASSERT_TRUE(
       supervision_mixin_.GetIdentityTestEnvironment()
           ->identity_manager()
@@ -574,7 +561,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
                   ->identity_manager()
                   ->GetPrimaryAccountId(signin::ConsentLevel::kSignin)));
 
-  EXPECT_CALL(*this, ClassifyUrlRequestMonitor(ContainsGoogleApiKey()))
+  EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
+              ClassifyUrl(ContainsGoogleApiKey()))
       .Times(1);
 
   content::TestNavigationObserver observer(contents());

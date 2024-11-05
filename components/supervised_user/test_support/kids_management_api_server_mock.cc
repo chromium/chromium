@@ -16,6 +16,8 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -83,10 +85,6 @@ void KidsManagementApiServerMock::InstallOn(
       &KidsManagementApiServerMock::ClassifyUrl, base::Unretained(this)));
   test_server_.RegisterRequestHandler(base::BindRepeating(
       &KidsManagementApiServerMock::ListFamilyMembers, base::Unretained(this)));
-
-  test_server_.RegisterRequestMonitor(base::BindRepeating(
-      &KidsManagementApiServerMock::RequestMonitorDispatcher,
-      base::Unretained(this)));
 }
 
 // Return a default Simpson family.
@@ -117,17 +115,6 @@ KidsManagementApiServerMock::ClassifyUrl(
   return FromProtoData(
       ClassifyUrlResponse(classify_url_mock_.ClassifyUrl(request))
           .SerializeAsString());
-}
-
-base::CallbackListSubscription KidsManagementApiServerMock::Subscribe(
-    base::RepeatingCallback<void(const net::test_server::HttpRequest& request)>
-        monitor) {
-  return request_monitors_.Add(monitor);
-}
-
-void KidsManagementApiServerMock::RequestMonitorDispatcher(
-    const net::test_server::HttpRequest& request) {
-  request_monitors_.Notify(request);
 }
 
 void KidsManagementApiServerMock::AllowSubsequentClassifyUrl() {

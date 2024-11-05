@@ -1367,7 +1367,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Classify url is never called - if ever, a static blocklist should be used.
   EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
-              ClassifyUrl(testing::_))
+              ClassifyUrl(::testing::_))
       .Times(0);
 
   GURL blocked_url = embedded_test_server()->GetURL(
@@ -1384,12 +1384,14 @@ IN_PROC_BROWSER_TEST_P(
     SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
     CheckAgainstClassifyUrlRPC) {
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
+  GURL url = embedded_test_server()->GetURL(kExampleHost2,
+                                            "/supervised_user/simple.html");
 
   // Only supervised users should call the backend
   if (GetSignInMode() ==
       supervised_user::SupervisionMixin::SignInMode::kSupervised) {
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
-                ClassifyUrl(::testing::_))
+                ClassifyUrl(supervised_user::Classifies(url)))
         .Times(1);
   } else {
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
@@ -1397,8 +1399,6 @@ IN_PROC_BROWSER_TEST_P(
         .Times(0);
   }
 
-  GURL url = embedded_test_server()->GetURL(kExampleHost2,
-                                            "/supervised_user/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Only supervised users should experience the
@@ -1412,12 +1412,14 @@ IN_PROC_BROWSER_TEST_P(
     SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
     CheckSameDocumentNavigationAgainstClassifyUrlRPC) {
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
+  GURL url = embedded_test_server()->GetURL(kExampleHost2,
+                                            "/supervised_user/simple.html");
 
   // Only supervised users should call the backend
   if (GetSignInMode() ==
       supervised_user::SupervisionMixin::SignInMode::kSupervised) {
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
-                ClassifyUrl(::testing::_))
+                ClassifyUrl(supervised_user::Classifies(url)))
         .Times(1);
   } else {
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
@@ -1425,8 +1427,6 @@ IN_PROC_BROWSER_TEST_P(
         .Times(0);
   }
 
-  GURL url = embedded_test_server()->GetURL(kExampleHost2,
-                                            "/supervised_user/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Only supervised users should experience the
