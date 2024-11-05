@@ -155,8 +155,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
   }
 
   private getSupportedNaturalVoiceDownloadLocales(): Set<string> {
-    if (chrome.readingMode.isLanguagePackDownloadingEnabled &&
-        chrome.readingMode.isChromeOsAsh) {
+    if (chrome.readingMode.isLanguagePackDownloadingEnabled) {
       return AVAILABLE_GOOGLE_TTS_LOCALES;
     }
     return new Set([]);
