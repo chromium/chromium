@@ -624,9 +624,6 @@ void FormFiller::FillOrPreviewForm(
   LOG_AF(buffer) << *form_structure << Br{};
   LOG_AF(buffer) << Tag{"table"};
 
-  form_structure->RationalizePhoneNumbersInSection(
-      autofill_trigger_field->section());
-
   // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime, which
   // may happen with refills.
   if (action_persistence == mojom::ActionPersistence::kFill) {

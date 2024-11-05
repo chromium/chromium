@@ -833,16 +833,14 @@ void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
   }
 }
 
-void FormStructureRationalizer::RationalizePhoneNumbersInSection(
-    const Section& section) {
-  std::vector<AutofillField*> fields;
-  for (const auto& field : *fields_) {
-    if (field->section() != section) {
-      continue;
-    }
-    fields.push_back(field.get());
+void FormStructureRationalizer::RationalizePhoneNumbersForFilling() {
+  std::map<Section, std::vector<AutofillField*>> section_fields;
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    section_fields[field->section()].push_back(field.get());
   }
-  RationalizePhoneNumberFields(fields);
+  for (auto& [section, fields] : section_fields) {
+    RationalizePhoneNumberFields(fields);
+  }
 }
 
 void FormStructureRationalizer::ApplyRationalizationsToFieldAndLog(

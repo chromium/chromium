@@ -245,28 +245,6 @@ TEST_F(FormStructureRationalizerTest,
                           CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, UNKNOWN_TYPE));
 }
 
-TEST_F(FormStructureRationalizerTest,
-       RationalizePhoneNumber_RunsOncePerSection) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          {"Full Name", "fullName", NAME_FULL},
-          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-          {"Home Phone", "homePhoneNumber", PHONE_HOME_WHOLE_NUMBER},
-          {"Cell Phone", "cellPhoneNumber", PHONE_HOME_WHOLE_NUMBER},
-      },
-      /*run_heuristics=*/false);
-  Section s = form_structure->field(0)->section();
-  EXPECT_FALSE(test_api(*form_structure).phone_rationalized(s));
-  form_structure->RationalizePhoneNumbersInSection(s);
-  EXPECT_TRUE(test_api(*form_structure).phone_rationalized(s));
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                          PHONE_HOME_WHOLE_NUMBER, PHONE_HOME_WHOLE_NUMBER));
-
-  EXPECT_FALSE(form_structure->field(2)->only_fill_when_focused());
-  EXPECT_TRUE(form_structure->field(3)->only_fill_when_focused());
-}
-
 TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
@@ -1133,7 +1111,7 @@ TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_FirstNumberIsWholeNumber) {
                   {PHONE_HOME_WHOLE_NUMBER, false},
                   {PHONE_HOME_CITY_AND_NUMBER, true}});
   FormStructureRationalizer rationalizer(&fields);
-  rationalizer.RationalizePhoneNumbersInSection(fields.front()->section());
+  rationalizer.RationalizePhoneNumbersForFilling();
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
 }
@@ -1150,7 +1128,7 @@ TEST_F(RationalizePhoneNumberFieldsTest,
                   {PHONE_HOME_CITY_CODE, true},
                   {PHONE_HOME_NUMBER, true}});
   FormStructureRationalizer rationalizer(&fields);
-  rationalizer.RationalizePhoneNumbersInSection(fields.front()->section());
+  rationalizer.RationalizePhoneNumbersForFilling();
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
 }
@@ -1163,7 +1141,7 @@ TEST_F(RationalizePhoneNumberFieldsTest,
                   {PHONE_HOME_COUNTRY_CODE, false},
                   {PHONE_HOME_CITY_CODE, false}});
   FormStructureRationalizer rationalizer(&fields);
-  rationalizer.RationalizePhoneNumbersInSection(fields.front()->section());
+  rationalizer.RationalizePhoneNumbersForFilling();
   // Even though we did not find the PHONE_HOME_NUMBER finishing the phone
   // number, the remaining fields are filled.
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
@@ -1182,7 +1160,7 @@ TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_FillPhonePartsOnceOnly) {
                   {PHONE_HOME_WHOLE_NUMBER, true},
                   {PHONE_HOME_CITY_CODE, true}});
   FormStructureRationalizer rationalizer(&fields);
-  rationalizer.RationalizePhoneNumbersInSection(fields.front()->section());
+  rationalizer.RationalizePhoneNumbersForFilling();
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
 }
@@ -1201,7 +1179,7 @@ TEST_F(RationalizePhoneNumberFieldsTest,
   fields[2]->set_is_visible(false);
   fields[2]->set_is_focusable(false);
   FormStructureRationalizer rationalizer(&fields);
-  rationalizer.RationalizePhoneNumbersInSection(fields.front()->section());
+  rationalizer.RationalizePhoneNumbersForFilling();
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
 }
@@ -1219,7 +1197,7 @@ TEST_F(RationalizePhoneNumberFieldsTest,
                   {PHONE_HOME_NUMBER_PREFIX, true},
                   {PHONE_HOME_NUMBER_SUFFIX, true}});
   FormStructureRationalizer rationalizer(&fields);
-  rationalizer.RationalizePhoneNumbersInSection(fields.front()->section());
+  rationalizer.RationalizePhoneNumbersForFilling();
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
 }
@@ -1236,7 +1214,7 @@ TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_IncorrectPrefix) {
                   // This would be a second number.
                   {PHONE_HOME_CITY_AND_NUMBER, true}});
   FormStructureRationalizer rationalizer(&fields);
-  rationalizer.RationalizePhoneNumbersInSection(fields.front()->section());
+  rationalizer.RationalizePhoneNumbersForFilling();
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
 }
@@ -1253,7 +1231,7 @@ TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_IncorrectSuffix) {
                   // This would be a second number.
                   {PHONE_HOME_CITY_AND_NUMBER, true}});
   FormStructureRationalizer rationalizer(&fields);
-  rationalizer.RationalizePhoneNumbersInSection(fields.front()->section());
+  rationalizer.RationalizePhoneNumbersForFilling();
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
 }

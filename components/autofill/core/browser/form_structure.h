@@ -231,9 +231,11 @@ class FormStructure {
   // All returned values are standardized to upper case.
   std::set<std::u16string> PossibleValues(FieldType type);
 
-  // Rationalize phone number fields in a given section, that is only fill
-  // the fields that are considered composing a first complete phone number.
-  void RationalizePhoneNumbersInSection(const Section& section);
+  // Rationalize phone number fields so that, in every section, only the first
+  // complete phone number is filled automatically. This is useful for when a
+  // form contains a first phone number and second phone number, which usually
+  // should be distinct.
+  void RationalizePhoneNumberFieldsForFilling();
 
   // Rationalize the form's autocomplete attributes, repeated fields and field
   // type predictions.
@@ -525,9 +527,6 @@ class FormStructure {
 
   // The timestamp when this form or one of its fields was last filled.
   std::optional<base::TimeTicks> last_filling_timestamp_;
-
-  // If phone number rationalization has been performed for a given section.
-  std::set<Section> phone_rationalized_;
 
   // Used to record whether developer has used autocomplete markup or
   // UPI-VPA hints, This is a bitmask of DeveloperEngagementMetric and set in

@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
@@ -198,10 +199,10 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationOk) {
 
   base::UserActionTester user_action_tester;
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-  // Trigger phone number rationalization at filling time.
-  FillTestProfile(form);
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("Autofill_FilledProfileSuggestion"));
+  FormStructure* form_structure =
+      autofill_manager().FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  form_structure->RationalizePhoneNumberFieldsForFilling();
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -236,10 +237,10 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationGood) {
 
   base::UserActionTester user_action_tester;
   autofill_manager().AddSeenForm(form, field_types);
-  // Trigger phone number rationalization at filling time.
-  FillTestProfile(form);
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("Autofill_FilledProfileSuggestion"));
+  FormStructure* form_structure =
+      autofill_manager().FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  form_structure->RationalizePhoneNumberFieldsForFilling();
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -279,10 +280,10 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationBad) {
 
   base::UserActionTester user_action_tester;
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-  // Trigger phone number rationalization at filling time.
-  FillTestProfile(form);
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("Autofill_FilledProfileSuggestion"));
+  FormStructure* form_structure =
+      autofill_manager().FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  form_structure->RationalizePhoneNumberFieldsForFilling();
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -330,10 +331,10 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForOnlyFillWhenFocusedField) {
 
   base::UserActionTester user_action_tester;
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-  // Trigger phone number rationalization at filling time.
-  FillTestProfile(form);
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("Autofill_FilledProfileSuggestion"));
+  FormStructure* form_structure =
+      autofill_manager().FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  form_structure->RationalizePhoneNumberFieldsForFilling();
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);

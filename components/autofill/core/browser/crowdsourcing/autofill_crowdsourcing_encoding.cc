@@ -842,6 +842,12 @@ void ProcessServerPredictionsQueryResponse(
     LogSectioningMetrics(form->form_signature(), form->fields(),
                          form_interactions_ukm_logger);
 
+    // Since this step requires the sections to be available, it is done after
+    // the sectioning logic is ran. Note that since this step doesn't change the
+    // types of the individual field, this should not break any assumption that
+    // was made to compute the sections.
+    form->RationalizePhoneNumberFieldsForFilling();
+
     // Log the field type predicted by rationalization.
     // The sections are mapped to consecutive natural numbers starting at 1.
     std::map<Section, size_t> section_id_map;

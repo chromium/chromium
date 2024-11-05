@@ -236,6 +236,7 @@ void FormStructure::DetermineHeuristicTypes(
   }
   rationalizer.RationalizeFieldTypePredictions(
       main_frame_origin_, client_country_, current_page_language_, log_manager);
+  rationalizer.RationalizePhoneNumbersForFilling();
 
   // Log the field type predicted by rationalization.
   // The sections are mapped to consecutive natural numbers starting at 1.
@@ -879,12 +880,9 @@ void FormStructure::set_randomized_encoder(
   randomized_encoder_ = std::move(encoder);
 }
 
-void FormStructure::RationalizePhoneNumbersInSection(const Section& section) {
-  if (base::Contains(phone_rationalized_, section))
-    return;
+void FormStructure::RationalizePhoneNumberFieldsForFilling() {
   FormStructureRationalizer rationalizer(&fields_);
-  rationalizer.RationalizePhoneNumbersInSection(section);
-  phone_rationalized_.insert(section);
+  rationalizer.RationalizePhoneNumbersForFilling();
 }
 
 void FormStructure::RationalizeFormStructure(

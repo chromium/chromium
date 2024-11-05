@@ -79,12 +79,9 @@ class FormStructureRationalizer {
                                        LogManager* log_manager);
 
   // Ensures that only a single phone number (which can be split across multiple
-  // fields) is autofilled in the `section`. If the section contains multiple
-  // phone numbers, `set_only_fill_when_focused(true)` is set for the remaining
-  // fields.
-  // Contrary to the other rationalization logic of this class, this one happens
-  // at filling time.
-  void RationalizePhoneNumbersInSection(const Section& section);
+  // fields) is autofilled per section. If a section contains multiple phone
+  // numbers, `only_fill_when_focused` is set for the remaining fields.
+  void RationalizePhoneNumbersForFilling();
 
  private:
   friend class FormStructureTestApi;
