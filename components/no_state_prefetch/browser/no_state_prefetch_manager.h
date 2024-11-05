@@ -20,9 +20,9 @@
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_histograms.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/browser/prerender_config.h"
-#include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "content/public/browser/preloading_data.h"
@@ -465,7 +465,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   const std::unique_ptr<NoStatePrefetchHistory> prefetch_history_;
 
-  const std::unique_ptr<PrerenderHistograms> histograms_;
+  const std::unique_ptr<NoStatePrefetchHistograms> histograms_;
 
   // Set of process hosts being prerendered.
   using PrerenderProcessSet =

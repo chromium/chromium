@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_histograms.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_histograms.h"
 
 #include <string>
 
@@ -18,13 +18,13 @@ namespace prerender {
 namespace {
 
 std::string GetHistogramName(Origin origin, const std::string& name) {
-  return ComposeHistogramName(PrerenderHistograms::GetHistogramPrefix(origin),
-                              name);
+  return ComposeHistogramName(
+      NoStatePrefetchHistograms::GetHistogramPrefix(origin), name);
 }
 
 }  // namespace
 
-std::string PrerenderHistograms::GetHistogramPrefix(Origin origin) {
+std::string NoStatePrefetchHistograms::GetHistogramPrefix(Origin origin) {
   switch (origin) {
     case ORIGIN_NONE:
       return "none";
@@ -49,8 +49,9 @@ std::string PrerenderHistograms::GetHistogramPrefix(Origin origin) {
   return "none";
 }
 
-void PrerenderHistograms::RecordFinalStatus(Origin origin,
-                                            FinalStatus final_status) const {
+void NoStatePrefetchHistograms::RecordFinalStatus(
+    Origin origin,
+    FinalStatus final_status) const {
   DCHECK(final_status != FINAL_STATUS_MAX);
   base::UmaHistogramEnumeration(GetHistogramName(origin, "FinalStatus"),
                                 final_status, FINAL_STATUS_MAX);

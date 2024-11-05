@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_HISTOGRAMS_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_HISTOGRAMS_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HISTOGRAMS_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HISTOGRAMS_H_
 
 #include <string>
 
@@ -25,14 +25,15 @@ namespace prerender {
 //
 // Besides thread checking this class is stateless, all public methods are
 // const.
-class PrerenderHistograms {
+class NoStatePrefetchHistograms {
  public:
   // Owned by a NoStatePrefetchManager object for the lifetime of the
   // NoStatePrefetchManager.
-  PrerenderHistograms() = default;
+  NoStatePrefetchHistograms() = default;
 
-  PrerenderHistograms(const PrerenderHistograms&) = delete;
-  PrerenderHistograms& operator=(const PrerenderHistograms&) = delete;
+  NoStatePrefetchHistograms(const NoStatePrefetchHistograms&) = delete;
+  NoStatePrefetchHistograms& operator=(const NoStatePrefetchHistograms&) =
+      delete;
 
   // Return the string to use as a prefix for histograms depending on the origin
   // of the prerender.
@@ -47,4 +48,4 @@ class PrerenderHistograms {
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_HISTOGRAMS_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_HISTOGRAMS_H_

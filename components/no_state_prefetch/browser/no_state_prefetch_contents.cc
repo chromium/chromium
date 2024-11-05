@@ -433,7 +433,7 @@ void NoStatePrefetchContents::RenderFrameCreated(
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &prerender_render_frame);
   prerender_render_frame->SetIsPrerendering(
-      PrerenderHistograms::GetHistogramPrefix(origin_));
+      NoStatePrefetchHistograms::GetHistogramPrefix(origin_));
 }
 
 void NoStatePrefetchContents::DidStopLoading() {
