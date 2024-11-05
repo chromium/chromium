@@ -3592,6 +3592,19 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "holdback": "false"
+                    },
+                    "enable_features": [
+                        "CCTNavigationalPrefetch",
+                        "PrefetchBrowserInitiatedTriggers"
+                    ]
+                },
+                {
+                    "name": "Holdback",
+                    "params": {
+                        "holdback": "true"
+                    },
                     "enable_features": [
                         "CCTNavigationalPrefetch",
                         "PrefetchBrowserInitiatedTriggers"
