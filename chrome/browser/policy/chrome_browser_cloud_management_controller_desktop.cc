@@ -26,6 +26,7 @@
 #include "chrome/browser/policy/client_data_delegate_desktop.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -33,7 +34,6 @@
 #include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation_service.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -78,7 +78,6 @@ constexpr base::FilePath::StringPieceType kCachedPolicyDirname =
 
 constexpr char kInvalidationListenerLogPrefix[] =
     "ChromeBrowserCloudManagementControllerDesktop";
-
 }  // namespace
 
 ChromeBrowserCloudManagementControllerDesktop::
@@ -302,9 +301,7 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
           identity_provider_.get(), g_browser_process->gcm_driver(),
           device_instance_id_driver_.get(),
           g_browser_process->shared_url_loader_factory(),
-          g_browser_process->local_state(),
-          policy::kPolicyFCMInvalidationSenderID,
-          invalidation::InvalidationListener::kProjectNumberEnterprise,
+          g_browser_process->local_state(), GetInvalidationProjectNumber(),
           kInvalidationListenerLogPrefix);
 
   auto* core = g_browser_process->browser_policy_connector()

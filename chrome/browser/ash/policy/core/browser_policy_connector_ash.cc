@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -70,6 +69,7 @@
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -129,13 +129,11 @@ std::variant<std::unique_ptr<AffiliatedInvalidationServiceProvider>,
 CreateServiceProviderOrListener(
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver) {
-  if (base::FeatureList::IsEnabled(
-          invalidation::kInvalidationsWithDirectMessages)) {
+  if (invalidation::IsInvalidationsWithDirectMessagesEnabled()) {
     auto listener = invalidation::CreateInvalidationServiceOrListener(
         /*identity_provider=*/nullptr, gcm_driver, instance_id_driver,
-        /*url_loader_factory=*/{}, /*pref_service=*/nullptr, /*sender_id=*/"",
-        invalidation::InvalidationListener::kProjectNumberEnterprise,
-        kInvalidationListenerLogPrefix);
+        /*url_loader_factory=*/{}, /*pref_service=*/nullptr,
+        GetInvalidationProjectNumber(), kInvalidationListenerLogPrefix);
     CHECK(std::holds_alternative<
           std::unique_ptr<invalidation::InvalidationListener>>(listener))
         << "InvalidationListener is not created in InvalidationListener setup";
@@ -145,7 +143,8 @@ CreateServiceProviderOrListener(
             listener));
   }
 
-  return std::make_unique<AffiliatedInvalidationServiceProviderImpl>();
+  return std::make_unique<AffiliatedInvalidationServiceProviderImpl>(
+      GetInvalidationProjectNumber());
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include "components/policy/core/browser/remote_commands/user_remote_commands_service_base.h"
 
 #include "base/time/default_clock.h"
+#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -15,6 +16,17 @@
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 
 namespace policy {
+
+namespace {
+
+auto GetInvalidationProjectNumber() {
+  if (invalidation::IsInvalidationsWithDirectMessagesEnabled()) {
+    return invalidation::InvalidationListener::kProjectNumberEnterprise;
+  }
+  return policy::kPolicyFCMInvalidationSenderID;
+}
+
+}  // namespace
 
 UserRemoteCommandsServiceBase::UserRemoteCommandsServiceBase(
     CloudPolicyCore* core)
@@ -45,8 +57,7 @@ void UserRemoteCommandsServiceBase::
       core_, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kUser);
   invalidator_->Initialize(
       invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID,
-          invalidation::InvalidationListener::kProjectNumberEnterprise));
+          GetInvalidationProjectNumber()));
 }
 
 void UserRemoteCommandsServiceBase::OnPolicyRefreshed(bool success) {}

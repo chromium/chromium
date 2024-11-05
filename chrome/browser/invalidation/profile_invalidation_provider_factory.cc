@@ -47,7 +47,6 @@ std::variant<std::unique_ptr<InvalidationService>,
              std::unique_ptr<InvalidationListener>>
 CreateInvalidationServiceOrListenerImpl(Profile* profile,
                                         IdentityProvider* identity_provider,
-                                        std::string sender_id,
                                         std::string project_number,
                                         std::string log_prefix) {
   return CreateInvalidationServiceOrListener(
@@ -57,8 +56,7 @@ CreateInvalidationServiceOrListenerImpl(Profile* profile,
           ->driver(),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      profile->GetPrefs(), std::move(sender_id), std::move(project_number),
-      std::move(log_prefix));
+      profile->GetPrefs(), std::move(project_number), std::move(log_prefix));
 }
 
 }  // namespace

@@ -32,6 +32,10 @@ BASE_FEATURE(kInvalidationsWithDirectMessages,
              "InvalidationsWithDirectMessages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsInvalidationsWithDirectMessagesEnabled() {
+  return base::FeatureList::IsEnabled(kInvalidationsWithDirectMessages);
+}
+
 std::variant<std::unique_ptr<InvalidationService>,
              std::unique_ptr<InvalidationListener>>
 CreateInvalidationServiceOrListener(
@@ -40,15 +44,14 @@ CreateInvalidationServiceOrListener(
     instance_id::InstanceIDDriver* instance_id_driver,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
-    std::string sender_id,
     std::string project_number,
     std::string log_prefix) {
   // `DriveNotificationManagerFactory` (identified by `kDriveFcmSenderId` sender
   // id) will keep using legacy `FCMInvalidationService` until Fandango
   // shutdown. Create the legacy invalidation stack for it even if the direct
   // messages feature is on.
-  if (base::FeatureList::IsEnabled(kInvalidationsWithDirectMessages) &&
-      sender_id != kDriveFcmSenderId) {
+  if (IsInvalidationsWithDirectMessagesEnabled() &&
+      project_number != kDriveFcmSenderId) {
     return InvalidationListener::Create(gcm_driver, instance_id_driver,
                                         std::move(project_number),
                                         std::move(log_prefix));
@@ -62,7 +65,7 @@ CreateInvalidationServiceOrListener(
       base::BindRepeating(
           &invalidation::PerUserTopicSubscriptionManager::Create,
           base::RetainedRef(url_loader_factory)),
-      instance_id_driver, pref_service, std::move(sender_id));
+      instance_id_driver, pref_service, std::move(project_number));
   service->Init();
   return service;
 }

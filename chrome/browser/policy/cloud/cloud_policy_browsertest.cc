@@ -20,6 +20,7 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/cloud/cloud_policy_test_utils.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -107,8 +108,7 @@ struct FeaturesTestParam {
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string fcm_sender_id,
-                                     std::string /*project_id*/,
+CreateInvalidationServiceForSenderId(std::string project_id,
                                      std::string /*log_prefix*/) {
   if (base::FeatureList::IsEnabled(
           invalidation::kInvalidationsWithDirectMessages)) {
@@ -371,9 +371,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
         // must be sent to the correct project id.
         invalidation::ProfileInvalidationProviderFactory::GetInstance()
             ->GetForProfile(profile())
-            ->GetInvalidationServiceOrListener(
-                kPolicyFCMInvalidationSenderID,
-                invalidation::InvalidationListener::kProjectNumberEnterprise));
+            ->GetInvalidationServiceOrListener(GetInvalidationProjectNumber()));
   }
 
   void SetServerPolicy(const em::CloudPolicySettings& settings,

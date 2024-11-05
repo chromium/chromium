@@ -26,7 +26,6 @@
 namespace invalidation {
 
 namespace {
-constexpr char kFakeSenderId[] = "fake_sender_id";
 constexpr char kFakeProjectId[] = "fake_project_id";
 }  // namespace
 
@@ -151,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(provider);
 
   auto service_or_listener =
-      provider->GetInvalidationServiceOrListener(kFakeSenderId, kFakeProjectId);
+      provider->GetInvalidationServiceOrListener(kFakeProjectId);
 
   EXPECT_TRUE(
       std::holds_alternative<InvalidationService*>(service_or_listener));
@@ -179,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(provider);
 
   auto service_or_listener =
-      provider->GetInvalidationServiceOrListener(kFakeSenderId, kFakeProjectId);
+      provider->GetInvalidationServiceOrListener(kFakeProjectId);
 
   EXPECT_TRUE(
       std::holds_alternative<InvalidationListener*>(service_or_listener));

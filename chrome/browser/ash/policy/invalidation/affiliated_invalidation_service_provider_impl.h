@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_INVALIDATION_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_IMPL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -31,7 +32,8 @@ class AffiliatedInvalidationServiceProviderImpl
     : public AffiliatedInvalidationServiceProvider,
       public session_manager::SessionManagerObserver {
  public:
-  AffiliatedInvalidationServiceProviderImpl();
+  explicit AffiliatedInvalidationServiceProviderImpl(
+      std::string project_number);
 
   AffiliatedInvalidationServiceProviderImpl(
       const AffiliatedInvalidationServiceProviderImpl&) = delete;
@@ -116,6 +118,9 @@ class AffiliatedInvalidationServiceProviderImpl
   int consumer_count_;
 
   bool is_shut_down_;
+
+  // GCM project number used for invalidations.
+  const std::string project_number_;
 };
 
 }  // namespace policy

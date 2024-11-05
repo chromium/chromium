@@ -10,7 +10,9 @@
 #include "base/functional/overloaded.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -63,8 +65,7 @@ void UserFmRegistrationTokenUploader::OnProfileInitializationComplete(
 
   auto invalidation_service_or_listener =
       invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID,
-          invalidation::InvalidationListener::kProjectNumberEnterprise);
+          GetInvalidationProjectNumber());
 
   std::visit(base::Overloaded{
                  [](invalidation::InvalidationService* service) {

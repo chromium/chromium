@@ -29,7 +29,6 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -49,10 +48,11 @@ namespace {
 const char kAffiliatedUserID1[] = "test_1@example.com";
 const char kAffiliatedUserID2[] = "test_2@example.com";
 const char kUnaffiliatedUserID[] = "test@other_domain.test";
+const char kFakeProjectNumber[] = "fake_project_number";
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string, std::string, std::string) {
+CreateInvalidationServiceForSenderId(std::string, std::string) {
   std::unique_ptr<invalidation::FakeInvalidationService> invalidation_service(
       new invalidation::FakeInvalidationService);
   invalidation_service->SetInvalidatorState(
@@ -233,7 +233,8 @@ void AffiliatedInvalidationServiceProviderImplTest::SetUp() {
       ->RegisterTestingFactory(
           base::BindRepeating(&BuildProfileInvalidationProvider));
 
-  provider_ = std::make_unique<AffiliatedInvalidationServiceProviderImpl>();
+  provider_ = std::make_unique<AffiliatedInvalidationServiceProviderImpl>(
+      kFakeProjectNumber);
 }
 
 void AffiliatedInvalidationServiceProviderImplTest::TearDown() {
@@ -367,8 +368,7 @@ AffiliatedInvalidationServiceProviderImplTest::GetProfileInvalidationService(
     return nullptr;
   auto invalidation_service =
       invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID,
-          invalidation::InvalidationListener::kProjectNumberEnterprise);
+          kFakeProjectNumber);
   CHECK(std::holds_alternative<invalidation::InvalidationService*>(
       invalidation_service));
   return static_cast<invalidation::FakeInvalidationService*>(

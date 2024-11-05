@@ -66,8 +66,7 @@ struct FeaturesTestParam {
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string fcm_sender_id,
-                                     std::string /*project_id*/,
+CreateInvalidationServiceForSenderId(std::string /*project_id*/,
                                      std::string /*log_prefix*/) {
   if (base::FeatureList::IsEnabled(
           invalidation::kInvalidationsWithDirectMessages)) {
@@ -225,8 +224,7 @@ class UserRemoteCommandsServiceTest
                 ->GetForProfile(profile()));
     auto invalidation_service_or_listener =
         profile_invalidation_provider_factory->GetInvalidationServiceOrListener(
-            std::move(sender_id),
-            /*project_id=*/"");
+            std::move(sender_id));
     CHECK(std::holds_alternative<invalidation::InvalidationService*>(
         invalidation_service_or_listener));
     return static_cast<invalidation::FakeInvalidationService*>(

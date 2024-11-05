@@ -31,18 +31,16 @@ IdentityProvider* ProfileInvalidationProvider::GetIdentityProvider() {
 
 std::variant<InvalidationService*, InvalidationListener*>
 ProfileInvalidationProvider::GetInvalidationServiceOrListener(
-    const std::string& sender_id,
     const std::string& project_id) {
   DCHECK(invalidation_service_or_listener_factory_);
 
-  if (!sender_id_to_invalidation_service_or_listener_.contains(
-          {sender_id, project_id})) {
-    sender_id_to_invalidation_service_or_listener_[{sender_id, project_id}] =
+  if (!sender_id_to_invalidation_service_or_listener_.contains(project_id)) {
+    sender_id_to_invalidation_service_or_listener_[project_id] =
         invalidation_service_or_listener_factory_.Run(
-            sender_id, project_id, "ProfileInvalidationProvider");
+            project_id, "ProfileInvalidationProvider");
   }
   return invalidation::UniquePointerVariantToPointer(
-      sender_id_to_invalidation_service_or_listener_[{sender_id, project_id}]);
+      sender_id_to_invalidation_service_or_listener_[project_id]);
 }
 
 void ProfileInvalidationProvider::Shutdown() {

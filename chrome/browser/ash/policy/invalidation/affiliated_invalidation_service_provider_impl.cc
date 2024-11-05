@@ -28,7 +28,6 @@
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -137,10 +136,11 @@ std::string AffiliatedInvalidationServiceProviderImpl::
 }
 
 AffiliatedInvalidationServiceProviderImpl::
-    AffiliatedInvalidationServiceProviderImpl()
+    AffiliatedInvalidationServiceProviderImpl(std::string project_number)
     : current_invalidation_service_(nullptr),
       consumer_count_(0),
-      is_shut_down_(false) {
+      is_shut_down_(false),
+      project_number_(std::move(project_number)) {
   // The AffiliatedInvalidationServiceProviderImpl should be created before any
   // user Profiles.
   DCHECK(g_browser_process->profile_manager()->GetLoadedProfiles().empty());
@@ -177,9 +177,7 @@ void AffiliatedInvalidationServiceProviderImpl::OnUserProfileLoaded(
 
   // Create a state observer for the user's invalidation service.
   auto invalidation_service_or_listener =
-      invalidation_provider->GetInvalidationServiceOrListener(
-          policy::kPolicyFCMInvalidationSenderID,
-          invalidation::InvalidationListener::kProjectNumberEnterprise);
+      invalidation_provider->GetInvalidationServiceOrListener(project_number_);
   CHECK(std::holds_alternative<invalidation::InvalidationService*>(
       invalidation_service_or_listener))
       << "AffiliatedInvalidationServiceProviderImpl is created with "
@@ -377,8 +375,8 @@ AffiliatedInvalidationServiceProviderImpl::
       invalidation::CreateInvalidationServiceOrListener(
           device_identity_provider_.get(), g_browser_process->gcm_driver(),
           device_instance_id_driver_.get(), url_loader_factory,
-          g_browser_process->local_state(), kPolicyFCMInvalidationSenderID,
-          /*project_number=*/"", /*log_prefix=*/"");
+          g_browser_process->local_state(), project_number_,
+          /*log_prefix=*/"");
   CHECK(std::holds_alternative<
         std::unique_ptr<invalidation::InvalidationService>>(
       invalidation_service_or_listener))

@@ -30,8 +30,7 @@ class ProfileInvalidationProvider : public KeyedService {
   using InvalidationServiceOrListenerFactory =
       base::RepeatingCallback<std::variant<
           std::unique_ptr<InvalidationService>,
-          std::unique_ptr<InvalidationListener>>(std::string /*sender_id*/,
-                                                 std::string /*project_id*/,
+          std::unique_ptr<InvalidationListener>>(std::string /*project_id*/,
                                                  std::string /*log_prefix*/)>;
 
   ProfileInvalidationProvider(
@@ -45,10 +44,9 @@ class ProfileInvalidationProvider : public KeyedService {
   ~ProfileInvalidationProvider() override;
 
   // Returns the `InvalidationService` or `InvalidationListener` specific to
-  // `sender_id`.
+  // `project_id`.
   std::variant<InvalidationService*, InvalidationListener*>
-  GetInvalidationServiceOrListener(const std::string& sender_id,
-                                   const std::string& project_id);
+  GetInvalidationServiceOrListener(const std::string& project_id);
 
   IdentityProvider* GetIdentityProvider();
 
@@ -64,7 +62,7 @@ class ProfileInvalidationProvider : public KeyedService {
 
   InvalidationServiceOrListenerFactory
       invalidation_service_or_listener_factory_;
-  std::map<std::pair<std::string, std::string>,
+  std::map<std::string,
            std::variant<std::unique_ptr<InvalidationService>,
                         std::unique_ptr<InvalidationListener>>>
       sender_id_to_invalidation_service_or_listener_;

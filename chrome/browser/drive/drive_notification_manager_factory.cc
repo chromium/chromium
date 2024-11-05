@@ -24,7 +24,7 @@ invalidation::InvalidationService* GetInvalidationService(Profile* profile) {
   }
   auto invalidation_service_or_listener =
       profile_invalidation_factory->GetInvalidationServiceOrListener(
-          kDriveFcmSenderId, /*project_id=*/"");
+          kDriveFcmSenderId);
   CHECK(std::holds_alternative<invalidation::InvalidationService*>(
       invalidation_service_or_listener))
       << "Drive does not support InvalidationListener and must be used with "

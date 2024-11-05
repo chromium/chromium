@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
@@ -18,7 +19,6 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace ash::cert_provisioning {
 
@@ -287,8 +287,7 @@ void CertProvisioningUserInvalidator::Register(
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
           CertScope::kUser,
           invalidation_provider->GetInvalidationServiceOrListener(
-              policy::kPolicyFCMInvalidationSenderID,
-              invalidation::InvalidationListener::kProjectNumberEnterprise),
+              policy::GetInvalidationProjectNumber()),
           topic, listener_type, std::move(on_invalidation_event_callback));
 
   if (!invalidation_handler_) {

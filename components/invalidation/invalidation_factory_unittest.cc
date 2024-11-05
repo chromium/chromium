@@ -26,7 +26,6 @@ namespace invalidation {
 namespace {
 
 constexpr char kDriveFcmSenderId[] = "947318989803";
-constexpr char kFakeSenderId[] = "fake_sender_id";
 constexpr char kFakeProjectId[] = "fake_project_id";
 
 constexpr char kLogPrefix[] = "test log";
@@ -122,7 +121,7 @@ TEST_F(InvalidationFactoryWithDirectMessagesDisabledTest,
   auto service_or_listener = CreateInvalidationServiceOrListener(
       &identity_provider_, &fake_gcm_driver_, &mock_instance_id_driver_,
       test_url_loader_factory_.GetSafeWeakWrapper(), &pref_service_,
-      kFakeSenderId, kFakeProjectId, kLogPrefix);
+      kFakeProjectId, kLogPrefix);
 
   ASSERT_TRUE(std::holds_alternative<std::unique_ptr<InvalidationService>>(
       service_or_listener));
@@ -135,7 +134,7 @@ TEST_F(InvalidationFactoryWithDirectMessagesDisabledTest,
   auto service_or_listener = CreateInvalidationServiceOrListener(
       &identity_provider_, &fake_gcm_driver_, &mock_instance_id_driver_,
       test_url_loader_factory_.GetSafeWeakWrapper(), &pref_service_,
-      kDriveFcmSenderId, kFakeProjectId, kLogPrefix);
+      kDriveFcmSenderId, kLogPrefix);
 
   ASSERT_TRUE(std::holds_alternative<std::unique_ptr<InvalidationService>>(
       service_or_listener));
@@ -159,7 +158,7 @@ TEST_F(InvalidationFactoryWithDirectMessagesEnabledTest,
   auto service_or_listener = CreateInvalidationServiceOrListener(
       &identity_provider_, &fake_gcm_driver_, &mock_instance_id_driver_,
       test_url_loader_factory_.GetSafeWeakWrapper(), &pref_service_,
-      kFakeSenderId, kFakeProjectId, kLogPrefix);
+      kFakeProjectId, kLogPrefix);
 
   ASSERT_TRUE(std::holds_alternative<std::unique_ptr<InvalidationListener>>(
       service_or_listener));
@@ -175,7 +174,7 @@ TEST_F(InvalidationFactoryWithDirectMessagesEnabledTest,
   auto service_or_listener = CreateInvalidationServiceOrListener(
       &identity_provider_, &fake_gcm_driver_, &mock_instance_id_driver_,
       test_url_loader_factory_.GetSafeWeakWrapper(), &pref_service_,
-      kDriveFcmSenderId, kFakeProjectId, kLogPrefix);
+      kDriveFcmSenderId, kLogPrefix);
 
   ASSERT_TRUE(std::holds_alternative<std::unique_ptr<InvalidationService>>(
       service_or_listener));
