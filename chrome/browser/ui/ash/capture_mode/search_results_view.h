@@ -28,6 +28,15 @@ class SearchResultsView : public AshWebViewImpl {
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
+  bool IsWebContentsCreationOverridden(
+      content::SiteInstance* source_site_instance,
+      content::mojom::WindowContainerType window_container_type,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url) override;
+
+ private:
+  base::WeakPtrFactory<SearchResultsView> weak_factory_{this};
 };
 
 }  // namespace ash
