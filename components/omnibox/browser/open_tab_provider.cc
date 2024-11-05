@@ -133,7 +133,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
       &input_query_nodes);
 
   // Perform basic substring matching on the query terms.
-  for (auto& open_tab : client_->GetTabMatcher().GetOpenTabs()) {
+  for (auto& open_tab : client_->GetTabMatcher().GetOpenTabs(&input)) {
     const GURL& url = open_tab.url;
     if (!url.is_valid()) {
       continue;

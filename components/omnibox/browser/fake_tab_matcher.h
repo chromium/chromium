@@ -28,7 +28,8 @@ class FakeTabMatcher : public TabMatcher {
   // TabMatcher implementation.
   bool IsTabOpenWithURL(const GURL& url,
                         const AutocompleteInput* input) const override;
-  std::vector<TabMatcher::TabWrapper> GetOpenTabs() const override;
+  std::vector<TabMatcher::TabWrapper> GetOpenTabs(
+      const AutocompleteInput* input) const override;
 
  private:
   // Substring used to match URLs for IsTabOpenWithURL().

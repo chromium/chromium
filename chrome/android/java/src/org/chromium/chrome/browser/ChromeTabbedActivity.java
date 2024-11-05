@@ -1873,7 +1873,26 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
                 break;
             case TabOpenType.BRING_TAB_TO_FRONT:
-                mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
+                // Hub search will allow archived tabs to be passed through here. In this case, CTA
+                // should be warm and be in a PAUSED state in the background. This is best-effort
+                // and may fail if that's not the case.
+                ArchivedTabModelOrchestrator archivedOrchestrator =
+                        ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get());
+                @Nullable
+                Tab archivedTab =
+                        archivedOrchestrator == null
+                                ? null
+                                : archivedOrchestrator
+                                        .getTabModel()
+                                        .getTabById(tabIdToBringToFront);
+                if (archivedTab != null) {
+                    archivedOrchestrator
+                            .getTabArchiver()
+                            .unarchiveAndRestoreTabs(
+                                    tabModel.getTabCreator(), Arrays.asList(archivedTab), true);
+                } else {
+                    mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
+                }
 
                 int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabIdToBringToFront);
                 if (tabIndex == TabModel.INVALID_TAB_INDEX) {
@@ -1888,6 +1907,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     }
                 } else {
                     TabModelUtils.setIndex(tabModel, tabIndex);
+                    // If the tab-switcher is displayed, hide it to show the tab.
+                    if (getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                        getLayoutManager().showLayout(LayoutType.BROWSING, /* animate= */ false);
+                    }
                 }
                 break;
             case TabOpenType.CLOBBER_CURRENT_TAB:
