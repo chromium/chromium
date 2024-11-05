@@ -16,6 +16,7 @@
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -123,6 +124,54 @@ void OnActionPopulated(
   std::move(callback).Run(std::move(action));
 }
 
+void RecordDetectedAction(manta::proto::ScannerAction action) {
+  switch (action.action_case()) {
+    case manta::proto::ScannerAction::kNewEvent:
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::kNewCalendarEventActionDetected);
+      return;
+    case manta::proto::ScannerAction::kNewContact:
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::kNewContactActionDetected);
+      return;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::kNewGoogleDocActionDetected);
+      return;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::kNewGoogleSheetActionDetected);
+      return;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::kCopyToClipboardActionDetected);
+      return;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      return;
+  }
+  // This should never be reached, as `action_case()` should always return a
+  // valid enum value. If the oneof field is set to something which is not
+  // recognised by this client, that is indistinguishable from an unknown field,
+  // and the above case should be `ACTION_NOT_SET`.
+  NOTREACHED();
+}
+
+void RecordAllDetectedActions(const manta::proto::ScannerOutput& output) {
+  bool action_found = false;
+  for (const manta::proto::ScannerObject& object : output.objects()) {
+    for (const manta::proto::ScannerAction& action : object.actions()) {
+      if (action.action_case() != manta::proto::ScannerAction::ACTION_NOT_SET) {
+        action_found = true;
+        RecordDetectedAction(action);
+      }
+    }
+  }
+
+  if (!action_found) {
+    RecordScannerFeatureUserState(ScannerFeatureUserState::kNoActionsDetected);
+  }
+}
+
 }  // namespace
 
 ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate)
@@ -153,6 +202,8 @@ void ScannerSession::OnActionsReturned(
     std::move(callback).Run({});
     return;
   }
+
+  RecordAllDetectedActions(*output);
   if (output->objects_size() == 0) {
     std::move(callback).Run({});
     return;

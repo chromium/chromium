@@ -5,15 +5,18 @@
 #include "ash/scanner/scanner_session.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
@@ -47,6 +50,9 @@ using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Return;
 using ::testing::SizeIs;
+
+constexpr std::string_view kScannerFeatureUserStateHistogram =
+    "Ash.ScannerFeature.UserState";
 
 using FetchActionsForImageFuture = base::test::TestFuture<
     scoped_refptr<base::RefCountedMemory>,
@@ -96,6 +102,57 @@ TEST(ScannerSessionTest,
   session.FetchActionsForImage(nullptr, future.GetCallback());
 
   EXPECT_THAT(future.Take(), IsEmpty());
+}
+
+TEST(ScannerSessionTest, FetchActionsForImageRecordsNumberOfActionsMetrics) {
+  base::HistogramTester histogram_tester;
+  FakeScannerProfileScopedDelegate delegate;
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& object_one = *output->add_objects();
+  object_one.add_actions()->mutable_new_event();
+  object_one.add_actions()->mutable_new_contact();
+  manta::proto::ScannerObject& object_two = *output->add_objects();
+  object_two.add_actions()->mutable_new_event();
+  object_two.add_actions()->mutable_new_google_doc();
+
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  ScannerSession session(&delegate);
+  session.FetchActionsForImage(nullptr, base::DoNothing());
+
+  histogram_tester.ExpectBucketCount(
+      kScannerFeatureUserStateHistogram,
+      ScannerFeatureUserState::kNewCalendarEventActionDetected, 2);
+  histogram_tester.ExpectBucketCount(
+      kScannerFeatureUserStateHistogram,
+      ScannerFeatureUserState::kNewContactActionDetected, 1);
+  histogram_tester.ExpectBucketCount(
+      kScannerFeatureUserStateHistogram,
+      ScannerFeatureUserState::kNewGoogleDocActionDetected, 1);
+  histogram_tester.ExpectBucketCount(
+      kScannerFeatureUserStateHistogram,
+      ScannerFeatureUserState::kNoActionsDetected, 0);
+}
+
+TEST(ScannerSessionTest, FetchActionsForImageNoActionRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+  FakeScannerProfileScopedDelegate delegate;
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  output->add_objects();
+  output->add_objects();
+
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  ScannerSession session(&delegate);
+  session.FetchActionsForImage(nullptr, base::DoNothing());
+
+  histogram_tester.ExpectBucketCount(
+      kScannerFeatureUserStateHistogram,
+      ScannerFeatureUserState::kNoActionsDetected, 1);
 }
 
 TEST(ScannerSessionTest,
