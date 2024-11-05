@@ -26,8 +26,7 @@ void TestShareKitService::JoinGroup(ShareKitJoinConfiguration* config) {
 
 UIViewController* TestShareKitService::FacePile(
     ShareKitFacePileConfiguration* config) {
-  // TODO(crbug.com/358373145): add fake implementation.
-  return nil;
+  return [[UIViewController alloc] init];
 }
 
 void TestShareKitService::ReadGroups(ShareKitReadConfiguration* config) {

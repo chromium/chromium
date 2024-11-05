@@ -257,6 +257,7 @@ source_set("unit_tests") {
     ":tab_groups",
     ":tab_groups_ui",
     "//base/test:test_support",
+    "//components/data_sharing/public",
     "//components/policy/core/common:common_constants",
     "//components/prefs:test_support",
     "//components/saved_tab_groups/public",
