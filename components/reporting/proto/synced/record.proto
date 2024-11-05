@@ -8,6 +8,9 @@ option optimize_for = LITE_RUNTIME;
 
 package reporting;
 
+// Used for annotating sensitive fields in google3.
+// ${COPYBARA_DATAPOL_IMPORT}
+
 import "components/reporting/proto/synced/health.proto";
 import "components/reporting/proto/synced/record_constants.proto";
 
@@ -92,6 +95,8 @@ message EncryptionInfo {
   // private key (identified by |public_key_id|) for shared secret recreation by
   // the server to compose the symmetric key used for |encrypted_wrapped_record|
   // encryption. Is transmitted in plaintext.
+
+  // ${COPYBARA_DATAPOL_ST_SECURITY_KEY}
   optional bytes encryption_key = 1;
 
   // Public key id (optional)

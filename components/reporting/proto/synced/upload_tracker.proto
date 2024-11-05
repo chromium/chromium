@@ -8,6 +8,9 @@ option optimize_for = LITE_RUNTIME;
 
 package reporting;
 
+// Used for annotating sensitive fields in google3.
+// ${COPYBARA_DATAPOL_IMPORT}
+
 import "components/reporting/proto/synced/status.proto";
 
 // Message populated by the caller when posting the log upload request
@@ -51,6 +54,8 @@ message UploadTracker {
   // finalize the upload at the end (after that, this field should be cleared).
   // This field is implementation-dependent; having it generic allows to choose
   // the actual upload protocol and/or unit test the whole process.
+
+  // ${COPYBARA_DATAPOL_ST_ACCOUNT_CREDENTIAL}
   optional string session_token = 4;  // required, while upload is in progress.
 
   // URL and optionally other parameters to access the uploaded file from the
