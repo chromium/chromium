@@ -52,6 +52,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -517,6 +518,9 @@ public class TabDragSourceTest {
      *  G.1] invalid mimetype.
      *  G.2] invalid clip data.
      *  G.3] destination strip is not visible.
+     * H] drag start special cases (see crbug.com/374480348):
+     *  H.1] drag starts outside of the source strip - we trigger an #onDragExit after 50ms.
+     *  H.2] drag starts outside of the source strip - we cancel the runnable after drag enter.
      *  </pre>
      */
     private static final String ONDRAG_TEST_CASES = "";
@@ -965,6 +969,66 @@ public class TabDragSourceTest {
                         mTabsToolbarView,
                         mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
         assertFalse("onDrag should return false.", res);
+    }
+
+    /** Test for {@link #ONDRAG_TEST_CASES} - Scenario H.1 */
+    @Test
+    public void test_onDrag_startsOutsideSourceStrip_runnableSuccess() {
+        // Start tab drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView,
+                mTabBeingDragged,
+                new PointF(POS_X, mPosY),
+                TAB_POSITION_X,
+                TAB_WIDTH);
+
+        // Verify the drag shadow begins invisible after ACTION_DRAG_STARTED.
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
+        assertFalse(
+                "Drag shadow should not yet be visible.",
+                ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
+                        .getShadowShownForTesting());
+
+        // Verify the drag shadow is visible after the runnable completes.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTrue(
+                "Drag shadow should now be visible.",
+                ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
+                        .getShadowShownForTesting());
+    }
+
+    /** Test for {@link #ONDRAG_TEST_CASES} - Scenario H.2 */
+    @Test
+    public void test_onDrag_startsOutsideSourceStrip_runnableCancelled() {
+        // Start tab drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView,
+                mTabBeingDragged,
+                new PointF(POS_X, mPosY),
+                TAB_POSITION_X,
+                TAB_WIDTH);
+
+        // Verify the drag shadow begins invisible after ACTION_DRAG_STARTED.
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
+        assertFalse(
+                "Drag shadow should not yet be visible.",
+                ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
+                        .getShadowShownForTesting());
+
+        // Verify the drag shadow is not visible as the runnable has been cancelled after
+        // #onDragEnter. Not triggered until ACTiON_DRAG_LOCATION since the drag's y-position is
+        // needed to verify the tab strip part of the view was entered.
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_ENTERED, POS_X, mPosY));
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertFalse(
+                "Drag shadow should still not visible.",
+                ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
+                        .getShadowShownForTesting());
     }
 
     @Test

@@ -15,6 +15,8 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
@@ -64,15 +66,21 @@ public class TabDragSource implements View.OnDragListener {
     private static final String TAG = "TabDragSource";
 
     private final WindowAndroid mWindowAndroid;
-    private MultiInstanceManager mMultiInstanceManager;
-    private DragAndDropDelegate mDragAndDropDelegate;
-    private Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
-    private Supplier<Boolean> mStripLayoutVisibilitySupplier;
-    private Supplier<TabContentManager> mTabContentManagerSupplier;
-    private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
-    private BrowserControlsStateProvider mBrowserControlStateProvider;
-    private float mPxToDp;
+    private final MultiInstanceManager mMultiInstanceManager;
+    private final DragAndDropDelegate mDragAndDropDelegate;
+    private final Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
+    private final Supplier<Boolean> mStripLayoutVisibilitySupplier;
+    private final Supplier<TabContentManager> mTabContentManagerSupplier;
+    private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private final BrowserControlsStateProvider mBrowserControlStateProvider;
+    private final float mPxToDp;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+
+    /** Handler and runnable to post/cancel an #onDragExit when the drag starts. */
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private final Runnable mOnDragExitRunnable = this::onDragExit;
+
     @Nullable private TabModelSelector mTabModelSelector;
 
     /** Drag shadow properties * */
@@ -90,6 +98,7 @@ public class TabDragSource implements View.OnDragListener {
     private float mLastXDp;
     private int mLastAction;
     private boolean mHoveringInStrip;
+
     // Local state used by Drag Drop metrics. Not-null when a tab dragging is in progress.
     private @Nullable DragLocalUmaState mUmaState;
 
@@ -99,6 +108,9 @@ public class TabDragSource implements View.OnDragListener {
      *
      * @param context Context to get resources.
      * @param stripLayoutHelperSupplier Supplier for StripLayoutHelper to perform strip actions.
+     * @param stripLayoutVisibilitySupplier Supplier for if the given tab strip is visible.
+     * @param tabContentManagerSupplier Supplier for the TabContentManager.
+     * @param layerTitleCacheSupplier Supplier for the LayerTitleCache.
      * @param multiInstanceManager MultiInstanceManager to perform move action when drop completes.
      * @param dragAndDropDelegate DragAndDropDelegate to initiate tab drag and drop.
      * @param browserControlStateProvider BrowserControlsStateProvider to compute drag-shadow
@@ -314,6 +326,13 @@ public class TabDragSource implements View.OnDragListener {
             return Boolean.TRUE.equals(mStripLayoutVisibilitySupplier.get());
         }
 
+        // If the tab is quickly dragged off the source strip on drag start with a mouse, the source
+        // strip may not receive an enter/exit event, preventing the drag shadow from being made
+        // visible. Post an #onDragExit here that will be cancelled if the source strip gets that
+        // initial drag enter event.
+        // See crbug.com/374480348 for additional info.
+        mHandler.postDelayed(mOnDragExitRunnable, /* delayMillis= */ 50L);
+
         mStartScreenPos = new PointF(xPx, yPx);
         mLastXDp = xPx * mPxToDp;
         return true;
@@ -325,7 +344,11 @@ public class TabDragSource implements View.OnDragListener {
         if (!isDragSource && mUmaState.mTabEnteringDestStripSystemElapsedTime < 0) {
             mUmaState.mTabEnteringDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         }
-        if (isDragSource || TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
+        if (isDragSource) {
+            mHandler.removeCallbacks(mOnDragExitRunnable);
+            showDragShadow(false);
+        }
+        if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
             showDragShadow(false);
         }
         mStripLayoutHelperSupplier
