@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -107,9 +106,6 @@ DateTimeSection::DateTimeSection(Profile* profile,
 DateTimeSection::~DateTimeSection() = default;
 
 void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"dateTimePageTitle", IDS_SETTINGS_DATE_TIME},
       {"timeZone", IDS_SETTINGS_TIME_ZONE},
@@ -125,9 +121,7 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"setTimeZoneAutomaticallyOff",
        IDS_SETTINGS_TIME_ZONE_DETECTION_CHOOSE_FROM_LIST},
       {"setTimeZoneAutomaticallyIpOnlyDefault",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT
-           : IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT},
+       IDS_OS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT},
       {"setTimeZoneAutomaticallyWithWiFiAccessPointsData",
        IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_WIFI_AP},
       {"setTimeZoneAutomaticallyWithAllLocationInfo",
