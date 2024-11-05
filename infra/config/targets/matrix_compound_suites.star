@@ -270,17 +270,11 @@ targets.legacy_matrix_compound_suite(
     name = "chromeos_octopus_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
@@ -295,24 +289,17 @@ targets.legacy_matrix_compound_suite(
             mixins = [
                 # trogdor is slow. So that we use more number of shards.
                 "shards-20",
-                "skylab-cft",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
@@ -324,41 +311,26 @@ targets.legacy_matrix_compound_suite(
     name = "chromeos_volteer_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
-            mixins = [
-                "skylab-cft",
-            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],

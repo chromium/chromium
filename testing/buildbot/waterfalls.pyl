@@ -84,7 +84,6 @@
         'os_type': 'chromeos',
         'cros_board': 'betty',
         'cros_dut_pool': 'vmlab',
-        'run_cft': True,
       },
       'chromeos-betty-chrome': {
         'additional_compile_targets': [
@@ -103,7 +102,6 @@
         'os_type': 'chromeos',
         'cros_board': 'betty',
         'cros_dut_pool': 'vmlab',
-        'run_cft': True,
       },
       'chromeos-betty-chrome-tests': {
         'test_suites': {
@@ -112,7 +110,6 @@
         'os_type': 'chromeos',
         'cros_board': 'betty',
         'cros_dut_pool': 'vmlab',
-        'run_cft': True,
       },
       'chromeos-brya-chrome': {
         'additional_compile_targets': [
@@ -127,7 +124,6 @@
           'chromiumos_preflight',
         ],
         'mixins': [
-          'skylab-cft',
           'cros-cbx-dut',
         ],
         'test_suites': {
@@ -138,7 +134,6 @@
       },
       'chromeos-brya-chrome-tests': {
         'mixins': [
-            'skylab-cft',
             'cros-cbx-dut',
         ],
         'test_suites': {
@@ -153,9 +148,6 @@
         ],
       },
       'chromeos-jacuzzi-chrome-tests': {
-        'mixins': [
-          'skylab-cft',
-        ],
         'test_suites': {
           'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
         },
@@ -186,7 +178,6 @@
         'os_type': 'chromeos',
         'cros_board': 'reven-vmtest',
         'cros_dut_pool': 'vmlab',
-        'run_cft': True,
       },
       'chromeos-trogdor-chrome': {
         'additional_compile_targets': [
@@ -405,23 +396,18 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'mixins': [
-          'skylab-cft',
-        ],
         'test_suites': {
           'skylab_tests': 'chromeos_ctp_preuprev_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'betty',
         'cros_dut_pool': 'vmlab',
-        'run_cft': True,
       },
       'chromeos-brya-chrome-preuprev': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
         'mixins': [
-          'skylab-cft',
           'cros-cbx-dut',
         ],
         'test_suites': {
@@ -434,9 +420,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'mixins': [
-          'skylab-cft',
-        ],
         'test_suites': {
           'skylab_tests': 'chromeos_ctp_preuprev_tests_slow_boards',
         },
@@ -446,9 +429,6 @@
       'chromeos-volteer-chrome-preuprev': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'skylab-cft',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_ctp_preuprev_tests',
@@ -502,9 +482,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'mixins': [
-          'skylab-cft',
-        ],
         'test_suites': {
           'skylab_tests': 'chromeos_jacuzzi_rel_skylab_tests',
         },
@@ -515,9 +492,6 @@
       'chromeos-octopus-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'skylab-cft',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_octopus_rel_skylab_tests',
@@ -1367,7 +1341,6 @@
           'chromiumos_preflight',
         ],
         'mixins': [
-          'skylab-cft',
           'cros-cbx-dut',
         ],
         'test_suites': {
@@ -1386,9 +1359,6 @@
       'chromeos-jacuzzi-chrome-dchecks-skylab': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'skylab-cft',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_jacuzzi_skylab_tests',

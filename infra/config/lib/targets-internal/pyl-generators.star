@@ -259,8 +259,6 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
             formatter.add_line("'public_builder_bucket': '{}',".format(skylab.public_builder_bucket))
         if skylab.shards:
             formatter.add_line("'shards': {},".format(skylab.shards))
-        if skylab.run_cft:
-            formatter.add_line("'run_cft': {},".format(skylab.run_cft))
         if skylab.args:
             formatter.add_line("'args': {},".format(skylab.args))
         if generate_skylab_container:

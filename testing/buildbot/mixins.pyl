@@ -640,9 +640,6 @@
       '--buildbucket-id=${buildbucket_build_id}',
     ],
   },
-  'skylab-cft': {
-    'run_cft': True,
-  },
   'swarming_containment_auto': {
     'fail_if_unused': False,
     'swarming': {

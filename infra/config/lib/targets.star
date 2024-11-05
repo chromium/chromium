@@ -284,7 +284,6 @@ def _skylab(
         public_builder = None,
         public_builder_bucket = None,
         shards = None,
-        run_cft = False,
         args = []):
     """Define a Skylab test target.
 
@@ -313,7 +312,6 @@ def _skylab(
         public_builder_bucket: Optional luci bucket. See public_builder
             above.
         shards: The number of shards used to run the test.
-        run_cft: Whether enabled CFT mode for chromium tests on Skylab.
         args: The list of test arguments to be added to test CLI.
     """
     return struct(
@@ -329,7 +327,6 @@ def _skylab(
         public_builder = public_builder,
         public_builder_bucket = public_builder_bucket,
         shards = shards,
-        run_cft = run_cft,
         args = args,
     )
 

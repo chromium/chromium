@@ -1849,13 +1849,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "skylab-cft",
-    skylab = targets.skylab(
-        run_cft = True,
-    ),
-)
-
-targets.mixin(
     name = "cros-cbx-dut",
     skylab = targets.skylab(
         cros_cbx = True,
