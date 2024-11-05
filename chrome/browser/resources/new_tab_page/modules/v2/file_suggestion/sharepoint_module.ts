@@ -8,7 +8,7 @@ import './file_suggestion.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {I18nMixinLit} from '../../../i18n_setup.js';
+import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
@@ -84,7 +84,15 @@ export class SharepointModuleElement extends SharepointModuleElementBase {
   }
 
   protected onDisableButtonClick_() {
-    // TODO(crbug.com/372729916): Handle disable button click.
+    const disableEvent = new CustomEvent('disable-module', {
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesSharepointName')),
+      },
+    });
+    this.dispatchEvent(disableEvent);
   }
 
   protected onDismissButtonClick_() {

@@ -8612,9 +8612,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DRIVE_NAME" desc="Name of the Drive module in sentence case shown in various UIs.">
         Google Drive
       </message>
-      <!-- TODO(crbug.com/372724129): Finalize and translate IDS_NTP_MODULES_SHAREPOINT_SENTENCE. -->
-      <message name="IDS_NTP_MODULES_SHAREPOINT_SENTENCE" translateable="false" desc="Name of the SharePoint module in sentence case shown in various UIs.">
-        SharePoint files
+      <!-- TODO(crbug.com/372724129): Finalize and translate IDS_NTP_MODULES_SHAREPOINT_NAME. -->
+      <message name="IDS_NTP_MODULES_SHAREPOINT_NAME" translateable="false" desc="Name of the SharePoint module in sentence case shown in various UIs.">
+        SharePoint
       </message>
       <message name="IDS_NTP_MODULES_DRIVE_FILES_SENTENCE" desc="Name of the files in the Drive module in sentence case shown in various UIs.">
         Files

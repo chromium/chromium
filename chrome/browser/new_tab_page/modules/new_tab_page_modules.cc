@@ -47,7 +47,7 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
   // `IsDriveModuleEnabledForProfile()` that limits who can see the sharepoint
   // module.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)) {
-    details.emplace_back("sharepoint", IDS_NTP_MODULES_SHAREPOINT_SENTENCE);
+    details.emplace_back("sharepoint", IDS_NTP_MODULES_SHAREPOINT_NAME);
   }
 
   if (base::FeatureList::IsEnabled(
