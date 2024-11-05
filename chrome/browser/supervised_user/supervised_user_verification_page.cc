@@ -48,6 +48,22 @@ bool SupervisedUserVerificationPage::ShouldShowPage(
   }
 }
 
+// static
+FamilyLinkUserReauthenticationInterstitialState
+SupervisedUserVerificationPage::GetReauthenticationInterstitialStateFromStatus(
+    Status status) {
+  switch (status) {
+    case Status::SHOWN:
+      return FamilyLinkUserReauthenticationInterstitialState::kInterstitialShown;
+    case Status::REAUTH_STARTED:
+      return FamilyLinkUserReauthenticationInterstitialState::kReauthenticationStarted;
+    case Status::REAUTH_COMPLETED:
+      return FamilyLinkUserReauthenticationInterstitialState::kReauthenticationCompleted;
+    default:
+      NOTREACHED();
+  }
+}
+
 SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     content::WebContents* web_contents,
     const std::string& email_to_reauth,
