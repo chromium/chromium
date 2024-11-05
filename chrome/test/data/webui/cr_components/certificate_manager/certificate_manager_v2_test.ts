@@ -13,10 +13,9 @@ import type {CertificatePasswordDialogElement} from 'chrome://resources/cr_compo
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
 // <if expr="is_win or is_macosx">
 import {isVisible} from 'chrome://webui-test/test_util.js';
-// </if>
-
 // </if>
 
 import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';

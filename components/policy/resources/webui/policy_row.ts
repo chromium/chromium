@@ -4,7 +4,7 @@
 
 import 'chrome://resources/js/action_link.js';
 import './policy_conflict.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

@@ -7,7 +7,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import 'chrome://resources/js/action_link.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';

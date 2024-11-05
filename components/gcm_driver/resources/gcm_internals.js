@@ -6,7 +6,7 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';

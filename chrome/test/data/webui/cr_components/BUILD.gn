@@ -39,8 +39,15 @@ build_webui_tests("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_path_mappings =
-      [ "chrome://new-tab-page/*|" +
+  ts_path_mappings = [
+    "chrome://customize-chrome-side-panel.top-chrome/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+    "chrome://new-tab-page/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+    "chrome://new-tab-page/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
-                    target_gen_dir) ]
+                    target_gen_dir),
+  ]
 }

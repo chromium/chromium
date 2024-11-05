@@ -4,6 +4,7 @@
 
 import './app_management_shared_style.css.js';
 import './toggle_row.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';

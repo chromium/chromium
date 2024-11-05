@@ -4,7 +4,6 @@
 
 /** @fileoverview Test suite for AppManagementFileHandlingItem. */
 import 'chrome://app-settings/file_handling_item.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
 import type {FileHandlingItemElement} from 'chrome://app-settings/file_handling_item.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';

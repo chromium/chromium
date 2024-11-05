@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // <if expr="_google_chrome">
-import './data_sharing_sdk.js';
+import '/data_sharing_sdk.js';
 // </if>
 // <if expr="not _google_chrome">
 import './dummy_data_sharing_sdk.js';

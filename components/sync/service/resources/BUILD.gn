@@ -41,6 +41,10 @@ build_webui("build") {
     "//tools/typescript/definitions/pending.d.ts",
     "jstemplate.d.ts",
   ]
+  ts_path_mappings =
+      [ "chrome://resources/js/jstemplate_compiled.js|" +
+        rebase_path("//third_party/jstemplate/jstemplate_compiled.js",
+                    target_gen_dir) ]
 
   webui_context_type = "trusted"
   grit_output_dir = "$root_gen_dir/components"
