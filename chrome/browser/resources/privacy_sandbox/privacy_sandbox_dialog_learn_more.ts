@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './privacy_sandbox_dialog_learn_more.html.js';
@@ -37,6 +38,10 @@ export class PrivacySandboxDialogLearnMoreElement extends PolymerElement {
     };
   }
 
+  // If true, the Ads API UX Enhancement should be shown.
+  private shouldShowV2_: boolean =
+      loadTimeData.getBoolean('isPrivacySandboxAdsApiUxEnhancementsEnabled');
+
   private onExpandedChanged_(expanded: boolean) {
     if (expanded) {
       this.scrollIntoCollapseElement_(this.$.collapse);
@@ -53,6 +58,10 @@ export class PrivacySandboxDialogLearnMoreElement extends PolymerElement {
       // visible.
       element.scrollIntoView({block: 'start', behavior: 'smooth'});
     }, duration * 0.7);
+  }
+
+  private getDivClass_() {
+    return this.shouldShowV2_ ? 'styled-div' : '';
   }
 }
 

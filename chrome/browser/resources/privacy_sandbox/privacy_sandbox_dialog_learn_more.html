@@ -5,9 +5,19 @@ iron-collapse {
 .cr-secondary-text{
   margin-left: 4px;
 }
+
+.styled-div {
+  border-bottom: 1px solid #D3E3FD; /* Light mode border */
+}
+
+@media (prefers-color-scheme: dark) {
+  .styled-div {
+    border-bottom: 1px solid #5E5E5E; /* Dark mode border */
+  }
+}
 </style>
 
-<div>
+<div class$="[[getDivClass_(shouldShowV2_)]]">
   <cr-expand-button expanded="{{expanded}}">
     <div class="cr-secondary-text">
       {{title}}
