@@ -364,13 +364,6 @@ BASE_FEATURE(kUnthrottleOnActiveAudioV2,
              "ArcUnthrottleOnActiveAudioV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls ARC USB Storage UI feature.
-// When enabled, chrome://settings and Files.app will ask if the user wants
-// to expose USB storage devices to ARC.
-BASE_FEATURE(kUsbStorageUIFeature,
-             "ArcUsbStorageUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the system/vendor images are mounted without specifying a
 // block size.
 BASE_FEATURE(kUseDefaultBlockSize,

@@ -123,9 +123,7 @@ void StorageHandler::RegisterMessages() {
 }
 
 void StorageHandler::OnJavascriptAllowed() {
-  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature)) {
-    arc_observation_.Observe(arc::ArcSessionManager::Get());
-  }
+  arc_observation_.Observe(arc::ArcSessionManager::Get());
 
   // Start observing mount/unmount events to update the connected device list.
   DiskMountManager::GetInstance()->AddObserver(this);
@@ -145,10 +143,8 @@ void StorageHandler::OnJavascriptDisallowed() {
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature)) {
-    DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
-    arc_observation_.Reset();
-  }
+  DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
+  arc_observation_.Reset();
 
   StopObservingEvents();
 }
