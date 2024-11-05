@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/common:version_header",
+    "//components/performance_manager",
     "//components/prefs",
     "//net",
     "//ui/base:features",

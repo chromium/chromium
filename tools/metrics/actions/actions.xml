@@ -46101,6 +46101,7 @@ should be able to be added at any place in this file.
   <suffix name="HistoryEmbeddings" label="History Embeddings Search"/>
   <suffix name="Passkeys" label="Passkeys"/>
   <suffix name="PdfSearchify" label="PDF Searchify"/>
+  <suffix name="PerformanceInterventionUI" label="Performance Intervention"/>
   <suffix name="SafetyCheck" label="Safety Check"/>
   <suffix name="SaveTabGroups" label="Saved Tab Groups"/>
   <suffix name="SearchBoxSuggestions" label="Search Box Suggestions"/>

@@ -7,6 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "pdf/buildflags.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
@@ -41,6 +42,10 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(
       WhatsNewModule(::features::kToolbarPinning, "corising@google.com",
                      BrowserCommand::kShowCustomizeChromeToolbar));
+
+  registry->RegisterModule(
+      WhatsNewModule(performance_manager::features::kPerformanceInterventionUI,
+                     "agale@google.com"));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
