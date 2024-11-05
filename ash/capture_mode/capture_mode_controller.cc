@@ -1964,6 +1964,15 @@ void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
   }
 }
 
+void CaptureModeController::OnSearchResultClicked() {
+  // End capture mode session when a result link is clicked, as the assumed user
+  // intention is to interact with the newly opened link.
+  if (IsActive() && capture_mode_session_->active_behavior()
+                        ->ShouldEndSessionOnSearchResultClicked()) {
+    Stop();
+  }
+}
+
 void CaptureModeController::OnImageFileSaved(
     scoped_refptr<base::RefCountedMemory> png_bytes,
     const CaptureModeBehavior* behavior,

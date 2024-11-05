@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,12 +71,15 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SearchResultsView) {
 
 // Tests that links are opened in new tabs.
 IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
-  auto widget = CreateWidget();
-  ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
-  auto* contents_view =
-      widget->SetContentsView(delegate->CreateSearchResultsView());
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  VerifyActiveBehavior(BehaviorType::kSunfish);
+
+  // Simulate showing the panel while the session is active.
+  controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL("kTestUrl1"));
+  ASSERT_TRUE(controller->IsActive());
   auto* search_results_view =
-      views::AsViewClass<SearchResultsView>(contents_view);
+      controller->GetSearchResultsPanel()->search_results_view();
 
   // Browser tests start out with 1 browser tab by default.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -113,8 +119,9 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  // Test it opens a new tab.
+  // Test it opens a new tab and ends the session.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(controller->IsActive());
 }
 
 IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SendSearchRequests) {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -44,6 +45,10 @@ content::WebContents* SearchResultsView::OpenURLFromTab(
                                 params.transition);
   new_tab_params.FillNavigateParamsFromOpenURLParams(params);
   OpenURLFromTabInternal(new_tab_params);
+
+  if (auto* controller = CaptureModeController::Get()) {
+    controller->OnSearchResultClicked();
+  }
   return new_tab_params.navigated_or_inserted_contents;
 }
 

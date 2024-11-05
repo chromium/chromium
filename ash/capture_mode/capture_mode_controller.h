@@ -364,6 +364,9 @@ class ASH_EXPORT CaptureModeController
                           const gfx::ImageSkia& image,
                           GURL url);
 
+  // Called by `SearchResultsView` when a search result is opened.
+  void OnSearchResultClicked();
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;
