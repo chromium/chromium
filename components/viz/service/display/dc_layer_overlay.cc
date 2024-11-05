@@ -1297,33 +1297,8 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
   // across all render passes.
   dc_layer.plane_z_order = -1 - overlay_data.promoted_overlays.size();
 
-  // If the video is translucent and uses SrcOver blend mode, we can achieve the
-  // same result as compositing with video on top if we replace video quad with
-  // a solid color quad with DstOut blend mode, and rely on SrcOver blending
-  // of the root surface with video on bottom. Essentially,
-  //
-  // SrcOver_quad(V, B, V_alpha) = SrcOver_premul(DstOut(BLACK, B, V_alpha), V)
-  // where
-  //    V is the video quad
-  //    B is the background
-  //    SrcOver_quad uses opacity of source quad (V_alpha)
-  //    SrcOver_premul uses alpha channel and assumes premultipled alpha
-  //
-  // This also applies to quads with a mask filter for rounded corners.
   bool is_opaque = false;
-
-  if (it->ShouldDrawWithBlending() &&
-      it->shared_quad_state->blend_mode == SkBlendMode::kSrcOver) {
-    render_pass->ReplaceExistingQuadWithSolidColor(it, SkColors::kBlack,
-                                                   SkBlendMode::kDstOut);
-  } else {
-    // When the opacity == 1.0, drawing with transparent will be done without
-    // blending and will have the proper effect of completely clearing the
-    // layer.
-    render_pass->ReplaceExistingQuadWithSolidColor(it, SkColors::kTransparent,
-                                                   SkBlendMode::kSrcOver);
-    is_opaque = true;
-  }
+  render_pass->ReplaceExistingQuadWithHolePunch(it, &is_opaque);
 
   const bool display_rect_unchanged =
       render_pass->output_rect == previous_frame_state.display_rect;

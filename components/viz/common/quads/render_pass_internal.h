@@ -39,6 +39,16 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
                                          SkColor4f color,
                                          SkBlendMode blend_mode);
 
+  // Replaces a quad in `quad_list` with a SolidColorDrawQuad with a transparent
+  // hole. This will either be:
+  // * If `quad` requires blending and uses SkBlendMode::kSrcOver then
+  //   use SkColors::kBlack with SkBlendMode::kDstOut and set
+  //   `*quad_was_opaque` to false.
+  // * SkColors::kTransparent with SkBlendMode::kSrcOver blend and set
+  //   `*quad_was_opaque` to true;
+  void ReplaceExistingQuadWithHolePunch(QuadList::Iterator quad,
+                                        bool* quad_was_opaque = nullptr);
+
   // These are in the space of the render pass' physical pixels.
   gfx::Rect output_rect;
   gfx::Rect damage_rect;
