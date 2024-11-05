@@ -149,6 +149,14 @@ class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
   }
 
   // BrowserContextKeyedServiceFactory implementation.
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override {
+    // Use `WrapUnique()` because `T` constructor is not always public,
+    // so `make_unique` would not work.
+    return base::WrapUnique(BuildServiceInstanceFor(context));
+  }
+
+  // BrowserContextKeyedServiceFactory implementation.
   // These can be effectively overridden with template specializations.
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
