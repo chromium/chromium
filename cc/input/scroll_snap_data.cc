@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "cc/base/features.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -703,66 +702,63 @@ std::optional<SnapSearchResult> SnapContainerData::FindCoveringCandidate(
   gfx::RangeF middle_dodging_range = area_range;
   gfx::RangeF forward_dodging_range = area_range;
 
-  if (base::FeatureList::IsEnabled(
-          features::kScrollSnapCoveringAvoidNestedSnapAreas)) {
-    for (const SnapAreaData& intruder : snap_area_list_) {
-      gfx::RangeF intruder_range =
-          horiz ? gfx::RangeF(intruder.rect.x(), intruder.rect.right())
-                : gfx::RangeF(intruder.rect.y(), intruder.rect.bottom());
+  for (const SnapAreaData& intruder : snap_area_list_) {
+    gfx::RangeF intruder_range =
+        horiz ? gfx::RangeF(intruder.rect.x(), intruder.rect.right())
+              : gfx::RangeF(intruder.rect.y(), intruder.rect.bottom());
 
-      if (intruder_range.start() > area_range.end() ||
-          intruder_range.end() < area_range.start()) {
-        // Does not intrude.
-        continue;
-      }
-      if (intruder_range.start() <= area_range.start() &&
-          intruder_range.end() >= area_range.end()) {
-        // Superset of `area` also not treated as an intruder.
-        continue;
-      }
+    if (intruder_range.start() > area_range.end() ||
+        intruder_range.end() < area_range.start()) {
+      // Does not intrude.
+      continue;
+    }
+    if (intruder_range.start() <= area_range.start() &&
+        intruder_range.end() >= area_range.end()) {
+      // Superset of `area` also not treated as an intruder.
+      continue;
+    }
 
-      // Try three ways of dodging the intruders.
-      // In full generality this requires an interval tree. But we can simplify
-      // somewhat because we only care about a dodging range that is potentially
-      // closer than an aligned snap position, which each intruder also
-      // produces. For example, given:
-      //      |---A---|     |---preferred snapport---|
-      //             |---B---|
-      // We do not care about the dodging range before the start of A.
+    // Try three ways of dodging the intruders.
+    // In full generality this requires an interval tree. But we can simplify
+    // somewhat because we only care about a dodging range that is potentially
+    // closer than an aligned snap position, which each intruder also
+    // produces. For example, given:
+    //      |---A---|     |---preferred snapport---|
+    //             |---B---|
+    // We do not care about the dodging range before the start of A.
 
-      // backward_dodging_range finds a dodging range that is above any intruder
-      // that intersects the snapport.
-      if (intruder_range.end() < preferred_snapport.start()) {
-        backward_dodging_range.set_start(
-            std::max(backward_dodging_range.start(), intruder_range.end()));
-      } else {
-        backward_dodging_range.set_end(
-            std::min(backward_dodging_range.end(), intruder_range.start()));
-      }
+    // backward_dodging_range finds a dodging range that is above any intruder
+    // that intersects the snapport.
+    if (intruder_range.end() < preferred_snapport.start()) {
+      backward_dodging_range.set_start(
+          std::max(backward_dodging_range.start(), intruder_range.end()));
+    } else {
+      backward_dodging_range.set_end(
+          std::min(backward_dodging_range.end(), intruder_range.start()));
+    }
 
-      // forward_dodging_range finds a dodging range that is below any intruder
-      // that intersects the snapport.
-      if (intruder_range.start() > preferred_snapport.end()) {
-        forward_dodging_range.set_end(
-            std::min(forward_dodging_range.end(), intruder_range.start()));
-      } else {
-        forward_dodging_range.set_start(
-            std::max(forward_dodging_range.start(), intruder_range.end()));
-      }
+    // forward_dodging_range finds a dodging range that is below any intruder
+    // that intersects the snapport.
+    if (intruder_range.start() > preferred_snapport.end()) {
+      forward_dodging_range.set_end(
+          std::min(forward_dodging_range.end(), intruder_range.start()));
+    } else {
+      forward_dodging_range.set_start(
+          std::max(forward_dodging_range.start(), intruder_range.end()));
+    }
 
-      // middle_dodging_range finds a dodging range inside the snapport, if
-      // there are intruders from above and below.
-      if (intruder_range.Contains(preferred_snapport) ||
-          preferred_snapport.Contains(intruder_range)) {
-        middle_dodging_range = gfx::RangeF();
-      } else if (intruder_range.start() <= preferred_snapport.start()) {
-        middle_dodging_range.set_start(
-            std::max(middle_dodging_range.start(), intruder_range.end()));
-      } else {
-        DCHECK(intruder_range.end() >= preferred_snapport.end());
-        middle_dodging_range.set_end(
-            std::min(middle_dodging_range.end(), intruder_range.start()));
-      }
+    // middle_dodging_range finds a dodging range inside the snapport, if there
+    // are intruders from above and below.
+    if (intruder_range.Contains(preferred_snapport) ||
+        preferred_snapport.Contains(intruder_range)) {
+      middle_dodging_range = gfx::RangeF();
+    } else if (intruder_range.start() <= preferred_snapport.start()) {
+      middle_dodging_range.set_start(
+          std::max(middle_dodging_range.start(), intruder_range.end()));
+    } else {
+      DCHECK(intruder_range.end() >= preferred_snapport.end());
+      middle_dodging_range.set_end(
+          std::min(middle_dodging_range.end(), intruder_range.start()));
     }
   }
 

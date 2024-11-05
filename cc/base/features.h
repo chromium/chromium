@@ -19,20 +19,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAnimatedImageResume);
 CC_BASE_EXPORT extern bool IsImpulseScrollAnimationEnabled();
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 
-// When enabled, scrolling within a covering snap area avoids or snaps to inner
-// nested areas, avoiding resting on positions which do not snap the inner area.
-// E.g. when scrolling within snap area A, it will stop either before/after
-// snap area B or with B snapped.
-//   --------
-//  | A      |
-//  |        |
-//  |  ---   |
-//  | | B |  |
-//  |  ---   |
-//  |        |
-//   --------
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapCoveringAvoidNestedSnapAreas);
-
 // Sets raster tree priority to NEW_CONTENT_TAKES_PRIORITY when performing a
 // unified scroll with main-thread repaint reasons.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
