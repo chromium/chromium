@@ -100,6 +100,9 @@ class ASH_EXPORT CaptureModeController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Returns whether the Sunfish feature is allowed and enabled by the user.
+  static bool IsSunfishAllowedAndEnabled();
+
   CaptureModeCameraController* camera_controller() {
     return camera_controller_.get();
   }

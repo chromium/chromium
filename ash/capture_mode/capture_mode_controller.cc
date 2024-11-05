@@ -678,6 +678,16 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
 }
 
+// static
+bool CaptureModeController::IsSunfishAllowedAndEnabled() {
+  return features::CanStartSunfishSession() &&
+         // When `AppListControllerImpl` is initialised and indirectly calls
+         // this function, the active user session has not been started yet.
+         // Gracefully handle this case.
+         Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
+         GetActiveUserPrefService()->GetBoolean(kSunfishEnabledPrefName);
+}
+
 SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
   return search_results_panel_widget_
              ? views::AsViewClass<SearchResultsPanel>(

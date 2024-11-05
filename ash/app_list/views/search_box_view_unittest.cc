@@ -47,6 +47,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -1362,6 +1363,13 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
   ASSERT_EQ(IsSunfishEnabled(), !!sunfish_button);
 
   if (IsSunfishEnabled()) {
+    ASSERT_TRUE(sunfish_button->GetVisible());
+    // `SetShowSunfishButton` should control the visibility of the button.
+    GetSearchModel()->search_box()->SetShowSunfishButton(false);
+    EXPECT_FALSE(sunfish_button->GetVisible());
+    GetSearchModel()->search_box()->SetShowSunfishButton(true);
+    EXPECT_TRUE(sunfish_button->GetVisible());
+
     // The app list will contain the sunfish launcher button next to the search
     // field.
     LeftClickOn(sunfish_button);

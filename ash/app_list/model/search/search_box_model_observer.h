@@ -19,6 +19,9 @@ class APP_LIST_MODEL_EXPORT SearchBoxModelObserver
   // Invoked when whether to show Assistant is changed.
   virtual void ShowAssistantChanged() = 0;
 
+  // Invoked when whether to show Sunfish is changed.
+  virtual void ShowSunfishChanged() = 0;
+
  protected:
   ~SearchBoxModelObserver() override = default;
 };

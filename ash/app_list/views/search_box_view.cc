@@ -564,7 +564,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     std::u16string sunfish_button_label(u"Select to search");
     sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
     sunfish_button->SetTooltipText(sunfish_button_label);
-    SetShowSunfishButton(true);
+    SetShowSunfishButton(search_box_model->show_sunfish_button());
   }
 
   views::ImageButton* assistant_button =
@@ -1702,6 +1702,13 @@ void SearchBoxView::ShowAssistantChanged() {
                              ->search_model()
                              ->search_box()
                              ->show_assistant_button());
+}
+
+void SearchBoxView::ShowSunfishChanged() {
+  SetShowSunfishButton(AppListModelProvider::Get()
+                           ->search_model()
+                           ->search_box()
+                           ->show_sunfish_button());
 }
 
 void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {

@@ -26,6 +26,9 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   void SetShowAssistantButton(bool show);
   bool show_assistant_button() const { return show_assistant_button_; }
 
+  void SetShowSunfishButton(bool show);
+  bool show_sunfish_button() const { return show_sunfish_button_; }
+
   void SetWouldTriggerIph(bool would_trigger_iph);
   bool would_trigger_iph() const { return would_trigger_iph_; }
 
@@ -38,6 +41,7 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
  private:
   bool search_engine_is_google_ = false;
   bool show_assistant_button_ = false;
+  bool show_sunfish_button_ = false;
 
   // `would_trigger_iph_` indicates whether we should START showing an IPH or
   // not. This can be set to false while an IPH is being shown and the IPH
