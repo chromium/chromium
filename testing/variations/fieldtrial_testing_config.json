@@ -5079,6 +5079,33 @@
             ]
         }
     ],
+    "ChromnientIPH": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSocialMedia",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:lens_overlay_iph_triggered;comparator:any;window:90;storage:365",
+                        "event_used": "name:lens_overlay_used;comparator:==0;window:90;storage:365",
+                        "session_rate": "==0",
+                        "x_url_allow_filters": "%5B%22facebook%2Ecom%22%2C%22web%2Ewhatsapp%2Ecom%22%2C%22instagram%2Ecom%22%2C%22x%2Ecom%22%2C%22twitter%2Ecom%22%2C%22reddit%2Ecom%22%2C%22tiktok%2Ecom%22%2C%22pinterest%2Ecom%22%2C%22quora%2Ecom%22%2C%22youtube%2Ecom%2Fshorts%22%5D",
+                        "x_url_block_filters": "%5B%22facebook%2Ecom%2Flogin%22%2C%22x%2Ecom%2Flogin%22%2C%22instagram%2Ecom%2Faccounts%2Flogin%22%2C%22reddit%2Ecom%2Flogin%22%2C%22tiktok%2Ecom%2Flogin%22%2C%22pinterest%2Ecom%2Flogin%22%2C%22amazon%2Ecom%2Fap%2Fsignin%22%5D",
+                        "x_wait_time": "7s"
+                    },
+                    "enable_features": [
+                        "IPH_LensOverlay"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientImageContextMenuActions": [
         {
             "platforms": [
