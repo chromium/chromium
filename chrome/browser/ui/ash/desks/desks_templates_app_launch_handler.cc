@@ -119,6 +119,7 @@ void DesksTemplatesAppLaunchHandler::LaunchCoralGroup(
 
   LaunchBrowsers();
   LaunchApps();
+  MaybeLaunchArcApps();
 }
 
 void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(
