@@ -1,11 +1,12 @@
 <style>
   :host {
-    background-color: var(--color-new-tab-page-background-override);
-    border: solid var(--color-new-tab-page-border) 1px;
+    background-color: var(--color-new-tab-page-module-background);
+    border: none;
     border-radius: var(--ntp-module-border-radius);
     box-sizing: border-box;
     display: block;
-    overflow: hidden;
+    height: fit-content;
+    overflow: visible;
     position: relative;
   }
 
@@ -19,20 +20,10 @@
   #moduleElement {
     align-items: center;
     background: var(--color-new-tab-page-module-background);
+    border-radius: var(--ntp-module-border-radius);
     display: flex;
     height: 100%;
     justify-content: center;
-  }
-
-  :host([modules-redesigned-enabled_]) {
-    background-color: var(--color-new-tab-page-module-background);
-    border: none;
-    height: fit-content;
-    overflow: visible;
-  }
-
-  :host([modules-redesigned-enabled_]) #moduleElement {
-    border-radius: var(--ntp-module-border-radius);
   }
 </style>
 <div id="impressionProbe"></div>

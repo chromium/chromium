@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {GoogleCalendarPageHandlerRemote} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
-import type {DismissModuleEvent, GoogleCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {DismissModuleInstanceEvent, GoogleCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {googleCalendarDescriptor, GoogleCalendarProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -71,7 +71,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
      ).dispatchEvent(new Event('dismiss-button-click'));
 
     // Assert.
-    const event: DismissModuleEvent = await whenFired;
+    const event: DismissModuleInstanceEvent = await whenFired;
     assertEquals(dismissToast, event.detail.message);
     assertTrue(!!event.detail.restoreCallback);
     assertEquals(1, handler.getCallCount('dismissModule'));

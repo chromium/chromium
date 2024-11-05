@@ -20,8 +20,6 @@ import {driveModuleV2Descriptor} from './v2/file_suggestion/drive_module.js';
 import {sharepointModuleDescriptor} from './v2/file_suggestion/sharepoint_module.js';
 import {mostRelevantTabResumptionDescriptor} from './v2/most_relevant_tab_resumption/module.js';
 
-const modulesRedesignedEnabled: boolean =
-    loadTimeData.getBoolean('modulesRedesignedEnabled');
 export const descriptors: ModuleDescriptor[] = [];
 descriptors.push(driveModuleV2Descriptor);
 descriptors.push(sharepointModuleDescriptor);
@@ -30,9 +28,7 @@ descriptors.push(googleCalendarDescriptor);
 descriptors.push(outlookCalendarDescriptor);
 
 // <if expr="not is_official_build">
-if (modulesRedesignedEnabled) {
-  descriptors.push(dummyV2Descriptor);
-}
+descriptors.push(dummyV2Descriptor);
 // </if>
 
 export async function counterfactualLoad() {

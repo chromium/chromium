@@ -17,7 +17,6 @@ modules_test_files =
       "modules/module_header_test.ts",
       "modules/module_registry_test.ts",
       "modules/module_wrapper_test.ts",
-      "modules/modules_test.ts",
       "modules/v2/modules_test.ts",
       "modules/v2/module_header_test.ts",
     ] + calendar_v2_test_files + file_suggestion_v2_test_files +

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DriveSuggestionHandlerRemote} from 'chrome://new-tab-page/drive_suggestion.mojom-webui.js';
-import type {DisableModuleEvent, DismissModuleEvent, DriveModuleV2Element} from 'chrome://new-tab-page/lazy_load.js';
+import type {DisableModuleEvent, DismissModuleInstanceEvent, DriveModuleV2Element} from 'chrome://new-tab-page/lazy_load.js';
 import {driveModuleV2Descriptor, FileProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -187,7 +187,7 @@ suite('DriveModuleV2', () => {
     dismissButton.click();
 
     // Assert.
-    const event: DismissModuleEvent = await whenFired;
+    const event: DismissModuleInstanceEvent = await whenFired;
     assertEquals('Files hidden', event.detail.message);
     assertTrue(!!event.detail.restoreCallback);
     assertEquals(1, handler.getCallCount('dismissModule'));

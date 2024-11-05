@@ -73,12 +73,6 @@ export class ModuleHeaderElement extends PolymerElement {
       disableText: String,
       moreActionsText: String,
 
-      modulesRedesignedEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
-        reflectToAttribute: true,
-      },
-
       /** True if the header should display an icon. */
       showIcon_: {
         type: Boolean,
@@ -102,7 +96,6 @@ export class ModuleHeaderElement extends PolymerElement {
   dismissText: string;
   disableText: string;
   moreActionsText: string;
-  private modulesRedesignedEnabled_: boolean;
 
   private computeIconStyle_() {
     return `-webkit-mask-image: url(${this.iconSrc});`;

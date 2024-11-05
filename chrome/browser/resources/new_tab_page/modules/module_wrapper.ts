@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_utils.js';
@@ -42,16 +41,10 @@ export class ModuleWrapperElement extends PolymerElement {
         observer: 'onModuleChange_',
         type: Object,
       },
-      modulesRedesignedEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
-        reflectToAttribute: true,
-      },
     };
   }
 
   module: ModuleInstance;
-  private modulesRedesignedEnabled_: boolean;
 
   private onModuleChange_(
       _newValue: ModuleInstance, oldValue?: ModuleInstance) {
@@ -62,11 +55,8 @@ export class ModuleWrapperElement extends PolymerElement {
     // if a user opens a link in a new tab.
     this.$.moduleElement.addEventListener('usage', (e: Event) => {
       e.stopPropagation();
-
-      if (this.modulesRedesignedEnabled_) {
-        NewTabPageProxy.getInstance().handler.onModuleUsed(
-            this.module.descriptor.id);
-      }
+      NewTabPageProxy.getInstance().handler.onModuleUsed(
+          this.module.descriptor.id);
 
       recordOccurence('NewTabPage.Modules.Usage');
       recordOccurence(`NewTabPage.Modules.Usage.${this.module.descriptor.id}`);
@@ -76,11 +66,8 @@ export class ModuleWrapperElement extends PolymerElement {
     // button clicks.
     this.$.moduleElement.addEventListener('menu-button-click', (e: Event) => {
       e.stopPropagation();
-
-      if (this.modulesRedesignedEnabled_) {
-        NewTabPageProxy.getInstance().handler.onModuleUsed(
-            this.module.descriptor.id);
-      }
+      NewTabPageProxy.getInstance().handler.onModuleUsed(
+          this.module.descriptor.id);
     }, {once: true});
 
     // Log module's id when module's info button is clicked.

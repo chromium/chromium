@@ -79,10 +79,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleHeaderV2) {
   RunTest("new_tab_page/modules/v2/module_header_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Modules) {
-  RunTest("new_tab_page/modules/modules_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleDescriptor) {
   RunTest("new_tab_page/modules/module_descriptor_test.js", "mocha.run()");
 }
@@ -181,11 +177,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Promo) {
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Clicks) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest Clicks')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Modules) {
-  RunTest("new_tab_page/app_test.js",
-          "runMochaSuite('NewTabPageAppTest Modules')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, V2Modules) {

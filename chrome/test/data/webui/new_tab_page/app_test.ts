@@ -735,61 +735,10 @@ suite('NewTabPageAppTest', () => {
     });
   }
 
-  suite('Modules', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesEnabled: true,
-        modulesRedesignedEnabled: false,
-        wideModulesEnabled: false,
-      });
-    });
-
-    [560, 672, 768].forEach(pageWidth => {
-      test(
-          `module width defaults to search box width rule applied for width: ${
-              pageWidth}px`,
-          () => {
-            document.body.setAttribute('style', `width:${pageWidth}px`);
-            const middleSlotPromo = $$(app, 'ntp-middle-slot-promo')!;
-            middleSlotPromo.dispatchEvent(
-                new Event('ntp-middle-slot-promo-loaded'));
-            const modules = $$(app, 'ntp-modules')!;
-            modules.dispatchEvent(new Event('modules-loaded'));
-            const searchBoxWidth =
-                window.getComputedStyle(app)
-                    .getPropertyValue('--ntp-search-box-width')
-                    .trim();
-
-            assertStyle(modules, 'width', `${searchBoxWidth}`);
-          });
-    });
-
-    test('modules max width media rule applied', async () => {
-      const sampleMaxWidthPx = 768;
-      loadTimeData.overrideValues({wideModulesEnabled: true});
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      document.body.setAttribute('style', `width:${sampleMaxWidthPx}px`);
-      app = document.createElement('ntp-app');
-      document.body.appendChild(app);
-      await microtasksFinished();
-
-      const middleSlotPromo = $$(app, 'ntp-middle-slot-promo')!;
-      middleSlotPromo.dispatchEvent(new Event('ntp-middle-slot-promo-loaded'));
-      const modules = $$(app, 'ntp-modules')!;
-      modules.dispatchEvent(new Event('modules-loaded'));
-      await microtasksFinished();
-
-      assertStyle(modules, 'width', `${sampleMaxWidthPx}px`);
-    });
-
-    modulesCommonTests('ntp-modules');
-  });
-
   suite('V2Modules', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
-        modulesRedesignedEnabled: true,
       });
     });
 
@@ -797,10 +746,6 @@ suite('NewTabPageAppTest', () => {
       const modules = $$(app, 'ntp-modules-v2')!;
       assertTrue(!!modules);
       assertStyle(modules, 'display', 'none');
-    });
-
-    test('modules redesigned attribute applied', async () => {
-      assertTrue(app.hasAttribute('modules-redesigned-enabled_'));
     });
 
     test(`clicking records click`, () => {
@@ -819,7 +764,6 @@ suite('NewTabPageAppTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
-        modulesRedesignedEnabled: true,
       });
     });
 
