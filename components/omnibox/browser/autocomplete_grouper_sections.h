@@ -282,7 +282,9 @@ class IOSLensMultimodalZpsSection : public ZpsSection {
 //  - up to 10 personalized suggestions.
 class IOSIpadNTPZpsSection : public ZpsSection {
  public:
-  explicit IOSIpadNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit IOSIpadNTPZpsSection(size_t trends_count,
+                                size_t total_count,
+                                omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPad ZPS limits and grouping for the SRP.
@@ -294,7 +296,8 @@ class IOSIpadNTPZpsSection : public ZpsSection {
 //  - up to 10 personalized suggestions.
 class IOSIpadSRPZpsSection : public ZpsSectionWithMVTiles {
  public:
-  explicit IOSIpadSRPZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit IOSIpadSRPZpsSection(size_t total_count,
+                                omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPad ZPS limits and grouping for the Web.
@@ -306,7 +309,8 @@ class IOSIpadSRPZpsSection : public ZpsSectionWithMVTiles {
 //  - up to 10 personalized suggestions.
 class IOSIpadWebZpsSection : public ZpsSectionWithMVTiles {
  public:
-  explicit IOSIpadWebZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit IOSIpadWebZpsSection(size_t total_count,
+                                omnibox::GroupConfigMap& group_configs);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_GROUPER_SECTIONS_H_

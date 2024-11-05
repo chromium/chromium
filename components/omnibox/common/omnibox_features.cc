@@ -357,6 +357,9 @@ BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);
 // Enables deletion of old shortcuts on profile load.
 BASE_FEATURE(kOmniboxDeleteOldShortcuts, "OmniboxDeleteOldShortcuts", DISABLED);
 
+// When enabled, it increases ipad's zps matches limit on web,srp and ntp.
+BASE_FEATURE(kIpadZeroSuggestMatches, "IpadZeroSuggestMatches", DISABLED);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enable the Elegant Text Height attribute on the UrlBar.
 // This attribute increases line height by up to 60% to accommodate certain

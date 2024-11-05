@@ -103,7 +103,7 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
   // defines a hard limit on the number of ZPS suggestions on iPad, so if an
   // experiment defines MaxZeroSuggestMatches to 15, it would be 15 on iPhone
   // and 10 on iPad.
-  constexpr size_t kMaxZeroSuggestMatchesOnIPad = 10;
+  size_t kMaxZeroSuggestMatchesOnIPad = OmniboxFieldTrial::kIpadZPSLimit.Get();
 #endif
   static_assert(kMaxAutocompletePositionValue > kDefaultMaxAutocompleteMatches,
                 "kMaxAutocompletePositionValue must be larger than the largest "
@@ -461,15 +461,19 @@ void AutocompleteResult::SortAndCull(
       }
     } else if constexpr (is_ios) {
       if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+        size_t num_trending_queries =
+            OmniboxFieldTrial::kIpadAdditionalTrendingQueries.Get();
+        size_t total_count = OmniboxFieldTrial::kIpadZPSLimit.Get();
+
         if (omnibox::IsNTPPage(page_classification)) {
-          sections.push_back(
-              std::make_unique<IOSIpadNTPZpsSection>(suggestion_groups_map_));
+          sections.push_back(std::make_unique<IOSIpadNTPZpsSection>(
+              num_trending_queries, total_count, suggestion_groups_map_));
         } else if (omnibox::IsSearchResultsPage(page_classification)) {
-          sections.push_back(
-              std::make_unique<IOSIpadSRPZpsSection>(suggestion_groups_map_));
+          sections.push_back(std::make_unique<IOSIpadSRPZpsSection>(
+              total_count, suggestion_groups_map_));
         } else {
-          sections.push_back(
-              std::make_unique<IOSIpadWebZpsSection>(suggestion_groups_map_));
+          sections.push_back(std::make_unique<IOSIpadWebZpsSection>(
+              total_count, suggestion_groups_map_));
         }
       } else {
         if (omnibox::IsLensSearchbox(page_classification)) {

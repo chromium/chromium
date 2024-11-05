@@ -148,6 +148,9 @@ BASE_DECLARE_FEATURE(kOmniboxDeleteOldShortcuts);
 // Enterprise search aggregators features.
 BASE_DECLARE_FEATURE(kEnableSearchAggregatorPolicy);
 
+// Ipad ZPS matches limit increase.
+BASE_DECLARE_FEATURE(kIpadZeroSuggestMatches);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

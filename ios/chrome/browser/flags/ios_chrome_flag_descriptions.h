@@ -826,6 +826,10 @@ extern const char kPrivacyGuideIosDescription[];
 extern const char kProvisionalNotificationAlertName[];
 extern const char kProvisionalNotificationAlertDescription[];
 
+// Title and description for the flag to enable ipad zps matches limit increase.
+extern const char kIpadZpsSuggestionMatchesLimitName[];
+extern const char kIpadZpsSuggestionMatchesLimitDescription[];
+
 // Title and description for the flag to enable PriceNotifications IPH to be
 // alwayws be displayed.
 extern const char kIPHPriceNotificationsWhileBrowsingName[];

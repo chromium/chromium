@@ -440,17 +440,22 @@ IOSLensMultimodalZpsSection::IOSLensMultimodalZpsSection(
                  group_configs) {}
 
 IOSIpadNTPZpsSection::IOSIpadNTPZpsSection(
+    size_t trends_count,
+    size_t total_count,
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(10,
+    : ZpsSection(total_count,
                  {
                      {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                     {total_count - trends_count - 1,
+                      omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                     {trends_count, omnibox::GROUP_TRENDS},
                  },
                  group_configs) {}
 
 IOSIpadSRPZpsSection::IOSIpadSRPZpsSection(
+    size_t total_count,
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSectionWithMVTiles(10,
+    : ZpsSectionWithMVTiles(total_count,
                             {
                                 // Verbatim match:
                                 {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
@@ -463,8 +468,9 @@ IOSIpadSRPZpsSection::IOSIpadSRPZpsSection(
                             group_configs) {}
 
 IOSIpadWebZpsSection::IOSIpadWebZpsSection(
+    size_t total_count,
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSectionWithMVTiles(10,
+    : ZpsSectionWithMVTiles(total_count,
                             {
                                 // Verbatim match:
                                 {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},

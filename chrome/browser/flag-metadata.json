@@ -6433,6 +6433,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-ipad-zps-limit",
+    "owners": [ "ameurhosni@google.com", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
     "owners": [ "mahmadi@chromium.org", "ender@google.com", "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130
