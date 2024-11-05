@@ -30,10 +30,6 @@ class WebAppNavigationCapturingBrowserTestBase : public WebAppBrowserTestBase {
       const WebAppNavigationCapturingBrowserTestBase&) = delete;
   ~WebAppNavigationCapturingBrowserTestBase() override = 0;
 
-  webapps::AppId InstallApp(
-      const GURL& url,
-      blink::mojom::ManifestLaunchHandler_ClientMode client_mode);
-
   Browser* CallWindowOpenExpectNewBrowser(content::WebContents* contents,
                                           const GURL& url,
                                           bool with_opener);

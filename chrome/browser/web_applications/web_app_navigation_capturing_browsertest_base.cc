@@ -44,21 +44,6 @@ WebAppNavigationCapturingBrowserTestBase::
 WebAppNavigationCapturingBrowserTestBase::
     ~WebAppNavigationCapturingBrowserTestBase() = default;
 
-webapps::AppId WebAppNavigationCapturingBrowserTestBase::InstallApp(
-    const GURL& url,
-    ManifestLaunchHandler_ClientMode client_mode) {
-  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(url);
-  web_app_info->launch_handler = blink::Manifest::LaunchHandler(client_mode);
-  web_app_info->scope = url.GetWithoutFilename();
-  web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  const webapps::AppId app_id =
-      test::InstallWebApp(profile(), std::move(web_app_info));
-  apps::AppReadinessWaiter(profile(), app_id).Await();
-  LOG(ERROR) << "Installed app " << app_id;
-  return app_id;
-}
-
 Browser*
 WebAppNavigationCapturingBrowserTestBase::CallWindowOpenExpectNewBrowser(
     content::WebContents* contents,

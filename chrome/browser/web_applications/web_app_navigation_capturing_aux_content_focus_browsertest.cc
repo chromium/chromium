@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_navigation_capturing_browsertest_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/common/web_app_id.h"
@@ -29,7 +31,10 @@ class WebAppNavigationCapturingAuxContentFocusBrowserTest
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingAuxContentFocusBrowserTest,
                        NoFocusForAuxContent) {
-  webapps::AppId app_id = InstallApp(GetAppUrl(), GetParam());
+  webapps::AppId app_id = test::InstallWebApp(
+      profile(), WebAppInstallInfo::CreateForTesting(
+                     GetAppUrl(), blink::mojom::DisplayMode::kMinimalUi,
+                     mojom::UserDisplayMode::kStandalone, GetParam()));
 
   // Launch the app in an auxiliary browsing context (opener = true).
   content::WebContents* intermediary_tab =
