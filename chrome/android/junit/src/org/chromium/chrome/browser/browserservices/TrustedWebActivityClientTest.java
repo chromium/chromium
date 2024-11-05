@@ -29,7 +29,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -53,7 +52,6 @@ public class TrustedWebActivityClientTest {
     @Mock private TrustedWebActivityClientWrappers.ConnectionPool mConnectionPool;
     @Mock private TrustedWebActivityClientWrappers.Connection mService;
     @Mock private NotificationBuilderBase mNotificationBuilder;
-    @Mock private TrustedWebActivityUmaRecorder mRecorder;
     @Mock private NotificationUmaTracker mNotificationUmaTracker;
 
     @Mock private Bitmap mServiceSmallIconBitmap;
@@ -89,7 +87,7 @@ public class TrustedWebActivityClientTest {
         delegateApps.add(createDummyToken());
         when(mPermissionManager.getAllDelegateApps(any())).thenReturn(delegateApps);
 
-        mClient = new TrustedWebActivityClient(mConnectionPool, mPermissionManager, mRecorder);
+        mClient = new TrustedWebActivityClient(mConnectionPool, mPermissionManager);
     }
 
     @Test

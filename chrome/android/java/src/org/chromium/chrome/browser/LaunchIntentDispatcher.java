@@ -308,7 +308,8 @@ public class LaunchIntentDispatcher {
             // - Multiple clients hosting CCTs,
             // - Multiwindow mode.
             Class<? extends Activity> handlerClass =
-                    getSessionDataHolder().getActiveHandlerClassInCurrentTask(intent, context);
+                    SessionDataHolder.getInstance()
+                            .getActiveHandlerClassInCurrentTask(intent, context);
             if (handlerClass != null) {
                 newIntent.setClassName(context, handlerClass.getName());
                 newIntent.addFlags(
@@ -359,10 +360,6 @@ public class LaunchIntentDispatcher {
         return newIntent;
     }
 
-    private static SessionDataHolder getSessionDataHolder() {
-        return ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
-    }
-
     /**
      * Handles launching a {@link CustomTabActivity}, which will sit on top of a client's activity
      * in the same task. Returns whether an Activity was launched (or brought to the foreground).
@@ -381,7 +378,7 @@ public class LaunchIntentDispatcher {
             // The old way of delivering intents relies on calling the activity directly via a
             // static reference. It doesn't allow using CLEAR_TOP, and also doesn't work when an
             // intent brings the task to foreground. The condition above is a temporary safety net.
-            boolean handled = getSessionDataHolder().handleIntent(mIntent);
+            boolean handled = SessionDataHolder.getInstance().handleIntent(mIntent);
             if (handled) return true;
         }
 
@@ -438,7 +435,8 @@ public class LaunchIntentDispatcher {
         }
         if (!ProfileManager.isInitialized()) return false;
         if (clearTopIntentsForCustomTabsEnabled(mIntent)
-                && getSessionDataHolder().getActiveHandlerClassInCurrentTask(mIntent, mActivity)
+                && SessionDataHolder.getInstance()
+                                .getActiveHandlerClassInCurrentTask(mIntent, mActivity)
                         != null) {
             return false;
         }

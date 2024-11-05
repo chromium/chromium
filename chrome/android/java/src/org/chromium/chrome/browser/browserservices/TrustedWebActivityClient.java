@@ -83,7 +83,6 @@ public class TrustedWebActivityClient {
 
     private final ConnectionPool mConnectionPool;
     private final InstalledWebappPermissionManager mPermissionManager;
-    private final TrustedWebActivityUmaRecorder mRecorder;
 
     /** Interface for callbacks to get a permission setting from a TWA app. */
     public interface PermissionCallback {
@@ -105,19 +104,15 @@ public class TrustedWebActivityClient {
     @Inject
     public TrustedWebActivityClient(
             TrustedWebActivityServiceConnectionPool connectionPool,
-            InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityUmaRecorder recorder) {
-        this(TrustedWebActivityClientWrappers.wrap(connectionPool), permissionManager, recorder);
+            InstalledWebappPermissionManager permissionManager) {
+        this(TrustedWebActivityClientWrappers.wrap(connectionPool), permissionManager);
     }
 
     /** Creates a TrustedWebActivityClient for tests. */
     public TrustedWebActivityClient(
-            ConnectionPool connectionPool,
-            InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityUmaRecorder recorder) {
+            ConnectionPool connectionPool, InstalledWebappPermissionManager permissionManager) {
         mConnectionPool = connectionPool;
         mPermissionManager = permissionManager;
-        mRecorder = recorder;
     }
 
     /**
@@ -163,7 +158,7 @@ public class TrustedWebActivityClient {
                                 commandResult == null
                                         ? false
                                         : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
-                        mRecorder.recordExtraCommandSuccess(
+                        TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
                                 COMMAND_CHECK_NOTIFICATION_PERMISSION, commandSuccess);
                         // The command might fail if the app is too old to support it. To handle
                         // that case, fall back to the old flow.
@@ -232,7 +227,7 @@ public class TrustedWebActivityClient {
                                         ? commandResult.getParcelable(
                                                 KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
                                         : null;
-                        mRecorder.recordExtraCommandSuccess(
+                        TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
                                 COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
                                 commandSuccess && pendingIntent != null);
                         if (!commandSuccess || pendingIntent == null) {
@@ -499,11 +494,12 @@ public class TrustedWebActivityClient {
     }
 
     private void recordFallback(@DelegatedNotificationSmallIconFallback int fallback) {
-        mRecorder.recordDelegatedNotificationSmallIconFallback(fallback);
+        TrustedWebActivityUmaRecorder.recordDelegatedNotificationSmallIconFallback(fallback);
     }
 
     /**
      * Cancels a notification through a Trusted Web Activity client.
+     *
      * @param scope The scope of the Service Worker that triggered the notification.
      * @param platformTag The tag of the notification to cancel.
      * @param platformId The id of the notification to cancel.

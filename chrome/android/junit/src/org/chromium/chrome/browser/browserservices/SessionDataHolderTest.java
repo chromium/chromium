@@ -52,11 +52,10 @@ public class SessionDataHolderTest {
     @Mock Activity mActivityInTask2;
     @Captor ArgumentCaptor<Callback<CustomTabsSessionToken>> mDisconnectCallbackCaptor;
 
-    private SessionDataHolder mHolder;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        CustomTabsConnection.setInstanceForTesting(mConnection);
         mIntent1 = createIntentWithSessionId(1);
         mSession1 = CustomTabsSessionToken.getSessionTokenFromIntent(mIntent1);
         mIntent2 = createIntentWithSessionId(2);
@@ -68,7 +67,7 @@ public class SessionDataHolderTest {
         when(mActivityInTask1.getTaskId()).thenReturn(TASK_ID_1);
         when(mActivityInTask2.getTaskId()).thenReturn(TASK_ID_2);
         doNothing().when(mConnection).setDisconnectCallback(mDisconnectCallbackCaptor.capture());
-        mHolder = new SessionDataHolder(() -> mConnection);
+        SessionDataHolder.setInstanceForTesting(new SessionDataHolder());
     }
 
     private Intent createIntentWithSessionId(int id) {
@@ -80,20 +79,20 @@ public class SessionDataHolderTest {
     @Test
     public void returnsActiveHandler_IfSessionsMatch() {
         startActivity1();
-        assertEquals(mHandler1, mHolder.getActiveHandler(mSession1));
+        assertEquals(mHandler1, SessionDataHolder.getInstance().getActiveHandler(mSession1));
     }
 
     @Test
     public void doesntReturnActiveHandler_IfSessionsDontMatch() {
         startActivity2();
-        assertNull(mHolder.getActiveHandler(mSession1));
+        assertNull(SessionDataHolder.getInstance().getActiveHandler(mSession1));
     }
 
     @Test
     public void doesntReturnActiveHandler_IfItWasRemoved() {
         startActivity1();
         stopActivity1();
-        assertNull(mHolder.getActiveHandler(mSession1));
+        assertNull(SessionDataHolder.getInstance().getActiveHandler(mSession1));
     }
 
     @Test
@@ -104,7 +103,7 @@ public class SessionDataHolderTest {
         // backgrounded one.
         startActivity2();
         stopActivity1();
-        assertEquals(mHandler2, mHolder.getActiveHandler(mSession2));
+        assertEquals(mHandler2, SessionDataHolder.getInstance().getActiveHandler(mSession2));
     }
 
     @Test
@@ -112,7 +111,8 @@ public class SessionDataHolderTest {
         when(mHandler1.getTaskId()).thenReturn(TASK_ID_1);
         startActivity1();
         Class<? extends Activity> activity =
-                mHolder.getActiveHandlerClassInCurrentTask(mIntent1, mActivityInTask1);
+                SessionDataHolder.getInstance()
+                        .getActiveHandlerClassInCurrentTask(mIntent1, mActivityInTask1);
         assertEquals(CustomTabActivity.class, activity);
     }
 
@@ -124,7 +124,8 @@ public class SessionDataHolderTest {
 
         // New intent arrives, bringing task 1 to foreground, but onStart was not yet called.
         Class<? extends Activity> activity =
-                mHolder.getActiveHandlerClassInCurrentTask(mIntent1, mActivityInTask1);
+                SessionDataHolder.getInstance()
+                        .getActiveHandlerClassInCurrentTask(mIntent1, mActivityInTask1);
         assertEquals(CustomTabActivity.class, activity);
     }
 
@@ -134,7 +135,8 @@ public class SessionDataHolderTest {
         startActivity1();
 
         Class<? extends Activity> activity =
-                mHolder.getActiveHandlerClassInCurrentTask(mIntent2, mActivityInTask1);
+                SessionDataHolder.getInstance()
+                        .getActiveHandlerClassInCurrentTask(mIntent2, mActivityInTask1);
         assertNull(activity);
     }
 
@@ -147,7 +149,8 @@ public class SessionDataHolderTest {
         startActivity2();
 
         Class<? extends Activity> activity =
-                mHolder.getActiveHandlerClassInCurrentTask(mIntent2, mActivityInTask1);
+                SessionDataHolder.getInstance()
+                        .getActiveHandlerClassInCurrentTask(mIntent2, mActivityInTask1);
         assertNull(activity);
     }
 
@@ -160,7 +163,8 @@ public class SessionDataHolderTest {
         startActivity2();
 
         Class<? extends Activity> activity =
-                mHolder.getActiveHandlerClassInCurrentTask(mIntent1, mActivityInTask1);
+                SessionDataHolder.getInstance()
+                        .getActiveHandlerClassInCurrentTask(mIntent1, mActivityInTask1);
         assertNull(activity);
     }
 
@@ -170,7 +174,8 @@ public class SessionDataHolderTest {
         startActivity1();
         disconnect(mSession1);
         Class<? extends Activity> activity =
-                mHolder.getActiveHandlerClassInCurrentTask(mIntent1, mActivityInTask1);
+                SessionDataHolder.getInstance()
+                        .getActiveHandlerClassInCurrentTask(mIntent1, mActivityInTask1);
         assertNull(activity);
     }
 
@@ -182,14 +187,14 @@ public class SessionDataHolderTest {
     }
 
     private void startActivity1() {
-        mHolder.setActiveHandler(mHandler1);
+        SessionDataHolder.getInstance().setActiveHandler(mHandler1);
     }
 
     private void startActivity2() {
-        mHolder.setActiveHandler(mHandler2);
+        SessionDataHolder.getInstance().setActiveHandler(mHandler2);
     }
 
     private void stopActivity1() {
-        mHolder.removeActiveHandler(mHandler1);
+        SessionDataHolder.getInstance().removeActiveHandler(mHandler1);
     }
 }

@@ -31,7 +31,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
@@ -48,7 +47,6 @@ public class TrustedWebActivityDisclosureControllerTest {
 
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public CurrentPageVerifier mCurrentPageVerifier;
-    @Mock public TrustedWebActivityUmaRecorder mRecorder;
     @Mock public ClientPackageNameProvider mClientPackageNameProvider;
     @Mock public BaseCustomTabActivity mActivity;
 
@@ -69,7 +67,7 @@ public class TrustedWebActivityDisclosureControllerTest {
 
         mController =
                 new TrustedWebActivityDisclosureController(
-                        mModel, mLifecycleDispatcher, mCurrentPageVerifier, mRecorder, mActivity);
+                        mModel, mLifecycleDispatcher, mCurrentPageVerifier, mActivity);
     }
 
     @Test

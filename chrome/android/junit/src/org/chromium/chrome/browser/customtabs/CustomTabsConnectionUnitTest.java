@@ -52,7 +52,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
+import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -104,17 +104,13 @@ public class CustomTabsConnectionUnitTest {
         mConnection.setIsDynamicFeaturesEnabled(true);
         when(mSession.getCallback()).thenReturn(mCallback);
         when(mSessionHandler.getSession()).thenReturn(mSession);
-        ChromeApplicationImpl.getComponent()
-                .resolveSessionDataHolder()
-                .setActiveHandler(mSessionHandler);
+        SessionDataHolder.getInstance().setActiveHandler(mSessionHandler);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
     }
 
     @After
     public void tearDown() {
-        ChromeApplicationImpl.getComponent()
-                .resolveSessionDataHolder()
-                .removeActiveHandler(mSessionHandler);
+        SessionDataHolder.getInstance().removeActiveHandler(mSessionHandler);
     }
 
     @Test

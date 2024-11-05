@@ -19,16 +19,12 @@ import javax.inject.Inject;
 public class ClearDataDialogResultRecorder {
     private final Lazy<SharedPreferencesManager> mPrefsManager;
     private final ChromeBrowserInitializer mBrowserInitializer;
-    private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
     public ClearDataDialogResultRecorder(
-            Lazy<SharedPreferencesManager> manager,
-            ChromeBrowserInitializer browserInitializer,
-            TrustedWebActivityUmaRecorder umaRecorder) {
+            Lazy<SharedPreferencesManager> manager, ChromeBrowserInitializer browserInitializer) {
         mPrefsManager = manager;
         mBrowserInitializer = browserInitializer;
-        mUmaRecorder = umaRecorder;
     }
 
     /**
@@ -39,8 +35,8 @@ public class ClearDataDialogResultRecorder {
     public void handleDialogResult(boolean accepted, boolean triggeredByUninstall) {
         if (accepted || mBrowserInitializer.isFullBrowserInitialized()) {
             // If accepted, native is going to be loaded for the settings.
-            mBrowserInitializer.runNowOrAfterFullBrowserStarted(
-                    () -> mUmaRecorder.recordClearDataDialogAction(accepted, triggeredByUninstall));
+            TrustedWebActivityUmaRecorder.recordClearDataDialogAction(
+                    accepted, triggeredByUninstall);
         } else {
             // Avoid loading native just for the sake of recording. Save the info and record
             // on next Chrome launch.
@@ -62,7 +58,8 @@ public class ClearDataDialogResultRecorder {
     private void recordDismissals(String prefKey, boolean triggeredByUninstall) {
         int times = mPrefsManager.get().readInt(prefKey);
         for (int i = 0; i < times; i++) {
-            mUmaRecorder.recordClearDataDialogAction(/* accepted= */ false, triggeredByUninstall);
+            TrustedWebActivityUmaRecorder.recordClearDataDialogAction(
+                    /* accepted= */ false, triggeredByUninstall);
         }
         mPrefsManager.get().removeKey(prefKey);
     }

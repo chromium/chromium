@@ -121,7 +121,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -378,7 +377,8 @@ public class CustomTabActivityTest {
                             });
                 });
 
-        ThreadUtils.runOnUiThreadBlocking(() -> getSessionDataHolder().handleIntent(intent));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> SessionDataHolder.getInstance().handleIntent(intent));
         pageLoadFinishedHelper.waitForCallback(0);
     }
 
@@ -871,7 +871,7 @@ public class CustomTabActivityTest {
                 "CustomTabContentHandler handled intent with wrong session",
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return getSessionDataHolder()
+                            return SessionDataHolder.getInstance()
                                     .handleIntent(
                                             CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                                                     context, mTestPage2));
@@ -887,7 +887,7 @@ public class CustomTabActivityTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             intent.setData(Uri.parse(mTestPage2));
-                            return getSessionDataHolder().handleIntent(intent);
+                            return SessionDataHolder.getInstance().handleIntent(intent);
                         }));
         final Tab tab = getActivity().getActivityTab();
         final CallbackHelper pageLoadFinishedHelper = new CallbackHelper();
@@ -982,7 +982,7 @@ public class CustomTabActivityTest {
         Assert.assertTrue(
                 "CustomTabContentHandler can't handle intent with same session",
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> getSessionDataHolder().handleIntent(intent)));
+                        () -> SessionDataHolder.getInstance().handleIntent(intent)));
         pageLoadFinishedHelper.waitForCallback(0);
     }
 
@@ -1031,7 +1031,7 @@ public class CustomTabActivityTest {
         Assert.assertTrue(
                 "CustomTabContentHandler can't handle intent with same session",
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> getSessionDataHolder().handleIntent(intent)));
+                        () -> SessionDataHolder.getInstance().handleIntent(intent)));
         pageLoadFinishedHelper.waitForCallback(0);
     }
 
@@ -2621,10 +2621,6 @@ public class CustomTabActivityTest {
                 });
         historyObserver.getQueryCallback().waitForCallback(0);
         return historyObserver.getHistoryQueryResults();
-    }
-
-    private SessionDataHolder getSessionDataHolder() {
-        return ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
     }
 
     private void assertLastLaunchedClientAppRecorded(

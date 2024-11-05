@@ -52,7 +52,6 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     private final Lazy<CustomTabBottomBarDelegate> mBottomBarDelegate;
     private final CustomTabIntentHandler mIntentHandler;
     private final CustomTabsConnection mConnection;
-    private final SessionDataHolder mSessionDataHolder;
     private final Activity mActivity;
 
     @Inject
@@ -63,8 +62,7 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
             CustomTabIntentHandler intentHandler,
             CustomTabsConnection connection,
             BaseCustomTabActivity activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            SessionDataHolder sessionDataHolder) {
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mIntentDataProvider = intentDataProvider;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mToolbarCoordinator = toolbarCoordinator;
@@ -72,23 +70,22 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
         mIntentHandler = intentHandler;
         mConnection = connection;
         mActivity = activity;
-        mSessionDataHolder = sessionDataHolder;
         lifecycleDispatcher.register(this);
 
         // The active handler will also get set in onStartWithNative, but since native may take some
         // time to initialize, we eagerly set it here to catch any messages the Custom Tabs Client
         // sends our way before that triggers.
-        mSessionDataHolder.setActiveHandler(this);
+        SessionDataHolder.getInstance().setActiveHandler(this);
     }
 
     @Override
     public void onStartWithNative() {
-        mSessionDataHolder.setActiveHandler(this);
+        SessionDataHolder.getInstance().setActiveHandler(this);
     }
 
     @Override
     public void onStopWithNative() {
-        mSessionDataHolder.removeActiveHandler(this);
+        SessionDataHolder.getInstance().removeActiveHandler(this);
     }
 
     @Override

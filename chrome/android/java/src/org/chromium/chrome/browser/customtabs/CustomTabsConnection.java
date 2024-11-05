@@ -256,7 +256,7 @@ public class CustomTabsConnection {
         super();
         mClientManager = new ClientManager();
         mLogRequests = CommandLine.getInstance().hasSwitch(LOG_SERVICE_REQUESTS);
-        mSessionDataHolder = ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
+        mSessionDataHolder = SessionDataHolder.getInstance();
     }
 
     /**

@@ -6,13 +6,8 @@ package org.chromium.chrome.browser.browserservices;
 
 import static org.mockito.AdditionalAnswers.answerVoid;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -26,6 +21,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -49,33 +45,60 @@ public class ClearDataDialogResultRecorderTest {
 
     @Test
     public void records_WhenAccepted_AfterNativeInit() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "TrustedWebActivity.ClearDataDialogOnUninstallAccepted", true)
+                        .build();
         mRecorder.handleDialogResult(true, true);
         finishNativeInit();
-        verify(mUmaRecorder).recordClearDataDialogAction(true, true);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void records_WhenAccepted_IfNativeAlreadyInited() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "TrustedWebActivity.ClearDataDialogOnUninstallAccepted", true)
+                        .build();
         finishNativeInit();
         mRecorder.handleDialogResult(true, true);
-        verify(mUmaRecorder).recordClearDataDialogAction(true, true);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void records_WhenDismissed_IfNativeAlreadyInited() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "TrustedWebActivity.ClearDataDialogOnUninstallAccepted", false)
+                        .build();
         finishNativeInit();
         mRecorder.handleDialogResult(false, true);
-        verify(mUmaRecorder).recordClearDataDialogAction(false, true);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void defersRecording_WhenDismissed_IfNativeNotAlreadyInited() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("TrustedWebActivity.ClearDataDialogOnUninstallAccepted")
+                        .expectNoRecords("TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted")
+                        .build();
         mRecorder.handleDialogResult(false, true);
-        verify(mUmaRecorder, never()).recordClearDataDialogAction(anyBoolean(), anyBoolean());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void makesDeferredRecordingOfDismissals() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                "TrustedWebActivity.ClearDataDialogOnUninstallAccepted", false, 2)
+                        .expectBooleanRecord(
+                                "TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted", false)
+                        .build();
         mRecorder.handleDialogResult(false, true);
         restartApp();
         mRecorder.handleDialogResult(false, true);
@@ -84,8 +107,7 @@ public class ClearDataDialogResultRecorderTest {
         restartApp();
 
         mRecorder.makeDeferredRecordings();
-        verify(mUmaRecorder, times(2)).recordClearDataDialogAction(false, true);
-        verify(mUmaRecorder).recordClearDataDialogAction(false, false);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -95,9 +117,13 @@ public class ClearDataDialogResultRecorderTest {
         mRecorder.makeDeferredRecordings();
         restartApp();
 
-        clearInvocations(mUmaRecorder);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("TrustedWebActivity.ClearDataDialogOnUninstallAccepted")
+                        .expectNoRecords("TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted")
+                        .build();
         mRecorder.makeDeferredRecordings();
-        verify(mUmaRecorder, never()).recordClearDataDialogAction(anyBoolean(), anyBoolean());
+        histogramWatcher.assertExpected();
     }
 
     private void restartApp() {
@@ -105,9 +131,7 @@ public class ClearDataDialogResultRecorderTest {
         doNothing()
                 .when(mBrowserInitializer)
                 .runNowOrAfterFullBrowserStarted(mTaskOnNativeInitCaptor.capture());
-        mRecorder =
-                new ClearDataDialogResultRecorder(
-                        () -> mPrefsManager, mBrowserInitializer, mUmaRecorder);
+        mRecorder = new ClearDataDialogResultRecorder(() -> mPrefsManager, mBrowserInitializer);
     }
 
     private void finishNativeInit() {

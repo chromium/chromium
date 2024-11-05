@@ -40,17 +40,14 @@ public class TwaSharingController {
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
     private final Verifier mVerifierDelegate;
-    private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
     public TwaSharingController(
             CustomTabActivityNavigationController navigationController,
-            TrustedWebActivityUmaRecorder umaRecorder,
             BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mNavigationController = navigationController;
         mVerifierDelegate = activity.getVerifier();
-        mUmaRecorder = umaRecorder;
     }
 
     /**
@@ -84,7 +81,7 @@ public class TwaSharingController {
                                     if (shareTarget.isShareMethodPost()) {
                                         boolean success = sendPost(shareData, shareTarget);
                                         if (success) {
-                                            mUmaRecorder.recordShareTargetRequest(
+                                            TrustedWebActivityUmaRecorder.recordShareTargetRequest(
                                                     ShareRequestMethod.POST);
                                         }
                                         return success;
@@ -95,7 +92,8 @@ public class TwaSharingController {
                                                     computeStartUrlForGETShareTarget(
                                                             shareData, shareTarget)),
                                             intent);
-                                    mUmaRecorder.recordShareTargetRequest(ShareRequestMethod.GET);
+                                    TrustedWebActivityUmaRecorder.recordShareTargetRequest(
+                                            ShareRequestMethod.GET);
                                     return true;
                                 });
     }

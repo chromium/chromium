@@ -12,33 +12,38 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import dagger.Lazy;
-
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /**
- * Holds the currently active {@link SessionHandler} and redirects relevant intents
- * and calls into it. {@link SessionHandler} is an interface owned by the currently
- * focused activity that has a linkage to a third party client app through a session.
+ * Holds the currently active {@link SessionHandler} and redirects relevant intents and calls into
+ * it. {@link SessionHandler} is an interface owned by the currently focused activity that has a
+ * linkage to a third party client app through a session.
  */
-@Singleton
 public class SessionDataHolder {
-    private final Lazy<CustomTabsConnection> mConnection;
     private final SparseArray<SessionData> mTaskIdToSessionData = new SparseArray<>();
 
     @Nullable private SessionHandler mActiveSessionHandler;
 
     @Nullable private Callback<CustomTabsSessionToken> mSessionDisconnectCallback;
 
-    @Inject
-    public SessionDataHolder(Lazy<CustomTabsConnection> connection) {
-        mConnection = connection;
+    private static SessionDataHolder sInstance = new SessionDataHolder();
+
+    @VisibleForTesting
+    /* package */ SessionDataHolder() {}
+
+    public static SessionDataHolder getInstance() {
+        return sInstance;
+    }
+
+    public static void setInstanceForTesting(SessionDataHolder instance) {
+        var oldValue = sInstance;
+        sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     /** Data associated with a {@link SessionHandler} necessary to pass new intents to it. */
@@ -162,6 +167,6 @@ public class SessionDataHolder {
                         }
                     }
                 };
-        mConnection.get().setDisconnectCallback(mSessionDisconnectCallback);
+        CustomTabsConnection.getInstance().setDisconnectCallback(mSessionDisconnectCallback);
     }
 }

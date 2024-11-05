@@ -42,7 +42,6 @@ public class TrustedWebActivityCoordinator {
             CurrentPageVerifier currentPageVerifier,
             Lazy<TwaSplashController> splashController,
             BrowserServicesIntentDataProvider intentDataProvider,
-            TrustedWebActivityUmaRecorder umaRecorder,
             InstalledWebappRegistrar installedWebappRegistrar,
             BaseCustomTabActivity activity) {
         // We don't need to do anything with the unused_ classes above, we just need to resolve them
@@ -52,15 +51,14 @@ public class TrustedWebActivityCoordinator {
         mInstalledWebappRegistrar = installedWebappRegistrar;
         mClientPackageNameProvider = activity.getClientPackageNameProvider();
 
-        initSplashScreen(splashController, intentDataProvider, umaRecorder);
+        initSplashScreen(splashController, intentDataProvider);
 
         currentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
     }
 
     private void initSplashScreen(
             Lazy<TwaSplashController> splashController,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            TrustedWebActivityUmaRecorder umaRecorder) {
+            BrowserServicesIntentDataProvider intentDataProvider) {
         boolean showSplashScreen =
                 TwaSplashController.intentIsForTwaWithSplashScreen(intentDataProvider.getIntent());
 
@@ -68,7 +66,7 @@ public class TrustedWebActivityCoordinator {
             splashController.get();
         }
 
-        umaRecorder.recordSplashScreenUsage(showSplashScreen);
+        TrustedWebActivityUmaRecorder.recordSplashScreenUsage(showSplashScreen);
     }
 
     private void onVerificationUpdate() {

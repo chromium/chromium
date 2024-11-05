@@ -19,7 +19,6 @@ import javax.inject.Inject;
  * with it.
  */
 public class TrustedWebActivityDisclosureController extends DisclosureController {
-    private final TrustedWebActivityUmaRecorder mRecorder;
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
     @Inject
@@ -27,20 +26,18 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier,
-            TrustedWebActivityUmaRecorder recorder,
             BaseCustomTabActivity activity) {
         super(
                 model,
                 lifecycleDispatcher,
                 currentPageVerifier,
                 activity.getClientPackageNameProvider().get());
-        mRecorder = recorder;
         mClientPackageNameProvider = activity.getClientPackageNameProvider();
     }
 
     @Override
     public void onDisclosureAccepted() {
-        mRecorder.recordDisclosureAccepted();
+        TrustedWebActivityUmaRecorder.recordDisclosureAccepted();
         BrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
         super.onDisclosureAccepted();
@@ -48,7 +45,7 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
 
     @Override
     public void onDisclosureShown() {
-        mRecorder.recordDisclosureShown();
+        TrustedWebActivityUmaRecorder.recordDisclosureShown();
         BrowserServicesStore.setUserSeenTwaDisclosureForPackage(mClientPackageNameProvider.get());
         super.onDisclosureShown();
     }

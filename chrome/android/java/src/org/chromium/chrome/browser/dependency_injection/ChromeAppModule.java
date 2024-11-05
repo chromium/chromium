@@ -17,7 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -67,16 +66,6 @@ public class ChromeAppModule {
     @Provides
     public SiteChannelsManager providesSiteChannelsManager() {
         return SiteChannelsManager.getInstance();
-    }
-
-    @Provides
-    public TrustedWebActivityUmaRecorder.DeferredTaskHandler provideTwaUmaRecorderTaskHandler() {
-        return new TrustedWebActivityUmaRecorder.DeferredTaskHandler() {
-            @Override
-            public void doWhenNativeLoaded(Runnable runnable) {
-                provideChromeBrowserInitializer().runNowOrAfterFullBrowserStarted(runnable);
-            }
-        };
     }
 
     @Provides
