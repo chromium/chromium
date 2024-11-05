@@ -10,6 +10,7 @@
 #import "base/path_service.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -105,6 +106,7 @@ class OmniboxTextFieldIOSTest : public PlatformTest {
   }
 
   OmniboxTextFieldIOS* textfield_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 // TODO:(crbug.com/1156541): Re-enable this test on devices.
