@@ -90,7 +90,7 @@ public class ChromeCachedFlags {
                 ModalDialogFeatureMap.sCachedFlags);
         cacheAdditionalNativeFlags();
 
-        List<CachedFieldTrialParameter<?>> fieldTrialsToCache =
+        List<CachedFieldTrialParameter<?>> fieldTrialParamsToCache =
                 List.of(
                         AuthTabVerifier.VERIFICATION_TIMEOUT_MS,
                         AuxiliarySearchProvider.USE_LARGE_FAVICON,
@@ -155,9 +155,9 @@ public class ChromeCachedFlags {
                         WebappLauncherActivity.MIN_SHELL_APK_VERSION);
 
         tryToCatchMissingParameters(
-                fieldTrialsToCache, OmniboxFeatures.getFieldTrialParamsToCache());
+                fieldTrialParamsToCache, OmniboxFeatures.getFieldTrialParamsToCache());
         CachedFlagUtils.cacheFieldTrialParameters(
-                fieldTrialsToCache, OmniboxFeatures.getFieldTrialParamsToCache());
+                fieldTrialParamsToCache, OmniboxFeatures.getFieldTrialParamsToCache());
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
