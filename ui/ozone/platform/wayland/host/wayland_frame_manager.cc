@@ -202,7 +202,8 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
   // in surface configuration being done, i.e: xdg_surface set_window_geometry +
   // ack_configure requests being issued.
   const wl::WaylandOverlayConfig& config = frame->root_config;
-  if (!frame->buffer_lost && !!config.buffer_id) {
+  if (should_ack_swap_without_commit_ ||
+      (!frame->buffer_lost && !!config.buffer_id)) {
     if (!ValidateRect(config.bounds_rect)) {
       fatal_error_message_ = kBoundsRectNanOrInf;
     } else {
@@ -262,6 +263,17 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
         data->set_display_trace_id(swap_trace_id),
             data->set_backend_frame_id(frame_id);
       });
+
+  if (should_ack_swap_without_commit_) {
+    SetFakeFeedback(frame.get());
+    submitted_frames_.push_back(std::move(frame));
+
+    VerifyNumberOfSubmittedFrames();
+
+    MaybeProcessSubmittedFrames();
+
+    return;
+  }
 
   auto* root_surface = frame->root_surface.get();
   auto& root_config = frame->root_config;
@@ -910,6 +922,12 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
   UpdatePresentationFlushTimer();
 }
 
+void WaylandFrameManager::SetFakeFeedback(WaylandFrame* frame) {
+  DCHECK(!frame->feedback.has_value() || frame->feedback->failed());
+  frame->feedback = frame->feedback.value_or(gfx::PresentationFeedback(
+      base::TimeTicks::Now(), base::TimeDelta(), GetPresentationKindFlags(0)));
+}
+
 void WaylandFrameManager::ProcessOldSubmittedFrame(WaylandFrame* frame) {
   DCHECK(!submitted_frames_.empty());
   DCHECK(!frame->submission_acked);
@@ -927,10 +945,7 @@ void WaylandFrameManager::ProcessOldSubmittedFrame(WaylandFrame* frame) {
   // If presentation feedback is not supported, use a fake feedback. This
   // literally means there are no presentation feedback callbacks created.
   if (!connection_->presentation()) {
-    DCHECK(!frame->feedback.has_value() || frame->feedback->failed());
-    frame->feedback = frame->feedback.value_or(
-        gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(),
-                                  GetPresentationKindFlags(0)));
+    SetFakeFeedback(frame);
   }
 }
 
@@ -1013,20 +1028,59 @@ void WaylandFrameManager::Hide() {
 
 void WaylandFrameManager::SetVideoCapture() {
   ++video_capture_count_;
-  VLOG(1) << __func__ << " new capture count=" << video_capture_count_;
-  EvaluateShouldSkipFrameCallbacks();
+  OnVideoCaptureUpdate();
 }
 
 void WaylandFrameManager::ReleaseVideoCapture() {
   DCHECK_GT(video_capture_count_, 0);
   --video_capture_count_;
+  OnVideoCaptureUpdate();
+}
+
+void WaylandFrameManager::OnVideoCaptureUpdate() {
   VLOG(1) << __func__ << " new capture count=" << video_capture_count_;
-  EvaluateShouldSkipFrameCallbacks();
+  EvaluateShouldAckSwapWithoutCommit();
+  if (!should_ack_swap_without_commit_) {
+    // If we're not already ACK-ing swaps immediately, see if we should fallback
+    // to not using frame callbacks when window is inactive during tab capture.
+    EvaluateShouldSkipFrameCallbacks();
+  }
 }
 
 void WaylandFrameManager::OnWindowActivationChanged() {
   VLOG(1) << __func__ << " is_active=" << window_->IsActive();
   EvaluateShouldSkipFrameCallbacks();
+}
+
+void WaylandFrameManager::OnWindowSuspensionChanged() {
+  VLOG(1) << __func__ << " is_suspended=" << window_->IsSuspended();
+  EvaluateShouldAckSwapWithoutCommit();
+}
+
+void WaylandFrameManager::EvaluateShouldAckSwapWithoutCommit() {
+  bool prev_should_ack_swap_without_commit = should_ack_swap_without_commit_;
+  should_ack_swap_without_commit_ =
+      video_capture_count_ > 0 && window_->IsSuspended();
+  if (!prev_should_ack_swap_without_commit && should_ack_swap_without_commit_) {
+    // Clear existing frame callback.
+    if (!submitted_frames_.empty()) {
+      auto& last_frame = submitted_frames_.back();
+      if (last_frame->wl_frame_callback) {
+        last_frame->wl_frame_callback.reset();
+      }
+      last_frame->submitted_buffers.clear();
+      if (!last_frame->feedback.has_value() || last_frame->feedback->failed()) {
+        SetFakeFeedback(last_frame.get());
+      }
+    }
+
+    MaybeProcessSubmittedFrames();
+
+    // Now we need to ensure pending frames are processed again.
+    // It should be safe to do so as after this point frame callbacks will not
+    // be used.
+    MaybeProcessPendingFrame();
+  }
 }
 
 void WaylandFrameManager::EvaluateShouldSkipFrameCallbacks() {

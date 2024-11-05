@@ -1089,6 +1089,10 @@ bool WaylandWindow::IsActive() const {
   return false;
 }
 
+bool WaylandWindow::IsSuspended() const {
+  return false;
+}
+
 WaylandBubble* WaylandWindow::AsWaylandBubble() {
   return nullptr;
 }

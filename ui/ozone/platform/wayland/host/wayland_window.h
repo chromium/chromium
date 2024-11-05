@@ -387,6 +387,7 @@ class WaylandWindow : public PlatformWindow,
   // both platform activation in wayland server's perspective as toplevel, and
   // activation status of delegate()->OnActivationChanged() as bubble.
   virtual bool IsActive() const;
+  virtual bool IsSuspended() const;
 
   // WaylandWindow can be any type of object - WaylandBubble,
   // WaylandToplevelWindow, WaylandPopup. The following methods cast itself to

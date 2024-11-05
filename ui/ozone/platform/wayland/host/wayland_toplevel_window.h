@@ -93,6 +93,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool OnInitialize(PlatformWindowInitProperties properties,
                     PlatformWindowDelegate::State* state) override;
   bool IsActive() const override;
+  bool IsSuspended() const override;
   void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
   bool IsScreenCoordinatesEnabled() const override;
   bool SupportsConfigureMinimizedState() const override;
@@ -268,6 +269,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 #endif
 
   bool is_active_ = false;
+  bool is_suspended_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // The flag that indicates the last requested immersive fullscreen status from

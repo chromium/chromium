@@ -637,6 +637,8 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   // Update state before notifying delegate.
   const bool did_active_change = is_active_ != window_states.is_activated;
   is_active_ = window_states.is_activated;
+  bool prev_suspended = is_suspended_;
+  is_suspended_ = window_states.is_suspended;
 
 #if BUILDFLAG(IS_LINUX)
   // The tiled state affects the window geometry, so apply it here.
@@ -701,6 +703,12 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
     } else {
       delegate()->OnActivationChanged(is_active_);
     }
+  }
+  if (prev_suspended != is_suspended_) {
+    frame_manager()->OnWindowSuspensionChanged();
+    OcclusionStateChanged(is_suspended_
+                              ? PlatformWindowOcclusionState::kOccluded
+                              : PlatformWindowOcclusionState::kUnknown);
   }
 }
 
@@ -778,6 +786,10 @@ bool WaylandToplevelWindow::OnInitialize(
 
 bool WaylandToplevelWindow::IsActive() const {
   return is_active_;
+}
+
+bool WaylandToplevelWindow::IsSuspended() const {
+  return is_suspended_;
 }
 
 bool WaylandToplevelWindow::IsSurfaceConfigured() {
