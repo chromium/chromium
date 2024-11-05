@@ -5,7 +5,6 @@
 #include "content/browser/preloading/anchor_element_interaction_host_impl.h"
 
 #include "content/browser/preloading/preloading.h"
-#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_worker_context.h"
@@ -164,15 +163,10 @@ void AnchorElementInteractionHostImpl::OnViewportHeuristicTriggered(
         "blink::features::kPreloadingViewportHeuristics being enabled");
     return;
   }
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(&render_frame_host());
-  auto* preloading_data =
-      PreloadingDataImpl::GetOrCreateForWebContents(web_contents);
-  ukm::SourceId triggering_page_ukm_source_id =
-      render_frame_host().GetPageUkmSourceId();
-  preloading_data->AddPreloadingPrediction(
-      preloading_predictor::kViewportHeuristic, PreloadingConfidence(100),
-      PreloadingData::GetSameURLMatcher(url), triggering_page_ukm_source_id);
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
+  preloading_decider->OnViewportHeuristicTriggered(url);
 }
 
 }  // namespace content

@@ -1293,8 +1293,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // Note: To work correctly, this also needs kNavigationPredictor enabled with
 // "random_anchor_sampling_period" set to 1, and
 // kNavigationPredictorNewViewportFeatures.
-// Note: The prediction will _not_ be preloaded and is currently only logged
-// for metrics purposes.
+// Note: The prediction will only be preloaded if the "enact_candidates" param
+// is set to true (false by default), otherwise it is only logged for metrics
+// purposes.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingViewportHeuristics);
 
 // Enables the same-origin main frame navigation in a prerendered page.

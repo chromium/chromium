@@ -109,6 +109,12 @@ class PreloadingDecider::BehaviorConfig {
         "pointer_hover_eagerness", "moderate"};
     pointer_hover_eagerness_ =
         EagernessSetFromFeatureParam(kPointerHoverEagerness.Get());
+
+    static const base::FeatureParam<std::string> kViewportHeuristicEagerness{
+        &blink::features::kPreloadingViewportHeuristics,
+        "viewport_heuristic_eagerness", "moderate"};
+    viewport_heuristic_eagerness_ =
+        EagernessSetFromFeatureParam(kViewportHeuristicEagerness.Get());
   }
 
   EagernessSet EagernessSetForPredictor(
@@ -117,6 +123,8 @@ class PreloadingDecider::BehaviorConfig {
       return pointer_down_eagerness_;
     } else if (predictor == preloading_predictor::kUrlPointerHoverOnAnchor) {
       return pointer_hover_eagerness_;
+    } else if (predictor == preloading_predictor::kViewportHeuristic) {
+      return viewport_heuristic_eagerness_;
     } else if (predictor ==
                preloading_predictor::kPreloadingHeuristicsMLModel) {
       return ml_model_eagerness_;
@@ -132,6 +140,8 @@ class PreloadingDecider::BehaviorConfig {
     if (predictor == preloading_predictor::kUrlPointerDownOnAnchor) {
       return kNoThreshold;
     } else if (predictor == preloading_predictor::kUrlPointerHoverOnAnchor) {
+      return kNoThreshold;
+    } else if (predictor == preloading_predictor::kViewportHeuristic) {
       return kNoThreshold;
     } else if (predictor ==
                preloading_predictor::kPreloadingHeuristicsMLModel) {
@@ -159,6 +169,7 @@ class PreloadingDecider::BehaviorConfig {
 
   EagernessSet pointer_down_eagerness_;
   EagernessSet pointer_hover_eagerness_;
+  EagernessSet viewport_heuristic_eagerness_;
   const EagernessSet ml_model_eagerness_;
   const bool ml_model_enacts_candidates_ = false;
   const PreloadingConfidence ml_model_prefetch_moderate_threshold_{
@@ -263,6 +274,24 @@ void PreloadingDecider::OnPointerHover(
   constexpr bool fallback_to_preconnect = false;
   MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
                       PreloadingConfidence{100}, fallback_to_preconnect);
+}
+
+void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kPreloadingViewportHeuristics));
+  static const base::FeatureParam<bool> kShouldEnactCandidates{
+      &blink::features::kPreloadingViewportHeuristics, "enact_candidates",
+      false};
+  const bool should_enact_candidates = kShouldEnactCandidates.Get();
+  if (!should_enact_candidates) {
+    AddPreloadingPrediction(url, preloading_predictor::kViewportHeuristic,
+                            PreloadingConfidence(100));
+    return;
+  }
+
+  MaybeEnactCandidate(url, preloading_predictor::kViewportHeuristic,
+                      PreloadingConfidence{100},
+                      /*fallback_to_preconnect=*/false);
 }
 
 void PreloadingDecider::MaybeEnactCandidate(
