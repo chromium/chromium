@@ -1042,26 +1042,24 @@ TEST_F(ScannerTest, CreatesScannerSession) {
 // Tests that action buttons are created when a Scanner response includes
 // suggested actions.
 TEST_F(ScannerTest, CreatesScannerActionButtons) {
-  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>,
-                         manta::ScannerProvider::ScannerProtoResponseCallback>
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
       fetch_actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
               FetchActionsForImage)
-      .WillOnce(InvokeFuture(fetch_actions_future));
+      .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
   auto* capture_mode_controller = CaptureModeController::Get();
   capture_mode_controller->StartSunfishSession();
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
 
-  auto [_, callback] = fetch_actions_future.Take();
   auto output = std::make_unique<manta::proto::ScannerOutput>();
   manta::proto::ScannerObject& objects = *output->add_objects();
   objects.add_actions()->mutable_new_event()->set_title("Event 1");
   objects.add_actions()->mutable_new_event()->set_title("Event 2");
-  std::move(callback).Run(std::move(output), manta::MantaStatus());
+  fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
 
   const CaptureModeSessionTestApi session_test_api(
       capture_mode_controller->capture_mode_session());
@@ -1393,17 +1391,15 @@ TEST_F(ScannerTest, ActionButtonsDoNotEndSessionOnActionFailure) {
 TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
   auto* controller = CaptureModeController::Get();
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  base::test::TestFuture<const SkBitmap&, OnTextDetectionComplete>
-      detect_text_future;
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   EXPECT_CALL(*test_delegate, DetectTextInImage)
-      .WillOnce(InvokeFuture(detect_text_future));
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  auto [_, callback] = detect_text_future.Take();
-  std::move(callback).Run("detected text");
+  detect_text_future.Take().Run("detected text");
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
@@ -1433,17 +1429,15 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
 TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
   auto* controller = CaptureModeController::Get();
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  base::test::TestFuture<const SkBitmap&, OnTextDetectionComplete>
-      detect_text_future;
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   EXPECT_CALL(*test_delegate, DetectTextInImage)
-      .WillOnce(InvokeFuture(detect_text_future));
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  auto [_, callback] = detect_text_future.Take();
-  std::move(callback).Run("");
+  detect_text_future.Take().Run("");
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
@@ -1458,16 +1452,15 @@ TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
 TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
   auto* controller = CaptureModeController::Get();
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  base::test::TestFuture<const SkBitmap&, OnTextDetectionComplete>
-      detect_text_future;
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   EXPECT_CALL(*test_delegate, DetectTextInImage)
-      .WillOnce(InvokeFuture(detect_text_future));
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 50),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  auto [_, callback] = detect_text_future.Take();
+  OnTextDetectionComplete callback = detect_text_future.Take();
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 50, 50),
                           /*release_mouse=*/true, /*verify_region=*/true);
   std::move(callback).Run("detected text");
