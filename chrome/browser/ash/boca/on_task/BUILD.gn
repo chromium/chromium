@@ -101,6 +101,7 @@ source_set("browser_tests") {
 
   deps = [
     ":on_task",
+    "//ash/webui/boca_ui",
     "//base/test:test_support",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/test:test_support",

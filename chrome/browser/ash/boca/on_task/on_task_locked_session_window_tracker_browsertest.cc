@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
@@ -37,10 +38,13 @@ using ::boca::LockedNavigationOptions;
 using ::testing::IsNull;
 using ::testing::NotNull;
 
+namespace ash::boca {
 namespace {
 
 constexpr char kTabUrl1[] = "https://example.com";
 constexpr char kTabUrl2[] = "https://company.org";
+constexpr char kChromeBocaAppQueryUrl[] =
+    "chrome-untrusted://boca-app/q?queryForm";
 
 class OnTaskLockedSessionWindowTrackerBrowserTest
     : public InProcessBrowserTest {
@@ -174,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
-                       BlockChromeUrlTypes) {
+                       BlockChromeUrlTypesExceptBocaAppURL) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -208,6 +212,29 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
   EXPECT_FALSE(url_obs.last_navigation_succeeded());
+
+  // Boca App chrome url is allowed.
+  const GURL boca_chrome_url = GURL(kChromeBocaAppUntrustedIndexURL);
+  content::TestNavigationObserver boca_url_obs(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, boca_chrome_url));
+  boca_url_obs.Wait();
+  EXPECT_EQ(boca_chrome_url, boca_app_browser->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetLastCommittedURL());
+  EXPECT_TRUE(boca_url_obs.last_navigation_succeeded());
+
+  // Boca App chrome url with query is allowed.
+  const GURL boca_with_query_chrome_url = GURL(kChromeBocaAppQueryUrl);
+  content::TestNavigationObserver boca_query_url_obs(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser,
+                                           boca_with_query_chrome_url));
+  boca_query_url_obs.Wait();
+  EXPECT_EQ(boca_with_query_chrome_url, boca_app_browser->tab_strip_model()
+                                            ->GetActiveWebContents()
+                                            ->GetLastCommittedURL());
+  EXPECT_TRUE(boca_query_url_obs.last_navigation_succeeded());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
@@ -345,3 +372,4 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
 }
 
 }  // namespace
+}  // namespace ash::boca

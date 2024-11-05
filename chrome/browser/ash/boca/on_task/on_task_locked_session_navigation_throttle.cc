@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/shell.h"
+#include "ash/webui/boca_ui/url_constants.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "ui/base/page_transition_types.h"
@@ -153,13 +155,16 @@ bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
 
 bool OnTaskLockedSessionNavigationThrottle::
     ShouldBlockSensitiveUrlNavigation() {
-  // Block download urls, files, urls via post request, blob urls, chrome urls,
-  // and other local schemes.
+  // Block download urls, files, urls via post request, blob urls, non-boca app
+  // chrome urls, and other local schemes.
   const GURL& url = navigation_handle()->GetURL();
+  bool is_boca_app_host_url =
+      (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+       url.host() == boca::kChromeBocaAppHost);
   return (navigation_handle()->IsDownload() ||
           (navigation_handle()->GetRequestMethod() !=
            net::HttpRequestHeaders::kGetMethod) ||
-          !url.SchemeIsHTTPOrHTTPS());
+          (!url.SchemeIsHTTPOrHTTPS() && !is_boca_app_host_url));
 }
 
 bool OnTaskLockedSessionNavigationThrottle::IsOutsideOnTaskAppNavigation() {
