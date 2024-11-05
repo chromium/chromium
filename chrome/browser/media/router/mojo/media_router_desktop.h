@@ -291,6 +291,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
     disable_media_route_providers_for_test_ = true;
   }
 
+  friend class CastBrowserControllerTest;
   friend class MediaRouterDesktopTest;
   friend class MediaRouterFactory;
   friend class MediaRouterMojoTest;
@@ -318,6 +319,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
                            SendRouteRequestsToMultipleProviders);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            GetMirroringMediaControllerHost);
+  FRIEND_TEST_ALL_PREFIXES(CastBrowserControllerTest, PausedIcon);
 
   // Represents a query to the MediaRouteProviders for media sinks and caches
   // media sinks returned by MRPs. Holds observers for the query.
