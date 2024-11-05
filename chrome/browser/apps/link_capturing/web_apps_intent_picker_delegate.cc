@@ -150,7 +150,7 @@ void WebAppsIntentPickerDelegate::LoadSingleAppIcon(
     }
     std::move(icon_loaded_callback).Run(mac_app_icon);
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif  // BUILDFLAG(IS_MAC)
   }
 }
@@ -243,7 +243,7 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
 #if BUILDFLAG(IS_MAC)
     LaunchMacApp(url, launch_name);
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif  // BUILDFLAG(IS_MAC)
   }
 }

@@ -653,8 +653,7 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     auto time_limit =
         app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());
     if (!time_limit.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
     }
     PauseData pause_data;
     pause_data.hours = time_limit.value().InHours();

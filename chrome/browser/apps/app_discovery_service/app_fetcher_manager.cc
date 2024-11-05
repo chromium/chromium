@@ -19,16 +19,13 @@ namespace apps {
 
 base::CallbackListSubscription AppFetcher::RegisterForAppUpdates(
     RepeatingResultCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::CallbackListSubscription();
+  NOTREACHED();
 }
 
 void AppFetcher::GetIcon(const std::string& icon_id,
                          int32_t size_hint_in_dip,
                          GetIconCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(gfx::ImageSkia(),
-                          DiscoveryError::kErrorRequestFailed);
+  NOTREACHED();
 }
 
 // static
@@ -67,10 +64,7 @@ base::CallbackListSubscription AppFetcherManager::RegisterForAppUpdates(
     RepeatingResultCallback callback) {
   switch (result_type) {
     case ResultType::kRecommendedArcApps:
-      NOTREACHED_IN_MIGRATION();
-      // |result_type| does not support updates, return an empty
-      // CallbackListSubscription.
-      return base::CallbackListSubscription();
+      NOTREACHED();
     case ResultType::kTestType:
       DCHECK(g_test_fetcher_);
       return g_test_fetcher_->RegisterForAppUpdates(std::move(callback));
@@ -86,15 +80,9 @@ void AppFetcherManager::GetIcon(const std::string& icon_id,
                                 GetIconCallback callback) {
   switch (result_type) {
     case ResultType::kRecommendedArcApps:
-      NOTREACHED_IN_MIGRATION();
-      std::move(callback).Run(gfx::ImageSkia(),
-                              DiscoveryError::kErrorRequestFailed);
-      return;
+      NOTREACHED();
     case ResultType::kTestType:
-      NOTREACHED_IN_MIGRATION();
-      std::move(callback).Run(gfx::ImageSkia(),
-                              DiscoveryError::kErrorRequestFailed);
-      return;
+      NOTREACHED();
     case ResultType::kGameSearchCatalog:
       DCHECK(almanac_fetcher_);
       almanac_fetcher_->GetIcon(icon_id, size_hint_in_dip, std::move(callback));

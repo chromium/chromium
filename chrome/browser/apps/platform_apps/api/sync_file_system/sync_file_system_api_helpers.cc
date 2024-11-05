@@ -24,8 +24,7 @@ sync_file_system::ServiceStatus SyncServiceStateToExtensionEnum(
     case ::sync_file_system::SYNC_SERVICE_DISABLED:
       return sync_file_system::ServiceStatus::kDisabled;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid state: " << state;
-  return sync_file_system::ServiceStatus::kNone;
+  NOTREACHED() << "Invalid state: " << state;
 }
 
 sync_file_system::FileStatus SyncFileStatusToExtensionEnum(
@@ -40,8 +39,7 @@ sync_file_system::FileStatus SyncFileStatusToExtensionEnum(
     case ::sync_file_system::SYNC_FILE_STATUS_UNKNOWN:
       return sync_file_system::FileStatus::kNone;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid status: " << status;
-  return sync_file_system::FileStatus::kNone;
+  NOTREACHED() << "Invalid status: " << status;
 }
 
 sync_file_system::SyncAction SyncActionToExtensionEnum(
@@ -56,8 +54,7 @@ sync_file_system::SyncAction SyncActionToExtensionEnum(
     case ::sync_file_system::SYNC_ACTION_NONE:
       return sync_file_system::SyncAction::kNone;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid action: " << action;
-  return sync_file_system::SyncAction::kNone;
+  NOTREACHED() << "Invalid action: " << action;
 }
 
 sync_file_system::SyncDirection SyncDirectionToExtensionEnum(
@@ -70,8 +67,7 @@ sync_file_system::SyncDirection SyncDirectionToExtensionEnum(
     case ::sync_file_system::SYNC_DIRECTION_NONE:
       return sync_file_system::SyncDirection::kNone;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid direction: " << direction;
-  return sync_file_system::SyncDirection::kNone;
+  NOTREACHED() << "Invalid direction: " << direction;
 }
 
 ::sync_file_system::ConflictResolutionPolicy
@@ -85,9 +81,7 @@ ExtensionEnumToConflictResolutionPolicy(
     case sync_file_system::ConflictResolutionPolicy::kManual:
       return ::sync_file_system::CONFLICT_RESOLUTION_POLICY_MANUAL;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid conflict resolution policy: " << ToString(policy);
-  return ::sync_file_system::CONFLICT_RESOLUTION_POLICY_UNKNOWN;
+  NOTREACHED() << "Invalid conflict resolution policy: " << ToString(policy);
 }
 
 sync_file_system::ConflictResolutionPolicy
@@ -101,11 +95,9 @@ ConflictResolutionPolicyToExtensionEnum(
     case ::sync_file_system::CONFLICT_RESOLUTION_POLICY_MANUAL:
       return sync_file_system::ConflictResolutionPolicy::kManual;
     case ::sync_file_system::CONFLICT_RESOLUTION_POLICY_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return sync_file_system::ConflictResolutionPolicy::kNone;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid conflict resolution policy: " << policy;
-  return sync_file_system::ConflictResolutionPolicy::kNone;
+  NOTREACHED() << "Invalid conflict resolution policy: " << policy;
 }
 
 std::optional<base::Value::Dict> CreateDictionaryValueForFileSystemEntry(
