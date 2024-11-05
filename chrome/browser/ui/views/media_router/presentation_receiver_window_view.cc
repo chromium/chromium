@@ -170,7 +170,6 @@ void PresentationReceiverWindowView::Init() {
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
 
   ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
-  ChromeTranslateClient::CreateForWebContents(web_contents);
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
