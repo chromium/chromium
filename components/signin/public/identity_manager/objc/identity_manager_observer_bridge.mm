@@ -72,6 +72,12 @@ void IdentityManagerObserverBridge::OnExtendedAccountInfoUpdated(
   }
 }
 
+void IdentityManagerObserverBridge::OnAccountsOnDeviceChanged() {
+  if ([delegate_ respondsToSelector:@selector(onAccountsOnDeviceChanged)]) {
+    [delegate_ onAccountsOnDeviceChanged];
+  }
+}
+
 void IdentityManagerObserverBridge::OnIdentityManagerShutdown(
     IdentityManager* identity_manager) {
   if ([delegate_ respondsToSelector:@selector(onIdentityManagerShutdown:)]) {
