@@ -22,8 +22,7 @@ namespace {
 
 VersionToken ComputeVersionToken(
     const sync_pb::CollaborationGroupSpecifics& specifics) {
-  return VersionToken(base::NumberToString(
-      specifics.changed_at_timestamp_millis_since_unix_epoch()));
+  return VersionToken(specifics.consistency_token());
 }
 
 }  // namespace

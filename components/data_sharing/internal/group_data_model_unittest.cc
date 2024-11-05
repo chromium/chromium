@@ -39,6 +39,8 @@ sync_pb::CollaborationGroupSpecifics MakeSpecifics(
   result.set_collaboration_id(id.value());
   result.set_changed_at_timestamp_millis_since_unix_epoch(
       changed_at_millis_since_unix_epoch);
+  result.set_consistency_token(
+      base::NumberToString(changed_at_millis_since_unix_epoch));
   return result;
 }
 

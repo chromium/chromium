@@ -24,8 +24,7 @@
 
 namespace data_sharing {
 
-// TODO(crbug.com/301390275): figure out what precisely this should be
-// (ConsistencyToken, timestamp, etc.).
+// Opaque (at this level) token that represents the version of the GroupData.
 using VersionToken = base::StrongAlias<class VersionTokenTag, std::string>;
 
 // In-memory cache and persistent storage for GroupData.

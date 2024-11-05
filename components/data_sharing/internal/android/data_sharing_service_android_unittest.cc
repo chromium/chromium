@@ -81,8 +81,12 @@ sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
     const GroupId& id) {
   sync_pb::CollaborationGroupSpecifics result;
   result.set_collaboration_id(id.value());
+
+  base::Time now = base::Time::Now();
   result.set_changed_at_timestamp_millis_since_unix_epoch(
-      base::Time::Now().InMillisecondsSinceUnixEpoch());
+      now.InMillisecondsSinceUnixEpoch());
+  result.set_consistency_token(
+      base::NumberToString(now.InMillisecondsSinceUnixEpoch()));
   return result;
 }
 
