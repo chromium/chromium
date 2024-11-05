@@ -164,7 +164,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -311,7 +311,7 @@ public class ToolbarManager
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Integer> mTabStripHeightSupplier;
     private TabStripHeightObserver mTabStripHeightObserver;
-    private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private OneshotSupplierImpl<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier =
             new OneshotSupplierImpl<>();
 
@@ -577,7 +577,7 @@ public class ToolbarManager
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      */
     public ToolbarManager(
             AppCompatActivity activity,
@@ -624,7 +624,7 @@ public class ToolbarManager
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout,
             ObservableSupplier<ReadAloudController> readAloudControllerSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -654,7 +654,7 @@ public class ToolbarManager
         mTabObscuringHandler = tabObscuringHandler;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profileSupplier, mHandler);
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mOverrideUrlLoadingDelegate = new OverrideUrlLoadingDelegateImpl();
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
@@ -716,7 +716,7 @@ public class ToolbarManager
                         ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
                                 ? mActivityLifecycleDispatcher
                                 : null,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateManager);
         // Observe tint changes to update sub-components that rely on the tint (crbug.com/1077684).
         mAppThemeColorProvider.addTintObserver(this);
         mCustomTabThemeColorProvider = new SettableThemeColorProvider(/* context= */ mActivity);
@@ -1338,8 +1338,8 @@ public class ToolbarManager
                     }
                 });
 
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.addObserver(mControlContainer);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(mControlContainer);
         }
 
         mProgressBarConfigProvider =
@@ -1450,7 +1450,7 @@ public class ToolbarManager
                         mControlsVisibilityDelegate,
                         mFullscreenManager,
                         mTabObscuringHandler,
-                        mDesktopWindowStateProvider,
+                        mDesktopWindowStateManager,
                         mTabStripTransitionDelegateSupplier,
                         onLongClickListener,
                         progressBar);
@@ -2014,8 +2014,8 @@ public class ToolbarManager
                     .removeReadabilityUpdateListener(mReadAloudReadabilityCallback);
         }
 
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.removeObserver(mControlContainer);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(mControlContainer);
         }
 
         mTabObscuringHandler.removeObserver(this);

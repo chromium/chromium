@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -216,7 +216,7 @@ public class OverlayPanel extends OverlayPanelAnimation
      * @param compositorViewHolder The {@link CompositorViewHolder}
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param currentTabSupplier Supplies the current {@link Tab}.
-     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public OverlayPanel(
             @NonNull Context context,
@@ -228,8 +228,8 @@ public class OverlayPanel extends OverlayPanelAnimation
             @NonNull ViewGroup compositorViewHolder,
             float toolbarHeightDp,
             @NonNull Supplier<Tab> currentTabSupplier,
-            DesktopWindowStateProvider desktopWindowStateProvider) {
-        super(context, layoutManager, toolbarHeightDp, desktopWindowStateProvider);
+            DesktopWindowStateManager desktopWindowStateManager) {
+        super(context, layoutManager, toolbarHeightDp, desktopWindowStateManager);
         mLayoutManager = layoutManager;
         mContentFactory = this;
         mBrowserControlsStateProvider = browserControlsStateProvider;

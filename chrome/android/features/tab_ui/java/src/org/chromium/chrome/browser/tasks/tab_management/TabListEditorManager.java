@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class TabListEditorManager {
     private final @NonNull ObservableSupplierImpl<TabListEditorController> mControllerSupplier =
             new ObservableSupplierImpl<>();
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
-    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
@@ -83,7 +83,7 @@ public class TabListEditorManager {
             BottomSheetController bottomSheetController,
             @TabListMode int mode,
             @Nullable Runnable onTabGroupCreation,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
@@ -96,7 +96,7 @@ public class TabListEditorManager {
         mMode = mode;
         mTabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(activity, modalDialogManager, onTabGroupCreation);
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
 
         // The snackbarManager used by mTabListEditorCoordinator. The rootView is the default
         // default parent view of the snackbar. When shown this will be re-parented inside the
@@ -140,7 +140,7 @@ public class TabListEditorManager {
                             TabProperties.TabActionState.SELECTABLE,
                             /* gridCardOnClickListenerProvider= */ null,
                             mModalDialogManager,
-                            mDesktopWindowStateProvider,
+                            mDesktopWindowStateManager,
                             mEdgeToEdgeSupplier);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }

@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChange
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 
 /** Base abstract class for animating the Overlay Panel. */
@@ -56,14 +56,14 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param context The current Android {@link Context}.
      * @param updateHost The {@link LayoutUpdateHost} used to request updates in the Layout.
      * @param toolbarHeightDp The height of the toolbar in dp.
-     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public OverlayPanelAnimation(
             Context context,
             LayoutUpdateHost updateHost,
             float toolbarHeightDp,
-            DesktopWindowStateProvider desktopWindowStateProvider) {
-        super(context, toolbarHeightDp, desktopWindowStateProvider);
+            DesktopWindowStateManager desktopWindowStateManager) {
+        super(context, toolbarHeightDp, desktopWindowStateManager);
         mUpdateHost = updateHost;
     }
 

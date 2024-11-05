@@ -191,7 +191,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mBottomSheetController,
                         mDataSharingTabManager,
                         mBackpressManager,
-                        /* desktopWindowStateProvider= */ null);
+                        /* desktopWindowStateManager= */ null);
     }
 
     @Test

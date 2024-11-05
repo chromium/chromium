@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -75,7 +75,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private final ThumbnailChangeListener mThumbnailChangeListener = (id) -> requestUpdate();
     private final Callback<TabContentManager> mOnTabContentManager = this::onTabContentManager;
 
-    protected @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    protected @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -122,7 +122,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         /* layoutStateProvider= */ this,
                         hubLayoutDependencyHolder,
                         mTabModelSelectorSupplier,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateManager);
         if (mTabContentManagerSupplier.hasValue()) {
             mHubLayout.setTabContentManager(mTabContentManagerSupplier.get());
         }

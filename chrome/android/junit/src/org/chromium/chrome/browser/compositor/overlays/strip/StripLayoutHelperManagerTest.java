@@ -88,7 +88,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -133,7 +133,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private StatusBarColorController mStatusBarColorController;
-    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
@@ -161,7 +161,7 @@ public class StripLayoutHelperManagerTest {
 
         when(mToolbarContainerView.getContext()).thenReturn(mActivity);
         when(mToolbarManager.getStatusBarColorController()).thenReturn(mStatusBarColorController);
-        when(mDesktopWindowStateProvider.isInUnfocusedDesktopWindow()).thenReturn(false);
+        when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(false);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         initializeTest();
@@ -207,7 +207,7 @@ public class StripLayoutHelperManagerTest {
                         mBrowserControlStateProvider,
                         mWindowAndroid,
                         mToolbarManager,
-                        mDesktopWindowStateProvider,
+                        mDesktopWindowStateManager,
                         mActionConfirmationManager,
                         mModalDialogManager,
                         mDataSharingTabManager);
@@ -233,7 +233,7 @@ public class StripLayoutHelperManagerTest {
     @Test
     public void testGetBackgroundColor_ActivityFocusChange_NotInDesktopWindow() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(new AppHeaderState());
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(new AppHeaderState());
         assertEquals(
                 "Initial strip background color is incorrect.",
                 ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_3),
@@ -277,7 +277,7 @@ public class StripLayoutHelperManagerTest {
             boolean isNightMode, boolean isIncognito) {
         var appHeaderState = Mockito.mock(AppHeaderState.class);
         doReturn(true).when(appHeaderState).isInDesktopWindow();
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(appHeaderState);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
         @ColorInt
         int focusedColor =
                 ChromeColors.getSurfaceColor(
@@ -320,8 +320,8 @@ public class StripLayoutHelperManagerTest {
         // Assume that the app starts in an unfocused desktop window.
         var appHeaderState =
                 new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(appHeaderState);
-        when(mDesktopWindowStateProvider.isInUnfocusedDesktopWindow()).thenReturn(true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(true);
         initializeTest();
 
         @ColorInt
@@ -340,14 +340,14 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onAppHeaderStateChanged(new AppHeaderState());
 
         int normalColor = TabUiThemeUtil.getTabStripBackgroundColor(mActivity, false);
-        verify(mDesktopWindowStateProvider).updateForegroundColor(normalColor);
+        verify(mDesktopWindowStateManager).updateForegroundColor(normalColor);
 
-        Mockito.reset(mDesktopWindowStateProvider);
+        Mockito.reset(mDesktopWindowStateManager);
         mStripLayoutHelperManager.setIsIncognitoForTesting(true);
         mStripLayoutHelperManager.onAppHeaderStateChanged(new AppHeaderState());
 
         int incognitoColor = TabUiThemeUtil.getTabStripBackgroundColor(mActivity, true);
-        verify(mDesktopWindowStateProvider).updateForegroundColor(incognitoColor);
+        verify(mDesktopWindowStateManager).updateForegroundColor(incognitoColor);
     }
 
     @Test

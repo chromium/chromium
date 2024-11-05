@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowModeState;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
@@ -90,7 +90,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
     @Mock private ControlContainer mControlContainer;
     @Mock private ViewResourceAdapter mViewResourceAdapter;
-    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Captor private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserver;
     @Captor private ArgumentCaptor<Callback<Resource>> mOnCaptureReadyCallback;
 
@@ -788,8 +788,8 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Test
     public void recordHistogramWindowResize_LayoutChangeNotInDesktopWindow_UnsupportedDevice() {
         // Create the transition coordinator with an initial null value of
-        // DesktopWindowStateProvider that is representative of an unsupported device.
-        mDesktopWindowStateProvider = null;
+        // DesktopWindowStateManager that is representative of an unsupported device.
+        mDesktopWindowStateManager = null;
         setUpTabStripTransitionCoordinator(
                 /* isInDesktopWindow= */ false, LARGE_NORMAL_WINDOW_WIDTH);
 
@@ -944,14 +944,12 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     private void setUpTabStripTransitionCoordinator(boolean isInDesktopWindow, int windowWidth) {
-        if (mDesktopWindowStateProvider != null) {
+        if (mDesktopWindowStateManager != null) {
             int stripHeight = TEST_TAB_STRIP_HEIGHT + (isInDesktopWindow ? mReservedTopPadding : 0);
             var appHeaderRect =
                     isInDesktopWindow ? new Rect(0, 0, windowWidth, stripHeight) : new Rect();
             mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, isInDesktopWindow);
-            doAnswer((arg) -> mAppHeaderState)
-                    .when(mDesktopWindowStateProvider)
-                    .getAppHeaderState();
+            doAnswer((arg) -> mAppHeaderState).when(mDesktopWindowStateManager).getAppHeaderState();
         }
 
         mDelegate = new TestDelegate();
@@ -965,7 +963,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                         mSpyControlContainer.toolbarLayout,
                         TEST_TAB_STRIP_HEIGHT,
                         mTabObscuringHandler,
-                        mDesktopWindowStateProvider,
+                        mDesktopWindowStateManager,
                         mDelegateSupplier);
         mObserver = new TestObserver();
         mCoordinator.addObserver(mObserver);

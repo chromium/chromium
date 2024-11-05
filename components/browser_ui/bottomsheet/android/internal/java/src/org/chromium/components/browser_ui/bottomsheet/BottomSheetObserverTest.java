@@ -153,7 +153,7 @@ public class BottomSheetObserverTest {
                                     () -> rootView,
                                     false,
                                     () -> 0,
-                                    /* desktopWindowStateProvider= */ null);
+                                    /* desktopWindowStateManager= */ null);
                         });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);

@@ -86,8 +86,8 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -228,7 +228,7 @@ public class StripLayoutHelperManager
      */
     private boolean mIsTopResumedActivity;
 
-    private final DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final DesktopWindowStateManager mDesktopWindowStateManager;
 
     // 3-dots menu button with tab strip end padding
     private float mStripEndPadding;
@@ -399,7 +399,7 @@ public class StripLayoutHelperManager
      * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
      * @param browserControlsStateProvider BrowserControlsStateProvider for drag drop.
      * @param toolbarManager The ToolbarManager instance.
-     * @param desktopWindowStateProvider The DesktopWindowStateProvider for the app header.
+     * @param desktopWindowStateManager The DesktopWindowStateManager for the app header.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -419,7 +419,7 @@ public class StripLayoutHelperManager
             // TODO(crbug.com/40939440): Avoid passing the ToolbarManager instance. Potentially
             // implement an interface to manage strip transition states.
             @NonNull ToolbarManager toolbarManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager) {
@@ -446,7 +446,7 @@ public class StripLayoutHelperManager
                         ? toolbarManager.getTabStripHeightSupplier().get() / mDensity
                         : mScrollableStripHeight;
         mTopPadding = mHeight - mScrollableStripHeight;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mStripVisibilityStateSupplier = new ObservableSupplierImpl<>(StripVisibilityState.UNKNOWN);
         mStripVisibilityStateObserver =
                 state -> {
@@ -547,14 +547,14 @@ public class StripLayoutHelperManager
                 });
 
         onContextChanged(context);
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.addObserver(this);
-            mIsTopResumedActivity = !mDesktopWindowStateProvider.isInUnfocusedDesktopWindow();
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
+            mIsTopResumedActivity = !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
         } else {
             mIsTopResumedActivity = AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher);
         }
-        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) {
-            onAppHeaderStateChanged(mDesktopWindowStateProvider.getAppHeaderState());
+        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)) {
+            onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
         }
     }
 
@@ -669,8 +669,8 @@ public class StripLayoutHelperManager
             mTabModelSelectorTabObserver.destroy();
         }
         mTabDragSource = null;
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.removeObserver(this);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
         }
         mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
     }
@@ -1376,11 +1376,11 @@ public class StripLayoutHelperManager
 
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
-        assert mDesktopWindowStateProvider != null;
+        assert mDesktopWindowStateManager != null;
         // We do not update the layer's height in this method. The height adjustment will be
         // triggered by #onHeightChanged.
 
-        mDesktopWindowStateProvider.updateForegroundColor(getBackgroundColor());
+        mDesktopWindowStateManager.updateForegroundColor(getBackgroundColor());
         updateHorizontalPaddings(newState.getLeftPadding(), newState.getRightPadding());
     }
 
@@ -1414,7 +1414,7 @@ public class StripLayoutHelperManager
     }
 
     public @ColorInt int getBackgroundColor() {
-        return AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)
+        return AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
                 ? TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
                         mContext, mIsIncognito, mIsTopResumedActivity)
                 : TabUiThemeUtil.getTabStripBackgroundColor(mContext, mIsIncognito);
@@ -1464,8 +1464,8 @@ public class StripLayoutHelperManager
         updateModelSwitcherButton();
 
         // If we are in DW mode, notify DW state provider since the model changed.
-        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) {
-            mDesktopWindowStateProvider.updateForegroundColor(getBackgroundColor());
+        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)) {
+            mDesktopWindowStateManager.updateForegroundColor(getBackgroundColor());
         }
 
         mUpdateHost.requestUpdate();

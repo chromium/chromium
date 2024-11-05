@@ -7,8 +7,7 @@ package org.chromium.components.browser_ui.desktop_windowing;
 import androidx.annotation.ColorInt;
 
 /** Interface to observe and retrieve desktop windowing mode state and updates. */
-// TODO(crbug.com/332784708): Rename this class (and observer) to DesktopWindowStateManager*.
-public interface DesktopWindowStateProvider {
+public interface DesktopWindowStateManager {
 
     interface AppHeaderObserver {
 
@@ -37,7 +36,7 @@ public interface DesktopWindowStateProvider {
     /**
      * @return {@code true} if the activity is in a desktop window irrespective of focus state,
      *     {@code false} otherwise.
-     * @deprecated Use {@link AppHeaderUtils#isAppInDesktopWindow(DesktopWindowStateProvider)}.
+     * @deprecated Use {@link AppHeaderUtils#isAppInDesktopWindow(DesktopWindowStateManager)}.
      */
     // TODO(crbug.com/337086192): Remove this method from the interface.
     @Deprecated

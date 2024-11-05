@@ -571,7 +571,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         this,
                         () ->
                                 mRootUiCoordinator != null
-                                        ? mRootUiCoordinator.getDesktopWindowStateProvider()
+                                        ? mRootUiCoordinator.getDesktopWindowStateManager()
                                         : null);
         mBackPressManager.setFallbackOnBackPressed(
                 () -> {
@@ -859,7 +859,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             tabHoverCardViewStub,
                             getWindowAndroid(),
                             getToolbarManager(),
-                            mRootUiCoordinator.getDesktopWindowStateProvider(),
+                            mRootUiCoordinator.getDesktopWindowStateManager(),
                             actionConfirmationManager,
                             getModalDialogManagerSupplier().get(),
                             mRootUiCoordinator.getDataSharingTabManager());
@@ -949,7 +949,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 adaptOnToolbarAlphaChange(),
                                 mBackPressManager,
                                 mEdgeToEdgeControllerSupplier,
-                                mRootUiCoordinator.getDesktopWindowStateProvider());
+                                mRootUiCoordinator.getDesktopWindowStateManager());
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }
@@ -1340,7 +1340,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mInactivityTracker.getTimeSinceLastBackgroundedMs());
 
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mRootUiCoordinator.getDesktopWindowStateProvider(),
+                mRootUiCoordinator.getDesktopWindowStateManager(),
                 mInstanceAllocationType,
                 !mFromResumption);
     }

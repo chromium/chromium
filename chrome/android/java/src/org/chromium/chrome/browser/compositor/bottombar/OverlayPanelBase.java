@@ -23,8 +23,8 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -146,7 +146,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     protected ObserverList<OverlayPanelStateProvider.Observer> mObservers = new ObserverList<>();
 
     // State provider for Desktop Window.
-    private final DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final DesktopWindowStateManager mDesktopWindowStateManager;
     private float mAppHeaderHeightDp;
 
     // ============================================================================================
@@ -156,15 +156,15 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     /**
      * @param context The current Android {@link Context}.
      * @param toolbarHeightDp The current height of the toolbar in dp.
-     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public OverlayPanelBase(
             Context context,
             float toolbarHeightDp,
-            DesktopWindowStateProvider desktopWindowStateProvider) {
+            DesktopWindowStateManager desktopWindowStateManager) {
         mContext = context;
         mToolbarHeightDp = toolbarHeightDp;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mPxToDp = 1.f / mContext.getResources().getDisplayMetrics().density;
 
         mBarMarginSide = BAR_ICON_SIDE_PADDING_DP;
@@ -184,10 +184,10 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         mButtonPaddingDps =
                 (int) (mPxToDp * resources.getDimension(R.dimen.overlay_panel_button_padding));
 
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.addObserver(this);
-            if (mDesktopWindowStateProvider.getAppHeaderState() != null) {
-                onAppHeaderStateChanged(mDesktopWindowStateProvider.getAppHeaderState());
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
+            if (mDesktopWindowStateManager.getAppHeaderState() != null) {
+                onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
             }
         }
     }
@@ -1233,8 +1233,8 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     }
 
     protected void destroy() {
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.removeObserver(this);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
         }
     }
 }

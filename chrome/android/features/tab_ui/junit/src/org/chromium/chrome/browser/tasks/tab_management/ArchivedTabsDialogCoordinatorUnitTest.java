@@ -127,7 +127,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mBackPressManager,
                         mTabArchiveSettings,
                         mModalDialogManager,
-                        /* desktopWindowStateProvider= */ null);
+                        /* desktopWindowStateManager= */ null);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
         recyclerView = new TabListRecyclerView(mContext, null);
         recyclerView.setId(R.id.tab_list_recycler_view);

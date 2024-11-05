@@ -62,7 +62,7 @@ import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -108,7 +108,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 }
             };
 
-    private final Supplier<DesktopWindowStateProvider> mDesktopWindowStateProviderSupplier;
+    private final Supplier<DesktopWindowStateManager> mDesktopWindowStateManagerSupplier;
     private final MultiInstanceStateObserver mOnMultiInstanceStateChanged;
 
     MultiInstanceManagerApi31(
@@ -118,7 +118,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            Supplier<DesktopWindowStateProvider> desktopWindowStateProviderSupplier) {
+            Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
         super(
                 activity,
                 tabModelOrchestratorSupplier,
@@ -127,7 +127,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 menuOrKeyboardActionController);
         mMaxInstances = MultiWindowUtils.getMaxInstances();
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mDesktopWindowStateProviderSupplier = desktopWindowStateProviderSupplier;
+        mDesktopWindowStateManagerSupplier = desktopWindowStateManagerSupplier;
         mOnMultiInstanceStateChanged = this::onMultiInstanceStateChanged;
     }
 
@@ -149,14 +149,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     info.size() < MultiWindowUtils.getMaxInstances(),
                     info);
 
-            if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProviderSupplier.get())) {
+            if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get())) {
                 RecordUserAction.record("MobileMenuWindowManager.InDesktopWindow");
             } else {
                 RecordUserAction.record("MobileMenuWindowManager");
             }
 
             AppHeaderUtils.recordDesktopWindowModeStateEnumHistogram(
-                    mDesktopWindowStateProviderSupplier.get(),
+                    mDesktopWindowStateManagerSupplier.get(),
                     "Android.MultiInstance.WindowManager.DesktopWindowModeState");
 
             Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
@@ -1048,7 +1048,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (instanceId == INVALID_INSTANCE_ID) return false;
 
         return TabUiFeatureUtilities.isTabDragAsWindowEnabled()
-                || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProviderSupplier.get());
+                || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get());
     }
 
     /**

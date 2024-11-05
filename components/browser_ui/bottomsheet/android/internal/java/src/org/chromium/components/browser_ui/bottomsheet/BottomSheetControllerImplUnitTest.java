@@ -27,7 +27,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
@@ -40,7 +40,7 @@ public class BottomSheetControllerImplUnitTest {
     @Mock private ScrimCoordinator mScrimCoordinator;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private ViewGroup mRoot;
-    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private AppHeaderState mAppHeaderState;
     @Mock private BottomSheet mBottomSheet;
 
@@ -71,7 +71,7 @@ public class BottomSheetControllerImplUnitTest {
                         mRootSupplier,
                         false,
                         mEdgeToEdgeBottomInsetSupplier,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateManager);
     }
 
     @Test

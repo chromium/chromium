@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -275,7 +275,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @NonNull ViewGroup mDialogView;
     private final @NonNull ViewGroup mTabSwitcherView;
     private final @NonNull FadingShadowView mShadowView;
-    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     private TabListRecyclerView mDialogRecyclerView;
     private WeakReference<TabListRecyclerView> mTabSwitcherRecyclerView;
@@ -299,7 +299,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      * @param backPressManager Manages the different back press handlers throughout the app.
      * @param tabArchiveSettings The settings manager for tab archive.
      * @param modalDialogManager Used for managing the modal dialogs.
-     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public ArchivedTabsDialogCoordinator(
             @NonNull Context context,
@@ -314,7 +314,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             @NonNull BackPressManager backPressManager,
             @NonNull TabArchiveSettings tabArchiveSettings,
             @NonNull ModalDialogManager modalDialogManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
@@ -325,7 +325,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mBackPressManager = backPressManager;
         mTabArchiveSettings = tabArchiveSettings;
         mModalDialogManager = modalDialogManager;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mArchivedTabModel =
@@ -561,7 +561,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         TabProperties.TabActionState.CLOSABLE,
                         mGridCardOnCLickListenerProvider,
                         mModalDialogManager,
-                        mDesktopWindowStateProvider,
+                        mDesktopWindowStateManager,
                         /* edgeToEdgeSupplier= */ null);
     }
 

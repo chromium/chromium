@@ -82,7 +82,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -165,8 +165,8 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock ModalDialogManager mModalDialogManager;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock MenuOrKeyboardActionController mMenuOrKeyboardActionController;
-    @Mock Supplier<DesktopWindowStateProvider> mDesktopWindowStateProviderSupplier;
-    @Mock DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock Supplier<DesktopWindowStateManager> mDesktopWindowStateManagerSupplier;
+    @Mock DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock AppHeaderState mAppHeaderState;
 
     @Mock TabGroupSyncService mTabGroupSyncService;
@@ -225,7 +225,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 ActivityLifecycleDispatcher activityLifecycleDispatcher,
                 ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
                 MenuOrKeyboardActionController menuOrKeyboardActionController,
-                Supplier<DesktopWindowStateProvider> desktopWindowStateProviderSupplier) {
+                Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
             super(
                     activity,
                     tabModelOrchestratorSupplier,
@@ -233,7 +233,7 @@ public class MultiInstanceManagerApi31UnitTest {
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
                     menuOrKeyboardActionController,
-                    desktopWindowStateProviderSupplier);
+                    desktopWindowStateManagerSupplier);
         }
 
         private void createInstance(int instanceId, Activity activity) {
@@ -392,7 +392,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mActivityLifecycleDispatcher,
                                 mModalDialogManagerSupplier,
                                 mMenuOrKeyboardActionController,
-                                mDesktopWindowStateProviderSupplier));
+                                mDesktopWindowStateManagerSupplier));
         ApplicationStatus.setCachingEnabled(true);
         ApplicationStatus.onStateChangeForTesting(mCurrentActivity, ActivityState.CREATED);
         ChromeSharedPreferences.getInstance()
@@ -407,8 +407,8 @@ public class MultiInstanceManagerApi31UnitTest {
                     mTabbedActivityTask66,
                 };
 
-        when(mDesktopWindowStateProviderSupplier.get()).thenReturn(mDesktopWindowStateProvider);
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(mAppHeaderState);
+        when(mDesktopWindowStateManagerSupplier.get()).thenReturn(mDesktopWindowStateManager);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
     }
 
     @After
@@ -679,7 +679,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateProviderSupplier);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -764,7 +764,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateProviderSupplier);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -849,7 +849,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateProviderSupplier);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -1303,7 +1303,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mActivityLifecycleDispatcher,
                                 mModalDialogManagerSupplier,
                                 mMenuOrKeyboardActionController,
-                                mDesktopWindowStateProviderSupplier));
+                                mDesktopWindowStateManagerSupplier));
 
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));

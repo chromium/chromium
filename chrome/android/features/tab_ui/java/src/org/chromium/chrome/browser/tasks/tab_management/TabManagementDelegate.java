@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -102,7 +102,7 @@ public interface TabManagementDelegate {
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param backPressManager Manages different back press handlers throughout the app.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
-     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -124,7 +124,7 @@ public interface TabManagementDelegate {
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull BackPressManager backPressManager,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider);
+            @Nullable DesktopWindowStateManager desktopWindowStateManager);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.

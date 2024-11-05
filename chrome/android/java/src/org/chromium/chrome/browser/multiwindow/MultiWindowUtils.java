@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -867,11 +867,11 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param isColdStart Whether app startup is a cold start.
      */
     public static void maybeRecordDesktopWindowCountHistograms(
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @InstanceAllocationType int instanceAllocationType,
             boolean isColdStart) {
         // Emit the histogram only for an activity that starts in a desktop window.
-        if (!AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateProvider)) return;
+        if (!AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager)) return;
 
         // Emit the histogram only for a newly created activity that is cold-started.
         if (!isColdStart) return;

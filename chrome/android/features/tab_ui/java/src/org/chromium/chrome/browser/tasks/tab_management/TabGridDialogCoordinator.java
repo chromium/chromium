@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGr
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -111,7 +111,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             TabGroupTitleEditor tabGroupTitleEditor,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             boolean isDataSharingAndroidEnabled =
                     ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
@@ -196,7 +196,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             showColorPickerPopupRunnable,
                             actionConfirmationManager,
                             modalDialogManager,
-                            desktopWindowStateProvider);
+                            desktopWindowStateManager);
 
             // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
@@ -323,7 +323,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* gridCardOnClickListenerProvider= */ null,
                             mModalDialogManager,
                             // Parent container handles desktop window state.
-                            /* desktopWindowStateProvider= */ null,
+                            /* desktopWindowStateManager= */ null,
                             /* edgeToEdgeSupplier= */ null);
         }
 

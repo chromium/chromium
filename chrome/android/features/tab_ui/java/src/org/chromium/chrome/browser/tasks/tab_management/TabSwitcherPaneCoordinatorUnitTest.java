@@ -230,7 +230,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                             mDestroyed = true;
                         },
                         mEdgeToEdgeSupplier,
-                        /* desktopWindowStateProvider= */ null);
+                        /* desktopWindowStateManager= */ null);
         watcher.assertExpected();
 
         mCoordinator.initWithNative();

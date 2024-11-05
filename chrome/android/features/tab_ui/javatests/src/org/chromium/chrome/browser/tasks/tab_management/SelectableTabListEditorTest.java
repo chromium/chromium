@@ -205,7 +205,7 @@ public class SelectableTabListEditorTest {
                                     sActivityTestRule
                                             .getActivity()
                                             .getRootUiCoordinatorForTesting()
-                                            .getDesktopWindowStateProvider();
+                                            .getDesktopWindowStateManager();
                     mEdgeToEdgeSupplier = new ObservableSupplierImpl<>();
                     mTabListEditorCoordinator =
                             new TabListEditorCoordinator(

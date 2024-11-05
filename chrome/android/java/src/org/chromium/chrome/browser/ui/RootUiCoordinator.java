@@ -177,7 +177,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -588,9 +588,9 @@ public class RootUiCoordinator
     }
 
     /**
-     * @return The {@link DesktopWindowStateProvider} instance associated with the current activity.
+     * @return The {@link DesktopWindowStateManager} instance associated with the current activity.
      */
-    public @Nullable DesktopWindowStateProvider getDesktopWindowStateProvider() {
+    public @Nullable DesktopWindowStateManager getDesktopWindowStateManager() {
         return null;
     }
 
@@ -1013,7 +1013,7 @@ public class RootUiCoordinator
                 mToolbarManager,
                 canContextualSearchPromoteToNewTab(),
                 mIntentRequestTracker,
-                getDesktopWindowStateProvider());
+                getDesktopWindowStateManager());
     }
 
     public ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier() {
@@ -1383,9 +1383,9 @@ public class RootUiCoordinator
                         }
                         mOmniboxFocusStateSupplier.set(hasFocus);
                     };
-            if (getDesktopWindowStateProvider() != null) {
+            if (getDesktopWindowStateManager() != null) {
                 toolbarContainer.setAppInUnfocusedDesktopWindow(
-                        getDesktopWindowStateProvider().isInUnfocusedDesktopWindow());
+                        getDesktopWindowStateManager().isInUnfocusedDesktopWindow());
             }
 
             Supplier<Tracker> trackerSupplier =
@@ -1651,7 +1651,7 @@ public class RootUiCoordinator
                             mOverviewColorSupplier,
                             mBaseChromeLayout,
                             mReadAloudControllerSupplier,
-                            getDesktopWindowStateProvider());
+                            getDesktopWindowStateManager());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
@@ -1932,7 +1932,7 @@ public class RootUiCoordinator
                                     ? 0
                                     : mEdgeToEdgeControllerSupplier.get().getBottomInset();
                         },
-                        getDesktopWindowStateProvider());
+                        getDesktopWindowStateManager());
         BottomSheetControllerFactory.setExceptionReporter(
                 ChromePureJavaExceptionReporter::reportJavaException);
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);

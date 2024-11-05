@@ -157,7 +157,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> sheetContainer,
                         () -> 0,
-                        /* desktopWindowStateProvider= */ null);
+                        /* desktopWindowStateManager= */ null);
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {

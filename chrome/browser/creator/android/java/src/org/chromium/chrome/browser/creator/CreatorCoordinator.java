@@ -420,7 +420,7 @@ public class CreatorCoordinator
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> mBottomSheetContainer,
                         () -> 0,
-                        /* desktopWindowStateProvider= */ null);
+                        /* desktopWindowStateManager= */ null);
     }
 
     private void setUpToolbarListener() {

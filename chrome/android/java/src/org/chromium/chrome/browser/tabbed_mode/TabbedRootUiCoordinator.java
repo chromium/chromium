@@ -140,7 +140,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarC
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -1235,7 +1235,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    public DesktopWindowStateProvider getDesktopWindowStateProvider() {
+    public DesktopWindowStateManager getDesktopWindowStateManager() {
         return mAppHeaderCoordinator;
     }
 

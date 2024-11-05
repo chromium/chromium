@@ -97,7 +97,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -176,7 +176,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private DataSharingService mDataSharingService;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
-    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
@@ -1554,7 +1554,7 @@ public class TabGridDialogMediatorUnitTest {
 
         verify(mTabGroupModelFilter).removeObserver(mTabModelObserverCaptor.capture());
         assertFalse(mCurrentTabGroupModelFilterSupplier.hasObservers());
-        verify(mDesktopWindowStateProvider).removeObserver(mMediator);
+        verify(mDesktopWindowStateManager).removeObserver(mMediator);
         verify(mMessagingBackendService).removePersistentMessageObserver(any());
     }
 
@@ -1724,7 +1724,7 @@ public class TabGridDialogMediatorUnitTest {
                         mShowColorPickerPopupRunnable,
                         mActionConfirmationManager,
                         mModalDialogManager,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateManager);
     }
 
     @Test
@@ -1742,7 +1742,7 @@ public class TabGridDialogMediatorUnitTest {
         // Rect with height = 10.
         Rect headerRect = new Rect(0, 0, 10, 10);
         AppHeaderState state = new AppHeaderState(headerRect, headerRect, true);
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(state);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(state);
 
         mMediator.onAppHeaderStateChanged(state);
 

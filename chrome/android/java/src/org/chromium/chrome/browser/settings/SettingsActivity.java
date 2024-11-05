@@ -256,7 +256,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> sheetContainer,
                         () -> 0,
-                        /* desktopWindowStateProvider= */ null);
+                        /* desktopWindowStateManager= */ null);
         mBottomSheetControllerSupplier.set(mManagedBottomSheetController);
     }
 

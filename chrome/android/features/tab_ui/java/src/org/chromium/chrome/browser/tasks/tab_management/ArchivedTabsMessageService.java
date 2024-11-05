@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -141,7 +141,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull Tracker mTracker;
     private final @NonNull Runnable mAppendMessageRunnable;
     private final @NonNull ObservableSupplier<TabListCoordinator> mTabListCoordinatorSupplier;
-    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -167,7 +167,7 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull Tracker tracker,
             @NonNull Runnable appendMessageRunnable,
             @NonNull ObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
         mContext = context;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
@@ -182,7 +182,7 @@ public class ArchivedTabsMessageService extends MessageService
         mTracker = tracker;
         mAppendMessageRunnable = appendMessageRunnable;
         mTabListCoordinatorSupplier = tabListCoordinatorSupplier;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mTabListCoordinatorSupplier.addObserver(
                 (tabListCoordinator) -> {
                     if (tabListCoordinator == null) return;
@@ -333,7 +333,7 @@ public class ArchivedTabsMessageService extends MessageService
                         mBackPressManager,
                         mTabArchiveSettings,
                         mModalDialogManager,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateManager);
     }
 
     private void updateModelProperties() {

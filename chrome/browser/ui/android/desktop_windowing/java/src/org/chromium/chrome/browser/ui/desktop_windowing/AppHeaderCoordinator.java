@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetObserver;
@@ -46,7 +46,7 @@ import org.chromium.ui.util.TokenHolder;
  */
 @RequiresApi(VERSION_CODES.R)
 public class AppHeaderCoordinator
-        implements DesktopWindowStateProvider,
+        implements DesktopWindowStateManager,
                 TopResumedActivityChangedObserver,
                 SaveInstanceStateObserver {
     @VisibleForTesting

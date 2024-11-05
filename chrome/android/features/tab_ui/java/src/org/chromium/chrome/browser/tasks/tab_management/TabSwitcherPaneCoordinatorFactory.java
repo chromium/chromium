@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUiScrimDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -60,7 +60,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final @NonNull BottomSheetController mBottomSheetController;
     private final DataSharingTabManager mDataSharingTabManager;
     private final @NonNull BackPressManager mBackPressManager;
-    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     private @Nullable TabSwitcherMessageManager mMessageManager;
 
@@ -81,7 +81,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
      * @param backPressManager Manages the different back press handlers throughout the app.
-     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -98,7 +98,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull BackPressManager backPressManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -120,7 +120,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID;
         mBackPressManager = backPressManager;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
     }
 
     /**
@@ -173,7 +173,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 onTabGroupCreation,
                 () -> mMessageManagerTokenHolder.releaseToken(token),
                 edgeToEdgeSupplier,
-                mDesktopWindowStateProvider);
+                mDesktopWindowStateManager);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */
@@ -258,7 +258,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mActivity.findViewById(R.id.coordinator),
                             mTabCreatorManager.getTabCreator(/* incognito= */ false),
                             mBackPressManager,
-                            mDesktopWindowStateProvider);
+                            mDesktopWindowStateManager);
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
                         mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());

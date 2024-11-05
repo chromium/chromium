@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
@@ -143,7 +143,7 @@ public class ContextualSearchPanel extends OverlayPanel {
      * @param canPromoteToNewTab Whether the panel can be promoted to a new tab.
      * @param currentTabSupplier Supplies the current activity tab.
      * @param edgeToEdgeControllerSupplier Controller for edge-to-edge drawing.
-     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public ContextualSearchPanel(
             @NonNull Context context,
@@ -158,7 +158,7 @@ public class ContextualSearchPanel extends OverlayPanel {
             boolean canPromoteToNewTab,
             @NonNull Supplier<Tab> currentTabSupplier,
             @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(
                 context,
                 layoutManager,
@@ -169,7 +169,7 @@ public class ContextualSearchPanel extends OverlayPanel {
                 compositorViewHolder,
                 toolbarHeightDp,
                 currentTabSupplier,
-                desktopWindowStateProvider);
+                desktopWindowStateManager);
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mToolbarManager = toolbarManager;

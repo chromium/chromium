@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.resources.ResourceManager;
@@ -117,7 +117,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private IncognitoStateObserver mIncognitoStateObserver;
 
     private TabObscuringHandler mTabObscuringHandler;
-    private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
 
     /** Token used to block the tab strip transition when find in page toolbar is showing. */
@@ -152,7 +152,7 @@ public class TopToolbarCoordinator implements Toolbar {
      *     captures are stale and not able to be taken.
      * @param fullscreenManager Used to check whether in fullscreen.
      * @param tabObscuringHandler Delegate object handling obscuring views.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
      * @param onLongClickListener OnLongClickListener for the toolbar.
@@ -182,7 +182,7 @@ public class TopToolbarCoordinator implements Toolbar {
                     browserStateBrowserControlsVisibilityDelegate,
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar) {
@@ -200,7 +200,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarColorObserverManager = new ToolbarColorObserverManager();
         mToolbarLayout.setToolbarColorObserver(mToolbarColorObserverManager);
         mTabObscuringHandler = tabObscuringHandler;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mTrackerSupplier = new ObservableSupplierImpl<>();
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
         mToolbarLayout.setOnLongClickListener(onLongClickListener);
@@ -308,7 +308,7 @@ public class TopToolbarCoordinator implements Toolbar {
                         mToolbarLayout,
                         tabStripHeightResource,
                         mTabObscuringHandler,
-                        mDesktopWindowStateProvider,
+                        mDesktopWindowStateManager,
                         mTabStripTransitionDelegateSupplier);
         mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
         mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);

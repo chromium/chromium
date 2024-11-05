@@ -25,7 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabListEditorMediator}. */
@@ -35,7 +35,7 @@ public final class TabListEditorMediatorUnitTest {
 
     @Mock private Context mContext;
     @Mock private ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
-    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
     private PropertyModel mModel;
     private TabListEditorMediator mMediator;
@@ -54,7 +54,7 @@ public final class TabListEditorMediatorUnitTest {
                         /* bottomSheetController= */ null,
                         /* tabListEditorLayout= */ null,
                         TabActionState.SELECTABLE,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateManager);
     }
 
     @After

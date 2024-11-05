@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -179,7 +179,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param onDestroyed A {@link Runnable} to execute when {@link #destroy()} is invoked.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
-     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public TabSwitcherPaneCoordinator(
             @NonNull Activity activity,
@@ -204,7 +204,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @Nullable Runnable onTabGroupCreation,
             @NonNull Runnable onDestroyed,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProviderSupplier = profileProviderSupplier;
             mIsVisibleSupplier = isVisibleSupplier;
@@ -265,7 +265,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 getTabGroupTitleEditor(),
                                                 actionConfirmationManager,
                                                 mModalDialogManager,
-                                                desktopWindowStateProvider);
+                                                desktopWindowStateManager);
                                 return mTabGridDialogCoordinator.getDialogController();
                             });
 
@@ -371,7 +371,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             bottomSheetController,
                             mode,
                             onTabGroupCreation,
-                            desktopWindowStateProvider,
+                            desktopWindowStateManager,
                             mEdgeToEdgeSupplier);
             mTabListEditorManager = tabListEditorManager;
             mMediator.setTabListEditorControllerSupplier(

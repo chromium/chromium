@@ -63,8 +63,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
@@ -214,7 +214,7 @@ public class TabGridDialogMediator
     private final TabModelObserver mTabModelObserver;
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private final Runnable mScrimClickRunnable;
-    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
@@ -242,7 +242,7 @@ public class TabGridDialogMediator
             Runnable showColorPickerPopupRunnable,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @Nullable ModalDialogManager modalDialogManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mActivity = activity;
         mDialogController = dialogController;
         mModel = model;
@@ -265,7 +265,7 @@ public class TabGridDialogMediator
                         .getTabModel()
                         .getProfile()
                         .getOriginalProfile();
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile)) {
             mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
@@ -522,10 +522,10 @@ public class TabGridDialogMediator
         mModel.set(
                 TabGridDialogProperties.UNGROUP_BAR_STATUS,
                 TabGridDialogView.UngroupBarStatus.HIDE);
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.addObserver(this);
-            if (mDesktopWindowStateProvider.getAppHeaderState() != null) {
-                onAppHeaderStateChanged(mDesktopWindowStateProvider.getAppHeaderState());
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
+            if (mDesktopWindowStateManager.getAppHeaderState() != null) {
+                onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
             }
         }
     }
@@ -661,8 +661,8 @@ public class TabGridDialogMediator
                     .removeObserver(mOnCollaborationIdChanged);
             mTransitiveSharedGroupObserver.destroy();
         }
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.removeObserver(this);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
         }
         if (mMessagingBackendService != null && mPersistentMessageObserver != null) {
             mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);

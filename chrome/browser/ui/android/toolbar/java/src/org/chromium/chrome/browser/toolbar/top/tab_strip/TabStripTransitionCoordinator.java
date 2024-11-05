@@ -25,8 +25,8 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 
 /** Class used to manage tab strip visibility and height updates. */
 public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHeaderObserver {
@@ -95,7 +95,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     /** Tracks the additional top padding added to the tab strip. */
     private int mTopPadding;
 
-    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable AppHeaderState mAppHeaderState;
     private boolean mForceUpdateHeight;
     private boolean mForceFadeInStrip;
@@ -118,7 +118,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @param toolbarLayout {@link ToolbarLayout} for the current toolbar.
      * @param tabStripHeightFromResource The height of the tab strip defined in resource.
      * @param tabObscuringHandler Delegate object handling obscuring views.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
      */
@@ -128,11 +128,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             View toolbarLayout,
             int tabStripHeightFromResource,
             TabObscuringHandler tabObscuringHandler,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
         mControlContainer = controlContainer;
         mTabStripHeightFromResource = tabStripHeightFromResource;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mHandler = new Handler(Looper.getMainLooper());
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
         mHeightTransitionHandler =
@@ -163,9 +163,9 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         updateTabStripTransitionThreshold();
 
         AppHeaderState appHeaderState = null;
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.addObserver(this);
-            appHeaderState = mDesktopWindowStateProvider.getAppHeaderState();
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
+            appHeaderState = mDesktopWindowStateManager.getAppHeaderState();
         }
 
         // Initialize the tab strip size based on whether we have app header.
@@ -186,11 +186,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     @Override
     public void onLowMemory() {}
 
-    // DesktopWindowStateProvider.AppHeaderObserver implementation.
+    // DesktopWindowStateManager.AppHeaderObserver implementation.
 
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
-        assert mDesktopWindowStateProvider != null;
+        assert mDesktopWindowStateManager != null;
         assert newState != null;
 
         boolean wasInDesktopWindow = mAppHeaderState != null && mAppHeaderState.isInDesktopWindow();
@@ -225,8 +225,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             controlContainerView().removeOnLayoutChangeListener(mOnLayoutChangedListener);
             mOnLayoutChangedListener = null;
         }
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.removeObserver(this);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
         }
         mCallbackController.destroy();
         mHeightTransitionHandler.destroy();
@@ -313,7 +313,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         mTabStripWidth = width;
         mTopPadding = topPadding;
         AppHeaderUtils.recordDesktopWindowModeStateEnumHistogram(
-                mDesktopWindowStateProvider,
+                mDesktopWindowStateManager,
                 "Android.DynamicTopChrome.WindowResize.DesktopWindowModeState");
 
         if (mLayoutTransitionTask != null) {
@@ -330,8 +330,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         mHeightTransitionHandler.setForceUpdateHeight(mForceUpdateHeight);
         mFadeTransitionHandler.setForceFadeInStrip(mForceFadeInStrip);
 
-        boolean isInDesktopWindow =
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider);
+        boolean isInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
         if (!isInDesktopWindow || mForceUpdateHeight) {
             mHeightTransitionHandler.onTabStripSizeChanged(width, topPadding);
         }

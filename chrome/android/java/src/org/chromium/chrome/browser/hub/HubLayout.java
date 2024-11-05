@@ -55,8 +55,8 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
@@ -85,7 +85,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private final @NonNull HubLayoutScrimController mScrimController;
     private final @NonNull DoubleConsumer mOnToolbarAlphaChange;
     private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
-    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and {@link
@@ -124,7 +124,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             @NonNull LayoutStateProvider layoutStateProvider,
             @NonNull HubLayoutDependencyHolder dependencyHolder,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(context, updateHost, renderHost);
         mPreviousLayoutTypeSupplier.set(layoutStateProvider.getActiveLayoutType());
 
@@ -146,9 +146,9 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mScrimController = dependencyHolder.getScrimController();
         mOnToolbarAlphaChange = dependencyHolder.getOnToolbarAlphaChange();
         mTabModelSelector = tabModelSelectorSupplier.get();
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.addObserver(this);
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
             maybeUpdateLayout();
         }
     }
@@ -204,8 +204,8 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         }
         mCurrentSceneLayer = null;
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.removeObserver(this);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
         }
     }
 
@@ -765,9 +765,9 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
      */
     private void maybeUpdateLayout() {
         int appHeaderHeight =
-                (mDesktopWindowStateProvider != null
-                                && mDesktopWindowStateProvider.getAppHeaderState() != null)
-                        ? mDesktopWindowStateProvider.getAppHeaderState().getAppHeaderHeight()
+                (mDesktopWindowStateManager != null
+                                && mDesktopWindowStateManager.getAppHeaderState() != null)
+                        ? mDesktopWindowStateManager.getAppHeaderState().getAppHeaderHeight()
                         : 0;
         mHubManager.setAppHeaderHeight(appHeaderHeight);
         // If the app header height or desktop windowing mode changes while the HubLayout is active,

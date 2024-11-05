@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -73,7 +73,7 @@ public class OverlayPanelBaseTest {
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private InsetObserver mInsetObserver;
-    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
     Activity mActivity;
     ActivityWindowAndroid mWindowAndroid;
@@ -91,7 +91,7 @@ public class OverlayPanelBaseTest {
                 Profile profile,
                 ViewGroup compositorViewHolder,
                 Tab tab,
-                DesktopWindowStateProvider desktopWindowStateProvider) {
+                DesktopWindowStateManager desktopWindowStateManager) {
             super(
                     context,
                     layoutManager,
@@ -102,7 +102,7 @@ public class OverlayPanelBaseTest {
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
                     () -> tab,
-                    desktopWindowStateProvider);
+                    desktopWindowStateManager);
         }
 
         /** Expose protected super method as public. */
@@ -148,7 +148,7 @@ public class OverlayPanelBaseTest {
                     profile,
                     compositorViewHolder,
                     tab,
-                    /* desktopWindowStateProvider= */ null);
+                    /* desktopWindowStateManager= */ null);
         }
 
         @Override
@@ -184,7 +184,7 @@ public class OverlayPanelBaseTest {
                                     mProfile,
                                     mCompositorViewHolder,
                                     mTab,
-                                    mDesktopWindowStateProvider);
+                                    mDesktopWindowStateManager);
                     mNoExpandPanel =
                             new NoExpandMockOverlayPanel(
                                     mActivity,
@@ -293,7 +293,7 @@ public class OverlayPanelBaseTest {
         int layoutHeight = 400;
         mExpandPanel.onLayoutChanged(400, layoutHeight, 100);
         mExpandPanel.setIsFullWidthSizePanelForTesting(true);
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(state);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(state);
 
         // With app header.
         mExpandPanel.onAppHeaderStateChanged(state);

@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -72,7 +72,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param toolbarContainerView View passed to StripLayoutHelper to support tab drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
      * @param toolbarManager The ToolbarManager instance.
-     * @param desktopWindowStateProvider The DesktopWindowStateProvider for the app header.
+     * @param desktopWindowStateManager The DesktopWindowStateManager for the app header.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -91,7 +91,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             @NonNull ViewStub tabHoverCardViewStub,
             @NonNull WindowAndroid windowAndroid,
             @NonNull ToolbarManager toolbarManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager) {
@@ -120,13 +120,13 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         browserControlsStateProvider,
                         windowAndroid,
                         toolbarManager,
-                        desktopWindowStateProvider,
+                        desktopWindowStateManager,
                         actionConfirmationManager,
                         modalDialogManager,
                         dataSharingTabManager);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
 
         setNextLayout(null, true);
     }

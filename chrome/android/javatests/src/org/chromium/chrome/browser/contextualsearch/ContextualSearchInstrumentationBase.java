@@ -103,7 +103,7 @@ public class ContextualSearchInstrumentationBase {
                     true,
                     null,
                     sActivityTestRule.getActivity().getEdgeToEdgeControllerSupplierForTesting(),
-                    /* desktopWindowStateProvider= */ null);
+                    /* desktopWindowStateManager= */ null);
         }
 
         @Override

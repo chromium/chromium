@@ -501,7 +501,7 @@ public class AppHeaderCoordinatorBrowserTest {
                 () -> {
                     var appHeaderCoordinator =
                             activity.getRootUiCoordinatorForTesting()
-                                    .getDesktopWindowStateProvider();
+                                    .getDesktopWindowStateManager();
                     Criteria.checkThat(appHeaderCoordinator, Matchers.notNullValue());
                 });
 
@@ -566,7 +566,7 @@ public class AppHeaderCoordinatorBrowserTest {
                 () -> {
                     var appHeaderStateProvider =
                             activity.getRootUiCoordinatorForTesting()
-                                    .getDesktopWindowStateProvider();
+                                    .getDesktopWindowStateManager();
                     setupAppHeaderRects(isInDesktopWindow);
                     var appHeaderState =
                             new AppHeaderState(

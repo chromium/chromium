@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -102,7 +102,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull BackPressManager backPressManager,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
@@ -121,7 +121,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         bottomSheetController,
                         dataSharingTabManager,
                         backPressManager,
-                        desktopWindowStateProvider);
+                        desktopWindowStateManager);
         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
         Handler handler = new Handler();
         profileProviderSupplier.onAvailable(

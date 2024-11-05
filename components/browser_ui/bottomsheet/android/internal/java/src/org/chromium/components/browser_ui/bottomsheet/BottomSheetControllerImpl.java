@@ -18,7 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -107,7 +107,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
-    private final DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final DesktopWindowStateManager mDesktopWindowStateManager;
     private int mAppHeaderHeight;
 
     /**
@@ -121,7 +121,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      * @param root The view that should contain the sheet.
      * @param alwaysFullWidth Whether bottom sheet is full-width.
      * @param edgeToEdgeBottomInsetSupplier The supplier of bottom inset when e2e is on.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the app header.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the app header.
      */
     public BottomSheetControllerImpl(
             final Supplier<ScrimCoordinator> scrim,
@@ -131,16 +131,16 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             Supplier<ViewGroup> root,
             boolean alwaysFullWidth,
             @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mScrimCoordinatorSupplier = scrim;
         mPendingSheetObservers = new ArrayList<>();
         mSuppressionTokens = new TokenHolder(() -> onSuppressionTokensChanged());
         mAlwaysFullWidth = alwaysFullWidth;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mKeyboardVisibilityDelegate = keyboardDelegate;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.addObserver(this);
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
         }
         mSheetInitializer =
                 () -> {
@@ -364,8 +364,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     @Override
     public void destroy() {
         if (mBottomSheet != null) mBottomSheet.destroy();
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.removeObserver(this);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
         }
     }
 

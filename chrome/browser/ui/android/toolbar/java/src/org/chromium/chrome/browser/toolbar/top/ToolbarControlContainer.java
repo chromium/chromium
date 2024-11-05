@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
@@ -64,7 +64,7 @@ import java.util.function.BooleanSupplier;
 
 /** Layout for the browser controls (omnibox, menu, tab strip, etc..). */
 public class ToolbarControlContainer extends OptimizedFrameLayout
-        implements ControlContainer, DesktopWindowStateProvider.AppHeaderObserver {
+        implements ControlContainer, DesktopWindowStateManager.AppHeaderObserver {
     private boolean mIncognito;
     private boolean mMidVisibilityToggle;
     private boolean mIsCompositorInitialized;
