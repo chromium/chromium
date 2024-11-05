@@ -35,6 +35,8 @@ class ASH_EXPORT BirchPrivacyNudgeController {
   // the past 24 hours, or if it has been shown less than three times. The
   // nudge will be anchored to `anchor_view` if provided.
   void MaybeShowNudge(views::View* anchor_view);
+
+  void MaybeHideNudge();
 };
 
 }  // namespace ash

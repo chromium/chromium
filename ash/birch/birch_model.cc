@@ -545,6 +545,12 @@ void BirchModel::RemoveItem(BirchItem* item) {
   }
 }
 
+void BirchModel::OnCoralGroupRemoved(const base::Token& group_id) {
+  std::erase_if(coral_data_.items, [&group_id](auto& item) {
+    return static_cast<BirchCoralItem>(item).group_id() == group_id;
+  });
+}
+
 void BirchModel::SetLostMediaDataChangedCallback(
     LostMediaDataChangedCallback callback) {
   CHECK(birch_client_);
