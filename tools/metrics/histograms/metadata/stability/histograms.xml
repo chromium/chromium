@@ -25,7 +25,6 @@ chromium-metrics-reviews@google.com.
 <variants name="CdmUtilityProcessType">
   <variant name="CdmServiceBroker"/>
   <variant name="MediaFoundationServiceBroker"/>
-  <variant name="Unknown"/>
 </variants>
 
 <histogram name="ChildProcess.Crashed.UtilityProcessExitCode"
@@ -612,7 +611,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.Media.{CdmUtilityProcessType}.Crash.ExitCode"
+<histogram name="Stability.Media.{ProcessType}.Crash.ExitCode"
     enum="WindowsExitCode" expires_after="2025-02-27">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -620,19 +619,20 @@ chromium-metrics-reviews@google.com.
     Recorded when a crash occurs in a CDM utility process. On crash, the exit
     code will indicate the exception code of the crash.
   </summary>
+  <token key="ProcessType" variants="CdmUtilityProcessType"/>
 </histogram>
 
-<histogram name="Stability.Media.{CdmUtilityProcessType}.Launch" enum="Boolean"
+<histogram name="Stability.Media.{ProcessType}.Launch" enum="Boolean"
     expires_after="2025-02-27">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Recorded when a CDM utility process either succeeded or failed to launch.
   </summary>
+  <token key="ProcessType" variants="CdmUtilityProcessType"/>
 </histogram>
 
-<histogram
-    name="Stability.Media.{CdmUtilityProcessType}.Launch.LaunchErrorCode"
+<histogram name="Stability.Media.{ProcessType}.Launch.LaunchErrorCode"
     enum="LaunchErrorCodes" expires_after="2025-02-27">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -640,9 +640,10 @@ chromium-metrics-reviews@google.com.
     A platform-specific error code returned from the attempt to launch a CDM
     utility process. Recorded when a CDM utility process fails to launch.
   </summary>
+  <token key="ProcessType" variants="CdmUtilityProcessType"/>
 </histogram>
 
-<histogram name="Stability.Media.{CdmUtilityProcessType}.Launch.WinLastError"
+<histogram name="Stability.Media.{ProcessType}.Launch.WinLastError"
     enum="WinGetLastError" expires_after="2025-02-27">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -651,6 +652,7 @@ chromium-metrics-reviews@google.com.
     launch a CDM utility process. Recorded when a utility process fails to
     launch on Windows.
   </summary>
+  <token key="ProcessType" variants="CdmUtilityProcessType"/>
 </histogram>
 
 <histogram name="Stability.MobileSessionShutdownType"
