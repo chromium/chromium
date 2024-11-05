@@ -1887,7 +1887,7 @@
       'filepath': 'privacy_sandbox|PrivacySandbox',
     },
     'private_aggregation': {
-      'filepath': 'private_aggregation|aggregation_service',
+      'filepath': 'private.?aggregation|aggregation.?service',
     },
     'profile_keyed_service': {
       'filepath': 'chrome/browser/profiles/profile_keyed_service_browsertest.cc',
