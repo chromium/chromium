@@ -79,7 +79,7 @@ const char kSkipCSDAllowlistOnPreclassification[] =
 // browsing countermeasures, we sample at 1 in 100 rate, but in this, we hit the
 // allowlist 1000 times more than the rate at which we send a ping due to local
 // model verdict. Therefore, we sample at 1 in 100,000 rate instead.
-const float kProbabilityForSendingSampleRequest = 0.00001;
+const float kProbabilityForSendingSampleRequest = 0.000001;
 // Probability value used to accept the high confidence allowlist match for
 // trigger and force request types. More information on why this value was
 // chosen can be found at go/crca-cspp-expand-allowlist.
