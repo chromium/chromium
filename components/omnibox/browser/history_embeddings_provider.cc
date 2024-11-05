@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -163,7 +164,8 @@ AutocompleteMatch HistoryEmbeddingsProvider::CreateMatch(
   match.contents = base::UTF8ToUTF16(scored_url_row.row.url().spec());
   match.contents_class = ClassifyTermMatches(
       FindTermMatches(input_.text(), match.contents), match.contents.size(),
-      ACMatchClassification::MATCH, ACMatchClassification::URL);
+      ACMatchClassification::MATCH | ACMatchClassification::URL,
+      ACMatchClassification::URL);
 
   if (starter_pack_engine_) {
     match.keyword = starter_pack_engine_->keyword();
@@ -208,8 +210,11 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
               base::UTF8ToUTF16(answerer_result.answer.text())));
       answer_match.destination_url =
           GURL{"chrome://history/?q=" + answerer_result.query};
+      std::u16string source = history_clusters::ComputeURLForDisplay(
+          scored_url_row.row.url(),
+          history_embeddings::kTrimAfterHostInResults.Get());
       answer_match.contents = AutocompleteMatch::SanitizeString(
-          base::UTF8ToUTF16(answerer_result.url) + u"  •  " +
+          source + u"  •  " +
           l10n_util::GetStringFUTF16(
               IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL,
               base::TimeFormatShortDate(scored_url_row.row.last_visit())));

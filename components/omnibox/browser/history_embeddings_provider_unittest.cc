@@ -440,7 +440,8 @@ TEST_F(HistoryEmbeddingsProviderTest,
   base::test::ScopedFeatureList enabled_feature;
   enabled_feature.InitWithFeaturesAndParameters(
       {{history_embeddings::kHistoryEmbeddings,
-        {{history_embeddings::kAnswersInOmniboxScoped.name, "true"}}},
+        {{history_embeddings::kAnswersInOmniboxScoped.name, "true"},
+         {history_embeddings::kTrimAfterHostInResults.name, "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
        {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -455,7 +456,7 @@ TEST_F(HistoryEmbeddingsProviderTest,
   result.query = "query";
   result.scored_url_rows = {
       CreateScoredUrlRow(.75, "https://url1.com/", u"title"),
-      CreateScoredUrlRow(.50, "https://url2.com/", u"title"),
+      CreateScoredUrlRow(.50, "https://url2.com/path?key=value", u"title"),
       CreateScoredUrlRow(.25, "https://url3.com/", u"title"),
   };
   base::Time time;
@@ -479,7 +480,8 @@ TEST_F(HistoryEmbeddingsProviderTest,
       AllOf(Field(&AutocompleteMatch::relevance, 500),
             Field(&AutocompleteMatch::type,
                   AutocompleteMatchType::HISTORY_EMBEDDINGS),
-            Field(&AutocompleteMatch::destination_url, "https://url2.com/"));
+            Field(&AutocompleteMatch::destination_url,
+                  "https://url2.com/path?key=value"));
   auto expected_match_3 =
       AllOf(Field(&AutocompleteMatch::relevance, 250),
             Field(&AutocompleteMatch::type,
@@ -520,7 +522,7 @@ TEST_F(HistoryEmbeddingsProviderTest,
   result_success.answerer_result.query = "query";
   result_success.answerer_result.answer.set_score(1);
   result_success.answerer_result.answer.set_text("answer text");
-  result_success.answerer_result.url = "https://url2.com/";
+  result_success.answerer_result.url = "https://url2.com/path?key=value";
   history_embeddings_provider_->OnReceivedSearchResult(
       std::move(result_success));
 
@@ -540,7 +542,7 @@ TEST_F(HistoryEmbeddingsProviderTest,
                       u"Summary"),
                 Field(&AutocompleteMatch::description, u"answer text"),
                 Field(&AutocompleteMatch::contents,
-                      u"https://url2.com/  •  Visited Mar 23, 2025"))));
+                      u"url2.com  •  Visited Mar 23, 2025"))));
 
   // Test error cases.
   std::u16string model_error =
