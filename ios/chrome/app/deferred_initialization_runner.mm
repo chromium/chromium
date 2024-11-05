@@ -7,12 +7,18 @@
 #import <stdint.h>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/sequence_checker.h"
+#import "base/timer/timer.h"
 
 NSString* const kPrefObserverInit = @"PrefObserverInit";
 
 // An object encapsulating the deferred execution of a block of initialization
 // code.
 @interface DeferredInitializationBlock : NSObject
+
+// Name of the block.
+@property(nonatomic, readonly) NSString* name;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -23,14 +29,9 @@ NSString* const kPrefObserverInit = @"PrefObserverInit";
 // Executes the deferred block now.
 - (void)run;
 
-// Cancels the block's execution.
-- (void)cancel;
-
 @end
 
 @implementation DeferredInitializationBlock {
-  // A string to reference the initialization block.
-  NSString* _name;
   // A block of code to execute.
   ProceduralBlock _runBlock;
 }
@@ -46,42 +47,30 @@ NSString* const kPrefObserverInit = @"PrefObserverInit";
 }
 
 - (void)run {
-  DCHECK([NSThread isMainThread]);
-  ProceduralBlock deferredBlock = _runBlock;
-  if (!deferredBlock)
-    return;
-  deferredBlock();
-  [[DeferredInitializationRunner sharedInstance] cancelBlockNamed:_name];
-}
-
-- (void)cancel {
-  _runBlock = nil;
+  ProceduralBlock deferredBlock = nil;
+  std::swap(deferredBlock, _runBlock);
+  if (deferredBlock) {
+    deferredBlock();
+  }
 }
 
 @end
 
-@interface DeferredInitializationRunner () {
-  NSMutableArray* _blocksNameQueue;
-  NSMutableDictionary* _runBlocks;
-  BOOL _isBlockScheduled;
+@implementation DeferredInitializationRunner {
+  // The list of pending blocks.
+  NSMutableArray<DeferredInitializationBlock*>* _runBlocks;
+
+  // The timer used to schedule the execution of the next block.
+  base::OneShotTimer _timer;
+
+  // Time interval between two blocks.
+  base::TimeDelta _delayBetweenBlocks;
+
+  // Time interval before running the first block.
+  base::TimeDelta _delayBeforeFirstBlock;
+
+  SEQUENCE_CHECKER(_sequenceChecker);
 }
-
-// Schedule the next block to be run after `delay` it will automatically
-// schedule the next block after `delayBetweenBlocks`.
-- (void)scheduleNextBlockWithDelay:(NSTimeInterval)delay;
-
-// Time interval between two blocks. Default value is 200ms.
-@property(nonatomic) NSTimeInterval delayBetweenBlocks;
-
-// Time interval before running the first block. Default value is 3s.
-@property(nonatomic) NSTimeInterval delayBeforeFirstBlock;
-
-@end
-
-@implementation DeferredInitializationRunner
-
-@synthesize delayBetweenBlocks = _delayBetweenBlocks;
-@synthesize delayBeforeFirstBlock = _delayBeforeFirstBlock;
 
 + (DeferredInitializationRunner*)sharedInstance {
   static dispatch_once_t once = 0;
@@ -92,72 +81,88 @@ NSString* const kPrefObserverInit = @"PrefObserverInit";
   return instance;
 }
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _blocksNameQueue = [NSMutableArray array];
-    _runBlocks = [NSMutableDictionary dictionary];
-    _isBlockScheduled = NO;
-    _delayBetweenBlocks = 0.2;
-    _delayBeforeFirstBlock = 3.0;
+- (instancetype)initWithDelayBetweenBlocks:(base::TimeDelta)betweenBlocks
+                     delayBeforeFirstBlock:(base::TimeDelta)beforeFirstBlock {
+  if ((self = [super init])) {
+    _runBlocks = [NSMutableArray array];
+    _delayBetweenBlocks = betweenBlocks;
+    _delayBeforeFirstBlock = beforeFirstBlock;
   }
   return self;
 }
 
+- (instancetype)init {
+  return [self initWithDelayBetweenBlocks:base::Milliseconds(200)
+                    delayBeforeFirstBlock:base::Seconds(3)];
+}
+
 - (void)enqueueBlockNamed:(NSString*)name block:(ProceduralBlock)block {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   DCHECK(name);
-  DCHECK([NSThread isMainThread]);
-  [self cancelBlockNamed:name];
-  [_blocksNameQueue addObject:name];
+  DCHECK(block);
 
   DeferredInitializationBlock* deferredBlock =
       [[DeferredInitializationBlock alloc] initWithName:name block:block];
-  [_runBlocks setObject:deferredBlock forKey:name];
+  [_runBlocks addObject:deferredBlock];
 
-  if (!_isBlockScheduled) {
-    [self scheduleNextBlockWithDelay:self.delayBeforeFirstBlock];
+  if (!_timer.IsRunning()) {
+    __weak DeferredInitializationRunner* weakSelf = self;
+    _timer.Start(FROM_HERE, _delayBeforeFirstBlock, base::BindOnce(^{
+                   [weakSelf runNextBlock];
+                 }));
   }
 }
 
-- (void)scheduleNextBlockWithDelay:(NSTimeInterval)delay {
-  DCHECK([NSThread isMainThread]);
-  _isBlockScheduled = NO;
-  NSString* nextBlockName = [_blocksNameQueue firstObject];
-  if (!nextBlockName)
-    return;
+- (void)runNextBlock {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  DeferredInitializationBlock* block = nil;
+  if (_runBlocks.count > 0) {
+    block = [_runBlocks objectAtIndex:0];
+    [_runBlocks removeObjectAtIndex:0];
+  }
 
-  DeferredInitializationBlock* nextBlock =
-      [_runBlocks objectForKey:nextBlockName];
-  DCHECK(nextBlock);
+  if (_runBlocks.count > 0) {
+    __weak DeferredInitializationRunner* weakSelf = self;
+    _timer.Start(FROM_HERE, _delayBetweenBlocks, base::BindOnce(^{
+                   [weakSelf runNextBlock];
+                 }));
+  }
 
-  __weak DeferredInitializationRunner* weakSelf = self;
-
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)),
-      dispatch_get_main_queue(), ^{
-        [nextBlock run];
-        [weakSelf scheduleNextBlockWithDelay:[weakSelf delayBetweenBlocks]];
-      });
-
-  _isBlockScheduled = YES;
-  [_blocksNameQueue removeObjectAtIndex:0];
+  if (block) {
+    [block run];
+  }
 }
 
 - (void)runBlockIfNecessary:(NSString*)name {
-  DCHECK([NSThread isMainThread]);
-  [[_runBlocks objectForKey:name] run];
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  DCHECK(name);
+  DeferredInitializationBlock* block = [self popBlockNamed:name];
+  if (block) {
+    [block run];
+  }
 }
 
 - (void)cancelBlockNamed:(NSString*)name {
-  DCHECK([NSThread isMainThread]);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   DCHECK(name);
-  [_blocksNameQueue removeObject:name];
-  [[_runBlocks objectForKey:name] cancel];
-  [_runBlocks removeObjectForKey:name];
+  [self popBlockNamed:name];
 }
 
 - (NSUInteger)numberOfBlocksRemaining {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   return [_runBlocks count];
+}
+
+- (DeferredInitializationBlock*)popBlockNamed:(NSString*)name {
+  NSUInteger count = _runBlocks.count;
+  for (NSUInteger index = 0; index < count; ++index) {
+    DeferredInitializationBlock* block = [_runBlocks objectAtIndex:index];
+    if ([block.name isEqualToString:name]) {
+      [_runBlocks removeObjectAtIndex:0];
+      return block;
+    }
+  }
+  return nil;
 }
 
 @end
