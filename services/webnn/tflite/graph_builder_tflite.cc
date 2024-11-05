@@ -265,14 +265,15 @@ std::vector<uint32_t> GetIndexOfSortedValue(base::span<const uint32_t> axes) {
 //   0, 1, 1,                     1, 1, 0,
 //   0, 0, 1]                     1, 1, 1]
 template <typename DataType>
-std::vector<DataType> FillMaskTriangular(base::span<const int32_t> dimensions,
-                                         bool upper,
-                                         int32_t diagonal,
-                                         DataType mask) {
+base::FixedArray<DataType> FillMaskTriangular(
+    base::span<const int32_t> dimensions,
+    bool upper,
+    int32_t diagonal,
+    DataType mask) {
   CHECK_EQ(dimensions.size(), 2u);
   const int32_t height = dimensions[0];
   const int32_t width = dimensions[1];
-  std::vector<DataType> filled_matrix(height * width);
+  base::FixedArray<DataType> filled_matrix(height * width);
   for (int32_t i = 0; i < height; ++i) {
     for (int32_t j = 0; j < width; ++j) {
       // `i + diagonal` has been validated to not overflow by the caller.
@@ -4707,6 +4708,10 @@ auto GraphBuilderTflite::SerializeTriangular(
   CHECK_GE(input_rank, 2u);
   const int32_t height = input_tensor_info.dimensions[input_rank - 2];
   const int32_t width = input_tensor_info.dimensions[input_rank - 1];
+  auto checked_size = base::MakeCheckedNum<int32_t>(height) * width;
+  if (!checked_size.IsValid()) {
+    return base::unexpected("Triangular mask is too large.");
+  }
   const std::array<int32_t, 2> mask_dimensions = {height, width};
   auto checked_diagonal = base::MakeCheckedNum<int32_t>(triangular.diagonal) +
                           std::max(height, width);
