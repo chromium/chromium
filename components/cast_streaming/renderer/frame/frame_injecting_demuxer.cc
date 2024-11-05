@@ -198,14 +198,13 @@ class FrameInjectingDemuxerStream
     }
   }
 
-  // DemuxerStream partial implementation.
-  void Read(uint32_t count, ReadCB read_cb) final {
+  // DemuxerStream partial implementation. Method returns only a single buffer
+  // at a time, hence |count| is not taken into account.
+  void Read(uint32_t /*count*/, ReadCB read_cb) final {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!pending_read_cb_);
     DCHECK(!buffer_requester_ || current_buffer_provider_);
-    DCHECK_EQ(count, 1u)
-        << "FrameInjectingDemuxerStream only reads a single buffer.";
 
     pending_read_cb_ = std::move(read_cb);
 
