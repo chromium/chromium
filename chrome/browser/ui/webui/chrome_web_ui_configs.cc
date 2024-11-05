@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
@@ -242,6 +243,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<NetInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<NTPTilesInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<OmniboxUIConfig>());
+  map.AddWebUIConfig(std::make_unique<OptimizationGuideInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PasswordManagerInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PolicyUIConfig>());
   map.AddWebUIConfig(std::make_unique<PredictorsUIConfig>());

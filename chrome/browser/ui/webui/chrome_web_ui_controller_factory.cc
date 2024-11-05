@@ -21,7 +21,6 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
-#include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/ui/webui/crashes_ui.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -44,7 +42,6 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/lens/buildflags.h"
-#include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -162,16 +159,6 @@ using ui::WebDialogUI;
 
 namespace {
 
-// TODO(crbug.com/40214184): Allow a way to disable CSP in tests.
-void SetUpWebUIDataSource(WebUI* web_ui,
-                          const char* web_ui_host,
-                          base::span<const webui::ResourcePath> resources,
-                          int default_resource) {
-  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(), web_ui_host);
-  webui::SetupWebUIDataSource(source, resources, default_resource);
-}
-
 // A function for creating a new WebUI. The caller owns the return value, which
 // may be nullptr (for example, if the URL refers to an non-existent extension).
 typedef WebUIController* (*WebUIFactoryFunction)(WebUI* web_ui,
@@ -183,15 +170,6 @@ WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
   return new T(web_ui);
 }
 
-template <>
-WebUIController* NewWebUI<OptimizationGuideInternalsUI>(WebUI* web_ui,
-                                                        const GURL& url) {
-  return OptimizationGuideInternalsUI::MaybeCreateOptimizationGuideInternalsUI(
-      web_ui, base::BindOnce(&SetUpWebUIDataSource, web_ui,
-                             optimization_guide_internals::
-                                 kChromeUIOptimizationGuideInternalsHost));
-}
-
 // Returns a function that can be used to create the right type of WebUI for a
 // tab, based on its URL. Returns nullptr if the URL doesn't have WebUI
 // associated with it.
@@ -200,32 +178,17 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
                                              const GURL& url) {
   // This will get called a lot to check all URLs, so do a quick check of other
   // schemes to filter out most URLs.
-  if (!content::HasWebUIScheme(url))
-    return nullptr;
-
-  // This factory doesn't support chrome-untrusted:// WebUIs.
-  if (url.SchemeIs(content::kChromeUIUntrustedScheme))
-    return nullptr;
-
-  // Please keep this in alphabetical order. If #ifs or special logics are
-  // required, add it below in the appropriate section.
-  //
-  // We must compare hosts only since some of the Web UIs append extra stuff
-  // after the host name.
-  if (url.host_piece() ==
-      optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
-    return &NewWebUI<OptimizationGuideInternalsUI>;
-  }
-
 #if !BUILDFLAG(IS_ANDROID)
-  if (url.SchemeIs(content::kChromeDevToolsScheme)) {
-    if (!DevToolsUIBindings::IsValidFrontendURL(url))
-      return nullptr;
-    return &NewWebUI<DevToolsUI>;
+  if (!url.SchemeIs(content::kChromeDevToolsScheme)) {
+    return nullptr;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
+  if (!DevToolsUIBindings::IsValidFrontendURL(url)) {
+    return nullptr;
+  }
+  return &NewWebUI<DevToolsUI>;
+#else
   return nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

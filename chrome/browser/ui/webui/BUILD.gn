@@ -31,6 +31,7 @@ source_set("configs") {
 
   deps = [
     ":webui",
+    "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/safe_browsing",
     "//components/compose:buildflags",
