@@ -2310,6 +2310,11 @@
       name: "HTMLAnchorAttribute",
       status: "experimental",
     },
+    {
+      // TODO(crbug.com/376516550): Enables dialog light dismiss functionality.
+      name: "HTMLDialogLightDismiss",
+      status: "experimental",
+    },
     // The `<embed>` should follow the specification, layout is not forced
     // when the `type` attribute is set to `image`.
     // https://html.spec.whatwg.org/C/#the-embed-element

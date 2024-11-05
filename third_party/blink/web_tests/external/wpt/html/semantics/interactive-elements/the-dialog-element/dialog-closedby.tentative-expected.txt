@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] closedby=any, Non-modal
+  assert_true: Dialog should respond to light dismiss expected true got false
+[FAIL] closedby=any, Modal
+  assert_true: Dialog should respond to light dismiss expected true got false
+[FAIL] closedby=closerequest, Non-modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=closerequest, Modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=none, Non-modal
+  assert_false: Dialog should NOT respond to ESC expected false got true
+[FAIL] closedby=none, Modal
+  assert_false: Dialog should NOT respond to ESC expected false got true
+[FAIL] closedby=, Non-modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=, Modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=invalid, Non-modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=invalid, Modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=null, Non-modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=null, Modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=AnY, Non-modal
+  assert_true: Dialog should respond to light dismiss expected true got false
+[FAIL] closedby=AnY, Modal
+  assert_true: Dialog should respond to light dismiss expected true got false
+[FAIL] closedby=ClOsErEqUeSt, Non-modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=ClOsErEqUeSt, Modal
+  assert_equals: Reflection should be limited to known values expected "closerequest" but got "Unimplemented"
+[FAIL] closedby=NoNe, Non-modal
+  assert_false: Dialog should NOT respond to ESC expected false got true
+[FAIL] closedby=NoNe, Modal
+  assert_false: Dialog should NOT respond to ESC expected false got true
+Harness: the test ran to completion.
+

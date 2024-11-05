@@ -1486,6 +1486,17 @@
     "expires": "Jun 1, 2025"
   },
   {
+    "prefix": "dialog-light-dismiss-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "html/dialog",
+      "external/wpt/html/semantics/interactive-elements/the-dialog-element"
+    ],
+    "args": ["--disable-blink-features=HTMLDialogLightDismiss"],
+    "expires": "Jun 1, 2025"
+  },
+  {
     "owners": [
       "haoliuk@chromium.org"
     ],

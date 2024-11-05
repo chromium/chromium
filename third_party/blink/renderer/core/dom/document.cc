@@ -8016,6 +8016,17 @@ void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
   popover_pointerdown_target_ = popover;
 }
 
+const HTMLDialogElement* Document::DialogPointerdownTarget() const {
+  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
+  return dialog_pointerdown_target_.Get();
+}
+
+void Document::SetDialogPointerdownTarget(const HTMLDialogElement* dialog) {
+  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
+  DCHECK(!dialog || dialog->IsOpen());
+  dialog_pointerdown_target_ = dialog;
+}
+
 void Document::exitPointerLock() {
   if (!GetPage())
     return;
@@ -8730,6 +8741,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popover_auto_stack_);
   visitor->Trace(popover_hint_stack_);
   visitor->Trace(popover_pointerdown_target_);
+  visitor->Trace(dialog_pointerdown_target_);
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(all_open_popovers_);
   visitor->Trace(document_part_root_);

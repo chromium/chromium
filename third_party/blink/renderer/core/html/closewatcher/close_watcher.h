@@ -92,6 +92,7 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   enum class State { kActive, kClosed };
   State state_ = State::kActive;
   bool dispatching_cancel_ = false;
+  bool enabled_ = true;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 

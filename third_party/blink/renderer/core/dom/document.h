@@ -1651,6 +1651,8 @@ class CORE_EXPORT Document : public ContainerNode,
     return popover_pointerdown_target_.Get();
   }
   void SetPopoverPointerdownTarget(const HTMLElement*);
+  const HTMLDialogElement* DialogPointerdownTarget() const;
+  void SetDialogPointerdownTarget(const HTMLDialogElement*);
 
   // https://crbug.com/1453291
   // The DOM Parts API:
@@ -2702,6 +2704,11 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<HTMLElement>> popover_hint_stack_;
   // The popover (if any) that received the most recent pointerdown event.
   Member<const HTMLElement> popover_pointerdown_target_;
+  // The dialog (if any) that received the most recent pointerdown event. This
+  // is distinct from popover_pointerdown_target_ because the same pointer
+  // action could trigger light dismiss on a containing popover and not a
+  // containing dialog, or vice versa.
+  Member<const HTMLDialogElement> dialog_pointerdown_target_;
   // A set of popovers for which hidePopover() has been called, but animations
   // are still running.
   HeapHashSet<Member<HTMLElement>> popovers_waiting_to_hide_;
