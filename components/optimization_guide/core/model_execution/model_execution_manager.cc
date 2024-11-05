@@ -130,8 +130,7 @@ GetRequiredModelAdaptationLoaders(
         on_device_model_service_controller) {
   std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader> loaders;
   for (const auto feature : kAllModelBasedCapabilityKeys) {
-    if (!features::internal::IsOnDeviceModelEnabled(feature) ||
-        !features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {
+    if (!features::internal::GetOptimizationTargetForCapability(feature)) {
       continue;
     }
     loaders.emplace(

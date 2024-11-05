@@ -52,7 +52,7 @@ base::WeakPtr<OnDeviceModelComponentStateManager>& GetInstance() {
 
 bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
   for (const ModelBasedCapabilityKey key : kAllModelBasedCapabilityKeys) {
-    if (!features::internal::IsOnDeviceModelEnabled(key)) {
+    if (!features::internal::GetOptimizationTargetForCapability(key)) {
       continue;
     }
     if (WasOnDeviceEligibleFeatureRecentlyUsed(key, local_state)) {

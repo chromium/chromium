@@ -99,7 +99,7 @@ void OnDeviceModelServiceController::Init() {
 
 OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     ModelBasedCapabilityKey feature) {
-  if (!features::internal::IsOnDeviceModelEnabled(feature)) {
+  if (!features::internal::GetOptimizationTargetForCapability(feature)) {
     return OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled;
   }
 
@@ -173,7 +173,7 @@ OnDeviceModelServiceController::CreateSession(
   std::optional<int64_t> adaptation_version;
   auto adaptation_metadata_it = model_adaptation_metadata_.find(feature);
   if (adaptation_metadata_it != model_adaptation_metadata_.end()) {
-    CHECK(features::internal::IsOnDeviceModelAdaptationEnabled(feature));
+    CHECK(features::internal::GetOptimizationTargetForCapability(feature));
     adaptation_assets =
         base::OptionalFromPtr(adaptation_metadata_it->second.asset_paths());
     adaptation_version = adaptation_metadata_it->second.version();
@@ -488,7 +488,7 @@ OnDeviceModelServiceController::GetFeatureAdapter(
 void OnDeviceModelServiceController::AddOnDeviceModelAvailabilityChangeObserver(
     ModelBasedCapabilityKey feature,
     OnDeviceModelAvailabilityObserver* observer) {
-  DCHECK(features::internal::IsOnDeviceModelEnabled(feature));
+  DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
   model_availability_change_observers_[feature].AddObserver(observer);
 }
 
@@ -496,7 +496,7 @@ void OnDeviceModelServiceController::
     RemoveOnDeviceModelAvailabilityChangeObserver(
         ModelBasedCapabilityKey feature,
         OnDeviceModelAvailabilityObserver* observer) {
-  DCHECK(features::internal::IsOnDeviceModelEnabled(feature));
+  DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
   model_availability_change_observers_[feature].RemoveObserver(observer);
 }
 

@@ -43,7 +43,7 @@ OnDeviceModelAdaptationController::OnDeviceModelAdaptationController(
     ModelBasedCapabilityKey feature,
     base::WeakPtr<OnDeviceModelServiceController> controller)
     : feature_(feature), controller_(controller) {
-  CHECK(features::internal::IsOnDeviceModelEnabled(feature));
+  CHECK(features::internal::GetOptimizationTargetForCapability(feature_));
 }
 
 OnDeviceModelAdaptationController::~OnDeviceModelAdaptationController() =
@@ -53,7 +53,7 @@ mojo::Remote<on_device_model::mojom::OnDeviceModel>&
 OnDeviceModelAdaptationController::GetOrCreateModelRemote(
     const on_device_model::AdaptationAssetPaths& adaptation_assets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(features::internal::IsOnDeviceModelAdaptationEnabled(feature_));
+  CHECK(features::internal::GetOptimizationTargetForCapability(feature_));
   if (!model_remote_) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},

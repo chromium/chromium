@@ -139,7 +139,7 @@ ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
 
 bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
                                             const PrefService& local_state) {
-  if (!features::internal::IsOnDeviceModelEnabled(feature)) {
+  if (!features::internal::GetOptimizationTargetForCapability(feature)) {
     return false;
   }
   base::Time last_use = local_state.GetTime(

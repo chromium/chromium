@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
@@ -102,6 +103,7 @@ class OnDeviceModelAdaptationLoader
       base::optional_ref<const optimization_guide::ModelInfo> model_info);
 
   ModelBasedCapabilityKey feature_;
+  proto::OptimizationTarget target_;
 
   // The model spec of the latest base model, received from the component
   // state manager.
