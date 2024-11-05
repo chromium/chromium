@@ -1528,6 +1528,24 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
   EXPECT_CALL(*mock_authenticator_ptr, Cancel());
 }
 
+TEST_F(PasswordAccessoryControllerTest, FillsPlusAddressSuggestion) {
+  CreateSheetController();
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField);
+
+  EXPECT_CALL(*driver(),
+              FillIntoFocusedField(
+                  false, Eq(plus_addresses::test::kFakePlusAddressU16)));
+  controller()->OnFillingTriggered(
+      autofill::FieldGlobalId(),
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kPlusAddress)
+          .SetDisplayText(plus_addresses::test::kFakePlusAddressU16)
+          .SetSelectable(true)
+          .Build());
+  EXPECT_TRUE(plus_address_service().was_plus_address_suggestion_filled());
+}
+
 TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
   WebAuthnCredManDelegate::override_cred_man_support_for_testing(
       CredManSupport::FULL_UNLESS_INAPPLICABLE);

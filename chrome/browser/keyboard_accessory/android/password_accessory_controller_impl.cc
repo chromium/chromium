@@ -308,6 +308,11 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
     const AccessorySheetField& selection) {
   authenticator_ = password_client_->GetDeviceAuthenticator();
   if (!ShouldTriggerBiometricReauth(selection)) {
+    if (selection.suggestion_type() ==
+            autofill::AccessorySuggestionType::kPlusAddress &&
+        plus_address_service_) {
+      plus_address_service_->DidFillPlusAddress();
+    }
     authenticator_.reset();
     FillSelection(selection);
     return;

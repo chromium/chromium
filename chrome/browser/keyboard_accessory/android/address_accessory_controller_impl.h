@@ -121,7 +121,7 @@ class AddressAccessoryControllerImpl
   // The data manager used to retrieve the profiles.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
-  const raw_ptr<const plus_addresses::PlusAddressService> plus_address_service_;
+  const raw_ptr<plus_addresses::PlusAddressService> plus_address_service_;
 
   std::unique_ptr<plus_addresses::AllPlusAddressesBottomSheetController>
       all_plus_addresses_bottom_sheet_controller_;

@@ -34,10 +34,12 @@
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -512,6 +514,23 @@ TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
                                base::UTF8ToUTF16(plus_address)));
   controller()->OnOptionSelected(
       AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET);
+}
+
+TEST_F(AddressAccessoryControllerTest, FillsPlusAddressSuggestion) {
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  const std::u16string plus_address = u"example@gmail.com";
+
+  EXPECT_CALL(main_frame_autofill_driver(),
+              ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                               mojom::ActionPersistence::kFill, field_id,
+                               plus_address));
+  controller()->OnFillingTriggered(
+      field_id, AccessorySheetField::Builder()
+                    .SetSuggestionType(AccessorySuggestionType::kPlusAddress)
+                    .SetDisplayText(plus_address)
+                    .SetSelectable(true)
+                    .Build());
+  EXPECT_TRUE(plus_address_service().was_plus_address_suggestion_filled());
 }
 
 }  // namespace autofill

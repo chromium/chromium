@@ -97,7 +97,9 @@ void FakePlusAddressService::OnPlusAddressSuggestionShown(
   NOTIMPLEMENTED();
 }
 
-void FakePlusAddressService::DidFillPlusAddress() {}
+void FakePlusAddressService::DidFillPlusAddress() {
+  did_fill_plus_address_suggestion_ = true;
+}
 
 void FakePlusAddressService::OnClickedRefreshInlineSuggestion(
     const url::Origin& last_committed_primary_main_frame_origin,

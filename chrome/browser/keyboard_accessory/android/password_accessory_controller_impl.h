@@ -270,7 +270,7 @@ class PasswordAccessoryControllerImpl
   // filling credentials.
   std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
-  const raw_ptr<const plus_addresses::PlusAddressService> plus_address_service_;
+  const raw_ptr<plus_addresses::PlusAddressService> plus_address_service_;
 
   std::unique_ptr<plus_addresses::AllPlusAddressesBottomSheetController>
       all_plus_addresses_bottom_sheet_controller_;

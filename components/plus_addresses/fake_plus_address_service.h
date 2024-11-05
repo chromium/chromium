@@ -159,6 +159,10 @@ class FakePlusAddressService : public PlusAddressService {
     should_return_timeout_error_ = should_return_timeout_error;
   }
 
+  bool was_plus_address_suggestion_filled() {
+    return did_fill_plus_address_suggestion_;
+  }
+
  private:
   PlusAddressRequestCallback on_confirmed_;
   testing::NiceMock<affiliations::MockAffiliationService>
@@ -174,6 +178,7 @@ class FakePlusAddressService : public PlusAddressService {
   bool should_return_affiliated_plus_profile_on_confirm_ = false;
   bool should_return_quota_error_ = false;
   bool should_return_timeout_error_ = false;
+  bool did_fill_plus_address_suggestion_ = false;
 };
 
 }  // namespace plus_addresses

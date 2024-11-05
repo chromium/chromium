@@ -151,6 +151,10 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
     FieldGlobalId focused_field_id,
     const AccessorySheetField& selection) {
   FillValueIntoField(focused_field_id, selection.display_text());
+  if (selection.suggestion_type() == AccessorySuggestionType::kPlusAddress &&
+      plus_address_service_) {
+    plus_address_service_->DidFillPlusAddress();
+  }
 }
 
 void AddressAccessoryControllerImpl::OnPasskeySelected(
