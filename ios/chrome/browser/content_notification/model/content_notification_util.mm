@@ -174,6 +174,10 @@ bool IsContentNotificationEnabled(ProfileIOS* profile) {
   BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
                                             signin::ConsentLevel::kSignin);
 
+  if (!ios::TemplateURLServiceFactory::GetForProfile(profile)) {
+    return false;
+  }
+
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForProfile(profile)
           ->GetDefaultSearchProvider();
@@ -203,6 +207,10 @@ bool IsContentNotificationRegistered(ProfileIOS* profile) {
       AuthenticationServiceFactory::GetForProfile(profile);
   BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
                                             signin::ConsentLevel::kSignin);
+
+  if (!ios::TemplateURLServiceFactory::GetForProfile(profile)) {
+    return false;
+  }
 
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForProfile(profile)
