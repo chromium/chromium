@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 
+#include <string_view>
+
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,8 +21,9 @@ const int kCharWidth = 6;
 
 }  // namespace
 
-// IMPORTANT: Do NOT change the below list without changing the COLUMN_LIST
-// macro below.
+// IMPORTANT: Do NOT change the below list without updating
+// `GetColumnIdAsString()` below, whose switch statement cannot be made
+// exhaustive (given pure-integral inputs).
 const TableColumnData kColumns[] = {
     {IDS_TASK_MANAGER_TASK_COLUMN, ui::TableColumn::LEFT, -1, 1, 120, 600, true,
      true, true},
@@ -114,11 +117,14 @@ const char kSortIsAscendingKey[] = "sort_is_ascending";
 // IDS_TASK_MANAGER_TASK_COLUMN, we use the literal string
 // "IDS_TASK_MANAGER_TASK_COLUMN").
 
+#if defined(COLUMN_CASE)
+#error Surprising name collision ┐(´∇｀)┌
+#endif
 #define COLUMN_CASE(column_id) \
   case column_id:              \
-    return std::string(#column_id);
+    return #column_id
 
-std::string GetColumnIdAsString(int column_id) {
+std::string_view GetColumnIdAsString(int column_id) {
   switch (column_id) {
     COLUMN_CASE(IDS_TASK_MANAGER_TASK_COLUMN);
     COLUMN_CASE(IDS_TASK_MANAGER_PROFILE_NAME_COLUMN);
@@ -143,10 +149,11 @@ std::string GetColumnIdAsString(int column_id) {
     COLUMN_CASE(IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN);
     COLUMN_CASE(IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN);
     COLUMN_CASE(IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN);
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
   }
+  NOTREACHED_IN_MIGRATION();
+  return "";
 }
+
+#undef COLUMN_CASE
 
 }  // namespace task_manager

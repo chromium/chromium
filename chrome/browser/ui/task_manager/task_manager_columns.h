@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "ui/base/models/table_model.h"
 
 namespace task_manager {
@@ -52,7 +54,7 @@ extern const char kSortIsAscendingKey[];
 
 // Returns the |column_id| as a string value to be used as keys in the user
 // preferences.
-std::string GetColumnIdAsString(int column_id);
+std::string_view GetColumnIdAsString(int column_id);
 
 }  // namespace task_manager
 
