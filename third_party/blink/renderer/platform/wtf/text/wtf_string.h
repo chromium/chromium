@@ -545,8 +545,6 @@ class WTF_EXPORT String {
   // Latin-1 if the string is not valid UTF-8.
   [[nodiscard]] static String FromUTF8WithLatin1Fallback(
       base::span<const uint8_t>);
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(const uint8_t*,
-                                                         size_t);
   [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view s) {
     return FromUTF8WithLatin1Fallback(base::as_byte_span(s));
   }

@@ -503,10 +503,6 @@ String String::FromUTF8(const uint8_t* string_start, size_t string_length) {
   return StringImpl::Create(buffer_start, utf16_length);
 }
 
-String String::FromUTF8WithLatin1Fallback(base::span<const uint8_t> bytes) {
-  return FromUTF8WithLatin1Fallback(bytes.data(), bytes.size());
-}
-
 String String::FromUTF8(const char* s) {
   if (!s) {
     return String();
@@ -514,10 +510,10 @@ String String::FromUTF8(const char* s) {
   return FromUTF8(std::string_view(s));
 }
 
-String String::FromUTF8WithLatin1Fallback(const uint8_t* string, size_t size) {
-  String utf8 = FromUTF8(string, size);
+String String::FromUTF8WithLatin1Fallback(base::span<const uint8_t> bytes) {
+  String utf8 = FromUTF8(bytes);
   if (!utf8)
-    return String(base::span(string, size));
+    return String(bytes);
   return utf8;
 }
 
