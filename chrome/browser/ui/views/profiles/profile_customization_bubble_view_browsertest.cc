@@ -70,7 +70,9 @@ class ProfileCustomizationBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileCustomizationBrowserTest, IPH) {
-  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
+  auto scoped_iph_delay =
+      AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+          base::Seconds(0));
 
   ASSERT_EQ(IsSupervisedUser(),
             supervised_user::IsPrimaryAccountSubjectToParentalControls(

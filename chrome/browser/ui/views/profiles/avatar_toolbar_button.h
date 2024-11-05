@@ -119,7 +119,8 @@ class AvatarToolbarButton : public ToolbarButton {
   void RemoveObserver(Observer* observer);
 
   // Can be used in tests to reduce or remove the delay before showing the IPH.
-  static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
+  [[nodiscard]] static base::AutoReset<base::TimeDelta>
+  SetScopedIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
 
   // These helper functions allow tests to be time independent; tests that are
   // time dependent tend to create a lot of flakiness.

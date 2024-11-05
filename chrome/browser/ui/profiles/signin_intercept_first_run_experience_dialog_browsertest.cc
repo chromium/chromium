@@ -116,7 +116,10 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
                      TrackerInitializationMode::kDoNotWait),
                  ClockMode::kUseTestClock,
                  InitialSessionState::kOutsideGracePeriod,
-                 /*use_main_profile=*/true) {}
+                 /*use_main_profile=*/true),
+        scoped_iph_delay_(
+            AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+                base::Seconds(0))) {}
 
   ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;
 
@@ -143,10 +146,6 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
   void SetUpOnMainThread() override {
     TestBase::SetUpOnMainThread();
     identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
-
-    // Needed for profile switch IPH testing.
-    AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
-        base::Seconds(0));
   }
 
   // Returns true if the profile switch IPH has been shown.
@@ -250,7 +249,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-
+  // Needed for profile switch IPH testing.
+  base::AutoReset<base::TimeDelta> scoped_iph_delay_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
 

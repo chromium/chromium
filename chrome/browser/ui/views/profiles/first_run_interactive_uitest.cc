@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
@@ -38,6 +40,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -105,16 +109,26 @@ struct TestParam {
   SyncButtonsFeatureConfig sync_buttons_feature_config =
       SyncButtonsFeatureConfig::kAsyncNotEqualButtons;
   bool with_updated_profile_creation_screen = false;
+  std::optional<bool> with_supervision = std::nullopt;
 };
 
+std::string SupervisionToString(
+    const ::testing::TestParamInfo<TestParam>& info) {
+  if (!info.param.with_supervision.has_value()) {
+    return "";
+  }
+  return info.param.with_supervision.value() ? "ForSupervisedUser"
+                                             : "ForAdultUser";
+}
 
 std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
-  return info.param.test_suffix;
+  return info.param.test_suffix + SupervisionToString(info);
 }
 
 // Permutations of supported parameters.
 const TestParam kTestParams[] = {
     {.test_suffix = "Default"},
+    {.test_suffix = "Default", .with_supervision = true},
     {.test_suffix = "WithUpdatedProfileCreationScreen",
      .with_updated_profile_creation_screen = true},
     {.test_suffix = "AsyncCapabilitiesToNotEqualButtons",
@@ -135,10 +149,14 @@ const TestParam kTestParams[] = {
 }  // namespace
 
 class FirstRunInteractiveUiTestBase
-    : public InteractiveBrowserTestT<FirstRunServiceBrowserTestBase>,
+    : public InteractiveFeaturePromoTestT<FirstRunServiceBrowserTestBase>,
       public WithProfilePickerInteractiveUiTestHelpers {
  public:
-  FirstRunInteractiveUiTestBase() = default;
+  FirstRunInteractiveUiTestBase()
+      : InteractiveFeaturePromoTestT<FirstRunServiceBrowserTestBase>(
+            UseDefaultTrackerAllowingPromos(
+                {feature_engagement::kIPHSupervisedUserProfileSigninFeature})) {
+  }
   ~FirstRunInteractiveUiTestBase() override = default;
 
  protected:
@@ -272,6 +290,9 @@ class FirstRunParameterizedInteractiveUiTest
       disabled_features.push_back(
           features::kEnterpriseUpdatedProfileCreationScreen);
     }
+    // To allow an IPH for new supervised user profiles.
+    enabled_features_and_params.push_back(
+        {feature_engagement::kIPHSupervisedUserProfileSigninFeature, {}});
 
     if (WithPrivacySandboxEnabled()) {
       enabled_features_and_params.push_back(
@@ -339,6 +360,10 @@ class FirstRunParameterizedInteractiveUiTest
     return GetParam().sync_buttons_feature_config;
   }
 
+  static bool WithSupervisedUser() {
+    return GetParam().with_supervision.value_or(false);
+  }
+
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
@@ -379,6 +404,14 @@ class FirstRunParameterizedInteractiveUiTest
   }
 
  protected:
+  bool SupervisedProfilePromoHasBeenShown(Browser* browser) {
+    return feature_engagement::TrackerFactory::GetForBrowserContext(
+               browser->profile())
+        ->HasEverTriggered(
+            feature_engagement::kIPHSupervisedUserProfileSigninFeature,
+            /*from_window=*/false);
+  }
+
   void SimulateSignIn(const std::string& account_email,
                       const std::string& account_given_name) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
@@ -399,8 +432,13 @@ class FirstRunParameterizedInteractiveUiTest
       account_info.hosted_domain = "chromium.org";
     }
 
-    // Controls behavior of sync buttons.
+    // Controls behavior of sync buttons and supervision.
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+
+    if (GetParam().with_supervision.has_value()) {
+      mutator.set_is_subject_to_parental_controls(WithSupervisedUser());
+    }
+
     switch (SyncButtonsFeatureConfig()) {
       case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
         mutator
@@ -515,13 +553,17 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   // TODO(crbug.com/363254870, crbug.com/366082752): Re-enable this test
   should_skip_test = true;
 #endif  // WIN && ARCH_CPU_64_BITS
-  if (should_skip_test)
+  if (should_skip_test) {
     GTEST_SKIP() << "Test is flaky on win64";
+  }
 
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Sync not possible until buttons stop loading";
   }
+
+  auto iph_delay = AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+      base::Seconds(0));
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -649,10 +691,13 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+
+  EXPECT_EQ(WithSupervisedUser(),
+            SupervisedProfilePromoHasBeenShown(browser()));
 }
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
- bool should_skip_test = false;
+  bool should_skip_test = false;
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
   // TODO(crbug.com/366082752): Re-enable this test
   should_skip_test = true;
@@ -664,7 +709,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Decline is not possible until buttons stop loading";
   }
-
+  auto iph_delay = AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+      base::Seconds(0));
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -725,6 +771,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+
+  EXPECT_EQ(WithSupervisedUser(),
+            SupervisedProfilePromoHasBeenShown(browser()));
 }
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
