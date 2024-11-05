@@ -40,6 +40,8 @@ struct ViewportIntersectionState {
 
   // Outermost main frame's scroll position. Is not affected by
   // pinch-zoom/visual-viewport.
+  // TODO(366424215): This may not be useful at all, investigate and
+  // consider removing.
   gfx.mojom.Point outermost_main_frame_scroll_position;
 
   // Child frame's transform to the coordinate system of the main frame.
