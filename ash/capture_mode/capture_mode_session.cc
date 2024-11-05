@@ -52,6 +52,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1426,11 +1427,9 @@ void CaptureModeSession::AddScannerActionButtons(
     ScannerActionViewModel& action = scanner_actions[i];
     std::u16string text = action.GetText();
     const gfx::VectorIcon& icon = action.GetIcon();
-    // TODO: b/376578793 - Disable all action buttons in the button pressed
-    // callback to prevent multiple actions from being performed simultaneously.
-    base::RepeatingClosure pressed_callback = std::move(action).ToCallback(
-        base::BindRepeating(&CaptureModeSession::OnScannerActionExecuted,
-                            weak_ptr_factory_.GetWeakPtr()));
+    base::RepeatingClosure pressed_callback =
+        base::BindRepeating(&CaptureModeSession::OnScannerActionButtonPressed,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(action));
 
     capture_mode_util::AddActionButton(
         std::move(pressed_callback), std::move(text), &icon,
@@ -1438,11 +1437,46 @@ void CaptureModeSession::AddScannerActionButtons(
   }
 }
 
+void CaptureModeSession::SetActionButtonsEnabled(bool enabled) {
+  // This should only be called after Scanner actions have been added, so the
+  // action container view should always be defined here.
+  CHECK(action_container_view_);
+
+  for (views::View* action_button : action_container_view_->children()) {
+    action_button->SetEnabled(enabled);
+  }
+
+  // As `action_container_view_` is non-null here,
+  // `UpdateActionContainerWidget()` must have been previously called, so
+  // calling it again would be equivalent to calling
+  // `UpdateActionContainerWidgetBounds()`.
+  // Setting the enabled state of a button does not affect any bounds, so there
+  // is no need to call either method here.
+}
+
+void CaptureModeSession::OnScannerActionButtonPressed(
+    const ScannerActionViewModel& scanner_action) {
+  SetActionButtonsEnabled(false);
+  scanner_action.ExecuteAction(
+      base::BindOnce(&CaptureModeSession::OnScannerActionExecuted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void CaptureModeSession::OnScannerActionExecuted(bool success) {
   // Note that the currently selected region may not be the same as the region
   // which had the Scanner action button which triggered this.
   if (success) {
     controller_->Stop();
+  } else {
+    // If this is an action from an old region, and this is run while a new
+    // action from a new region is being executed, this may incorrectly
+    // re-enable the new region's actions before the new action is finished.
+    //
+    // TODO: b/377379657 - Gracefully handle this case by either cancelling
+    // actions that are being executed when selecting a new region, or by
+    // ensuring that new regions cannot be selected while an action is being
+    // executed.
+    SetActionButtonsEnabled(true);
   }
 }
 

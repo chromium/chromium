@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
 namespace gfx {
@@ -25,9 +24,6 @@ class ScannerCommandDelegate;
 // conversion to a user-facing text string, icon, and a callback.
 class ASH_EXPORT ScannerActionViewModel {
  public:
-  using ActionFinishedCallback =
-      base::RepeatingCallback<ScannerCommandCallback::RunType>;
-
   explicit ScannerActionViewModel(
       ScannerUnpopulatedAction unpopulated_action,
       base::WeakPtr<ScannerCommandDelegate> delegate);
@@ -42,20 +38,9 @@ class ASH_EXPORT ScannerActionViewModel {
   std::u16string GetText() const;
   const gfx::VectorIcon& GetIcon() const;
 
-  // Converts this action into a `base::RepeatingClosure` which, when called,
-  // executes the action.
-  // When the action is finished, `action_finished_callback` is called with a
-  // boolean value representing whether the action execution was successful.
-  //
-  // As the returned closure needs to take ownership of this action, this must
-  // be called with an rvalue reference to `this`, such as:
-  //     std::move(action).ToCallback(std::move(on_finished))
-  //
-  // Alternatively, if the intent is to _copy_ the action into the returned
-  // closure, explicitly create a copy:
-  //     ScannerActionViewModel(action).ToCallback(std::move(on_finished))
-  base::RepeatingClosure ToCallback(
-      ActionFinishedCallback action_finished_callback) &&;
+  // Executes this action, running the provided callback with a success value
+  // when the execution finishes.
+  void ExecuteAction(ScannerCommandCallback action_finished_callback) const;
 
  private:
   ScannerUnpopulatedAction unpopulated_action_;

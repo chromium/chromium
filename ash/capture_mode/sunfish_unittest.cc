@@ -68,8 +68,10 @@ namespace ash {
 
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
+using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::DoDefault;
+using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -1410,6 +1412,81 @@ TEST_F(ScannerTest, ActionButtonsDoNotEndSessionOnActionFailure) {
   fetch_action_details_future.Take().Run(nullptr, manta::MantaStatus());
 
   EXPECT_TRUE(capture_mode_controller->IsActive());
+}
+
+TEST_F(ScannerTest, ActionButtonsAreDisabledWhenScannerActionIsRunning) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(std::move(output), manta::MantaStatus()));
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionDetailsForImage)
+      .Times(1);
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(action_buttons,
+              AllOf(SizeIs(2), Each(Property("GetEnabled",
+                                             &views::View::GetEnabled, true))));
+  LeftClickOn(action_buttons[0]);
+
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      AllOf(SizeIs(2),
+            Each(Property("GetEnabled", &views::View::GetEnabled, false))));
+}
+
+TEST_F(ScannerTest,
+       ActionButtonsAreEnabledWhenScannerActionFinishesWithFailure) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(std::move(output), manta::MantaStatus()));
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_action_details_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionDetailsForImage)
+      .WillOnce(WithArg<2>(InvokeFuture(fetch_action_details_future)));
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(action_buttons,
+              AllOf(SizeIs(2), Each(Property("GetEnabled",
+                                             &views::View::GetEnabled, true))));
+  LeftClickOn(action_buttons[0]);
+  ASSERT_THAT(
+      session_test_api.GetActionButtons(),
+      AllOf(SizeIs(2),
+            Each(Property("GetEnabled", &views::View::GetEnabled, false))));
+  fetch_action_details_future.Take().Run(nullptr, manta::MantaStatus());
+
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              AllOf(SizeIs(2), Each(Property("GetEnabled",
+                                             &views::View::GetEnabled, true))));
 }
 
 // Tests that the copy text button is shown in default capture mode if text is

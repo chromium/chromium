@@ -139,9 +139,7 @@ TEST(ScannerSessionTest, RunningActionFailsIfActionDetailsFails) {
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  std::move(actions.front())
-      .ToCallback(action_finished_future.GetRepeatingCallback())
-      .Run();
+  actions.front().ExecuteAction(action_finished_future.GetCallback());
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -169,9 +167,7 @@ TEST(ScannerSessionTest, RunningActionFailsIfActionDetailsHaveMultipleObjects) {
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  std::move(actions.front())
-      .ToCallback(action_finished_future.GetRepeatingCallback())
-      .Run();
+  actions.front().ExecuteAction(action_finished_future.GetCallback());
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -200,9 +196,7 @@ TEST(ScannerSessionTest, RunningActionFailsIfActionDetailsHaveMultipleActions) {
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  std::move(actions.front())
-      .ToCallback(action_finished_future.GetRepeatingCallback())
-      .Run();
+  actions.front().ExecuteAction(action_finished_future.GetCallback());
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -237,9 +231,7 @@ TEST(ScannerSessionTest,
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  std::move(actions.front())
-      .ToCallback(action_finished_future.GetRepeatingCallback())
-      .Run();
+  actions.front().ExecuteAction(action_finished_future.GetCallback());
   ASSERT_TRUE(action_finished_future.IsReady());
 }
 
@@ -266,9 +258,7 @@ TEST(ScannerSessionTest,
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  std::move(actions.front())
-      .ToCallback(action_finished_future.GetRepeatingCallback())
-      .Run();
+  actions.front().ExecuteAction(action_finished_future.GetCallback());
   ASSERT_TRUE(action_finished_future.IsReady());
 }
 
@@ -310,9 +300,7 @@ TEST(ScannerSessionTest, RunningNewEventActionOpensUrl) {
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  std::move(actions.front())
-      .ToCallback(action_finished_future.GetRepeatingCallback())
-      .Run();
+  actions.front().ExecuteAction(action_finished_future.GetCallback());
 
   EXPECT_TRUE(action_finished_future.Get());
 }
@@ -361,9 +349,7 @@ TEST(ScannerSessionTest, RunningNewContactActionOpensUrl) {
   std::vector<ScannerActionViewModel> actions = future.Take();
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
-  std::move(actions.front())
-      .ToCallback(action_finished_future.GetRepeatingCallback())
-      .Run();
+  actions.front().ExecuteAction(action_finished_future.GetCallback());
 
   EXPECT_TRUE(action_finished_future.Get());
 }

@@ -25,10 +25,9 @@ namespace {
 
 // Executes the populated action, if it exists, calling
 // `action_finished_callback` with the result of the execution.
-void ExecutePopulatedAction(
-    base::WeakPtr<ScannerCommandDelegate> delegate,
-    ScannerActionViewModel::ActionFinishedCallback action_finished_callback,
-    std::optional<ScannerAction> populated_action) {
+void ExecutePopulatedAction(base::WeakPtr<ScannerCommandDelegate> delegate,
+                            ScannerCommandCallback action_finished_callback,
+                            std::optional<ScannerAction> populated_action) {
   if (!populated_action.has_value()) {
     std::move(action_finished_callback).Run(false);
     return;
@@ -37,17 +36,6 @@ void ExecutePopulatedAction(
   HandleScannerCommand(std::move(delegate),
                        ScannerActionToCommand(std::move(*populated_action)),
                        std::move(action_finished_callback));
-}
-
-// Populates the unpopulated action and executes the resulting populated action,
-// calling `action_finished_callback` with the result of the execution.
-void PopulateAndExecuteAction(
-    base::WeakPtr<ScannerCommandDelegate> delegate,
-    ScannerActionViewModel::ActionFinishedCallback action_finished_callback,
-    const ScannerUnpopulatedAction& unpopulated_action) {
-  unpopulated_action.PopulateToVariant(
-      base::BindOnce(&ExecutePopulatedAction, std::move(delegate),
-                     std::move(action_finished_callback)));
 }
 
 }  // namespace
@@ -102,16 +90,10 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
   return kCaptureModeIcon;
 }
 
-base::RepeatingClosure ScannerActionViewModel::ToCallback(
-    ScannerActionViewModel::ActionFinishedCallback
-        action_finished_callback) && {
-  // Every time this callback is called, a copy of the `delegate` and
-  // `action_finished_callback` will be made to call `RunAction`. These copies
-  // are cheap as they are `base::WeakPtr` and `base::RepeatingCallback` (which
-  // internally uses a `scoped_refptr<BindState>`) respectively.
-  return base::BindRepeating(&PopulateAndExecuteAction, std::move(delegate_),
-                             std::move(action_finished_callback),
-                             std::move(unpopulated_action_));
+void ScannerActionViewModel::ExecuteAction(
+    ScannerCommandCallback action_finished_callback) const {
+  unpopulated_action_.PopulateToVariant(base::BindOnce(
+      &ExecutePopulatedAction, delegate_, std::move(action_finished_callback)));
 }
 
 }  // namespace ash

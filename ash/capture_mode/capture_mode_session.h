@@ -53,6 +53,7 @@ class CaptureWindowObserver;
 class CursorSetter;
 class PillButton;
 class RecordingTypeMenuView;
+class ScannerActionViewModel;
 class UserNudgeController;
 class WindowDimmer;
 
@@ -417,6 +418,14 @@ class ASH_EXPORT CaptureModeSession
   // Removes any existing action buttons from `action_container_view_` if the
   // `action_container_widget_` exists,
   void RemoveAllActionButtons();
+
+  // Sets the enabled state of all existing action buttons. Action buttons that
+  // are added after this is called will still be enabled by default.
+  void SetActionButtonsEnabled(bool enabled);
+
+  // Called back when a Scanner action button is pressed.
+  void OnScannerActionButtonPressed(
+      const ScannerActionViewModel& scanner_action);
 
   // Called back when a Scanner action, which was executed from the user
   // clicking an action button added by `AddScannerActionButtons`, finishes
