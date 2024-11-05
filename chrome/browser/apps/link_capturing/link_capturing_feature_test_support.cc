@@ -22,21 +22,37 @@
 namespace apps::test {
 
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
-    std::optional<bool> override_captures_by_default) {
+    std::optional<bool> override_captures_by_default,
+    bool use_v2) {
   CHECK_IS_TEST();
 #if BUILDFLAG(IS_CHROMEOS)
   CHECK(!override_captures_by_default || !override_captures_by_default.value());
+  // TODO(crbug.com/376922620): Create a feature flag to turn off the v1
+  // throttle.
+  if (use_v2) {
+    return {{::features::kPwaNavigationCapturing,
+             {{::features::kNavigationCapturingDefaultState.name,
+               "reimpl_default_off"}}}};
+  }
   return {{::apps::features::kLinkCapturingUiUpdate, {}}};
 #else
   // TODO(crbug.com/351775835): Integrate testing for all enum states of
   // `CapturingState`.
+  std::string on_by_default_label =
+      use_v2 ? "reimpl_default_on" : "on_by_default";
+  std::string off_by_default_label =
+      use_v2 ? "reimpl_default_off" : "off_by_default";
+
   bool should_override_by_default = override_captures_by_default.value_or(
       ::features::kNavigationCapturingDefaultState.default_value ==
-      ::features::CapturingState::kDefaultOn);
+          ::features::CapturingState::kDefaultOn ||
+      ::features::kNavigationCapturingDefaultState.default_value ==
+          ::features::CapturingState::kReimplDefaultOn);
+
   return {{::features::kPwaNavigationCapturing,
            {{::features::kNavigationCapturingDefaultState.name,
-             std::string(should_override_by_default ? "on_by_default"
-                                                    : "off_by_default")}}}};
+             std::string(should_override_by_default ? on_by_default_label
+                                                    : off_by_default_label)}}}};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX() {

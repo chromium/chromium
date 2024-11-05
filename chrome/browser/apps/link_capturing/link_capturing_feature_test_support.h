@@ -22,7 +22,8 @@ namespace apps::test {
 // file itself.
 // Note: `captures_by_default` being set to true is not supported by ChromeOS.
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
-    std::optional<bool> override_captures_by_default = std::nullopt);
+    std::optional<bool> override_captures_by_default = std::nullopt,
+    bool use_v2 = false);
 
 std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX();
 
