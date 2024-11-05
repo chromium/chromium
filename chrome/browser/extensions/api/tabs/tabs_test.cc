@@ -1674,9 +1674,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithId) {
 
   // Confirms that TabManager sees the tab as discarded.
   web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_TRUE(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                  web_contents)
-                  ->IsDiscarded());
+  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                web_contents)
+                ->GetTabState(),
+            ::mojom::LifecycleUnitState::DISCARDED);
 
   // Make sure the returned tab is the one discarded and its discarded state is
   // correct.
@@ -1721,10 +1722,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
       discard.get(), base::StringPrintf("[%u]", tab_invalid_id),
       browser()->profile());
 
-  // Discarded state should still be false as no tab was discarded.
-  EXPECT_FALSE(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                   browser()->tab_strip_model()->GetWebContentsAt(1))
-                   ->IsDiscarded());
+  // State should still be `ACTIVE` as no tab was discarded.
+  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                browser()->tab_strip_model()->GetWebContentsAt(1))
+                ->GetTabState(),
+            ::mojom::LifecycleUnitState::ACTIVE);
 
   // Check error message.
   EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
@@ -1752,9 +1754,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
 
   // Confirms that TabManager sees the tab as discarded.
   web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_TRUE(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                  web_contents)
-                  ->IsDiscarded());
+  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                web_contents)
+                ->GetTabState(),
+            ::mojom::LifecycleUnitState::DISCARDED);
 
   // Make sure the returned tab is the one discarded and its discarded state is
   // correct.

@@ -84,7 +84,8 @@ class TabManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   bool IsTabDiscarded(content::WebContents* content) {
-    return TabLifecycleUnitExternal::FromWebContents(content)->IsDiscarded();
+    return TabLifecycleUnitExternal::FromWebContents(content)->GetTabState() ==
+           ::mojom::LifecycleUnitState::DISCARDED;
   }
 
  protected:

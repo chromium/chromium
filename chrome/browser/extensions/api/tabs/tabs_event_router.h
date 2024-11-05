@@ -88,11 +88,13 @@ class TabsEventRouter : public TabStripModelObserver,
                         const gfx::Image& image) override;
 
   // resource_coordinator::TabLifecycleObserver:
-  void OnDiscardedStateChange(content::WebContents* contents,
-                              ::mojom::LifecycleUnitDiscardReason reason,
-                              bool is_discarded) override;
-  void OnAutoDiscardableStateChange(content::WebContents* contents,
-                                    bool is_auto_discardable) override;
+  void OnTabLifecycleStateChange(
+      content::WebContents* contents,
+      ::mojom::LifecycleUnitState previous_state,
+      ::mojom::LifecycleUnitState new_state,
+      std::optional<LifecycleUnitDiscardReason> discard_reason) override;
+  void OnTabAutoDiscardableStateChange(content::WebContents* contents,
+                                       bool is_auto_discardable) override;
 
  private:
   // Methods called from OnTabStripModelChanged.

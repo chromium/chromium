@@ -71,12 +71,17 @@ class MockTabLifecycleObserver : public TabLifecycleObserver {
   MockTabLifecycleObserver(const MockTabLifecycleObserver&) = delete;
   MockTabLifecycleObserver& operator=(const MockTabLifecycleObserver&) = delete;
 
-  MOCK_METHOD3(OnDiscardedStateChange,
-               void(content::WebContents* contents,
-                    LifecycleUnitDiscardReason reason,
-                    bool is_discarded));
-  MOCK_METHOD2(OnAutoDiscardableStateChange,
-               void(content::WebContents* contents, bool is_auto_discardable));
+  MOCK_METHOD(void,
+              OnTabLifecycleStateChange,
+              (content::WebContents * contents,
+               mojom::LifecycleUnitState previous_state,
+               mojom::LifecycleUnitState new_state,
+               std::optional<LifecycleUnitDiscardReason> discard_reason),
+              (override));
+  MOCK_METHOD(void,
+              OnTabAutoDiscardableStateChange,
+              (content::WebContents * contents, bool is_auto_discardable),
+              (override));
 };
 
 }  // namespace
@@ -260,7 +265,7 @@ TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
   EXPECT_CALL(observer_,
-              OnAutoDiscardableStateChange(web_contents_.get(), false));
+              OnTabAutoDiscardableStateChange(web_contents_.get(), false));
   tab_lifecycle_unit.SetAutoDiscardable(false);
   ::testing::Mock::VerifyAndClear(&observer_);
   EXPECT_FALSE(tab_lifecycle_unit.IsAutoDiscardable());
@@ -269,7 +274,7 @@ TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
       DecisionFailureReason::LIVE_STATE_EXTENSION_DISALLOWED);
 
   EXPECT_CALL(observer_,
-              OnAutoDiscardableStateChange(web_contents_.get(), true));
+              OnTabAutoDiscardableStateChange(web_contents_.get(), true));
   tab_lifecycle_unit.SetAutoDiscardable(true);
   ::testing::Mock::VerifyAndClear(&observer_);
   EXPECT_TRUE(tab_lifecycle_unit.IsAutoDiscardable());

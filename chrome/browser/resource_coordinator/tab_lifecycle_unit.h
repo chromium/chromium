@@ -104,11 +104,11 @@ class TabLifecycleUnitSource::TabLifecycleUnit
 
   // TabLifecycleUnitExternal:
   content::WebContents* GetWebContents() const override;
-  bool IsDiscarded() const override;
   bool IsAutoDiscardable() const override;
   void SetAutoDiscardable(bool auto_discardable) override;
   bool DiscardTab(mojom::LifecycleUnitDiscardReason reason,
                   uint64_t memory_footprint_estimate) override;
+  mojom::LifecycleUnitState GetTabState() const override;
 
   // LifecycleUnit and TabLifecycleUnitExternal:
   base::Time GetLastFocusedTime() const override;

@@ -1321,7 +1321,8 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
               web_contents);
 
       if (!MatchesBool(params->query_info.discarded,
-                       tab_lifecycle_unit_external->IsDiscarded())) {
+                       tab_lifecycle_unit_external->GetTabState() ==
+                           ::mojom::LifecycleUnitState::DISCARDED)) {
         continue;
       }
 

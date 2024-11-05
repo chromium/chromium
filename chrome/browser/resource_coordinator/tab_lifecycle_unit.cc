@@ -21,6 +21,8 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
@@ -456,7 +458,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetAutoDiscardable(
       web_contents(), auto_discardable_);
 
   for (auto& observer : *observers_)
-    observer.OnAutoDiscardableStateChange(web_contents(), auto_discardable_);
+    observer.OnTabAutoDiscardableStateChange(web_contents(), auto_discardable_);
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
@@ -617,14 +619,15 @@ content::WebContents* TabLifecycleUnitSource::TabLifecycleUnit::GetWebContents()
   return web_contents();
 }
 
-bool TabLifecycleUnitSource::TabLifecycleUnit::IsDiscarded() const {
-  return GetState() == LifecycleUnitState::DISCARDED;
-}
-
 bool TabLifecycleUnitSource::TabLifecycleUnit::DiscardTab(
     mojom::LifecycleUnitDiscardReason reason,
     uint64_t memory_footprint_estimate) {
   return Discard(reason, memory_footprint_estimate);
+}
+
+mojom::LifecycleUnitState
+TabLifecycleUnitSource::TabLifecycleUnit::GetTabState() const {
+  return GetState();
 }
 
 TabLifecycleUnitSource* TabLifecycleUnitSource::TabLifecycleUnit::GetTabSource()
@@ -690,14 +693,16 @@ void TabLifecycleUnitSource::TabLifecycleUnit::OnLifecycleUnitStateChanged(
       << "Cannot transition TabLifecycleUnit state from " << last_state
       << " to " << GetState() << " with reason " << reason;
 
-  // Invoke OnDiscardedStateChange() if necessary.
-  const bool was_discarded = last_state == LifecycleUnitState::DISCARDED;
-  const bool is_discarded = GetState() == LifecycleUnitState::DISCARDED;
-  if (was_discarded != is_discarded) {
-    for (auto& observer : *observers_) {
-      observer.OnDiscardedStateChange(web_contents(), GetDiscardReason(),
-                                      is_discarded);
-    }
+  // Populate `discard_reason` if the last or current state is `DISCARDED`.
+  std::optional<LifecycleUnitDiscardReason> discard_reason;
+  if (last_state == LifecycleUnitState::DISCARDED ||
+      GetState() == LifecycleUnitState::DISCARDED) {
+    discard_reason = discard_reason_;
+  }
+
+  for (auto& observer : *observers_) {
+    observer.OnTabLifecycleStateChange(web_contents(), last_state, GetState(),
+                                       discard_reason);
   }
 }
 

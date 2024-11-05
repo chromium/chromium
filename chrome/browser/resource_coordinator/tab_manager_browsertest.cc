@@ -70,7 +70,8 @@ namespace {
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 
 bool IsTabDiscarded(content::WebContents* web_contents) {
-  return TabLifecycleUnitExternal::FromWebContents(web_contents)->IsDiscarded();
+  return TabLifecycleUnitExternal::FromWebContents(web_contents)
+             ->GetTabState() == ::mojom::LifecycleUnitState::DISCARDED;
 }
 
 class ExpectStateTransitionObserver : public LifecycleUnitObserver {
@@ -132,11 +133,14 @@ class DiscardWaiter : public TabLifecycleObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  void OnDiscardedStateChange(content::WebContents* contents,
-                              LifecycleUnitDiscardReason reason,
-                              bool is_discarded) override {
-    if (is_discarded)
+  void OnTabLifecycleStateChange(
+      content::WebContents* contents,
+      mojom::LifecycleUnitState previous_state,
+      mojom::LifecycleUnitState new_state,
+      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
+    if (new_state == mojom::LifecycleUnitState::DISCARDED) {
       run_loop_.Quit();
+    }
   }
 
   base::RunLoop run_loop_;

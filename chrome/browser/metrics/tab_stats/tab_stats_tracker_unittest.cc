@@ -117,7 +117,15 @@ class TestTabStatsTracker : public TabStatsTracker {
                             bool is_discarded) {
     std::unique_ptr<content::WebContents> tab =
         test_harness->CreateTestWebContents();
-    OnDiscardedStateChange(tab.get(), reason, is_discarded);
+    if (is_discarded) {
+      OnTabLifecycleStateChange(
+          tab.get(), /*previous_state=*/::mojom::LifecycleUnitState::ACTIVE,
+          /*new_state=*/::mojom::LifecycleUnitState::DISCARDED, reason);
+    } else {
+      OnTabLifecycleStateChange(
+          tab.get(), /*previous_state=*/::mojom::LifecycleUnitState::DISCARDED,
+          /*new_state=*/::mojom::LifecycleUnitState::ACTIVE, reason);
+    }
   }
 
   void CheckDailyEventInterval() { daily_event_for_testing()->CheckInterval(); }

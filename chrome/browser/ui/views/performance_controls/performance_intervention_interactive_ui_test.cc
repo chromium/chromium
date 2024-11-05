@@ -77,10 +77,12 @@ class DiscardWaiter : public resource_coordinator::TabLifecycleObserver {
 
   void Wait() { run_loop_->Run(); }
 
-  void OnDiscardedStateChange(content::WebContents* contents,
-                              LifecycleUnitDiscardReason reason,
-                              bool is_discarded) override {
-    if (is_discarded) {
+  void OnTabLifecycleStateChange(
+      content::WebContents* contents,
+      mojom::LifecycleUnitState previous_state,
+      mojom::LifecycleUnitState new_state,
+      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
+    if (new_state == mojom::LifecycleUnitState::DISCARDED) {
       run_loop_->Quit();
     }
   }

@@ -486,8 +486,9 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   // Note that while a discarded tab *must* have an unloaded status, its
   // possible for an unloaded tab to not be discarded (session restored tabs
   // whose loads have been deferred, for example).
-  tab_object.discarded =
-      tab_lifecycle_unit_external && tab_lifecycle_unit_external->IsDiscarded();
+  tab_object.discarded = tab_lifecycle_unit_external &&
+                         tab_lifecycle_unit_external->GetTabState() ==
+                             ::mojom::LifecycleUnitState::DISCARDED;
   DCHECK(!tab_object.discarded ||
          tab_object.status == api::tabs::TabStatus::kUnloaded);
   tab_object.auto_discardable =

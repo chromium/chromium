@@ -460,17 +460,18 @@ void TabStatsTracker::OnResume() {
 }
 
 // resource_coordinator::TabLifecycleObserver:
-void TabStatsTracker::OnDiscardedStateChange(
+void TabStatsTracker::OnTabLifecycleStateChange(
     content::WebContents* contents,
-    ::mojom::LifecycleUnitDiscardReason reason,
-    bool is_discarded) {
-  // Increment the count in the data store for tabs metrics reporting.
-  tab_stats_data_store_->OnTabDiscardStateChange(reason, is_discarded);
+    mojom::LifecycleUnitState previous_state,
+    mojom::LifecycleUnitState new_state,
+    std::optional<LifecycleUnitDiscardReason> discard_reason) {
+  if (previous_state == ::mojom::LifecycleUnitState::DISCARDED ||
+      new_state == ::mojom::LifecycleUnitState::DISCARDED) {
+    tab_stats_data_store_->OnTabDiscardStateChange(
+        discard_reason.value(),
+        new_state == ::mojom::LifecycleUnitState::DISCARDED);
+  }
 }
-
-void TabStatsTracker::OnAutoDiscardableStateChange(
-    content::WebContents* contents,
-    bool is_auto_discardable) {}
 
 void TabStatsTracker::OnInitialOrInsertedTab(
     content::WebContents* web_contents) {
