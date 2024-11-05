@@ -249,8 +249,14 @@ AutofillContextMenuManager::AutofillContextMenuManager(
 AutofillContextMenuManager::~AutofillContextMenuManager() = default;
 
 void AutofillContextMenuManager::AppendItems() {
-  MaybeAddAutofillFeedbackItem();
-  MaybeAddAutofillManualFallbackItems();
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManualFallbackAvailable)) {
+    MaybeAddAutofillManualFallbackItems();
+    MaybeAddAutofillFeedbackItem();
+  } else {
+    MaybeAddAutofillFeedbackItem();
+    MaybeAddAutofillManualFallbackItems();
+  }
 }
 
 bool AutofillContextMenuManager::IsCommandIdSupported(int command_id) {
@@ -428,6 +434,16 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   menu_model_->AddTitle(
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
 
+  if (add_passwords_fallback) {
+    AddPasswordsManualFallbackItems(*password_manager_driver);
+
+    const bool select_passwords_option_shown =
+        UserHasPasswordsSaved(*password_manager_driver);
+    if (select_passwords_option_shown) {
+      LogSelectPasswordManualFallbackContextMenuEntryShown(
+          CHECK_DEREF(password_manager_driver));
+    }
+  }
   if (add_prediction_improvements) {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
@@ -436,7 +452,6 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
             vector_icons::kLocationOnChromeRefreshIcon, ui::kColorIcon,
             kContextMenuIconSize));
   }
-
   if (add_address_fallback) {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
@@ -460,16 +475,6 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
 
     LogPaymentsManualFallbackContextMenuEntryShown(
         CHECK_DEREF(autofill_driver));
-  }
-  if (add_passwords_fallback) {
-    AddPasswordsManualFallbackItems(*password_manager_driver);
-
-    const bool select_passwords_option_shown =
-        UserHasPasswordsSaved(*password_manager_driver);
-    if (select_passwords_option_shown) {
-      LogSelectPasswordManualFallbackContextMenuEntryShown(
-          CHECK_DEREF(password_manager_driver));
-    }
   }
   if (add_plus_address_fallback) {
     menu_model_->AddItemWithStringIdAndIcon(
