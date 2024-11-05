@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "collaboration_service_factory.h",
     "collaboration_service_factory.mm",
+    "ios_collaboration_controller_delegate.h",
+    "ios_collaboration_controller_delegate.mm",
   ]
 
   deps = [
@@ -26,7 +28,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "collaboration_service_factory_unittest.mm" ]
+  sources = [
+    "collaboration_service_factory_unittest.mm",
+    "ios_collaboration_controller_delegate_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base",
