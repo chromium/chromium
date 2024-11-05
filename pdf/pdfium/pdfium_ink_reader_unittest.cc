@@ -55,10 +55,8 @@ TEST_P(PDFiumInkReaderTest, Basic) {
   EXPECT_FALSE(ink::Intersects(ink::Point{194, 204}, shape, no_transform));
 
   // Points that do intersect.
-  // TODO(crbug.com/353942910): These should return true once a tessellator is
-  // available.
-  EXPECT_FALSE(ink::Intersects(ink::Point{133, 212}, shape, no_transform));
-  EXPECT_FALSE(ink::Intersects(ink::Point{194, 203}, shape, no_transform));
+  EXPECT_TRUE(ink::Intersects(ink::Point{133, 212}, shape, no_transform));
+  EXPECT_TRUE(ink::Intersects(ink::Point{194, 203}, shape, no_transform));
 }
 
 TEST_P(PDFiumInkReaderTest, NoPage) {

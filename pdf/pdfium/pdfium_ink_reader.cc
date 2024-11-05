@@ -18,6 +18,7 @@
 #include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/ink/src/ink/geometry/point.h"
+#include "third_party/ink/src/ink/geometry/tessellator.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -65,11 +66,10 @@ ink::Point GetTransformedInkPoint(const gfx::AxisTransform2d& transform,
 // Creates an ink::Mesh from `polyline`. If it is valid, append it to `meshes`.
 void AppendPolylineToMeshesList(std::vector<ink::Mesh>& meshes,
                                 const std::vector<ink::Point>& polyline) {
-  // TODO(crbug.com/353942910): Save `polyline` into an `ink::Mesh` once
-  // ink::CreateMeshFromPolyline() is available to do tessellation.
-  //
-  // For now, just append an empty mesh.
-  meshes.emplace_back();
+  auto mesh = ink::CreateMeshFromPolyline(polyline);
+  if (mesh.ok()) {
+    meshes.push_back(*mesh);
+  }
 }
 
 std::optional<ink::ModeledShape> ReadV2InkModeledShapeFromPath(
@@ -128,8 +128,7 @@ std::optional<ink::ModeledShape> ReadV2InkModeledShapeFromPath(
   }
 
   // After the loop is done, take care of the remaining values.
-  // TODO(crbug.com/353942910): Actually add the call. Leave it out
-  // intentionally to make the unit test pass without a working tessellator.
+  AppendPolylineToMeshesList(meshes, current_polyline);
 
   // Note that `shape` only has enough data for use with ink::Intersects(). It
   // has no outline.
