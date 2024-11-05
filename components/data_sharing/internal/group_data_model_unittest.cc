@@ -67,6 +67,10 @@ std::unique_ptr<syncer::EntityChange> EntityChangeDeleteFromSpecifics(
   return syncer::EntityChange::CreateDelete(specifics.collaboration_id());
 }
 
+MATCHER(NotNullTime, "") {
+  return !arg.is_null();
+}
+
 MATCHER_P(HasDisplayName, expected_name, "") {
   return arg.display_name == expected_name;
 }
@@ -89,6 +93,14 @@ class MockModelObserver : public GroupDataModel::Observer {
   MOCK_METHOD(void, OnGroupAdded, (const GroupId& group_id), (override));
   MOCK_METHOD(void, OnGroupUpdated, (const GroupId& group_id), (override));
   MOCK_METHOD(void, OnGroupDeleted, (const GroupId& group_id), (override));
+  MOCK_METHOD(void,
+              OnMemberAdded,
+              (const GroupId&, const std::string&, const base::Time&),
+              (override));
+  MOCK_METHOD(void,
+              OnMemberRemoved,
+              (const GroupId&, const std::string&, const base::Time&),
+              (override));
 };
 
 class GroupDataModelTest : public testing::Test {
@@ -167,6 +179,18 @@ class GroupDataModelTest : public testing::Test {
   void MimicMemberAddedServerSide(const GroupId& group_id,
                                   const std::string& member_gaia_id) {
     sdk_delegate_.AddMember(group_id, member_gaia_id);
+
+    syncer::EntityChangeList entity_changes;
+    entity_changes.push_back(EntityChangeUpdateFromSpecifics(
+        MakeSpecifics(group_id, next_changed_at_millis_since_unix_epoch_++)));
+    collaboration_group_bridge_->ApplyIncrementalSyncChanges(
+        collaboration_group_bridge_->CreateMetadataChangeList(),
+        std::move(entity_changes));
+  }
+
+  void MimicMemberRemovedServerSide(const GroupId& group_id,
+                                    const std::string& member_gaia_id) {
+    sdk_delegate_.RemoveMember(group_id, member_gaia_id);
 
     syncer::EntityChangeList entity_changes;
     entity_changes.push_back(EntityChangeUpdateFromSpecifics(
@@ -275,6 +299,27 @@ TEST_F(GroupDataModelTest, ShouldUpdateGroup) {
 
   EXPECT_THAT(model().GetGroup(group_id),
               Optional(HasMemberWithGaiaId(member_gaia_id)));
+}
+
+TEST_F(GroupDataModelTest, ShouldNotifyAboutGroupChanges) {
+  WaitForModelLoaded();
+
+  const GroupId group_id = MimicGroupAddedServerSide("group");
+  WaitForGroupAdded(group_id);
+
+  // Test that OnMemberAdded() is called when a member is added.
+  std::string member_gaia_id = "gaia_id1";
+  EXPECT_CALL(model_observer(),
+              OnMemberAdded(group_id, member_gaia_id, NotNullTime()));
+  MimicMemberAddedServerSide(group_id, member_gaia_id);
+  WaitForGroupUpdated(group_id);
+  testing::Mock::VerifyAndClearExpectations(&model_observer());
+
+  // Test that OnMemberRemoved() is called when a member is removed.
+  EXPECT_CALL(model_observer(),
+              OnMemberRemoved(group_id, member_gaia_id, NotNullTime()));
+  MimicMemberRemovedServerSide(group_id, member_gaia_id);
+  WaitForGroupUpdated(group_id);
 }
 
 TEST_F(GroupDataModelTest, ShouldDeleteGroup) {

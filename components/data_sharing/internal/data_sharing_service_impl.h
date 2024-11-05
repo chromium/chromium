@@ -43,7 +43,7 @@ class PreviewServerProxy;
 
 // The internal implementation of the DataSharingService.
 class DataSharingServiceImpl : public DataSharingService,
-                               public GroupDataModel::Observer{
+                               public GroupDataModel::Observer {
  public:
   // `identity_manager` must not be null and must outlive this object.
   // `sdk_delegate` is nullable, indicating that SDK is not available.
@@ -125,6 +125,12 @@ class DataSharingServiceImpl : public DataSharingService,
   void OnGroupAdded(const GroupId& group_id) override;
   void OnGroupUpdated(const GroupId& group_id) override;
   void OnGroupDeleted(const GroupId& group_id) override;
+  void OnMemberAdded(const GroupId& group_id,
+                     const std::string& member_gaia_id,
+                     const base::Time& event_time) override;
+  void OnMemberRemoved(const GroupId& group_id,
+                       const std::string& member_gaia_id,
+                       const base::Time& event_time) override;
 
   CollaborationGroupSyncBridge* GetCollaborationGroupSyncBridgeForTesting();
 

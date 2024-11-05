@@ -58,6 +58,22 @@ void FakeDataSharingSDKDelegate::AddMember(const GroupId& group_id,
   *group_it->second.add_members() = member;
 }
 
+void FakeDataSharingSDKDelegate::RemoveMember(
+    const GroupId& group_id,
+    const std::string& member_gaia_id) {
+  auto group_it = groups_.find(group_id);
+  ASSERT_TRUE(group_it != groups_.end());
+
+  auto* mutable_members = group_it->second.mutable_members();
+  mutable_members->erase(
+      std::remove_if(
+          mutable_members->begin(), mutable_members->end(),
+          [&member_gaia_id](const data_sharing_pb::GroupMember& member) {
+            return member.gaia_id() == member_gaia_id;
+          }),
+      mutable_members->end());
+}
+
 void FakeDataSharingSDKDelegate::AddAccount(const std::string& email,
                                             const std::string& gaia_id) {
   email_to_gaia_id_[email] = gaia_id;

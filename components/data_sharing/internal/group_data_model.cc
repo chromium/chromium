@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "components/data_sharing/internal/group_data_proto_utils.h"
 #include "components/data_sharing/internal/group_data_store.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 
@@ -237,17 +238,18 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
       continue;
     }
 
-    const bool is_existing_group =
-        group_data_store_.GetGroupData(group_id).has_value();
+    const auto old_group_data_opt = group_data_store_.GetGroupData(group_id);
     group_data_store_.StoreGroupData(requested_groups_and_versions.at(group_id),
                                      group_data);
-    // TODO(crbug.com/301390275): compute deltas for observers.
     for (auto& observer : observers_) {
-      if (is_existing_group) {
+      if (old_group_data_opt.has_value()) {
         observer.OnGroupUpdated(group_id);
       } else {
         observer.OnGroupAdded(group_id);
       }
+    }
+    if (old_group_data_opt.has_value()) {
+      NotifyObserversAboutChangedMembers(*old_group_data_opt, group_data);
     }
   }
 
@@ -255,6 +257,44 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
   if (has_pending_changes_) {
     // Some changes happened while the fetch was in flight, process them now.
     ProcessGroupChanges(/*is_initial_load=*/false);
+  }
+}
+
+void GroupDataModel::NotifyObserversAboutChangedMembers(
+    const GroupData& old_group_data,
+    const GroupData& new_group_data) {
+  std::vector<std::string> old_members_gaia_ids;
+  for (const auto& member : old_group_data.members) {
+    old_members_gaia_ids.push_back(member.gaia_id);
+  }
+  std::vector<std::string> new_members_gaia_ids;
+  for (const auto& member : new_group_data.members) {
+    new_members_gaia_ids.push_back(member.gaia_id);
+  }
+
+  std::vector<std::string> added_members_gaia_ids;
+  base::ranges::set_difference(
+      new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
+      old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
+      std::back_inserter(added_members_gaia_ids));
+
+  std::vector<std::string> removed_members_gaia_ids;
+  base::ranges::set_difference(
+      old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
+      new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
+      std::back_inserter(removed_members_gaia_ids));
+
+  for (auto& observer : observers_) {
+    // TODO(crbug.com/377215683): pass the actual event time (at least derived
+    // from CollaborationGroupSpecifics).
+    for (auto& member_gaia_id : added_members_gaia_ids) {
+      observer.OnMemberAdded(new_group_data.group_token.group_id,
+                             member_gaia_id, base::Time::Now());
+    }
+    for (auto& member_gaia_id : removed_members_gaia_ids) {
+      observer.OnMemberRemoved(new_group_data.group_token.group_id,
+                               member_gaia_id, base::Time::Now());
+    }
   }
 }
 

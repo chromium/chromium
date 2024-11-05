@@ -69,11 +69,22 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     // been already loaded before starting to observe the service.
     virtual void OnGroupDataModelLoaded() {}
 
+    // Called when the group data model has been changed.
     virtual void OnGroupChanged(const GroupData& group_data) {}
     // User either created a new group or has been invited to the existing one.
     virtual void OnGroupAdded(const GroupData& group_data) {}
     // Either group has been deleted or user has been removed from the group.
     virtual void OnGroupRemoved(const GroupId& group_id) {}
+
+    // Two methods below are called in addition to OnGroupChanged().
+    // Called when a new member has been added to the group.
+    virtual void OnGroupMemberAdded(const GroupId& group_id,
+                                    const std::string& member_gaia_id,
+                                    const base::Time& event_time) {}
+    // Called when a member has been removed from the group.
+    virtual void OnGroupMemberRemoved(const GroupId& group_id,
+                                      const std::string& member_gaia_id,
+                                      const base::Time& event_time) {}
 
     // The update details of a service's collaboration status.
     struct ServiceStatusUpdate {
@@ -133,8 +144,7 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Synchronously reads a group from the local storage. Returns nullopt if the
   // group doesn't exist, it has not been fetched from the server yet, or the
   // model is not loaded yet.
-  virtual std::optional<GroupData> ReadGroup(
-      const GroupId& group_id) = 0;
+  virtual std::optional<GroupData> ReadGroup(const GroupId& group_id) = 0;
   // Synchronously reads all groups from the local storage. Returns empty set
   // if the groups haven't been fetched from the server yet, or the model is not
   // loaded yet.

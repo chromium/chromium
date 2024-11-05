@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/internal/group_data_store.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
@@ -30,9 +31,6 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
     Observer() = default;
     ~Observer() override = default;
 
-    // TODO(crbug.com/301390275): Revisit observer methods, in particular
-    // include something around update deltas.
-
     // Indicates that data is loaded from the disk, it can still be stale
     // though. GetGroup() / GetAllGroups() returns no data prior to this call.
     virtual void OnModelLoaded() = 0;
@@ -40,6 +38,13 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
     virtual void OnGroupAdded(const GroupId& group_id) = 0;
     virtual void OnGroupUpdated(const GroupId& group_id) = 0;
     virtual void OnGroupDeleted(const GroupId& group_id) = 0;
+
+    virtual void OnMemberAdded(const GroupId& group_id,
+                               const std::string& member_gaia_id,
+                               const base::Time& event_time) = 0;
+    virtual void OnMemberRemoved(const GroupId& group_id,
+                                 const std::string& member_gaia_id,
+                                 const base::Time& event_time) = 0;
   };
 
   // `collaboration_group_sync_bridge` and `sdk_delegate` must not be null and
@@ -89,6 +94,9 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
       const std::map<GroupId, VersionToken>& requested_groups_and_versions,
       const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
           read_groups_result);
+
+  void NotifyObserversAboutChangedMembers(const GroupData& old_group_data,
+                                          const GroupData& new_group_data);
 
   GroupDataStore group_data_store_;
   bool is_group_data_store_loaded_ = false;

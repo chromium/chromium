@@ -30,6 +30,7 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
   GroupId AddGroupAndReturnId(const std::string& display_name);
 
   void AddMember(const GroupId& group_id, const std::string& member_gaia_id);
+  void RemoveMember(const GroupId& group_id, const std::string& member_gaia_id);
 
   void AddAccount(const std::string& email, const std::string& gaia_id);
 
