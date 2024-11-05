@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
@@ -91,8 +90,7 @@ KioskSystemSession::KioskSystemSession(
       InitForWebKiosk(app_name);
       break;
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/361017777): call InitForIwaKiosk or reus existing init.
-      NOTIMPLEMENTED();
+      InitForIwaKiosk(app_name);
       break;
   }
 }
@@ -102,24 +100,28 @@ KioskSystemSession::~KioskSystemSession() = default;
 void KioskSystemSession::InitForChromeAppKiosk() {
   const std::string& app_id = kiosk_app_id_.app_id.value();
   browser_session_.InitForChromeAppKiosk(app_id);
-  StartFloatingAccessibilityMenu();
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
-
-  periodic_metrics_service_->RecordPreviousSessionMetrics();
-  periodic_metrics_service_->StartRecordingPeriodicMetrics(
-      IsOfflineEnabledForApp(app_id, profile()));
+  InitCommon(IsOfflineEnabledForApp(app_id, profile()));
 }
 
 void KioskSystemSession::InitForWebKiosk(
     const std::optional<std::string>& app_name) {
   browser_session_.InitForWebKiosk(app_name);
+  InitCommon(/*is_offline_enabled=*/true);
+}
+
+void KioskSystemSession::InitForIwaKiosk(
+    const std::optional<std::string>& app_name) {
+  browser_session_.InitForIwaKiosk(app_name);
+  InitCommon(/*is_offline_enabled=*/true);
+}
+
+void KioskSystemSession::InitCommon(bool is_offline_enabled) {
   StartFloatingAccessibilityMenu();
 
   periodic_metrics_service_->RecordPreviousSessionMetrics();
-  // Web apps always support offline mode.
-  periodic_metrics_service_->StartRecordingPeriodicMetrics(
-      /*is_offline_enabled=*/true);
+  periodic_metrics_service_->StartRecordingPeriodicMetrics(is_offline_enabled);
 }
 
 void KioskSystemSession::ShuttingDown() {

@@ -12,6 +12,7 @@
 
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;
@@ -41,6 +42,9 @@ class KioskIwaManager : public KioskAppManagerBase {
   // Returns a valid account id if an IWA kiosk is configured for auto launch.
   // Returns a nullopt otherwise.
   const std::optional<AccountId>& GetAutoLaunchAccountId() const;
+
+  // Notify this manager that a Kiosk session started with the given `app_id`.
+  void OnKioskSessionStarted(const KioskAppId& app_id);
 
  private:
   void UpdateAppsFromPolicy() override;

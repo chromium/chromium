@@ -214,6 +214,10 @@ void KioskMetricsService::RecordKioskSessionWebStarted() {
   RecordKioskSessionStarted(KioskSessionState::kWebStarted);
 }
 
+void KioskMetricsService::RecordKioskSessionIwaStarted() {
+  RecordKioskSessionStarted(KioskSessionState::kIwaStarted);
+}
+
 void KioskMetricsService::RecordKioskSessionStopped() {
   if (!IsKioskSessionRunning()) {
     return;

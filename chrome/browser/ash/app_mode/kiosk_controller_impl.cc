@@ -21,7 +21,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
@@ -179,8 +178,7 @@ void KioskControllerImpl::InitializeKioskSystemSession(
       chrome_app_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/361017701): add iwa_manager_.OnKioskSessionStarted.
-      NOTIMPLEMENTED();
+      iwa_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
   }
 }

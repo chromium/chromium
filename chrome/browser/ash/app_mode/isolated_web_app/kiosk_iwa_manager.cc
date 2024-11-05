@@ -12,10 +12,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -107,6 +109,11 @@ const KioskIwaData* KioskIwaManager::GetApp(const AccountId& account_id) const {
 const std::optional<AccountId>& KioskIwaManager::GetAutoLaunchAccountId()
     const {
   return auto_launch_id_;
+}
+
+void KioskIwaManager::OnKioskSessionStarted(const KioskAppId& app_id) {
+  CHECK_EQ(app_id.type, KioskAppType::kIsolatedWebApp);
+  NotifySessionInitialized();
 }
 
 void KioskIwaManager::UpdateAppsFromPolicy() {

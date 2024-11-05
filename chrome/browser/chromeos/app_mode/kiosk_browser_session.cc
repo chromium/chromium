@@ -8,6 +8,7 @@
 #include <signal.h>
 
 #include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -248,6 +249,12 @@ void KioskBrowserSession::InitForWebKiosk(
     const std::optional<std::string>& web_app_name) {
   CreateBrowserWindowHandler(web_app_name);
   metrics_service_->RecordKioskSessionWebStarted();
+}
+
+void KioskBrowserSession::InitForIwaKiosk(
+    const std::optional<std::string>& app_name) {
+  CreateBrowserWindowHandler(app_name);
+  metrics_service_->RecordKioskSessionIwaStarted();
 }
 
 void KioskBrowserSession::SetOnHandleBrowserCallbackForTesting(

@@ -289,6 +289,8 @@ web_app::WebAppInstallInfoFactory GetAppWebAppInfoFactory() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+enum class KioskType { kChromeApp = 0, kWebApp = 1, kIwa = 2 };
+
 }  // namespace
 
 // TODO(b/271336749): split kiosk_browser_session_unittest.cc file into smaller
@@ -348,23 +350,37 @@ class KioskBrowserSessionBaseTest
     return CreateBrowserWithFullscreenTestWindowForParams(params, profile());
   }
 
-  // Simulate starting a web kiosk session.
-  void StartWebKioskSession(
-      const std::string& web_app_name = kTestWebAppName1) {
-    // Create the main kiosk browser window, which is normally auto-created when
-    // a web kiosk session starts.
+  // Create the main kiosk browser window, which is normally auto-created when a
+  // web kiosk session starts.
+  void CreateWebKioskMainBrowser(const std::string& web_app_name) {
     web_kiosk_main_browser_ = CreateBrowserWithFullscreenTestWindowForParams(
         Browser::CreateParams::CreateForApp(
             /*app_name=*/web_app_name, /*trusted_source=*/true,
             /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
             /*user_gesture=*/true),
         profile(), /*is_main_browser=*/true);
+  }
+
+  // Simulate starting a web kiosk session.
+  void StartWebKioskSession(
+      const std::string& web_app_name = kTestWebAppName1) {
+    CreateWebKioskMainBrowser(web_app_name);
 
     kiosk_browser_session_ = KioskBrowserSession::CreateForTesting(
         profile(), base::DoNothing(), local_state(), {crash_path().value()});
     kiosk_browser_session_->InitForWebKiosk(web_app_name);
 
     task_environment_.RunUntilIdle();
+  }
+
+  // Simulate starting an IWA kiosk session.
+  void StartIwaKioskSession(const std::string& iwa_name = kTestWebAppName1) {
+    // IWAs are launched same as web apps, reusing web kiosk routines.
+    CreateWebKioskMainBrowser(iwa_name);
+
+    kiosk_browser_session_ = KioskBrowserSession::CreateForTesting(
+        profile(), base::DoNothing(), local_state(), {crash_path().value()});
+    kiosk_browser_session_->InitForIwaKiosk(iwa_name);
   }
 
   // Simulate starting a chrome app kiosk session.
@@ -440,8 +456,8 @@ class KioskBrowserSessionBaseTest
   content::RenderViewHostTestEnabler enabler_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  // Main browser window created when launching a web kiosk app.
-  // Could be nullptr if `StartWebKioskSession` function was not called.
+  // Main browser window created when launching a web or IWA kiosk app.
+  // Will be nullptr if `CreateWebKioskMainBrowser` function was not called.
   std::unique_ptr<FakeBrowser> web_kiosk_main_browser_;
   base::HistogramTester histogram_;
   std::unique_ptr<KioskBrowserSession> kiosk_browser_session_;
@@ -485,6 +501,13 @@ TEST_F(KioskBrowserSessionTest, WebKioskTracksBrowserCreation) {
 
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
+}
+
+TEST_F(KioskBrowserSessionTest, IwaKioskSessionState) {
+  StartIwaKioskSession();
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kIwaStarted, 1);
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 }
 
 TEST_F(KioskBrowserSessionTest, ChromeAppKioskSessionState) {
@@ -908,13 +931,19 @@ TEST_F(KioskBrowserSessionRestartReasonTest, PowerManagerRequestRestart) {
 
 // Kiosk type agnostic test class. Runs all tests for web and chrome app kiosks.
 class KioskBrowserSessionTroubleshootingTest
-    : public KioskBrowserSessionBaseTest<bool> {
+    : public KioskBrowserSessionBaseTest<KioskType> {
  public:
   void SetUpKioskSession() {
-    if (is_web_kiosk()) {
-      StartWebKioskSession();
-    } else {
-      StartChromeAppKioskSession();
+    switch (GetKioskType()) {
+      case KioskType::kChromeApp:
+        StartChromeAppKioskSession();
+        break;
+      case KioskType::kWebApp:
+        StartWebKioskSession();
+        break;
+      case KioskType::kIwa:
+        StartIwaKioskSession();
+        break;
     }
   }
 
@@ -946,7 +975,7 @@ class KioskBrowserSessionTroubleshootingTest
   }
 
  private:
-  bool is_web_kiosk() const { return GetParam(); }
+  KioskType GetKioskType() const { return GetParam(); }
 };
 
 TEST_P(KioskBrowserSessionTroubleshootingTest,
@@ -1092,7 +1121,9 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
 
 INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingTools,
                          KioskBrowserSessionTroubleshootingTest,
-                         ::testing::Bool());
+                         ::testing::Values(KioskType::kChromeApp,
+                                           KioskType::kWebApp,
+                                           KioskType::kIwa));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class FakeNewWindowDelegate : public ash::TestNewWindowDelegate {
@@ -1298,7 +1329,9 @@ TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
 
 INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingShortcuts,
                          KioskBrowserSessionTroubleshootingShortcutsTest,
-                         ::testing::Bool());
+                         ::testing::Values(KioskType::kChromeApp,
+                                           KioskType::kWebApp,
+                                           KioskType::kIwa));
 
 // Kiosk type agnostic test class. Runs all tests for web and chrome app kiosks.
 // Test only the case when system web apps are enabled in the Kiosk session.
