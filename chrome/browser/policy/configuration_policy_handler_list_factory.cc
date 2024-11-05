@@ -2298,6 +2298,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kWebAppsUseAdHocCodeSigningForAppShims,
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_MAC)
+
+  { key::kWebAudioOutputBufferingEnabled,
+    prefs::kWebAudioOutputBufferingEnabled,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

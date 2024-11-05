@@ -4351,6 +4351,10 @@ inline constexpr char kBreachedCredentialsCount[] =
 inline constexpr char kExtensibleEnterpriseSSOEnabled[] =
     "extensible_enterprise_sso.enabled";
 #endif  //  BUILDFLAG(IS_MAC)
+
+// Allow or don't allow bypassing WebAudio output buffering
+inline constexpr char kWebAudioOutputBufferingEnabled[] =
+    "web_audio_output_buffering_enabled";
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
