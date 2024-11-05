@@ -1268,15 +1268,6 @@ crbug.com/750992 external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-008
 crbug.com/750992 [ Linux ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-020.xht [ Failure ]
 crbug.com/750992 [ Win ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-020.xht [ Failure ]
 
-# PEPC tests currently PASS as the necessary feature is enabled by the experimental web platform features
-# flag but this might not remain the case. In any event, these tests are marked Fail/Pass for now, and a
-# virtual test suite is responsible for ensuring these tests pass with the feature flag enabled.
-# To be removed together with the virtual test suite when PEPC is enabled by default.
-crbug.com/1512722 external/wpt/html/semantics/permission-element/bounded-css-properties.html [ Crash Failure Pass ]
-crbug.com/1512722 external/wpt/html/semantics/permission-element/invalid-css-properties.html [ Crash Failure Pass ]
-crbug.com/1512722 external/wpt/html/semantics/permission-element/negative-offset-and-margin.html [ Crash Failure Pass ]
-crbug.com/1512722 external/wpt/html/semantics/permission-element/no-end-tag-no-contents.html [ Crash Failure Pass ]
-
 ### TablesNG
 # crbug.com/958381
 
@@ -8318,7 +8309,6 @@ crbug.com/372372940 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/i
 crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-failure-status-update.js [ Failure Pass ]
 crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-status-update-on-enable.js [ Failure Pass ]
 crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Failure Pass ]
-crbug.com/372372940 virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html [ Failure Pass ]
 crbug.com/372372940 wpt_internal/prerender/focus-on-prerendered-window-client.https.html [ Pass Timeout ]
 
 # Flaky on WebKit Linux ASAN and Win
