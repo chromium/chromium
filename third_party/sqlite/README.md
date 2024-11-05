@@ -260,3 +260,27 @@ rm -rf testdir
 git checkout amalgamation/sqlite3.c
 git checkout amalgamation_dev/sqlite3.c
 ```
+
+## Bisect SQLite
+
+When diagnosing the cause of an issue found in a fuzzer issue or while bringing
+up SQLite, you may want to bisect the SQLite repo.
+
+To find the SQLite commit that introduced an issue the `scripts/repro_tool.py`
+can be used in combination with `git bisect run`.
+
+For example, given a good commit of `9e45bccab2b8`, a bad commit of
+`c12b0d5b7135`, and a reproduction sql file `repro.sql`, running the following
+will pinpoint the commit that introduced the failure:
+
+```sh
+cd src
+git bisect start c12b0d5b7135 9e45bccab2b8
+git bisect run ../scripts/repro_tool.py repro.sql
+```
+
+The reproduction file can be omitted if it is a build error. `--should_build`
+can be passed to `repro_tool.py` if the issue is not a build error and we don't
+want to continue bisecting if a build does fail.
+
+See `scripts/repro_tool.py --help` for more information.
