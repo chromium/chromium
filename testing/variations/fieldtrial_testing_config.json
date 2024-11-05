@@ -23516,25 +23516,6 @@
             ]
         }
     ],
-    "TurnOffStreamingMediaCachingAlways": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TurnOffStreamingMediaCachingAlways"
-                    ]
-                }
-            ]
-        }
-    ],
     "UIEnableSharedImageCacheForGpu": [
         {
             "platforms": [
