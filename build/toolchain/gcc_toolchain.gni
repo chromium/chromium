@@ -392,7 +392,7 @@ template("single_gcc_toolchain") {
       } else {
         rspfile = "{{output}}.rsp"
         rspfile_content = "{{inputs}}"
-        command = "\"$ar\" {{arflags}} -r -c -s -D {{output}} @\"$rspfile\""
+        command = "\"$ar\" {{arflags}} -r -c -D {{output}} @\"$rspfile\""
       }
 
       # Remove the output file first so that ar doesn't try to modify the
@@ -406,7 +406,7 @@ template("single_gcc_toolchain") {
       }
 
       # Almost all targets build with //build/config/compiler:thin_archive which
-      # adds -T to arflags.
+      # adds -T -S to arflags.
       description = "AR {{output}}"
       outputs = [ "{{output_dir}}/{{target_output_name}}{{output_extension}}" ]
 
