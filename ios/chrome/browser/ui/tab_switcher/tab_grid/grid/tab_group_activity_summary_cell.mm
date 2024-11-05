@@ -124,9 +124,12 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   [buttonConfiguration setImage:buttonImage];
-  // TODO(crbug.com/370898260): Close the summary view with the close button.
+  __weak __typeof(self) weakSelf = self;
+  UIAction* closeAction = [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate closeButtonForActivitySummaryTapped];
+  }];
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
-                                         primaryAction:nil];
+                                         primaryAction:closeAction];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.tintColor = [UIColor colorNamed:kTextSecondaryColor];
   return button;

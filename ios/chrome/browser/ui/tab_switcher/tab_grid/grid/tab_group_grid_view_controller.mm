@@ -11,6 +11,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_activity_summary_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_header.h"
 
+@interface TabGroupGridViewController () <TabGroupActivitySummaryCellDelegate>
+@end
+
 @implementation TabGroupGridViewController {
   // Registered header.
   UICollectionViewSupplementaryRegistration* _tabGroupHeaderRegistration;
@@ -123,6 +126,7 @@
 - (void)configureActivitySummaryCell:(TabGroupActivitySummaryCell*)cell {
   // TODO(crbug.com/375594684): Connect with the backend and update the text.
   cell.text = @"3 new tabs, 2 closed";
+  cell.delegate = self;
 }
 
 // Returns the header which contains the title and the color view.
@@ -176,6 +180,15 @@
         NSNotFound);
   [snapshot appendItemsWithIdentifiers:@[ item ]
              intoSectionWithIdentifier:kTabGroupHeaderSectionIdentifier];
+}
+
+#pragma mark - TabGroupActivitySummaryCellDelegate
+
+- (void)closeButtonForActivitySummaryTapped {
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
+  GridItemIdentifier* item = [GridItemIdentifier activitySummaryIdentifier];
+  [snapshot deleteItemsWithIdentifiers:@[ item ]];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 @end
