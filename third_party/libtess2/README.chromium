@@ -1,0 +1,16 @@
+Name: Libtess2
+URL: https://github.com/memononen/libtess2
+Version: 1.0.2
+Revision: fc52516467dfa124bdd967c15c7cf9faf02a34ca
+License: SGI Free Software License B
+License File: LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description:
+
+Game and tools oriented refactored version of GLU tesselator.
+
+Local Modifications:
+
+None

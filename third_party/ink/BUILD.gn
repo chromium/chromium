@@ -70,6 +70,8 @@ source_set("ink") {
     "src/ink/geometry/rect.h",
     "src/ink/geometry/segment.cc",
     "src/ink/geometry/segment.h",
+    "src/ink/geometry/tessellator.cc",
+    "src/ink/geometry/tessellator.h",
     "src/ink/geometry/triangle.cc",
     "src/ink/geometry/triangle.h",
     "src/ink/geometry/vec.cc",
@@ -177,6 +179,8 @@ source_set("ink") {
     "//third_party/abseil-cpp:absl",
     "//third_party/ink_stroke_modeler",
   ]
+
+  deps = [ "//third_party/libtess2" ]
 }
 
 source_set("brush_test_support") {
