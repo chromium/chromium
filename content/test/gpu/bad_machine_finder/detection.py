@@ -134,7 +134,8 @@ class MixinGroupedBadMachines:
 
 
 def DetectViaStdDevOutlier(mixin_stats: tasks.MixinStats,
-                           stddev_multiplier: float) -> 'BadMachineList':
+                           stddev_multiplier: float,
+                           min_failures: int) -> 'BadMachineList':
   """Detects bad machines by looking for machines whose task failure rate is
   more than the given number of standard deviations from the fleet-wide mean.
 
@@ -144,6 +145,10 @@ def DetectViaStdDevOutlier(mixin_stats: tasks.MixinStats,
     stddev_multiplier: A multiplier to apply to the standard deviation. If a
         machine's failure rate is greater than (fleet-wide mean) + (stddev *
         stddev_multiplier), it is considered bad.
+    min_failures: The minimum number of failures a bot must have in order to be
+        reported. This helps avoid cases where healthy bots are erroneously
+        reported due to getting a small number of random failures in a small
+        number of total tasks.
 
   Returns:
     A BadMachineList containing any bad machines found.
@@ -163,6 +168,11 @@ def DetectViaStdDevOutlier(mixin_stats: tasks.MixinStats,
   for bot_id, bot_stats in mixin_stats.IterBots():
     bot_failure_rate = bot_stats.overall_failure_rate
     if bot_failure_rate <= threshold:
+      continue
+    if bot_stats.failed_tasks < min_failures:
+      logging.debug(
+          'Bot %s skipped in DetectViaStdDevOutlier due to only having %d '
+          'failed tasks', bot_id, bot_stats.failed_tasks)
       continue
     reason = (f'Had a failure rate of {bot_failure_rate} despite a fleet-wide '
               f'average of {mean} and a standard deviation of {stddev}.')
@@ -214,7 +224,8 @@ def DetectViaRandomChance(mixin_stats: tasks.MixinStats,
 
 
 def DetectViaInterquartileRange(mixin_stats: tasks.MixinStats, mixin_name: str,
-                                iqr_multiplier: float) -> 'BadMachineList':
+                                iqr_multiplier: float,
+                                min_failures: int) -> 'BadMachineList':
   """Detects bad machines by looking for for bots whose failure rate is above
   Q3 + |iqr_multiplier| * IQR, which is a standard way of looking for outliers
   in data.
@@ -227,6 +238,10 @@ def DetectViaInterquartileRange(mixin_stats: tasks.MixinStats, mixin_name: str,
     mixin_name: The name of the mixin being checked. For debugging purposes.
     iqr_multiplier: How many multiples of the IQR above the third quartile a
         failure rate has to be to be considered an outlier.
+    min_failures: The minimum number of failures a bot must have in order to be
+        reported. This helps avoid cases where healthy bots are erroneously
+        reported due to getting a small number of random failures in a small
+        number of total tasks.
 
   Returns:
     A BadMachineList containing any bad machines found.
@@ -258,6 +273,11 @@ def DetectViaInterquartileRange(mixin_stats: tasks.MixinStats, mixin_name: str,
   for bot_id, bot_stats in mixin_stats.IterBots():
     bot_failure_rate = bot_stats.overall_failure_rate
     if bot_failure_rate <= upper_bound:
+      continue
+    if bot_stats.failed_tasks < min_failures:
+      logging.debug(
+          'Bot %s skipped in DetectViaInterquartileRange due to only having %d '
+          'failed tasks', bot_id, bot_stats.failed_tasks)
       continue
     reason = (f'Failure rate of {bot_failure_rate} is above the IQR-based '
               f'upper bound of {upper_bound}.')

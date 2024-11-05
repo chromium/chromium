@@ -126,6 +126,15 @@ def ParseArgs() -> argparse.Namespace:
       default=1.5,
       help=('How many interquartile ranges a failure rate must be above the '
             'third quartile for it to be considered an outlier.'))
+  detection_modifiers.add_argument(
+      '--minimum-failed-tasks',
+      type=int,
+      default=5,
+      help=('Used with the stddev outlier and iqr detection methods. Bots '
+            'that have fewer than this number of failed tasks within the '
+            'sample period will not be reported. This helps avoid false '
+            'reports due to getting a small number of flakes in a small number '
+            'of total tasks.'))
 
   mixin_group = parser.add_mutually_exclusive_group(required=True)
   mixin_group.add_argument('--mixin',
@@ -155,6 +164,8 @@ def _VerifyArgs(parser: argparse.ArgumentParser,
     parser.error('--bug-id must be non-negative')
   if args.report_grace_period < 0:
     parser.error('--report-grace-period must be non-negative')
+  if args.minimum_failed_tasks < 0:
+    parser.error('--minimum-failed-tasks must be non-negative')
 
 
 def _SetLoggingVerbosity(args: argparse.Namespace) -> None:
@@ -190,13 +201,15 @@ def _AnalyzeMixin(mixin_stats: tasks.MixinStats, mixin_name: str,
                   args: argparse.Namespace) -> detection.BadMachineList:
   bad_machine_list = detection.BadMachineList()
   bad_machine_list.Merge(
-      detection.DetectViaStdDevOutlier(mixin_stats, args.stddev_multiplier))
+      detection.DetectViaStdDevOutlier(mixin_stats, args.stddev_multiplier,
+                                       args.minimum_failed_tasks))
   bad_machine_list.Merge(
       detection.DetectViaRandomChance(mixin_stats,
                                       args.random_chance_probability_threshold))
   bad_machine_list.Merge(
       detection.DetectViaInterquartileRange(mixin_stats, mixin_name,
-                                            args.iqr_multiplier))
+                                            args.iqr_multiplier,
+                                            args.minimum_failed_tasks))
   return bad_machine_list
 
 
