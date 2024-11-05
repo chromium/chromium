@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/storage_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -33,8 +35,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDefaultSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_STORAGE,
        mojom::kStorageSubpagePath,
        mojom::SearchResultIcon::kStorage,
@@ -44,11 +46,11 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_STORAGE_ALT1, IDS_OS_SETTINGS_TAG_STORAGE_ALT2,
         IDS_OS_SETTINGS_TAG_STORAGE_ALT3, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetExternalStorageSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetExternalStorageSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_EXTERNAL_STORAGE,
        mojom::kExternalStorageSubpagePath,
        mojom::SearchResultIcon::kStorage,
@@ -56,7 +58,7 @@ const std::vector<SearchConcept>& GetExternalStorageSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kExternalStorage}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace
