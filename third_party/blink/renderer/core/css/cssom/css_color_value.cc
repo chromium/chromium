@@ -154,8 +154,7 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
   const CSSValueID value_id =
       To<CSSIdentifierValue>(parsed_value)->GetValueID();
   std::string_view value_name = GetCSSValueName(value_id);
-  if (const NamedColor* named_color = FindColor(
-          value_name.data(), static_cast<wtf_size_t>(value_name.length()))) {
+  if (const NamedColor* named_color = FindColor(value_name)) {
     Color color = Color::FromRGBA32(named_color->argb_value);
 
     return MakeGarbageCollected<V8UnionCSSColorValueOrCSSStyleValue>(

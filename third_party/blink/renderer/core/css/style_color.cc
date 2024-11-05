@@ -411,8 +411,7 @@ Color StyleColor::ColorFromKeyword(CSSValueID keyword,
                                    const ui::ColorProvider* color_provider,
                                    bool is_in_web_app_scope) {
   std::string_view value_name = GetCSSValueName(keyword);
-  if (const NamedColor* named_color = FindColor(
-          value_name.data(), static_cast<wtf_size_t>(value_name.length()))) {
+  if (const NamedColor* named_color = FindColor(value_name)) {
     return Color::FromRGBA32(named_color->argb_value);
   }
 

@@ -28,6 +28,7 @@
 
 #include <iosfwd>
 #include <optional>
+#include <string_view>
 #include <tuple>
 
 #include "base/containers/span.h"
@@ -53,7 +54,7 @@ struct NamedColor {
   unsigned argb_value;
 };
 
-PLATFORM_EXPORT const NamedColor* FindColor(const char* str, unsigned len);
+PLATFORM_EXPORT const NamedColor* FindColor(std::string_view str);
 
 class PLATFORM_EXPORT Color {
   DISALLOW_NEW();

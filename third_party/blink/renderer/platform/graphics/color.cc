@@ -131,8 +131,7 @@ inline const NamedColor* FindNamedColor(const String& name) {
       return nullptr;
     buffer[i] = ToASCIILower(static_cast<char>(c));
   }
-  buffer[length] = '\0';
-  return FindColor(buffer.data(), length);
+  return FindColor(base::as_string_view(base::span(buffer).first(length)));
 }
 
 constexpr int RedChannel(RGBA32 color) {
