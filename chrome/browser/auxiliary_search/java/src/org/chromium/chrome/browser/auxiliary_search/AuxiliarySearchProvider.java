@@ -42,15 +42,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** This class provides information for the auxiliary search. */
 public class AuxiliarySearchProvider {
-    /** The callback interface to get results from fetching a favicon. * */
+    /** The callback interface to get results from fetching favicons. */
     public interface FaviconImageFetchedCallback {
+        // TODO(crbug.com/376549664): Remove this method once the internal changes land.
         /** This method will be called when the result favicon is ready. */
-        void onFaviconAvailable(Bitmap image, AuxiliarySearchEntry entry);
+        default void onFaviconAvailable(Bitmap image, AuxiliarySearchEntry entry) {}
+
+        /** Called when all favicon fetching is complete. */
+        default void onFetchCompleted(@NonNull Map<AuxiliarySearchEntry, Bitmap> tabToFaviconMap) {}
     }
 
     /* Only donate the recent 7 days accessed tabs.*/
@@ -77,11 +83,11 @@ public class AuxiliarySearchProvider {
                 return (int) -Math.signum((float) delta);
             };
 
-    private static final String MAX_FAVICON_NUMBER_PARAM = "max_favicon_number";
-    public static final IntCachedFieldTrialParameter MAX_FAVICON_NUMBER =
+    private static final String ZERO_STATE_FAVICON_NUMBER_PARAM = "zero_state_favicon_number";
+    public static final IntCachedFieldTrialParameter ZERO_STATE_FAVICON_NUMBER =
             ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
-                    MAX_FAVICON_NUMBER_PARAM,
+                    ZERO_STATE_FAVICON_NUMBER_PARAM,
                     DEFAULT_FAVICON_NUMBER);
 
     private static final String USE_LARGE_FAVICON_PARAM = "use_large_favicon";
@@ -105,8 +111,9 @@ public class AuxiliarySearchProvider {
     private final @NonNull FaviconHelper mFaviconHelper;
     private final int mDefaultFaviconSize;
     private final boolean mIsFaviconEnabled;
-    private final int mMaxFaviconNumber;
+    private final int mZeroStateFaviconNumber;
     private Long mTabMaxAgeMillis;
+    private int mTaskFinishedCount;
 
     public AuxiliarySearchProvider(
             @NonNull Context context,
@@ -125,7 +132,7 @@ public class AuxiliarySearchProvider {
                         : resources.getDimensionPixelSize(
                                 R.dimen.auxiliary_search_favicon_size_small);
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
-        mMaxFaviconNumber = MAX_FAVICON_NUMBER.getValue();
+        mZeroStateFaviconNumber = ZERO_STATE_FAVICON_NUMBER.getValue();
     }
 
     /**
@@ -147,6 +154,8 @@ public class AuxiliarySearchProvider {
         long minAccessTime = System.currentTimeMillis() - mTabMaxAgeMillis;
         List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
 
+        // We will get up to 100 tabs as default. This is controlled by feature
+        // AuxiliarySearchDonation.
         mAuxiliarySearchBridge.getNonSensitiveTabs(
                 listTab,
                 tabs -> {
@@ -164,25 +173,45 @@ public class AuxiliarySearchProvider {
         long startTimeMs = TimeUtils.uptimeMillis();
         var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
 
-        int count = 0;
         if (mIsFaviconEnabled) {
             tabs.sort(sComparator);
         }
 
-        for (Tab tab : tabs) {
+        mTaskFinishedCount = 0;
+        Map<AuxiliarySearchEntry, Bitmap> entryToFaviconMap = new HashMap<>();
+        int zeroStateFaviconFetchedNumber =
+                mIsFaviconEnabled ? Math.min(tabs.size(), mZeroStateFaviconNumber) : 0;
+
+        for (int i = 0; i < tabs.size(); i++) {
+            Tab tab = tabs.get(i);
             AuxiliarySearchEntry entry = tabToAuxiliarySearchEntry(tab);
             if (entry != null) {
                 tabGroupBuilder.addTab(entry);
-                if (!mIsFaviconEnabled || count >= mMaxFaviconNumber) continue;
 
-                count++;
+                // When donating favicon is enabled, Chrome only donates the favicons of the most
+                // recently visited tabs in the first round.
+                if (!mIsFaviconEnabled || i >= zeroStateFaviconFetchedNumber) continue;
+
                 faviconHelper.getLocalFaviconImageForURL(
                         mProfile,
                         tab.getUrl(),
                         mDefaultFaviconSize,
                         (image, url) -> {
+                            // TODO(crbug.com/376549664): Remove this code once the internal changes
+                            // land.
                             if (faviconImageFetchedCallback != null) {
                                 faviconImageFetchedCallback.onFaviconAvailable(image, entry);
+                            }
+
+                            mTaskFinishedCount++;
+                            if (image != null) {
+                                entryToFaviconMap.put(entry, image);
+                            }
+
+                            // Once all favicon fetching is completed, notifies the callback.
+                            if (faviconImageFetchedCallback != null
+                                    && mTaskFinishedCount == zeroStateFaviconFetchedNumber) {
+                                faviconImageFetchedCallback.onFetchCompleted(entryToFaviconMap);
                             }
                         });
             }
@@ -191,11 +220,13 @@ public class AuxiliarySearchProvider {
         // Allows to call the callback to start a donation immediately.
         callback.onResult(tabGroupBuilder.build());
 
-        if (mIsFaviconEnabled && mMaxFaviconNumber < tabs.size()) {
-            saveTabMetadataToFile(getTabDonateFile(mContext), tabs, mMaxFaviconNumber);
-        }
-
-        if (mIsFaviconEnabled) {
+        int remainingFaviconFetchCount = tabs.size() - zeroStateFaviconFetchedNumber;
+        if (mIsFaviconEnabled && remainingFaviconFetchCount > 0) {
+            saveTabMetadataToFile(
+                    getTabDonateFile(mContext),
+                    tabs,
+                    zeroStateFaviconFetchedNumber,
+                    remainingFaviconFetchCount);
             scheduleBackgroundTask((long) SCHEDULE_DELAY_TIME_MS.getValue(), startTimeMs);
         }
     }
@@ -237,22 +268,22 @@ public class AuxiliarySearchProvider {
      * @param metadataFile The file to write.
      * @param tabs A list of tabs to save.
      * @param startIndex The index of the first tabs to save.
+     * @param tabCount The total count of tabs to save.
      */
     void saveTabMetadataToFile(
-            @NonNull File metadataFile, @NonNull List<Tab> tabs, int startIndex) {
+            @NonNull File metadataFile, @NonNull List<Tab> tabs, int startIndex, int tabCount) {
         synchronized (SAVE_LIST_LOCK) {
             AtomicFile file = new AtomicFile(metadataFile);
             FileOutputStream output = null;
             try {
                 output = file.startWrite();
-                int size = tabs.size();
 
                 DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(output));
                 stream.writeInt(SAVED_STATE_VERSION);
-                stream.writeInt(size - mMaxFaviconNumber);
+                stream.writeInt(tabCount);
 
-                for (int i = startIndex; i < size; i++) {
-                    Tab tab = tabs.get(i);
+                for (int i = 0; i < tabCount; i++) {
+                    Tab tab = tabs.get(i + startIndex);
                     stream.writeInt(tab.getId());
                     stream.writeUTF(tab.getTitle());
                     stream.writeUTF(tab.getUrl().getSpec());

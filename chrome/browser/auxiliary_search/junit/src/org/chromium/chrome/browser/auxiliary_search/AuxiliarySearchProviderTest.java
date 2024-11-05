@@ -15,12 +15,14 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 
 import androidx.test.filters.SmallTest;
 
@@ -28,6 +30,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -60,6 +64,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /** Unit tests for {@link AuxiliarySearchProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -86,6 +91,7 @@ public class AuxiliarySearchProviderTest {
     private @Mock Context mContext;
     private @Mock Resources mResources;
     private @Mock BackgroundTaskScheduler mBackgroundTaskScheduler;
+    private @Captor ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
 
     private AuxiliarySearchProvider mAuxiliarySearchProvider;
     private MockTabModel mMockNormalTabModel;
@@ -320,9 +326,11 @@ public class AuxiliarySearchProviderTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
     public void testOnNonSensitiveTabsAvailable() {
-        int maxFaviconNumber = 10;
-        AuxiliarySearchProvider.MAX_FAVICON_NUMBER.setForTesting(maxFaviconNumber);
-        assertEquals(maxFaviconNumber, AuxiliarySearchProvider.MAX_FAVICON_NUMBER.getValue());
+        int zeroStateFaviconNumber = 10;
+        AuxiliarySearchProvider.ZERO_STATE_FAVICON_NUMBER.setForTesting(zeroStateFaviconNumber);
+        assertEquals(
+                zeroStateFaviconNumber,
+                AuxiliarySearchProvider.ZERO_STATE_FAVICON_NUMBER.getValue());
 
         mAuxiliarySearchProvider =
                 new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);
@@ -350,12 +358,24 @@ public class AuxiliarySearchProviderTest {
             assertEquals(now + count - i - 1, tab.getTimestampMillis());
             assertEquals(TAB_TITLE + Integer.toString(count - i - 1), tab.getTitle());
         }
-        verify(mFaviconHelper, times(maxFaviconNumber))
+        verify(mFaviconHelper, times(zeroStateFaviconNumber))
                 .getLocalFaviconImageForURL(
                         any(Profile.class),
                         any(GURL.class),
                         anyInt(),
-                        any(FaviconImageCallback.class));
+                        mFaviconImageCallbackCaptor.capture());
+
+        // Verifies the onFetchCompleted() is called once all favicon fetching is completed.
+        for (int i = 0; i < zeroStateFaviconNumber - 1; i++) {
+            mFaviconImageCallbackCaptor.getAllValues().get(i).onFaviconAvailable(null, null);
+            verify(mFaviconImageFetchedCallback, never()).onFetchCompleted(any());
+        }
+
+        mFaviconImageCallbackCaptor
+                .getAllValues()
+                .get(zeroStateFaviconNumber - 1)
+                .onFaviconAvailable(Bitmap.createBitmap(20, 20, Bitmap.Config.RGB_565), null);
+        verify(mFaviconImageFetchedCallback).onFetchCompleted(any(Map.class));
     }
 
     @Test
