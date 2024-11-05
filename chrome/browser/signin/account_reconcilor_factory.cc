@@ -121,9 +121,7 @@ AccountReconcilorFactory::AccountReconcilorFactory()
           "AccountReconcilor",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              .WithGuest(ProfileSelection::kNone)
               .Build()) {
   DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());

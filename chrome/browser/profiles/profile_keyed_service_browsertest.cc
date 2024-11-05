@@ -515,7 +515,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   // clang-format off
   std::set<std::string> guest_active_services {
     "AccountExtensionTracker",
-    "AccountReconcilor",
     "ActivityLog",
     "ActivityLogPrivateAPI",
     "AdaptiveQuietNotificationPermissionUiEnabler",
