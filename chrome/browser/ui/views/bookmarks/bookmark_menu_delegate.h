@@ -148,6 +148,15 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   typedef std::map<const bookmarks::BookmarkNode*, raw_ptr<views::MenuItemView>>
       NodeToMenuMap;
 
+  struct DropParams {
+    raw_ptr<const bookmarks::BookmarkNode> drop_parent = nullptr;
+    size_t index_to_drop_at = 0;
+  };
+
+  std::optional<DropParams> GetDropParams(
+      views::MenuItemView* menu,
+      views::MenuDelegate::DropPosition* position);
+
   // Returns whether the menu should close id 'delete' is selected.
   bool ShouldCloseOnRemove(const bookmarks::BookmarkNode* node) const;
 
