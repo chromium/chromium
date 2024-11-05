@@ -612,11 +612,11 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
         autofill_status_vector = {
             AutofillStatus::kIsFocusable,
             AutofillStatus::kWasFocusedByTapOrClick,
-            AutofillStatus::kWasAutofillTriggered,
-            AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+            AutofillStatus::kWasAutofillTriggeredAnywhereOnForm,
+            AutofillStatus::kShouldBeAutofilledBeforeSecurityPolicy,
             AutofillStatus::kSuggestionWasAvailable,
             AutofillStatus::kSuggestionWasShown,
-            AutofillStatus::kSuggestionWasAccepted,
+            AutofillStatus::kWasAutofillTriggeredOnField,
             AutofillStatus::kUserTypedIntoField,
             AutofillStatus::kFilledValueWasModified,
             AutofillStatus::kHadTypedOrFilledValueAtSubmission,
@@ -625,14 +625,16 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
         field_log_events_count = 4;
       } else if (i == 1) {
         autofill_status_vector = {
-            AutofillStatus::kIsFocusable, AutofillStatus::kWasAutofillTriggered,
-            AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+            AutofillStatus::kIsFocusable,
+            AutofillStatus::kWasAutofillTriggeredAnywhereOnForm,
+            AutofillStatus::kShouldBeAutofilledBeforeSecurityPolicy,
             AutofillStatus::kHadTypedOrFilledValueAtSubmission,
             AutofillStatus::kWasAutofilledAfterSecurityPolicy};
         field_log_events_count = 1;
       } else if (i == 2) {
-        autofill_status_vector = {AutofillStatus::kIsFocusable,
-                                  AutofillStatus::kWasAutofillTriggered};
+        autofill_status_vector = {
+            AutofillStatus::kIsFocusable,
+            AutofillStatus::kWasAutofillTriggeredAnywhereOnForm};
         field_log_events_count = 1;
       }
       std::map<std::string, int64_t> expected = {

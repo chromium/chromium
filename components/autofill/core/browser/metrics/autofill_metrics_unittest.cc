@@ -5645,9 +5645,8 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
     if (i == 0 || i == 2) {
       autofill_status_vector = {
           AutofillStatus::kIsFocusable,
-          AutofillStatus::kWasAutofillTriggered,
-          AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
-          AutofillStatus::kWasRefill,
+          AutofillStatus::kWasAutofillTriggeredAnywhereOnForm,
+          AutofillStatus::kShouldBeAutofilledBeforeSecurityPolicy,
           AutofillStatus::kHadValueBeforeFilling,
           AutofillStatus::kHadTypedOrFilledValueAtSubmission,
           AutofillStatus::kWasAutofilledAfterSecurityPolicy};
@@ -5655,9 +5654,8 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
     } else {
       autofill_status_vector = {
           AutofillStatus::kIsFocusable,
-          AutofillStatus::kWasAutofillTriggered,
-          AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
-          AutofillStatus::kWasRefill,
+          AutofillStatus::kWasAutofillTriggeredAnywhereOnForm,
+          AutofillStatus::kShouldBeAutofilledBeforeSecurityPolicy,
           AutofillStatus::kHadTypedOrFilledValueAtSubmission,
           AutofillStatus::kFillingPreventedByIframeSecurityPolicy,
           AutofillStatus::kWasAutofilledAfterSecurityPolicy};

@@ -454,18 +454,18 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
   }
 
   if (suggestion_was_shown == OptionalBoolean::kTrue) {
-    SetStatusVector(AutofillStatus::kSuggestionWasAccepted,
+    SetStatusVector(AutofillStatus::kWasAutofillTriggeredOnField,
                     OptionalBooleanToBool(suggestion_was_accepted));
   }
 
-  SetStatusVector(AutofillStatus::kWasAutofillTriggered, autofill_count > 0);
+  SetStatusVector(AutofillStatus::kWasAutofillTriggeredAnywhereOnForm,
+                  autofill_count > 0);
   if (autofill_count > 0) {
     SetStatusVector(
-        AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+        AutofillStatus::kShouldBeAutofilledBeforeSecurityPolicy,
         OptionalBooleanToBool(was_autofilled_before_security_policy));
     SetStatusVector(AutofillStatus::kHadValueBeforeFilling,
                     OptionalBooleanToBool(had_value_before_filling));
-    SetStatusVector(AutofillStatus::kWasRefill, autofill_count > 1);
     if (was_autofilled_after_security_policy != OptionalBoolean::kUndefined) {
       SetStatusVector(
           AutofillStatus::kWasAutofilledAfterSecurityPolicy,
