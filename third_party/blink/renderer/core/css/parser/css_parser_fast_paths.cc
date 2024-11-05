@@ -1119,7 +1119,7 @@ static ParseColorResult ParseColor(CSSPropertyID property_id,
     return ParseColorResult::kFailure;
   }
   if (StyleColor::IsColorKeyword(value_id)) {
-    if (!isValueAllowedInMode(value_id, parser_mode)) {
+    if (!IsValueAllowedInMode(value_id, parser_mode)) {
       return ParseColorResult::kFailure;
     }
     out_color_keyword = value_id;
@@ -1154,7 +1154,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     CSSValueID value_id,
     CSSParserMode parser_mode) {
   if (!IsValidCSSValueID(value_id) ||
-      !isValueAllowedInMode(value_id, parser_mode)) {
+      !IsValueAllowedInMode(value_id, parser_mode)) {
     return false;
   }
 

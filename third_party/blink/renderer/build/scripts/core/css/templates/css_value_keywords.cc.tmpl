@@ -57,7 +57,7 @@ const Value* FindValue(const char* str, unsigned int len) {
 
 std::string_view GetCSSValueName(CSSValueID id) {
   DCHECK_GT(id, CSSValueID::kInvalid);
-  DCHECK_LT(static_cast<int>(id), numCSSValueKeywords);
+  DCHECK_LT(static_cast<int>(id), kNumCSSValueKeywords);
   const int raw_id = static_cast<int>(id);
   const uint16_t start = kValueListStringOffsets[raw_id - 1];
   // Subtract one to compensate for the null character.
@@ -65,7 +65,7 @@ std::string_view GetCSSValueName(CSSValueID id) {
   return std::string_view(kValueListStringPool + start, end - start);
 }
 
-bool isValueAllowedInMode(CSSValueID id, CSSParserMode mode) {
+bool IsValueAllowedInMode(CSSValueID id, CSSParserMode mode) {
   switch (id) {
 {% for ua_keyword in ua_sheet_mode_values_keywords %}
     case CSSValueID::{{ua_keyword.enum_name}}:

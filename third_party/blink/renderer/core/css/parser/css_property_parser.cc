@@ -382,7 +382,7 @@ CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
 template <typename CharacterType>
 static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
                                     unsigned length) {
-  char buffer[maxCSSValueKeywordLength + 1];  // 1 for null character
+  char buffer[kMaxCSSValueKeywordLength + 1];  // 1 for null character
   if (!QuasiLowercaseIntoBuffer(value_keyword, length, buffer)) {
     return CSSValueID::kInvalid;
   }
@@ -404,7 +404,7 @@ CSSValueID CssValueKeywordID(StringView string) {
   if (!length) {
     return CSSValueID::kInvalid;
   }
-  if (length > maxCSSValueKeywordLength) {
+  if (length > kMaxCSSValueKeywordLength) {
     return CSSValueID::kInvalid;
   }
 

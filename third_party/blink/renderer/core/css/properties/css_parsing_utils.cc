@@ -2084,7 +2084,7 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
     return nullptr;
   }
   if (StyleColor::IsColorKeyword(id)) {
-    if (!isValueAllowedInMode(id, context.Mode())) {
+    if (!IsValueAllowedInMode(id, context.Mode())) {
       return nullptr;
     }
     if (allowed_colors == AllowedColors::kAbsolute &&
