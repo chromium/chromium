@@ -104,7 +104,7 @@ chrome/test/data/extensions/good 1 1
 chrome/test/data/extensions/manifest_tests 2 2
 chrome/test/data/extensions/permissions/allowlist 1 1
 chrome/test/data/mac_installer 2 1
-chrome/test/data/safe_browsing 1 1
+chrome/test/data/safe_browsing 4 2
 chrome/test/data/safe_browsing/download_protection 1 1
 chrome/test/data/third_party/kraken/tests/kraken-1.1 20 4
 chrome/test/data/third_party/spaceport 1 1
@@ -743,7 +743,6 @@ third_party/sinonjs/src 1 1
 third_party/six/src 2 1
 third_party/six/src/documentation 1 1
 third_party/sqlite 1 1
-third_party/sqlite/scripts 1 1
 third_party/test_fonts 15 1
 third_party/tflite_support/src 1 1
 third_party/tflite_support/src/tensorflow_lite_support/acceleration 3 1

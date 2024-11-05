@@ -12,12 +12,7 @@
 [package]
 edition = "2021"
 name = "font-types"
-version = "0.7.2"
-build = false
-autobins = false
-autoexamples = false
-autotests = false
-autobenches = false
+version = "0.7.3"
 description = "Scalar types used in fonts."
 readme = "README.md"
 categories = ["text-processing"]
@@ -26,10 +21,6 @@ repository = "https://github.com/googlefonts/fontations"
 
 [package.metadata.docs.rs]
 all-features = true
-
-[lib]
-name = "font_types"
-path = "src/lib.rs"
 
 [dependencies.bytemuck]
 version = "1.13.1"

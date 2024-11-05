@@ -1165,6 +1165,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.7.1 -> 0.7.2"
 notes = "Explicit inlining of some type conversion. No new unsafe."
 
+[[audits.font-types]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.7.2 -> 0.7.3"
+notes = "Wrapping math for Fixed type, no new unsafe."
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

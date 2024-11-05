@@ -122,7 +122,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."flate2:1.0.34"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."font-types:0.7.2"]
+[policy."font-types:0.7.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."getrandom:0.2.15"]
