@@ -98,17 +98,19 @@ class SuggestionListViewBinder {
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
             view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
         } else if (SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE.equals(propertyKey)) {
-            Context context = view.dropdown.getContext();
-            boolean isIncognito =
-                    model.get(SuggestionListProperties.COLOR_SCHEME)
-                            == BrandedColorScheme.INCOGNITO;
-            @ColorInt
-            int backgroundColor =
-                    isIncognito
-                            ? context.getColor(R.color.default_bg_color_dark_elev_3_baseline)
-                            : ChromeColors.getSurfaceColor(
-                                    context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
-            view.container.setBackgroundColor(backgroundColor);
+            if (model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE)) {
+                Context context = view.dropdown.getContext();
+                boolean isIncognito =
+                        model.get(SuggestionListProperties.COLOR_SCHEME)
+                                == BrandedColorScheme.INCOGNITO;
+                @ColorInt
+                int backgroundColor =
+                        isIncognito
+                                ? context.getColor(R.color.default_bg_color_dark_elev_3_baseline)
+                                : ChromeColors.getSurfaceColor(
+                                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                view.container.setBackgroundColor(backgroundColor);
+            }
             updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.DRAW_OVER_ANCHOR == propertyKey) {
             boolean drawOver = model.get(SuggestionListProperties.DRAW_OVER_ANCHOR);

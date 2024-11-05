@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
@@ -101,6 +102,13 @@ public class SuggestionListViewBinderUnitTest {
         mListModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, false);
         assertEquals(View.GONE, mContainer.getVisibility());
         assertEquals(View.GONE, mDropdown.getVisibility());
+    }
+
+    @Test
+    public void suggestionsContainerNotVisible_colorScheme() {
+        mListModel.set(SuggestionListProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        mListModel.set(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE, false);
+        assertNull(mContainer.getBackground());
     }
 
     @Test
