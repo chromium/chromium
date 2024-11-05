@@ -1255,6 +1255,10 @@ void LogPriceDropMetrics(web::WebState* web_state) {
         // Suggested actions items are not dragable and not stored in
         // `_selectedEditingItems`.
         NOTREACHED();
+      case GridItemType::kActivitySummary:
+        // Activity summary card is not dragable and not stored in
+        // `_selectedEditingItems`.
+        NOTREACHED();
     }
   }
   return dragItems;
@@ -1740,6 +1744,8 @@ void LogPriceDropMetrics(web::WebState* web_state) {
       }
       case GridItemType::kSuggestedActions:
         NOTREACHED();
+      case GridItemType::kActivitySummary:
+        NOTREACHED();
     }
   }
 
@@ -1772,9 +1778,11 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 - (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
   CHECK(itemID.type == GridItemType::kInactiveTabsButton ||
         itemID.type == GridItemType::kGroup ||
-        itemID.type == GridItemType::kTab);
+        itemID.type == GridItemType::kTab ||
+        itemID.type == GridItemType::kActivitySummary);
   if (_modeHolder.mode == TabGridMode::kSelection) {
     CHECK(itemID.type != GridItemType::kInactiveTabsButton);
+    CHECK(itemID.type != GridItemType::kActivitySummary);
     if ([self isItemSelected:itemID]) {
       [self removeFromSelectionItemID:itemID];
     } else {
@@ -1818,6 +1826,8 @@ void LogPriceDropMetrics(web::WebState* web_state) {
       break;
     }
     case GridItemType::kSuggestedActions:
+      NOTREACHED();
+    case GridItemType::kActivitySummary:
       NOTREACHED();
   }
 }

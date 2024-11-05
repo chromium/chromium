@@ -83,19 +83,20 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 - (void)start {
   [self setUpViewController];
 
+  Browser* browser = self.browser;
   _mediator = [[TabGroupMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()
+      initWithWebStateList:browser->GetWebStateList()
                   tabGroup:_tabGroup->GetWeakPtr()
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController
                 modeHolder:self.modeHolder];
-  _mediator.browser = self.browser;
+  _mediator.browser = browser;
   _mediator.tabGroupsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _mediator.tabGridIdleStatusHandler = self.tabGridIdleStatusHandler;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
-             initWithProfile:self.browser->GetProfile()
+             initWithProfile:browser->GetProfile()
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   _viewController.mutator = _mediator;

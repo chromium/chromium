@@ -138,6 +138,9 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
       case GridItemType::kSuggestedActions:
         // No-op.
         break;
+      case GridItemType::kActivitySummary:
+        // No-op.
+        break;
     }
   }
 

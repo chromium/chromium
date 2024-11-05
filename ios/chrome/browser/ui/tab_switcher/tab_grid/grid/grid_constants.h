@@ -10,6 +10,8 @@
 
 // Identifier for the section containing the inactive tab button.
 extern NSString* const kInactiveTabButtonSectionIdentifier;
+// Identifier for the tab group header section.
+extern NSString* const kTabGroupHeaderSectionIdentifier;
 // Identifier for the tabs section.
 extern NSString* const kGridOpenTabsSectionIdentifier;
 // Identifier for the section containing the suggested actions.

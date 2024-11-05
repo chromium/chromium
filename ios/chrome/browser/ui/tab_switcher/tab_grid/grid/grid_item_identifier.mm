@@ -11,11 +11,12 @@
 #import "ios/web/public/web_state_id.h"
 
 namespace {
-// There is only one suggested actions or inactive tab button item in the app,
-// their hash can be manually chosen. Pick two different ones to avoid
-// collisions.
+// There is only one suggested actions, inactive tab button item or activity
+// summary card in the app, their hash can be manually chosen. Pick different
+// ones to avoid collisions.
 constexpr NSUInteger kSuggestedActionHash = 0;
 constexpr NSUInteger kInactiveTabsButtonHash = 1;
+constexpr NSUInteger kActivitySummaryHash = 2;
 }  // namespace
 
 @implementation GridItemIdentifier {
@@ -41,6 +42,10 @@ constexpr NSUInteger kInactiveTabsButtonHash = 1;
 
 + (instancetype)suggestedActionsIdentifier {
   return [[self alloc] initForSuggestedAction];
+}
+
++ (instancetype)activitySummaryIdentifier {
+  return [[self alloc] initForActivitySummary];
 }
 
 - (instancetype)initForInactiveTabsButton {
@@ -81,6 +86,15 @@ constexpr NSUInteger kInactiveTabsButtonHash = 1;
   return self;
 }
 
+- (instancetype)initForActivitySummary {
+  self = [super init];
+  if (self) {
+    _type = GridItemType::kActivitySummary;
+    _hash = kActivitySummaryHash;
+  }
+  return self;
+}
+
 #pragma mark - NSObject
 
 // TODO(crbug.com/329073651): Refactor -hash and -isEqual.
@@ -110,7 +124,9 @@ constexpr NSUInteger kInactiveTabsButtonHash = 1;
     case GridItemType::kGroup:
       return self.tabGroupItem.description;
     case GridItemType::kSuggestedActions:
-      return @"Suggested Action identifier.";
+      return @"Suggested Action identifier";
+    case GridItemType::kActivitySummary:
+      return @"Activity summary card";
   }
 }
 
@@ -133,6 +149,8 @@ constexpr NSUInteger kInactiveTabsButtonHash = 1;
       return CompareTabGroupItems(self.tabGroupItem,
                                   itemIdentifier.tabGroupItem);
     case GridItemType::kSuggestedActions:
+      return YES;
+    case GridItemType::kActivitySummary:
       return YES;
   }
 }

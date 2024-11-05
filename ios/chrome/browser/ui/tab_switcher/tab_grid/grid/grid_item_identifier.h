@@ -25,6 +25,7 @@ enum class GridItemType : NSUInteger {
   kTab,
   kGroup,
   kSuggestedActions,
+  kActivitySummary,
 };
 
 // Represents grid items in a diffable data source. GridItemIdentifier equality
@@ -54,12 +55,14 @@ enum class GridItemType : NSUInteger {
                withWebStateList:(WebStateList*)webStateList;
 #endif
 + (instancetype)suggestedActionsIdentifier;
++ (instancetype)activitySummaryIdentifier;
 
 - (instancetype)initForInactiveTabsButton NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithTabItem:(TabSwitcherItem*)item
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithGroupItem:(TabGroupItem*)item NS_DESIGNATED_INITIALIZER;
 - (instancetype)initForSuggestedAction NS_DESIGNATED_INITIALIZER;
+- (instancetype)initForActivitySummary NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

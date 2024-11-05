@@ -96,7 +96,8 @@ constexpr CGFloat kSpace = 8;
     _incognito = incognito;
     _shared = shared;
     _tabGroup = tabGroup;
-    _gridViewController = [[TabGroupGridViewController alloc] init];
+    _gridViewController =
+        [[TabGroupGridViewController alloc] initWithShared:shared];
     if (!incognito) {
       _gridViewController.theme = GridThemeLight;
     } else {

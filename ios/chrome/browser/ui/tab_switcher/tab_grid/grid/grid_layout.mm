@@ -32,6 +32,8 @@ constexpr CGFloat kSearchHeaderEstimatedHeight = 50;
 // Estimated size of the SuggestedActions item.
 constexpr CGFloat kSuggestedActionsEstimatedHeight = 100;
 constexpr CGFloat kLegacySuggestedActionsEstimatedHeight = 150;
+// Estimated size of the activity summary item.
+constexpr CGFloat kActivitySummaryCellEstimatedHeight = 58;
 // Different width thresholds for determining the columns count.
 constexpr CGFloat kSmallWidthThreshold = 500;
 constexpr CGFloat kLargeWidthThreshold = 1000;
@@ -264,10 +266,45 @@ NSCollectionLayoutSection* TabsSection(
     case TabsSectionHeaderType::kAnimatingOut:
       section.boundarySupplementaryItems = @[ AnimatingOutHeader() ];
       break;
-    case TabsSectionHeaderType::kTabGroup:
-      section.boundarySupplementaryItems = @[ TabGroupHeader() ];
-      break;
   }
+
+  return section;
+}
+
+// Returns a compositional layout grid section for a tab group header.
+NSCollectionLayoutSection* TabGroupHeaderSection(
+    id<NSCollectionLayoutEnvironment> layout_environment,
+    NSDirectionalEdgeInsets section_insets) {
+  // Use the same estimated height for the item and the group.
+  NSCollectionLayoutDimension* estimated_height_dimension =
+      EstimatedDimension(kActivitySummaryCellEstimatedHeight);
+
+  // Configure the layout item.
+  NSCollectionLayoutSize* item_size = [NSCollectionLayoutSize
+      sizeWithWidthDimension:FractionalWidth(1.)
+             heightDimension:estimated_height_dimension];
+  NSCollectionLayoutItem* item =
+      [NSCollectionLayoutItem itemWithLayoutSize:item_size];
+
+  // Configure the layout group.
+  NSCollectionLayoutSize* group_size = [NSCollectionLayoutSize
+      sizeWithWidthDimension:FractionalWidth(1.)
+             heightDimension:estimated_height_dimension];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
+                                                    subitems:@[ item ]];
+  const CGFloat spacing = Spacing(layout_environment);
+  group.interItemSpacing = [NSCollectionLayoutSpacing fixedSpacing:spacing];
+
+  // Configure the layout section.
+  NSCollectionLayoutSection* section =
+      [NSCollectionLayoutSection sectionWithGroup:group];
+  section_insets.top += spacing;
+  section_insets.leading += spacing;
+  section_insets.trailing += spacing;
+  section.contentInsets = section_insets;
+  section.contentInsetsReference = UIContentInsetsReferenceNone;
+  section.boundarySupplementaryItems = @[ TabGroupHeader() ];
 
   return section;
 }
@@ -445,6 +482,10 @@ NSCollectionLayoutSection* SuggestedActionsSection(
       [self.diffableDataSource sectionIdentifierForIndex:sectionIndex];
   if ([sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier]) {
     return InactiveTabButtonSection(layoutEnvironment, self.sectionInsets);
+  } else if ([sectionIdentifier
+                 isEqualToString:kTabGroupHeaderSectionIdentifier]) {
+    CHECK_EQ(self.tabsSectionHeaderType, TabsSectionHeaderType::kNone);
+    return TabGroupHeaderSection(layoutEnvironment, self.sectionInsets);
   } else if ([sectionIdentifier
                  isEqualToString:kGridOpenTabsSectionIdentifier]) {
     return TabsSection(layoutEnvironment, self.tabsSectionHeaderType,

@@ -632,9 +632,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   NSString* sectionIdentifier =
       [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
-  // No context menu on suggested actions or inactive tabs section.
+  // No context menu on suggested actions, inactive tabs section or tab group
+  // header section.
   if ([sectionIdentifier isEqualToString:kSuggestedActionsSectionIdentifier] ||
-      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier]) {
+      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kTabGroupHeaderSectionIdentifier]) {
     return nil;
   }
 
@@ -720,6 +722,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
     case GridItemType::kSuggestedActions:
       NOTREACHED();
+    case GridItemType::kActivitySummary:
+      NOTREACHED();
   }
 }
 
@@ -748,6 +752,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                       dragEvent);
         break;
       case GridItemType::kSuggestedActions:
+        NOTREACHED();
+      case GridItemType::kActivitySummary:
         NOTREACHED();
     }
   } else {
@@ -780,9 +786,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   NSString* sectionIdentifier =
       [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
   if ([sectionIdentifier isEqualToString:kSuggestedActionsSectionIdentifier] ||
-      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier]) {
-    // Return an empty array because the suggested actions cell or the inactive
-    // tabs button should not be dragged.
+      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kTabGroupHeaderSectionIdentifier]) {
+    // Return an empty array because the suggested actions cell, the inactive
+    // tabs button, the activity summary cell should not be dragged.
     return @[];
   }
   GridItemIdentifier* draggedItem =
@@ -803,6 +810,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
             dragItemForTabGroupItem:_draggedItemIdentifier.tabGroupItem];
         break;
       case GridItemType::kSuggestedActions:
+        NOTREACHED();
+      case GridItemType::kActivitySummary:
         NOTREACHED();
     }
     if (!dragItem) {
@@ -1540,13 +1549,17 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                    item:itemIdentifier
                                                             .tabGroupItem];
     }
-    case GridItemType::kSuggestedActions:
+    case GridItemType::kSuggestedActions: {
       UICollectionViewCellRegistration* registration =
           _suggestedActionsCellRegistration;
       return [self.collectionView
           dequeueConfiguredReusableCellWithRegistration:registration
                                            forIndexPath:indexPath
                                                    item:itemIdentifier];
+    }
+    case GridItemType::kActivitySummary:
+      // Must be handled in the subclasses.
+      NOTREACHED();
   }
 }
 
@@ -1757,14 +1770,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
   CHECK(
       [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier] ||
-      [sectionIdentifier isEqualToString:kGridOpenTabsSectionIdentifier]);
+      [sectionIdentifier isEqualToString:kGridOpenTabsSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kTabGroupHeaderSectionIdentifier]);
 
   GridItemIdentifier* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
   CHECK(itemIdentifier.type == GridItemType::kInactiveTabsButton ||
         itemIdentifier.type == GridItemType::kGroup ||
-        itemIdentifier.type == GridItemType::kTab);
+        itemIdentifier.type == GridItemType::kTab ||
+        itemIdentifier.type == GridItemType::kActivitySummary);
 
   [self.mutator userTappedOnItemID:itemIdentifier];
   if (_mode == TabGridMode::kSelection) {
@@ -1793,6 +1808,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
     case GridItemType::kSuggestedActions:
       NOTREACHED();
+    case GridItemType::kActivitySummary:
+      // No-op.
+      break;
   }
 }
 

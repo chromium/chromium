@@ -68,6 +68,8 @@
     }
     case GridItemType::kSuggestedActions:
       NOTREACHED();
+    case GridItemType::kActivitySummary:
+      NOTREACHED();
   }
 }
 
@@ -94,6 +96,8 @@
       return;
     }
     case GridItemType::kSuggestedActions:
+      NOTREACHED();
+    case GridItemType::kActivitySummary:
       NOTREACHED();
   }
 }
@@ -134,6 +138,8 @@
         break;
       }
       case GridItemType::kSuggestedActions:
+        NOTREACHED();
+      case GridItemType::kActivitySummary:
         NOTREACHED();
     }
   }

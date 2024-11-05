@@ -6,6 +6,8 @@
 
 NSString* const kInactiveTabButtonSectionIdentifier =
     @"InactiveTabSectionIdentifier";
+NSString* const kTabGroupHeaderSectionIdentifier =
+    @"TabGroupHeaderSectionIdentifier";
 NSString* const kGridOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";

@@ -285,15 +285,24 @@ source_set("grid_view_controller_mutator") {
 
 source_set("tab_group_grid_ui") {
   sources = [
+    "tab_group_activity_summary_cell.h",
+    "tab_group_activity_summary_cell.mm",
     "tab_group_grid_view_controller.h",
     "tab_group_grid_view_controller.mm",
     "tab_group_header.h",
     "tab_group_header.mm",
   ]
   deps = [
+    ":grid_item_identifier",
     ":grid_ui",
+    ":grid_ui_constants",
     ":grid_view_delegate",
     "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
   ]
 }
 

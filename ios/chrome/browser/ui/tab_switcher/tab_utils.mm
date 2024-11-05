@@ -44,6 +44,8 @@ bool HasDuplicateGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items) {
         break;
       case GridItemType::kSuggestedActions:
         NOTREACHED();
+      case GridItemType::kActivitySummary:
+        NOTREACHED();
     }
   }
   return (identifiers.size() + groups.size()) != items.count;
