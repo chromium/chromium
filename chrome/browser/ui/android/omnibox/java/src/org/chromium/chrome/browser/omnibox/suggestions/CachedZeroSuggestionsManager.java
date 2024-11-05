@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_Z
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_URL_PREFIX;
 
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -52,11 +53,23 @@ public class CachedZeroSuggestionsManager {
         }
     }
 
+    /** Persisted Search Engine metadata. */
+    public static class SearchEngineMetadata {
+        /** The keyword associated with the search engine. */
+        public final String keyword;
+
+        public SearchEngineMetadata(String keyword) {
+            this.keyword = keyword;
+        }
+    }
+
     @VisibleForTesting
     /* package */ static final String KEY_JUMP_START_URL = "omnibox:jump_start:url";
 
     @VisibleForTesting
     /* package */ static final String KEY_JUMP_START_PAGE_CLASS = "omnibox:jump_start:page_class";
+
+    @VisibleForTesting /* package */ static final String KEY_DSE_KEYWORD = "omnibox:dse:keyword";
 
     @VisibleForTesting
     /* package */ static final Set<String> ADDITIONAL_KEYS_TO_ERASE =
@@ -79,6 +92,21 @@ public class CachedZeroSuggestionsManager {
                 .commit();
 
         eraseOldCachedData();
+    }
+
+    /** Save the details related to currently selected Search Engine. */
+    public static void saveSearchEngineMetadata(SearchEngineMetadata metadata) {
+        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
+        editor.putString(KEY_DSE_KEYWORD, metadata.keyword).apply();
+    }
+
+    /** Returns the details of the currently persisted Search Engine. */
+    public static @Nullable SearchEngineMetadata readSearchEngineMetadata() {
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        var keyword = prefs.getString(KEY_DSE_KEYWORD, null);
+        if (TextUtils.isEmpty(keyword)) return null;
+
+        return new SearchEngineMetadata(keyword);
     }
 
     /**

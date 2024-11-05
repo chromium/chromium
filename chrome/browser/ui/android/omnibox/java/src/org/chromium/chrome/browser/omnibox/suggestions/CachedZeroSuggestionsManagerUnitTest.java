@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.KEY_JUMP_START_PAGE_CLASS;
@@ -19,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.SearchEngineMetadata;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -281,5 +284,34 @@ public class CachedZeroSuggestionsManagerUnitTest {
         CachedZeroSuggestionsManager.eraseCachedData();
         assertFalse(prefs.contains(KEY_JUMP_START_URL));
         assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
+    }
+
+    @Test
+    public void dseMetadata_restoreFromEmptyCache() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+        // Start with empty prefs.
+        prefs.edit().clear().apply();
+        assertNull(CachedZeroSuggestionsManager.readSearchEngineMetadata());
+    }
+
+    @Test
+    public void dseMetadata_restoreFromEmptyKeyword() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+
+        CachedZeroSuggestionsManager.saveSearchEngineMetadata(new SearchEngineMetadata(null));
+        assertNull(CachedZeroSuggestionsManager.readSearchEngineMetadata());
+
+        CachedZeroSuggestionsManager.saveSearchEngineMetadata(new SearchEngineMetadata(""));
+        assertNull(CachedZeroSuggestionsManager.readSearchEngineMetadata());
+    }
+
+    @Test
+    public void dseMetadata_restoreValidMetadata() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+
+        CachedZeroSuggestionsManager.saveSearchEngineMetadata(new SearchEngineMetadata("keyword"));
+        var persisted = CachedZeroSuggestionsManager.readSearchEngineMetadata();
+        assertNotNull(persisted);
+        assertEquals("keyword", persisted.keyword);
     }
 }
