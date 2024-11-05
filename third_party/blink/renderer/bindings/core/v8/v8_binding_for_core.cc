@@ -736,6 +736,7 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
   // introduced due to crbug.com/1037985 .  Remove this temporary fix once
   // the root cause is fixed.
   if (!frame->IsDetached() && frame->IsProvisional()) {
+    DCHECK(false);
     base::debug::DumpWithoutCrashing();
     return v8::Local<v8::Context>();
   }
@@ -751,6 +752,7 @@ v8::Local<v8::Context> ToV8ContextMaybeEmpty(LocalFrame* frame,
   // introduced due to crbug.com/1037985 .  Remove this temporary fix once
   // the root cause is fixed.
   if (frame->IsProvisional()) {
+    DCHECK(false);
     base::debug::DumpWithoutCrashing();
     return v8::Local<v8::Context>();
   }
