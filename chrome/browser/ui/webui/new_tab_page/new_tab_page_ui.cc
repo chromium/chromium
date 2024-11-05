@@ -351,7 +351,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDriveTitleV2", IDS_NTP_MODULES_DRIVE_NAME},
       {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},
       {"modulesSharepointInfo", IDS_NTP_MODULES_SHAREPOINT_INFO},
-      {"modulesSharepointTitle", IDS_NTP_MODULES_SHAREPOINT_TITLE},
       {"modulesSharepointName", IDS_NTP_MODULES_SHAREPOINT_NAME},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDismissForHoursButtonText",
