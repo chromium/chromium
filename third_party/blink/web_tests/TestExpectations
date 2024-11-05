@@ -8406,3 +8406,8 @@ crbug.com/376931817 external/wpt/file-system-access/local_FileSystemDirectoryHan
 crbug.com/376931817 external/wpt/file-system-access/local_FileSystemFileHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
 crbug.com/376931817 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
 crbug.com/376931817 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemFileHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
+
+# Gardener 2024-11-05
+crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-001c-print.html [ Pass Failure ]
+crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-001d-print.html [ Pass Failure ]
+crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-002c-print.html [ Pass Failure ]
