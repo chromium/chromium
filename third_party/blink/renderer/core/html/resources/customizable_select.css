@@ -34,8 +34,6 @@ select:not(:-internal-list-box):-internal-select-has-child-button {
 select:not(:-internal-list-box):not(:-internal-select-has-child-button) {
   padding: -internal-appearance-auto-base-select(0, 0.25em);
   border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), ButtonBorder);
-  /* TODO(crbug.com/1511354): Adding border-radius here makes it impossible to
-   * pass the reftest due to indistinguishable differences in a few pixels. */
   /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
    * https://github.com/openui/open-ui/issues/1026
    * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
@@ -60,7 +58,6 @@ select:not(:-internal-list-box)::picker(select) {
   box-sizing: border-box;
   overflow: auto;
   border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25em;
   padding-block: 0.25em;
   padding-inline: 0;
   background-color: Field;

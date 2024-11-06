@@ -9,7 +9,6 @@
 .customizable-select-popover {
   overflow: auto;
   border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25em;
   padding-block: 0.25em;
   padding-inline: 0;
   background-color: Field;
