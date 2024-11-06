@@ -1246,6 +1246,7 @@ void CloudPolicyClient::UploadFmRegistrationToken(
   params.callback =
       base::BindOnce(&CloudPolicyClient::OnUploadFmRegistrationTokenResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  params.profile_id = profile_id_;
 
   std::unique_ptr<RegistrationJobConfiguration> config =
       std::make_unique<RegistrationJobConfiguration>(std::move(params));
