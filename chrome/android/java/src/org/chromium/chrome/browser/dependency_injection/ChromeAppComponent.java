@@ -8,12 +8,9 @@ import dagger.Component;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.AppHooksModule;
-import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
-import org.chromium.chrome.browser.customtabs.CustomTabsClientFileProcessor;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import javax.inject.Singleton;
 
@@ -30,10 +27,4 @@ public interface ChromeAppComponent {
     CustomTabsConnection resolveCustomTabsConnection();
 
     SharedPreferencesManager resolveChromeSharedPreferences();
-
-    ClearDataDialogResultRecorder resolveClearDataDialogResultRecorder();
-
-    ExternalAuthUtils resolveExternalAuthUtils();
-
-    CustomTabsClientFileProcessor resolveCustomTabsFileProcessor();
 }
