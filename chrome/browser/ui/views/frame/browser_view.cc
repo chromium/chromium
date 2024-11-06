@@ -5381,8 +5381,11 @@ void BrowserView::NotifyAdditionalConditionEvent(const char* event_name) {
   if (!feature_promo_controller_) {
     return;
   }
-  feature_promo_controller_->feature_engagement_tracker()->NotifyEvent(
-      event_name);
+  if (auto* const tracker =
+          feature_engagement::TrackerFactory::GetForBrowserContext(
+              GetProfile())) {
+    tracker->NotifyEvent(event_name);
+  }
 }
 
 user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(

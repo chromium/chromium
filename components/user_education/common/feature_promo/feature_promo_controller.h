@@ -237,11 +237,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   void NotifyFeatureUsedIfValid(const base::Feature& feature);
 #endif
 
-  // Returns the associated feature engagement tracker.
-  feature_engagement::Tracker* feature_engagement_tracker() {
-    return feature_engagement_tracker_;
-  }
-
   // FeaturePromoController:
   FeaturePromoResult CanShowPromo(
       const FeaturePromoParams& params) const override;

@@ -396,7 +396,7 @@ void FeaturePromoControllerCommon::NotifyFeatureUsedIfValid(
     const base::Feature& feature) {
   if (base::FeatureList::IsEnabled(feature) &&
       registry_->IsFeatureRegistered(feature)) {
-    feature_engagement_tracker()->NotifyUsedEvent(feature);
+    feature_engagement_tracker_->NotifyUsedEvent(feature);
   }
 }
 #endif
