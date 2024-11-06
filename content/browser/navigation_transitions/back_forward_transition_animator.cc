@@ -77,8 +77,11 @@ bool ShouldUseFallbackScreenshot(
       cache_hit_or_miss_reason = NavigationTransitionData::
           CacheHitOrMissReason::kCacheMissScreenshotOrientation;
     } else {
-      CHECK_EQ(cache_hit_or_miss_reason.value(),
-               NavigationTransitionData::CacheHitOrMissReason::kCacheHit);
+      // TODO(crbug.com/377566662): Identify why the cache hit or miss reason is
+      // not set correctly at this point. This is to avoid the crashes addressed
+      // in crbug.com/377338996.
+      cache_hit_or_miss_reason =
+          NavigationTransitionData::CacheHitOrMissReason::kCacheHit;
     }
   }
 
