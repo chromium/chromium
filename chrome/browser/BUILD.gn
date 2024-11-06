@@ -2092,6 +2092,7 @@ static_library("browser") {
     "//components/fingerprinting_protection_filter/mojom",
     "//components/flags_ui",
     "//components/gcm_driver",
+    "//components/guest_view/buildflags",
     "//components/handoff",
     "//components/headless/select_file_dialog",
     "//components/heap_profiling/in_process",

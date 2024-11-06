@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/types/optional_util.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_map.h"

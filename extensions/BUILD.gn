@@ -2,6 +2,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
@@ -9,6 +10,9 @@ import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
 assert(enable_extensions_core)
+
+# If enable_extensions is true then enable_guest_view must also be true.
+assert(!enable_extensions || enable_guest_view)
 
 if (is_component_build) {
   component("extensions") {

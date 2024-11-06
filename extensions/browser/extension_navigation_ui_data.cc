@@ -5,10 +5,10 @@
 #include "extensions/browser/extension_navigation_ui_data.h"
 
 #include "base/memory/ptr_util.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "content/public/common/content_features.h"

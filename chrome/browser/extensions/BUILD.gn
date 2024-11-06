@@ -771,6 +771,7 @@ source_set("extensions") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/window_sizer",
     "//chrome/browser/ui/zoom",
+    "//components/guest_view/buildflags",
 
     # Only for allow_circular_includes_from
     "//chrome/browser/apps/app_service/app_icon",
