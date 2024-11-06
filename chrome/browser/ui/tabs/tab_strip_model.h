@@ -97,6 +97,9 @@ struct DetachedWebContents {
 
   // The |contents| associated optional SessionID, used as key for
   // ClosedTabCache. We only cache |contents| if |remove_reason| is kCached.
+  //
+  // TODO(crbug.com/377537302): The ClosedTabCache feature is gone, but it's
+  // unclear if the session ID is needed for other things as well.
   std::optional<SessionID> id;
 };
 

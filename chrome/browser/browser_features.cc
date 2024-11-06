@@ -65,12 +65,6 @@ BASE_FEATURE(kCertVerificationNetworkTime,
              "CertVerificationNetworkTime",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using the ClosedTabCache to instantly restore recently closed tabs
-// using the "Reopen Closed Tab" button.
-BASE_FEATURE(kClosedTabCache,
-             "ClosedTabCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_LINUX)
 // Enables usage of os_crypt_async::SecretPortalKeyProvider.  Once
 // `kSecretPortalKeyProviderUseForEncryption` is enabled, this flag cannot be
