@@ -228,8 +228,7 @@ void SupervisedUserVerificationPage::CommandReceived(
     case security_interstitials::CMD_OPEN_DIAGNOSTIC:
     case security_interstitials::CMD_REPORT_PHISHING_ERROR:
       // Not supported by the verification page.
-      NOTREACHED_IN_MIGRATION() << "Unsupported command: " << command;
-      break;
+      NOTREACHED() << "Unsupported command: " << command;
     case security_interstitials::CMD_ERROR:
     case security_interstitials::CMD_TEXT_FOUND:
     case security_interstitials::CMD_TEXT_NOT_FOUND:

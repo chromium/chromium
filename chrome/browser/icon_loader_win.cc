@@ -154,7 +154,7 @@ gfx::Image GetIconForFileExtension(const std::wstring& group,
       size = SHGFI_LARGEICON;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   gfx::Image image;
@@ -246,7 +246,7 @@ void IconLoader::ReadIconInSandbox() {
       size = chrome::mojom::IconSize::kLarge;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   base::File file;

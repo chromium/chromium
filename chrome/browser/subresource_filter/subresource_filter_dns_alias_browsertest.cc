@@ -63,8 +63,7 @@ std::string PrintToString(Level level) {
     case ActivationLevel::kDisabled:
       return "ActivationDisabled";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 namespace {

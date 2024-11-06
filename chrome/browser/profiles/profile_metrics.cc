@@ -392,7 +392,7 @@ void ProfileMetrics::LogProfileAvatarSelection(size_t icon_index) {
       icon_name = AVATAR_GAIA;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   base::UmaHistogramEnumeration("Profile.Avatar", icon_name,
                                 NUM_PROFILE_AVATAR_METRICS);

@@ -1012,7 +1012,7 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
              switches::autoplay::kDocumentUserActivationRequiredPolicy) {
     result = blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -3791,8 +3791,7 @@ void ChromeContentBrowserClient::OnTrustAnchorUsed(
       policy::PolicyCertServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
   if (!service) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   service->SetUsedPolicyCertificates();
 }
@@ -8504,8 +8503,7 @@ std::string ChromeContentBrowserClient::GetChildProcessSuffix(int child_flags) {
       base::to_underlying(ChildProcessHostFlags::kChildProcessHelperAlerts)) {
     return chrome::kMacHelperSuffixAlerts;
   }
-  NOTREACHED_IN_MIGRATION() << "Unsupported child process flags!";
-  return {};
+  NOTREACHED() << "Unsupported child process flags!";
 }
 #endif  // BUILDFLAG(IS_MAC)
 

@@ -102,8 +102,7 @@ bool IncognitoModePrefs::CanOpenBrowser(Profile* profile) {
       return profile->IsIncognitoProfile();
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

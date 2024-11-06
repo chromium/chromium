@@ -45,8 +45,7 @@ CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(
     case ActivityType::kPreFirstTab:
       return NO_VISIBLE_TAB;
   }
-  NOTREACHED_IN_MIGRATION();
-  return VISIBLE_CHROME_TAB;
+  NOTREACHED();
 }
 
 ActivityType GetInitialActivityTypeForTesting() {

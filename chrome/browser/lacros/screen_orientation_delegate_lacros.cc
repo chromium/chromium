@@ -32,8 +32,7 @@ ui::WaylandOrientationLockType ToWaylandOrientationLockType(
     case device::mojom::ScreenOrientationLockType::NATURAL:
       return ui::WaylandOrientationLockType::kNatural;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::WaylandOrientationLockType::kAny;
+  NOTREACHED();
 }
 
 }  // namespace

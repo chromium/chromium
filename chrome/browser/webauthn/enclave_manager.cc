@@ -1183,8 +1183,7 @@ class EnclaveManager::StateMachine {
       case State::kStop:
         // This should never be observed here as this special case is handled
         // below.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
 
       case State::kNextAction:
         CHECK(absl::holds_alternative<None>(event)) << ToString(event);

@@ -196,8 +196,7 @@ void RetargetUserShortcutsWithArgs(const InstallerState& installer_state,
                                    const base::FilePath& old_target_exe,
                                    const base::FilePath& new_target_exe) {
   if (installer_state.system_install()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   ShellUtil::ShellChange install_level = ShellUtil::CURRENT_USER;
 
@@ -1174,8 +1173,7 @@ bool MoveSetupOutOfInstallFolder(const base::FilePath& setup_exe) {
   if (!(::IsUserAnAdmin()
             ? base::PathService::Get(base::DIR_SYSTEM_TEMP, &tmp_dir)
             : base::PathService::Get(base::DIR_TEMP, &tmp_dir))) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Change the current directory to the TMP directory. See method comment

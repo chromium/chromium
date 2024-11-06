@@ -355,7 +355,7 @@ BackgroundModeManager* TestingBrowserProcess::background_mode_manager() {
 
 void TestingBrowserProcess::set_background_mode_manager_for_test(
     std::unique_ptr<BackgroundModeManager> manager) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 

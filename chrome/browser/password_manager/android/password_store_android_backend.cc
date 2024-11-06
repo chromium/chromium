@@ -218,8 +218,7 @@ SuccessStatus GetSuccessStatusFromError(
     case AndroidBackendErrorType::kFailedToCreateFacetId:
       return SuccessStatus::kError;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SuccessStatus::kError;
+  NOTREACHED();
 }
 
 std::string GetOperationName(PasswordStoreOperation operation) {
@@ -247,8 +246,7 @@ std::string GetOperationName(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
       return "GetAllLoginsWithBrandingInfoAsync";
   }
-  NOTREACHED_IN_MIGRATION() << "Operation code not handled";
-  return "";
+  NOTREACHED() << "Operation code not handled";
 }
 
 int GetRetryAttemptFromDelay(base::TimeDelta delay) {

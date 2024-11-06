@@ -110,20 +110,6 @@ ShutdownDetector::ShutdownDetector(
 
 ShutdownDetector::~ShutdownDetector() {}
 
-// These functions are used to help us diagnose crash dumps that happen
-// during the shutdown process.
-NOINLINE void ShutdownFDReadError() {
-  // Ensure function isn't optimized away.
-  asm("");
-  sleep(UINT_MAX);
-}
-
-NOINLINE void ShutdownFDClosedError() {
-  // Ensure function isn't optimized away.
-  asm("");
-  sleep(UINT_MAX);
-}
-
 NOINLINE void ExitPosted() {
   // Ensure function isn't optimized away.
   asm("");
@@ -141,13 +127,9 @@ void ShutdownDetector::ThreadMain() {
                             reinterpret_cast<char*>(&signal) + bytes_read,
                             sizeof(signal) - bytes_read));
     if (ret < 0) {
-      NOTREACHED_IN_MIGRATION() << "Unexpected error: " << strerror(errno);
-      ShutdownFDReadError();
-      break;
+      NOTREACHED() << "Unexpected error: " << strerror(errno);
     } else if (ret == 0) {
-      NOTREACHED_IN_MIGRATION() << "Unexpected closure of shutdown pipe.";
-      ShutdownFDClosedError();
-      break;
+      NOTREACHED() << "Unexpected closure of shutdown pipe.";
     }
     bytes_read += ret;
   } while (bytes_read < sizeof(signal));

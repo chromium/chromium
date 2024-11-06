@@ -265,10 +265,9 @@ void ResumableUploadRequest::SendContentSoon() {
       break;
     // Resumable upload currently does not support paste.
     case STRING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

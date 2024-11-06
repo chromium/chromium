@@ -253,16 +253,14 @@ std::optional<uint64_t> FakeArCore::SubscribeToHitTest(
     mojom::XRNativeOriginInformationPtr nativeOriginInformation,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::optional<uint64_t> FakeArCore::SubscribeToHitTestForTransientInput(
     const std::string& profile_name,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 mojom::XRHitTestSubscriptionResultsDataPtr
@@ -273,7 +271,7 @@ FakeArCore::GetHitTestSubscriptionResults(
 }
 
 void FakeArCore::UnsubscribeFromHitTest(uint64_t subscription_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 mojom::XRPlaneDetectionDataPtr FakeArCore::GetDetectedPlanesData() {

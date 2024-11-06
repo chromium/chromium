@@ -116,8 +116,7 @@ std::wstring LegalizeNewProgId(std::wstring prog_id,
   std::wstring new_style_suffix;
   if (ShellUtil::GetUserSpecificRegistrySuffix(&new_style_suffix) &&
       suffix == new_style_suffix && prog_id.length() > 39) {
-    NOTREACHED_IN_MIGRATION();
-    prog_id.erase(39);
+    NOTREACHED();
   }
   return prog_id;
 }
@@ -175,8 +174,7 @@ class UserSpecificRegistrySuffix {
 UserSpecificRegistrySuffix::UserSpecificRegistrySuffix() {
   std::wstring user_sid;
   if (!base::win::GetUserSidString(&user_sid)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   static_assert(sizeof(base::MD5Digest) == 16, "size of MD5 not as expected");
   base::MD5Digest md5_digest;
@@ -193,8 +191,7 @@ UserSpecificRegistrySuffix::UserSpecificRegistrySuffix() {
 
 bool UserSpecificRegistrySuffix::GetSuffix(std::wstring* suffix) {
   if (suffix_.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   suffix->assign(suffix_);
   return true;
@@ -763,8 +760,7 @@ bool QuickIsChromeRegisteredForMode(
       reg_key = GetBrowserClientKey(suffix);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   reg_key += ShellUtil::kRegShellOpen;
 
@@ -831,8 +827,7 @@ bool GetInstallationSpecificSuffix(const base::FilePath& chrome_exe,
 
   // Get the old suffix for the check below.
   if (!ShellUtil::GetOldUserSpecificRegistrySuffix(suffix)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   if (QuickIsChromeRegistered(chrome_exe, *suffix,
                               CONFIRM_SHELL_REGISTRATION)) {
@@ -931,8 +926,7 @@ base::win::ShortcutOperation TranslateShortcutOperation(
       return base::win::ShortcutOperation::kReplaceExisting;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::win::ShortcutOperation::kReplaceExisting;
+      NOTREACHED();
   }
 }
 
@@ -1281,8 +1275,7 @@ bool RemoveShortcutFolderIfEmpty(ShellUtil::ShortcutLocation location,
           ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED &&
       location != ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR &&
       location != ShellUtil::SHORTCUT_LOCATION_APP_SHORTCUTS) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   base::FilePath shortcut_folder;
@@ -1599,8 +1592,7 @@ bool ShellUtil::ShortcutLocationIsSupported(ShortcutLocation location) {
     case SHORTCUT_LOCATION_APP_SHORTCUTS:
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1686,8 +1678,7 @@ bool ShellUtil::MoveExistingShortcut(ShortcutLocation old_location,
   // Explicitly allow locations to which this is applicable.
   if (old_location != SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED ||
       new_location != SHORTCUT_LOCATION_START_MENU_ROOT) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   std::wstring shortcut_name(ExtractShortcutNameFromProperties(properties));
@@ -1898,8 +1889,9 @@ std::wstring ShellUtil::GetCurrentInstallationSuffix(
                                CONFIRM_PROGID_REGISTRATION)) {
     // If Chrome is not registered under any of the possible suffixes (e.g.
     // tests, Canary, etc.): use the new-style suffix at run-time.
-    if (!GetUserSpecificRegistrySuffix(&tested_suffix))
-      NOTREACHED_IN_MIGRATION();
+    if (!GetUserSpecificRegistrySuffix(&tested_suffix)) {
+      NOTREACHED();
+    }
   }
   return tested_suffix;
 }
@@ -1916,7 +1908,7 @@ std::wstring ShellUtil::GetBrowserModelId(bool is_per_user_install) {
     suffix = command_line.GetSwitchValueNative(
         installer::switches::kRegisterChromeBrowserSuffix);
   } else if (is_per_user_install && !GetUserSpecificRegistrySuffix(&suffix)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   app_id += suffix;
   if (app_id.length() <= installer::kMaxAppModelIdLength)
@@ -1937,8 +1929,7 @@ std::wstring ShellUtil::BuildAppUserModelId(
   // |max_component_length| should be at least 2; otherwise the truncation logic
   // below breaks.
   if (max_component_length < 2U) {
-    NOTREACHED_IN_MIGRATION();
-    return (*components.begin()).substr(0, installer::kMaxAppModelIdLength);
+    NOTREACHED();
   }
 
   std::wstring app_id;
@@ -1964,8 +1955,7 @@ std::wstring ShellUtil::BuildAppUserModelId(
 ShellUtil::DefaultState ShellUtil::GetChromeDefaultState() {
   base::FilePath app_path;
   if (!base::PathService::Get(base::FILE_EXE, &app_path)) {
-    NOTREACHED_IN_MIGRATION();
-    return UNKNOWN_DEFAULT;
+    NOTREACHED();
   }
 
   return GetChromeDefaultStateFromPath(app_path);
@@ -1996,8 +1986,7 @@ ShellUtil::DefaultState ShellUtil::GetChromeDefaultProtocolClientState(
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return UNKNOWN_DEFAULT;
+    NOTREACHED();
   }
 
   const wchar_t* const protocols[] = {protocol.c_str()};
@@ -2430,8 +2419,7 @@ bool ShellUtil::GetOldUserSpecificRegistrySuffix(std::wstring* suffix) {
   wchar_t user_name[256];
   DWORD size = std::size(user_name);
   if (::GetUserName(user_name, &size) == 0 || size < 1) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   suffix->reserve(size);
   suffix->assign(1, L'.');
@@ -2550,8 +2538,7 @@ bool ShellUtil::AddAppProtocolAssociations(
     const std::wstring& prog_id) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   if (!RegisterApplicationForProtocols(protocols, prog_id, chrome_exe))

@@ -50,11 +50,11 @@ void RecursiveReadBookmarksFolder(
   if (!is_top_level_bookmarks_container) {
     // Top level containers sometimes don't have title attributes.
     if (![type isEqualToString:@"WebBookmarkTypeList"] || !title) {
-      NOTREACHED_IN_MIGRATION()
-          << "Type=(" << (type ? base::SysNSStringToUTF8(type) : "Null type")
-          << ") Title=("
-          << (title ? base::SysNSStringToUTF8(title) : "Null title") << ")";
-      return;
+      NOTREACHED() << "Type=("
+                   << (type ? base::SysNSStringToUTF8(type) : "Null type")
+                   << ") Title=("
+                   << (title ? base::SysNSStringToUTF8(title) : "Null title")
+                   << ")";
     }
   }
 

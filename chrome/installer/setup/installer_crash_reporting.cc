@@ -39,8 +39,7 @@ const char* OperationToString(InstallerState::Operation operation) {
       // Fall out of switch.
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Returns `SystemTemp` if available. Otherwise, retrieves the SYSTEM version of

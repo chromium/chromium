@@ -65,8 +65,7 @@ const std::vector<GURL> OptimizationGuideTabUrlProvider::GetUrlsOfActiveTabs(
 const std::vector<content::WebContents*>
 OptimizationGuideTabUrlProvider::GetAllWebContentsForProfile(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 #else
   std::vector<content::WebContents*> web_contents_list;
   for (Browser* browser : *BrowserList::GetInstance()) {

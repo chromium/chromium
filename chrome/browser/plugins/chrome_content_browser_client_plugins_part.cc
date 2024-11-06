@@ -288,7 +288,7 @@ void ChromeContentBrowserClientPluginsPart::DidCreatePpapiPlugin(
       std::unique_ptr<ppapi::host::HostFactory>(
           new ChromeBrowserPepperHostFactory(browser_host)));
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 

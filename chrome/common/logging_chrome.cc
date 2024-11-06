@@ -356,8 +356,9 @@ void RemoveSymlinkAndLog(const base::FilePath& link_path,
 base::FilePath GetSessionLogDir(const base::CommandLine& command_line) {
   std::string log_dir;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (!env->GetVar(env_vars::kSessionLogDir, &log_dir))
-    NOTREACHED_IN_MIGRATION();
+  if (!env->GetVar(env_vars::kSessionLogDir, &log_dir)) {
+    NOTREACHED();
+  }
   return base::FilePath(log_dir);
 }
 

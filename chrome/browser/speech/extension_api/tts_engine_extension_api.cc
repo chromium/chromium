@@ -716,7 +716,6 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   return RespondNow(NoArguments());
 #else
   // Given tts engine json api definition, we should never get here.
-  NOTREACHED_IN_MIGRATION();
-  return RespondNow(Error("Unsupported on this platform."));
+  NOTREACHED();
 #endif
 }

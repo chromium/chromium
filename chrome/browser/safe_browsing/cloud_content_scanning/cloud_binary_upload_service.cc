@@ -495,10 +495,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
                   url_loader_factory_, url, metadata, std::move(data.page),
                   std::move(traffic_annotation), std::move(callback));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    FinishRequest(request, Result::UNKNOWN,
-                  enterprise_connectors::ContentAnalysisResponse());
-    return;
+    NOTREACHED();
   }
   upload_request->set_access_token(request->access_token());
 

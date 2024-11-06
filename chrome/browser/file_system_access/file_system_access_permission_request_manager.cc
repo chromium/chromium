@@ -181,8 +181,7 @@ void FileSystemAccessPermissionRequestManager::DequeueAndShowRequest() {
           web_contents());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

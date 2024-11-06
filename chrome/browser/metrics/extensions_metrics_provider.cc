@@ -82,8 +82,7 @@ metrics::SystemProfileProto::ExtensionsState ExtensionStateAsProto(
     case OFF_STORE:
       return metrics::SystemProfileProto::HAS_OFFSTORE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return metrics::SystemProfileProto::NO_EXTENSIONS;
+  NOTREACHED();
 }
 
 // Determines if the |extension| is an extension (can use extension APIs) and is
@@ -158,8 +157,7 @@ ExtensionInstallProto::Type GetType(Manifest::Type type) {
       // TODO(mgawad): introduce new CHROMEOS_SYSTEM_EXTENSION type.
       return ExtensionInstallProto::EXTENSION;
     case Manifest::NUM_LOAD_TYPES:
-      NOTREACHED_IN_MIGRATION();
-      // Fall through.
+      NOTREACHED();
   }
   return ExtensionInstallProto::UNKNOWN_TYPE;
 }
@@ -316,8 +314,7 @@ ExtensionInstallProto::BlacklistState GetBlacklistState(
     case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
       return ExtensionInstallProto::BLACKLISTED_POTENTIALLY_UNWANTED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ExtensionInstallProto::BLACKLISTED_UNKNOWN;
+  NOTREACHED();
 }
 
 // Creates the install proto for a given |extension|. |now| is the current

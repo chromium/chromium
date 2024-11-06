@@ -901,8 +901,7 @@ Profile* ProfileManager::GetProfileFromProfileKey(ProfileKey* profile_key) {
       return otr;
   }
 
-  NOTREACHED_IN_MIGRATION() << "An invalid profile key is passed.";
-  return nullptr;
+  NOTREACHED() << "An invalid profile key is passed.";
 }
 
 std::map<ProfileKeepAliveOrigin, int> ProfileManager::GetKeepAlivesByPath(
@@ -1370,9 +1369,9 @@ void ProfileManager::UnloadProfileIfNoKeepAlive(const ProfileInfo* info) {
     return;
 
   if (!info->GetCreatedProfile()) {
-    NOTREACHED_IN_MIGRATION() << "Attempted to unload profile "
-                              << info->GetRawProfile()->GetDebugName()
-                              << " before it was loaded. This is not valid.";
+    NOTREACHED() << "Attempted to unload profile "
+                 << info->GetRawProfile()->GetDebugName()
+                 << " before it was loaded. This is not valid.";
   }
 
   VLOG(1) << "Unloading profile " << info->GetCreatedProfile()->GetDebugName();

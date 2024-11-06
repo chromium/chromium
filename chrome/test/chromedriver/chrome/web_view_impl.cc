@@ -214,8 +214,7 @@ const char* GetAsString(PointerType type) {
     case kPen:
       return "pen";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -511,8 +510,7 @@ std::unique_ptr<PageLoadStrategy> WebViewImpl::CreatePageLoadStrategy(
   } else if (strategy == PageLoadStrategy::kEager) {
     return std::make_unique<NavigationTracker>(client_.get(), this, true);
   } else {
-    NOTREACHED_IN_MIGRATION() << "invalid strategy '" << strategy << "'";
-    return nullptr;
+    NOTREACHED() << "invalid strategy '" << strategy << "'";
   }
 }
 

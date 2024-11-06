@@ -52,9 +52,7 @@ void SetPreloadPagesState(PrefService* prefs, PreloadPagesState state) {
       value = NetworkPredictionOptions::kDisabled;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "invalid PreloadPageState: " << static_cast<int>(state);
-      return;
+      NOTREACHED() << "invalid PreloadPageState: " << static_cast<int>(state);
   }
   prefs->SetInteger(prefs::kNetworkPredictionOptions, static_cast<int>(value));
 }

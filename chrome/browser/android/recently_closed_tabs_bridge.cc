@@ -150,7 +150,7 @@ void AddEntriesToList(JNIEnv* env,
       AddBulkEventToEntries(env, it, entry, window, jentries);
       continue;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -355,7 +355,7 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
           ChromePreloadingEligibility::kPrefetchFailed));
       return;
     case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // maintain a weak ptr so that this can cancel prerendering when

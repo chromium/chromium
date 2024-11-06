@@ -303,7 +303,7 @@ void ChromePluginPlaceholder::CustomContextMenuAction(uint32_t action) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

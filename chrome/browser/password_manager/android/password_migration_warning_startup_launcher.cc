@@ -86,5 +86,5 @@ void PasswordMigrationWarningStartupLauncher::
 
 void PasswordMigrationWarningStartupLauncher::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

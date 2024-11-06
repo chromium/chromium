@@ -103,8 +103,7 @@ void FallbackTaskProvider::ShowTaskLater(Task* task) {
                                            std::forward_as_tuple(task),
                                            std::forward_as_tuple(this));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    it->second.InvalidateWeakPtrs();
+    NOTREACHED();
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

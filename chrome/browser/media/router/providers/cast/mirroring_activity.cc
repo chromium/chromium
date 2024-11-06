@@ -152,8 +152,7 @@ std::optional<MirroringActivity::MirroringType> GetMirroringType(
   }
 
   if (!source.url().is_valid()) {
-    NOTREACHED_IN_MIGRATION() << "Invalid source: " << source;
-    return std::nullopt;
+    NOTREACHED() << "Invalid source: " << source;
   }
 
   if (source.IsCastPresentationUrl()) {
@@ -163,15 +162,13 @@ std::optional<MirroringActivity::MirroringType> GetMirroringType(
       // StreamingApp. We should return Tab Mirroring here.
       return MirroringActivity::MirroringType::kTab;
     } else {
-      NOTREACHED_IN_MIGRATION() << "Non-mirroring Cast app: " << source;
-      return std::nullopt;
+      NOTREACHED() << "Non-mirroring Cast app: " << source;
     }
   } else if (source.url().SchemeIsHTTPOrHTTPS()) {
     return MirroringActivity::MirroringType::kOffscreenTab;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Invalid source: " << source;
-  return std::nullopt;
+  NOTREACHED() << "Invalid source: " << source;
 }
 
 // TODO(crbug.com/1363512): Remove support for sender side letterboxing.

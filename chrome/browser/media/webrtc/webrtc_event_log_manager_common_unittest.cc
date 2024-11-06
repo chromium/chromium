@@ -331,7 +331,7 @@ class LogFileWriterTest
         break;
       }
       default: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }

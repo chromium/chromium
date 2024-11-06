@@ -243,9 +243,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      use_color = true;  // Still need to initialize `color` or MSVC will warn.
-      break;
+      NOTREACHED();
   }
 
   cloud_devices::printer::PwgRasterConfigCapability raster_capability;

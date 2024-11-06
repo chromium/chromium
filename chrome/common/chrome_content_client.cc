@@ -363,8 +363,7 @@ std::string ChromeContentClient::GetProcessTypeNameInEnglish(int type) {
   }
 #endif
 
-  NOTREACHED_IN_MIGRATION() << "Unknown child process type!";
-  return "Unknown";
+  NOTREACHED() << "Unknown child process type!";
 }
 
 blink::OriginTrialPolicy* ChromeContentClient::GetOriginTrialPolicy() {

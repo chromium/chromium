@@ -230,7 +230,7 @@ void EmbeddedA11yExtensionLoader::MaybeInstallExtension(
   resources_path = root_path.Append("resources");
 #else
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #endif
 

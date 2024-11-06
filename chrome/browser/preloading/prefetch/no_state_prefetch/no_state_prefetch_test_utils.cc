@@ -57,10 +57,9 @@ class NeverRunsExternalProtocolHandlerDelegate
  public:
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
       const GURL& url) override {
-    NOTREACHED_IN_MIGRATION();
     // This will crash, but it shouldn't get this far with BlockState::BLOCK
     // anyway.
-    return nullptr;
+    NOTREACHED();
   }
 
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
@@ -79,16 +78,16 @@ class NeverRunsExternalProtocolHandlerDelegate
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void LaunchUrlWithoutSecurityCheck(
       const GURL& url,
       content::WebContents* web_contents) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
-  void FinishedProcessingCheck() override { NOTREACHED_IN_MIGRATION(); }
+  void FinishedProcessingCheck() override { NOTREACHED(); }
 };
 
 }  // namespace
@@ -158,7 +157,7 @@ void TestNoStatePrefetchContents::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* widget_host,
     bool became_visible) {
   // The NoStatePrefetchContents should never be visible.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestNoStatePrefetchContents::RenderWidgetHostDestroyed(

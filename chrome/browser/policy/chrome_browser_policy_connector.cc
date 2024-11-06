@@ -147,8 +147,7 @@ bool ChromeBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsDeviceEnterprisedManaged();
 #else
-  NOTREACHED_IN_MIGRATION() << "This method is only defined for ChromeOS";
-  return false;
+  NOTREACHED() << "This method is only defined for ChromeOS";
 #endif
 }
 

@@ -118,7 +118,7 @@ void PeriodicBackgroundSyncPermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize Periodic Background Sync
   // from PeriodicBackgroundSyncPermissionContext.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PeriodicBackgroundSyncPermissionContext::NotifyPermissionSet(

@@ -263,8 +263,7 @@ AndroidPlatformConfiguration::ChooseEnabledProcess() const {
     }
     cumulative_weight += process_enable_weight.weight;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 bool AndroidPlatformConfiguration::IsEnabledForThread(

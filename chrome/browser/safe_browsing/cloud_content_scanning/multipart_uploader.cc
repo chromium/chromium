@@ -162,7 +162,7 @@ void MultipartUploadRequest::SetRequestHeaders(
       data_size = data_size_;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   request->headers.SetHeader("X-Goog-Upload-Header-Content-Length",
                              base::NumberToString(data_size));
@@ -196,7 +196,7 @@ void MultipartUploadRequest::SendRequest() {
       SendPageRequest(std::move(resource_request));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

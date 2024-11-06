@@ -354,9 +354,8 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
     case RenderFrameHost::LifecycleState::kActive:
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Illegal RFH state for TaskManager: "
-                                << static_cast<int>(rfh_state);
-      break;
+      NOTREACHED() << "Illegal RFH state for TaskManager: "
+                   << static_cast<int>(rfh_state);
   }
 
   // Exclude sad tabs, sad OOPIFs.

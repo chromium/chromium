@@ -100,7 +100,7 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
         chrome::SessionEnding();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 #else
     Exit();
@@ -173,14 +173,14 @@ void ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop() {
 
 void ChromeBrowserMainPartsPosix::ShowMissingLocaleMessageBox() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();  // Should not ever happen on ChromeOS.
+  NOTREACHED();  // Should not ever happen on ChromeOS.
 #elif BUILDFLAG(IS_MAC)
   // Not called on Mac because we load the locale files differently.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #elif defined(USE_AURA)
   // TODO(port): We may want a views based message dialog here eventually, but
   // for now, crash.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
 #error "Need MessageBox implementation."
 #endif

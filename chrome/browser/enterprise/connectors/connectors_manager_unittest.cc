@@ -580,7 +580,7 @@ class ConnectorsManagerConnectorPoliciesSourceDestinationTest
                volume_pair == &kNoDlpMalwareVolumePair2) {
       settings.tags = {{"malware", TagSettings()}};
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // The "local_user_agent" service provider doesn't support the "malware"
@@ -733,7 +733,7 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, NamesAndConfigs) {
     EXPECT_TRUE(configs[0]->region_urls.empty());
     EXPECT_TRUE(configs[0]->local_path);
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unexpected service provider name";
+    NOTREACHED() << "Unexpected service provider name";
   }
 }
 

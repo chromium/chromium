@@ -82,7 +82,7 @@ ScopedJavaLocalRef<jlongArray> ProcessIdFeedbackSource::GetProcessIdsForType(
     case content::PROCESS_TYPE_GPU:
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported process type.";
+      NOTREACHED() << "Unsupported process type.";
   }
   size_t size = process_ids_[process_type].size();
 

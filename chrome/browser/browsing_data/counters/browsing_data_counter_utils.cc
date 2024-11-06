@@ -146,7 +146,7 @@ std::u16string GetChromeCounterTextFromResult(
   }
   if (pref_name == browsing_data::prefs::kDeleteCookiesBasic) {
     // The basic tab doesn't show cookie counter results.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   if (pref_name == browsing_data::prefs::kDeleteCookies) {
     // Site data counter.
@@ -259,9 +259,8 @@ std::u16string GetChromeCounterTextFromResult(
             IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_COMBINATION, counts[0],
             counts[1]);
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    NOTREACHED_IN_MIGRATION();
   }
 
 #if BUILDFLAG(IS_ANDROID)

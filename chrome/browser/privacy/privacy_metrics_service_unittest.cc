@@ -76,11 +76,10 @@ class PrivacyMetricsServiceTest : public testing::Test {
             signin::ConsentLevel::kSync)) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       identity_test_env()->RevokeSyncConsent();
-#else
-      NOTREACHED_IN_MIGRATION()
-          << "It is not possible to unconsent from Sync on Ash";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
       return;
+#else
+      NOTREACHED() << "It is not possible to unconsent from Sync on Ash";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
     }
 
     CoreAccountInfo account_info =

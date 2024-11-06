@@ -34,8 +34,9 @@ std::vector<base::FilePath> GetCriticalBinariesPath() {
 
   // Find where chrome.exe is installed.
   base::FilePath chrome_exe_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &chrome_exe_dir))
-    NOTREACHED_IN_MIGRATION();
+  if (!base::PathService::Get(base::DIR_EXE, &chrome_exe_dir)) {
+    NOTREACHED();
+  }
 
   std::vector<base::FilePath> critical_binaries;
   critical_binaries.reserve(std::size(kUnversionedFiles) +

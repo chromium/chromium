@@ -790,7 +790,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
           compression::GzipUncompress(file_contents, &uncompressed_log));
       EXPECT_EQ(uncompressed_log, expected_event_log);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -1366,7 +1366,7 @@ class FileListExpectingWebRtcEventLogUploader : public WebRtcEventLogUploader {
   }
 
   void Cancel() override {
-    NOTREACHED_IN_MIGRATION() << "Incompatible with this kind of test.";
+    NOTREACHED() << "Incompatible with this kind of test.";
   }
 
  private:

@@ -1089,9 +1089,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
                                 base::Unretained(this), info);
       break;
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
-      NOTREACHED_IN_MIGRATION()
-          << "This interception type should not happen in DICE";
-      break;
+      NOTREACHED() << "This interception type should not happen in DICE";
   }
   ShowSigninInterceptionBubble(bubble_parameters, std::move(callback));
 }

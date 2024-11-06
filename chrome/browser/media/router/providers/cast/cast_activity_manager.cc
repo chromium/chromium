@@ -1200,15 +1200,7 @@ void CastActivityManager::HandleMissingSessionIdOnJoin(
     mojom::MediaRouteProvider::JoinRouteCallback callback) {
   // This should never happen, but it looks like maybe it does.  See
   // crbug.com/1114067.
-  NOTREACHED_IN_MIGRATION();
-  static const char kErrorMessage[] = "Internal error: missing session ID";
-  // The empty string parameters could have real values, but they're omitted
-  // out of an abundance of caution, and they're not especially relevant to
-  // this error anyway.
-  logger_.get()->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
-                          kErrorMessage, "", "", "");
-  std::move(callback).Run(std::nullopt, nullptr, kErrorMessage,
-                          mojom::RouteRequestResultCode::UNKNOWN_ERROR);
+  NOTREACHED();
 }
 
 void CastActivityManager::HandleMissingSessionOnJoin(

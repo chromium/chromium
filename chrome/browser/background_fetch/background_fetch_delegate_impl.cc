@@ -320,8 +320,7 @@ void BackgroundFetchDelegateImpl::UpdateOfflineItem(const std::string& job_id) {
       break;
     case JobState::kJobComplete:
       // There shouldn't be any updates at this point.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
       offline_item->state = OfflineItemState::IN_PROGRESS;
   }

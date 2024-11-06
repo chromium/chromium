@@ -1010,8 +1010,7 @@ Status DevToolsClientImpl::ProcessNextMessage(int expected_id,
       return Status(kTimeout, err);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return HandleMessage(expected_id, message, caller);

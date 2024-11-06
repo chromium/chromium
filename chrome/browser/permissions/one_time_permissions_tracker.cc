@@ -134,8 +134,7 @@ void OneTimePermissionsTracker::HandleUserMediaState(
       notify_callback = &OneTimePermissionsTracker::NotifyCapturingAudioExpired;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   if (origin_tracker_[origin].used_content_settings_set.find(content_setting) !=

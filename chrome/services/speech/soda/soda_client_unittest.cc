@@ -52,8 +52,7 @@ void OnSodaResponse(const char* serialized_proto,
   ASSERT_TRUE(callback_handle);
   speech::soda::chrome::SodaResponse response;
   if (!response.ParseFromArray(serialized_proto, length)) {
-    LOG(ERROR) << "Unable to parse result from SODA.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "Unable to parse result from SODA.";
   }
 
   if (response.soda_type() == speech::soda::chrome::SodaResponse::RECOGNITION) {

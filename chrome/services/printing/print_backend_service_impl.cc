@@ -396,8 +396,7 @@ PrintBackendServiceImpl::PrintingContextDelegate::GetParentView() {
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   return parent_native_view_;
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
@@ -412,7 +411,7 @@ void PrintBackendServiceImpl::PrintingContextDelegate::SetParentWindow(
   parent_native_view_ = reinterpret_cast<gfx::NativeView>(
       base::win::Uint32ToHandle(parent_window_id));
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 #endif

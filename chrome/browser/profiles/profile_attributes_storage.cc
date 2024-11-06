@@ -447,8 +447,7 @@ void ProfileAttributesStorage::RemoveProfile(
     const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry = GetProfileAttributesWithPath(profile_path);
   if (!entry) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::u16string name = entry->GetName();

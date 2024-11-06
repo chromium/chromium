@@ -220,16 +220,16 @@ void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
 }
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionStopped() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionError() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SpeechRecognitionServiceTest::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SpeechRecognitionServiceTest::SetUpPrefs() {

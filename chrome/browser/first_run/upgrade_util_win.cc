@@ -289,8 +289,7 @@ bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Explicitly make sure to relaunch chrome.exe rather than old_chrome.exe.

@@ -293,7 +293,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
   if (base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
     render_frame()->ExecuteJavaScript(js16);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return page_state;
 }
@@ -305,8 +305,7 @@ void NetErrorHelper::InitializeErrorPageEasterEggHighScore(int high_score) {
       high_score);
   std::u16string js16;
   if (!base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   render_frame()->ExecuteJavaScript(js16);

@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
   ASSERT_NE(crosapi::browser_util::IsLacrosEnabled(),
             OneDrivePrefObserverServiceExists());
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

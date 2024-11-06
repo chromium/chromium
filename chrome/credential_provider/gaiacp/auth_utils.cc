@@ -152,8 +152,7 @@ void KerbInteractiveUnlockLogonInit(wchar_t* domain,
       pkil->MessageType = KerbInteractiveLogon;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   // Initialize the UNICODE_STRINGS to share domain, username and password

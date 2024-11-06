@@ -420,7 +420,7 @@ void WebRtcLoggingController::OnAgentDisconnected() {
       // Do nothing
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

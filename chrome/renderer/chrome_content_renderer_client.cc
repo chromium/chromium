@@ -1049,8 +1049,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
     };
     switch (status) {
       case chrome::mojom::PluginStatus::kNotFound: {
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
       case chrome::mojom::PluginStatus::kAllowed:
       case chrome::mojom::PluginStatus::kPlayImportantContent: {
@@ -1357,9 +1356,8 @@ void ChromeContentRendererClient::ReportNaClAppType(
       }
     } else {
       // We found an extension that is not covered by any metric
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid NaCl usage in extension. Extension name: "
-          << extension->name() << ", type: " << extension->GetType();
+      NOTREACHED() << "Invalid NaCl usage in extension. Extension name: "
+                   << extension->name() << ", type: " << extension->GetType();
     }
   }
 

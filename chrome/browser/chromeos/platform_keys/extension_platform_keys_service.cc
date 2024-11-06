@@ -123,8 +123,7 @@ KeystoreSigningScheme GetKeystoreSigningScheme(
       }
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return KeystoreSigningScheme::kUnknown;
+  NOTREACHED();
 }
 
 // Returns appropriate KeystoreService for |browser_context|, which can be:

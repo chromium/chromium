@@ -291,15 +291,15 @@ void PaymentMethodAccessoryControllerImpl::OnOptionSelected(
     ShowAutofillCreditCardSettings(&GetWebContents());
     return;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unhandled selected action: " << static_cast<int>(selected_action);
+  NOTREACHED() << "Unhandled selected action: "
+               << static_cast<int>(selected_action);
 }
 
 void PaymentMethodAccessoryControllerImpl::OnToggleChanged(
     AccessoryAction toggled_action,
     bool enabled) {
-  NOTREACHED_IN_MIGRATION()
-      << "Unhandled toggled action: " << static_cast<int>(toggled_action);
+  NOTREACHED() << "Unhandled toggled action: "
+               << static_cast<int>(toggled_action);
 }
 
 // static

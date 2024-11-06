@@ -63,8 +63,7 @@ std::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     case policy::MarketSegment::ENTERPRISE:
       return em::PolicyData::ENROLLED_ENTERPRISE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
@@ -84,8 +83,7 @@ std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case UserSegment::kDemoMode:
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void ProvideHistograms() {

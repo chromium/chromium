@@ -568,12 +568,9 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case Result::DEEP_SCANNED_FAILED:
     case Result::IMMEDIATE_DEEP_SCAN:
-      NOTREACHED_IN_MIGRATION();
-      return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
-          kAllow;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::kBlock;
+  NOTREACHED();
 }
 
 std::string GenerateLastPickedDirectoryKey(const std::string& id) {
@@ -1012,8 +1009,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       case PermissionAction::REVOKED:
       case PermissionAction::GRANTED_ONCE:
       case PermissionAction::NUM:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1086,8 +1082,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
         break;
       case PermissionAction::REVOKED:
       case PermissionAction::NUM:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1419,8 +1414,7 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (HasGrantedActivePermissionStatus(grant.get())) {
@@ -1509,8 +1503,7 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (HasGrantedActivePermissionStatus(grant.get())) {

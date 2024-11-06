@@ -93,8 +93,9 @@ void AddCdmHostFilePaths(
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   base::FilePath chrome_exe_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &chrome_exe_dir))
-    NOTREACHED_IN_MIGRATION();
+  if (!base::PathService::Get(base::DIR_EXE, &chrome_exe_dir)) {
+    NOTREACHED();
+  }
 
   base::FilePath chrome_path =
       chrome_exe_dir.Append(FILE_PATH_LITERAL("chrome"));

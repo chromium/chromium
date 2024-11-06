@@ -280,7 +280,7 @@ cx_diag::ExceptionReason Convert(
     case crosapi::TelemetryExtensionException::Reason::kCameraFrontendNotOpened:
       return cx_diag::ExceptionReason::kCameraFrontendNotOpened;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 cx_diag::RoutineWaitingReason Convert(

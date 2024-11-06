@@ -87,10 +87,8 @@ class TestPhishingDOMFeatureExtractor : public PhishingDOMFeatureExtractor {
         const std::string document_domain = it->second;
         return !url.DomainIs(document_domain);
       }
-      NOTREACHED_IN_MIGRATION()
-          << "Testing input setup is incorrect. "
-             "Please check url_to_frame_domain_map_ setup.";
-      return true;
+      NOTREACHED() << "Testing input setup is incorrect. Please check "
+                      "url_to_frame_domain_map_ setup.";
     }
   }
 

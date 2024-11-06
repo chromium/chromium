@@ -255,9 +255,8 @@ void __stdcall ModuleWatcher::LoaderNotificationCallback(
       break;
 
     default:
-      // This is unexpected, but not a reason to crash.
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown LDR_DLL_NOTIFICATION_REASON: " << notification_reason;
+      NOTREACHED() << "Unknown LDR_DLL_NOTIFICATION_REASON: "
+                   << notification_reason;
   }
 }
 

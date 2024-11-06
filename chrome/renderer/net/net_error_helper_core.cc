@@ -311,8 +311,7 @@ void NetErrorHelperCore::ExecuteButtonPress(Button button) {
       delegate_->DownloadPageLater();
       return;
     case NO_BUTTON:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

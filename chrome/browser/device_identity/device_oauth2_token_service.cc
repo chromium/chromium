@@ -119,8 +119,7 @@ bool DeviceOAuth2TokenService::RefreshTokenIsAvailable() const {
       return !GetRobotAccountId().empty();
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unhandled state " << state_;
-  return false;
+  NOTREACHED() << "Unhandled state " << state_;
 }
 
 OAuth2AccessTokenManager* DeviceOAuth2TokenService::GetAccessTokenManager() {
@@ -293,8 +292,7 @@ bool DeviceOAuth2TokenService::HandleAccessTokenFetch(
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unexpected state " << state_;
-  return false;
+  NOTREACHED() << "Unexpected state " << state_;
 }
 
 void DeviceOAuth2TokenService::FlushPendingRequests(
@@ -347,16 +345,14 @@ std::string DeviceOAuth2TokenService::GetRefreshToken() const {
       // or short-circuited to signal error immediately, so no actual token
       // minting via OAuth2AccessTokenManager::FetchOAuth2Token should be
       // triggered.
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
     case STATE_VALIDATION_PENDING:
     case STATE_VALIDATION_STARTED:
     case STATE_TOKEN_VALID:
       return store_->GetRefreshToken();
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unhandled state " << state_;
-  return std::string();
+  NOTREACHED() << "Unhandled state " << state_;
 }
 
 void DeviceOAuth2TokenService::StartValidation() {

@@ -553,7 +553,7 @@ class SSLUITestBase : public InProcessBrowserTest,
       default: {
         // Other values in the enum are not used by these tests, and don't
         // have a Javascript equivalent that can be called here.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
     ASSERT_TRUE(content::ExecJs(tab, javascript));

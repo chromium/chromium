@@ -221,7 +221,7 @@ void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
 
       default:
         // We only expect the reasons explicitly handled above.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   RecordFileExtensionType(kDownloadExtensionUmaName, target_file_path_);

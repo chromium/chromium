@@ -1407,7 +1407,7 @@ void MTPDeviceDelegateImplLinux::RunTask(PendingTaskInfo task_info) {
                                                    std::move(task_info.task));
       break;
     case content::BrowserThread::ID_COUNT:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

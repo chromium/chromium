@@ -299,10 +299,9 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
             SecureDnsModeDetailsForHistogram::kOffByDetectedManagedEnvironment;
         break;
       case SecureDnsConfig::ManagementMode::kDisabledParentalControls:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // No need to check for parental controls if DoH is already disabled.

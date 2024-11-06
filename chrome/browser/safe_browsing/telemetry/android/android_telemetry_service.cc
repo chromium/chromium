@@ -306,8 +306,7 @@ void AndroidTelemetryService::MaybeSendApkDownloadReport(
     RecordApkDownloadTelemetryOutcome(
         ApkDownloadTelemetryOutcome::NOT_SENT_FAILED_TO_SERIALIZE);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Unhandled PingManager::ReportThreatDetailsResult type";
+    NOTREACHED() << "Unhandled PingManager::ReportThreatDetailsResult type";
   }
 }
 

@@ -104,8 +104,7 @@ std::optional<Decision> GetDecisionBasedOnSiteReputation(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 // Roll the dice to decide whether to use the normal UI even when the preload

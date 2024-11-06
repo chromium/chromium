@@ -124,8 +124,7 @@ void PasswordUiViewAndroid::Destroy(JNIEnv*, const JavaRef<jobject>&) {
       state_ = State::DELETION_PENDING;
       break;
     case State::DELETION_PENDING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -215,13 +214,11 @@ void PasswordUiViewAndroid::HandleSerializePasswords(
     case State::ALIVE_SERIALIZATION_PENDING:
       // The UI should not allow the user to re-request export before finishing
       // or cancelling the pending one.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case State::DELETION_PENDING:
       // The Java part should not first request destroying of |this| and then
       // ask |this| for serialized passwords.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   std::vector<password_manager::CredentialUIEntry> credentials =
       saved_passwords_presenter_.GetSavedCredentials();
@@ -355,8 +352,7 @@ void PasswordUiViewAndroid::PostSerializedPasswords(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   switch (state_) {
     case State::ALIVE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case State::ALIVE_SERIALIZATION_PENDING: {
       state_ = State::ALIVE;
       if (export_target_for_testing_) {

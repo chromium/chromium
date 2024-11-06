@@ -133,8 +133,7 @@ const sync_pb::PreferenceSpecifics& GetPreferenceFromEntity(
     case syncer::OS_PRIORITY_PREFERENCES:
       return entity.specifics().os_priority_preference().preference();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return entity.specifics().preference();
+      NOTREACHED();
   }
 }
 

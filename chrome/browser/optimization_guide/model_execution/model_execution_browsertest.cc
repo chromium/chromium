@@ -311,7 +311,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
       response->set_code(net::HTTP_OK);
       response->set_content(serialized_response);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     return std::move(response);
