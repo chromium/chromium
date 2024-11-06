@@ -147,6 +147,8 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
   // set on the widget directly as there will be no client view.
   if (base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
     auto delegate = std::make_unique<MahiWidgetDelegate>();
+    // Set to true so that the delegate deletes itself.
+    delegate->SetOwnedByWidget(true);
     delegate->SetCanResize(true);
     delegate->SetContentsView(std::move(contents_view));
     params.delegate = delegate.release();
