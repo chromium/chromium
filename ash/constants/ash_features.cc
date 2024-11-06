@@ -1077,6 +1077,11 @@ BASE_FEATURE(kFilesSinglePartitionFormat,
              "FilesSinglePartitionFormat",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable background cleanup for old files in Trash.
+BASE_FEATURE(kFilesTrashAutoCleanup,
+             "FilesTrashAutoCleanup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable files app trash for Drive.
 BASE_FEATURE(kFilesTrashDrive,
              "FilesTrashDrive",

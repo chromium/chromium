@@ -4660,6 +4660,15 @@
     "expiry_milestone": 104
   },
   {
+    "name": "files-trash-auto-cleanup",
+    "owners": [
+      "jboulic@chromium.org",
+      "benreich@chromium.org",
+      "simmonsjosh@google.com"
+    ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "files-trash-drive",
     "owners": [ "benreich@chromium.org", "joelhockey@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 149

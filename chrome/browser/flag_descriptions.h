@@ -3910,6 +3910,9 @@ extern const char kFilesMaterializedViewsDescription[];
 extern const char kFilesSinglePartitionFormatName[];
 extern const char kFilesSinglePartitionFormatDescription[];
 
+extern const char kFilesTrashAutoCleanupName[];
+extern const char kFilesTrashAutoCleanupDescription[];
+
 extern const char kFilesTrashDriveName[];
 extern const char kFilesTrashDriveDescription[];
 

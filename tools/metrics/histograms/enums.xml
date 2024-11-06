@@ -16973,6 +16973,7 @@ from previous Chrome versions.
       label="ReadAnythingReadAloudAutomaticWordHighlighting:disabled"/>
   <int value="-1315631616" label="CustomizeChromeWallpaperSearch:disabled"/>
   <int value="-1315360754" label="WindowLayoutMenu:disabled"/>
+  <int value="-1315176318" label="FilesTrashAutoCleanup:disabled"/>
   <int value="-1314823250"
       label="OsSettingsDeprecateSyncMetricsToggle:disabled"/>
   <int value="-1314757884" label="TabGroupsSave:enabled"/>
@@ -23199,6 +23200,7 @@ from previous Chrome versions.
   <int value="1220274247" label="AllowReaderForAccessibility:disabled"/>
   <int value="1220464509" label="enable-first-run-ui-transitions"/>
   <int value="1220655015" label="kScrollableTabStripOverflow:enabled"/>
+  <int value="1220920757" label="FilesTrashAutoCleanup:enabled"/>
   <int value="1221104166" label="ThumbnailCacheRefactor:enabled"/>
   <int value="1221370955" label="FedCmAddAccount:enabled"/>
   <int value="1221394044" label="SharingUseDeviceInfo:enabled"/>

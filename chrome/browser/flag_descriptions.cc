@@ -6795,6 +6795,10 @@ const char kFilesSinglePartitionFormatName[] =
 const char kFilesSinglePartitionFormatDescription[] =
     "Enable partitioning of removable disks into single partition.";
 
+const char kFilesTrashAutoCleanupName[] = "Trash auto cleanup";
+const char kFilesTrashAutoCleanupDescription[] =
+    "Enable background cleanup for old files in Trash.";
+
 const char kFilesTrashDriveName[] = "Enable Files Trash for Drive.";
 const char kFilesTrashDriveDescription[] =
     "Enable trash for Drive volume in Files App.";
