@@ -32,21 +32,19 @@ TEST(WebSocketCommonTest, IsValidSubprotocolString) {
   EXPECT_FALSE(WebSocketCommon::IsValidSubprotocolString(String()));
   EXPECT_FALSE(WebSocketCommon::IsValidSubprotocolString(""));
 
-  const char kValidCharacters[] =
+  const String valid_characters(
       "!#$%&'*+-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`"
-      "abcdefghijklmnopqrstuvwxyz|~";
-  size_t length = strlen(kValidCharacters);
-  for (size_t i = 0; i < length; ++i) {
-    String s(kValidCharacters + i, 1u);
-    EXPECT_TRUE(WebSocketCommon::IsValidSubprotocolString(s));
+      "abcdefghijklmnopqrstuvwxyz|~");
+  for (wtf_size_t i = 0; i < valid_characters.length(); ++i) {
+    EXPECT_TRUE(WebSocketCommon::IsValidSubprotocolString(
+        valid_characters.Substring(i, 1u)));
   }
   for (size_t i = 0; i < 256; ++i) {
-    if (std::find(kValidCharacters, kValidCharacters + length,
-                  static_cast<char>(i)) != kValidCharacters + length) {
+    LChar to_check = static_cast<LChar>(i);
+    if (valid_characters.find(to_check) != WTF::kNotFound) {
       continue;
     }
-    char to_check = static_cast<char>(i);
-    String s(&to_check, 1u);
+    String s(base::span_from_ref(to_check));
     EXPECT_FALSE(WebSocketCommon::IsValidSubprotocolString(s));
   }
 }

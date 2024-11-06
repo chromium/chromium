@@ -56,7 +56,7 @@ constexpr size_t kCompressedSizeZstd = 19;
 
 String MakeLargeString(char c = 'a') {
   Vector<char> data(kSizeKb * 1000, c);
-  return String(data.data(), data.size()).ReleaseImpl();
+  return String(data).ReleaseImpl();
 }
 
 String MakeComplexString(size_t size) {
@@ -64,7 +64,7 @@ String MakeComplexString(size_t size) {
   // This string should not be compressed too much, but also should not
   // be compressed failed. So make only some parts of this random.
   base::RandBytes(base::as_writable_byte_span(data).first(size / 10u));
-  return String(data.data(), data.size()).ReleaseImpl();
+  return String(data).ReleaseImpl();
 }
 
 class LambdaThreadDelegate : public base::PlatformThread::Delegate {
@@ -812,7 +812,7 @@ TEST_P(ParkableStringTest, CompressionFailed) {
   const size_t kSize = 20000;
   Vector<char> data(kSize);
   base::RandBytes(base::as_writable_byte_span(data));
-  ParkableString parkable(String(data.data(), data.size()).ReleaseImpl());
+  ParkableString parkable(String(data).ReleaseImpl());
   WaitForDelayedParking();
   EXPECT_EQ(ParkableStringImpl::Age::kOld, parkable.Impl()->age_for_testing());
 

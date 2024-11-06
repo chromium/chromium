@@ -465,7 +465,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsArabic) {
 TEST_F(HarfBuzzShaperTest, ShapeLatinSegment) {
   Font font(font_description);
 
-  String string("Hello World!", 12u);
+  String string(base::span_from_cstring("Hello World!"));
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);

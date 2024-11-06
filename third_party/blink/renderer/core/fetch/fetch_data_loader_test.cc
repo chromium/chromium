@@ -880,7 +880,7 @@ TEST_F(FetchDataLoaderTest, LoadAsDataPipeWithCopy) {
   auto result = reader->Run(task_runner.get());
 
   EXPECT_EQ(result.first, BytesConsumer::Result::kDone);
-  EXPECT_EQ(String(result.second.data(), result.second.size()), "hello, world");
+  EXPECT_EQ(String(result.second), "hello, world");
 }
 
 TEST_F(FetchDataLoaderTest, LoadAsDataPipeWithCopyFailure) {

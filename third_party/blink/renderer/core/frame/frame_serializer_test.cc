@@ -171,7 +171,7 @@ class FrameSerializerTest
     const SerializedResource* resource = GetResource(url, mime_type);
     if (resource) {
       const Vector<char> data = resource->data->CopyAs<Vector<char>>();
-      return String(data.data(), data.size());
+      return String(data);
     }
     return String();
   }
