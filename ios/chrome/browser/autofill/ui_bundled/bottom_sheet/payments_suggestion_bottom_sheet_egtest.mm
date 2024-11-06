@@ -9,10 +9,11 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -74,6 +75,17 @@ const char kFormCardExpirationYear[] = "CCExpiresYear";
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
   [super tearDownHelper];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector
+            (testOpenPaymentsBottomSheetShowDetailsEditNickname)]) {
+    // Disable V2 for that test case as it doesn't support the flow tested by
+    // that test case.
+    config.features_disabled.push_back(kAutofillPaymentsSheetV2Ios);
+  }
+  return config;
 }
 
 // Matcher for the bottom sheet's "Continue" button.
@@ -478,6 +490,49 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
       [nickname stringByAppendingString:[_lastDigits substringFromIndex:4]];
   id<GREYMatcher> nicknamedCreditCard = grey_text(nicknameAndCardNumber);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:nicknamedCreditCard];
+}
+
+// Verify that the Payments Bottom Sheet "Show Details" button opens the proper
+// menu and allows the nickname to be edited. For any version of the sheet.
+- (void)testOpenPaymentsBottomSheetShowDetailsEditNicknameOnAnyVersion {
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  WaitOnResponsiveContinueButton();
+
+  // Long press to open context menu.
+  id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
+
+  [[EarlGrey selectElementWithMatcher:creditCardEntry]
+      performAction:grey_longPress()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                         IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS),
+                     grey_interactable(), nullptr)] performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Edit the card's nickname.
+  [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
+      performAction:grey_tap()];
+
+  NSString* nickname = @"Card Nickname";
+  [[EarlGrey selectElementWithMatcher:NicknameTextField()]
+      performAction:grey_replaceText(nickname)];
+
+  [[EarlGrey selectElementWithMatcher:SettingToolbarDoneButton()]
+      performAction:grey_tap()];
+
+  // Close the context menu.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Verify that the Payments Bottom Sheet "Manage Payments Methods" button opens

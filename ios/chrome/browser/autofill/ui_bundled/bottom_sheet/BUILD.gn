@@ -144,6 +144,7 @@ source_set("bottom_sheet_egtest") {
   sources = [ "payments_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/common",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
