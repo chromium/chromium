@@ -20,5 +20,4 @@ calendar_v2_non_web_component_files = [
 calendar_css_files = [
   "modules/v2/calendar/calendar.css",
   "modules/v2/calendar/calendar_event.css",
-  "modules/v2/calendar/google_calendar_module.css",
 ]

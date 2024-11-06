@@ -13,7 +13,6 @@ import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
-import {getCss} from './drive_module.css.js';
 import {getHtml} from './drive_module.html.js';
 import {FileProxy} from './file_module_proxy.js';
 import type {FileSuggestionElement} from './file_suggestion.js';
@@ -37,10 +36,6 @@ const DriveModuleElementBase = I18nMixinLit(CrLitElement);
 export class DriveModuleElement extends DriveModuleElementBase {
   static get is() {
     return 'ntp-drive-module-redesigned';
-  }
-
-  static override get styles() {
-    return getCss();
   }
 
   override render() {

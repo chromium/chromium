@@ -12,7 +12,6 @@ import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
-import {getCss} from './sharepoint_module.css.js';
 import {getHtml} from './sharepoint_module.html.js';
 
 export interface SharepointModuleElement {
@@ -30,10 +29,6 @@ const SharepointModuleElementBase = I18nMixinLit(CrLitElement);
 export class SharepointModuleElement extends SharepointModuleElementBase {
   static get is() {
     return 'ntp-sharepoint-module';
-  }
-
-  static override get styles() {
-    return getCss();
   }
 
   override render() {
