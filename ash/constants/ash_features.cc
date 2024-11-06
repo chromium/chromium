@@ -4158,8 +4158,9 @@ bool IsLinkCrossDeviceInternalsEnabled() {
 }
 
 bool IsLobsterEnabled() {
-  return base::FeatureList::IsEnabled(kLobster) &&
-         base::FeatureList::IsEnabled(kFeatureManagementLobster);
+  return base::FeatureList::IsEnabled(kLobsterDogfood) ||
+         (base::FeatureList::IsEnabled(kLobster) &&
+          base::FeatureList::IsEnabled(kFeatureManagementLobster));
 }
 
 bool IsLockScreenHideSensitiveNotificationsSupported() {
