@@ -11954,6 +11954,21 @@
             ]
         }
     ],
+    "IOSReactivationNotifications": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSReactivationNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSaveToPhotosImprovements": [
         {
             "platforms": [
