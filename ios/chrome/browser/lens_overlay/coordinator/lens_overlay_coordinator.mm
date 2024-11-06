@@ -10,9 +10,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/timer/elapsed_timer.h"
-#import "components/lens/lens_overlay_first_interaction_type.h"
-#import "components/lens/lens_overlay_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -27,6 +24,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_metrics_recorder.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -143,18 +141,6 @@ const CGFloat kMenuSymbolSize = 18;
 
   UIViewController<ChromeLensOverlay>* _selectionViewController;
 
-  /// Entrypoint used for the current lens overlay invocation.
-  LensOverlayEntrypoint _currentEntrypoint;
-  /// The time at which the overlay was invoked.
-  base::ElapsedTimer _invocationTime;
-  /// The time at which the overlay UI was `shown`. null when hidden.
-  base::TimeTicks _foregroundTime;
-  /// The total foregroud duration since invoked.
-  base::TimeDelta _foregroundDuration;
-  /// Whether a lens request has been performed during this session.
-  BOOL _searchPerformedInSession;
-  /// Whether the first interaction has been recorded.
-  BOOL _firstInteractionRecorded;
   /// Indicates the Lens Overlay is in the exit flow.
   BOOL _isExiting;
   /// Forces the device orientation in portrait mode.
@@ -172,6 +158,9 @@ const CGFloat kMenuSymbolSize = 18;
   /// This auxiliary window is used while restoring the sheet state when
   /// returning to the tab where Lens Overlay is active.
   UIWindow* _restorationWindow;
+
+  /// A helper object that provides a central point for recording metrics.
+  LensOverlayMetricsRecorder* _metricsRecorder;
 }
 
 #pragma mark - public
@@ -305,12 +294,9 @@ const CGFloat kMenuSymbolSize = 18;
              name:UIApplicationDidReceiveMemoryWarningNotification
            object:nil];
 
-  _currentEntrypoint = entrypoint;
-  _invocationTime = base::ElapsedTimer();
-  _foregroundTime = base::TimeTicks();
-  _foregroundDuration = base::TimeDelta();
-  _searchPerformedInSession = NO;
-  _firstInteractionRecorded = NO;
+  _metricsRecorder = [[LensOverlayMetricsRecorder alloc]
+      initWithEntrypoint:entrypoint
+                sourceID:self.associatedTabSourceId];
 
   _associatedTabHelper = [self activeTabHelper];
   CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
@@ -362,7 +348,7 @@ const CGFloat kMenuSymbolSize = 18;
   [self lockOrientationInPortrait:YES];
   [_selectionViewController setTopIconsHidden:self.shouldShowConsentFlow];
 
-  _foregroundTime = base::TimeTicks::Now();
+  [_metricsRecorder setLensOverlayInForeground:YES];
 
   __weak __typeof(self) weakSelf = self;
 
@@ -407,7 +393,7 @@ const CGFloat kMenuSymbolSize = 18;
 - (void)presentConsentFlow {
   [self createConsentViewController];
   [self showConsentViewController];
-  lens::RecordPermissionRequestedToBeShown(true, self.currentInvocationSource);
+  [_metricsRecorder recordPermissionRequestedToBeShown];
 }
 
 - (void)hideLensUI:(BOOL)animated {
@@ -415,11 +401,7 @@ const CGFloat kMenuSymbolSize = 18;
     return;
   }
 
-  // Add the foreground duration and reset the timer.
-  _foregroundDuration =
-      _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
-  _foregroundTime = base::TimeTicks();
-
+  [_metricsRecorder setLensOverlayInForeground:NO];
   _associatedTabHelper->UpdateSnapshotStorage();
   [self dismissRestorationWindow];
   [self lockOrientationInPortrait:NO];
@@ -442,8 +424,9 @@ const CGFloat kMenuSymbolSize = 18;
                 name:UIApplicationDidReceiveMemoryWarningNotification
               object:nil];
 
-  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Closed"));
-  [self recordDismissalMetrics:dismissalSource];
+  [_metricsRecorder
+      recordDismissalMetricsWithSource:dismissalSource
+                     generatedTabCount:_mediator.generatedTabCount];
 
   // The reason the UI is destroyed can be that Omnient gets associated to a
   // different tab. In this case mark the stale tab helper as not shown.
@@ -645,8 +628,7 @@ const CGFloat kMenuSymbolSize = 18;
 #pragma mark - LensOverlayMediatorDelegate
 
 - (void)lensOverlayMediatorDidOpenOverlayMenu:(LensOverlayMediator*)mediator {
-  [self
-      recordFirstInteraction:lens::LensOverlayFirstInteractionType::kLensMenu];
+  [_metricsRecorder recordOverflowMenuOpened];
 }
 
 - (void)lensOverlayMediatorOpenURLInNewTabRequsted:(GURL)URL {
@@ -674,16 +656,9 @@ const CGFloat kMenuSymbolSize = 18;
 // lazy initialization of the result UI.
 - (void)loadResultsURL:(GURL)url {
   DCHECK(!_resultMediator);
-
-  // Time to first interaction metrics.
-  if (!_searchPerformedInSession) {
-    _searchPerformedInSession = YES;
-    [self recordFirstInteraction:
-              _mediator.currentLensResult.isTextSelection
-                  ? lens::LensOverlayFirstInteractionType::kTextSelect
-                  : lens::LensOverlayFirstInteractionType::kRegionSelect];
-  }
-
+  [_metricsRecorder
+      recordResultLoadedWithTextSelection:_mediator.currentLensResult
+                                              .isTextSelection];
   [self startResultPage];
   [_resultMediator loadResultsURL:url];
 }
@@ -703,11 +678,7 @@ const CGFloat kMenuSymbolSize = 18;
   self.browser->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kLensOverlayConditionsAccepted, true);
   _consentViewController = nil;
-  lens::RecordPermissionUserAction(
-      lens::LensPermissionUserAction::kAcceptButtonPressed,
-      self.currentInvocationSource);
-  [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
-                                   kPermissionDialog];
+  [_metricsRecorder recordPermissionsAccepted];
 
   __weak __typeof(self) weakSelf = self;
   [_containerViewController
@@ -718,20 +689,13 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)didTapSecondaryActionButton {
-  lens::RecordPermissionUserAction(
-      lens::LensPermissionUserAction::kCancelButtonPressed,
-      self.currentInvocationSource);
-  [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
-                                   kPermissionDialog];
+  [_metricsRecorder recordPermissionsDenied];
   [self destroyLensUI:YES
                reason:lens::LensOverlayDismissalSource::kLensPermissionsDenied];
 }
 
 - (void)didPressLearnMore {
-  lens::RecordPermissionUserAction(lens::LensPermissionUserAction::kLinkOpened,
-                                   self.currentInvocationSource);
-  [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
-                                   kPermissionDialog];
+  [_metricsRecorder recordPermissionsLinkOpen];
   [self openURLInNewTab:GURL(kLearnMoreLensURL)];
 }
 
@@ -925,6 +889,7 @@ const CGFloat kMenuSymbolSize = 18;
   _consentViewController = nil;
   _isExiting = NO;
   _associatedTabHelper = nil;
+  _metricsRecorder = nil;
   _scopedForceOrientation.reset();
 }
 
@@ -1025,7 +990,7 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)showConsentViewController {
-  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Consent.Show"));
+  [_metricsRecorder recordLensOverlayConsentShown];
   [self disableSelectionInteraction:YES];
   // Configure sheet presentation
   UISheetPresentationController* sheet =
@@ -1218,11 +1183,6 @@ const CGFloat kMenuSymbolSize = 18;
   }
 }
 
-/// Converts the current entrypoint to LensOverlayInvocationSource.
-- (lens::LensOverlayInvocationSource)currentInvocationSource {
-  return lens::InvocationSourceFromEntrypoint(_currentEntrypoint);
-}
-
 /// Returns the UKM source id from the associated tab.
 - (ukm::SourceId)associatedTabSourceId {
   if (_associatedTabHelper) {
@@ -1231,52 +1191,6 @@ const CGFloat kMenuSymbolSize = 18;
     }
   }
   return ukm::kInvalidSourceId;
-}
-
-/// Records the first interaction time.
-- (void)recordFirstInteraction:
-    (lens::LensOverlayFirstInteractionType)firstInteractionType {
-  if (_firstInteractionRecorded) {
-    return;
-  }
-  _firstInteractionRecorded = YES;
-  lens::RecordTimeToFirstInteraction(
-      self.currentInvocationSource, _invocationTime.Elapsed(),
-      firstInteractionType, self.associatedTabSourceId);
-}
-
-/// Metrics recorded on lens overlay dismissal.
-- (void)recordDismissalMetrics:
-    (lens::LensOverlayDismissalSource)dismissalSource {
-  lens::LensOverlayInvocationSource invocationSource =
-      self.currentInvocationSource;
-
-  // Invocation metrics.
-  lens::RecordInvocation(invocationSource);
-  lens::RecordInvocationResultedInSearch(invocationSource,
-                                         _searchPerformedInSession);
-  // Dismissal metric.
-  lens::RecordDismissal(dismissalSource);
-
-  // Session foreground duration metrics.
-  if (_foregroundTime != base::TimeTicks()) {
-    _foregroundDuration =
-        _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
-  }
-  lens::RecordSessionForegroundDuration(invocationSource, _foregroundDuration);
-
-  // Session duration metrics.
-  base::TimeDelta sessionDuration = _invocationTime.Elapsed();
-  lens::RecordSessionDuration(invocationSource, sessionDuration);
-
-  // Records number of tabs opened by the lens overlay during session.
-  lens::RecordGeneratedTabCount(_mediator.generatedTabCount);
-
-  // Session end UKM metrics.
-  lens::RecordUKMSessionEndMetrics(
-      self.associatedTabSourceId, self.currentInvocationSource,
-      _searchPerformedInSession, sessionDuration, _foregroundDuration,
-      _mediator.generatedTabCount);
 }
 
 @end
