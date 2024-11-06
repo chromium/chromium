@@ -27,9 +27,14 @@ static constexpr int kIconSize = 20;
 }  // namespace
 
 OmniboxLocalAnswerHeaderView::OmniboxLocalAnswerHeaderView() {
+  // The vertical insets are chosen so that this `OmniboxLocalAnswerHeaderView`
+  // is the same `kRowHeight` that 1-line matches are. Thus, when the owning
+  // `OmniboxResultView` hides its `OmniboxMatchCellView`, e.g. because it's
+  // empty, the header-only `OmniboxResultView` will be the same height as
+  // 1-line matches.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::TLBR(25, 21, 2, 0), 8));
+      gfx::Insets::TLBR(10, 21, 10, 0), 8));
   throbber_ = AddChildView(std::make_unique<views::Throbber>(kIconSize));
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   text_ = AddChildView(std::make_unique<views::Label>());
