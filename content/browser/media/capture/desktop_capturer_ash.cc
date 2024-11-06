@@ -4,16 +4,34 @@
 
 #include "content/browser/media/capture/desktop_capturer_ash.h"
 
-#include "ash/shell.h"
 #include "content/browser/media/capture/desktop_frame_skia.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot_aura.h"
 
 namespace content {
+namespace {
+
+aura::Window* FindRootWindowForDisplayId(int64_t display_id) {
+  for (auto& window_tree_host : aura::Env::GetInstance()->window_tree_hosts()) {
+    auto* root_window = window_tree_host->window();
+    auto display =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+    if (display.id() == display_id) {
+      return root_window;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
 
 DesktopCapturerAsh::DesktopCapturerAsh() = default;
 
@@ -40,18 +58,22 @@ void DesktopCapturerAsh::Start(Callback* callback) {
 }
 
 void DesktopCapturerAsh::CaptureFrame() {
-  aura::Window* window = ash::Shell::GetRootWindowForNewWindows();
+  aura::Window* root_window = nullptr;
   if (display_id_) {
-    window = ash::Shell::GetRootWindowForDisplayId(*display_id_);
+    root_window = FindRootWindowForDisplayId(*display_id_);
   }
-  if (!window) {
+  if (!root_window) {
+    root_window = FindRootWindowForDisplayId(
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+  }
+  if (!root_window) {
+    // No root window to capture was found.
     callback_->OnCaptureResult(Result::ERROR_PERMANENT, nullptr);
     return;
   }
-
-  const gfx::Rect bounds(window->bounds().size());
+  const gfx::Rect bounds(root_window->bounds().size());
   ui::GrabWindowSnapshot(
-      window, bounds,
+      root_window, bounds,
       base::BindOnce(&DesktopCapturerAsh::OnGrabWindowSnapsot,
                      weak_ptr_factory_.GetWeakPtr()));
 }

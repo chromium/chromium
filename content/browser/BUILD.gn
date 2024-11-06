@@ -2837,7 +2837,6 @@ source_set("browser") {
         "media/capture/desktop_frame_skia.cc",
         "media/capture/desktop_frame_skia.h",
       ]
-      deps += [ "//ash" ]
     }
   }
 
