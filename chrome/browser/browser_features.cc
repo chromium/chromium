@@ -129,12 +129,6 @@ BASE_FEATURE(kIncomingCallNotifications,
              "IncomingCallNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the static key pinning list can be updated via component
-// updater.
-BASE_FEATURE(kKeyPinningComponentUpdater,
-             "KeyPinningComponentUpdater",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN)
 // Enables locking the cookie database for profiles.
 // TODO(crbug.com/40901624): Remove after fully launched.

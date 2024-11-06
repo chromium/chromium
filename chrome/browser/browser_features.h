@@ -54,7 +54,6 @@ BASE_DECLARE_FEATURE(kUseAppBoundEncryptionProviderForEncryption);
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
-BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);

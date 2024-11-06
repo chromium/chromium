@@ -207,15 +207,13 @@ void PKIMetadataComponentInstallerService::ReconfigureAfterNetworkRestart() {
                            UpdateNetworkServiceCTListOnUI,
                        weak_factory_.GetWeakPtr()));
   }
-  if (base::FeatureList::IsEnabled(features::kKeyPinningComponentUpdater)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(&LoadBinaryProtoFromDisk,
-                       install_dir_.Append(kKPConfigProtoFileName)),
-        base::BindOnce(&PKIMetadataComponentInstallerService::
-                           UpdateNetworkServiceKPListOnUI,
-                       weak_factory_.GetWeakPtr()));
-  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&LoadBinaryProtoFromDisk,
+                     install_dir_.Append(kKPConfigProtoFileName)),
+      base::BindOnce(
+          &PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI,
+          weak_factory_.GetWeakPtr()));
 }
 
 void PKIMetadataComponentInstallerService::OnComponentReady(
@@ -516,34 +514,6 @@ PKIMetadataComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
-  bool should_install =
-      base::FeatureList::IsEnabled(features::kKeyPinningComponentUpdater);
-
-#if BUILDFLAG(IS_CT_SUPPORTED)
-  should_install |= base::FeatureList::IsEnabled(
-      features::kCertificateTransparencyAskBeforeEnabling);
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  // If Chrome Root Store is supported, always install the component.
-  // Note that if CRS is supported but optional, the CRS setting can change
-  // during runtime based on the enterprise policy, so we still have to install
-  // the component now so that CRS updates will be processed in case we need
-  // them later. (Might be possible to refactor to only install component later
-  // when it's needed and if it's not already installed? Probably not worth the
-  // trouble though since CRS being optional is only a temporary state.)
-  // Note: On Android CRS will continue to be optional in code since chrome
-  // browser and webview use the same binary, but eventually it will just be
-  // unconditionally enabled in chrome and disabled in webview. This component
-  // is not registered in webview so setting it to always install here isn't a
-  // problem.
-  should_install = true;
-#endif
-
-  if (!should_install) {
-    return;
-  }
-
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<PKIMetadataComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());
