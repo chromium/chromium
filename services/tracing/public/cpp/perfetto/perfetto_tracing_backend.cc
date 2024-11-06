@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/tracing/tracing_tls.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -512,10 +513,36 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     NOTREACHED();
   }
 
-  void CloneSession(CloneSessionArgs) override {
+  void CloneSession(CloneSessionArgs args) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Not implemented yet.
-    NOTREACHED();
+    auto uuid =
+        base::UnguessableToken::DeserializeFromString(args.unique_session_name);
+    if (!uuid) {
+      consumer_->OnSessionCloned({
+          .success = false,
+          .error = "Session name is not an UnguessableToken",
+      });
+    }
+    consumer_host_->CloneSession(
+        tracing_session_host_.BindNewPipeAndPassReceiver(),
+        tracing_session_client_.BindNewPipeAndPassRemote(), *uuid,
+        base::BindOnce(
+            [](ConsumerEndpoint* endpoint, bool success,
+               const std::string& error, const base::Token& uuid) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(endpoint->sequence_checker_);
+
+              perfetto::Consumer::OnSessionClonedArgs args{
+                  .success = success,
+                  .error = std::move(error),
+                  .uuid = perfetto::base::Uuid(uuid.high(), uuid.low()),
+              };
+              endpoint->consumer_->OnSessionCloned(args);
+            },
+            base::Unretained(this)));
+    tracing_session_host_.set_disconnect_handler(base::BindOnce(
+        &ConsumerEndpoint::OnTracingFailed, base::Unretained(this)));
+    tracing_session_client_.set_disconnect_handler(base::BindOnce(
+        &ConsumerEndpoint::OnTracingFailed, base::Unretained(this)));
   }
 
   // tracing::mojom::TracingSessionClient implementation:
