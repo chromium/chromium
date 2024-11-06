@@ -425,6 +425,9 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="attribution_scopes not a valid dictionary"/>
   <int value="47" label="attribution_scopes' values not a valid list"/>
   <int value="48" label="attribution_scopes' values list value is invalid"/>
+  <int value="49" label="named_budgets not a valid dictionary"/>
+  <int value="50" label="named_budgets key too long"/>
+  <int value="51" label="named_budgets value is invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/source_registration_error.mojom:SourceRegistrationError) -->
@@ -576,6 +579,8 @@ chromium-metrics-reviews@google.com.
              for aggregatable_source_registration_time"/>
   <int value="32" label="attribution_scopes value not a valid list"/>
   <int value="33" label="attribution_scopes list value is invalid"/>
+  <int value="34" label="named_budgets wrong type"/>
+  <int value="35" label="named_budgets's name invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/trigger_registration_error.mojom:TriggerRegistrationError) -->

@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/filters.h"
@@ -69,6 +70,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   AggregatableTriggerConfig aggregatable_trigger_config;
   AggregatableDebugReportingConfig aggregatable_debug_reporting_config;
   AttributionScopesSet attribution_scopes;
+  std::vector<AggregatableNamedBudgetCandidate>
+      aggregatable_named_budget_candidates;
 };
 
 }  // namespace attribution_reporting

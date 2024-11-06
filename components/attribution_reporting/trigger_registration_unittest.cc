@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -318,7 +319,8 @@ TEST(TriggerRegistrationTest, Parse) {
           R"json({"aggregatable_filtering_id_max_bytes": null})json",
           ErrorIs(TriggerRegistrationError::
                       kAggregatableFilteringIdMaxBytesInvalidValue),
-      }};
+      },
+  };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
       "Conversions.TriggerRegistrationError11";
@@ -602,6 +604,103 @@ TEST(TriggerRegistrationTest, ParseAttributionScopesConfig) {
                                     trigger->attribution_scopes.scopes().size(),
                                     1);
     }
+  }
+}
+
+TEST(TriggerRegistrationTest, ParseAggregatableNamedBudgetCandidate) {
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<TriggerRegistration, TriggerRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "aggregatable_named_budgets_valid",
+          R"json({"named_budgets":[
+            {
+              "name":"a"
+            },
+            {
+              "name":"b",
+              "not_filters":{"a":["b"]}
+            }
+          ]})json",
+          ValueIs(Field(
+              &TriggerRegistration::aggregatable_named_budget_candidates,
+              ElementsAre(
+                  AggregatableNamedBudgetCandidate(/*name=*/"a", FilterPair()),
+                  AggregatableNamedBudgetCandidate(
+                      /*name=*/"b", FilterPair(
+                                        /*positive=*/FiltersDisjunction(),
+                                        /*negative=*/{*FilterConfig::Create(
+                                            {{{"a", {"b"}}}})}))))),
+      },
+      {
+          "aggregatable_named_budgets_invalid",
+          R"json({"named_budgets":[
+            {
+              "name":1
+            }
+          ]})json",
+          ErrorIs(
+              TriggerRegistrationError::kAggregatableNamedBudgetNameInvalid),
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionAggregatableNamedBudgets);
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    SCOPED_TRACE(test_case.desc);
+
+    auto trigger = TriggerRegistration::Parse(test_case.json);
+    EXPECT_THAT(trigger, test_case.matches);
+  }
+}
+
+TEST(TriggerRegistrationTest, SerializeAggregatableNamedBudgetCandidate) {
+  const struct {
+    TriggerRegistration input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          TriggerRegistration(),
+          R"json({
+            "aggregatable_source_registration_time": "exclude",
+            "aggregatable_filtering_id_max_bytes": 1,
+            "debug_reporting": false,
+            "aggregatable_debug_reporting": {
+              "key_piece": "0x0"
+            }
+          })json",
+      },
+      {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.aggregatable_named_budget_candidates = {
+                AggregatableNamedBudgetCandidate(
+                    /*name=*/"a", FilterPair(
+                                      /*positive=*/FiltersDisjunction(),
+                                      /*negative=*/{*FilterConfig::Create(
+                                          {{{"a", {"b"}}}})}))};
+          }),
+          R"json({
+            "aggregatable_source_registration_time": "exclude",
+            "aggregatable_filtering_id_max_bytes": 1,
+            "named_budgets": [
+              {"name":"a", "not_filters":[{"a":["b"]}]}],
+            "debug_reporting": false,
+            "aggregatable_debug_reporting": {
+              "key_piece": "0x0"
+            }
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
   }
 }
 

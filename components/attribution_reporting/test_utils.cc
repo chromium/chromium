@@ -15,6 +15,8 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -134,6 +136,13 @@ std::ostream& operator<<(std::ostream& out,
   return out << attribution_scopes_data.ToJson();
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         const AggregatableNamedBudgetDefs& budgets) {
+  base::Value::Dict dict;
+  budgets.Serialize(dict);
+  return out << dict;
+}
+
 std::ostream& operator<<(std::ostream& out, const SourceRegistration& s) {
   return out << s.ToJson();
 }
@@ -150,6 +159,11 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out,
                          const EventTriggerData& event_trigger) {
   return out << event_trigger.ToJson();
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AggregatableNamedBudgetCandidate& budget) {
+  return out << budget.ToJson();
 }
 
 std::ostream& operator<<(std::ostream& out, const TriggerRegistration& reg) {

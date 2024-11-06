@@ -17,6 +17,8 @@
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -290,6 +292,21 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<
+        attribution_reporting::mojom::AggregatableNamedBudgetDefsDataView,
+        attribution_reporting::AggregatableNamedBudgetDefs> {
+  static const attribution_reporting::AggregatableNamedBudgetDefs::BudgetMap&
+  budgets(const attribution_reporting::AggregatableNamedBudgetDefs& data) {
+    return data.budgets();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::AggregatableNamedBudgetDefsDataView data,
+      attribution_reporting::AggregatableNamedBudgetDefs* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
   static const attribution_reporting::DestinationSet& destinations(
@@ -370,6 +387,12 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.attribution_scopes_data;
   }
 
+  static const attribution_reporting::AggregatableNamedBudgetDefs&
+  aggregatable_named_budget_defs(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.aggregatable_named_budget_defs;
+  }
+
   static bool Read(
       attribution_reporting::mojom::SourceRegistrationDataView data,
       attribution_reporting::SourceRegistration* out);
@@ -445,6 +468,27 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<
+        attribution_reporting::mojom::AggregatableNamedBudgetCandidateDataView,
+        attribution_reporting::AggregatableNamedBudgetCandidate> {
+  static const std::optional<std::string>& name(
+      const attribution_reporting::AggregatableNamedBudgetCandidate& data) {
+    return data.name();
+  }
+
+  static const attribution_reporting::FilterPair& filters(
+      const attribution_reporting::AggregatableNamedBudgetCandidate& data) {
+    return data.filters();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::AggregatableNamedBudgetCandidateDataView
+          data,
+      attribution_reporting::AggregatableNamedBudgetCandidate* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
                  attribution_reporting::TriggerRegistration> {
   static const std::vector<attribution_reporting::EventTriggerData>&
@@ -478,6 +522,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   aggregatable_dedup_keys(
       const attribution_reporting::TriggerRegistration& trigger) {
     return trigger.aggregatable_dedup_keys;
+  }
+
+  static const std::vector<
+      attribution_reporting::AggregatableNamedBudgetCandidate>&
+  aggregatable_named_budget_candidates(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregatable_named_budget_candidates;
   }
 
   static bool debug_reporting(

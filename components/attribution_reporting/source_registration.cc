@@ -19,6 +19,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
@@ -143,6 +144,10 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
       result.aggregation_keys,
       AggregationKeys::FromJSON(registration.Find(kAggregationKeys)));
 
+  ASSIGN_OR_RETURN(result.aggregatable_named_budget_defs,
+                   AggregatableNamedBudgetDefs::FromJSON(
+                       registration.Find(kAggregatableNamedBudgets)));
+
   if (base::Value* scopes_value = registration.Find(kAttributionScopes);
       scopes_value &&
       base::FeatureList::IsEnabled(features::kAttributionScopes)) {
@@ -260,6 +265,8 @@ base::Value::Dict SourceRegistration::ToJson() const {
                                        kAttributionSourceDestinationLimit)) {
     SerializeInt64(dict, kDestinationLimitPriority, destination_limit_priority);
   }
+
+  aggregatable_named_budget_defs.Serialize(dict);
 
   return dict;
 }

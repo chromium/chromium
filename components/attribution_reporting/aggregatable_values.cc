@@ -81,23 +81,17 @@ AggregatableValuesValue::FromJSON(const base::Value& json,
     if (!value_v) {
       return base::unexpected(value_error);
     }
-    ASSIGN_OR_RETURN(value, ParseInt(*value_v),
+    ASSIGN_OR_RETURN(value, ParseAggregatableValue(*value_v),
                      [value_error](ParseError) { return value_error; });
 
     ASSIGN_OR_RETURN(filtering_id, ParseUint64(*dict, kFilteringId),
                      [value_error](ParseError) { return value_error; });
   } else {
-    ASSIGN_OR_RETURN(value, ParseInt(json),
+    ASSIGN_OR_RETURN(value, ParseAggregatableValue(json),
                      [value_error](ParseError) { return value_error; });
   }
-
-  auto result = AggregatableValuesValue::Create(
-      value, filtering_id.value_or(kDefaultFilteringId));
-  if (!result) {
-    return base::unexpected(value_error);
-  }
-
-  return *std::move(result);
+  return AggregatableValuesValue(value,
+                                 filtering_id.value_or(kDefaultFilteringId));
 }
 
 AggregatableValuesValue::AggregatableValuesValue(uint32_t value,

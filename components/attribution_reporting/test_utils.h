@@ -20,6 +20,8 @@ class TimeDelta;
 namespace attribution_reporting {
 
 class AggregatableDebugReportingContribution;
+class AggregatableNamedBudgetDefs;
+class AggregatableNamedBudgetCandidate;
 class AggregatableTriggerConfig;
 class AggregatableTriggerData;
 class AggregatableValues;
@@ -69,6 +71,8 @@ std::ostream& operator<<(std::ostream&, const AttributionScopesSet&);
 
 std::ostream& operator<<(std::ostream&, const AttributionScopesData&);
 
+std::ostream& operator<<(std::ostream&, const AggregatableNamedBudgetDefs&);
+
 std::ostream& operator<<(std::ostream&, const SourceRegistration&);
 
 std::ostream& operator<<(std::ostream&, const AggregatableValues&);
@@ -76,6 +80,9 @@ std::ostream& operator<<(std::ostream&, const AggregatableValues&);
 std::ostream& operator<<(std::ostream&, const AggregatableTriggerData&);
 
 std::ostream& operator<<(std::ostream&, const EventTriggerData&);
+
+std::ostream& operator<<(std::ostream&,
+                         const AggregatableNamedBudgetCandidate&);
 
 std::ostream& operator<<(std::ostream&, const TriggerRegistration&);
 
