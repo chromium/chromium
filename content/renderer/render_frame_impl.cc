@@ -1103,6 +1103,8 @@ void FillMiscNavigationParams(
     navigation_params->cookie_deprecation_label =
         WebString::FromASCII(*commit_params.cookie_deprecation_label);
   }
+  navigation_params->initial_permission_statuses =
+      std::move(commit_params.initial_permission_statuses);
 }
 
 std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {

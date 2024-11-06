@@ -17750,4 +17750,40 @@ void RenderFrameHostImpl::GetBoundInterfacesForTesting(
   broker_.GetBinderMapInterfacesForTesting(out);  // IN-TEST
 }
 
+std::optional<base::flat_map<blink::mojom::PermissionName,
+                             blink::mojom::PermissionStatus>>
+RenderFrameHostImpl::GetCachedPermissionStatuses() {
+// `GetCombinedPermissionStatus` on Android is not fully supported for now.
+#if BUILDFLAG(IS_ANDROID)
+  return std::nullopt;
+#else
+  using blink::PermissionType;
+  using blink::mojom::PermissionName;
+  static constexpr auto kPermissions =
+      std::to_array<std::pair<PermissionName, PermissionType>>(
+          {{PermissionName::VIDEO_CAPTURE, PermissionType::VIDEO_CAPTURE},
+           {PermissionName::AUDIO_CAPTURE, PermissionType::AUDIO_CAPTURE},
+           {PermissionName::GEOLOCATION, PermissionType::GEOLOCATION}});
+
+  base::flat_map<PermissionName, PermissionStatus> permission_map;
+  for (const auto& permission : kPermissions) {
+    PermissionStatus status = GetCombinedPermissionStatus(permission.second);
+    // Default value is ASK, we don't need add the permission status in this
+    // case.
+    if (status != PermissionStatus::ASK) {
+      permission_map.emplace(permission.first, status);
+    }
+  }
+
+  return permission_map;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+blink::mojom::PermissionStatus RenderFrameHostImpl::GetCombinedPermissionStatus(
+    blink::PermissionType permission_type) {
+  return GetBrowserContext()
+      ->GetPermissionController()
+      ->GetCombinedPermissionAndDeviceStatus(permission_type, this);
+}
+
 }  // namespace content

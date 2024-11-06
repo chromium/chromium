@@ -4108,7 +4108,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
           /*cookie_deprecation_label=*/std::nullopt,
           /*visited_link_salt=*/std::nullopt,
-          /*local_surface_id=*/std::nullopt);
+          /*local_surface_id=*/std::nullopt,
+          node->current_frame_host()->GetCachedPermissionStatuses());
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->as_string();
@@ -4249,6 +4250,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   commit_params->navigation_timing->system_entropy_at_navigation_start =
       SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
           frame_tree_node, blink::mojom::SystemEntropy::kNormal);
+  commit_params->initial_permission_statuses =
+      frame_tree_node->current_frame_host()->GetCachedPermissionStatuses();
 
   if (common_params->url.IsAboutSrcdoc()) {
     // TODO(wjmaclean): initialize this in NavigationRequest's constructor

@@ -130,6 +130,9 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   PermissionResult GetPermissionResultForCurrentDocument(
       PermissionType permission,
       RenderFrameHost* render_frame_host) override;
+  PermissionStatus GetCombinedPermissionAndDeviceStatus(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) override;
   PermissionResult GetPermissionResultForOriginWithoutContext(
       PermissionType permission,
       const url::Origin& origin) override;
@@ -164,13 +167,6 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin);
-
-  // The method does the same as `GetPermissionStatusForCurrentDocument` but it
-  // also takes into account the device's status (OS permission status).
-  // Currently, this function is only used for Page Embedded Permission Control.
-  PermissionStatus GetCombinedPermissionAndDeviceStatus(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host);
 
   using SubscriptionsStatusMap =
       base::flat_map<SubscriptionsMap::KeyType, PermissionStatus>;

@@ -253,8 +253,8 @@ TEST_P(PerformanceManagerTabHelperTest, PageIsAudible) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_P(PerformanceManagerTabHelperTest, NotificationPermission) {
-  auto owned_permission_controller = std::make_unique<
-      testing::StrictMock<content::MockPermissionController>>();
+  auto owned_permission_controller =
+      std::make_unique<testing::NiceMock<content::MockPermissionController>>();
   auto* permission_controller = owned_permission_controller.get();
   GetBrowserContext()->SetPermissionControllerForTesting(
       std::move(owned_permission_controller));

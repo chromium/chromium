@@ -38,6 +38,8 @@ import "third_party/blink/public/mojom/navigation/system_entropy.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
+import "third_party/blink/public/mojom/permissions/permission.mojom";
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -658,6 +660,12 @@ struct CommitNavigationParams {
   // earlier to ensure the new Document doesn't render frames using the same ID
   // as the old Document when it is committed in the renderer.
   viz.mojom.LocalSurfaceId? local_surface_id;
+
+  // Map of permission statuses at commit time.
+  // Note: the permission statues will be only used as initial states of
+  // `CachedPermissionStatus` in renderer side.
+  //  Could be null for synchronous commit, same document navigations.
+  map<PermissionName, PermissionStatus>? initial_permission_statuses;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for
