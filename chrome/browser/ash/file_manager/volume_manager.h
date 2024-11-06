@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/file_manager/documents_provider_root_manager.h"
 #include "chrome/browser/ash/file_manager/fusebox_daemon.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/ash/file_manager/trash_auto_cleanup.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -399,6 +400,7 @@ class VolumeManager
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;
   io_task::IOTaskController io_task_controller_;
+  std::unique_ptr<trash::TrashAutoCleanup> trash_auto_cleanup_;
   // TODO(b/328006921): Replace with a check if the volumes are mounted.
   bool arc_volumes_mounted_ = false;
   bool ignore_clipboard_changed_ = false;

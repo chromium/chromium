@@ -76,6 +76,8 @@ static_library("file_manager") {
     "select_file_dialog_util.h",
     "snapshot_manager.cc",
     "snapshot_manager.h",
+    "trash_auto_cleanup.cc",
+    "trash_auto_cleanup.h",
     "trash_common_util.cc",
     "trash_common_util.h",
     "trash_info_validator.cc",

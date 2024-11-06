@@ -393,6 +393,11 @@ void VolumeManager::Initialize() {
   RegisterShareCacheMountPoint(profile_);
   DoMountEvent(
       Volume::CreateForShareCache(util::GetShareCacheFilePath(profile_)));
+
+  // Start Trash autocleanup.
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesTrashAutoCleanup)) {
+    trash_auto_cleanup_ = trash::TrashAutoCleanup::Create(profile_);
+  }
 }
 
 void VolumeManager::Shutdown() {
@@ -409,6 +414,7 @@ void VolumeManager::Shutdown() {
   disk_mount_manager_->RemoveObserver(this);
   documents_provider_root_manager_->RemoveObserver(this);
   documents_provider_root_manager_.reset();
+  trash_auto_cleanup_.reset();
 
   if (storage_monitor::StorageMonitor* const p =
           storage_monitor::StorageMonitor::GetInstance()) {
