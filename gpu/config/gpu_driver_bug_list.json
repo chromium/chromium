@@ -3457,6 +3457,24 @@
       "features": [
         "use_current_picture_for_av1_invalid_ref"
       ]
+    },
+    {
+      "id": 438,
+      "cr_bugs": [ 377047083 ],
+      "description": "Disable DirectML execution of metacommands on Intel GPUs with driver version between 31.0.101.5518 and 32.0.101.6083 due to stability bugs",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "31.0.101.5518",
+        "value2": "32.0.101.6083"
+      },
+      "features": [
+        "disable_dml_meta_commands_for_gpu"
+      ]
     }
   ]
 }

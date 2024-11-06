@@ -5757,17 +5757,9 @@ GraphImplDml::GraphImplDml(
 GraphImplDml::~GraphImplDml() = default;
 
 base::expected<ComPtr<IDMLCompiledOperator>, HRESULT>
-GraphImplDml::CompileOnBackgroundThread(
-    GraphBuilderDml graph_builder,
-    const bool pass_dml_execution_disable_meta_commands) {
+GraphImplDml::CompileOnBackgroundThread(GraphBuilderDml graph_builder,
+                                        DML_EXECUTION_FLAGS flags) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CompileOnBackgroundThread");
-  // Use `DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE` to allow late bindings on the
-  // compiled operator which you've already recorded onto the command list,
-  // before you submit the command list for execution.
-  DML_EXECUTION_FLAGS flags = DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE;
-  if (pass_dml_execution_disable_meta_commands) {
-    flags |= DML_EXECUTION_FLAG_DISABLE_META_COMMANDS;
-  }
   return graph_builder.Compile(flags);
 }
 
@@ -6681,7 +6673,7 @@ void GraphImplDml::CreateAndBuild(
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback,
-    const bool pass_dml_execution_disable_meta_commands) {
+    const bool disable_dml_meta_commands_for_gpu) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
 
   GraphBuilderDml graph_builder(adapter->dml_device());
@@ -6701,13 +6693,22 @@ void GraphImplDml::CreateAndBuild(
     return;
   }
 
+  // Use `DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE` to allow late bindings on the
+  // compiled operator which you've already recorded onto the command list,
+  // before you submit the command list for execution.
+  DML_EXECUTION_FLAGS flags = DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE;
+  // Only apply `DML_EXECUTION_FLAG_DISABLE_META_COMMANDS` for GPU, because NPU
+  // currently requires metacommands to be enabled.
+  if (disable_dml_meta_commands_for_gpu && !adapter->IsNPU()) {
+    flags |= DML_EXECUTION_FLAG_DISABLE_META_COMMANDS;
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&GraphImplDml::CompileOnBackgroundThread,
-                     std::move(graph_builder),
-                     pass_dml_execution_disable_meta_commands),
+                     std::move(graph_builder), flags),
       base::BindOnce(&GraphImplDml::OnCompilationComplete, std::move(adapter),
                      std::move(context), std::move(callback),
                      std::move(constant_id_to_input_index_map),

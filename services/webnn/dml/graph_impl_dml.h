@@ -97,7 +97,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       WebNNContextImpl::CreateGraphImplCallback callback,
-      bool pass_dml_execution_disable_meta_commands);
+      bool disable_dml_meta_commands_for_gpu);
 
   GraphImplDml(const GraphImplDml&) = delete;
   GraphImplDml& operator=(const GraphImplDml&) = delete;
@@ -290,7 +290,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   // main thread to avoid blocking.
   static base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
   CompileOnBackgroundThread(GraphBuilderDml graph_builder,
-                            bool pass_dml_execution_disable_meta_commands);
+                            DML_EXECUTION_FLAGS flags);
 
   // After the CompileOnBackgroundThread task is completed on a background
   // thread, the OnCompilationComplete method should run back on the GPU main

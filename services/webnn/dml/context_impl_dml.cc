@@ -509,7 +509,7 @@ void ContextImplDml::CreateGraphImpl(
       std::move(compute_resource_info), std::move(constant_operands),
       std::move(callback),
       gpu_feature_info_->IsWorkaroundEnabled(
-          gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
+          gpu::DISABLE_DML_META_COMMANDS_FOR_GPU));
 }
 
 void ContextImplDml::CreateTensorImpl(
