@@ -122,18 +122,11 @@ void EditorMenuControllerImpl::OnDismiss(bool is_other_command_executed) {
 }
 
 void EditorMenuControllerImpl::OnSettingsButtonPressed() {
-  GURL setting_url = GURL(base::StrCat(
-      {"chrome://os-settings/",
-       chromeos::MagicBoostState::Get() &&
-               chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()
-           ? chromeos::settings::mojom::kSystemPreferencesSectionPath
-           : chromeos::settings::mojom::kInputSubpagePath,
-       "?settingId=",
-       base::NumberToString(
-           static_cast<int>(chromeos::settings::mojom::Setting::kShowOrca))}));
-  ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      setting_url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  if (!card_session_) {
+    return;
+  }
+
+  card_session_->OpenSettings();
 }
 
 void EditorMenuControllerImpl::OnChipButtonPressed(
@@ -349,6 +342,36 @@ void EditorMenuControllerImpl::EditorCardSession::StartFlowWithFreeformText(
       }
       return;
   }
+}
+
+void EditorMenuControllerImpl::EditorCardSession::OpenSettings() {
+  GURL setting_url;
+
+  switch (current_tab) {
+    case Tab::kEditor:
+      setting_url = GURL(base::StrCat(
+          {"chrome://os-settings/",
+           chromeos::MagicBoostState::Get() &&
+                   chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()
+               ? chromeos::settings::mojom::kSystemPreferencesSectionPath
+               : chromeos::settings::mojom::kInputSubpagePath,
+           "?settingId=",
+           base::NumberToString(static_cast<int>(
+               chromeos::settings::mojom::Setting::kShowOrca))}));
+      break;
+    case Tab::kLobster:
+      setting_url = GURL(base::StrCat(
+          {"chrome://os-settings/",
+           chromeos::settings::mojom::kSystemPreferencesSectionPath,
+           "?settingId=",
+           base::NumberToString(static_cast<int>(
+               chromeos::settings::mojom::Setting::kLobsterOnOff))}));
+      break;
+  }
+
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      setting_url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 }  // namespace chromeos::editor_menu

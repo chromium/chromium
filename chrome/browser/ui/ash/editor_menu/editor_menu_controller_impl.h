@@ -96,6 +96,8 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
 
     void StartFlowWithFreeformText(const std::string& freeform_text);
 
+    void OpenSettings();
+
     EditorManager* editor_manager() { return editor_manager_.get(); }
 
     LobsterManager* lobster_manager() { return lobster_manager_.get(); }
