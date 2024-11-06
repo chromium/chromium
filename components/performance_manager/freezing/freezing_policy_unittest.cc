@@ -156,6 +156,7 @@ TEST_F(FreezingPolicyTest, Basic) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   policy()->AddFreezeVote(page_node());
   VerifyFreezerExpectations();
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 0U);
 }
 
 // Multiple connected pages in the same browsing instance with no
@@ -263,11 +264,15 @@ TEST_F(FreezingPolicyTest,
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page2.get()));
   policy()->AddFreezeVote(page2.get());
   VerifyFreezerExpectations();
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 0U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 0U);
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
   EXPECT_CALL(*freezer(), UnfreezePageNode(page2.get()));
   page_node()->SetIsHoldingWebLockForTesting(true);
   VerifyFreezerExpectations();
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 1U);
 }
 
 // Similar to AddCannotFreezeReasonToBrowsingInstanceWithManyPages, except that
@@ -289,12 +294,18 @@ TEST_F(FreezingPolicyTest, AddCannotFreezeReasonToConnectedPages) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page3.get()));
   policy()->AddFreezeVote(page3.get());
   VerifyFreezerExpectations();
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 0U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 0U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page3.get()).size(), 0U);
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
   EXPECT_CALL(*freezer(), UnfreezePageNode(page2.get()));
   EXPECT_CALL(*freezer(), UnfreezePageNode(page3.get()));
   page_node()->SetIsHoldingWebLockForTesting(true);
   VerifyFreezerExpectations();
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page3.get()).size(), 1U);
 }
 
 // A browsing instance with one page that has a `CannotFreezeReason` is not
@@ -304,6 +315,8 @@ TEST_F(FreezingPolicyTest,
   auto [page2, frame2] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
   page_node()->SetIsHoldingWebLockForTesting(true);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 1U);
 
   // Don't expect freezing.
   policy()->AddFreezeVote(page_node());
@@ -325,6 +338,9 @@ TEST_F(FreezingPolicyTest,
   auto [page3, frame3] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceB);
   page_node()->SetIsHoldingWebLockForTesting(true);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page3.get()).size(), 1U);
 
   // Don't expect freezing.
   policy()->AddFreezeVote(page_node());
@@ -348,6 +364,9 @@ TEST_F(FreezingPolicyTest, BreakConnectedSet) {
   policy()->AddFreezeVote(page_node());
   policy()->AddFreezeVote(page2.get());
   policy()->AddFreezeVote(page3.get());
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page3.get()).size(), 1U);
 
   // Deleting `frame2` puts `page_node()` in a different connected set than
   // `page2` and `page3`. `page_node()` cannot be frozen because it has a
@@ -357,6 +376,9 @@ TEST_F(FreezingPolicyTest, BreakConnectedSet) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page3.get()));
   frame2.reset();
   VerifyFreezerExpectations();
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 0U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page3.get()).size(), 0U);
 }
 
 // Similar to BreakConnectedSet, but the connected set left by the page from
@@ -374,6 +396,9 @@ TEST_F(FreezingPolicyTest, BreakConnectedSet_LeftSetIsFrozen) {
   policy()->AddFreezeVote(page_node());
   policy()->AddFreezeVote(page2.get());
   policy()->AddFreezeVote(page3.get());
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page3.get()).size(), 1U);
 
   // Deleting `frame2` puts `page_node()` in a different connected set than
   // `page2` and `page3`. `page_node()` cannot be frozen because it has a
@@ -382,6 +407,9 @@ TEST_F(FreezingPolicyTest, BreakConnectedSet_LeftSetIsFrozen) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   frame2.reset();
   VerifyFreezerExpectations();
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page_node()).size(), 0U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page2.get()).size(), 1U);
+  EXPECT_EQ(policy()->GetCannotFreezeReasons(page3.get()).size(), 1U);
 }
 
 TEST_F(FreezingPolicyTest, FreezeVoteWhenVisible) {

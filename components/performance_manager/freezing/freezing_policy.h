@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -82,6 +83,10 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void AddFreezeVote(PageNode* page_node);
   void RemoveFreezeVote(PageNode* page_node);
 
+  // Returns a list of human-readable reasons why a page can't be frozen
+  // automatically, or an empty list if it can be frozen automatically.
+  std::set<std::string> GetCannotFreezeReasons(const PageNode* page_node);
+
  private:
   // State of a browsing instance.
   struct BrowsingInstanceState {
@@ -106,6 +111,11 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
     // instance are frozen.
     base::flat_map<url::Origin, uint64_t> per_origin_pmf_after_freezing_kb;
   };
+
+  // Returns pages connected to `page`, including `page` itself. See
+  // meta-comment above this class for a definition of "connected".
+  base::flat_set<raw_ptr<const PageNode>> GetConnectedPages(
+      const PageNode* page);
 
   // Returns browsing instance id(s) for `page`.
   base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
