@@ -13,14 +13,15 @@
 
 namespace ash {
 
-class PickerSearchFieldView;
+class QuickInsertSearchFieldView;
 
 // The textfield in the Picker search bar view.
 class ASH_EXPORT PickerSearchBarTextfield : public views::Textfield {
   METADATA_HEADER(PickerSearchBarTextfield, views::Textfield)
 
  public:
-  explicit PickerSearchBarTextfield(PickerSearchFieldView* search_field_view);
+  explicit PickerSearchBarTextfield(
+      QuickInsertSearchFieldView* search_field_view);
   PickerSearchBarTextfield(const PickerSearchBarTextfield&) = delete;
   PickerSearchBarTextfield& operator=(const PickerSearchBarTextfield&) = delete;
   ~PickerSearchBarTextfield() override;
@@ -29,7 +30,7 @@ class ASH_EXPORT PickerSearchBarTextfield : public views::Textfield {
 
  private:
   // The search field view that contains and owns this textfield.
-  raw_ptr<PickerSearchFieldView> search_field_view_;
+  raw_ptr<QuickInsertSearchFieldView> search_field_view_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSearchBarTextfield, views::Textfield)

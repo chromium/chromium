@@ -1613,7 +1613,7 @@ TEST_F(QuickInsertViewTest, StopsSearchWhenBackButtonPressed) {
   ASSERT_TRUE(search_future.Wait());
   ASSERT_FALSE(stop_search_future.IsReady());
 
-  PickerSearchFieldView& search_field_view =
+  QuickInsertSearchFieldView& search_field_view =
       picker_view->search_field_view_for_testing();
   ViewDrawnWaiter().Wait(&search_field_view.back_button_for_testing());
   LeftClickOn(&search_field_view.back_button_for_testing());
@@ -2880,7 +2880,7 @@ TEST_F(
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
 
   task_environment()->FastForwardBy(
-      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+      QuickInsertSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
 }
@@ -2898,7 +2898,7 @@ TEST_F(
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
   task_environment()->FastForwardBy(
-      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+      QuickInsertSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
 
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 2);
@@ -3103,7 +3103,7 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
   ViewDrawnWaiter().Wait(category_result);
   LeftClickOn(category_result);
 
-  PickerSearchFieldView& search_field_view =
+  QuickInsertSearchFieldView& search_field_view =
       view->search_field_view_for_testing();
   ViewDrawnWaiter().Wait(&search_field_view.back_button_for_testing());
   LeftClickOn(&search_field_view.back_button_for_testing());

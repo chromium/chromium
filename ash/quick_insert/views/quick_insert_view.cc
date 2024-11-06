@@ -793,8 +793,8 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
   // `base::Unretained` is safe here because this class owns
   // `main_container_view_`, which owns `search_field_view_`.
   search_field_view_ = main_container_view_->AddSearchFieldView(
-      views::Builder<PickerSearchFieldView>(
-          std::make_unique<PickerSearchFieldView>(
+      views::Builder<QuickInsertSearchFieldView>(
+          std::make_unique<QuickInsertSearchFieldView>(
               base::IgnoreArgs<const std::u16string&>(base::BindRepeating(
                   &PickerView::UpdateActivePage, base::Unretained(this))),
               base::BindRepeating(&PickerView::OnSearchBackButtonPressed,

@@ -116,8 +116,8 @@ bool PickerMainContainerView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-PickerSearchFieldView* PickerMainContainerView::AddSearchFieldView(
-    std::unique_ptr<PickerSearchFieldView> search_field_view) {
+QuickInsertSearchFieldView* PickerMainContainerView::AddSearchFieldView(
+    std::unique_ptr<QuickInsertSearchFieldView> search_field_view) {
   search_field_view_ = AddChildView(std::move(search_field_view));
   return search_field_view_;
 }

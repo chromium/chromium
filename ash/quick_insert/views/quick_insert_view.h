@@ -47,7 +47,7 @@ enum class PickerPositionType;
 enum class PickerPseudoFocusDirection;
 class PickerEmojiBarView;
 class PickerMainContainerView;
-class PickerSearchFieldView;
+class QuickInsertSearchFieldView;
 class PickerPageView;
 class QuickInsertSearchResultsSection;
 class PickerSearchResultsView;
@@ -134,7 +134,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
     return preview_controller_;
   }
 
-  PickerSearchFieldView& search_field_view_for_testing() {
+  QuickInsertSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
   }
   PickerSearchResultsView& search_results_view_for_testing() {
@@ -260,7 +260,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // The main container contains the search field and contents pages.
   raw_ptr<PickerMainContainerView> main_container_view_ = nullptr;
-  raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
+  raw_ptr<QuickInsertSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> category_results_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;

@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::PickerKeyEventHandler key_event_handler;
   ash::PickerPerformanceMetrics metrics;
   auto* view =
-      widget->SetContentsView(std::make_unique<ash::PickerSearchFieldView>(
+      widget->SetContentsView(std::make_unique<ash::QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetPlaceholderText(u"cat");
 
@@ -142,8 +142,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::PickerPerformanceMetrics metrics;
   auto* container_view =
       widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
-  auto* search_field_view =
-      container_view->AddChildView(std::make_unique<ash::PickerSearchFieldView>(
+  auto* search_field_view = container_view->AddChildView(
+      std::make_unique<ash::QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   auto* other_view =
       container_view->AddChildView(std::make_unique<views::Label>(u"test"));
@@ -172,8 +172,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::PickerPerformanceMetrics metrics;
   auto* container_view =
       widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
-  auto* search_field_view =
-      container_view->AddChildView(std::make_unique<ash::PickerSearchFieldView>(
+  auto* search_field_view = container_view->AddChildView(
+      std::make_unique<ash::QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   auto* other_view =
       container_view->AddChildView(std::make_unique<views::Label>(u"test"));
@@ -206,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::PickerPerformanceMetrics metrics;
   auto* container_view =
       widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
-  auto* search_field_view =
-      container_view->AddChildView(std::make_unique<ash::PickerSearchFieldView>(
+  auto* search_field_view = container_view->AddChildView(
+      std::make_unique<ash::QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   auto* other_view =
       container_view->AddChildView(std::make_unique<views::Label>(u"test"));
@@ -253,8 +253,8 @@ IN_PROC_BROWSER_TEST_F(
   ash::PickerPerformanceMetrics metrics;
   auto* container_view =
       widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
-  auto* search_field_view =
-      container_view->AddChildView(std::make_unique<ash::PickerSearchFieldView>(
+  auto* search_field_view = container_view->AddChildView(
+      std::make_unique<ash::QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   auto* other_view =
       container_view->AddChildView(std::make_unique<views::Label>(u"test"));
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::PickerKeyEventHandler key_event_handler;
   ash::PickerPerformanceMetrics metrics;
   auto* view =
-      widget->SetContentsView(std::make_unique<ash::PickerSearchFieldView>(
+      widget->SetContentsView(std::make_unique<ash::QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetPlaceholderText(u"cat");
   view->SetQueryText(u"query");
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::PickerKeyEventHandler key_event_handler;
   ash::PickerPerformanceMetrics metrics;
   auto* view =
-      widget->SetContentsView(std::make_unique<ash::PickerSearchFieldView>(
+      widget->SetContentsView(std::make_unique<ash::QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetPlaceholderText(u"placeholder");
 
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   ash::PickerKeyEventHandler key_event_handler;
   ash::PickerPerformanceMetrics metrics;
   auto* view =
-      widget->SetContentsView(std::make_unique<ash::PickerSearchFieldView>(
+      widget->SetContentsView(std::make_unique<ash::QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetPlaceholderText(u"placeholder");
   view->SetBackButtonVisible(true);
