@@ -571,6 +571,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kObjectViewBox, WebDXFeature::kObjectViewBox},
           {CSSSampleId::kForcedColorAdjust, WebDXFeature::kForcedColors},
           {CSSSampleId::kWhiteSpaceCollapse, WebDXFeature::kWhiteSpaceCollapse},
+          {CSSSampleId::kImageOrientation, WebDXFeature::kImageOrientation},
       }};
 
   return *kMap;
