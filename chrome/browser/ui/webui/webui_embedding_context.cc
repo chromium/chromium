@@ -234,15 +234,16 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(EmbedderContextData);
 
 base::CallbackListSubscription InitEmbeddingContext(
     tabs::TabInterface* tab_interface) {
-  // Set the initial browser context and configure updates for browser changes.
-  const auto update_browser_context = [](tabs::TabInterface* tab) {
-    CHECK(tab->GetBrowserWindowInterface());
-    SetBrowserWindowInterface(tab->GetContents(),
-                              tab->GetBrowserWindowInterface());
-  };
-  update_browser_context(tab_interface);
-  return tab_interface->RegisterDidInsert(
-      base::BindRepeating(update_browser_context));
+  // Set the initial tab interface and configure updates for discard changes.
+  // TODO(crbug.com/371950942): Once the new discard implementation has landed
+  // there is no need to re-set the interface on discard and this can be inlined
+  // into TabModel.
+  SetTabInterface(tab_interface->GetContents(), tab_interface);
+  return tab_interface->RegisterWillDiscardContents(base::BindRepeating(
+      [](tabs::TabInterface* tab, content::WebContents* old_contents,
+         content::WebContents* new_contents) {
+        SetTabInterface(new_contents, tab);
+      }));
 }
 
 void SetBrowserWindowInterface(
