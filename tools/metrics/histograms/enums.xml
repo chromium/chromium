@@ -23605,6 +23605,7 @@ from previous Chrome versions.
   <int value="1376139800" label="SeaPen:enabled"/>
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
   <int value="1376437124" label="show-cert-link"/>
+  <int value="1376758377" label="StaticStorageQuota:disabled"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>
   <int value="1377802847" label="ViewTransition:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
@@ -25338,6 +25339,7 @@ from previous Chrome versions.
   <int value="2063238104" label="ContextMenuPopupForAllScreenSizes:enabled"/>
   <int value="2063329599"
       label="AutofillEnableAndroidNKeyForFidoAuthentication:disabled"/>
+  <int value="2063330973" label="StaticStorageQuota:enabled"/>
   <int value="2063420769" label="SharedHighlightingV2:disabled"/>
   <int value="2064964530" label="RippleForEnhancedProtection:enabled"/>
   <int value="2065833330" label="CanvasContextLostInBackground:enabled"/>

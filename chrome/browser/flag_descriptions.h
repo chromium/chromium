@@ -2392,6 +2392,9 @@ extern const char kEnablePasswordSharingDescription[];
 extern const char kEnableMantaServiceName[];
 extern const char kEnableMantaServiceDescription[];
 
+extern const char kPredictableReportedQuotaName[];
+extern const char kPredictableReportedQuotaDescription[];
+
 extern const char kPromptAPIForGeminiNanoName[];
 extern const char kPromptAPIForGeminiNanoDescription[];
 extern const char* const kAIAPIsForGeminiNanoLinks[2];

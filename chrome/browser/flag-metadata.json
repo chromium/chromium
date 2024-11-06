@@ -6990,6 +6990,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "predictable-reported-quota",
+    "owners": ["reemaaa@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "prefer-constant-frame-rate",
     "owners": [ "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 130

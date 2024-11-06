@@ -4117,6 +4117,12 @@ const char kEnableMantaServiceName[] = "Enable Manta Service";
 const char kEnableMantaServiceDescription[] =
     "Enables the profile keyed Manta service at startup.";
 
+const char kPredictableReportedQuotaName[] = "Predictable Reported Quota";
+const char kPredictableReportedQuotaDescription[] =
+    "Enables reporting of a predictable quota from the StorageManager's "
+    "estimate API. This flag is intended only for validating if this change "
+    "caused an unforseen bug.";
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 const char kRunVideoCaptureServiceInBrowserProcessName[] =
     "Run video capture service in browser";

@@ -11810,6 +11810,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableLocalCardMigration)},
+    {"predictable-reported-quota",
+     flag_descriptions::kPredictableReportedQuotaName,
+     flag_descriptions::kPredictableReportedQuotaDescription, kOsAll,
+     FEATURE_VALUE_TYPE(storage::features::kStaticStorageQuota)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"use-ahardwarebuffer-usage-flags-from-vulkan",
