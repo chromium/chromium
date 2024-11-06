@@ -230,6 +230,12 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
                                   syncer::SyncService* sync_service,
                                   bool is_test_mode,
                                   LogManager* log_manager) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillDisableLocalCardMigration)) {
+    // Feature is being turned down.
+    return false;
+  }
+
   PaymentsDataManager& payments_data_manager =
       personal_data_manager->payments_data_manager();
   // If |is_test_mode| is set, assume we are in a browsertest and
