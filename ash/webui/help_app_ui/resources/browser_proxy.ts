@@ -38,10 +38,6 @@ const guestFrame = document.createElement('iframe');
 guestFrame.src = `${GUEST_ORIGIN}${location.pathname}${location.search}`;
 document.body.appendChild(guestFrame);
 
-// Cached result whether Local Search Service is enabled.
-const isLssEnabled =
-    helpApp.handler.isLssEnabled().then(result => result.enabled);
-
 // Cached result of whether Launcher Search is enabled.
 const isLauncherSearchEnabled =
     helpApp.handler.isLauncherSearchEnabled().then(result => result.enabled);
@@ -94,9 +90,6 @@ guestMessagePipe.registerHandler(
 
 guestMessagePipe.registerHandler(
     Message.ADD_OR_UPDATE_SEARCH_INDEX, async (data: SearchableItem[]) => {
-      if (!(await isLssEnabled)) {
-        return;
-      }
       const dataToSend = data.map(searchableItem => {
         const contents: Content[] = [
           {
@@ -149,18 +142,12 @@ guestMessagePipe.registerHandler(
     });
 
 guestMessagePipe.registerHandler(Message.CLEAR_SEARCH_INDEX, async () => {
-  if (!(await isLssEnabled)) {
-    return;
-  }
   return indexRemote.clearIndex();
 });
 
 guestMessagePipe.registerHandler(
   Message.FIND_IN_SEARCH_INDEX,
   async (dataFromApp: {query: string, maxResults: number}) => {
-      if (!(await isLssEnabled)) {
-        return {results: null};
-      }
       const response = await indexRemote.find(
           toTruncatedString16(dataFromApp.query), dataFromApp.maxResults || 50);
 

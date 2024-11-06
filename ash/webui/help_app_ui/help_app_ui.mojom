@@ -88,9 +88,6 @@ interface PageHandler {
   // Triggers the call-to-action associated with the given action type id.
   TriggerWelcomeTipCallToAction(ActionTypeId action_type_id);
 
-  // Returns true if Local Search Service integration is enabled.
-  IsLssEnabled() => (bool enabled);
-
   // Returns true if the Help App Launcher Search feature is enabled.
   IsLauncherSearchEnabled() => (bool enabled);
 

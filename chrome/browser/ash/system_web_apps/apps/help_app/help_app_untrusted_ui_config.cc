@@ -90,11 +90,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   // Add any features that have been enabled.
   source->AddBoolean(
       "HelpAppLauncherSearch",
-      base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
-          base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
-  source->AddBoolean(
-      "HelpAppSearchServiceIntegration",
-      base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
+      base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch));
+  source->AddBoolean("HelpAppSearchServiceIntegration", true);
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
 

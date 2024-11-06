@@ -724,11 +724,6 @@ BASE_FEATURE(kEnableLazyLoginWebUILoading,
              "EnableLazyLoginWebUILoading",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables LocalSearchService to be initialized.
-BASE_FEATURE(kEnableLocalSearchService,
-             "EnableLocalSearchService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OAuth support when printing via the IPP protocol.
 BASE_FEATURE(kEnableOAuthIpp,
              "EnableOAuthIpp",

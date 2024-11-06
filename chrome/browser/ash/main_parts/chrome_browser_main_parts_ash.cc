@@ -990,11 +990,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
                                     ->GetDeviceNamePolicyHandler());
   }
 
-  if (base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {
-    // Set |local_state| for LocalSearchServiceProxyFactory.
-    local_search_service::LocalSearchServiceProxyFactory::GetInstance()
-        ->SetLocalState(g_browser_process->local_state());
-  }
+  // Set |local_state| for LocalSearchServiceProxyFactory.
+  local_search_service::LocalSearchServiceProxyFactory::GetInstance()
+      ->SetLocalState(g_browser_process->local_state());
 
   // Make sure that wallpaper boot transition and other delays in OOBE
   // are disabled for tests and kiosk app launch by default.

@@ -37,7 +37,6 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void ShowParentalControls() override;
   void TriggerWelcomeTipCallToAction(
       help_app::mojom::ActionTypeId action_type_id) override;
-  void IsLssEnabled(IsLssEnabledCallback callback) override;
   void IsLauncherSearchEnabled(
       IsLauncherSearchEnabledCallback callback) override;
   void LaunchMicrosoft365Setup() override;
@@ -51,7 +50,6 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
  private:
   mojo::Receiver<help_app::mojom::PageHandler> receiver_;
   raw_ptr<HelpAppUI> help_app_ui_;  // Owns |this|.
-  bool is_lss_enabled_;
   bool is_launcher_search_enabled_;
   raw_ref<PrefService> pref_service_;
 };
