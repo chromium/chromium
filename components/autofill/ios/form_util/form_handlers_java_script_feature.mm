@@ -37,7 +37,7 @@ std::vector<web::JavaScriptFeature::FeatureScript> GetFeatureScripts() {
   if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
     feature_scripts.push_back(FeatureScript::CreateWithFilename(
         kRemoteTokenRegistrationScriptName,
-        FeatureScript::InjectionTime::kDocumentEnd,
+        FeatureScript::InjectionTime::kDocumentStart,
         FeatureScript::TargetFrames::kAllFrames,
         FeatureScript::ReinjectionBehavior::kReinjectOnDocumentRecreation));
   }

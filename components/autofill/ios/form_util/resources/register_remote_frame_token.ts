@@ -24,6 +24,11 @@ function registerRemoteToken(): void {
   gCrWeb.remoteFrameRegistration.registerSelfWithRemoteToken(remoteFrameToken);
 }
 
-// Remote token registration must be delayed until the DOM is loaded. This
-// script is injected at Document End injection time.
-registerRemoteToken();
+
+// Register a new token after the page is displayed due to navigation. The
+// browser layer destroys existing WebFrame's on navigation which removes any
+// registered frame tokens. That is why the frame must be registered again if
+// the user navigates back to it.
+addEventListener('pageshow', () => {
+  registerRemoteToken();
+});
