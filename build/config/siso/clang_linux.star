@@ -56,6 +56,15 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.h", "crtbegin.o"],
         },
+        "build/linux/debian_bullseye_armhf-sysroot/usr/include:include": {
+            "type": "glob",
+            "includes": ["*"],
+            # need bits/stab.def, c++/*
+        },
+        "build/linux/debian_bullseye_armhf-sysroot/usr/lib:headers": {
+            "type": "glob",
+            "includes": ["*.h", "crtbegin.o"],
+        },
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
             "type": "glob",
             "includes": ["*"],
@@ -103,6 +112,18 @@ def __filegroups(ctx):
             "includes": ["*.o", "*.so*", "lib*.a"],
         },
         "build/linux/debian_bullseye_i386-sysroot/usr/lib/gcc/i686-linux-gnu:libgcc": {
+            "type": "glob",
+            "includes": ["*.o", "*.a", "*.so"],
+        },
+        "build/linux/debian_bullseye_armhf-sysroot/lib:libso": {
+            "type": "glob",
+            "includes": ["*.so*"],
+        },
+        "build/linux/debian_bullseye_armhf-sysroot/usr/lib/arm-linux-gnueabihf:libs": {
+            "type": "glob",
+            "includes": ["*.o", "*.so*", "lib*.a"],
+        },
+        "build/linux/debian_bullseye_armhf-sysroot/usr/lib/gcc/arm-linux-gnueabihf:libgcc": {
             "type": "glob",
             "includes": ["*.o", "*.a", "*.so"],
         },
@@ -182,6 +203,10 @@ def __step_config(ctx, step_config):
             "build/linux/debian_bullseye_i386-sysroot/usr/include:include",
             "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers",
         ],
+        "build/linux/debian_bullseye_armhf-sysroot:headers": [
+            "build/linux/debian_bullseye_armhf-sysroot/usr/include:include",
+            "build/linux/debian_bullseye_armhf-sysroot/usr/lib:headers",
+        ],
         "build/linux/debian_bullseye_amd64-sysroot:link": [
             "build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu:libso",
             "build/linux/debian_bullseye_amd64-sysroot/lib64/ld-linux-x86-64.so.2",
@@ -196,6 +221,12 @@ def __step_config(ctx, step_config):
             "build/linux/debian_bullseye_i386-sysroot/lib:libso",
             "build/linux/debian_bullseye_i386-sysroot/usr/lib/gcc/i686-linux-gnu:libgcc",
             "build/linux/debian_bullseye_i386-sysroot/usr/lib/i386-linux-gnu:libs",
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
+        ],
+        "build/linux/debian_bullseye_armhf-sysroot:link": [
+            "build/linux/debian_bullseye_armhf-sysroot/lib:libso",
+            "build/linux/debian_bullseye_armhf-sysroot/usr/lib/gcc/arm-linux-gnueabihf:libgcc",
+            "build/linux/debian_bullseye_armhf-sysroot/usr/lib/arm-linux-gnueabihf:libs",
             "third_party/llvm-build/Release+Asserts/bin:llddeps",
         ],
         "build/toolchain/gcc_solink_wrapper.py": [
