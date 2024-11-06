@@ -49,7 +49,7 @@ MATCHER_P(LastElement, matcher, "") {
 }
 
 struct TestCase {
-  PickerSearchSource source;
+  QuickInsertSearchSource source;
   QuickInsertSectionType section_type;
 };
 
@@ -67,49 +67,49 @@ class QuickInsertSearchAggregatorTest
 
 const TestCase kNamedSectionTestCases[] = {
     TestCase{
-        .source = PickerSearchSource::kOmnibox,
+        .source = QuickInsertSearchSource::kOmnibox,
         .section_type = QuickInsertSectionType::kLinks,
     },
     TestCase{
-        .source = PickerSearchSource::kLocalFile,
+        .source = QuickInsertSearchSource::kLocalFile,
         .section_type = QuickInsertSectionType::kLocalFiles,
     },
     TestCase{
-        .source = PickerSearchSource::kDrive,
+        .source = QuickInsertSearchSource::kDrive,
         .section_type = QuickInsertSectionType::kDriveFiles,
     },
     TestCase{
-        .source = PickerSearchSource::kClipboard,
+        .source = QuickInsertSearchSource::kClipboard,
         .section_type = QuickInsertSectionType::kClipboard,
     },
 };
 
 const TestCase kNoneSectionTestCases[] = {
     TestCase{
-        .source = PickerSearchSource::kAction,
+        .source = QuickInsertSearchSource::kAction,
         .section_type = QuickInsertSectionType::kNone,
     },
     TestCase{
-        .source = PickerSearchSource::kDate,
+        .source = QuickInsertSearchSource::kDate,
         .section_type = QuickInsertSectionType::kNone,
     },
     TestCase{
-        .source = PickerSearchSource::kMath,
+        .source = QuickInsertSearchSource::kMath,
         .section_type = QuickInsertSectionType::kNone,
     },
 };
 
 const TestCase kContentEditorSectionTestCases[] = {
     TestCase{
-        .source = PickerSearchSource::kEditorWrite,
+        .source = QuickInsertSearchSource::kEditorWrite,
         .section_type = QuickInsertSectionType::kContentEditor,
     },
     TestCase{
-        .source = PickerSearchSource::kEditorRewrite,
+        .source = QuickInsertSearchSource::kEditorRewrite,
         .section_type = QuickInsertSectionType::kContentEditor,
     },
     TestCase{
-        .source = PickerSearchSource::kLobster,
+        .source = QuickInsertSearchSource::kLobster,
         .section_type = QuickInsertSectionType::kContentEditor,
     },
 };
@@ -466,17 +466,17 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox, {},
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kOmnibox, {},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDate, {},
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kDate, {},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kAction, {},
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kAction, {},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile, {},
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kLocalFile, {},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive, {},
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kDrive, {},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kMath, {},
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kMath, {},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -550,41 +550,41 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kOmnibox,
                                        {QuickInsertTextResult(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kClipboard,
+      QuickInsertSearchSource::kClipboard,
       {QuickInsertClipboardResult(
           base::UnguessableToken::Create(),
           QuickInsertClipboardResult::DisplayFormat::kText,
           /*file_count=*/0, u"clipboard", std::nullopt,
           /*is_recent=*/false)},
       /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kDate,
                                        {QuickInsertTextResult(u"date")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kAction,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kAction,
                                        {QuickInsertTextResult(u"category")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kLocalFile,
+      QuickInsertSearchSource::kLocalFile,
       {QuickInsertLocalFileResult(u"local", base::FilePath("fake_path"),
                                   /*best_match=*/false)},
       /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kDrive,
                                        {QuickInsertTextResult(u"drive")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kMath,
                                        {QuickInsertTextResult(u"math")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kEditorWrite,
                                        {QuickInsertTextResult(u"write")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorRewrite,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kEditorRewrite,
                                        {QuickInsertTextResult(u"rewrite")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kLobster,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kLobster,
                                        {QuickInsertTextResult(u"lobster")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -630,11 +630,11 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kOmnibox,
                                        {QuickInsertTextResult(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kClipboard,
+      QuickInsertSearchSource::kClipboard,
       {QuickInsertClipboardResult(
           base::UnguessableToken::Create(),
           QuickInsertClipboardResult::DisplayFormat::kText,
@@ -642,11 +642,11 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
           /*is_recent=*/false)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kLocalFile,
+      QuickInsertSearchSource::kLocalFile,
       {QuickInsertLocalFileResult(u"local", base::FilePath("fake_path"),
                                   /*best_match=*/true)},
       /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kEditorWrite,
                                        {QuickInsertTextResult(u"write")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -692,11 +692,11 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kOmnibox,
                                        {QuickInsertTextResult(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kClipboard,
+      QuickInsertSearchSource::kClipboard,
       {QuickInsertClipboardResult(
           base::UnguessableToken::Create(),
           QuickInsertClipboardResult::DisplayFormat::kText,
@@ -704,11 +704,11 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
           /*is_recent=*/true)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kLocalFile,
+      QuickInsertSearchSource::kLocalFile,
       {QuickInsertLocalFileResult(u"local", base::FilePath("fake_path"),
                                   /*best_match=*/true)},
       /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kEditorWrite,
                                        {QuickInsertTextResult(u"write")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -767,34 +767,34 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   task_environment().FastForwardBy(kBurnInPeriod);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kOmnibox,
                                        {QuickInsertTextResult(u"omnibox")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kDrive,
                                        {QuickInsertTextResult(u"drive")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kDate,
                                        {QuickInsertTextResult(u"date")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kAction,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kAction,
                                        {QuickInsertTextResult(u"category")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kClipboard,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kClipboard,
                                        {QuickInsertTextResult(u"clipboard")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kLocalFile,
                                        {QuickInsertTextResult(u"local")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kMath,
                                        {QuickInsertTextResult(u"math")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kEditorWrite,
                                        {QuickInsertTextResult(u"write")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorRewrite,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kEditorRewrite,
                                        {QuickInsertTextResult(u"rewrite")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kLobster,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kLobster,
                                        {QuickInsertTextResult(u"lobster")},
                                        /*has_more_results=*/false);
 }
@@ -812,13 +812,13 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
 
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kOmnibox,
                                        {QuickInsertTextResult(u"omnibox")},
                                        /*has_more_results=*/true);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kLocalFile,
                                        {QuickInsertTextResult(u"local")},
                                        /*has_more_results=*/true);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kDrive,
                                        {QuickInsertTextResult(u"drive")},
                                        /*has_more_results=*/true);
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -841,13 +841,13 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   task_environment().FastForwardBy(kBurnInPeriod);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kOmnibox,
                                        {QuickInsertTextResult(u"omnibox")},
                                        /*has_more_results=*/true);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kLocalFile,
                                        {QuickInsertTextResult(u"local")},
                                        /*has_more_results=*/true);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kDrive,
                                        {QuickInsertTextResult(u"drive")},
                                        /*has_more_results=*/true);
 }
@@ -897,7 +897,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDrive,
+      QuickInsertSearchSource::kDrive,
       {
           QuickInsertDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
                                      base::FilePath()),
@@ -910,7 +910,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       },
       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kOmnibox,
+      QuickInsertSearchSource::kOmnibox,
       {
           QuickInsertBrowsingHistoryResult(GURL("https://example.com"), u"",
                                            ui::ImageModel()),
@@ -977,7 +977,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kOmnibox,
+      QuickInsertSearchSource::kOmnibox,
       {
           QuickInsertBrowsingHistoryResult(GURL("https://example.com"), u"",
                                            ui::ImageModel()),
@@ -997,7 +997,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       },
       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDrive,
+      QuickInsertSearchSource::kDrive,
       {
           QuickInsertDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
                                      base::FilePath()),
@@ -1060,7 +1060,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDrive,
+      QuickInsertSearchSource::kDrive,
       {
           QuickInsertDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
                                      base::FilePath()),
@@ -1074,7 +1074,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       /*has_more_results=*/true);
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kOmnibox,
+      QuickInsertSearchSource::kOmnibox,
       {
           QuickInsertBrowsingHistoryResult(GURL("https://example.com"), u"",
                                            ui::ImageModel()),
@@ -1144,7 +1144,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDrive,
+      QuickInsertSearchSource::kDrive,
       {
           QuickInsertDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
                                      base::FilePath()),
@@ -1157,7 +1157,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       },
       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kOmnibox,
+      QuickInsertSearchSource::kOmnibox,
       {
           QuickInsertBrowsingHistoryResult(GURL("https://example.com"), u"",
                                            ui::ImageModel()),
@@ -1229,7 +1229,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kOmnibox,
+      QuickInsertSearchSource::kOmnibox,
       {
           QuickInsertBrowsingHistoryResult(GURL("https://example.com"), u"",
                                            ui::ImageModel()),
@@ -1250,7 +1250,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       /*has_more_results=*/true);
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDrive,
+      QuickInsertSearchSource::kDrive,
       {
           QuickInsertDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
                                      base::FilePath()),
@@ -1316,7 +1316,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kOmnibox,
+      QuickInsertSearchSource::kOmnibox,
       {
           QuickInsertBrowsingHistoryResult(GURL("https://example.com"), u"",
                                            ui::ImageModel()),
@@ -1336,7 +1336,7 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
       },
       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kDrive,
+      QuickInsertSearchSource::kDrive,
       {
           QuickInsertDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
                                      base::FilePath()),

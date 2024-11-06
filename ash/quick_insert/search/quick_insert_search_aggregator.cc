@@ -33,24 +33,25 @@ namespace ash {
 
 namespace {
 
-QuickInsertSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
+QuickInsertSectionType SectionTypeFromSearchSource(
+    QuickInsertSearchSource source) {
   switch (source) {
-    case PickerSearchSource::kOmnibox:
+    case QuickInsertSearchSource::kOmnibox:
       return QuickInsertSectionType::kLinks;
-    case PickerSearchSource::kDate:
-    case PickerSearchSource::kMath:
+    case QuickInsertSearchSource::kDate:
+    case QuickInsertSearchSource::kMath:
       return QuickInsertSectionType::kNone;
-    case PickerSearchSource::kClipboard:
+    case QuickInsertSearchSource::kClipboard:
       return QuickInsertSectionType::kClipboard;
-    case PickerSearchSource::kAction:
+    case QuickInsertSearchSource::kAction:
       return QuickInsertSectionType::kNone;
-    case PickerSearchSource::kLocalFile:
+    case QuickInsertSearchSource::kLocalFile:
       return QuickInsertSectionType::kLocalFiles;
-    case PickerSearchSource::kDrive:
+    case QuickInsertSearchSource::kDrive:
       return QuickInsertSectionType::kDriveFiles;
-    case PickerSearchSource::kEditorWrite:
-    case PickerSearchSource::kEditorRewrite:
-    case PickerSearchSource::kLobster:
+    case QuickInsertSearchSource::kEditorWrite:
+    case QuickInsertSearchSource::kEditorRewrite:
+    case QuickInsertSearchSource::kLobster:
       return QuickInsertSectionType::kContentEditor;
   }
 }
@@ -182,7 +183,7 @@ QuickInsertSearchAggregator::QuickInsertSearchAggregator(
 QuickInsertSearchAggregator::~QuickInsertSearchAggregator() = default;
 
 void QuickInsertSearchAggregator::HandleSearchSourceResults(
-    PickerSearchSource source,
+    QuickInsertSearchSource source,
     std::vector<QuickInsertSearchResult> results,
     bool has_more_results) {
   CHECK(!current_callback_.is_null())

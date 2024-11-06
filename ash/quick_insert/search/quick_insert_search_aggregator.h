@@ -43,7 +43,7 @@ class ASH_EXPORT QuickInsertSearchAggregator {
       delete;
   ~QuickInsertSearchAggregator();
 
-  void HandleSearchSourceResults(PickerSearchSource source,
+  void HandleSearchSourceResults(QuickInsertSearchSource source,
                                  std::vector<QuickInsertSearchResult> results,
                                  bool has_more_results);
   void HandleNoMoreResults(bool interrupted);

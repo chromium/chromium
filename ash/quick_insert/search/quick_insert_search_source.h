@@ -7,7 +7,7 @@
 
 namespace ash {
 
-enum class PickerSearchSource {
+enum class QuickInsertSearchSource {
   kOmnibox = 0,
   kDate,
   kAction,
