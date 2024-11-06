@@ -6,6 +6,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
+#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -118,18 +119,15 @@ CreateAssistantOnDeviceSessionTask::CreateAssistantOnDeviceSessionTask(
           browser_context,
           optimization_guide::ModelBasedCapabilityKey::kPromptApi),
       completion_callback_(std::move(completion_callback)) {
+  AIManagerKeyedService* service =
+      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(browser_context);
   if (sampling_params) {
     sampling_params_ = optimization_guide::SamplingParams{
-        .top_k = std::min(
-            sampling_params->top_k,
-            uint32_t(AIManagerKeyedService::GetAssistantModelMaxTopK())),
+        .top_k = std::min(sampling_params->top_k,
+                          service->GetAssistantModelMaxTopK()),
         .temperature = sampling_params->temperature};
   } else {
-    sampling_params_ = optimization_guide::SamplingParams{
-        .top_k = uint32_t(
-            optimization_guide::features::GetOnDeviceModelDefaultTopK()),
-        .temperature = float(
-            AIManagerKeyedService::GetAssistantModelDefaultTemperature())};
+    sampling_params_ = service->GetAssistantDefaultSamplingParams();
   }
 }
 

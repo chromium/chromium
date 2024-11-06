@@ -13,9 +13,4 @@ BASE_FEATURE(kAIAssistantOverrideConfiguration,
 const base::FeatureParam<int> kAIAssistantOverrideConfigurationMaxTopK{
     &features::kAIAssistantOverrideConfiguration, "max_top_k", 8};
 
-const base::FeatureParam<double>
-    kAIAssistantOverrideConfigurationDefaultTemperature{
-        &features::kAIAssistantOverrideConfiguration, "default_temperature",
-        1.0};
-
 }  // namespace features

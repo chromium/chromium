@@ -13,10 +13,6 @@ namespace features {
 BASE_DECLARE_FEATURE(kAIAssistantOverrideConfiguration);
 extern const base::FeatureParam<int> kAIAssistantOverrideConfigurationMaxTopK;
 
-BASE_DECLARE_FEATURE(kAIAssistantOverrideConfiguration);
-extern const base::FeatureParam<double>
-    kAIAssistantOverrideConfigurationDefaultTemperature;
-
 }  // namespace features
 
 #endif  // CHROME_BROWSER_AI_FEATURES_H_

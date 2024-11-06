@@ -365,9 +365,10 @@ void AIManagerKeyedService::CreateSummarizer(
 }
 
 void AIManagerKeyedService::GetModelInfo(GetModelInfoCallback callback) {
+  auto default_sampling_params = GetAssistantDefaultSamplingParams();
   std::move(callback).Run(blink::mojom::AIModelInfo::New(
-      optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-      GetAssistantModelMaxTopK(), GetAssistantModelDefaultTemperature()));
+      default_sampling_params.top_k, GetAssistantModelMaxTopK(),
+      default_sampling_params.temperature));
 }
 
 void AIManagerKeyedService::CreateWriter(
@@ -501,8 +502,40 @@ void AIManagerKeyedService::RemoveReceiver(mojo::ReceiverId receiver_id) {
   receivers_.Remove(receiver_id);
 }
 
-// static
-int AIManagerKeyedService::GetAssistantModelMaxTopK() {
+optimization_guide::SamplingParams
+AIManagerKeyedService::GetAssistantDefaultSamplingParams() {
+  if (default_assistant_sampling_params_.has_value()) {
+    return default_assistant_sampling_params_.value();
+  }
+
+  // Create a `kPromptApi` session without specifying the config params. The
+  // session should be created using the default value from the model execution
+  // config.
+  // TODO(crbug.com/372349624): implement a way to fetch the default params
+  // without creating a dummy session.
+  OptimizationGuideKeyedService* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context_));
+  using optimization_guide::SessionConfigParams;
+  SessionConfigParams config_params = SessionConfigParams{
+      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
+      .logging_mode = SessionConfigParams::LoggingMode::kAlwaysDisable,
+  };
+  auto session = service->StartSession(
+      optimization_guide::ModelBasedCapabilityKey::kPromptApi, config_params);
+
+  default_assistant_sampling_params_ =
+      session
+          ? session->GetSamplingParams()
+          : optimization_guide::SamplingParams{
+                uint32_t(
+                    optimization_guide::features::GetOnDeviceModelMaxTopK()),
+                float(optimization_guide::features::
+                          GetOnDeviceModelDefaultTemperature())};
+  return default_assistant_sampling_params_.value();
+}
+
+uint32_t AIManagerKeyedService::GetAssistantModelMaxTopK() {
   int max_top_k = optimization_guide::features::GetOnDeviceModelMaxTopK();
   if (base::FeatureList::IsEnabled(
           features::kAIAssistantOverrideConfiguration)) {
@@ -510,15 +543,6 @@ int AIManagerKeyedService::GetAssistantModelMaxTopK() {
         max_top_k, features::kAIAssistantOverrideConfigurationMaxTopK.Get());
   }
   return max_top_k;
-}
-
-// static
-double AIManagerKeyedService::GetAssistantModelDefaultTemperature() {
-  if (base::FeatureList::IsEnabled(
-          features::kAIAssistantOverrideConfiguration)) {
-    return features::kAIAssistantOverrideConfigurationDefaultTemperature.Get();
-  }
-  return optimization_guide::features::GetOnDeviceModelDefaultTemperature();
 }
 
 void AIManagerKeyedService::AddModelDownloadProgressObserver(

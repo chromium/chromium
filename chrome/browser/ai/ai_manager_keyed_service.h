@@ -55,12 +55,14 @@ class AIManagerKeyedService : public KeyedService,
       uint64_t downloaded_bytes,
       uint64_t total_bytes);
 
+  // TODO(crbug.com/372349624): make the max sampling params configured from the
+  // model execution config as well.
   // Return the max top k value for the Assistant API. Note that this value
   // won't exceed the max top k defined by the underlying on-device model.
-  static int GetAssistantModelMaxTopK();
+  uint32_t GetAssistantModelMaxTopK();
 
-  // Return the default temperature for the Assistant API.
-  static double GetAssistantModelDefaultTemperature();
+  // Return the default sampling params for the Assistant API.
+  optimization_guide::SamplingParams GetAssistantDefaultSamplingParams();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
@@ -125,6 +127,11 @@ class AIManagerKeyedService : public KeyedService,
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;
   std::unique_ptr<AIOnDeviceModelComponentObserver> component_observer_;
+
+  // Since it requires creating a default session to fetch the default sampling
+  // params, we keep a lazy-initialized instance here as a cache.
+  std::optional<optimization_guide::SamplingParams>
+      default_assistant_sampling_params_;
 
   base::WeakPtrFactory<AIManagerKeyedService> weak_factory_{this};
 };
