@@ -7,8 +7,8 @@ found in the LICENSE file.
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- The application name displayed to the user. -->
-    <string name="app_name" translatable="false">Chromium</string>
-    <string name="bookmark_widget_title" translatable="false">Chromium bookmarks</string>
-    <string name="search_widget_title" translatable="false">Chromium search</string>
-    <string name="quick_action_search_widget_title" translatable="false">Chromium quick action search</string>
+    <string name="app_name" translatable="false">Wealth Browser</string>
+    <string name="bookmark_widget_title" translatable="false">Wealth Browser bookmarks</string>
+    <string name="search_widget_title" translatable="false">Wealth Browser search</string>
+    <string name="quick_action_search_widget_title" translatable="false">Wealth Browser quick action search</string>
 </resources>
