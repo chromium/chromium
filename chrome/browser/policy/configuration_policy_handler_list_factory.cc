@@ -2324,13 +2324,11 @@ void GetExtensionAllowedTypesMap(
     std::vector<std::unique_ptr<StringMappingListPolicyHandler::MappingEntry>>*
         result) {
   // Mapping from extension type names to Manifest::Type.
-  for (size_t index = 0;
-       index < extensions::schema_constants::kAllowedTypesMapSize; ++index) {
-    const extensions::schema_constants::AllowedTypesMapEntry& entry =
-        extensions::schema_constants::kAllowedTypesMap[index];
+  for (const auto& [name, manifest_type] :
+       extensions::schema_constants::kAllowedTypesMap) {
     result->push_back(
         std::make_unique<StringMappingListPolicyHandler::MappingEntry>(
-            entry.name, std::make_unique<base::Value>(entry.manifest_type)));
+            name, std::make_unique<base::Value>(manifest_type)));
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

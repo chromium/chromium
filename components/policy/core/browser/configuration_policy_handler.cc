@@ -227,7 +227,7 @@ bool IntRangePolicyHandlerBase::EnsureInRange(const base::Value* input,
 // StringMappingListPolicyHandler implementation -----------------------------
 
 StringMappingListPolicyHandler::MappingEntry::MappingEntry(
-    const char* policy_value,
+    std::string_view policy_value,
     std::unique_ptr<base::Value> map)
     : enum_value(policy_value), mapped_value(std::move(map)) {}
 
