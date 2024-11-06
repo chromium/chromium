@@ -746,7 +746,7 @@ def main():
   if not args.skip_checkout:
     CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
 
-    if sys.platform == 'win32':
+    if sys.platform == 'win32' and not args.llvm_force_head_revision::
       # Apply https://github.com/zmodem/llvm-project/commit/802b816836f1 which
       # adds printfs to the win/asan runtime which get printed at high verbosity
       # level or on errors such as CHECK failure.
