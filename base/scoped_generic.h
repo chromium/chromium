@@ -9,6 +9,7 @@
 
 #include <concepts>
 #include <type_traits>
+#include <utility>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -148,8 +149,8 @@ class ScopedGeneric {
   // object. After this operation, this object will hold a null value, and
   // will not own the object any more.
   [[nodiscard]] element_type release() {
-    element_type old_generic = data_.generic;
-    data_.generic = traits_type::InvalidValue();
+    element_type old_generic =
+        std::exchange(data_.generic, traits_type::InvalidValue());
     TrackRelease(old_generic);
     return old_generic;
   }
