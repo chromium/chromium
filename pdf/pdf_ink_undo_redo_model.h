@@ -13,7 +13,7 @@
 
 #include "base/types/strong_alias.h"
 #include "pdf/buildflags.h"
-#include "pdf/pdf_ink_stroke_id.h"
+#include "pdf/pdf_ink_ids.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");

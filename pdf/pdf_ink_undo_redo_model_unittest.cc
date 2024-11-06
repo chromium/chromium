@@ -10,7 +10,7 @@
 #include <optional>
 #include <set>
 
-#include "pdf/pdf_ink_stroke_id.h"
+#include "pdf/pdf_ink_ids.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
