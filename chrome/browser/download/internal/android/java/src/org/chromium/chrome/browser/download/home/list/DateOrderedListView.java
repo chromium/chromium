@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.Recycler;
 import androidx.recyclerview.widget.RecyclerView.State;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
 import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
@@ -127,7 +128,8 @@ class DateOrderedListView {
         mUiConfig.addObserver(
                 (newDisplayStyle) -> {
                     int padding =
-                            getPaddingForDisplayStyle(newDisplayStyle, context.getResources());
+                            getPaddingForDisplayStyle(
+                                    newDisplayStyle, mView, context.getResources());
                     mView.setPaddingRelative(
                             padding, mView.getPaddingTop(), padding, mView.getPaddingBottom());
                 });
@@ -143,10 +145,16 @@ class DateOrderedListView {
      * @return The start and end padding of the recycler view for the given display style.
      */
     private static int getPaddingForDisplayStyle(
-            UiConfig.DisplayStyle displayStyle, Resources resources) {
+            UiConfig.DisplayStyle displayStyle, View view, Resources resources) {
         int padding = 0;
         if (displayStyle.horizontal == HorizontalDisplayStyle.WIDE) {
-            int screenWidthDp = resources.getConfiguration().screenWidthDp;
+            float dpToPx = resources.getDisplayMetrics().density;
+            int screenWidthDp = 0;
+            if (BuildInfo.getInstance().isAutomotive && view != null) {
+                screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
+            } else {
+                screenWidthDp = resources.getConfiguration().screenWidthDp;
+            }
             padding =
                     (int)
                             (((screenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f)

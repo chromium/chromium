@@ -501,7 +501,8 @@ public class SelectableListToolbar<E> extends Toolbar
     @Override
     public void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
         int padding =
-                SelectableListLayout.getPaddingForDisplayStyle(newDisplayStyle, getResources());
+                SelectableListLayout.getPaddingForDisplayStyle(
+                        newDisplayStyle, this, getResources());
         int paddingStartOffset = 0;
         boolean isSearchViewShowing = isSearching() && !mIsSelectionEnabled;
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();

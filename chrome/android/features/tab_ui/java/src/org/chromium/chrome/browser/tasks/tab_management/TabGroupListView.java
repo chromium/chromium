@@ -99,7 +99,8 @@ public class TabGroupListView extends FrameLayout {
 
     private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
         int padding =
-                SelectableListLayout.getPaddingForDisplayStyle(newDisplayStyle, getResources());
+                SelectableListLayout.getPaddingForDisplayStyle(
+                        newDisplayStyle, mRecyclerView, getResources());
         mRecyclerView.setPaddingRelative(
                 padding, mRecyclerView.getPaddingTop(), padding, mRecyclerView.getPaddingBottom());
     }
