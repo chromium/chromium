@@ -468,8 +468,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             return;
         }
 
-        if (UiUtils.isSystemUiThemingDisabled()) return;
-
         // Use transparent color, so the AppBarLayout can color the status bar on scroll.
         UiUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT);
 

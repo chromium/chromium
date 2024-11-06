@@ -347,17 +347,6 @@ public class UiUtils {
     }
 
     /**
-     * Always returns false because all OEMs currently support theming (to the extent of our
-     * knowledge).
-     *
-     * @return Whether the support for theming on a particular device has been completely disabled
-     *     due to lack of support by the OEM.
-     */
-    public static boolean isSystemUiThemingDisabled() {
-        return false;
-    }
-
-    /**
      * Sets the navigation bar icons to dark or light.
      *
      * @param rootView The root view used to request updates to the system UI theme.

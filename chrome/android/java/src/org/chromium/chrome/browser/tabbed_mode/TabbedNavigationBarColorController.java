@@ -347,7 +347,6 @@ class TabbedNavigationBarColorController
         boolean toEdge = isDrawingToEdge();
         boolean forceDarkNavigation = mTabModelSelector.isIncognitoSelected();
 
-        forceDarkNavigation &= !UiUtils.isSystemUiThemingDisabled();
         forceDarkNavigation |= mIsInFullscreen;
         mForceDarkNavigationBarColor = forceDarkNavigation;
 
