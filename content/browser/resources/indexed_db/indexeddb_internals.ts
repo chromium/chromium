@@ -19,19 +19,6 @@ import {IdbInternalsHandler} from './indexed_db_internals.mojom-webui.js';
 import type {IdbBucketMetadata} from './indexed_db_internals_types.mojom-webui.js';
 import type {SchemefulSite} from './schemeful_site.mojom-webui.js';
 
-// TODO: This comes from components/flags_ui/resources/flags.ts. It should be
-// extracted into a tools/typescript/definitions/jstemplate.d.ts file, and
-// include that as part of build_webui()'s ts_definitions, instead of copying it
-// here.
-declare global {
-  class JsEvalContext {
-    constructor(data: any);
-  }
-
-  function jstProcess(context: JsEvalContext, template: HTMLElement): void;
-  function jstGetTemplate(templateName: string): HTMLElement;
-}
-
 // Methods to convert mojo values to strings or to objects with readable
 // toString values. Accessible to jstemplate html code.
 const stringifyMojo = {

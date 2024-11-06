@@ -5,5 +5,8 @@
 declare class JsEvalContext {
   constructor(data: any);
 }
+
 declare function jstProcess(
     context: JsEvalContext, template: HTMLElement): void;
+
+declare function jstGetTemplate(templateName: string): HTMLElement;
