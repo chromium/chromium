@@ -69,31 +69,9 @@
           }
         ]
       },
-      // Budget value zero.
-      {
-        "timestamp": "3",
-        "registration_request": {
-          "context_origin": "https://source.test",
-          "Attribution-Reporting-Eligible": "navigation-source"
-        },
-        "responses": [
-          {
-            "url": "https://reporter.test/register-source",
-            "response": {
-              "Attribution-Reporting-Info": "report-header-errors",
-              "Attribution-Reporting-Register-Source": {
-                "destination": "https://destination.test",
-                "named_budgets": {
-                  "biddable": 0
-                }
-              }
-            }
-          }
-        ]
-      },
       // Budget value above max.
       {
-        "timestamp": "4",
+        "timestamp": "3",
         "registration_request": {
           "context_origin": "https://source.test",
           "Attribution-Reporting-Eligible": "navigation-source"
@@ -115,7 +93,7 @@
       },
       // Budget value not an integer.
       {
-        "timestamp": "5",
+        "timestamp": "4",
         "registration_request": {
           "context_origin": "https://source.test",
           "Attribution-Reporting-Eligible": "navigation-source"
@@ -137,7 +115,7 @@
       },
       // Budget key length above max.
       {
-        "timestamp": "6",
+        "timestamp": "5",
         "registration_request": {
           "context_origin": "https://source.test",
           "Attribution-Reporting-Eligible": "navigation-source"
@@ -159,7 +137,7 @@
       },
       // Budgets too many keys.
       {
-        "timestamp": "7",
+        "timestamp": "6",
         "registration_request": {
           "context_origin": "https://source.test",
           "Attribution-Reporting-Eligible": "navigation-source"
@@ -307,23 +285,11 @@
          "body": {
             "context_site": "https://source.test",
             "header": "Attribution-Reporting-Register-Source",
-            "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":{\"biddable\":0}}"
-         },
-         "type": "header-parsing-error"
-       } ],
-       "report_time": "3",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
-      },
-      {
-       "payload": [ {
-         "body": {
-            "context_site": "https://source.test",
-            "header": "Attribution-Reporting-Register-Source",
             "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":{\"biddable\":65537}}"
           },
          "type": "header-parsing-error"
        } ],
-       "report_time": "4",
+       "report_time": "3",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
@@ -335,7 +301,7 @@
           },
          "type": "header-parsing-error"
        } ],
-       "report_time": "5",
+       "report_time": "4",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
@@ -347,7 +313,7 @@
           },
          "type": "header-parsing-error"
        } ],
-       "report_time": "6",
+       "report_time": "5",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
@@ -359,7 +325,7 @@
           },
          "type": "header-parsing-error"
        } ],
-       "report_time": "7",
+       "report_time": "6",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {

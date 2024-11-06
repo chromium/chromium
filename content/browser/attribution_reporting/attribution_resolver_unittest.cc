@@ -5413,7 +5413,7 @@ TEST_F(AttributionResolverTest, MaxAggregatableBudgetPerNamedBudgetPerSource) {
           .GetBuilder()
           .SetAggregatableNamedBudgetDefs(
               *attribution_reporting::AggregatableNamedBudgetDefs::
-                  FromBudgetMap({{"a", 5}, {"b", 5}}))
+                  FromBudgetMap({{"a", 5}, {"b", 5}, {"c", 0}}))
           .Build());
 
   EXPECT_THAT(
@@ -5467,6 +5467,17 @@ TEST_F(AttributionResolverTest, MaxAggregatableBudgetPerNamedBudgetPerSource) {
               .SetAggregatableNamedBudgetCandidates(
                   {attribution_reporting::AggregatableNamedBudgetCandidate(
                       "c", attribution_reporting::FilterPair())})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kInsufficientNamedBudget));
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{5})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      "d", attribution_reporting::FilterPair())})
               .Build()),
       CreateReportAggregatableStatusIs(
           AttributionTrigger::AggregatableResult::kSuccess));
