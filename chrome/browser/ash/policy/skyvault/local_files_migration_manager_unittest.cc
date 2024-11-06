@@ -267,6 +267,7 @@ TEST_F(LocalFilesMigrationManagerTest, RetriesIfAllowed) {
   LocalFilesMigrationManager manager(profile());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
   ASSERT_TRUE(run_future.WaitAndClear());
 
@@ -304,6 +305,7 @@ TEST_F(LocalFilesMigrationManagerTest, DoesNotRetryWhenFatal) {
   LocalFilesMigrationManager manager(profile());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
+  manager.SetSkipEmptyCheckForTesting(/*skip=*/true);
   manager.Initialize();
   ASSERT_TRUE(run_future.Wait());
 
