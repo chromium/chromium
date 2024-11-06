@@ -6,10 +6,10 @@
 
 namespace ash {
 
-MockPickerSearchResultsViewDelegate::~MockPickerSearchResultsViewDelegate() =
-    default;
+MockQuickInsertSearchResultsViewDelegate::
+    ~MockQuickInsertSearchResultsViewDelegate() = default;
 
-MockPickerSearchResultsViewDelegate::MockPickerSearchResultsViewDelegate() =
-    default;
+MockQuickInsertSearchResultsViewDelegate::
+    MockQuickInsertSearchResultsViewDelegate() = default;
 
 }  // namespace ash

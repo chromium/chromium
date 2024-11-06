@@ -50,7 +50,7 @@ class PickerMainContainerView;
 class QuickInsertSearchFieldView;
 class PickerPageView;
 class QuickInsertSearchResultsSection;
-class PickerSearchResultsView;
+class QuickInsertSearchResultsView;
 class PickerTraversableItemContainer;
 class QuickInsertViewDelegate;
 class PickerZeroStateView;
@@ -59,7 +59,7 @@ class PickerZeroStateView;
 class ASH_EXPORT QuickInsertView
     : public views::WidgetDelegateView,
       public PickerZeroStateViewDelegate,
-      public PickerSearchResultsViewDelegate,
+      public QuickInsertSearchResultsViewDelegate,
       public PickerEmojiBarViewDelegate,
       public PickerPseudoFocusHandler,
       public PickerPreviewBubbleController::Observer {
@@ -100,7 +100,7 @@ class ASH_EXPORT QuickInsertView
   void SetCapsLockDisplayed(bool displayed) override;
   PickerCapsLockPosition GetCapsLockPosition() override;
 
-  // PickerSearchResultsViewDelegate:
+  // QuickInsertSearchResultsViewDelegate:
   void SelectSearchResult(const QuickInsertSearchResult& result) override;
   void SelectMoreResults(QuickInsertSectionType type) override;
   QuickInsertActionType GetActionForResult(
@@ -138,10 +138,10 @@ class ASH_EXPORT QuickInsertView
   QuickInsertSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
   }
-  PickerSearchResultsView& search_results_view_for_testing() {
+  QuickInsertSearchResultsView& search_results_view_for_testing() {
     return *search_results_view_;
   }
-  PickerSearchResultsView& category_results_view_for_testing() {
+  QuickInsertSearchResultsView& category_results_view_for_testing() {
     return *category_results_view_;
   }
   PickerZeroStateView& zero_state_view_for_testing() {
@@ -263,8 +263,8 @@ class ASH_EXPORT QuickInsertView
   raw_ptr<PickerMainContainerView> main_container_view_ = nullptr;
   raw_ptr<QuickInsertSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
-  raw_ptr<PickerSearchResultsView> category_results_view_ = nullptr;
-  raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
+  raw_ptr<QuickInsertSearchResultsView> category_results_view_ = nullptr;
+  raw_ptr<QuickInsertSearchResultsView> search_results_view_ = nullptr;
 
   raw_ptr<PickerEmojiBarView> emoji_bar_view_ = nullptr;
 

@@ -17,8 +17,8 @@ namespace ash {
 enum class QuickInsertActionType;
 enum class QuickInsertSectionType;
 
-// Delegate for `PickerSearchResultsView`.
-class ASH_EXPORT PickerSearchResultsViewDelegate {
+// Delegate for `QuickInsertSearchResultsView`.
+class ASH_EXPORT QuickInsertSearchResultsViewDelegate {
  public:
   virtual void SelectSearchResult(const QuickInsertSearchResult& result) = 0;
 

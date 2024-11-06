@@ -814,9 +814,9 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       ash::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .BuildClientOwnsWidget();
-  ash::MockPickerSearchResultsViewDelegate mock_delegate;
-  auto* view =
-      widget->SetContentsView(std::make_unique<ash::PickerSearchResultsView>(
+  ash::MockQuickInsertSearchResultsViewDelegate mock_delegate;
+  auto* view = widget->SetContentsView(
+      std::make_unique<ash::QuickInsertSearchResultsView>(
           &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
@@ -835,9 +835,9 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
       ash::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .BuildClientOwnsWidget();
-  ash::MockPickerSearchResultsViewDelegate mock_delegate;
-  auto* view =
-      widget->SetContentsView(std::make_unique<ash::PickerSearchResultsView>(
+  ash::MockQuickInsertSearchResultsViewDelegate mock_delegate;
+  auto* view = widget->SetContentsView(
+      std::make_unique<ash::QuickInsertSearchResultsView>(
           &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
           /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
