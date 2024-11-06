@@ -20,6 +20,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "media/base/video_frame.h"
@@ -42,18 +43,23 @@ int g_next_buffer_id = 0;
 
 scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
     const gfx::Size& frame_size) {
+  auto* sii = aura::Env::GetInstance()
+                  ->context_factory()
+                  ->SharedMainThreadRasterContextProvider()
+                  ->SharedImageInterface();
+
   gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-      gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  return aura::Env::GetInstance()
-      ->context_factory()
-      ->SharedMainThreadRasterContextProvider()
-      ->SharedImageInterface()
-      ->CreateSharedImage(
-          {viz::SinglePlaneFormat::kBGRA_8888, frame_size, gfx::ColorSpace(),
-           shared_image_usage, "FakeCameraDevice"},
-          gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+
+  if (sii->GetCapabilities().supports_scanout_shared_images) {
+    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
+
+  return sii->CreateSharedImage(
+      {viz::SinglePlaneFormat::kBGRA_8888, frame_size, gfx::ColorSpace(),
+       shared_image_usage, "FakeCameraDevice"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 }
 
 SkRect GetCircleRect(const gfx::Point& center, int radius) {
