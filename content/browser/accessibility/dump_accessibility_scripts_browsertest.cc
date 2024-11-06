@@ -608,6 +608,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   Migration_RunTypedTest<kMacMethods>("accessibility-disclosure-level.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityColumnIndexRange) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-column-index-range.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityRowIndexRange) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-row-index-range.html");
+}
+
 // Parameterized attributes
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,

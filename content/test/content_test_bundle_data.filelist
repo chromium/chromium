@@ -5544,6 +5544,8 @@ data/accessibility/mac/description/aria-description-in-axcustomcontent-expected.
 data/accessibility/mac/description/aria-description-in-axcustomcontent.html
 data/accessibility/mac/methods/accessibility-column-header-ui-elements-expected.txt
 data/accessibility/mac/methods/accessibility-column-header-ui-elements.html
+data/accessibility/mac/methods/accessibility-column-index-range-expected.txt
+data/accessibility/mac/methods/accessibility-column-index-range.html
 data/accessibility/mac/methods/accessibility-custom-content-expected-mac-before-11.txt
 data/accessibility/mac/methods/accessibility-custom-content-expected.txt
 data/accessibility/mac/methods/accessibility-custom-content.html
@@ -5561,6 +5563,8 @@ data/accessibility/mac/methods/accessibility-placeholder-value-expected.txt
 data/accessibility/mac/methods/accessibility-placeholder-value.html
 data/accessibility/mac/methods/accessibility-role-description-expected.txt
 data/accessibility/mac/methods/accessibility-role-description.html
+data/accessibility/mac/methods/accessibility-row-index-range-expected.txt
+data/accessibility/mac/methods/accessibility-row-index-range.html
 data/accessibility/mac/methods/accessibility-rows-expected.txt
 data/accessibility/mac/methods/accessibility-rows.html
 data/accessibility/mac/methods/accessibility-selected-expected.txt

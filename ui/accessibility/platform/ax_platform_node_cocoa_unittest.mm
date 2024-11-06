@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
+#include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
 namespace {
 
@@ -35,6 +36,13 @@ class AXPlatformNodeCocoaTest
     } else {
       features_.InitAndDisableFeature(features::kMacAccessibilityAPIMigration);
     }
+  }
+
+  AXPlatformNodeCocoa* GetCocoaNode(const AXNodeID id) const {
+    TestAXNodeWrapper* wrapper =
+        TestAXNodeWrapper::GetOrCreate(GetTree(), GetNode(id));
+    return [[AXPlatformNodeCocoa alloc]
+        initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
   }
 
  private:
@@ -118,4 +126,35 @@ TEST_P(AXPlatformNodeCocoaTestNewAPI,
         isAttributeAvailableThroughNewAccessibilityAPI:attributeName]);
   }
 }
+
+// accessibilityColumnIndexRange on a table cell.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityColumnIndexRange) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* cell = GetCocoaNode(3);
+  NSRange range = [cell accessibilityColumnIndexRange];
+  EXPECT_EQ(range.location, 0UL);  // Column index should start at 0
+  EXPECT_EQ(range.length, 1UL);    // Only one column in this simple setup
+}
+
+// accessibilityRowIndexRange on a table cell.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowIndexRange) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* cell = GetCocoaNode(3);
+  NSRange range = [cell accessibilityRowIndexRange];
+  EXPECT_EQ(range.location, 0UL);  // Row index should start at 0
+  EXPECT_EQ(range.length, 1UL);    // Only one row in this simple setup
+}
+
 }  // namespace ui

@@ -654,6 +654,7 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSValue*)columnIndexRange {
+  // Note: keep in sync with accessibilityColumnIndexRange.
   if (![self instanceActive])
     return nil;
 
@@ -1186,6 +1187,7 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSValue*)rowIndexRange {
+  // Note: keep in sync with accessibilityRowIndexRange.
   if (![self instanceActive])
     return nil;
 
