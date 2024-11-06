@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/version.gni")
 
 declare_args() {
@@ -13,8 +11,7 @@ declare_args() {
 
   # Should Dawn support be compiled to back the WebGPU implementation?
   # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
-  use_dawn = is_apple || is_win || is_chromeos_ash ||
-             (is_linux && !is_castos) || is_chromeos_lacros ||
+  use_dawn = is_apple || is_win || is_chromeos || (is_linux && !is_castos) ||
              (is_android && target_cpu != "x86" && target_cpu != "x64")
 
   # Should Dawn test binaries (unittests, end2end_tests, perf_tests) be built?
@@ -26,8 +23,7 @@ declare_args() {
 
 declare_args() {
   enable_swiftshader =
-      (is_win || is_linux || is_chromeos || is_mac || is_chromeos_ash ||
-       is_fuchsia) &&
+      (is_win || is_linux || is_chromeos || is_mac || is_fuchsia) &&
       (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm" ||
        target_cpu == "arm64" || target_cpu == "mipsel" ||
        target_cpu == "mips64el" || target_cpu == "riscv64")
