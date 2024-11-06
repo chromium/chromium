@@ -85,10 +85,10 @@ MATCHER_P(LastElement, matcher, "") {
 }
 
 using MockSearchResultsCallback =
-    ::testing::MockFunction<PickerViewDelegate::SearchResultsCallback>;
+    ::testing::MockFunction<QuickInsertViewDelegate::SearchResultsCallback>;
 
-using MockEmojiSearchResultsCallback =
-    ::testing::MockFunction<PickerViewDelegate::EmojiSearchResultsCallback>;
+using MockEmojiSearchResultsCallback = ::testing::MockFunction<
+    QuickInsertViewDelegate::EmojiSearchResultsCallback>;
 
 class QuickInsertSearchControllerTest : public testing::Test {
  protected:

@@ -18,7 +18,7 @@ class Rect;
 namespace ash {
 
 enum class PickerPositionType;
-class PickerViewDelegate;
+class QuickInsertViewDelegate;
 
 class ASH_EXPORT QuickInsertWidget : public views::Widget {
  public:
@@ -33,7 +33,7 @@ class ASH_EXPORT QuickInsertWidget : public views::Widget {
   // click, then it should be the timestamp of the click. By default, the
   // timestamp is the time this function is called.
   static views::UniqueWidgetPtr Create(
-      PickerViewDelegate* delegate,
+      QuickInsertViewDelegate* delegate,
       const gfx::Rect& anchor_bounds,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
@@ -41,7 +41,7 @@ class ASH_EXPORT QuickInsertWidget : public views::Widget {
   // itself at the center of the display containing `anchor_bounds`.
   // `anchor_bounds` is in screen coordinates.
   static views::UniqueWidgetPtr CreateCentered(
-      PickerViewDelegate* delegate,
+      QuickInsertViewDelegate* delegate,
       const gfx::Rect& anchor_bounds,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
@@ -49,7 +49,7 @@ class ASH_EXPORT QuickInsertWidget : public views::Widget {
   void OnNativeBlur() override;
 
  private:
-  explicit QuickInsertWidget(PickerViewDelegate* delegate,
+  explicit QuickInsertWidget(QuickInsertViewDelegate* delegate,
                              const gfx::Rect& anchor_bounds,
                              PickerPositionType position_type,
                              base::TimeTicks trigger_event_timestamp);
@@ -57,7 +57,7 @@ class ASH_EXPORT QuickInsertWidget : public views::Widget {
   // Used to close the Picker widget when the user clicks outside of it.
   PickerBubbleEventFilter bubble_event_filter_;
 
-  raw_ptr<PickerViewDelegate> delegate_;
+  raw_ptr<QuickInsertViewDelegate> delegate_;
 };
 
 }  // namespace ash

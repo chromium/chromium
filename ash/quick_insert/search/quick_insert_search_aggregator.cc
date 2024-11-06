@@ -171,7 +171,7 @@ void DeduplicateDriveFilesFromLinks(std::vector<QuickInsertSearchResult>& files,
 
 QuickInsertSearchAggregator::QuickInsertSearchAggregator(
     base::TimeDelta burn_in_period,
-    PickerViewDelegate::SearchResultsCallback callback) {
+    QuickInsertViewDelegate::SearchResultsCallback callback) {
   current_callback_ = std::move(callback);
   CHECK(!current_callback_.is_null());
 

@@ -50,14 +50,14 @@ class ASH_EXPORT PickerSearchController {
                    base::span<const QuickInsertCategory> available_categories,
                    bool caps_lock_state_to_search,
                    bool search_case_transforms,
-                   PickerViewDelegate::SearchResultsCallback callback);
+                   QuickInsertViewDelegate::SearchResultsCallback callback);
 
   void StopSearch();
 
   void StartEmojiSearch(
       PrefService* prefs,
       std::u16string_view query,
-      PickerViewDelegate::EmojiSearchResultsCallback callback);
+      QuickInsertViewDelegate::EmojiSearchResultsCallback callback);
 
   // Gets the emoji name for the given emoji / emoticon / symbol.
   // Used for getting emoji tooltips for zero state emoji.

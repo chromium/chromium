@@ -38,7 +38,7 @@ using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 
 using MockSearchResultsCallback =
-    ::testing::MockFunction<PickerViewDelegate::SearchResultsCallback>;
+    ::testing::MockFunction<QuickInsertViewDelegate::SearchResultsCallback>;
 
 constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
 

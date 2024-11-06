@@ -334,7 +334,7 @@ TEST_F(QuickInsertControllerTest,
             controller().widget_for_testing()->GetNativeWindow());
   EXPECT_EQ(focus_controller->GetFocusedWindow(),
             controller().widget_for_testing()->GetNativeWindow());
-  auto* view = views::AsViewClass<PickerView>(
+  auto* view = views::AsViewClass<QuickInsertView>(
       controller().widget_for_testing()->widget_delegate()->GetContentsView());
   ASSERT_NE(view, nullptr);
   EXPECT_TRUE(
@@ -379,7 +379,7 @@ TEST_F(QuickInsertControllerTest,
             controller().widget_for_testing()->GetNativeWindow());
   EXPECT_EQ(focus_controller->GetFocusedWindow(),
             controller().widget_for_testing()->GetNativeWindow());
-  auto* view = views::AsViewClass<PickerView>(
+  auto* view = views::AsViewClass<QuickInsertView>(
       controller().widget_for_testing()->widget_delegate()->GetContentsView());
   ASSERT_NE(view, nullptr);
   EXPECT_TRUE(
@@ -433,7 +433,7 @@ TEST_F(QuickInsertControllerTest,
   EXPECT_EQ(focus_controller->GetFocusedWindow(),
             controller().widget_for_testing()->GetNativeWindow());
   EXPECT_FALSE(textfield->HasFocus());
-  auto* view = views::AsViewClass<PickerView>(
+  auto* view = views::AsViewClass<QuickInsertView>(
       controller().widget_for_testing()->widget_delegate()->GetContentsView());
   ASSERT_NE(view, nullptr);
   EXPECT_TRUE(

@@ -70,7 +70,7 @@ gfx::Size PickerMainContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int preferred_height =
       views::View::CalculatePreferredSize(available_size).height();
-  return gfx::Size(kPickerViewWidth,
+  return gfx::Size(kQuickInsertViewWidth,
                    std::min(preferred_height, kMainContainerMaxHeight));
 }
 

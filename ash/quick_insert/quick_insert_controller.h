@@ -62,7 +62,7 @@ class PickerPasteRequest;
 class PickerActionOnNextFocusRequest;
 
 // Controls a Picker widget.
-class ASH_EXPORT QuickInsertController : public PickerViewDelegate,
+class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
                                          public views::ViewObserver,
                                          public PickerAssetFetcherImplDelegate {
  public:
@@ -115,7 +115,7 @@ class ASH_EXPORT QuickInsertController : public PickerViewDelegate,
     return caps_lock_bubble_controller_;
   }
 
-  // PickerViewDelegate:
+  // QuickInsertViewDelegate:
   std::vector<QuickInsertCategory> GetAvailableCategories() override;
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void GetResultsForCategory(QuickInsertCategory category,
