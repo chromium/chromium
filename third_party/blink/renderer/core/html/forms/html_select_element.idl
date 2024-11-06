@@ -61,5 +61,5 @@
     // https://html.spec.whatwg.org/multipage/input.html#dom-select-showpicker
     [RaisesException, RuntimeEnabled=HTMLSelectElementShowPicker, MeasureAs=ShowPickerSelect] void showPicker();
 
-    [RuntimeEnabled=CustomizableSelect] attribute HTMLSelectedOptionElement? selectedOptionElement;
+    [RuntimeEnabled=SelectedoptionelementAttribute] attribute HTMLSelectedOptionElement? selectedOptionElement;
 };
