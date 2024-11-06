@@ -1269,6 +1269,11 @@ bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
   out_gainmap_info.fBaseImageType = base_is_hdr
                                         ? SkGainmapInfo::BaseImageType::kHDR
                                         : SkGainmapInfo::BaseImageType::kSDR;
+  if (!gain_map.useBaseColorSpace) {
+    // Try to use the alternate image's color space.
+    out_gainmap_info.fGainmapMathColorSpace =
+        GetAltImageColorSpace(*decoder_->image);
+  }
   for (int i = 0; i < 3; ++i) {
     if (gain_map.gainMapMin[i].d == 0 || gain_map.gainMapMax[i].d == 0 ||
         gain_map.gainMapGamma[i].d == 0 || gain_map.baseOffset[i].d == 0 ||
@@ -1299,14 +1304,7 @@ bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
         base_is_hdr ? alternate_offset : base_offset;
     out_gainmap_info.fEpsilonHdr[i] =
         base_is_hdr ? base_offset : alternate_offset;
-
-    if (!gain_map.useBaseColorSpace) {
-      // Try to use the alternate image's color space.
-      out_gainmap_info.fGainmapMathColorSpace =
-          GetAltImageColorSpace(*decoder_->image);
-    }
   }
-
   out_gainmap_data = data_;
   return true;
 }
