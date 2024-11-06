@@ -345,6 +345,13 @@ struct AudioBuffer {
 };
 
 // See media/base/video_frame_metadata.h for a description of fields.
+enum EffectState {
+  kUnknown = 0,
+  kDisabled = 1,
+  kEnabled = 2
+};
+
+// See media/base/video_frame_metadata.h for a description of fields.
 // TODO(crbug.com/40489779): Remove |has_*| values and use nullable types.
 struct VideoFrameMetadata {
   bool allow_overlay;
@@ -425,6 +432,8 @@ struct VideoFrameMetadata {
   mojo_base.mojom.TimeDelta? wallclock_frame_duration;
 
   uint64? frame_sequence;
+
+  EffectState background_blur;
 };
 
 // This defines a mojo transport format for media::VideoFrame.

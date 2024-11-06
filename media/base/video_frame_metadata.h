@@ -17,6 +17,11 @@
 
 namespace media {
 
+// A container for information about effects that might be applied to a frame.
+struct EffectInfo {
+  bool enabled;
+};
+
 // NOTE: When adding new VideoFrameMetadata fields, please ensure you update the
 // MergeMetadataFrom() method.
 struct MEDIA_EXPORT VideoFrameMetadata {
@@ -229,6 +234,9 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   //
   // Only set for video frames produced by the frame sink video capturer.
   std::optional<uint64_t> frame_sequence;
+
+  // Information about any background blur effect applied to the frame.
+  std::optional<EffectInfo> background_blur;
 };
 
 }  // namespace media

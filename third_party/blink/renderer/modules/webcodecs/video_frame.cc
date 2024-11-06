@@ -32,6 +32,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_background_blur.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
@@ -54,7 +55,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_frame_layout.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
@@ -1215,8 +1215,17 @@ VideoFrameMetadata* VideoFrame::metadata(ExceptionState& exception_state) {
     return nullptr;
   }
 
-  NOTIMPLEMENTED();
-  return VideoFrameMetadata::Create();
+  auto* metadata = VideoFrameMetadata::Create();
+
+  if (!local_frame->metadata().background_blur) {
+    return metadata;
+  }
+
+  auto* background_blur = BackgroundBlur::Create();
+  background_blur->setEnabled(local_frame->metadata().background_blur->enabled);
+  metadata->setBackgroundBlur(background_blur);
+
+  return metadata;
 }
 
 uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
