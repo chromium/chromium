@@ -504,6 +504,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kHasRicUnits, WebDXFeature::kRic},
           {WebFeature::kHasLhUnits, WebDXFeature::kLh},
           {WebFeature::kHasRlhUnits, WebDXFeature::kRlh},
+          {WebFeature::kCSSNesting, WebDXFeature::kNesting},
+          {WebFeature::kCSSSelectorNthChildOfSelector,
+           WebDXFeature::kNthChildOf},
       }};
 
   return *kMap;

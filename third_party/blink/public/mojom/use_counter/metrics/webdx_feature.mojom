@@ -218,6 +218,8 @@ enum WebDXFeature {
   kRic = 160,
   kLh = 161,
   kRlh = 162,
+  kNesting = 163,
+  kNthChildOf = 164,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

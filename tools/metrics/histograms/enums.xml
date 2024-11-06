@@ -33803,6 +33803,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="160" label="Ric"/>
   <int value="161" label="Lh"/>
   <int value="162" label="Rlh"/>
+  <int value="163" label="Nesting"/>
+  <int value="164" label="NthChildOf"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
