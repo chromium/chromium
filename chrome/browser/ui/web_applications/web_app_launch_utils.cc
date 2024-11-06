@@ -648,10 +648,8 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
     web_contents->UpdateWindowControlsOverlay(gfx::Rect());
   }
 
-  std::unique_ptr<tabs::TabModel> tab_model =
-      source_tabstrip->DetachTabAtForInsertion(found_tab_index.value());
   std::unique_ptr<content::WebContents> contents_move =
-      tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
+      source_tabstrip->DetachWebContentsAtForInsertion(found_tab_index.value());
   int location = target_browser->tab_strip_model()->count();
   int add_types = (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE);
   if (insert_as_first_tab) {

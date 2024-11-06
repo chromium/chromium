@@ -130,16 +130,6 @@ bool ShouldForgetOpenersForTransition(ui::PageTransition transition) {
                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 }
 
-tabs::TabInterface::DetachReason RemoveReasonToDetachReason(
-    TabStripModelChange::RemoveReason reason) {
-  switch (reason) {
-    case TabStripModelChange::RemoveReason::kDeleted:
-      return tabs::TabInterface::DetachReason::kDelete;
-    case TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip:
-      return tabs::TabInterface::DetachReason::kInsertIntoOtherWindow;
-  }
-}
-
 }  // namespace
 
 TabGroupModelFactory::TabGroupModelFactory() {
@@ -165,12 +155,14 @@ DetachedWebContents::DetachedWebContents(
     std::unique_ptr<tabs::TabModel> tab,
     content::WebContents* contents,
     TabStripModelChange::RemoveReason remove_reason,
+    tabs::TabInterface::DetachReason tab_detach_reason,
     std::optional<SessionID> id)
     : tab(std::move(tab)),
       contents(contents),
       index_before_any_removals(index_before_any_removals),
       index_at_time_of_removal(index_at_time_of_removal),
       remove_reason(remove_reason),
+      tab_detach_reason(tab_detach_reason),
       id(id) {}
 DetachedWebContents::~DetachedWebContents() = default;
 DetachedWebContents::DetachedWebContents(DetachedWebContents&&) = default;
@@ -347,20 +339,31 @@ std::unique_ptr<content::WebContents> TabStripModel::DiscardWebContentsAt(
 std::unique_ptr<tabs::TabModel> TabStripModel::DetachTabAtForInsertion(
     int index) {
   auto dwc = DetachWebContentsWithReasonAt(
-      index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip);
+      index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
+      tabs::TabInterface::DetachReason::kInsertIntoOtherWindow);
   return std::move(dwc->tab);
+}
+
+std::unique_ptr<content::WebContents>
+TabStripModel::DetachWebContentsAtForInsertion(int index) {
+  auto dwc = DetachWebContentsWithReasonAt(
+      index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
+      tabs::TabInterface::DetachReason::kDelete);
+  return tabs::TabModel::DestroyAndTakeWebContents(std::move(dwc->tab));
 }
 
 void TabStripModel::DetachAndDeleteWebContentsAt(int index) {
   // Drops the returned unique pointer.
   DetachWebContentsWithReasonAt(index,
-                                TabStripModelChange::RemoveReason::kDeleted);
+                                TabStripModelChange::RemoveReason::kDeleted,
+                                tabs::TabInterface::DetachReason::kDelete);
 }
 
 std::unique_ptr<DetachedWebContents>
 TabStripModel::DetachWebContentsWithReasonAt(
     int index,
-    TabStripModelChange::RemoveReason reason) {
+    TabStripModelChange::RemoveReason web_contents_remove_reason,
+    tabs::TabInterface::DetachReason tab_detach_reason) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   CHECK_NE(active_index(), kNoTab) << "Activate the TabStripModel by "
@@ -372,11 +375,13 @@ TabStripModel::DetachWebContentsWithReasonAt(
         ->WillEnterBackground(base::PassKey<TabStripModel>());
   }
   GetTabAtIndex(index)->WillDetach(base::PassKey<TabStripModel>(),
-                                   RemoveReasonToDetachReason(reason));
+                                   tab_detach_reason);
 
   DetachNotifications notifications(tab_model->contents(), selection_model_);
-  auto dwc = DetachWebContentsImpl(index, index,
-                                   /*create_historical_tab=*/false, reason);
+  auto dwc =
+      DetachWebContentsImpl(index, index,
+                            /*create_historical_tab=*/false,
+                            web_contents_remove_reason, tab_detach_reason);
   notifications.detached_web_contents.push_back(std::move(dwc));
   SendDetachWebContentsNotifications(&notifications);
   return std::move(notifications.detached_web_contents[0]);
@@ -395,7 +400,8 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
     int index_before_any_removals,
     int index_at_time_of_removal,
     bool create_historical_tab,
-    TabStripModelChange::RemoveReason reason) {
+    TabStripModelChange::RemoveReason web_contents_remove_reason,
+    tabs::TabInterface::DetachReason tab_detach_reason) {
   if (empty()) {
     return nullptr;
   }
@@ -416,7 +422,7 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
   if (create_historical_tab) {
     id = delegate_->CreateHistoricalTab(tab->contents());
   }
-  if (reason == TabStripModelChange::RemoveReason::kDeleted) {
+  if (tab_detach_reason == tabs::TabInterface::DetachReason::kDelete) {
     tab->DestroyTabFeatures();
   }
 
@@ -427,7 +433,7 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
   auto* contents = old_data->contents();
   return std::make_unique<DetachedWebContents>(
       index_before_any_removals, index_at_time_of_removal, std::move(old_data),
-      contents, reason, id);
+      contents, web_contents_remove_reason, tab_detach_reason, id);
 }
 
 void TabStripModel::SendDetachWebContentsNotifications(
@@ -449,9 +455,9 @@ void TabStripModel::SendDetachWebContentsNotifications(
   {
     TabStripModelChange::Remove remove;
     for (auto& dwc : notifications->detached_web_contents) {
-      remove.contents.emplace_back(dwc->contents,
-                                   dwc->index_before_any_removals,
-                                   dwc->remove_reason, dwc->id, dwc->tab.get());
+      remove.contents.emplace_back(
+          dwc->contents, dwc->index_before_any_removals, dwc->remove_reason,
+          dwc->tab_detach_reason, dwc->id, dwc->tab.get());
     }
 
     TabStripModelChange change(std::move(remove));
@@ -2233,7 +2239,8 @@ bool TabStripModel::CloseWebContentses(
         close_types & TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB;
     auto dwc = DetachWebContentsImpl(
         original_indices[i], current_index, create_historical_tab,
-        TabStripModelChange::RemoveReason::kDeleted);
+        TabStripModelChange::RemoveReason::kDeleted,
+        tabs::TabInterface::DetachReason::kDelete);
     detached_web_contents.push_back(std::move(dwc));
   }
 

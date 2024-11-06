@@ -1330,15 +1330,13 @@ void ConvertPopupToTabbedBrowser(Browser* browser) {
   // object first, before removing the existing object from the browser-list in
   // order to avoid incorrectly triggering a shutdown.
   Browser* b = Browser::Create(Browser::CreateParams(browser->profile(), true));
-  std::unique_ptr<tabs::TabModel> tab_model =
-      tab_strip->DetachTabAtForInsertion(tab_strip->active_index());
   // This method moves a WebContents from a non-normal browser window to a
   // normal browser window. We cannot move the Tab over directly since TabModel
   // enforces the requirement that it cannot move between window types.
   // https://crbug.com/334281979): Non-normal browser windows should not have a
   // tab to begin with.
   std::unique_ptr<content::WebContents> contents_move =
-      tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
+      tab_strip->DetachWebContentsAtForInsertion(tab_strip->active_index());
 
   // This method moves a WebContents from a non-normal browser window to a
   // normal browser window. We cannot move the Tab over directly since TabModel

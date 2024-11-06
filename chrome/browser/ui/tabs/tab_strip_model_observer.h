@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -75,6 +76,7 @@ class TabStripModelChange {
     RemovedTab(content::WebContents* contents,
                int index,
                RemoveReason remove_reason,
+               tabs::TabInterface::DetachReason tab_detach_reason,
                std::optional<SessionID> session_id,
                tabs::TabModel* tab);
     virtual ~RemovedTab();
@@ -85,6 +87,7 @@ class TabStripModelChange {
     raw_ptr<content::WebContents> contents;
     int index;
     RemoveReason remove_reason;
+    tabs::TabInterface::DetachReason tab_detach_reason;
     std::optional<SessionID> session_id;
     raw_ptr<tabs::TabModel> tab;
   };

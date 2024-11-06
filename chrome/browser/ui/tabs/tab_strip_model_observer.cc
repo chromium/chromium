@@ -14,14 +14,17 @@
 
 using content::WebContents;
 
-TabStripModelChange::RemovedTab::RemovedTab(content::WebContents* contents,
-                                            int index,
-                                            RemoveReason remove_reason,
-                                            std::optional<SessionID> session_id,
-                                            tabs::TabModel* tab)
+TabStripModelChange::RemovedTab::RemovedTab(
+    content::WebContents* contents,
+    int index,
+    RemoveReason remove_reason,
+    tabs::TabInterface::DetachReason tab_detach_reason,
+    std::optional<SessionID> session_id,
+    tabs::TabModel* tab)
     : contents(contents),
       index(index),
       remove_reason(remove_reason),
+      tab_detach_reason(tab_detach_reason),
       session_id(session_id),
       tab(tab) {}
 TabStripModelChange::RemovedTab::~RemovedTab() = default;

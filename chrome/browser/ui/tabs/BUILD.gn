@@ -346,6 +346,7 @@ if (!is_android) {
     ]
     public_deps = [
       "//base",
+      "//chrome/browser/ui/tabs:tabs_public",
       "//components/sessions:session_id",
       "//components/tab_groups",
       "//ui/base",
