@@ -5,13 +5,10 @@
 source_set("generic") {
   sources = [
     "default_browser_generic_promo_commands.h",
-    "default_browser_generic_promo_consumer.h",
     "default_browser_generic_promo_coordinator.h",
     "default_browser_generic_promo_coordinator.mm",
     "default_browser_generic_promo_mediator.h",
     "default_browser_generic_promo_mediator.mm",
-    "default_browser_generic_promo_view_controller.h",
-    "default_browser_generic_promo_view_controller.mm",
   ]
 
   deps = [
@@ -54,12 +51,14 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public:test_support",
     "//components/sync_device_info:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
     "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser_tests",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

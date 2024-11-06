@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -36,7 +37,7 @@ constexpr CGFloat kSpacing = 24;
 constexpr CGFloat kTabletCenterOffset = 40;
 }  // namespace
 
-@interface DefaultBrowserInstructionsView ()
+@interface DefaultBrowserInstructionsViewController ()
 
 // Custom animation view used in the full-screen promo.
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
@@ -55,25 +56,22 @@ NSString* const kDefaultBrowserInstructionsViewAnimationViewId =
 NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     @"DefaultBrowserInstructionsViewDarkAnimationViewId";
 
-@implementation DefaultBrowserInstructionsView
+@implementation DefaultBrowserInstructionsViewController
 
-- (instancetype)
-        initWithDismissButton:(BOOL)hasDismissButton
-             hasRemindMeLater:(BOOL)hasRemindMeLater
-                     hasSteps:(BOOL)hasSteps
-                actionHandler:(id<ConfirmationAlertActionHandler>)actionHandler
-    alertScreenViewController:(ConfirmationAlertViewController*)alertScreen
-                    titleText:(NSString*)titleText {
+- (instancetype)initWithDismissButton:(BOOL)hasDismissButton
+                     hasRemindMeLater:(BOOL)hasRemindMeLater
+                             hasSteps:(BOOL)hasSteps
+                        actionHandler:
+                            (id<ConfirmationAlertActionHandler>)actionHandler
+                            titleText:(NSString*)titleText {
   if ((self = [super init])) {
-    CHECK(alertScreen);
     [self addVideoSection];
     [self addInformationSectionWithDismissButton:hasDismissButton
                                 hasRemindMeLater:hasRemindMeLater
                                         hasSteps:hasSteps
                                    actionHandler:actionHandler
-                       alertScreenViewController:alertScreen
                                        titleText:titleText];
-    [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+    [self.view setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits =
@@ -132,8 +130,8 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   [self.animationViewWrapper setDictionaryTextProvider:textProvider];
   [self.animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
 
-  [self addSubview:self.animationViewWrapper.animationView];
-  [self addSubview:self.animationViewWrapperDarkMode.animationView];
+  [self.view addSubview:self.animationViewWrapper.animationView];
+  [self.view addSubview:self.animationViewWrapperDarkMode.animationView];
 
   // Layout the animation view to take up the top half of the view.
   self.animationViewWrapper.animationView
@@ -147,13 +145,13 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
   [NSLayoutConstraint activateConstraints:@[
     [self.animationViewWrapper.animationView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor],
+        constraintEqualToAnchor:self.view.leadingAnchor],
     [self.animationViewWrapper.animationView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
+        constraintEqualToAnchor:self.view.trailingAnchor],
     [self.animationViewWrapper.animationView.topAnchor
-        constraintEqualToAnchor:self.topAnchor],
+        constraintEqualToAnchor:self.view.topAnchor],
     [self.animationViewWrapper.animationView.bottomAnchor
-        constraintEqualToAnchor:self.centerYAnchor
+        constraintEqualToAnchor:self.view.centerYAnchor
                        constant:[self centerOffset]],
   ]];
 
@@ -202,9 +200,9 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                                  actionHandler:
                                      (id<ConfirmationAlertActionHandler>)
                                          actionHandler
-                     alertScreenViewController:
-                         (ConfirmationAlertViewController*)alertScreen
                                      titleText:(NSString*)titleText {
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc] init];
   alertScreen.actionHandler = actionHandler;
   if (!titleText) {
     alertScreen.titleString =
@@ -258,15 +256,20 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
         IDS_IOS_DEFAULT_BROWSER_PROMO_TERTIARY_BUTTON_TEXT);
   }
 
-  [self addSubview:alertScreen.view];
+  [self addChildViewController:alertScreen];
+  [self.view addSubview:alertScreen.view];
+  [alertScreen didMoveToParentViewController:self];
 
   // Layout the alert view to take up bottom half of the view.
   alertScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
-    [alertScreen.view.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-    [alertScreen.view.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-    [alertScreen.view.widthAnchor constraintEqualToAnchor:self.widthAnchor],
-    [alertScreen.view.topAnchor constraintEqualToAnchor:self.centerYAnchor
+    [alertScreen.view.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+    [alertScreen.view.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [alertScreen.view.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor],
+    [alertScreen.view.topAnchor constraintEqualToAnchor:self.view.centerYAnchor
                                                constant:[self centerOffset]],
   ]];
   self.alertScreen = alertScreen;
