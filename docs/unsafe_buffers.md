@@ -485,3 +485,32 @@ or other range types which prevents any chance of OOB memory
 access. For instance, replace `memcpy()`, `std::copy()` and
 `std::ranges::copy()` with `base::span::copy_from()`. And
 replace `memset()` with `std::ranges::fill()`.
+
+# Aligned memory
+
+An aligned heap allocation can be constructed into a `base::HeapArray` through
+the `base::AlignedUninit<T>(size, alignment)` function in
+`//base/memory/aligned_memory.h`. It will allocate space for `size` many `T`
+objects aligned to `alignment`, and return a `base::AlignedHeapArray<T>` which
+is a `base::HeapArray` with an appropriate deleter. Note that the returned
+memory is uninitialized.
+```cc
+base::AlignedHeapArray<float> array = base::AlignedUninit<float>(size, alignment);
+```
+
+Some containers are built on top of buffers of `char`s that are aligned for
+some other `T` in order to manage the lifetimes of objects in the buffer
+through in-place construction (`std::construct_at`) and destruction. While the
+memory is allocated and destroyed as `char*`, it is accessed as `T*`. The
+`base::AlignedUninitCharArray<T>(size, alignment)` function in
+`//base/memory/aligned_memory.h` handles this by returning both:
+- A `base::AlignedHeapArray<char>` that will not call destructors on anything in its
+  buffer.
+- A `base::span<T>` that points to all of the (not-yet-created) objects in the
+  `AlignedHeapArray`. This span can be used to construct `T` objects in place in the
+  buffer, and the caller is responsible for destroying them as well.
+```cc
+auto [a, s] = base::AlignedUninitCharArray<float>(size, alignment);
+base::AlignedHeapArray<char> array = std::move(a);
+base::span<float> span = s;
+```
