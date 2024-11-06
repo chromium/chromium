@@ -8799,7 +8799,7 @@ static_library("browser_generated_files") {
     public_deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
   }
 
-  if (chrome_root_store_cert_management_ui) {
+  if (chrome_root_store_cert_management_ui || enable_webui_certificate_viewer) {
     public_deps += [ "//chrome/browser/net:server_certificate_database_proto" ]
   }
 }
