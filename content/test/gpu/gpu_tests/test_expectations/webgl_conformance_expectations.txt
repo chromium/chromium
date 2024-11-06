@@ -490,7 +490,6 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 
 # flaky and worth retrying.
-crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/buffers/buffer-data-array-buffer-delete.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/misc/hint.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/misc/webgl-specific.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/build/build_033_to_040.html [ RetryOnFailure ]
@@ -575,7 +574,6 @@ crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] deqp/data/gles2/shaders/scopi
 
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/attribs/gl-vertexattribpointer.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/more/conformance/methods.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/more/conformance/quickCheckAPI-S_V.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/more/functions/bufferDataBadArgs.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/more/functions/texSubImage2D.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/reading/read-pixels-test.html [ RetryOnFailure ]
@@ -596,7 +594,6 @@ crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bit
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_image/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_image/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_image/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/image_data/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/exif-orientation.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/mipmap-fbo.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
@@ -757,7 +754,6 @@ crbug.com/40167870 [ android android-pixel-2 angle-opengles passthrough ] confor
 
 crbug.com/40167870 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1175226 [ android android-pixel-4 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/335857349 [ android android-pixel-4 no-passthrough ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 
 ## Pixel 6 ##
@@ -784,8 +780,6 @@ crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/render
 ## Misc failures ##
 
 
-# Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
-crbug.com/1276552 [ android-pixel-4 android-r passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 
 ## Samsung failures ##
