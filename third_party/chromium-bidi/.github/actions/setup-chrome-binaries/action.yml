@@ -1,0 +1,30 @@
+name: 'Install browser'
+description: 'Setups GitHub cache and installs browser if needed'
+inputs:
+  working-directory:
+    description: 'Set up working directory if not default'
+    required: false
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup cache for browser binaries
+      uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      with:
+        path: ~/.cache/chromium-bidi
+        key: ${{ runner.os }}-browser-binaries-${{ hashFiles('.browser') }}
+
+    - name: Install all chrome binaries if needed
+      shell: bash
+      run: echo ${{ inputs.working-directory }}
+
+    - name: Install all chrome binaries if needed
+      # Run in a custom working directory if required.
+      if: inputs.working-directory != 'false'
+      working-directory: ${{inputs.working-directory}}
+      shell: bash
+      run: node tools/install-browser.mjs --all
+    - name: Install all chrome binaries if needed
+      if: inputs.working-directory == 'false'
+      shell: bash
+      run: node tools/install-browser.mjs --all

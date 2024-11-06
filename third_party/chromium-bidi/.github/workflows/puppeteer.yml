@@ -67,11 +67,11 @@ jobs:
         working-directory: puppeteer
         run: |
           rm packages/puppeteer-core/node_modules/chromium-bidi -r
-      - name: Setup cache for browser binaries
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+      # Install chrome, chromedriver and headless shell is required to keep them cached.
+      - name: Install all chrome binaries if needed
+        uses: ./bidi/.github/actions/setup-chrome-binaries
         with:
-          path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-browsers-${{ hashFiles('bidi/.browser') }}
+          working-directory: bidi
       - name: Install pinned browser
         id: browser
         working-directory: bidi

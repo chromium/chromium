@@ -29,10 +29,10 @@ import {Browser, computeSystemExecutablePath} from '@puppeteer/browsers';
  * Headless Shell instead of the Chrome binary.
  * @return {string}
  */
-export function installAndGetChromePath() {
+export function installAndGetChromePath(isHeadlessShell = false) {
   // Old headless means "headless shell", which is implemented in a separate
   // binary: https://developer.chrome.com/blog/chrome-headless-shell.
-  const isHeadlessShell = process.env.HEADLESS === 'old';
+  isHeadlessShell = isHeadlessShell || process.env.HEADLESS === 'old';
 
   if (process.env.BROWSER_BIN) {
     return process.env.BROWSER_BIN;

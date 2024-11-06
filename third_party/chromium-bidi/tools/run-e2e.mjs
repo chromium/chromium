@@ -189,7 +189,7 @@ const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
   env: {
     ...process.env,
-    BROWSER_BIN: installAndGetChromePath(),
+    BROWSER_BIN: installAndGetChromePath(HEADLESS === 'old'),
     HEADLESS,
   },
 });

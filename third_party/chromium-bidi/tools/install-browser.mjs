@@ -18,19 +18,24 @@
  */
 
 /**
- * @fileoverview Installs a browser defined in `.browser` or corresponding
- * ChromeDriver using `@puppeteer/browsers` to the directory provided as the
- * first argument (default: $HOME/.cache/chromium-bidi).
+ * @fileoverview Installs Chrome binaries, ChromeDriver, Headless Shell or all
+ * of them with version defined in `.browser` using `@puppeteer/browsers` to the
+ * directory provided as the first argument or to the default of
+ * $HOME/.cache/chromium-bidi.
  *
- * If `--chromedriver` is set, the ChromeDriver is installed instead of a
- * browser.
+ * If `--chrome` is set, or no other flags is set, Chrome is installed.
+ *
+ * If `--chromedriver` is set, the ChromeDriver is installed.
  *
  * If `--chrome-headless-shell` is set, Headless Shell is installed.
  * https://developer.chrome.com/blog/chrome-headless-shell
  *
+ * If `--all` is set, Chrome, Chromedriver and Headless Shell is installed.
+ * Same as using `--chrome --chromedriver --chrome-headless-shell`.
+ *
  * If `--github` is set, the executable path is written to the
  * `executablePath` output param for GitHub actions. Otherwise, the executable
- * is written to stdout.
+ * is written to stdout. Can be used with at most one product argument.
  *
  * Examples:
  *  - `node tools/install-browser.mjs`
@@ -47,57 +52,85 @@ import {setOutput, setFailed} from '@actions/core';
 import {install, computeExecutablePath} from '@puppeteer/browsers';
 
 const GITHUB_SHELL_ARG = '--github';
+const ALL_ARG = '--all';
+const CHROME_ARG = '--chrome';
 const CHROME_DRIVER_ARG = '--chromedriver';
 const CHROME_HEADLESS_SHELL_ARG = '--chrome-headless-shell';
+const ARGUMENTS = [
+  ALL_ARG,
+  CHROME_ARG,
+  CHROME_DRIVER_ARG,
+  CHROME_HEADLESS_SHELL_ARG,
+  GITHUB_SHELL_ARG,
+];
 
 /**
  * Returns the browser name based on the command line arguments and `.browser`
  * content.
- * @return {'chrome'|'chromedriver'|'chrome-headless-shell'}
+ * @return {['chrome'|'chromedriver'|'chrome-headless-shell']}
  */
-function getProduct(browserSpec) {
-  if (process.argv.includes(CHROME_DRIVER_ARG)) {
-    return 'chromedriver';
+function getProducts() {
+  const result = [];
+  if (
+    process.argv.includes(CHROME_DRIVER_ARG) ||
+    process.argv.includes(ALL_ARG)
+  ) {
+    result.push('chromedriver');
   }
-  if (process.argv.includes(CHROME_HEADLESS_SHELL_ARG)) {
-    return 'chrome-headless-shell';
+  if (
+    process.argv.includes(CHROME_HEADLESS_SHELL_ARG) ||
+    process.argv.includes(ALL_ARG)
+  ) {
+    result.push('chrome-headless-shell');
   }
-  // Default `chrome`.
-  return browserSpec.split('@')[0];
+  if (
+    process.argv.includes(CHROME_ARG) ||
+    process.argv.includes(ALL_ARG) ||
+    result.length === 0
+  ) {
+    result.push('chrome');
+  }
+  return result;
 }
 
 try {
   const browserSpec = (await readFile('.browser', 'utf-8')).trim();
 
   let cacheDir = resolve(homedir(), '.cache', 'chromium-bidi');
-  if (
-    process.argv[2] &&
-    process.argv[2] !== GITHUB_SHELL_ARG &&
-    process.argv[2] !== CHROME_DRIVER_ARG &&
-    process.argv[2] !== CHROME_HEADLESS_SHELL_ARG
-  ) {
+  if (process.argv[2] && !ARGUMENTS.includes(process.argv[2])) {
     cacheDir = process.argv[2];
   }
 
   // See .browser for the format.
-  const product = getProduct(browserSpec);
+  const products = getProducts();
   const buildId = browserSpec.split('@')[1];
 
-  await install({
-    browser: product,
-    buildId,
-    cacheDir,
-  });
+  // Install all the requested binaries.
+  const paths = await Promise.all(
+    products.map(async (product) => {
+      await install({
+        browser: product,
+        buildId,
+        cacheDir,
+      });
+      return computeExecutablePath({
+        cacheDir,
+        browser: product,
+        buildId,
+      });
+    }),
+  );
 
-  const executablePath = computeExecutablePath({
-    cacheDir,
-    browser: product,
-    buildId,
-  });
+  console.log(paths.join('\n'));
   if (process.argv.includes(GITHUB_SHELL_ARG)) {
-    setOutput('executablePath', executablePath);
+    if (paths.length === 1) {
+      setOutput('executablePath', paths[0]);
+    } else {
+      setFailed(
+        `${GITHUB_SHELL_ARG} flag cannot be used for more then one product`,
+      );
+    }
   }
-  console.log(executablePath);
 } catch (err) {
   setFailed(`Failed to download the browser: ${err.message}`);
 }

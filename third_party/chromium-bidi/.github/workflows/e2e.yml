@@ -66,26 +66,9 @@ jobs:
       - uses: google/wireit@83d7f8bed70b7bcfc40f4b9f54f4b7485753991b # setup-github-actions-caching/v2.0.1
       - name: Install and build npm dependencies
         run: npm ci
-      - name: Setup cache for browser binaries
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        with:
-          path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}
       # Install chrome, chromedriver and headless shell is required to keep them cached.
-      - name: Install chrome
-        run: node tools/install-browser.mjs
-      - name: Install chromedriver
-        run: node tools/install-browser.mjs --chromedriver
-      - name: Install headless shell
-        run: node tools/install-browser.mjs --chrome-headless-shell
-      - name: Get chrome path
-        id: browser
-        run: |
-          if [[ ${{ matrix.head }} != 'old-headless' ]]; then
-            node tools/install-browser.mjs --github
-          else
-            node tools/install-browser.mjs --chrome-headless-shell --github
-          fi
+      - name: Install all chrome binaries if needed
+        uses: ./.github/actions/setup-chrome-binaries
       - name: Set up Python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
@@ -105,7 +88,6 @@ jobs:
           --this-chunk=${{ matrix.this_chunk }}
           --total-chunks=${{ matrix.total_chunks }}
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
@@ -116,7 +98,6 @@ jobs:
           --this-chunk=${{ matrix.this_chunk }}
           --total-chunks=${{ matrix.total_chunks }}
         env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Upload artifacts
         if: always()

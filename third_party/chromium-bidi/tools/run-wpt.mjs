@@ -72,11 +72,6 @@ const RUN_TESTS = process.env.RUN_TESTS || 'true';
 // Whether to update the WPT expectations after running the tests.
 const UPDATE_EXPECTATIONS = process.env.UPDATE_EXPECTATIONS || 'false';
 
-let BROWSER_BIN = process.env.BROWSER_BIN;
-if (RUN_TESTS === 'true' && !BROWSER_BIN) {
-  BROWSER_BIN = installAndGetChromePath();
-}
-
 // Whether to use Chromedriver with mapper.
 const CHROMEDRIVER = process.env.CHROMEDRIVER || 'true';
 
@@ -93,6 +88,14 @@ const FAIL_NO_TEST = process.env.FAIL_NO_TEST || 'true';
 
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
+
+// Headless shell is used in headless mapper tests.
+const IS_HEADLESS_SHELL = HEADLESS === 'true' && CHROMEDRIVER !== 'true';
+
+let BROWSER_BIN = process.env.BROWSER_BIN;
+if (RUN_TESTS === 'true' && !BROWSER_BIN) {
+  BROWSER_BIN = installAndGetChromePath(IS_HEADLESS_SHELL);
+}
 
 // A special name for the logs to remove overriding no
 // Don't provide extension`.log`
@@ -185,16 +188,15 @@ if (RUN_TESTS === 'true') {
   }
 
   if (HEADLESS === 'true') {
-    if (CHROMEDRIVER === 'true') {
-      // For chromedriver use new headless.
-      wptRunArgs.push('--binary-arg=--headless=new');
-    } else {
+    if (IS_HEADLESS_SHELL) {
       // TODO: switch to new headless.
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/949.
       // For nodejs mapper runner supports only old headless.
-      wptRunArgs.push('--binary-arg=--headless=old');
       wptRunArgs.push('--binary-arg=--hide-scrollbars');
       wptRunArgs.push('--binary-arg=--mute-audio');
+    } else {
+      // For chromedriver use new headless.
+      wptRunArgs.push('--binary-arg=--headless=new');
     }
   } else {
     // Pass `--no-headless` to the WPT runner to enable headful mode.
