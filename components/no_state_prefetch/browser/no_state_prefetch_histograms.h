@@ -36,10 +36,10 @@ class NoStatePrefetchHistograms {
       delete;
 
   // Return the string to use as a prefix for histograms depending on the origin
-  // of the prerender.
+  // of the prefetch.
   static std::string GetHistogramPrefix(Origin origin);
 
-  // Record a final status of a prerendered page in a histogram.
+  // Record a final status of a prefetched page in a histogram.
   void RecordFinalStatus(Origin origin, FinalStatus final_status) const;
 
  private:
