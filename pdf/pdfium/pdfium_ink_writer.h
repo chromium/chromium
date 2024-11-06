@@ -16,7 +16,7 @@ class Stroke;
 
 namespace chrome_pdf {
 
-// Writes `stroke` into `page` in `document`.
+// Writes `stroke` into `page` in `document` using the "V2" Ink format.
 //
 // Returns a handle to the page object if the operation is successful.  If the
 // operation fails, then both `document` and `page` are left unchanged.

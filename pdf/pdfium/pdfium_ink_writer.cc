@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
+#include "pdf/pdf_ink_constants.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
@@ -24,10 +25,6 @@
 namespace chrome_pdf {
 
 namespace {
-
-// TODO(crbug.com/353904284):  Choose real marker name that doesn't conflict
-// with other writers.
-constexpr char kInkAnnotationIdentifierKey[] = "ink-annot-id";
 
 // Wrapper around an `ink::ModeledShape` to iterate through all the outlines
 // that make up the shape.
@@ -196,7 +193,7 @@ FPDF_PAGEOBJECT WriteStrokeToPage(FPDF_DOCUMENT document,
 
   FPDF_PAGEOBJECT page_obj = path.get();
   FPDF_PAGEOBJECTMARK mark =
-      FPDFPageObj_AddMark(page_obj, kInkAnnotationIdentifierKey);
+      FPDFPageObj_AddMark(page_obj, kInkAnnotationIdentifierKeyV2);
   CHECK(mark);
 
   SetBrushPropertiesForPath(stroke.GetBrush(), page_obj);
