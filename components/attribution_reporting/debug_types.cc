@@ -44,6 +44,8 @@ using ::attribution_reporting::mojom::DebugDataType;
     "trigger-aggregate-attributions-per-source-destination-limit")            \
   X(kTriggerAggregateDeduplicated, "trigger-aggregate-deduplicated")          \
   X(kTriggerAggregateExcessiveReports, "trigger-aggregate-excessive-reports") \
+  X(kTriggerAggregateInsufficientNamedBudget,                                 \
+    "trigger-aggregate-insufficient-named-budget")                            \
   X(kTriggerAggregateInsufficientBudget,                                      \
     "trigger-aggregate-insufficient-budget")                                  \
   X(kTriggerAggregateNoContributions, "trigger-aggregate-no-contributions")   \

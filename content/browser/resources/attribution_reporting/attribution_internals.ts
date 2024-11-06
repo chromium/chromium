@@ -833,6 +833,8 @@ const aggregatableResultText: Readonly<Record<AggregatableResult, string>> = {
   [AggregatableResult.kProhibitedByBrowserPolicy]:
       commonResult.prohibitedByBrowserPolicy,
   [AggregatableResult.kExcessiveReports]: commonResult.excessiveReports,
+  [AggregatableResult.kInsufficientNamedBudget]:
+      'Failure: Insufficient budget with selected name',
 };
 
 const attributionSupportText: Readonly<Record<AttributionSupport, string>> = {

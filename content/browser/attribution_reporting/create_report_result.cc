@@ -170,6 +170,9 @@ AggregatableResult CreateReportResult::aggregatable_status() const {
           [](const InsufficientBudget&) {
             return AggregatableResult::kInsufficientBudget;
           },
+          [](const InsufficientNamedBudget&) {
+            return AggregatableResult::kInsufficientNamedBudget;
+          },
           [](const NoMatchingSourceFilterData&) {
             return AggregatableResult::kNoMatchingSourceFilterData;
           },

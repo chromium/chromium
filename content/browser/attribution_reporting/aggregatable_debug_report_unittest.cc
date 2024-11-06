@@ -679,6 +679,12 @@ TEST_P(AggregatableDebugReportTest, TriggerDebugReport_Aggregatable) {
           .has_matching_source = true,
       },
       {
+          .result = CreateReportResult::InsufficientNamedBudget(/*name=*/"a",
+                                                                /*budget=*/10),
+          .type = DebugDataType::kTriggerAggregateInsufficientNamedBudget,
+          .has_matching_source = true,
+      },
+      {
           .result = CreateReportResult::NoMatchingSourceFilterData(),
           .type = DebugDataType::kTriggerNoMatchingFilterData,
           .has_matching_source = true,

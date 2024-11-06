@@ -166,6 +166,8 @@ std::optional<DebugDataType> GetDebugType(AggregatableResult result) {
       return DebugDataType::kTriggerAggregateNoContributions;
     case AggregatableResult::kInsufficientBudget:
       return DebugDataType::kTriggerAggregateInsufficientBudget;
+    case AggregatableResult::kInsufficientNamedBudget:
+      return DebugDataType::kTriggerAggregateInsufficientNamedBudget;
     case AggregatableResult::kReportWindowPassed:
       return DebugDataType::kTriggerAggregateReportWindowPassed;
     case AggregatableResult::kExcessiveReports:

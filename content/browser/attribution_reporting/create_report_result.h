@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
+#include <utility>
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -96,6 +98,13 @@ class CONTENT_EXPORT CreateReportResult {
 
   struct InsufficientBudget {};
 
+  struct InsufficientNamedBudget {
+    std::string name;
+    int budget;
+    InsufficientNamedBudget(std::string name, int64_t budget)
+        : name(std::move(name)), budget(budget) {}
+  };
+
   using EventLevel = absl::variant<EventLevelSuccess,
                                    InternalError,
                                    NoCapacityForConversionDestination,
@@ -123,6 +132,7 @@ class CONTENT_EXPORT CreateReportResult {
                                      ExcessiveReportingOrigins,
                                      NoHistograms,
                                      InsufficientBudget,
+                                     InsufficientNamedBudget,
                                      NoMatchingSourceFilterData,
                                      NotRegistered,
                                      ProhibitedByBrowserPolicy,

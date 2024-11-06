@@ -5425,7 +5425,7 @@ TEST_F(AttributionResolverTest, MaxAggregatableBudgetPerNamedBudgetPerSource) {
                       "a", attribution_reporting::FilterPair())})
               .Build()),
       CreateReportAggregatableStatusIs(
-          AttributionTrigger::AggregatableResult::kInsufficientBudget));
+          AttributionTrigger::AggregatableResult::kInsufficientNamedBudget));
 
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(
@@ -5447,7 +5447,7 @@ TEST_F(AttributionResolverTest, MaxAggregatableBudgetPerNamedBudgetPerSource) {
                       "a", attribution_reporting::FilterPair())})
               .Build()),
       CreateReportAggregatableStatusIs(
-          AttributionTrigger::AggregatableResult::kInsufficientBudget));
+          AttributionTrigger::AggregatableResult::kInsufficientNamedBudget));
 
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(
@@ -5526,7 +5526,7 @@ TEST_F(AttributionResolverTest,
                                       /*negative=*/{}))})
               .Build()),
       CreateReportAggregatableStatusIs(
-          AttributionTrigger::AggregatableResult::kInsufficientBudget));
+          AttributionTrigger::AggregatableResult::kInsufficientNamedBudget));
 
   // First named budget ignored, second used.
   EXPECT_THAT(
@@ -5546,7 +5546,7 @@ TEST_F(AttributionResolverTest,
                                        /*negative=*/{}))})
               .Build()),
       CreateReportAggregatableStatusIs(
-          AttributionTrigger::AggregatableResult::kInsufficientBudget));
+          AttributionTrigger::AggregatableResult::kInsufficientNamedBudget));
 }
 
 }  // namespace content
