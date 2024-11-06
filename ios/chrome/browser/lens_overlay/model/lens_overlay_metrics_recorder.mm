@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/lens/lens_overlay_metrics.h"
+#import "components/lens/lens_overlay_page_content_mime_type.h"
 
 @implementation LensOverlayMetricsRecorder {
   /// Whether a lens request has been performed during this session.
@@ -122,7 +123,7 @@
   [self recordLensOverlayClosed];
 
   // Invocation metrics.
-  lens::RecordInvocation(_invocationSource);
+  lens::RecordInvocation(_invocationSource, lens::PageContentMimeType::kNone);
   lens::RecordInvocationResultedInSearch(_invocationSource,
                                          _searchPerformedInSession);
   // Dismissal metric.

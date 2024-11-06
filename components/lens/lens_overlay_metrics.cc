@@ -45,6 +45,18 @@ std::string FirstInteractionTypeToString(
   }
 }
 
+std::string DocumentTypeToString(lens::PageContentMimeType page_content_type) {
+  switch (page_content_type) {
+    case lens::PageContentMimeType::kPdf:
+      return "Pdf";
+    case lens::PageContentMimeType::kHtml:
+    case lens::PageContentMimeType::kPlainText:
+      return "Web";
+    default:
+      return "Unspecified";
+  }
+}
+
 void RecordPermissionRequestedToBeShown(
     bool shown,
     LensOverlayInvocationSource invocation_source) {
@@ -65,8 +77,15 @@ void RecordPermissionUserAction(LensPermissionUserAction user_action,
   base::UmaHistogramEnumeration(histogram_name, user_action);
 }
 
-void RecordInvocation(LensOverlayInvocationSource invocation_source) {
+void RecordInvocation(LensOverlayInvocationSource invocation_source,
+                      lens::PageContentMimeType page_content_type) {
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
+
+  // UMA Invocation sliced by document type.
+  const auto sliced_invoked_histogram_name =
+      "Lens.Overlay.ByDocumentType." + DocumentTypeToString(page_content_type) +
+      ".Invoked";
+  base::UmaHistogramBoolean(sliced_invoked_histogram_name, true);
 }
 
 void RecordDismissal(LensOverlayDismissalSource dismissal_source) {

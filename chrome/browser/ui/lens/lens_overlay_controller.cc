@@ -1677,11 +1677,12 @@ void LensOverlayController::UpdatePageContextualization(
 
   // If the PageContentMimeType is kNone we won't be able to contextualize the
   // page. We should notify the side panel so the ghost loader isn't shown. We
-  // don't need to update the overlay as this update only happens on navigation
-  // where the side panel will already be open.
-  UpdateGhostLoaderState(/*suppress_ghost_loader=*/content_type ==
-                             lens::PageContentMimeType::kNone,
-                         /*reset_loading_state=*/false);
+  // don't need to update the overlay as this update only happens on
+  // navigation where the side panel will already be open.
+  UpdateGhostLoaderState(
+      /*suppress_ghost_loader=*/content_type ==
+          lens::PageContentMimeType::kNone,
+      /*reset_loading_state=*/false);
 
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
       initialization_data_->page_content_bytes_,
@@ -2702,8 +2703,11 @@ void LensOverlayController::RecordTimeToFirstInteraction(
 
 void LensOverlayController::RecordEndOfSessionMetrics(
     lens::LensOverlayDismissalSource dismissal_source) {
-  // UMA invocation source.
-  lens::RecordInvocation(invocation_source_);
+  // UMA invocation.
+  auto page_content_type = initialization_data_
+                               ? initialization_data_->page_content_type_
+                               : lens::PageContentMimeType::kNone;
+  lens::RecordInvocation(invocation_source_, page_content_type);
 
   // UMA unsliced Dismissed.
   lens::RecordDismissal(dismissal_source);

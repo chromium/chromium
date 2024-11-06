@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"

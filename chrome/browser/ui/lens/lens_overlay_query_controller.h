@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
@@ -45,14 +46,6 @@ class VariationsClient;
 }  // namespace variations
 
 namespace lens {
-
-// The possible page content types for a contextual query.
-enum class PageContentMimeType {
-  kNone = 0,
-  kPdf = 1,
-  kHtml = 2,
-  kPlainText = 3,
-};
 
 // Callback type alias for the lens overlay full image response.
 using LensOverlayFullImageResponseCallback =

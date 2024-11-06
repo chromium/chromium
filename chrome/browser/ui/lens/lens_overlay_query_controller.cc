@@ -189,22 +189,22 @@ std::map<std::string, std::string> AddStartTimeQueryParam(
 
 std::map<std::string, std::string> AddVisualInputTypeQueryParam(
     std::map<std::string, std::string> additional_search_query_params,
-    PageContentMimeType content_type) {
+    lens::PageContentMimeType content_type) {
   // Default contextual visual input type.
   std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
   switch (content_type) {
-    case PageContentMimeType::kPdf:
+    case lens::PageContentMimeType::kPdf:
       if (lens::features::UsePdfVitParam()) {
         vitValue = kPdfVisualInputTypeQueryParameterValue;
       }
       break;
-    case PageContentMimeType::kHtml:
-    case PageContentMimeType::kPlainText:
+    case lens::PageContentMimeType::kHtml:
+    case lens::PageContentMimeType::kPlainText:
       if (lens::features::UseWebpageVitParam()) {
         vitValue = kWebpageVisualInputTypeQueryParameterValue;
       }
       break;
-    case PageContentMimeType::kNone:
+    case lens::PageContentMimeType::kNone:
       break;
   }
   additional_search_query_params.insert(
@@ -212,34 +212,34 @@ std::map<std::string, std::string> AddVisualInputTypeQueryParam(
   return additional_search_query_params;
 }
 
-std::string ContentTypeToString(PageContentMimeType content_type) {
+std::string ContentTypeToString(lens::PageContentMimeType content_type) {
   switch (content_type) {
-    case PageContentMimeType::kPdf:
+    case lens::PageContentMimeType::kPdf:
       return kPdfMimeType;
-    case PageContentMimeType::kHtml:
+    case lens::PageContentMimeType::kHtml:
       return kHtmlMimeType;
-    case PageContentMimeType::kPlainText:
+    case lens::PageContentMimeType::kPlainText:
       return kPlainTextMimeType;
-    case PageContentMimeType::kNone:
+    case lens::PageContentMimeType::kNone:
       return "";
   }
 }
 
 lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
-    PageContentMimeType content_type) {
+    lens::PageContentMimeType content_type) {
   switch (content_type) {
-    case PageContentMimeType::kPdf:
+    case lens::PageContentMimeType::kPdf:
       if (lens::features::UsePdfInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
       }
       break;
-    case PageContentMimeType::kHtml:
-    case PageContentMimeType::kPlainText:
+    case lens::PageContentMimeType::kHtml:
+    case lens::PageContentMimeType::kPlainText:
       if (lens::features::UseWebpageInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
       }
       break;
-    case PageContentMimeType::kNone:
+    case lens::PageContentMimeType::kNone:
       break;
   }
   return lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY;
@@ -306,7 +306,7 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
-    PageContentMimeType underlying_content_type,
+    lens::PageContentMimeType underlying_content_type,
     float ui_scale_factor) {
   original_screenshot_ = screenshot;
   page_url_ = page_url;

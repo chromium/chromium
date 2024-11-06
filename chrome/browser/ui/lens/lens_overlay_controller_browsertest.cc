@@ -72,6 +72,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/permissions/test/permission_request_observer.h"
@@ -3360,6 +3361,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                     /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByInvocationSource.AppMenu.SessionDuration",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByDocumentType.Unspecified.Invoked",
       /*expected_count=*/1);
   entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_SessionEnd::kEntryName);

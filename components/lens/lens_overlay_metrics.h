@@ -13,6 +13,7 @@
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_new_tab_source.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -21,6 +22,9 @@ namespace lens {
 // Returns the string representation of the invocation source.
 std::string InvocationSourceToString(
     LensOverlayInvocationSource invocation_source);
+
+// Returns the string representation of the page content type.
+std::string DocumentTypeToString(lens::PageContentMimeType page_content_type);
 
 // Recorded when lens permission is requested to be shown. Both sliced and
 // unsliced.
@@ -33,7 +37,8 @@ void RecordPermissionUserAction(LensPermissionUserAction user_action,
                                 LensOverlayInvocationSource invocation_source);
 
 // Records lens overlay invocation.
-void RecordInvocation(LensOverlayInvocationSource invocation_source);
+void RecordInvocation(LensOverlayInvocationSource invocation_source,
+                      lens::PageContentMimeType page_content_type);
 
 // Records lens overlay dismissal.
 void RecordDismissal(LensOverlayDismissalSource dismissal_source);

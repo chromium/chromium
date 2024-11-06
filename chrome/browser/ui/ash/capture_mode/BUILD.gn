@@ -42,6 +42,7 @@ static_library("capture_mode") {
     "//chromeos/ash/experiences/screenshot_area",
     "//chromeos/ash/services/recording/public/mojom",
     "//components/drive",
+    "//components/lens",
     "//content/public/browser",
     "//services/screen_ai/public/mojom",
     "//services/video_capture/public/mojom",
