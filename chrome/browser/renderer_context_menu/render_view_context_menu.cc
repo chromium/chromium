@@ -3050,11 +3050,13 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 #endif
 
     case IDC_SPELLCHECK_MENU:
-    case IDC_CONTENT_CONTEXT_OPENLINKWITH:
     case IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS:
     case IDC_CONTENT_CONTEXT_GENERATEPASSWORD:
     case IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS:
       return true;
+
+    case IDC_CONTENT_CONTEXT_OPENLINKWITH:
+      return IsAllowedByUntrustedNetworkStatus();
 
     case IDC_ROUTE_MEDIA:
       return IsRouteMediaEnabled();
