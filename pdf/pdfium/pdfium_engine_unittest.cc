@@ -1990,33 +1990,15 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-class AnnotationModeTestClient : public MockTestClient {
- public:
-  AnnotationModeTestClient() = default;
-  AnnotationModeTestClient(const AnnotationModeTestClient&) = delete;
-  AnnotationModeTestClient& operator=(const AnnotationModeTestClient&) = delete;
-  ~AnnotationModeTestClient() override = default;
-
-  // PDFiumEngineClient overrides:
-  bool IsInAnnotationMode() const override { return annotation_mode_; }
-
-  void set_annotation_mode(bool annotation_mode) {
-    annotation_mode_ = annotation_mode;
-  }
-
- private:
-  bool annotation_mode_ = false;
-};
-
 using PDFiumEngineAnnotationModeTest = PDFiumTestBase;
 
 TEST_P(PDFiumEngineAnnotationModeTest, KillFormFocus) {
-  NiceMock<AnnotationModeTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
 
-  client.set_annotation_mode(true);
+  EXPECT_CALL(client, IsInAnnotationMode()).WillOnce(Return(true));
 
   // Attempting to focus in annotation mode should once more trigger a killing
   // of form focus.
@@ -2026,7 +2008,7 @@ TEST_P(PDFiumEngineAnnotationModeTest, KillFormFocus) {
 }
 
 TEST_P(PDFiumEngineAnnotationModeTest, CannotSelectText) {
-  NiceMock<AnnotationModeTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -2036,7 +2018,7 @@ TEST_P(PDFiumEngineAnnotationModeTest, CannotSelectText) {
   // `SelectionChangeInvalidator`.
   engine->PluginSizeUpdated({500, 500});
 
-  client.set_annotation_mode(true);
+  EXPECT_CALL(client, IsInAnnotationMode()).WillOnce(Return(true));
 
   // Attempting to select text should do nothing in annotation mode.
   engine->SelectAll();
