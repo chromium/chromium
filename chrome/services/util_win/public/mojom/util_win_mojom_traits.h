@@ -184,21 +184,6 @@ struct StructTraits<chrome::mojom::TpmIdentifierDataView,
     return input.tpm_specific_version();
   }
 
-  static uint32_t manufacturer_version_hash(
-      const metrics::SystemProfileProto_TpmIdentifier& input) {
-    return input.manufacturer_version_hash();
-  }
-
-  static uint32_t manufacturer_version_info_hash(
-      const metrics::SystemProfileProto_TpmIdentifier& input) {
-    return input.manufacturer_version_info_hash();
-  }
-
-  static uint32_t tpm_specific_version_hash(
-      const metrics::SystemProfileProto_TpmIdentifier& input) {
-    return input.tpm_specific_version_hash();
-  }
-
   static bool Read(chrome::mojom::TpmIdentifierDataView data,
                    metrics::SystemProfileProto_TpmIdentifier* output);
 };

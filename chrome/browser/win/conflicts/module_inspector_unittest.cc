@@ -55,8 +55,7 @@ class CrashingUtilWinImpl : public chrome::mojom::UtilWin {
   }
   void GetAntiVirusProducts(bool report_full_names,
                             GetAntiVirusProductsCallback callback) override {}
-  void GetTpmIdentifier(bool report_full_names,
-                        GetTpmIdentifierCallback callback) override {}
+  void GetTpmIdentifier(GetTpmIdentifierCallback callback) override {}
 
   mojo::Receiver<chrome::mojom::UtilWin> receiver_;
 };

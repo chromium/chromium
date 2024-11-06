@@ -346,7 +346,6 @@ void UtilWinImpl::GetAntiVirusProducts(bool report_full_names,
   std::move(callback).Run(::GetAntiVirusProducts(report_full_names));
 }
 
-void UtilWinImpl::GetTpmIdentifier(bool report_full_names,
-                                   GetTpmIdentifierCallback callback) {
-  std::move(callback).Run(::GetTpmIdentifier(report_full_names));
+void UtilWinImpl::GetTpmIdentifier(GetTpmIdentifierCallback callback) {
+  std::move(callback).Run(::GetTpmIdentifier());
 }

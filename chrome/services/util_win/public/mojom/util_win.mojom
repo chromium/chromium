@@ -111,15 +111,6 @@ struct TpmIdentifier {
   // This might not be recorded, see ShouldReportFullNames() in
   // chrome/browser/metrics/tpm_metrics_provider_win.cc.
   string? tpm_specific_version;
-
-  // Hash value of the manufacturer_version value.
-  uint32 manufacturer_version_hash;
-
-  // Hash value of the manufacturer_version_info value.
-  uint32 manufacturer_version_info_hash;
-
-  // Hash value of the tpm_specific_version value.
-  uint32 tpm_specific_version_hash;
 };
 
 struct ClsId {
@@ -226,9 +217,7 @@ interface UtilWin {
       => (array<AntiVirusProduct> av_products);
 
   // Returns TPM identifying information on the user's machine.
-  // `report_full_names` controls whether or not the full identifying
-  // fields are included or just the hashes.
-  GetTpmIdentifier(bool report_full_names) => (TpmIdentifier? tpm_identifier);
+  GetTpmIdentifier() => (TpmIdentifier? tpm_identifier);
 };
 
 // Hosted by a utility service in kNoSandbox (with CET allowed). Called on

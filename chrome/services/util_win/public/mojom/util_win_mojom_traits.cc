@@ -328,20 +328,6 @@ bool StructTraits<chrome::mojom::TpmIdentifierDataView,
     }
   }
 
-  // If the hashes are 0, they have not been set and wont be reported
-  if (input.manufacturer_version_hash() != 0u) {
-    output->set_manufacturer_version_hash(input.manufacturer_version_hash());
-  }
-
-  if (input.manufacturer_version_info_hash() != 0u) {
-    output->set_manufacturer_version_info_hash(
-        input.manufacturer_version_info_hash());
-  }
-
-  if (input.tpm_specific_version_hash() != 0u) {
-    output->set_tpm_specific_version_hash(input.tpm_specific_version_hash());
-  }
-
   return true;
 }
 
