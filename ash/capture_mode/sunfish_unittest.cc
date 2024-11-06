@@ -1068,6 +1068,21 @@ TEST_F(SunfishTest, NoCrashOnUpdateCaptureUisOpacity) {
   EXPECT_TRUE(controller->search_results_panel_widget());
 }
 
+TEST_F(SunfishTest, ClosePanelOnLockScreen) {
+  // Open the panel.
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* generator = GetEventGenerator();
+  SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->search_results_panel_widget());
+
+  // Lock the screen. Test the panel is hidden.
+  GetSessionControllerClient()->LockScreen();
+  ASSERT_FALSE(controller->search_results_panel_widget());
+}
+
 class ScannerTest : public AshTestBase {
  public:
   ScannerTest() = default;

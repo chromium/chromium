@@ -1508,6 +1508,7 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
     // finished yet.
     Stop();
   }
+  search_results_panel_widget_.reset();
 
   if (!is_recording_in_progress())
     return;
