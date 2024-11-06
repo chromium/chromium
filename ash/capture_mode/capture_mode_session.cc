@@ -40,6 +40,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -1424,6 +1425,8 @@ ActionButtonView* CaptureModeSession::AddActionButton(
 
 void CaptureModeSession::OnTextDetected() {
   if (active_behavior_->CanShowSmartActionsButton()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
     // TODO(crbug.com/375967525): Finalize and translate the smart actions
     // button accessible name.
     ActionButtonView* action_button = AddActionButton(

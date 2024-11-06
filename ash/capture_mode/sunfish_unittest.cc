@@ -1733,4 +1733,31 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
                                 ActionButtonIsCollapsed())));
 }
 
+TEST_F(ScannerTest, SmartActionsButtonShownForDetectedTextRecordsHistogram) {
+  base::HistogramTester histogram_tester;
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  // Smart actions button should have been created.
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(action_buttons,
+              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner),
+                          ActionButtonTypeIs(ActionButtonType::kCopyText)));
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown, 1);
+}
+
 }  // namespace ash
