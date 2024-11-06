@@ -206,12 +206,21 @@ void HTMLDialogElement::requestClose(const String& return_value) {
 
 String HTMLDialogElement::closedBy() const {
   CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
-  // TODO(crbug.com/376516550): This should be "limited to only known values".
-  return "Unimplemented";
+  auto attribute_value =
+      FastGetAttribute(html_names::kClosedbyAttr).LowerASCII();
+  if (attribute_value == keywords::kAny || attribute_value == keywords::kNone ||
+      attribute_value == keywords::kCloserequest) {
+    return attribute_value;
+  } else {
+    // The closedby attribute's invalid value default and missing value default
+    // are both the Auto state. The Auto state matches closerequest when the
+    // element is modal; otherwise none.
+    return IsModal() ? keywords::kCloserequest : keywords::kNone;
+  }
 }
 void HTMLDialogElement::setClosedBy(const String& new_value) {
   CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
-  // TODO(crbug.com/376516550): This should be "limited to only known values".
+  setAttribute(html_names::kClosedbyAttr, AtomicString(new_value));
 }
 
 // static
@@ -511,12 +520,13 @@ void HTMLDialogElement::SetFocusForDialog() {
   if (IsAutofocusable()) {
     control = this;
   }
-  if (!control)
+  if (!control) {
     control = this;
+  }
 
-  if (control->IsFocusable())
+  if (control->IsFocusable()) {
     control->Focus();
-  else if (IsModal()) {
+  } else if (IsModal()) {
     control->GetDocument().ClearFocusedElement();
   }
 

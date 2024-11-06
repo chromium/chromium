@@ -15,13 +15,13 @@
 <dialog closedby="closerequest" data-behavior="closerequest"></dialog>
 <dialog closedby="none" data-behavior="none"></dialog>
 
-<dialog closedby data-behavior="closerequest"></dialog>
-<dialog closedby="invalid" data-behavior="closerequest"></dialog>
-<dialog data-behavior="closerequest"></dialog>
-
 <dialog closedby="AnY" data-behavior="any"></dialog>
 <dialog closedby="ClOsErEqUeSt" data-behavior="closerequest"></dialog>
 <dialog closedby="NoNe" data-behavior="none"></dialog>
+
+<dialog closedby="invalid" data-behavior="auto"></dialog>
+<dialog closedby data-behavior="auto"></dialog>
+<dialog data-behavior="auto"></dialog>
 
 <script>
   function openDialog(dialog,modal) {
@@ -41,6 +41,7 @@
         t.add_cleanup(() => dialog.close());
         // Try hitting ESC
         openDialog(dialog,modal);
+        const closedByReflectionWhileOpen = dialog.closedBy;
         const ESC = '\uE00C';
         await new test_driver.send_keys(document.documentElement,ESC);
         const respondsToEsc = !dialog.open;
@@ -51,6 +52,8 @@
         const respondsToLightDismiss = !dialog.open;
         dialog.close();
         // See if expectations match
+        let expectedReflectionWhileOpen = dialog.dataset.behavior;
+        let expectedReflectionWhileClosed = dialog.dataset.behavior;
         switch (dialog.dataset.behavior) {
           case 'any':
             assert_true(respondsToEsc,'Dialog should respond to ESC');
@@ -64,11 +67,24 @@
             assert_false(respondsToEsc,'Dialog should NOT respond to ESC');
             assert_false(respondsToLightDismiss,'Dialog should NOT respond to light dismiss');
             break;
+          case 'auto':
+            if (modal) {
+              assert_true(respondsToEsc,'Modal dialog in auto state should respond to ESC');
+              assert_false(respondsToLightDismiss,'Modal dialog in auto state should NOT respond to light dismiss');
+              expectedReflectionWhileOpen = 'closerequest';
+            } else {
+              assert_false(respondsToEsc,'Non-modal dialog in auto state should NOT respond to ESC');
+              assert_false(respondsToLightDismiss,'Non-modal dialog in auto state should NOT respond to light dismiss');
+              expectedReflectionWhileOpen = 'none';
+            }
+            expectedReflectionWhileClosed = 'none';
+            break;
           default:
             assert_notreached('Invalid expectation');
         }
         // Check reflection
-        assert_equals(dialog.closedBy,dialog.dataset.behavior,'Reflection should be limited to known values');
+        assert_equals(closedByReflectionWhileOpen,expectedReflectionWhileOpen,'Reflection should be limited to known values (open)');
+        assert_equals(dialog.closedBy,expectedReflectionWhileClosed,'Reflection should be limited to known values (closed)');
       }, `closedby=${dialog.getAttribute('closedby')}, ${modal ? 'Modal' : 'Non-modal'}`);
     }
   }
