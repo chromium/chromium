@@ -45,10 +45,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTilesAndroidGL);
 #endif
 
-// Updating browser controls state will IPC directly from browser main to the
-// compositor thread. Previously this proxied through the renderer main thread.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUpdateBrowserControlsWithoutProxy);
-
 // Enables shared image cache for gpu used by CC instances instantiated for UI.
 // TODO(https://crbug.com/c/1378251): this shall also be possible to use by
 // renderers.

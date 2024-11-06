@@ -320,14 +320,8 @@ void PageImpl::UpdateBrowserControlsState(
   if (!GetMainDocument().IsRenderFrameLive())
     return;
 
-  if (base::FeatureList::IsEnabled(
-          features::kUpdateBrowserControlsWithoutProxy)) {
-    GetMainDocument().GetRenderWidgetHost()->UpdateBrowserControlsState(
-        constraints, current, animate, offset_tags_info);
-  } else {
-    GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(
-        constraints, current, animate, offset_tags_info);
-  }
+  GetMainDocument().GetRenderWidgetHost()->UpdateBrowserControlsState(
+      constraints, current, animate, offset_tags_info);
 }
 
 float PageImpl::GetPageScaleFactor() const {
