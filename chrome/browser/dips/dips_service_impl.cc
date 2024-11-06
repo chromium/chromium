@@ -52,9 +52,6 @@
 
 namespace {
 
-// Controls whether UKM metrics are collected for DIPS.
-BASE_FEATURE(kDipsUkm, "DipsUkm", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the database requests are executed on a foreground sequence.
 BASE_FEATURE(kDipsOnForegroundSequence,
              "DipsOnForegroundSequence",
@@ -371,20 +368,18 @@ void DIPSServiceImpl::HandleRedirectChain(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kDipsUkm)) {
-    if (chain->initial_url.source_id != ukm::kInvalidSourceId) {
-      ukm::builders::DIPS_ChainBegin(chain->initial_url.source_id)
-          .SetChainId(chain->chain_id)
-          .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
-          .Record(ukm::UkmRecorder::Get());
-    }
+  if (chain->initial_url.source_id != ukm::kInvalidSourceId) {
+    ukm::builders::DIPS_ChainBegin(chain->initial_url.source_id)
+        .SetChainId(chain->chain_id)
+        .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
+        .Record(ukm::UkmRecorder::Get());
+  }
 
-    if (chain->final_url.source_id != ukm::kInvalidSourceId) {
-      ukm::builders::DIPS_ChainEnd(chain->final_url.source_id)
-          .SetChainId(chain->chain_id)
-          .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
-          .Record(ukm::UkmRecorder::Get());
-    }
+  if (chain->final_url.source_id != ukm::kInvalidSourceId) {
+    ukm::builders::DIPS_ChainEnd(chain->final_url.source_id)
+        .SetChainId(chain->chain_id)
+        .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
+        .Record(ukm::UkmRecorder::Get());
   }
 
   base::TimeDelta total_server_bounce_delay;
@@ -538,25 +533,22 @@ void DIPSServiceImpl::HandleRedirect(
   bool final_site_same = (redirect.site == chain.final_site);
   DCHECK_LT(redirect.chain_index.value(), chain.length);
 
-  if (base::FeatureList::IsEnabled(kDipsUkm)) {
-    ukm::builders::DIPS_Redirect(redirect.url.source_id)
-        .SetSiteEngagementLevel(redirect.has_interaction.value() ? 1 : 0)
-        .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
-        .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
-        .SetRedirectAndInitialSiteSame(initial_site_same)
-        .SetRedirectAndFinalSiteSame(final_site_same)
-        .SetInitialAndFinalSitesSame(chain.initial_and_final_sites_same)
-        .SetRedirectChainIndex(redirect.chain_index.value())
-        .SetRedirectChainLength(chain.length)
-        .SetIsPartialRedirectChain(chain.is_partial_chain)
-        .SetClientBounceDelay(
-            BucketizeBounceDelay(redirect.client_bounce_delay))
-        .SetHasStickyActivation(redirect.has_sticky_activation)
-        .SetWebAuthnAssertionRequestSucceeded(
-            redirect.web_authn_assertion_request_succeeded)
-        .SetChainId(redirect.chain_id.value())
-        .Record(ukm::UkmRecorder::Get());
-  }
+  ukm::builders::DIPS_Redirect(redirect.url.source_id)
+      .SetSiteEngagementLevel(redirect.has_interaction.value() ? 1 : 0)
+      .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
+      .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
+      .SetRedirectAndInitialSiteSame(initial_site_same)
+      .SetRedirectAndFinalSiteSame(final_site_same)
+      .SetInitialAndFinalSitesSame(chain.initial_and_final_sites_same)
+      .SetRedirectChainIndex(redirect.chain_index.value())
+      .SetRedirectChainLength(chain.length)
+      .SetIsPartialRedirectChain(chain.is_partial_chain)
+      .SetClientBounceDelay(BucketizeBounceDelay(redirect.client_bounce_delay))
+      .SetHasStickyActivation(redirect.has_sticky_activation)
+      .SetWebAuthnAssertionRequestSucceeded(
+          redirect.web_authn_assertion_request_succeeded)
+      .SetChainId(redirect.chain_id.value())
+      .Record(ukm::UkmRecorder::Get());
 
   if (initial_site_same || final_site_same) {
     // Don't record UMA metrics for same-site redirects.
