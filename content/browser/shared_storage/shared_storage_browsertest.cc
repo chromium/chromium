@@ -76,6 +76,12 @@
 
 namespace content {
 
+using testing::_;
+using testing::Args;
+using testing::Eq;
+using testing::FieldsAre;
+using testing::Ne;
+using testing::Optional;
 using testing::Pair;
 using testing::UnorderedElementsAre;
 using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
@@ -7564,6 +7570,18 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
         : PrivateAggregationManagerImpl(std::move(budgeter),
                                         std::move(host),
                                         /*storage_partition=*/nullptr) {}
+
+    MOCK_METHOD(bool,
+                BindNewReceiver,
+                (url::Origin,
+                 url::Origin,
+                 PrivateAggregationCallerApi,
+                 std::optional<std::string>,
+                 std::optional<base::TimeDelta>,
+                 std::optional<url::Origin>,
+                 size_t,
+                 mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
+                (override));
   };
 
   SharedStoragePrivateAggregationEnabledBrowserTest() {
@@ -7578,25 +7596,37 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
 
     a_test_origin_ = https_server()->GetOrigin("a.test");
 
-    auto* storage_partition_impl =
-        static_cast<StoragePartitionImpl*>(GetStoragePartition());
+    auto& storage_partition_impl =
+        static_cast<StoragePartitionImpl&>(*GetStoragePartition());
 
-    private_aggregation_host_ = new PrivateAggregationHost(
+    auto private_aggregation_host = std::make_unique<PrivateAggregationHost>(
         /*on_report_request_details_received=*/mock_callback_.Get(),
-        storage_partition_impl->browser_context());
+        storage_partition_impl.browser_context());
 
-    storage_partition_impl->OverridePrivateAggregationManagerForTesting(
+    auto test_private_aggregation_manager_impl =
         std::make_unique<TestPrivateAggregationManagerImpl>(
             std::make_unique<MockPrivateAggregationBudgeter>(),
-            base::WrapUnique<PrivateAggregationHost>(
-                private_aggregation_host_.get())));
+            std::move(private_aggregation_host));
+
+    test_private_aggregation_manager_impl_ =
+        test_private_aggregation_manager_impl.get();
+
+    ON_CALL(*test_private_aggregation_manager_impl_, BindNewReceiver)
+        .WillByDefault([&](auto... params) {
+          return test_private_aggregation_manager_impl_
+              ->PrivateAggregationManagerImpl::BindNewReceiver(
+                  std::move(params)...);
+        });
+
+    storage_partition_impl.OverridePrivateAggregationManagerForTesting(
+        std::move(test_private_aggregation_manager_impl));
 
     EXPECT_TRUE(NavigateToURL(
         shell(), https_server()->GetURL("a.test", kSimplePagePath)));
   }
 
   void TearDownOnMainThread() override {
-    private_aggregation_host_ = nullptr;
+    test_private_aggregation_manager_impl_ = nullptr;
     SharedStorageBrowserTestBase::TearDownOnMainThread();
   }
 
@@ -7605,7 +7635,9 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
         std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
   }
 
-  const base::MockRepeatingCallback<
+  // Returns a reference to the `on_report_request_details_received` callback
+  // that is shared with `PrivateAggregationHost` in `SetUpOnMainThread()`.
+  base::MockRepeatingCallback<
       void(PrivateAggregationHost::ReportRequestGenerator,
            std::vector<blink::mojom::AggregatableReportHistogramContribution>,
            PrivateAggregationBudgetKey,
@@ -7614,11 +7646,17 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
     return mock_callback_;
   }
 
+  TestPrivateAggregationManagerImpl& test_private_aggregation_manager_impl()
+      const {
+    return *test_private_aggregation_manager_impl_;
+  }
+
  protected:
   url::Origin a_test_origin_;
 
  private:
-  raw_ptr<PrivateAggregationHost> private_aggregation_host_;
+  raw_ptr<TestPrivateAggregationManagerImpl>
+      test_private_aggregation_manager_impl_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -7841,6 +7879,14 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
+
+  // The timeout should be set because we have a `context_id`.
+  EXPECT_CALL(test_private_aggregation_manager_impl(), BindNewReceiver)
+      .With(Args<3, 4, 6>(FieldsAre(
+          /*context_id*/ Optional(_),
+          /*timeout*/ Optional(base::Seconds(5)),
+          /*filtering_id_max_bytes*/
+          PrivateAggregationHost::kDefaultFilteringIdMaxBytes)));
 
   EXPECT_CALL(mock_callback(), Run)
       .WillOnce(testing::Invoke(
@@ -8196,6 +8242,15 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop run_loop;
 
+  // No timeout should be specified because there is no `context_id` and
+  // `filtering_id_max_bytes` is the default.
+  EXPECT_CALL(test_private_aggregation_manager_impl(), BindNewReceiver)
+      .With(Args<3, 4, 6>(FieldsAre(
+          /*context_id*/ Eq(std::nullopt),
+          /*timeout*/ Eq(std::nullopt),
+          /*filtering_id_max_bytes*/
+          PrivateAggregationHost::kDefaultFilteringIdMaxBytes)));
+
   EXPECT_CALL(mock_callback(), Run)
       .WillOnce(testing::Invoke(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
@@ -8502,6 +8557,15 @@ IN_PROC_BROWSER_TEST_F(
 
   base::RunLoop run_loop;
 
+  // The timeout should be set because we have a non-default
+  // `filtering_id_max_bytes`.
+  EXPECT_CALL(test_private_aggregation_manager_impl(), BindNewReceiver)
+      .With(Args<3, 4, 6>(FieldsAre(
+          /*context_id*/ Eq(std::nullopt),
+          /*timeout*/ Optional(base::Seconds(5)),
+          /*filtering_id_max_bytes*/
+          Ne(PrivateAggregationHost::kDefaultFilteringIdMaxBytes))));
+
   EXPECT_CALL(mock_callback(), Run)
       .WillOnce(testing::Invoke(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
@@ -8568,6 +8632,15 @@ IN_PROC_BROWSER_TEST_F(
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
+
+  // The timeout should be set because we have a non-default
+  // `filtering_id_max_bytes`.
+  EXPECT_CALL(test_private_aggregation_manager_impl(), BindNewReceiver)
+      .With(Args<3, 4, 6>(FieldsAre(
+          /*context_id*/ Eq(std::nullopt),
+          /*timeout*/ Optional(base::Seconds(5)),
+          /*filtering_id_max_bytes*/
+          Ne(PrivateAggregationHost::kDefaultFilteringIdMaxBytes))));
 
   EXPECT_CALL(mock_callback(), Run)
       .WillOnce(testing::Invoke(
@@ -8701,7 +8774,27 @@ IN_PROC_BROWSER_TEST_F(
     TooBigFilteringIdWithCustomByteSize_Error) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
-  EXPECT_CALL(mock_callback(), Run).Times(0);
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(),
+              Run(/*report_request_generator=*/_,
+                  /*contributions=*/testing::IsEmpty(),
+                  /*budget_key=*/_,
+                  PrivateAggregationHost::NullReportBehavior::kSendNullReport))
+      .WillOnce(testing::Invoke(
+          [&](PrivateAggregationHost::ReportRequestGenerator generator,
+              std::vector<blink::mojom::AggregatableReportHistogramContribution>
+                  contributions,
+              PrivateAggregationBudgetKey budget_key,
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
+            AggregatableReportRequest request =
+                std::move(generator).Run(contributions);
+            ASSERT_EQ(request.payload_contents().contributions.size(), 0u);
+            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8u);
+            EXPECT_EQ(request.shared_info().debug_mode,
+                      AggregatableReportSharedInfo::DebugMode::kDisabled);
+            run_loop.Quit();
+          }));
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -8746,6 +8839,8 @@ IN_PROC_BROWSER_TEST_F(
                                  "does not fit in byte size"));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
             console_observer.messages()[0].log_level);
+
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(

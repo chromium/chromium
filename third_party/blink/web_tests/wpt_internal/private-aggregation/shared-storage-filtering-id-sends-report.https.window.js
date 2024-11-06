@@ -203,46 +203,6 @@ private_aggregation_promise_test(async () => {
   await addModuleOnce('resources/shared-storage-module.js');
 
   const data = {
-    contributions: [{bucket: 1n, value: 2, filteringId: 16777215n}]
-  };
-  await sharedStorage.run('contribute-to-histogram', {
-    data,
-    keepAlive: true,
-    privateAggregationConfig: {filteringIdMaxBytes: 3}
-  });
-
-  const {reports: [report]} = await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
-
-  verifyReport(
-      report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
-      /*debug_key=*/ undefined,
-      /*expected_payload=*/ undefined,
-      /*expected_context_id=*/ undefined);
-
-}, 'run() that calls Private Aggregation with max filtering ID for custom max bytes');
-
-private_aggregation_promise_test(async () => {
-  await addModuleOnce('resources/shared-storage-module.js');
-
-  const data = {
-    contributions: [{bucket: 1n, value: 2, filteringId: 16777216n}]
-  };
-  await sharedStorage.run('contribute-to-histogram', {
-    data,
-    keepAlive: true,
-    privateAggregationConfig: {filteringIdMaxBytes: 3}
-  });
-
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
-}, 'run() that calls Private Aggregation with too big filtering ID for custom max bytes');
-
-
-private_aggregation_promise_test(async () => {
-  await addModuleOnce('resources/shared-storage-module.js');
-
-  const data = {
     contributions: [{bucket: 1n, value: 2, filteringId: (1n << 64n) - 1n}]
   };
   await sharedStorage.run('contribute-to-histogram', {
@@ -261,22 +221,6 @@ private_aggregation_promise_test(async () => {
       /*expected_context_id=*/ undefined);
 }, 'run() that calls Private Aggregation with max filtering ID possible');
 
-
-private_aggregation_promise_test(async () => {
-  await addModuleOnce('resources/shared-storage-module.js');
-
-  const data = {
-    contributions: [{bucket: 1n, value: 2, filteringId: (1n << 64n)}]
-  };
-  await sharedStorage.run('contribute-to-histogram', {
-    data,
-    keepAlive: true,
-    privateAggregationConfig: {filteringIdMaxBytes: 3}
-  });
-
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
-}, 'run() that calls Private Aggregation with too big filtering ID for largest max bytes possible');
 
 private_aggregation_promise_test(async () => {
   await addModuleOnce('resources/shared-storage-module.js');

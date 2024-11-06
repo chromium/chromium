@@ -136,8 +136,10 @@ class CONTENT_EXPORT PrivateAggregationHost
   // is not potentially trustworthy or if `context_id` is too long.  If
   // `timeout` is set, the report will be sent as if the pipe closed after the
   // timeout, regardless of when the disconnection actually happens. `timeout`
-  // must be positive if set. If `timeout` is set, `context_id` must be set too.
-  // If `aggregation_coordinator_origin` is set, the origin must be on the
+  // must be positive if set. If `timeout` is set, then
+  // `PrivateAggregationManager::ShouldSendReportDeterministically(context_id,
+  // filtering_id_max_bytes)` should return true. If
+  // `aggregation_coordinator_origin` is set, the origin must be on the
   // allowlist. `filtering_id_max_bytes` must be positive and no greater than
   // `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`. The
   // return value indicates whether the receiver was accepted. Virtual for
