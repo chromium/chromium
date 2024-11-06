@@ -26,11 +26,21 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace manta {
 
 namespace {
 constexpr char kMockEndpoint[] = "https://my-endpoint.com";
+
+std::vector<uint8_t> CreateJPGBytes(int width, int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(SK_ColorRED);  // Fill with a solid color
+  auto image_bytes = gfx::JPEGCodec::Encode(bitmap, 100);
+  return image_bytes.value();
+}
 }
 
 class FakeWalrusProvider : public WalrusProvider, public FakeBaseProvider {
@@ -43,6 +53,12 @@ class FakeWalrusProvider : public WalrusProvider, public FakeBaseProvider {
                        identity_manager,
                        ProviderParams()),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
+  std::optional<std::vector<uint8_t>> DownscaleImageIfNeeded(
+      const std::vector<uint8_t>& image_bytes,
+      int32_t max_pixels_after_resizing) {
+    return WalrusProvider::DownscaleImageIfNeeded(image_bytes,
+                                                  max_pixels_after_resizing);
+  }
 };
 
 class WalrusProviderTest : public BaseProviderTest {
@@ -243,12 +259,12 @@ TEST_F(WalrusProviderTest, TextImageBothBlocked) {
 
 TEST_F(WalrusProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
   base::HistogramTester histogram_tester;
-  std::unique_ptr<FakeWalrusProvider> wallrus_provider = CreateWalrusProvider();
+  std::unique_ptr<FakeWalrusProvider> walrus_provider = CreateWalrusProvider();
 
   identity_test_env_.reset();
 
   std::string text_prompt = "text pompt";
-  wallrus_provider->Filter(
+  walrus_provider->Filter(
       text_prompt, base::BindLambdaForTesting(
                        [quit_closure = task_environment_.QuitClosure()](
                            base::Value::Dict dict, MantaStatus manta_status) {
@@ -262,6 +278,45 @@ TEST_F(WalrusProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
   // No metric logged.
   histogram_tester.ExpectTotalCount("Ash.MantaService.WalrusProvider.TimeCost",
                                     0);
+}
+
+TEST_F(WalrusProviderTest, InvalidOrUnknownImageFormatIsNotDownscaled) {
+  std::unique_ptr<FakeWalrusProvider> walrus_provider = CreateWalrusProvider();
+  std::vector<uint8_t> invalid_image_bytes = {1, 2, 3, 4, 5};
+
+  std::optional<std::vector<uint8_t>> resized_image =
+      walrus_provider->DownscaleImageIfNeeded(invalid_image_bytes, 100);
+
+  ASSERT_FALSE(resized_image.has_value());
+}
+
+TEST_F(WalrusProviderTest, LargerImageIsDownscaled) {
+  std::unique_ptr<FakeWalrusProvider> walrus_provider = CreateWalrusProvider();
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(20, 40);
+
+  std::optional<std::vector<uint8_t>> resized_image_bytes =
+      walrus_provider->DownscaleImageIfNeeded(image_bytes, 10 * 10);
+
+  ASSERT_TRUE(resized_image_bytes.has_value());
+  auto resized_image = gfx::JPEGCodec::Decode(resized_image_bytes.value());
+
+  ASSERT_TRUE(resized_image.height() > 0 && resized_image.width() > 0);
+  ASSERT_EQ(resized_image.width(), 7);
+  ASSERT_EQ(resized_image.height(), 14);
+}
+
+TEST_F(WalrusProviderTest, SmallerImageIsNotDownscaled) {
+  std::unique_ptr<FakeWalrusProvider> walrus_provider = CreateWalrusProvider();
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(5, 12);
+
+  std::optional<std::vector<uint8_t>> resized_image_bytes =
+      walrus_provider->DownscaleImageIfNeeded(image_bytes, 10 * 10);
+  ASSERT_TRUE(resized_image_bytes.has_value());
+  auto resized_image = gfx::JPEGCodec::Decode(resized_image_bytes.value());
+
+  ASSERT_TRUE(resized_image.height() > 0 && resized_image.width() > 0);
+  ASSERT_EQ(resized_image.width(), 5);
+  ASSERT_EQ(resized_image.height(), 12);
 }
 
 }  // namespace manta

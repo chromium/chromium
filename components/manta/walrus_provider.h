@@ -64,6 +64,10 @@ class COMPONENT_EXPORT(MANTA) WalrusProvider : virtual public BaseProvider {
  private:
   friend class FakeWalrusProvider;
 
+  std::optional<std::vector<uint8_t>> DownscaleImageIfNeeded(
+      const std::vector<uint8_t>& image_bytes,
+      int32_t max_pixels_after_resizing);
+
   base::WeakPtrFactory<WalrusProvider> weak_ptr_factory_{this};
 };
 

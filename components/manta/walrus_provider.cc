@@ -4,8 +4,15 @@
 
 #include "components/manta/walrus_provider.h"
 
-#include "base/strings/stringprintf.h"
+#include <algorithm>
+
 #include "components/manta/features.h"
+#include "third_party/skia/include/codec/SkJpegDecoder.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace manta {
 
@@ -13,6 +20,8 @@ namespace {
 
 constexpr char kOauthConsumerName[] = "manta_walrus";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
+// The maximum number of pixels after resizing an image.
+constexpr int32_t kMaxPixelsAfterResizing = 1024 * 1024;
 
 void OnServerResponseOrErrorReceived(
     MantaGenericCallback callback,
@@ -67,6 +76,40 @@ void WalrusProvider::Filter(std::string text_prompt,
   Filter(text_prompt, empty_images, std::move(done_callback));
 }
 
+std::optional<SkBitmap> DeserializeImage(const std::vector<uint8_t>& bytes) {
+  if (SkJpegDecoder::IsJpeg(bytes.data(), bytes.size())) {
+    return gfx::JPEGCodec::Decode(bytes);
+  }
+  if (SkPngDecoder::IsPng(bytes.data(), bytes.size())) {
+    return gfx::PNGCodec::Decode(bytes);
+  }
+  return std::nullopt;
+}
+
+// Downscales the given image maintaining the aspect ratio if the number of
+// pixels exceeds |max_pixels_after_resizing|. If the image cannot be decoded or
+// encoded, returns null.
+std::optional<std::vector<uint8_t>> WalrusProvider::DownscaleImageIfNeeded(
+    const std::vector<uint8_t>& image_bytes,
+    int32_t max_pixels_after_resizing = kMaxPixelsAfterResizing) {
+  auto bitmap = DeserializeImage(image_bytes);
+  if (!bitmap.has_value() || bitmap->height() == 0 || bitmap->width() == 0) {
+    return std::nullopt;
+  }
+
+  // (height * scale) * (width * scale) = max_pixels_after_resizing
+  // scale = sqrt(max_pixels_after_resizing / (height * width))
+  double scale = std::sqrt(static_cast<double>(max_pixels_after_resizing) /
+                           (bitmap->height() * bitmap->width()));
+  scale = std::min(1.0, scale);
+
+  SkBitmap resized_bitmap = skia::ImageOperations::Resize(
+      bitmap.value(), skia::ImageOperations::RESIZE_BEST,
+      scale * bitmap->width(), scale * bitmap->height());
+
+  return gfx::JPEGCodec::Encode(resized_bitmap, /*quality=*/90);
+}
+
 void WalrusProvider::Filter(const std::optional<std::string>& text_prompt,
                             const std::vector<std::vector<uint8_t>>& images,
                             MantaGenericCallback done_callback) {
@@ -82,8 +125,15 @@ void WalrusProvider::Filter(const std::optional<std::string>& text_prompt,
   for (auto& image : images) {
     auto* input_data = request.add_input_data();
     input_data->set_tag("input_image");
-    input_data->mutable_image()->set_serialized_bytes(
-        std::string(image.begin(), image.end()));
+    auto resized_image_bytes = DownscaleImageIfNeeded(image);
+    if (resized_image_bytes.has_value()) {
+      input_data->mutable_image()->set_serialized_bytes(
+          std::string(resized_image_bytes.value().begin(),
+                      resized_image_bytes.value().end()));
+    } else {
+      input_data->mutable_image()->set_serialized_bytes(
+          std::string(image.begin(), image.end()));
+    }
   }
 
   if (!request.input_data_size()) {
