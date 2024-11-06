@@ -676,8 +676,10 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/true);
   registry->RegisterBooleanPref(kSunfishEnabledPrefName,
                                 /*default_value=*/true);
+  // TODO(b/367882127): Set to default to true when consent disclaimer is
+  // required for the general launch.
   registry->RegisterBooleanPref(kSunfishConsentDisclaimerAccepted,
-                                /*default_value=*/false);
+                                /*default_value=*/true);
 }
 
 // static
