@@ -626,7 +626,7 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertRegexpMatches(
-            res,
+            res[0],
             'Virtual suite name "testing_prefix_with_larger_character_count_then_the_allowed_amount_of_48" is over the "48" filename length limit'
         )
 

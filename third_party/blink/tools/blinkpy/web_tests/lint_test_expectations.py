@@ -408,8 +408,9 @@ def check_virtual_test_suites(host, options):
             failures.append(failure)
 
         if len(prefix) > max_suite_length:
-            failures = 'Virtual suite name "{}" is over the "{}" filename length limit'.format(
+            failure = 'Virtual suite name "{}" is over the "{}" filename length limit'.format(
                 prefix, max_suite_length)
+            failures.append(failure)
 
     return failures
 
