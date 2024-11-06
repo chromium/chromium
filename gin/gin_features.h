@@ -102,16 +102,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyMultipleMemories);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaft);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaftInstructionSelection);
 
-// Feature for more aggressive code caching (https://crbug.com/v8/14411) and
-// three parameters to control caching behavior.
-GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyMoreAggressiveCodeCaching);
-GIN_EXPORT extern const base::FeatureParam<int>
-    kWebAssemblyMoreAggressiveCodeCachingThreshold;
-GIN_EXPORT extern const base::FeatureParam<int>
-    kWebAssemblyMoreAggressiveCodeCachingTimeoutMs;
-GIN_EXPORT extern const base::FeatureParam<int>
-    kWebAssemblyMoreAggressiveCodeCachingHardThreshold;
-
 }  // namespace features
 
 #endif  // GIN_GIN_FEATURES_H_
