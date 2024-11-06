@@ -767,6 +767,7 @@ AccountSelectionModalView::CreateSpinnerIconView() {
       std::make_unique<views::Throbber>();
   header_icon_spinner->SetPreferredSize(
       gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
+  header_icon_spinner->SizeToPreferredSize();
   header_icon_spinner->Start();
   header_icon_spinner_ =
       icon_container->AddChildView(std::move(header_icon_spinner));
@@ -866,6 +867,7 @@ void AccountSelectionModalView::ReplaceButtonWithSpinner(
       std::make_unique<views::Throbber>();
   button_spinner->SetPreferredSize(
       gfx::Size(kModalButtonSpinnerSize, kModalButtonSpinnerSize));
+  button_spinner->SizeToPreferredSize();
   button_spinner->SetColorId(spinner_color);
   button_spinner->Start();
 
@@ -878,8 +880,12 @@ void AccountSelectionModalView::ReplaceButtonWithSpinner(
   spinner_container->AddChildView(std::move(button_spinner));
 
   // Set button text color to be the same as its background color so that the
-  // text is not visible and the size of the button doesn't change.
+  // text is not visible and the size of the button doesn't change. Explicitly
+  // set the vertical border to 0 because otherwise, the spinner cannot fit in
+  // the button in some OSes.
   button->SetUseDefaultFillLayout(true);
+  button->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(0, button->GetBorder()->GetInsets().left())));
   button->AddChildView(std::move(spinner_container));
   button->SetTextColor(HoverButton::ButtonState::STATE_DISABLED, button_color);
   button->SetEnabledTextColors(button_color);
