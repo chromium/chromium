@@ -1,0 +1,48 @@
+   name: Android CI
+
+   on:
+     push:
+       branches:
+         - main
+     pull_request:
+       branches:
+         - main
+
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+
+       steps:
+         # Step 1: Check out the code from your repository
+         - name: Check out repository
+           uses: actions/checkout@v2
+
+         # Step 2: Set up JDK
+         - name: Set up JDK 11
+           uses: actions/setup-java@v2
+           with:
+             distribution: 'zulu'
+             java-version: '11'
+
+         # Step 3: Cache Gradle dependencies
+         - name: Cache Gradle packages
+           uses: actions/cache@v2
+           with:
+             path: |
+               ~/.gradle/caches
+               ~/.gradle/wrapper
+             key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+             restore-keys: |
+               ${{ runner.os }}-gradle-
+
+         # Step 4: Build the app
+         - name: Build with Gradle
+           run: ./gradlew build
+
+         # Step 5: Upload APK as artifact
+         - name: Upload APK
+           if: success()
+           uses: actions/upload-artifact@v2
+           with:
+             name: app
+             path: app/build/outputs/apk/debug/*.apk
