@@ -41,8 +41,8 @@ chromium-metrics-reviews@google.com.
   <variant name="DataApp" summary="Android /data/app directory"/>
   <variant name="DataData" summary="Android /data/data directory"/>
   <variant name="DataMedia"
-      summary="Android /data/media/0 directory, excluding
-               /data/media/0/Android"/>
+      summary="Android /data/media/0 directory, excluding 'Android' and
+               'Download' subdirectories"/>
   <variant name="DataMediaAndroid"
       summary="Android /data/media/0/Android/ directory"/>
   <variant name="DataUserDE" summary="Android /data/user_de/0 directory"/>
@@ -958,8 +958,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The combined application data size for apps in the {Target}. The data size
     (StorageStats.dataBytes) is calculated with
-    StorageStatsManager#queryStatsForPackage, once per user for each ChromeOS
-    milestone update.
+    StorageStatsManager#queryStatsForPackage and reported for every ARC boot.
   </summary>
   <token key="Target" variants="AndroidAppCategories"/>
 </histogram>
@@ -970,9 +969,10 @@ chromium-metrics-reviews@google.com.
   <owner>momohatt@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
-    The size of the {Target}. For the root /data directory, the size is reported
-    for every ARC boot. For other directories, the size is reported once per
-    user for each ChromeOS milestone update.
+    The size of the {Target}. The size of the root /data directory is reported
+    on every ARC boot, but reported only if virtio-blk is enabled for /data. The
+    sizes of other directories are reported regardless of virtio-blk, but
+    reported only once every 30 days for each user to save calculation cost.
   </summary>
   <token key="Target" variants="AndroidDataDirectories"/>
 </histogram>
