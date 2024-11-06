@@ -47,6 +47,8 @@ class ImageDataFetcher;
 
 - (NotificationsSettingsObserver*)notificationsSettingsObserverForTesting;
 
+- (FaviconLoader*)faviconLoaderForTesting;
+
 - (void)enablePriceTrackingNotificationsSettingsForTesting;
 
 - (void)setPriceTrackingPromoItemForTesting:(PriceTrackingPromoItem*)item;

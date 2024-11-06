@@ -22,6 +22,7 @@ class ShoppingService;
 @protocol NewTabPageActionsDelegate;
 class PrefService;
 @class PriceTrackingPromoItem;
+class FaviconLoader;
 @protocol PriceTrackingPromoActionDelegate;
 class PushNotificationService;
 @protocol SnackbarCommands;
@@ -53,6 +54,7 @@ class AuthenticationService;
                  localState:(PrefService*)localState
     pushNotificationService:(PushNotificationService*)pushNotificationService
       authenticationService:(AuthenticationService*)authenticationService
+              faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

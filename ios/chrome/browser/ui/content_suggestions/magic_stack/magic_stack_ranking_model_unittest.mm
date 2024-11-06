@@ -361,7 +361,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                     prefService:GetProfile()->GetPrefs()
                      localState:GetLocalState()
         pushNotificationService:nil
-          authenticationService:nil];
+          authenticationService:nil
+                  faviconLoader:nil];
 
     PriceTrackingPromoItem* item = [[PriceTrackingPromoItem alloc] init];
     [_priceTrackingPromoMediator setPriceTrackingPromoItemForTesting:item];

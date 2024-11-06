@@ -16,6 +16,8 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -47,6 +49,10 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        IOSChromeFaviconLoaderFactory::GetInstance(),
+        IOSChromeFaviconLoaderFactory::GetDefaultFactory());
+
     profile_ = std::move(builder).Build();
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -65,7 +71,8 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
         prefs::kFeaturePushNotificationPermissions);
     local_state_.registry()->RegisterDictionaryPref(
         prefs::kAppLevelPushNotificationPermissions);
-
+    favicon_loader_ =
+        IOSChromeFaviconLoaderFactory::GetForProfile(profile_.get());
     mediator_ = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:shopping_service_.get()
                   bookmarkModel:bookmark_model_.get()
@@ -75,7 +82,9 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
                     prefService:pref_service()
                      localState:&local_state_
         pushNotificationService:push_notification_service_.get()
-          authenticationService:auth_service_];
+          authenticationService:auth_service_
+                  faviconLoader:favicon_loader_];
+
     // Mock notifications settings response.
     mock_notification_center_ = OCMClassMock([UNUserNotificationCenter class]);
     UNUserNotificationCenter* (^swizzle_block)() =
@@ -125,6 +134,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
   id<SystemIdentity> identity_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<FaviconLoader> favicon_loader_;
   PriceTrackingPromoMediator* mediator_;
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
   id mock_notification_center_;
@@ -154,6 +164,7 @@ TEST_F(PriceTrackingPromoMediatorTest, TestDisconnect) {
   EXPECT_NE(nil, mediator().authenticationServiceForTesting);
   EXPECT_NE(nil, mediator().imageFetcherForTesting);
   EXPECT_NE(nil, mediator().notificationsSettingsObserverForTesting);
+  EXPECT_NE(nil, mediator().faviconLoaderForTesting);
   [mediator() disconnect];
   EXPECT_EQ(nil, mediator().shoppingServiceForTesting);
   EXPECT_EQ(nil, mediator().bookmarkModelForTesting);
@@ -162,6 +173,7 @@ TEST_F(PriceTrackingPromoMediatorTest, TestDisconnect) {
   EXPECT_EQ(nil, mediator().authenticationServiceForTesting);
   EXPECT_EQ(nil, mediator().imageFetcherForTesting);
   EXPECT_EQ(nil, mediator().notificationsSettingsObserverForTesting);
+  EXPECT_EQ(nil, mediator().faviconLoaderForTesting);
 }
 
 // Resets card and fetches most recent subscription, if available.

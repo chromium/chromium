@@ -24,6 +24,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -41,6 +42,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_prefs.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -82,6 +86,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   NotificationsSettingsObserver* _notificationsObserver;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   PrefChangeRegistrar _prefChangeRegistrar;
+  raw_ptr<FaviconLoader> _faviconLoader;
 }
 
 - (instancetype)
@@ -92,7 +97,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
                 prefService:(PrefService*)prefService
                  localState:(PrefService*)localState
     pushNotificationService:(PushNotificationService*)pushNotificationService
-      authenticationService:(AuthenticationService*)authenticationService {
+      authenticationService:(AuthenticationService*)authenticationService
+              faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
     _shoppingService = shoppingService;
@@ -110,6 +116,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
     _prefChangeRegistrar.Init(prefService);
     _prefObserverBridge->ObserveChangesForPreference(
         kPriceTrackingPromoDisabled, &_prefChangeRegistrar);
+    _faviconLoader = faviconLoader;
   }
   return self;
 }
@@ -126,6 +133,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   _notificationsObserver = nil;
   _prefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
+  _faviconLoader = nil;
 }
 
 - (void)reset {
@@ -299,12 +307,17 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   if (subscriptions.empty()) {
     return;
   }
-  GURL most_recent_subscription_product_url =
+  std::pair<GURL, GURL> productImageProductUrls =
       [self getMostRecentSubscriptionProductUrl:subscriptions];
+
+  GURL most_recent_subscription_product_image_url =
+      productImageProductUrls.first;
+  GURL most_recent_product_page_url = productImageProductUrls.second;
+
   __weak PriceTrackingPromoMediator* weakSelf = self;
   // There is a subscription but no image url - the price tracking promo
   // will be displayed but with the fallback image.
-  if (most_recent_subscription_product_url.is_empty()) {
+  if (most_recent_subscription_product_image_url.is_empty()) {
     _priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
     _priceTrackingPromoItem.commandHandler = self;
     [self.delegate newSubscriptionAvailable];
@@ -312,22 +325,24 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
     // If we have an image, fetch it and display the price tracking promo
     // with that image.
     _imageFetcher->FetchImageData(
-        most_recent_subscription_product_url,
+        most_recent_subscription_product_image_url,
         base::BindOnce(^(const std::string& imageData,
                          const image_fetcher::RequestMetadata& metadata) {
           PriceTrackingPromoMediator* strongSelf = weakSelf;
           if (!strongSelf || !strongSelf.delegate) {
             return;
           }
-          [strongSelf onImageFetchedResult:imageData];
+          [strongSelf onImageFetchedResult:imageData
+                                productUrl:most_recent_product_page_url];
         }),
         NO_TRAFFIC_ANNOTATION_YET);
   }
 }
 
-- (GURL)getMostRecentSubscriptionProductUrl:
+- (std::pair<GURL, GURL>)getMostRecentSubscriptionProductUrl:
     (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
-  GURL most_recent_subscription_product_url;
+  GURL most_recent_subscription_product_image_url;
+  GURL most_recent_subscription_product_page_url;
   int64_t most_recent_subscription_time = 0;
   for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
@@ -337,23 +352,42 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
     }
     const power_bookmarks::ShoppingSpecifics specifics =
         meta->shopping_specifics();
-    if (most_recent_subscription_product_url.is_empty() ||
+    if (most_recent_subscription_product_image_url.is_empty() ||
         most_recent_subscription_time <
             specifics.last_subscription_change_time()) {
-      most_recent_subscription_product_url = GURL(meta->lead_image().url());
+      most_recent_subscription_product_image_url =
+          GURL(meta->lead_image().url());
       most_recent_subscription_time = specifics.last_subscription_change_time();
+      most_recent_subscription_product_page_url = bookmark->url();
     }
   }
-  return most_recent_subscription_product_url;
+  return {most_recent_subscription_product_image_url,
+          most_recent_subscription_product_page_url};
 }
 
-- (void)onImageFetchedResult:(const std::string&)imageData {
+- (void)onImageFetchedResult:(const std::string&)imageData
+                  productUrl:(const GURL&)productUrl {
   self->_priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
   self->_priceTrackingPromoItem.commandHandler = self;
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
   if (data) {
     self->_priceTrackingPromoItem.productImageData = data;
+
+    // Load favicon.
+    // TODO(crbug.com/377599695) add timeout support
+    __weak PriceTrackingPromoMediator* weakSelf = self;
+    _faviconLoader->FaviconForPageUrl(
+        productUrl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
+        /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+          [weakSelf onFaviconReceived:attributes];
+        });
+  }
+}
+
+- (void)onFaviconReceived:(FaviconAttributes*)attributes {
+  if (attributes.faviconImage && !attributes.usesDefaultImage) {
+    self->_priceTrackingPromoItem.faviconImage = attributes.faviconImage;
   }
   [self.delegate newSubscriptionAvailable];
 }
@@ -396,6 +430,10 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 - (NotificationsSettingsObserver*)notificationsSettingsObserverForTesting {
   return self->_notificationsObserver;
+}
+
+- (FaviconLoader*)faviconLoaderForTesting {
+  return self->_faviconLoader;
 }
 
 - (void)enablePriceTrackingNotificationsSettingsForTesting {

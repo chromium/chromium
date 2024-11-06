@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_view.h"
 
+#import "base/i18n/rtl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_commands.h"
@@ -52,6 +53,17 @@ const CGFloat kProductImageWidthHeight = 48.0;
 // Separator height.
 const CGFloat kSeparatorHeight = 0.5;
 
+// Properties for Favicon image.
+const CGFloat kFaviconImageViewCornerRadius = 2.0;
+const CGFloat kFaviconImageViewTrailingCornerRadius = 4.0;
+const CGFloat kFaviconImageViewHeightWidth = 10.0;
+
+// Properties for Favicon image container.
+const CGFloat kFaviconImageContainerCornerRadius = 3.0;
+const CGFloat kFaviconImageContainerTrailingCornerRadius = 6.0;
+const CGFloat kFaviconImageContainerHeightWidth = 15.0;
+const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
+
 }  // namespace
 
 @implementation PriceTrackingPromoModuleView {
@@ -59,6 +71,8 @@ const CGFloat kSeparatorHeight = 0.5;
   UILabel* _descriptionLabel;
   UIButton* _allowButton;
   UIImageView* _productImageView;
+  UIImageView* _faviconImageView;
+  UIView* _faviconImageContainer;
   // To create a background circle around the fallback product image.
   UIImageView* _fallbackProductImageView;
   UIView* _productImage;
@@ -67,6 +81,23 @@ const CGFloat kSeparatorHeight = 0.5;
   UIStackView* _textStack;
   UIView* _separator;
   UITapGestureRecognizer* _tapRecognizer;
+}
+
+// Create a mask with radius applied to the trailing corner
+- (CAShapeLayer*)faviconMaskWithRadius:(CGFloat)trailingCornerRadius
+                      imageHeightWidth:(CGFloat)imageHeightWidth {
+  UIRectCorner bottomTrail =
+      base::i18n::IsRTL() ? UIRectCornerBottomLeft : UIRectCornerBottomRight;
+  CGSize cornerRadiusSize =
+      CGSizeMake(trailingCornerRadius, trailingCornerRadius);
+  UIBezierPath* bezierPath =
+      [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, imageHeightWidth,
+                                                         imageHeightWidth)
+                            byRoundingCorners:bottomTrail
+                                  cornerRadii:cornerRadiusSize];
+  CAShapeLayer* mask = [CAShapeLayer layer];
+  mask.path = bezierPath.CGPath;
+  return mask;
 }
 
 - (void)configureView:(PriceTrackingPromoItem*)config {
@@ -131,7 +162,43 @@ const CGFloat kSeparatorHeight = 0.5;
     _gradientOverlay.layer.cornerRadius = kProductImageCornerRadius;
     _gradientOverlay.layer.zPosition = 1;
 
-    [NSLayoutConstraint activateConstraints:@[
+    if (config.faviconImage) {
+      _faviconImageContainer = [[UIView alloc] init];
+      _faviconImageContainer.translatesAutoresizingMaskIntoConstraints = NO;
+      _faviconImageContainer.layer.borderWidth = 0;
+      _faviconImageContainer.backgroundColor =
+          [UIColor colorNamed:kBackgroundColor];
+      _faviconImageContainer.layer.cornerRadius =
+          kFaviconImageContainerCornerRadius;
+      _faviconImageContainer.layer.masksToBounds = YES;
+      // Apply bottom right radius mask
+      _faviconImageContainer.layer.mask =
+          [self faviconMaskWithRadius:kFaviconImageContainerTrailingCornerRadius
+                     imageHeightWidth:kFaviconImageContainerHeightWidth];
+
+      _faviconImageView = [[UIImageView alloc] init];
+      _faviconImageView.image = config.faviconImage;
+      _faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
+      _faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+      _faviconImageView.layer.borderWidth = 0;
+      _faviconImageView.layer.cornerRadius = kFaviconImageViewCornerRadius;
+      _faviconImageView.layer.masksToBounds = YES;
+      _faviconImageView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      // Apply bottom right radius mask
+      _faviconImageView.layer.mask =
+          [self faviconMaskWithRadius:kFaviconImageViewTrailingCornerRadius
+                     imageHeightWidth:kFaviconImageViewHeightWidth];
+    }
+
+    [_productImage addSubview:_productImageView];
+    [_productImageView addSubview:_gradientOverlay];
+    if (_faviconImageContainer) {
+      [_productImage addSubview:_faviconImageContainer];
+      [_faviconImageContainer addSubview:_faviconImageView];
+    }
+
+    NSMutableArray* constraints = [[NSMutableArray alloc] init];
+    [constraints addObjectsFromArray:@[
       [_productImage.heightAnchor
           constraintEqualToConstant:kProductImageWidthHeight],
       [_productImage.widthAnchor
@@ -145,9 +212,30 @@ const CGFloat kSeparatorHeight = 0.5;
       [_gradientOverlay.widthAnchor
           constraintEqualToAnchor:_gradientOverlay.heightAnchor],
     ]];
+    if (_faviconImageContainer) {
+      [constraints addObjectsFromArray:@[
+        [_faviconImageContainer.heightAnchor
+            constraintEqualToConstant:kFaviconImageContainerHeightWidth],
+        [_faviconImageContainer.widthAnchor
+            constraintEqualToAnchor:_faviconImageContainer.heightAnchor],
+        [_faviconImageContainer.trailingAnchor
+            constraintEqualToAnchor:_productImage.trailingAnchor
+                           constant:kFaviconImageContainerTrailingMargin],
+        [_faviconImageContainer.bottomAnchor
+            constraintEqualToAnchor:_productImage.bottomAnchor
+                           constant:kFaviconImageContainerTrailingMargin],
+        [_faviconImageView.heightAnchor
+            constraintEqualToConstant:kFaviconImageViewHeightWidth],
+        [_faviconImageView.widthAnchor
+            constraintEqualToAnchor:_faviconImageView.heightAnchor],
+        [_faviconImageView.centerXAnchor
+            constraintEqualToAnchor:_faviconImageContainer.centerXAnchor],
+        [_faviconImageView.centerYAnchor
+            constraintEqualToAnchor:_faviconImageContainer.centerYAnchor],
+      ]];
+    }
 
-    [_productImage addSubview:_productImageView];
-    [_productImageView addSubview:_gradientOverlay];
+    [NSLayoutConstraint activateConstraints:constraints];
 
   } else {
     _fallbackProductImageView = [[UIImageView alloc] init];
