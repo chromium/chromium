@@ -87,14 +87,6 @@ void ToastService::RegisterToasts(
                                   IDS_CLEAR_BROWSING_DATA_TOAST_BODY)
           .Build());
 
-  // TODO(crbug.com/357929158): This registration only partially implements the
-  // Chromnient toast and will need to handle alternate icons and strings.
-  toast_registry_->RegisterToast(
-      ToastId::kLensOverlay,
-      ToastSpecification::Builder(vector_icons::kSearchChromeRefreshIcon,
-                                  IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE)
-          .Build());
-
   // TODO(crbug.com/357930023): This registration only partially implements the
   // non-milestone update toast for testing purposes and will need to be
   // updated.

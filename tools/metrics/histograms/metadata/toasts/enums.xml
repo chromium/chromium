@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Image Copied"/>
   <int value="2" label="Link to Highlight Copied"/>
   <int value="3" label="Added to Reading List"/>
-  <int value="4" label="Lens Overlay"/>
+  <int value="4" label="(Deprecated) Lens Overlay"/>
   <int value="5" label="Non-milestone Update"/>
   <int value="6" label="Added to comparison table"/>
   <int value="7" label="Clear Browsing Data"/>

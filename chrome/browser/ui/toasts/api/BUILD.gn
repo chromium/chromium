@@ -23,10 +23,7 @@ source_set("toasts") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "toast_id_unittest.cc",
-    "toast_registry_unittest.cc",
-  ]
+  sources = [ "toast_registry_unittest.cc" ]
   deps = [
     ":toasts",
     "//base",
