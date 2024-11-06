@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -86,9 +87,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
       VideoCaptureJpegDecoderFactoryCB jpeg_decoder_factory_callback);
 #else
-  VideoCaptureDeviceClient(std::unique_ptr<VideoFrameReceiver> receiver,
-                           scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-                           VideoEffectsContext video_effects_context);
+  VideoCaptureDeviceClient(
+      std::unique_ptr<VideoFrameReceiver> receiver,
+      scoped_refptr<VideoCaptureBufferPool> buffer_pool,
+      std::optional<VideoEffectsContext> video_effects_context);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   VideoCaptureDeviceClient(const VideoCaptureDeviceClient&) = delete;

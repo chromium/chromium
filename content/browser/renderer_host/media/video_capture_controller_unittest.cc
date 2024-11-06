@@ -8,14 +8,14 @@
 #include <string.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
-#include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -199,7 +199,7 @@ class VideoCaptureControllerTest
     device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
-        buffer_pool_, media::VideoEffectsContext({}));
+        buffer_pool_, std::nullopt);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

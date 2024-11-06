@@ -10,6 +10,7 @@
 #include "media/capture/video/video_capture_device_client.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -283,15 +284,18 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
     std::unique_ptr<VideoFrameReceiver> receiver,
     scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-    VideoEffectsContext video_effects_context)
+    std::optional<VideoEffectsContext> video_effects_context)
     : receiver_(std::move(receiver)),
       buffer_pool_(std::move(buffer_pool)),
       last_captured_pixel_format_(PIXEL_FORMAT_UNKNOWN) {
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  effects_processor_task_runner_ =
-      base::SequencedTaskRunner::GetCurrentDefault();
-  effects_processor_ = std::make_unique<VideoCaptureEffectsProcessor>(
-      video_effects_context.TakeVideoEffectsProcessor());
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+      video_effects_context) {
+    effects_processor_task_runner_ =
+        base::SequencedTaskRunner::GetCurrentDefault();
+    effects_processor_ = std::make_unique<VideoCaptureEffectsProcessor>(
+        video_effects_context->TakeVideoEffectsProcessor());
+  }
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -305,8 +309,10 @@ VideoCaptureDeviceClient::~VideoCaptureDeviceClient() {
   receiver_->OnStopped();
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  effects_processor_task_runner_->DeleteSoon(FROM_HERE,
-                                             std::move(effects_processor_));
+  if (effects_processor_) {
+    effects_processor_task_runner_->DeleteSoon(FROM_HERE,
+                                               std::move(effects_processor_));
+  }
 #endif
 }
 
@@ -431,7 +437,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+      effects_processor_) {
     auto data_span = base::make_span(data, base::checked_cast<size_t>(length));
 
     VideoFrameMetadata metadata;
@@ -839,7 +846,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
       buffer.is_premapped, color_space, mojom::PlaneStridesPtr{});
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+      effects_processor_) {
     // We need to allocate the output buffer since the post-processor cannot
     // operate in-place. This new `out_buffer`, along with original `buffer`,
     // will be considered as held for producer until the post-processor has
