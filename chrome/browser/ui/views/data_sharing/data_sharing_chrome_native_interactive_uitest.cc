@@ -292,9 +292,10 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, OpenGroupHelper) {
 
 using DataSharingChromeNativeUiPixelTest = DataSharingChromeNativeUiTest;
 
-// Take a screenshot of the shared tab group in app menu > tab groups.
+// Take a screenshot of the shared tab group in app menu > tab groups and
+// everything menu in the bookmarks bar.
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiPixelTest,
-                       SharedTabGroupInAppMenu) {
+                       SharedTabGroupInMenus) {
   std::string fake_collab_id = "fake_collab_id";
   tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
   tab_groups::TabGroupSyncServiceImpl* tab_group_service =
@@ -332,6 +333,49 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiPixelTest,
 
                   // Close the everything menu.
                   HoverTabAt(0), ClickMouse());
+}
+
+// Take a screenshot of the shared tab group's TabGroupHeader in the tabstrip.
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiPixelTest,
+                       SharedTabGroupInTabStrip) {
+  const char kTabGroupHeaderToScreenshot[] = "Tab group header to hover";
+
+  std::string fake_collab_id = "fake_collab_id";
+  tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
+  tab_groups::TabGroupSyncServiceImpl* tab_group_service =
+      static_cast<tab_groups::TabGroupSyncServiceImpl*>(
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+              browser()->profile()));
+
+  // Make the group shared.
+  tab_group_service->MakeTabGroupSharedForTesting(local_group_id,
+                                                  fake_collab_id);
+
+  // Manually call set visual data to repaint the tab group header with the
+  // share icon.
+  TabGroup* tab_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(local_group_id);
+  tab_group->SetVisualData(*tab_group->visual_data());
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      ShowBookmarksBar(),
+      NameDescendantView(
+          kBrowserViewElementId, kTabGroupHeaderToScreenshot,
+          base::BindRepeating(
+              [](tab_groups::TabGroupId group_id, const views::View* view) {
+                const TabGroupHeader* header =
+                    views::AsViewClass<TabGroupHeader>(view);
+                if (!header) {
+                  return false;
+                }
+                return header->group().value() == group_id;
+              },
+              local_group_id)),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      Screenshot(kTabGroupHeaderToScreenshot, "shared_icon_in_tab_group_header",
+                 "5924633"));
 }
 
 }  // namespace tab_groups
