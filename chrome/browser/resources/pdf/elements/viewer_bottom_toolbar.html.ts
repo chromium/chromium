@@ -25,9 +25,8 @@ export function getHtml(this: ViewerBottomToolbarElement) {
           .currentType="${this.currentType}"></ink-size-selector>
     </viewer-bottom-toolbar-dropdown>
     ${this.shouldShowColorOptions_() ? html`
-      <!-- TODO(crbug.com/369653190): Use actual button icons. -->
       <viewer-bottom-toolbar-dropdown id="color">
-        <cr-icon slot="icon" icon="pdf:pen-size-3"></cr-icon>
+        <div slot="icon" id="color-chip"></div>
         <ink-color-selector slot="menu" .currentColor="${this.currentColor}"
             .currentType="${this.currentType}"></ink-color-selector>
       </viewer-bottom-toolbar-dropdown>` : ''}

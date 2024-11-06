@@ -46,6 +46,12 @@ function assertDropdownSizeIcon(expected: string) {
   chrome.test.assertEq(expected, actual);
 }
 
+function assertDropdownColorFillColor(expected: string) {
+  const styles =
+      getComputedStyle(getRequiredElement(bottomToolbar, '#color-chip'));
+  chrome.test.assertEq(expected, styles.getPropertyValue('background-color'));
+}
+
 chrome.test.runTests([
   async function testSelectPen() {
     // Default to a black pen. Cannot use assertAnnotationBrush() yet, since
@@ -77,6 +83,7 @@ chrome.test.runTests([
       color: {r: 253, g: 214, b: 99},
       size: 1,
     });
+    assertDropdownColorFillColor('rgb(253, 214, 99)');
     chrome.test.succeed();
   },
 
@@ -158,6 +165,8 @@ chrome.test.runTests([
       color: {r: 52, g: 168, b: 83},
       size: 16,
     });
+    // The color changes to 'rgb(174, 220, 186)' after blending.
+    assertDropdownColorFillColor('rgb(174, 220, 186)');
     chrome.test.succeed();
   },
 ]);

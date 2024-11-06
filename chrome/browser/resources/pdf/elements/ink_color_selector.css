@@ -4,6 +4,8 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
 :host {
@@ -28,7 +30,7 @@ div {
 .color-chip {
   appearance: none;
   background: var(--item-color, magenta);
-  border: 1px solid rgb(143, 143, 143);
+  border: 1px solid var(--viewer-icon-ink-background-color);
   border-radius: 50%;
   cursor: pointer;
   margin: 0;

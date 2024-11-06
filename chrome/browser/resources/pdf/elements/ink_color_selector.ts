@@ -7,7 +7,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
 import type {Color} from '../constants.js';
-import {hexToColor} from '../pdf_viewer_utils.js';
+import {blendHighlighterColorValue, colorToHex, hexToColor} from '../pdf_viewer_utils.js';
 
 import {getCss} from './ink_color_selector.css.js';
 import {getHtml} from './ink_color_selector.html.js';
@@ -60,32 +60,6 @@ const PEN_COLORS: ColorOption[] = [
   {name: 'penColorBlue700', color: '#1967d2'},
   {name: 'penColorBrown3', color: '#885945'},
 ];
-
-// LINT.IfChange(HighlighterOpacity)
-const HIGHLIGHTER_OPACITY: number = 0.4;
-// LINT.ThenChange(//pdf/pdf_ink_brush.cc:HighlighterOpacity)
-
-/**
- * @param color The `Color` in RGB values.
- * @returns A hex-coded color string, formatted as '#ffffff'.
- */
-function colorToHex(color: Color): string {
-  const rgb = [color.r, color.g, color.b]
-                  .map(value => value.toString(16).padStart(2, '0'))
-                  .join('');
-  return `#${rgb}`;
-}
-
-/**
- * Blends `colorValue` with highlighter opacity on a white background.
- * @param colorValue The red, green, or blue value of a color.
- * @returns The new respective red, green, or blue value of a color that has
- * been transformed using the highlighter transparency on a white background.
- */
-function blendHighlighterColorValue(colorValue: number): number {
-  return Math.round(
-      colorValue * HIGHLIGHTER_OPACITY + 255 * (1 - HIGHLIGHTER_OPACITY));
-}
 
 /**
  * @returns Whether `lhs` and `rhs` have the same RGB values or not.

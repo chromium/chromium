@@ -41,3 +41,11 @@ ink-brush-selector {
 ink-color-selector {
   padding: 20px;
 }
+
+#color-chip {
+  background: var(--ink-brush-color, magenta);
+  border: 1px solid var(--viewer-icon-ink-background-color);
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+}
