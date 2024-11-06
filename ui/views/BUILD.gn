@@ -79,6 +79,7 @@ component("views") {
   public = [
     "accessibility/accessibility_paint_checks.h",
     "accessibility/atomic_view_ax_tree_manager.h",
+    "accessibility/ax_attribute_changed_callbacks.h",
     "accessibility/ax_event_manager.h",
     "accessibility/ax_event_observer.h",
     "accessibility/ax_virtual_view.h",
@@ -326,6 +327,7 @@ component("views") {
   sources = [
     "accessibility/accessibility_paint_checks.cc",
     "accessibility/atomic_view_ax_tree_manager.cc",
+    "accessibility/ax_attribute_changed_callbacks.cc",
     "accessibility/ax_event_manager.cc",
     "accessibility/ax_event_observer.cc",
     "accessibility/ax_virtual_view.cc",
