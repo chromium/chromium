@@ -110,7 +110,8 @@ class TestCSSParserImpl {
                               bool nested,
                               bool& invalid_rule_error) {
     return impl_.ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting,
-                                  nested, invalid_rule_error);
+                                  /* is_within_scope */ false, nested,
+                                  invalid_rule_error);
   }
 
  private:

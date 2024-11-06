@@ -80,16 +80,19 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     CSSNestingType nesting_type = parent_rule_for_nesting
                                       ? CSSNestingType::kNesting
                                       : CSSNestingType::kNone;
+    // TODO(crbug.com/363019835): Handle `is_within_scope` properly.
+    bool is_within_scope = false;
     new_rule = CSSParser::ParseRule(
         context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
-        parent_rule_for_nesting, rule_string);
+        parent_rule_for_nesting, is_within_scope, rule_string);
 
     if (!new_rule && parent_rule_for_nesting &&
         RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
       // Retry as a CSSNestedDeclarations rule.
       // https://drafts.csswg.org/cssom/#insert-a-css-rule
       new_rule = CSSParser::ParseNestedDeclarationsRule(
-          context, nesting_type, parent_rule_for_nesting, rule_string);
+          context, nesting_type, parent_rule_for_nesting, is_within_scope,
+          rule_string);
     }
   }
 
