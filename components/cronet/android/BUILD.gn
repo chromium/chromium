@@ -2130,12 +2130,8 @@ group("cronet_package_ci") {
   deps = [
     ":generate_build_script_test",
     ":gn2bp_check",
+    "//components/cronet/gn2bp/tests/test_rlib_crate:rust_test_targets",
   ]
-
-  if (enable_rust) {
-    deps +=
-        [ "//components/cronet/gn2bp/tests/test_rlib_crate:rust_test_targets" ]
-  }
 }
 
 group("cronet_android_mainline") {
