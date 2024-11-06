@@ -5675,18 +5675,22 @@ void NavigationRequest::OnFailureChecksComplete(
   ErrorPageProcess old_error_page_process = ComputeErrorPageProcess();
   net_error_ = result.net_error_code();
 
+  // The new `net_error_` value may mean we want to cancel the navigation.
+  if (MaybeCancelFailedNavigation()) {
+    return;
+  }
+
   // FIXME: Should we clear out |extended_error_code_| here?
 
   // Ensure that WillFailRequest() isn't changing the error code in a way that
   // switches the destination process for the error page - see
   // https://crbug.com/817881.
+  // NOTE: The throttle may change the error code to cancel a navigation which
+  // could lead to a failure here, and therefore this must be done after
+  // `MaybeCancelFailedNavigation`.
   CHECK_EQ(old_error_page_process, ComputeErrorPageProcess())
       << " Unsupported error code change in WillFailRequest(): from "
       << old_net_error << " to " << net_error_;
-
-  // The new `net_error_` value may mean we want to cancel the navigation.
-  if (MaybeCancelFailedNavigation())
-    return;
 
   // The OnRequestFailedInternal() did not commit the error page as it
   // deferred to WillFailRequest(), which has called through to here, and

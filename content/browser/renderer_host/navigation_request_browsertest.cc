@@ -1155,6 +1155,54 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelFailure) {
   }
 }
 
+// Ensure that a NavigationThrottle can cancel a redirected navigation that is
+// blocked by CSP.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       ThrottleCancelFailureRedirectBlockedByCSP) {
+  // Navigate to a URL with an iframe that will be later redirected to a
+  // URL blocked by CSP.
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Add frame-src CSP via a new <meta> element.
+  EXPECT_TRUE(
+      ExecJs(shell(),
+             "var meta = document.createElement('meta');"
+             "meta.httpEquiv = 'Content-Security-Policy';"
+             "meta.content = 'frame-src http://a.com:*';"
+             "document.getElementsByTagName('head')[0].appendChild(meta);"));
+
+  // Create a cross-origin redirect URL that doesn't honour above specified CSP.
+  GURL subframe_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL redirecting_subframe_url(embedded_test_server()->GetURL(
+      "a.com", "/server-redirect?" + subframe_url.spec()));
+
+  NavigationHandleObserver subframe_observer(shell()->web_contents(),
+                                             redirecting_subframe_url);
+  TestNavigationThrottleInstaller installer(
+      shell()->web_contents(), NavigationThrottle::PROCEED,
+      NavigationThrottle::PROCEED, NavigationThrottle::CANCEL_AND_IGNORE,
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
+
+  FrameTreeNode* child = static_cast<WebContentsImpl*>(shell()->web_contents())
+                             ->GetPrimaryFrameTree()
+                             .root()
+                             ->child_at(0);
+
+  // Navigate the subframe to a location that is not allowed by CSP.
+  EXPECT_FALSE(NavigateToURLFromRenderer(child, redirecting_subframe_url));
+
+  // Wait for WillFailRequest.
+  installer.WaitForThrottleWillFail();
+  // Make sure that throttle WillFailRequest() was called.
+  EXPECT_TRUE(installer.will_fail_called());
+  EXPECT_TRUE(subframe_observer.is_error());
+  // The redirected navigation is cancelled and the old net error code
+  // `net::BLOCKED_BY_CSP` is replaced with `net::ERR_ABORTED`.
+  EXPECT_EQ(net::ERR_ABORTED, subframe_observer.net_error_code());
+}
+
 // Ensure that a NavigationThrottle can cancel the navigation when the response
 // is received.
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelResponse) {
