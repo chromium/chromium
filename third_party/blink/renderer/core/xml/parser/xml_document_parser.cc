@@ -685,7 +685,8 @@ static int ReadFunc(void* context, char* buffer, int len) {
     return 0;
 
   SharedBufferReader* data = static_cast<SharedBufferReader*>(context);
-  return data->ReadData(buffer, len);
+  auto buffer_span = base::span(buffer, base::checked_cast<size_t>(len));
+  return base::checked_cast<int>(data->ReadData(buffer_span));
 }
 
 static int WriteFunc(void*, const char*, int) {
