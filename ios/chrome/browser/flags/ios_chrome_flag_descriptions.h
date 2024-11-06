@@ -134,6 +134,11 @@ extern const char kAutofillShowManualFillForVirtualCardsDescription[];
 extern const char kAutofillStickyInfobarName[];
 extern const char kAutofillStickyInfobarDescription[];
 
+// Title and description for the flag that enables the throttling of Autofill
+// document form scans.
+extern const char kAutofillThrottleDocumentFormScanName[];
+extern const char kAutofillThrottleDocumentFormScanDescription[];
+
 // Title and description for the flag that sets a client-side timeout on
 // UnmaskCardRequests to Google Payments servers.
 extern const char kAutofillUnmaskCardRequestTimeoutName[];

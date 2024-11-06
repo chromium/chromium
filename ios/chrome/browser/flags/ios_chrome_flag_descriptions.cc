@@ -165,6 +165,12 @@ const char kAutofillStickyInfobarDescription[] =
     "Makes the Address Infobar sticky to only dismiss on navigation from user "
     "gesture.";
 
+const char kAutofillThrottleDocumentFormScanName[] =
+    "Throttle Autofill Document Form Scans";
+const char kAutofillThrottleDocumentFormScanDescription[] =
+    "Enables the throttling of the recurrent document form scans done by "
+    "Autofill.";
+
 const char kAutofillUnmaskCardRequestTimeoutName[] =
     "Timeout for the credit card unmask request";
 const char kAutofillUnmaskCardRequestTimeoutDescription[] =
