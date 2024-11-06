@@ -1248,7 +1248,10 @@ void SearchBoxView::AssistantButtonPressed() {
 }
 
 void SearchBoxView::SunfishButtonPressed() {
-  view_delegate_->DismissAppList();
+  if (is_app_list_bubble_) {
+    // Only hide the launcher bubble in clamshell mode.
+    view_delegate_->DismissAppList();
+  }
   CaptureModeController::Get()->StartSunfishSession();
 }
 
