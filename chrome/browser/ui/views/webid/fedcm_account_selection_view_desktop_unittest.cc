@@ -2522,3 +2522,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // will complain that a widget is still open.
   dialog_widget_.reset();
 }
+
+// Tests that resizing the window updates the modal dialog position.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ResizingWindowUpdatesModalDialogPosition) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
+
+  controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
+  EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+}
