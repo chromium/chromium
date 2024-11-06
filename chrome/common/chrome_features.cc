@@ -110,12 +110,6 @@ BASE_FEATURE(kBackgroundModeAllowRestart,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kQuickOfficeForceFileDownload,
-             "QuickOfficeForceFileDownload",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_ANDROID)
 // Enable boarding pass detector on Chrome Android.
 BASE_FEATURE(kBoardingPassDetector,

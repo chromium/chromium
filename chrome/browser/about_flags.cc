@@ -5892,13 +5892,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchTextEditingRedesignName,
      flag_descriptions::kTouchTextEditingRedesignDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kTouchTextEditingRedesign)},
-#if BUILDFLAG(IS_CHROMEOS)
-    {"quickoffice-force-file-download",
-     flag_descriptions::kQuickOfficeForceFileDownloadName,
-     flag_descriptions::kQuickOfficeForceFileDownloadDescription,
-     kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kQuickOfficeForceFileDownload)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
     {"enable-extensible-enterprise-sso",
      flag_descriptions::kEnableExtensibleEnterpriseSSOName,

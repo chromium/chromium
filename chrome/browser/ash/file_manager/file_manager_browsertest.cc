@@ -228,17 +228,12 @@ class QuickOfficeBrowserTestBase : public InProcessBrowserTest {
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_file_directory);
     return test_file_directory;
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class QuickOfficeForceFileDownloadEnabledBrowserTest
     : public QuickOfficeBrowserTestBase {
  public:
-  QuickOfficeForceFileDownloadEnabledBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kQuickOfficeForceFileDownload);
-  }
+  QuickOfficeForceFileDownloadEnabledBrowserTest() = default;
   ~QuickOfficeForceFileDownloadEnabledBrowserTest() override = default;
 
   QuickOfficeForceFileDownloadEnabledBrowserTest(
@@ -250,10 +245,7 @@ class QuickOfficeForceFileDownloadEnabledBrowserTest
 class QuickOfficeForceFileDownloadDisabledBrowserTest
     : public QuickOfficeBrowserTestBase {
  public:
-  QuickOfficeForceFileDownloadDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kQuickOfficeForceFileDownload);
-  }
+  QuickOfficeForceFileDownloadDisabledBrowserTest() = default;
   ~QuickOfficeForceFileDownloadDisabledBrowserTest() override = default;
 
   QuickOfficeForceFileDownloadDisabledBrowserTest(

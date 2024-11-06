@@ -7438,11 +7438,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "quickoffice-force-file-download",
-    "owners": ["simmonsjosh@google.com"],
-    "expiry_milestone": 133
-  },
-  {
     "name": "read-aloud",
     "owners": [
       "basiaz@google.com",
