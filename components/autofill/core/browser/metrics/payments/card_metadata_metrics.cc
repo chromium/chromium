@@ -6,6 +6,7 @@
 
 #include <unordered_set>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -90,9 +91,9 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
     return kNab;
   } else if (card_issuer_id_or_network == kNatwestCardIssuerId) {
     return kNatwest;
-  } else if (card_issuer_id_or_network == autofill::kMasterCard) {
+  } else if (card_issuer_id_or_network == kMasterCard) {
     return kMastercard;
-  } else if (card_issuer_id_or_network == autofill::kVisaCard) {
+  } else if (card_issuer_id_or_network == kVisaCard) {
     return kVisa;
   } else {
     return "";
@@ -101,8 +102,8 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
 
 CardMetadataLoggingContext GetMetadataLoggingContext(
     const std::vector<CreditCard>& cards) {
-  const base::flat_set<std::string> kLoggedNetworks{autofill::kMasterCard,
-                                                    autofill::kVisaCard};
+  constexpr auto kLoggedNetworks =
+      base::MakeFixedFlatSet<std::string_view>({kMasterCard, kVisaCard});
   CardMetadataLoggingContext metadata_logging_context;
   for (const CreditCard& card : cards) {
     // If there is a product description, denote in the

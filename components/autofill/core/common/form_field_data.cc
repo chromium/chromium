@@ -470,7 +470,7 @@ std::optional<FormControlType> StringToFormControlTypeDiscouraged(
        i <= base::to_underlying(FormControlType::kMaxValue); ++i) {
     FormControlType type = static_cast<FormControlType>(i);
     if (mojom::IsKnownEnumValue(type) &&
-        type_string == autofill::FormControlTypeToString(type)) {
+        type_string == FormControlTypeToString(type)) {
       return type;
     }
   }

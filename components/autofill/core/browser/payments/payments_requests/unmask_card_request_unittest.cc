@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill::payments {
+namespace {
 
 // TODO(crbug.com/40241790): Extend tests in this file to all of the possible
 // card unmasking test cases. The cases that are not in this file are currently
@@ -166,7 +167,7 @@ TEST_F(UnmaskCardRequestTest, HasTimeoutWhenFlagSet) {
 class VirtualCardUnmaskCardRequestTest
     : public UnmaskCardRequestTest,
       public testing::WithParamInterface<
-          std::tuple<autofill::CardUnmaskChallengeOptionType, bool>> {
+          std::tuple<CardUnmaskChallengeOptionType, bool>> {
  public:
   VirtualCardUnmaskCardRequestTest() {
     if (IsCvcChallengeOption()) {
@@ -180,8 +181,7 @@ class VirtualCardUnmaskCardRequestTest
   ~VirtualCardUnmaskCardRequestTest() override = default;
 
   bool IsCvcChallengeOption() {
-    return std::get<0>(GetParam()) ==
-           autofill::CardUnmaskChallengeOptionType::kCvc;
+    return std::get<0>(GetParam()) == CardUnmaskChallengeOptionType::kCvc;
   }
 
   bool IsAutofillEnable3dsForVcnYellowPathTurnedOn() {
@@ -396,9 +396,8 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     VirtualCardUnmaskCardRequestTest,
-    testing::Combine(
-        testing::Values(autofill::CardUnmaskChallengeOptionType::kCvc),
-        testing::Bool()));
+    testing::Combine(testing::Values(CardUnmaskChallengeOptionType::kCvc),
+                     testing::Bool()));
 
 class CardInfoRetrievalUnmaskCardRequestTest : public UnmaskCardRequestTest {
  public:
@@ -457,4 +456,5 @@ TEST_F(CardInfoRetrievalUnmaskCardRequestTest, GetRequestContent) {
   EXPECT_TRUE(IsIncludedInRequestContent("https://example.com/"));
 }
 
+}  // namespace
 }  // namespace autofill::payments

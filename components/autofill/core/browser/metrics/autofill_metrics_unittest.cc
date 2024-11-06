@@ -92,6 +92,9 @@
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #endif
 
+namespace autofill::autofill_metrics {
+namespace {
+
 using ::autofill::test::AddFieldPredictionToForm;
 using ::autofill::test::CreateTestFormField;
 using ::base::ASCIIToUTF16;
@@ -104,9 +107,6 @@ using ::testing::HasSubstr;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::UnorderedPointwise;
-
-namespace autofill::autofill_metrics {
-namespace {
 
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 using PaymentsSigninState = AutofillMetrics::PaymentsSigninState;

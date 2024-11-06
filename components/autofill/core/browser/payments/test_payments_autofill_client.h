@@ -113,7 +113,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   AutofillOfferManager* GetAutofillOfferManager() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest,
+      base::span<const CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions) override;
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator>

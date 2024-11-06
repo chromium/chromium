@@ -39,13 +39,13 @@ AutofillField& AddSelect(FormStructure& form,
                          bool is_sensitive = false) {
   AutofillField& added_field =
       AddInputField(form, label, name, value, is_sensitive);
-  added_field.set_form_control_type(autofill::FormControlType::kSelectOne);
+  added_field.set_form_control_type(FormControlType::kSelectOne);
   added_field.set_options(options);
   return added_field;
 }
 
 TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
-  FormStructure form{autofill::FormData()};
+  FormStructure form{FormData()};
   // TODO(crbug.com/373776019): Restructure to remove and extend the
   // AddInputField method.
   AutofillField& field1 = AddInputField(form, u"label", u"name", u"val");

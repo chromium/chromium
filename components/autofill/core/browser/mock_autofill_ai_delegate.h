@@ -33,28 +33,27 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
   MOCK_METHOD(void, UserFeedbackReceived, (UserFeedback feedback), (override));
   MOCK_METHOD(bool,
               IsPredictionImprovementsEligible,
-              (const autofill::FormStructure& form,
-               const autofill::AutofillField& field),
+              (const FormStructure& form, const AutofillField& field),
               (const override));
   MOCK_METHOD(bool, IsUserEligible, (), (const override));
   MOCK_METHOD(void, UserClickedLearnMore, (), (override));
   MOCK_METHOD(void,
               OnClickedTriggerSuggestion,
-              (const autofill::FormData& form,
-               const autofill::FormFieldData& trigger_field,
+              (const FormData& form,
+               const FormFieldData& trigger_field,
                UpdateSuggestionsCallback update_suggestions_callback),
               (override));
   MOCK_METHOD(
       void,
       MaybeImportForm,
-      (std::unique_ptr<autofill::FormStructure> form,
-       base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
+      (std::unique_ptr<FormStructure> form,
+       base::OnceCallback<void(std::unique_ptr<FormStructure> form,
                                bool autofill_ai_shows_bubble)> callback),
       (override));
   MOCK_METHOD(void, HasDataStored, (HasDataCallback callback), (override));
   MOCK_METHOD(bool,
               ShouldDisplayIph,
-              (const autofill::FormStructure& form, const AutofillField& field),
+              (const FormStructure& form, const AutofillField& field),
               (const override));
   MOCK_METHOD(void, GoToSettings, (), (const override));
   MOCK_METHOD(void,

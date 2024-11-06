@@ -1063,7 +1063,7 @@ class RationalizePhoneNumberFieldsTest : public testing::Test {
  public:
   struct FieldTemplate {
     // Description of the field passed to the rationalization.
-    autofill::FieldType type;
+    FieldType type;
     // Expectation of field after rationalization.
     bool only_fill_when_focused;
   };

@@ -871,9 +871,8 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
   std::u16string id_attribute = element.GetIdAttribute().Utf16();
   static base::NoDestructor<WebString> kLabel("label");
   std::u16string label_attribute = element.GetAttribute(*kLabel).Utf16();
-  autofill::mojom::FormControlType type_attribute =
-      form_util::ToAutofillFormControlType(
-          element.FormControlTypeForAutofill());
+  mojom::FormControlType type_attribute = form_util::ToAutofillFormControlType(
+      element.FormControlTypeForAutofill());
 
   if (!password_manager::util::CanFieldBeConsideredAsSingleUsername(
           name_attribute, id_attribute, label_attribute, type_attribute) ||
@@ -1681,7 +1680,7 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
     // time.
     ShowSuggestions(
         focused_input,
-        autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
   }
 }
 
@@ -2420,7 +2419,7 @@ void PasswordAutofillAgent::MaybeTriggerSuggestionsOnFocusedElement(
       base::FeatureList::IsEnabled(
           password_manager::features::kShowSuggestionsOnAutofocus)) {
     autofill_agent_->TriggerSuggestions(
-        autofill::form_util::GetFieldRendererId(focused_element),
+        form_util::GetFieldRendererId(focused_element),
         AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField);
   }
 }

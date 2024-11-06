@@ -500,7 +500,7 @@ class TestAutofillManagerSingleEventWaiter {
     }
     void OnFillOrPreviewDataModelForm(
         AutofillManager& manager,
-        autofill::FormGlobalId form,
+        FormGlobalId form,
         mojom::ActionPersistence action_persistence,
         base::span<const FormFieldData* const> filled_fields,
         absl::variant<const AutofillProfile*, const CreditCard*>

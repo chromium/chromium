@@ -365,7 +365,7 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
   }
 }
 
-void EncodeFormForQuery(const autofill::FormStructure& form,
+void EncodeFormForQuery(const FormStructure& form,
                         AutofillPageQueryRequest& query,
                         std::vector<FormSignature>& queried_form_signatures,
                         std::set<FormSignature>& processed_forms) {
@@ -710,7 +710,7 @@ EncodeAutofillPageQueryRequest(
   // considered for field signatures; (2) for dynamic forms we will hold on to
   // the original form signature.
   std::set<FormSignature> processed_forms;
-  for (const autofill::FormStructure* form : forms) {
+  for (const FormStructure* form : forms) {
     if (base::Contains(processed_forms, form->form_signature())) {
       continue;
     }

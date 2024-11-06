@@ -10,8 +10,6 @@
 namespace autofill {
 namespace {
 
-using autofill::AddressRewriter;
-
 TEST(AddressRewriterTest, InvalidCountryCode) {
   AddressRewriter ad =
       AddressRewriter::ForCountryCode(AddressCountryCode("ZZZZ"));

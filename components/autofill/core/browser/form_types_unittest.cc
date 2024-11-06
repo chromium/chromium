@@ -12,9 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
-using autofill::FieldType;
-using std::string;
+namespace {
 
 struct FormTypesTestCase {
   std::vector<FieldType> field_types;
@@ -22,7 +20,7 @@ struct FormTypesTestCase {
   bool expected_result;
 };
 
-autofill::FormFieldData CreateFieldWithValue(std::u16string value) {
+FormFieldData CreateFieldWithValue(std::u16string value) {
   FormFieldData field;
   field.set_value(value);
   return field;
@@ -59,4 +57,5 @@ INSTANTIATE_TEST_SUITE_P(
                                       true},
                     FormTypesTestCase{{CREDIT_CARD_NUMBER}, {u""}, false}));
 
+}  // namespace
 }  // namespace autofill

@@ -545,16 +545,15 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // implementation.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest,
+      base::span<const CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions);
 
   // Shows the Touch To Fill surface for filling IBAN information, if
   // possible, returning `true` on success. `delegate` will be notified of
   // events. This function is not implemented on iOS and iOS WebView, and
   // should not be used on those platforms.
-  virtual bool ShowTouchToFillIban(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::Iban> ibans_to_suggest);
+  virtual bool ShowTouchToFillIban(base::WeakPtr<TouchToFillDelegate> delegate,
+                                   base::span<const Iban> ibans_to_suggest);
 
   // Hides the Touch To Fill surface for filling payment information if one is
   // currently shown. Should be called only if the feature is supported by the

@@ -309,7 +309,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
 size_t CountActiveFieldsInForms(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   size_t active_field_count = 0;
-  for (const autofill::FormStructure* form : forms) {
+  for (const FormStructure* form : forms) {
     active_field_count += form->active_field_count();
   }
   return active_field_count;

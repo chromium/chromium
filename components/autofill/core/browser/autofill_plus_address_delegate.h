@@ -93,8 +93,7 @@ class AutofillPlusAddressDelegate {
       const url::Origin& origin,
       bool is_off_the_record,
       const FormData& focused_form,
-      const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
-          form_field_types,
+      const base::flat_map<FieldGlobalId, FieldTypeGroup>& form_field_types,
       const PasswordFormClassification& focused_form_classification,
       const FieldGlobalId& focused_field_id,
       AutofillSuggestionTriggerSource trigger_source) = 0;

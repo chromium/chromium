@@ -60,25 +60,25 @@
 namespace autofill {
 namespace {
 
-using autofill::AutofillProfileChange;
-using autofill::CreditCardChange;
-using base::ScopedTempDir;
+using ::autofill::AutofillProfileChange;
+using ::autofill::CreditCardChange;
+using ::base::ScopedTempDir;
 using IbanChangeKey = absl::variant<std::string, int64_t>;
-using sync_pb::AutofillWalletSpecifics;
-using sync_pb::DataTypeState;
-using sync_pb::EntityMetadata;
-using syncer::DataBatch;
-using syncer::DataType;
-using syncer::EntityChange;
-using syncer::EntityData;
-using syncer::HasInitialSyncDone;
-using syncer::KeyAndData;
-using syncer::MockDataTypeLocalChangeProcessor;
-using testing::NiceMock;
-using testing::Pointee;
-using testing::Return;
-using testing::SizeIs;
-using testing::UnorderedElementsAre;
+using ::sync_pb::AutofillWalletSpecifics;
+using ::sync_pb::DataTypeState;
+using ::sync_pb::EntityMetadata;
+using ::syncer::DataBatch;
+using ::syncer::DataType;
+using ::syncer::EntityChange;
+using ::syncer::EntityData;
+using ::syncer::HasInitialSyncDone;
+using ::syncer::KeyAndData;
+using ::syncer::MockDataTypeLocalChangeProcessor;
+using ::testing::NiceMock;
+using ::testing::Pointee;
+using ::testing::Return;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // Represents a Payments customer id.
 constexpr char kCustomerDataId[] = "deadbeef";
@@ -1507,7 +1507,7 @@ class AutofillWalletSyncBridgeTestWithBenefitSyncDisabled
  public:
   AutofillWalletSyncBridgeTestWithBenefitSyncDisabled() {
     feature_list_.InitAndDisableFeature(
-        autofill::features::kAutofillEnableCardBenefitsSync);
+        features::kAutofillEnableCardBenefitsSync);
   }
 
   ~AutofillWalletSyncBridgeTestWithBenefitSyncDisabled() override = default;

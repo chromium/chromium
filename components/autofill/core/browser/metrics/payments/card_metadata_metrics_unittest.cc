@@ -161,10 +161,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
       GetHistogramName(card().issuer_id(), ".ShownWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadata"),
+      GetHistogramName(kMasterCard, ".ShownWithMetadata"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".ShownWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard..ShownWithMetadata",
                                       card_metadata_available(), 0);
@@ -193,10 +193,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
       GetHistogramName(card().issuer_id(), ".ShownWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadata"),
+      GetHistogramName(kMasterCard, ".ShownWithMetadata"),
       card_metadata_available(), 2);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".ShownWithMetadataOnce"),
       card_metadata_available(), 1);
 }
 
@@ -259,10 +259,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       GetHistogramName(card().issuer_id(), ".SelectedWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadata"),
+      GetHistogramName(kMasterCard, ".SelectedWithMetadata"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".SelectedWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard..SelectedWithMetadata", card_metadata_available(),
@@ -293,10 +293,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       GetHistogramName(card().issuer_id(), ".SelectedWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadata"),
+      GetHistogramName(kMasterCard, ".SelectedWithMetadata"),
       card_metadata_available(), 2);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".SelectedWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
       GetHistogramName(card().issuer_id(),
@@ -304,8 +304,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       true,
       card_metadata_available() && registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard,
-                       ".SelectedWithIssuerMetadataPresentOnce"),
+      GetHistogramName(kMasterCard, ".SelectedWithIssuerMetadataPresentOnce"),
       true, card_metadata_available() ? 1 : 0);
 
   // Only test non-Amex because for Amex case it will log true in
@@ -369,10 +368,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
       GetHistogramName(card().issuer_id(), ".FilledWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadata"),
+      GetHistogramName(kMasterCard, ".FilledWithMetadata"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".FilledWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard..FilledWithMetadata",
                                       card_metadata_available(), 0);
@@ -402,10 +401,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
       GetHistogramName(card().issuer_id(), ".FilledWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadata"),
+      GetHistogramName(kMasterCard, ".FilledWithMetadata"),
       card_metadata_available(), 2);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".FilledWithMetadataOnce"),
       card_metadata_available(), 1);
 }
 
@@ -458,10 +457,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
       GetHistogramName(card().issuer_id(), ".SubmittedWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".WillSubmitWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".WillSubmitWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SubmittedWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".SubmittedWithMetadataOnce"),
       card_metadata_available(), 1);
 }
 
@@ -502,7 +501,7 @@ class CardMetadataLatencyMetricsTest
                            .action = ""});
 
     CreditCard masked_server_card = test::GetMaskedServerCard();
-    masked_server_card.SetNetworkForMaskedCard(autofill::kMasterCard);
+    masked_server_card.SetNetworkForMaskedCard(kMasterCard);
     masked_server_card.set_guid(kTestMaskedCardId);
     masked_server_card.set_issuer_id(kCapitalOneCardIssuerId);
     if (card_has_static_art_image()) {

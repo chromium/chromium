@@ -52,9 +52,8 @@ optimization_guide::proto::FormControlType ToFormControlTypeProto(
 
 optimization_guide::proto::FormData ToFormDataProto(
     const FormData& form_data,
-    const base::flat_map<autofill::FieldGlobalId, bool>& field_eligibility_map,
-    const base::flat_map<autofill::FieldGlobalId, bool>&
-        field_value_sensitivity_map) {
+    const base::flat_map<FieldGlobalId, bool>& field_eligibility_map,
+    const base::flat_map<FieldGlobalId, bool>& field_value_sensitivity_map) {
   optimization_guide::proto::FormData form_data_proto;
   form_data_proto.set_form_name(base::UTF16ToUTF8(form_data.name()));
   for (const auto& field : form_data.fields()) {
@@ -78,8 +77,7 @@ optimization_guide::proto::FormData ToFormDataProto(
     // Utility function to map the eligibility and value sensitivity to the form
     // data.
     auto map_is_true_for_key =
-        [](const base::flat_map<autofill::FieldGlobalId, bool>& map,
-           autofill::FieldGlobalId key) {
+        [](const base::flat_map<FieldGlobalId, bool>& map, FieldGlobalId key) {
           auto it = map.find(key);
           return it != map.end() ? it->second : false;
         };
@@ -97,7 +95,7 @@ optimization_guide::proto::FormData ToFormDataProto(
 
 optimization_guide::proto::FormData ToFormDataProto(
     const FormStructure& form_structure) {
-  auto field_eligibility_map = base::MakeFlatMap<autofill::FieldGlobalId, bool>(
+  auto field_eligibility_map = base::MakeFlatMap<FieldGlobalId, bool>(
       form_structure.fields(), {}, [](const auto& field) {
         return std::make_pair(
             field->global_id(),
@@ -106,7 +104,7 @@ optimization_guide::proto::FormData ToFormDataProto(
       });
 
   auto field_value_sensitivity_map =
-      base::MakeFlatMap<autofill::FieldGlobalId, bool>(
+      base::MakeFlatMap<FieldGlobalId, bool>(
           form_structure.fields(), {}, [](const auto& field) {
             return std::make_pair(
                 field->global_id(),

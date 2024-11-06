@@ -130,7 +130,7 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
 
   // Shows the Card Unmask Prompt. `challenge_option` being present denotes that
   // we are in the virtual card use-case.
-  void ShowPrompt(const std::optional<autofill::CardUnmaskChallengeOption>&
+  void ShowPrompt(const std::optional<CardUnmaskChallengeOption>&
                       challenge_option = std::nullopt) {
     card_.set_record_type(challenge_option.has_value()
                               ? CreditCard::RecordType::kVirtualCard
@@ -157,7 +157,7 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
                                      bool should_unmask_virtual_card = false,
                                      bool was_checkbox_visible = true) {
     ShowPrompt(should_unmask_virtual_card
-                   ? std::optional<autofill::CardUnmaskChallengeOption>(
+                   ? std::optional<CardUnmaskChallengeOption>(
                          test::GetCardUnmaskChallengeOptions(
                              {CardUnmaskChallengeOptionType::kCvc})[0])
                    : std::nullopt);
@@ -506,7 +506,7 @@ TEST_P(LoggingValidationTestForNickname,
 
 TEST_P(LoggingValidationTestForNickname, VirtualCard_LogUnmaskPromptShown) {
   base::HistogramTester histogram_tester;
-  ShowPrompt(std::optional<autofill::CardUnmaskChallengeOption>(
+  ShowPrompt(std::optional<CardUnmaskChallengeOption>(
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kCvc})[0]));
 

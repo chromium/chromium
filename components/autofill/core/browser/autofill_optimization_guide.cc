@@ -201,8 +201,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
 #endif
   }
 
-  if (base::FeatureList::IsEnabled(
-          ::autofill::features::kAutofillEnableAblationStudy)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableAblationStudy)) {
     AddAblationOptimizationTypes(optimization_types);
   }
 

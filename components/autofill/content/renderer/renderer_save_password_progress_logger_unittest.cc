@@ -41,26 +41,25 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
  private:
   // autofill::mojom::PasswordManagerDriver:
-  void PasswordFormsParsed(
-      const std::vector<autofill::FormData>& form_data) override {}
+  void PasswordFormsParsed(const std::vector<FormData>& form_data) override {}
 
   void PasswordFormsRendered(
-      const std::vector<autofill::FormData>& visible_forms_data) override {}
+      const std::vector<FormData>& visible_forms_data) override {}
 
-  void PasswordFormSubmitted(const autofill::FormData& form_data) override {}
+  void PasswordFormSubmitted(const FormData& form_data) override {}
 
-  void InformAboutUserInput(const autofill::FormData& form_data) override {}
+  void InformAboutUserInput(const FormData& form_data) override {}
 
-  void DynamicFormSubmission(autofill::mojom::SubmissionIndicatorEvent
-                                 submission_indication_event) override {}
+  void DynamicFormSubmission(
+      mojom::SubmissionIndicatorEvent submission_indication_event) override {}
 
-  void PasswordFormCleared(const autofill::FormData& form_data) override {}
+  void PasswordFormCleared(const FormData& form_data) override {}
 
   void ShowPasswordSuggestions(
-      const autofill::PasswordSuggestionRequest& request) override {}
+      const PasswordSuggestionRequest& request) override {}
 #if BUILDFLAG(IS_ANDROID)
   void ShowKeyboardReplacingSurface(
-      autofill::mojom::SubmissionReadinessState submission_readiness,
+      mojom::SubmissionReadinessState submission_readiness,
       bool is_webauthn_form) override {}
 #endif
 
@@ -71,7 +70,7 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
   void UserModifiedPasswordField() override {}
 
-  void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
+  void UserModifiedNonPasswordField(FieldRendererId renderer_id,
                                     const std::u16string& value,
                                     bool autocomplete_attribute_has_username,
                                     bool is_likely_otp) override {}
@@ -80,9 +79,9 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
                                    const GURL& frame_url) override {}
 
   void FocusedInputChanged(
-      autofill::FieldRendererId focused_field_id,
-      autofill::mojom::FocusedFieldType focused_field_type) override {}
-  void LogFirstFillingResult(autofill::FormRendererId form_renderer_id,
+      FieldRendererId focused_field_id,
+      mojom::FocusedFieldType focused_field_type) override {}
+  void LogFirstFillingResult(FormRendererId form_renderer_id,
                              int32_t result) override {}
 
   // Records whether RecordSavePasswordProgress() gets called.

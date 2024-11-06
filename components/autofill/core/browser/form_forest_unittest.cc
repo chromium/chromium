@@ -29,6 +29,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill::internal {
+namespace {
+
 using FrameData = autofill::internal::FormForest::FrameData;
 using FrameDataSet =
     base::flat_set<std::unique_ptr<FrameData>, FrameData::CompareByFrameToken>;
@@ -43,9 +46,6 @@ using ::testing::Matcher;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::UnorderedElementsAreArray;
-
-namespace autofill::internal {
-namespace {
 
 // Matchers.
 

@@ -91,7 +91,7 @@ std::string_view GetSkipFieldFillLogMessage(
 }
 
 std::string FetchCountryCodeFromProfile(const AutofillProfile* profile) {
-  return base::UTF16ToUTF8(profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+  return base::UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_COUNTRY));
 }
 
 // Returns how many fields with type |field_type| may be filled in a form at
@@ -119,9 +119,8 @@ std::string_view ActionPersistenceToString(
 
 // Returns true iff `field` should be skipped during filling because its
 // non-empty initial value is considered to be meaningful.
-bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(
-    const autofill::AutofillField& field,
-    bool is_trigger_field) {
+bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
+                                                    bool is_trigger_field) {
   // Assume that the trigger field can always be overwritten.
   if (is_trigger_field) {
     return false;
@@ -667,7 +666,7 @@ void FormFiller::FillOrPreviewForm(
   std::optional<FillEventId> fill_event_id;
   if (action_persistence == mojom::ActionPersistence::kFill) {
     std::string country_code;
-    if (const autofill::AutofillProfile** address =
+    if (const AutofillProfile** address =
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       country_code = FetchCountryCodeFromProfile(*address);
     }

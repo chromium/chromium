@@ -320,7 +320,7 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
 std::vector<FieldGlobalId> FormStructure::FindFieldsEligibleForManualFilling(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   std::vector<FieldGlobalId> fields_eligible_for_manual_filling;
-  for (const autofill::FormStructure* form : forms) {
+  for (const FormStructure* form : forms) {
     for (const auto& field : form->fields_) {
       FieldTypeGroup field_type_group =
           GroupTypeOfFieldType(field->server_type());

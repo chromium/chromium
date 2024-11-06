@@ -100,7 +100,7 @@ int GetIconResourceID(Suggestion::Icon resource_name) {
 #endif
   const auto& kDataResource =
       base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableNewCardArtAndNetworkImages)
+          features::kAutofillEnableNewCardArtAndNetworkImages)
           ? kNewCardArtAndNetworkDataResources
           : kDataResources;
   auto it = kDataResource.find(resource_name);

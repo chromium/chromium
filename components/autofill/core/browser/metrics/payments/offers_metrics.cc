@@ -136,16 +136,14 @@ void LogOffersSuggestionsPopupShown(bool first_time_being_logged) {
     // while autofilling if it is the first time being logged.
     base::UmaHistogramEnumeration(
         "Autofill.Offer.SuggestionsPopupShown2",
-        autofill::autofill_metrics::OffersSuggestionsPopupEvent::
-            kOffersSuggestionsPopupShownOnce);
+        OffersSuggestionsPopupEvent::kOffersSuggestionsPopupShownOnce);
   }
 
   // We log every time the offers suggestions popup is shown, regardless if the
   // user is repeatedly clicking the same field.
   base::UmaHistogramEnumeration(
       "Autofill.Offer.SuggestionsPopupShown2",
-      autofill::autofill_metrics::OffersSuggestionsPopupEvent::
-          kOffersSuggestionsPopupShown);
+      OffersSuggestionsPopupEvent::kOffersSuggestionsPopupShown);
 }
 
 void LogIndividualOfferSuggestionEvent(

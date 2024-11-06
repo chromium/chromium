@@ -446,7 +446,7 @@ CreditCardFieldParser::~CreditCardFieldParser() = default;
 
 void CreditCardFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  for (autofill::AutofillField* number : numbers_) {
+  for (AutofillField* number : numbers_) {
     AddClassification(number, CREDIT_CARD_NUMBER,
                       kBaseCreditCardParserScore, field_candidates);
   }

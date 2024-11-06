@@ -28,13 +28,12 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace autofill::autofill_metrics {
-
 namespace {
 
-using autofill::test::AddFieldPredictionToForm;
-using autofill::test::CreateTestFormField;
+using ::autofill::mojom::SubmissionSource;
+using ::autofill::test::AddFieldPredictionToForm;
+using ::autofill::test::CreateTestFormField;
 using AutofillStatus = FormInteractionsUkmLogger::AutofillStatus;
-using mojom::SubmissionSource;
 
 using UkmSuggestionsShownType = ukm::builders::Autofill_SuggestionsShown;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
@@ -1965,5 +1964,4 @@ TEST_F(FieldLogUkmMetricTest,
 }
 
 }  // namespace
-
 }  // namespace autofill::autofill_metrics

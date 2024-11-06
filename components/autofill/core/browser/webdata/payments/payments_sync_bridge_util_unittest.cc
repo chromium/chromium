@@ -229,8 +229,7 @@ class PaymentsSyncBridgeUtilCardBenefitsTest
  public:
   PaymentsSyncBridgeUtilCardBenefitsTest() {
     feature_list_.InitWithFeatureState(
-        autofill::features::kAutofillEnableCardBenefitsSync,
-        IsBenefitsSyncEnabled());
+        features::kAutofillEnableCardBenefitsSync, IsBenefitsSyncEnabled());
   }
 
   ~PaymentsSyncBridgeUtilCardBenefitsTest() override = default;
@@ -1141,21 +1140,19 @@ INSTANTIATE_TEST_SUITE_P(
     PaymentsSyncBridgeUtilTest_WalletCardMapping,
     testing::Values(
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::AMEX,
-                              autofill::kAmericanExpressCard},
+                              kAmericanExpressCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::DISCOVER,
-                              autofill::kDiscoverCard},
-        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::ELO,
-                              autofill::kEloCard},
-        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::JCB,
-                              autofill::kJCBCard},
+                              kDiscoverCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::ELO, kEloCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::JCB, kJCBCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::MASTER_CARD,
-                              autofill::kMasterCard},
+                              kMasterCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::UNIONPAY,
-                              autofill::kUnionPay},
+                              kUnionPay},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VERVE,
-                              autofill::kVerveCard},
+                              kVerveCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VISA,
-                              autofill::kVisaCard}));
+                              kVisaCard}));
 
 // These two tests verify the same case as
 // `PaymentsSyncBridgeUtilTest_WalletCardMapping` but with the added caveat of
@@ -1168,7 +1165,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
       features::kAutofillEnableVerveCardSupport);
 
   CreditCard credit_card = test::GetMaskedServerCard();
-  credit_card.SetNetworkForMaskedCard(autofill::kVerveCard);
+  credit_card.SetNetworkForMaskedCard(kVerveCard);
 
   sync_pb::AutofillWalletSpecifics wallet_specifics;
   SetAutofillWalletSpecificsFromServerCard(credit_card, &wallet_specifics);
@@ -1213,7 +1210,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   ASSERT_EQ(1U, wallet_cards.size());
   // With the flag off, the card network is `kGenericCard` instead of
   // `kVerveCard`.
-  EXPECT_EQ(autofill::kGenericCard, wallet_cards.front().network());
+  EXPECT_EQ(kGenericCard, wallet_cards.front().network());
 }
 
 TEST_F(PaymentsSyncBridgeUtilTest,
