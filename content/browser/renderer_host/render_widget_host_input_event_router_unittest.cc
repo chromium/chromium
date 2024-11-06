@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/input/features.h"
 #include "components/input/render_widget_targeter.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -1016,12 +1017,15 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
                                            scroll_begin));
 
   // Verify that the DwoC code set the crash string.
-  // TODO(crbug.com/346629231): remove this iblock and associated code when
+  // TODO(crbug.com/346629231): remove this block and associated code when
   // resolved.
-  std::ostringstream stream;
-  base::debug::OutputCrashKeysToStream(stream);
-  EXPECT_EQ("touchscreen_gesture_event_history:{GestureTapDown,TS,f};",
-            stream.str());
+  if (base::FeatureList::IsEnabled(
+          input::features::kLogBubblingTouchscreenGesturesForDebug)) {
+    std::ostringstream stream;
+    base::debug::OutputCrashKeysToStream(stream);
+    EXPECT_EQ("Bug346629231-tscr_gesture_evt_history:{GestureTapDown,TS,f};",
+              stream.str());
+  }
 
   EXPECT_EQ(nullptr, bubbling_gesture_scroll_origin());
   EXPECT_EQ(nullptr, bubbling_gesture_scroll_target());
