@@ -146,8 +146,7 @@ class BocaSessionManager
   virtual void LoadCurrentSession();
   void ParseSessionResponse(base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result);
-  // TODO(b/371111860): Remove the dispatch event flag when OnTask
-  // fixes the session handling.
+
   virtual void UpdateCurrentSession(std::unique_ptr<::boca::Session> session,
                                     bool dispatch_event);
   virtual ::boca::Session* GetCurrentSession();
