@@ -7731,11 +7731,18 @@ static_library("browser") {
 
       "//chrome/browser/extensions",
 
+      # Has dependencies on notification code in //chrome/browser.
+      "//chrome/browser/extensions/api/notifications",
+
       # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications/extensions",
     ]
     deps += [
       "//apps",
+
+      # This dependency should be removed when //chrome/browser/notifications
+      # is modularized.
+      "//chrome/browser/extensions/api/notifications",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/extensions/api",
