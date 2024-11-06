@@ -3394,24 +3394,6 @@
             ]
         }
     ],
-    "BrowserSwitcherNoneIsGreylist": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowserSwitcherNoneIsGreylist"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowserThreadPoolAdjustmentForAndroid": [
         {
             "platforms": [
