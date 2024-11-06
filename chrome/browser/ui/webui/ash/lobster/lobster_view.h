@@ -24,6 +24,8 @@ class LobsterView : public WebUIBubbleDialogView {
   ~LobsterView() override;
 
   // WebUIBubbleDialogView:
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override;
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& new_size) override;
   void ShowUI() override;
