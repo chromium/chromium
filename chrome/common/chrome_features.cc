@@ -1260,11 +1260,11 @@ BASE_FEATURE(kProcessPerSiteSkipEnterpriseUsers,
 // Enables the SkyVault (cloud-first) changes, some of which are also controlled
 // by policies: removing local storage, saving downloads and screen captures to
 // the cloud, and related UX changes, primarily in the Files App.
-BASE_FEATURE(kSkyVault, "SkyVault", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSkyVault, "SkyVault", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the SkyVault V2 changes, which are also controlled by policies:
 // LocalUserFilesAllowed, DownloadDirectory and ScreenCaptureLocation.
-BASE_FEATURE(kSkyVaultV2, "SkyVaultV2", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSkyVaultV2, "SkyVaultV2", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

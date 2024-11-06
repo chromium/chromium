@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
@@ -48,6 +49,11 @@ constexpr char kOneDrivePolicyVariableName[] = "${microsoft_onedrive}";
 bool LocalUserFilesAllowed() {
   // If the flag is disabled, ignore the policy value and allow local storage.
   if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+    return true;
+  }
+  // In tests, `g_browser_process` is null.
+  if (!g_browser_process || !g_browser_process->local_state()) {
+    CHECK_IS_TEST();
     return true;
   }
   return g_browser_process->local_state()->GetBoolean(
