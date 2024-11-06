@@ -12032,6 +12032,24 @@
             ]
         }
     ],
+    "IOSStartTimeStartupRemediations": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSaveNTPWebState",
+                    "params": {
+                        "ios-startup-remediations-save-ntp-web-state": "true"
+                    },
+                    "enable_features": [
+                        "IOSStartTimeStartupRemediations"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTFLiteLanguageDetection": [
         {
             "platforms": [
