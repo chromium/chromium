@@ -1090,6 +1090,7 @@ public final class ProductionSupportedFlagList {
                 "LCPTimingPredictorPrerender2",
                 "When enabled, Prerender2 by Speculation Rules API is delayed until LCP is"
                         + " finished."),
+        Flag.baseFeature("SyntheticResponseReportUnexpectedHeader"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
