@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/read_into_request.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
@@ -483,14 +482,13 @@ void ByteStreamTeeEngine::ForwardReaderError(
     ReadableStreamGenericReader* this_reader) {
   // 14. Let forwardReaderError be the following steps, taking a thisReader
   // argument:
-  class RejectFunction final : public PromiseHandler {
+  class RejectFunction final : public ThenCallable<IDLAny, RejectFunction> {
    public:
     explicit RejectFunction(ByteStreamTeeEngine* engine,
                             ReadableStreamGenericReader* reader)
         : engine_(engine), reader_(reader) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       //   a. Upon rejection of thisReader.[[closedPromise]] with reason r,
       //     i. If thisReader is not reader, return.
       if (engine_->reader_ != reader_) {
@@ -499,11 +497,11 @@ void ByteStreamTeeEngine::ForwardReaderError(
       //     ii. Perform !
       //     ReadableByteStreamControllerError(branch1.[[controller]], r).
       ReadableByteStreamController::Error(script_state, engine_->controller_[0],
-                                          r);
+                                          r.V8Value());
       //     iii. Perform !
       //     ReadableByteStreamControllerError(branch2.[[controller]], r).
       ReadableByteStreamController::Error(script_state, engine_->controller_[1],
-                                          r);
+                                          r.V8Value());
       //     iv. If canceled1 is false or canceled2 is false, resolve
       //     cancelPromise with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
@@ -514,7 +512,7 @@ void ByteStreamTeeEngine::ForwardReaderError(
     void Trace(Visitor* visitor) const override {
       visitor->Trace(engine_);
       visitor->Trace(reader_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectFunction>::Trace(visitor);
     }
 
    private:
@@ -522,11 +520,9 @@ void ByteStreamTeeEngine::ForwardReaderError(
     Member<ReadableStreamGenericReader> reader_;
   };
 
-  StreamThenPromise(script_state->GetContext(),
-                    this_reader->closed(script_state).V8Promise(), nullptr,
-                    MakeGarbageCollected<ScriptFunction>(
-                        script_state, MakeGarbageCollected<RejectFunction>(
-                                          this, this_reader)));
+  this_reader->closed(script_state)
+      .Catch(script_state,
+             MakeGarbageCollected<RejectFunction>(this, this_reader));
 }
 
 void ByteStreamTeeEngine::PullWithDefaultReader(

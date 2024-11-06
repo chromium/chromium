@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
@@ -251,30 +250,27 @@ void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
       underlying_sink->abort(script_state_, reason, ASSERT_NO_EXCEPTION);
 
   // 6. Upon fulfillment of promise, reject pendingOperation with reason.
-  class ResolveFunction final : public PromiseHandler {
+  class ResolveFunction final
+      : public ThenCallable<IDLUndefined, ResolveFunction> {
    public:
     ResolveFunction(ScriptValue reason,
                     ScriptPromiseResolver<IDLUndefined>* resolver)
         : reason_(reason), resolver_(resolver) {}
 
-    void CallWithLocal(ScriptState*, v8::Local<v8::Value>) override {
-      resolver_->Reject(reason_);
-    }
+    void React(ScriptState*) { resolver_->Reject(reason_); }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(reason_);
       visitor->Trace(resolver_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLUndefined, ResolveFunction>::Trace(visitor);
     }
 
    private:
     ScriptValue reason_;
     Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
-  StreamThenPromise(script_state_->GetContext(), abort_promise.V8Promise(),
-                    MakeGarbageCollected<ScriptFunction>(
-                        script_state_, MakeGarbageCollected<ResolveFunction>(
-                                           reason, pending_operation)));
+  abort_promise.React(script_state_, MakeGarbageCollected<ResolveFunction>(
+                                         reason, pending_operation));
 }
 
 void OutgoingStream::OnOutgoingStreamClosed() {

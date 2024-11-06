@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
@@ -387,18 +386,15 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     // visible asynchronously anyway. This avoids doing an extra allocation and
     // creating a TraceWrappertV8Reference.
     if (!writable_->backpressure_promise_) {
-      return DoWrite(script_state, chunk);
+      return DoWrite(script_state, chunk).V8Promise();
     }
 
     // 2. Return the result of reacting to backpressurePromise with the
     //    following fulfillment steps:
-
-    return StreamThenPromise(
-        script_state->GetContext(),
-        writable_->backpressure_promise_->V8Promise(),
-        MakeGarbageCollected<ScriptFunction>(
-            script_state,
-            MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this)));
+    return writable_->backpressure_promise_->Promise()
+        .Then(script_state,
+              MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this))
+        .V8Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -408,15 +404,16 @@ class CrossRealmTransformWritable::WriteAlgorithm final
 
  private:
   // A promise handler which calls DoWrite() when the promise resolves.
-  class DoWriteOnResolve final : public PromiseHandlerWithValue {
+  class DoWriteOnResolve final : public ThenCallable<IDLUndefined,
+                                                     DoWriteOnResolve,
+                                                     IDLPromise<IDLUndefined>> {
    public:
     DoWriteOnResolve(ScriptState* script_state,
                      v8::Local<v8::Value> chunk,
                      WriteAlgorithm* target)
         : chunk_(script_state->GetIsolate(), chunk), target_(target) {}
 
-    v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
-                                       v8::Local<v8::Value>) override {
+    ScriptPromise<IDLUndefined> React(ScriptState* script_state) {
       return target_->DoWrite(script_state,
                               chunk_.Get(script_state->GetIsolate()));
     }
@@ -424,7 +421,8 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     void Trace(Visitor* visitor) const override {
       visitor->Trace(chunk_);
       visitor->Trace(target_);
-      PromiseHandlerWithValue::Trace(visitor);
+      ThenCallable<IDLUndefined, DoWriteOnResolve,
+                   IDLPromise<IDLUndefined>>::Trace(visitor);
     }
 
    private:
@@ -433,8 +431,8 @@ class CrossRealmTransformWritable::WriteAlgorithm final
   };
 
   // Sends a chunk over the message port to the readable side.
-  v8::Local<v8::Promise> DoWrite(ScriptState* script_state,
-                                 v8::Local<v8::Value> chunk) {
+  ScriptPromise<IDLUndefined> DoWrite(ScriptState* script_state,
+                                      v8::Local<v8::Value> chunk) {
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable
     // 8. Let writeAlgorithm be the following steps, taking a chunk argument:
     //   2. Return the result of reacting to backpressurePromise with the
@@ -456,11 +454,11 @@ class CrossRealmTransformWritable::WriteAlgorithm final
       writable_->message_port_->close();
 
       //     2. Return a promise rejected with result.[[Value]].
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //     4. Otherwise, return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   const Member<CrossRealmTransformWritable> writable_;
