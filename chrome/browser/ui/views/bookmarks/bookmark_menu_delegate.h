@@ -153,6 +153,9 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
     size_t index_to_drop_at = 0;
   };
 
+  // Computes the parent and the index at which the dragged/copied node will be
+  // dropped.
+  // Returns `std::nullopt` if the drop is not valid.
   std::optional<DropParams> GetDropParams(
       views::MenuItemView* menu,
       views::MenuDelegate::DropPosition* position);

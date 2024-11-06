@@ -169,17 +169,28 @@ BookmarkParentFolder GetBookmarkParentFolderForNode(
   NOTREACHED();
 }
 
+// Bookmark menu has the following structure:
+// - Managed folder submenu
+// - Bookmark bar items
+// - Other Bookmark submenu
+// - Mobile Bookmark submenu
+// Dropping before the managed or mobile folder is invalid.
+// Dropping after the other or mobile bookmark folder is invalid.
 bool IsDropValid(const BookmarkNode* target,
-                 const views::MenuDelegate::DropPosition* position) {
+                 const views::MenuDelegate::DropPosition* position,
+                 bookmarks::ManagedBookmarkService* managed_service) {
   switch (*position) {
     case views::MenuDelegate::DropPosition::kUnknow:
     case views::MenuDelegate::DropPosition::kNone:
       return false;
 
     case views::MenuDelegate::DropPosition::kBefore:
+      // Dropping before mobile and managed node makes no sense.
+      if (managed_service && target == managed_service->managed_node()) {
+        return false;
+      }
       if (target->is_permanent_node() &&
           target->type() == BookmarkNode::Type::MOBILE) {
-        // Dropping before this node makes no sense.
         return false;
       }
       return true;
@@ -194,7 +205,7 @@ bool IsDropValid(const BookmarkNode* target,
       return true;
 
     case views::MenuDelegate::DropPosition::kOn:
-      return true;
+      return target->is_folder();
   }
   NOTREACHED();
 }
@@ -581,16 +592,25 @@ BookmarkMenuDelegate::GetDropParams(
   const BookmarkNode* const drop_node =
       menu_id_to_node_map_[menu->GetCommand()];
   CHECK(drop_node);
-  if (!IsDropValid(drop_node, position)) {
+  bookmarks::ManagedBookmarkService* managed_service =
+      GetManagedBookmarkService();
+  if (!IsDropValid(drop_node, position, managed_service)) {
     return std::nullopt;
   }
 
   DropParams drop_params;
   switch (*position) {
     case views::MenuDelegate::DropPosition::kAfter:
-      drop_params.drop_parent = drop_node->parent();
-      drop_params.index_to_drop_at =
-          *drop_node->parent()->GetIndexOf(drop_node) + 1;
+      if (managed_service && drop_node == managed_service->managed_node()) {
+        // This can happen with SHOW_PERMANENT_FOLDERS.
+        // Managed folder is shown at the top of the bookmarks menu.
+        drop_params.drop_parent = GetBookmarkModel()->bookmark_bar_node();
+        drop_params.index_to_drop_at = 0;
+      } else {
+        drop_params.drop_parent = drop_node->parent();
+        drop_params.index_to_drop_at =
+            *drop_node->parent()->GetIndexOf(drop_node) + 1;
+      }
       break;
 
     case views::MenuDelegate::DropPosition::kOn:
