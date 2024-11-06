@@ -2995,7 +2995,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.PrivacyHub.LearnMorePage.Opened"
-    enum="PrivacyHubLearnMoreSensor" expires_after="2024-12-15">
+    enum="PrivacyHubLearnMoreSensor" expires_after="2025-11-01">
   <owner>cschlosser@chromium.org</owner>
   <owner>chromeos-privacyhub@google.com</owner>
   <summary>
