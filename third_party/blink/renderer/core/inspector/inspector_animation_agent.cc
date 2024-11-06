@@ -144,6 +144,12 @@ protocol::Response InspectorAnimationAgent::enable() {
   enabled_.Set(true);
   instrumenting_agents_->AddInspectorAnimationAgent(this);
 
+  if (inspected_frames_->Root()->IsProvisional()) {
+    // Running getAnimations on a document attached to a provisional frame can
+    // cause a crash: crbug.com/40670727
+    return protocol::Response::Success();
+  }
+
   Document* document = inspected_frames_->Root()->GetDocument();
   DocumentAnimations& document_animations = document->GetDocumentAnimations();
   HeapVector<Member<Animation>> animations =
