@@ -2538,13 +2538,6 @@
       status: "stable",
     },
     {
-      // This feature makes HTMLLabelElement::DefaultEventHandler always call
-      // HTMLElement::DefaultEventHandler instead of only doing so
-      // conditionally. Shipping in M123 so should be safe to remove in M127.
-      name: "LabelEventHandlerCallSuper",
-      status: "stable",
-    },
-    {
       name: "LangAttributeAwareFormControlUI",
       settable_from_internals: true,
     },
