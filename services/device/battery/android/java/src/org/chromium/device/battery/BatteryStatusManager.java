@@ -16,6 +16,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 import org.chromium.device.mojom.BatteryStatus;
 
 /**
@@ -40,7 +45,10 @@ class BatteryStatusManager {
                 }
             };
     private AndroidBatteryManagerWrapper mAndroidBatteryManager;
-    private boolean mEnabled;
+    private volatile boolean mEnabled;
+
+    private static final TaskRunner sSequencedTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
 
     @VisibleForTesting
     static class AndroidBatteryManagerWrapper {
@@ -79,27 +87,45 @@ class BatteryStatusManager {
         return new BatteryStatusManager(callback, batteryManager);
     }
 
-    /**
-     * Starts listening for intents.
-     * @return True on success.
-     */
-    boolean start() {
-        if (!mEnabled
-                && ContextUtils.registerProtectedBroadcastReceiver(
-                                ContextUtils.getApplicationContext(), mReceiver, mFilter)
-                        != null) {
-            // success
+    /** Starts listening for intents. */
+    void start() {
+        if (mEnabled) {
+            return;
+        }
+
+        if (DeviceFeatureMap.isEnabled(
+                DeviceFeatureList.BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND)) {
+            sSequencedTaskRunner.execute(this::registerBatteryStatusManagerReceiver);
+        } else {
+            registerBatteryStatusManagerReceiver();
+        }
+    }
+
+    void registerBatteryStatusManagerReceiver() {
+        if (ContextUtils.registerProtectedBroadcastReceiver(
+                        ContextUtils.getApplicationContext(), mReceiver, mFilter)
+                != null) {
             mEnabled = true;
         }
-        return mEnabled;
     }
 
     /** Stops listening to intents. */
     void stop() {
-        if (mEnabled) {
-            ContextUtils.getApplicationContext().unregisterReceiver(mReceiver);
-            mEnabled = false;
+        if (!mEnabled) {
+            return;
         }
+
+        if (DeviceFeatureMap.isEnabled(
+                DeviceFeatureList.BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND)) {
+            sSequencedTaskRunner.execute(this::unregisterBatteryStatusManagerReceiver);
+        } else {
+            unregisterBatteryStatusManagerReceiver();
+        }
+    }
+
+    void unregisterBatteryStatusManagerReceiver() {
+        ContextUtils.getApplicationContext().unregisterReceiver(mReceiver);
+        mEnabled = false;
     }
 
     @VisibleForTesting

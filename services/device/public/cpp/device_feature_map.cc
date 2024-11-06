@@ -24,6 +24,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnAndroidCredMan,
     &kGenericSensorExtraClasses,
+    &kBatteryStatusManagerBroadcastReceiverInBackground,
 };
 
 // static
