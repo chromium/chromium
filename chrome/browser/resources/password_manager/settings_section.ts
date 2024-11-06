@@ -31,11 +31,10 @@ import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener} from './password_manager_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
-
 import type {Route} from './router.js';
 import {RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './settings_section.html.js';
-import {SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
+import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface SettingsSectionElement {
@@ -387,7 +386,8 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     e.preventDefault();
     // <if expr="not is_chromeos">
     if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
-      SyncBrowserProxyImpl.getInstance().openBatchUpload();
+      SyncBrowserProxyImpl.getInstance().openBatchUpload(
+          BatchUploadPasswordsEntryPoint.PASSWORD_MANAGER);
       return;
     }
     // </if>

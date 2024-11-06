@@ -55,11 +55,9 @@ class BatchUploadService : public KeyedService {
   // data (of any type) to show and the dialog is not shown already in the
   // profile. `dialog_shown_callback` returns whether the dialog was shown or
   // not.
-  // TODO(crbug.com/375351323): Remove the default entry point value when adding
-  // the real entry points at the call sites.
   void OpenBatchUpload(
       Browser* browser,
-      EntryPoint entry_point = EntryPoint::kPasswordManagerSettings,
+      EntryPoint entry_point,
       base::OnceCallback<void(bool)> dialog_shown_callback = base::DoNothing());
 
   // Returns whether the dialog is currently showing on a browser.

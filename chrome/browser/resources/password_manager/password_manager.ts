@@ -44,5 +44,5 @@ export {SharePasswordLoadingDialogElement} from './sharing/share_password_loadin
 export {SharePasswordRecipientElement} from './sharing/share_password_recipient.js';
 export {PasswordManagerSideBarElement} from './side_bar.js';
 export {SiteFaviconElement} from './site_favicon.js';
-export {AccountInfo, SyncBrowserProxy, SyncBrowserProxyImpl, SyncInfo, TrustedVaultBannerState} from './sync_browser_proxy.js';
+export {AccountInfo, BatchUploadPasswordsEntryPoint, SyncBrowserProxy, SyncBrowserProxyImpl, SyncInfo, TrustedVaultBannerState} from './sync_browser_proxy.js';
 export {PasswordManagerToolbarElement} from './toolbar.js';
