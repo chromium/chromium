@@ -352,6 +352,7 @@ ci_build_perf_builder(
     ),
     # TODO(333491525): enable no-fallback once OOM fallback mitigated.
     siso_experiments = [],
+    siso_limits = "fastlocal=0",
 )
 
 cq_build_perf_builder(
