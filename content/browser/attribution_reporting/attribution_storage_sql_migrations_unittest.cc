@@ -642,7 +642,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion64ToCurrent) {
 
 TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion65ToCurrent) {
   base::HistogramTester histograms;
-  LoadDatabase(GetVersionFilePath(64), DbPath());
+  LoadDatabase(GetVersionFilePath(65), DbPath());
 
   // Verify pre-conditions.
   {
