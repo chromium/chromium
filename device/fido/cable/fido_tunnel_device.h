@@ -139,13 +139,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   };
 
   struct QRInfo {
+    static constexpr size_t kPskSize = 32;
+
     QRInfo();
     ~QRInfo();
     QRInfo(const QRInfo&) = delete;
     QRInfo& operator=(const QRInfo&) = delete;
 
     CableEidArray decrypted_eid;
-    std::array<uint8_t, 32> psk;
+    std::array<uint8_t, kPskSize> psk;
     std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback;
     std::array<uint8_t, kQRSeedSize> local_identity_seed;
@@ -153,6 +155,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   };
 
   struct PairedInfo {
+    static constexpr size_t kPskSize = QRInfo::kPskSize;
+
     PairedInfo();
     ~PairedInfo();
     PairedInfo(const PairedInfo&) = delete;
@@ -162,7 +166,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     std::array<uint8_t, kP256X962Length> peer_identity;
     std::vector<uint8_t> secret;
     std::optional<CableEidArray> decrypted_eid;
-    std::optional<std::array<uint8_t, 32>> psk;
+    std::optional<std::array<uint8_t, kPskSize>> psk;
     std::optional<std::vector<uint8_t>> handshake_message;
     base::OnceClosure pairing_is_invalid;
   };

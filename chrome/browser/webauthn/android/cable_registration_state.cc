@@ -4,6 +4,8 @@
 
 #include "chrome/browser/webauthn/android/cable_registration_state.h"
 
+#include <array>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -156,7 +158,7 @@ void RegistrationState::MaybeFlushPendingEvent() {
     // and we piggyback on that to transmit fresh keys. Therefore syncing
     // peers should have reasonably recent information.
     uint64_t id;
-    static_assert(EXTENT(event->pairing_id) == sizeof(id), "");
+    static_assert(std::tuple_size_v<decltype(event->pairing_id)> == sizeof(id));
     memcpy(&id, event->pairing_id.data(), sizeof(id));
 
     // A maximum age is enforced for sync secrets so that any leak of

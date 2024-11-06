@@ -99,7 +99,7 @@ TEST(CableV2Encoding, QRs) {
     std::string url = qr::Encode(qr_key, FidoRequestType::kMakeCredential);
     const std::optional<qr::Components> decoded = qr::Parse(url);
     ASSERT_TRUE(decoded.has_value()) << url;
-    static_assert(EXTENT(qr_key) >= EXTENT(decoded->secret), "");
+    static_assert(kQRKeySize >= std::tuple_size_v<decltype(decoded->secret)>);
     EXPECT_EQ(memcmp(decoded->secret.data(),
                      &qr_key[qr_key.size() - decoded->secret.size()],
                      decoded->secret.size()),

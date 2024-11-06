@@ -2309,21 +2309,6 @@ TEST(SpanTest, IteratorConversions) {
       "Error: const iterator should not be convertible to iterator");
 }
 
-TEST(SpanTest, ExtentMacro) {
-  constexpr size_t kSize = 10;
-  std::array<uint8_t, kSize> array;
-  static_assert(EXTENT(array) == kSize, "EXTENT broken");
-
-  const std::array<uint8_t, kSize>& reference = array;
-  static_assert(EXTENT(reference) == kSize, "EXTENT broken for references");
-
-  const std::array<uint8_t, kSize>* pointer = nullptr;
-  static_assert(EXTENT(*pointer) == kSize, "EXTENT broken for pointers");
-
-  uint8_t plain_array[kSize] = {0};
-  static_assert(EXTENT(plain_array) == kSize, "EXTENT broken for plain arrays");
-}
-
 TEST(SpanTest, CopyFrom) {
   int arr[] = {1, 2, 3};
   span<int, 0> empty_static_span;

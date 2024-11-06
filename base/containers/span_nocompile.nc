@@ -140,13 +140,6 @@ void ConstVectorDeducesAsConstSpan() {
   span<int> s = make_span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
 }
 
-// EXTENT should not result in |dynamic_extent|, it should be a compile-time
-// error.
-void ExtentNoDynamicExtent() {
-  std::vector<uint8_t> vector;
-  constexpr size_t extent = EXTENT(vector);  // expected-error@*:* {{EXTENT should only be used for containers with a static extent}}
-}
-
 void Dangling() {
   // `std::array` destroyed at the end of the full expression.
   [[maybe_unused]] auto a = span<const int>(std::to_array({1, 2, 3}));     // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}

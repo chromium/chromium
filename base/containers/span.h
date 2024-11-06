@@ -278,16 +278,6 @@ template <typename T>
 inline constexpr size_t kComputedExtent =
     kComputedExtentImpl<std::remove_cvref_t<T>>;
 
-// must_not_be_dynamic_extent prevents |dynamic_extent| from being returned in a
-// constexpr context.
-template <size_t kExtent>
-constexpr size_t must_not_be_dynamic_extent() {
-  static_assert(
-      kExtent != dynamic_extent,
-      "EXTENT should only be used for containers with a static extent.");
-  return kExtent;
-}
-
 template <class T, class U, size_t N, size_t M>
   requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
            std::equality_comparable_with<T, U>)
@@ -1779,16 +1769,5 @@ constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
 }
 
 }  // namespace base
-
-// EXTENT returns the size of any type that can be converted to a |base::span|
-// with definite extent, i.e. everything that is a contiguous storage of some
-// sort with static size. Specifically, this works for std::array in a constexpr
-// context. Note:
-//   * |std::size| should be preferred for plain arrays.
-//   * In run-time contexts, functions such as |std::array::size| should be
-//     preferred.
-#define EXTENT(x)                                                          \
-  ::base::internal::must_not_be_dynamic_extent<decltype(::base::make_span( \
-      x))::extent>()
 
 #endif  // BASE_CONTAINERS_SPAN_H_
