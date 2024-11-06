@@ -8,11 +8,13 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/lobster/lobster_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_manager.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"
+#include "chrome/browser/ui/ash/editor_menu/lobster_manager.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_card_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -82,23 +84,33 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
       virtual void DismissCard() = 0;
     };
 
+    enum class Tab { kEditor, kLobster };
+
     explicit EditorCardSession(EditorMenuControllerImpl* controller,
-                               std::unique_ptr<EditorManager> editor_manager);
+                               std::unique_ptr<EditorManager> editor_manager,
+                               std::unique_ptr<LobsterManager> lobster_manager);
     ~EditorCardSession() override;
 
     // EditorManager::Observer overrides
     void OnEditorModeChanged(const EditorMode& mode) override;
 
-    EditorManager& manager();
+    void StartFlowWithFreeformText(const std::string& freeform_text);
 
-    bool lobster_tab_selected = false;
+    EditorManager* editor_manager() { return editor_manager_.get(); }
+
+    LobsterManager* lobster_manager() { return lobster_manager_.get(); }
+
+    Tab current_tab = Tab::kEditor;
 
    private:
     // Not owned by this class
     raw_ptr<EditorMenuControllerImpl> controller_;
 
     // Provides access to the core editor backend.
-    std::unique_ptr<EditorManager> manager_;
+    std::unique_ptr<EditorManager> editor_manager_;
+
+    // Provides access to the lobster trigger.
+    std::unique_ptr<LobsterManager> lobster_manager_;
   };
 
   void OnGetEditorContext(
