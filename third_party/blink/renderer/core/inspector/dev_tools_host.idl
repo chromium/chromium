@@ -30,6 +30,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+dictionary Accelerator {
+  unsigned short keyCode;
+  long modifiers;
+};
+
 dictionary ShowContextMenuItem {
   required DOMString type;
   [EnforceRange] unsigned short id;
@@ -37,6 +42,7 @@ dictionary ShowContextMenuItem {
   boolean isExperimentalFeature = false;
   boolean enabled = true;
   boolean checked = false;
+  Accelerator accelerator;
   sequence<ShowContextMenuItem> subItems;
 };
 

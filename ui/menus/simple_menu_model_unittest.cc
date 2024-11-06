@@ -106,6 +106,20 @@ TEST(SimpleMenuModelTest, SetLabel) {
   ASSERT_EQ(u"new label", simple_menu_model.GetLabelAt(0));
 }
 
+TEST(SimpleMenuModelTest, SetAccelerator) {
+  SimpleMenuModel simple_menu_model(nullptr);
+  simple_menu_model.AddItem(/*command_id*/ 5, u"menu item 0");
+
+  const ui::Accelerator accelerator_set(VKEY_A, EF_NONE);
+  simple_menu_model.SetAcceleratorAt(/*index*/ 0, accelerator_set);
+
+  ui::Accelerator accelerator_get;
+  simple_menu_model.GetAcceleratorAt(0, &accelerator_get);
+  EXPECT_TRUE(simple_menu_model.GetAcceleratorAt(0, &accelerator_get));
+
+  ASSERT_EQ(accelerator_set, accelerator_get);
+}
+
 TEST(SimpleMenuModelTest, SetEnabledAt) {
   SimpleMenuModel simple_menu_model(nullptr);
   simple_menu_model.AddItem(/*command_id*/ 5, u"menu item 0");

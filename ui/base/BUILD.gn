@@ -356,6 +356,8 @@ component("base") {
 
   if (is_ios) {
     sources += [
+      "accelerators/accelerator.cc",
+      "accelerators/accelerator.h",
       "device_form_factor_ios.mm",
       "resource/resource_bundle_ios.mm",
     ]
@@ -525,6 +527,9 @@ component("base") {
     deps += [
       ":l10n_util_ios",
       "//base",
+      "//ui/events:dom_keycode_converter",
+      "//ui/events:events",
+      "//ui/events:events_base",
     ]
   }
 

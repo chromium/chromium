@@ -91,6 +91,8 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
 
   KeyboardCode key_code() const { return key_code_; }
 
+  bool IsEmpty() const;
+
 #if BUILDFLAG(IS_CHROMEOS)
   DomCode code() const { return code_; }
   void reset_code() { code_ = DomCode::NONE; }
