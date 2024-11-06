@@ -251,23 +251,6 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
       1);
 }
 
-// A test to ensure that a row in the settings view shows up for
-// plus_addresses, and that tapping it opens a new tab for its settings, which
-// are managed externally.
-- (void)testSettings {
-  [ChromeEarlGreyUI openSettingsMenu];
-  // Take note of how many tabs are open before clicking the link in settings,
-  // which should simply open a new tab.
-  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
-  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:grey_accessibilityID(kSettingsPlusAddressesId)];
-
-  // A new tab should open after tapping the link.
-  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
-  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
-}
-
 // A test to check the refresh plus address functionality.
 - (void)testRefresh {
   [self openCreatePlusAddressBottomSheet];

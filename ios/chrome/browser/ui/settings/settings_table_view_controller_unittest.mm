@@ -606,24 +606,6 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
        sectionIdentifier:section]);
 }
 
-// Verifies that the plus address option isn't shown when disabled.
-TEST_F(SettingsTableViewControllerTest, NoPlusAddressesByDefault) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      plus_addresses::features::kPlusAddressesEnabled);
-
-  CreateController();
-  CheckController();
-
-  NSArray<TableViewItem*>* advanced_items = [controller().tableViewModel
-      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
-                                       SettingsSectionIdentifierAdvanced];
-
-  for (TableViewItem* advanced_item in advanced_items) {
-    EXPECT_NE(advanced_item.accessibilityIdentifier, kSettingsPlusAddressesId);
-  }
-}
-
 // Verifies that the default browser blue dot is displayed when indicated.
 TEST_F(SettingsTableViewControllerTest, TestHasDefaultBrowserBlueDot) {
   VerifyDefaultBrowwserBlueDot(true);

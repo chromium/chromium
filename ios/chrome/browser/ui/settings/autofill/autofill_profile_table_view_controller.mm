@@ -171,8 +171,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       forSectionWithIdentifier:SectionIdentifierSwitches];
 
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::
-              kPlusAddressIOSErrorAndLoadingStatesEnabled) &&
+          plus_addresses::features::kPlusAddressesEnabled) &&
       self.userEmail) {
     [model addSectionWithIdentifier:SectionIdentifierPlusAddress];
     [model addItem:[self plusAddressItem]
@@ -379,8 +378,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableViewModel sectionIdentifierForSectionIndex:section];
 
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::
-              kPlusAddressIOSErrorAndLoadingStatesEnabled) &&
+          plus_addresses::features::kPlusAddressesEnabled) &&
       sectionIdentifier == SectionIdentifierPlusAddress) {
     return kPlusAddressSectionHeaderHeight;
   }
@@ -394,8 +392,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableViewModel sectionIdentifierForSectionIndex:section];
 
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::
-              kPlusAddressIOSErrorAndLoadingStatesEnabled) &&
+          plus_addresses::features::kPlusAddressesEnabled) &&
       sectionIdentifier == SectionIdentifierPlusAddress) {
     return kTableViewHeaderFooterViewHeight;
   }
