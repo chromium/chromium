@@ -103,8 +103,10 @@ void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
 
   bool is_inherit = value.IsInheritedValue();
   bool is_initial = value.IsInitialValue();
-  if (is_inherit && !state.ParentStyle()) {
+  bool is_unset = value.IsUnsetValue();
+  if ((is_inherit || is_unset) && !state.ParentStyle()) {
     is_inherit = false;
+    is_unset = false;
     is_initial = true;
   }
   DCHECK(!is_inherit || !is_initial);
@@ -113,7 +115,7 @@ void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
   if (is_inherit && !is_inherited_for_unset) {
     state.StyleBuilder().SetHasExplicitInheritance();
     state.ParentStyle()->SetChildHasExplicitInheritance();
-  } else if (value.IsUnsetValue()) {
+  } else if (is_unset) {
     DCHECK(!is_inherit && !is_initial);
     if (is_inherited_for_unset) {
       is_inherit = true;
