@@ -227,13 +227,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.BatchUpload.Opened" enum="BooleanHit"
+<histogram name="Sync.BatchUpload.Opened" enum="BatchUploadEntryPoint"
     expires_after="2025-04-14">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records that the Batch Upload Dialog was opened. Records when the dialog is
-    first shown.
+    Records the entry point from which the Batch Upload Dialog was opened.
+    Records when the dialog is first shown.
   </summary>
 </histogram>
 

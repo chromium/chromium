@@ -40,6 +40,7 @@ class BatchUploadDelegateMock : public BatchUploadDelegate {
       ShowBatchUploadDialog,
       (Browser * browser,
        std::vector<syncer::LocalDataDescription> local_data_description_list,
+       BatchUploadService::EntryPoint entry_point,
        BatchUploadSelectedDataTypeItemsCallback complete_callback),
       (override));
 };
@@ -134,9 +135,11 @@ TEST_F(BatchUploadServiceTest, SignedOut) {
       identity_manager().HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(0);
-  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _)).Times(0);
+  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);
   EXPECT_CALL(opened_callback, Run(false)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
@@ -147,9 +150,11 @@ TEST_F(BatchUploadServiceTest, SignedPending) {
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
 
   EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(0);
-  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _)).Times(0);
+  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);
   EXPECT_CALL(opened_callback, Run(false)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
@@ -161,9 +166,11 @@ TEST_F(BatchUploadServiceTest, Syncing) {
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
 
   EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(0);
-  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _)).Times(0);
+  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);
   EXPECT_CALL(opened_callback, Run(false)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
@@ -179,9 +186,11 @@ TEST_F(BatchUploadServiceTest, NoLocalDataReturned) {
                                       syncer::DataType::CONTACT_INFO},
                   _))
       .Times(1);
-  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _)).Times(0);
+  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);
   EXPECT_CALL(opened_callback, Run(false)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
@@ -192,9 +201,11 @@ TEST_F(BatchUploadServiceTest, EmptyLocalDataReturned) {
   SetReturnDescriptions(syncer::PASSWORDS, 0);
 
   EXPECT_CALL(sync_service_mock(), GetLocalDataDescriptions(_, _)).Times(1);
-  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _)).Times(0);
+  EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);
   EXPECT_CALL(opened_callback, Run(false)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_FALSE(service.IsDialogOpened());
 }
 
@@ -212,9 +223,11 @@ TEST_F(BatchUploadServiceTest,
   EXPECT_CALL(
       delegate_mock(),
       ShowBatchUploadDialog(
-          _, std::vector<syncer::LocalDataDescription>{contact_info}, _));
+          _, std::vector<syncer::LocalDataDescription>{contact_info}, _, _));
   EXPECT_CALL(opened_callback, Run(true)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 }
 
@@ -233,9 +246,11 @@ TEST_F(BatchUploadServiceTest,
       delegate_mock(),
       ShowBatchUploadDialog(
           _, std::vector<syncer::LocalDataDescription>{passwords, contact_info},
-          _));
+          _, _));
   EXPECT_CALL(opened_callback, Run(true)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 }
 
@@ -253,16 +268,19 @@ TEST_F(BatchUploadServiceTest, LocalDataReturnedShowsDialogAndReturnIdToMove) {
       passwords, contact_infos};
   BatchUploadSelectedDataTypeItemsCallback returned_complete_callback;
   EXPECT_CALL(delegate_mock(),
-              ShowBatchUploadDialog(_, expected_descriptions, _))
+              ShowBatchUploadDialog(_, expected_descriptions, _, _))
       .WillOnce(
           [&](Browser* browser,
               const std::vector<syncer::LocalDataDescription>&
                   local_data_description_list,
+              BatchUploadService::EntryPoint entry_point,
               BatchUploadSelectedDataTypeItemsCallback complete_callback) {
             returned_complete_callback = std::move(complete_callback);
           });
   EXPECT_CALL(opened_callback, Run(true)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 
   std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
@@ -287,16 +305,19 @@ TEST_F(BatchUploadServiceTest,
       passwords, contact_infos};
   BatchUploadSelectedDataTypeItemsCallback returned_complete_callback;
   EXPECT_CALL(delegate_mock(),
-              ShowBatchUploadDialog(_, expected_descriptions, _))
+              ShowBatchUploadDialog(_, expected_descriptions, _, _))
       .WillOnce(
           [&](Browser* browser,
               const std::vector<syncer::LocalDataDescription>&
                   local_data_description_list,
+              BatchUploadService::EntryPoint entry_point,
               BatchUploadSelectedDataTypeItemsCallback complete_callback) {
             returned_complete_callback = std::move(complete_callback);
           });
   EXPECT_CALL(opened_callback, Run(true)).Times(1);
-  service.OpenBatchUpload(nullptr, opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
+      opened_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 
   std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>

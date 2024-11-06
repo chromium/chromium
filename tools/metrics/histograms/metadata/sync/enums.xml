@@ -71,6 +71,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Signout"/>
 </enum>
 
+<!-- LINT.IfChange(BatchUploadEntryPoint) -->
+
+<enum name="BatchUploadEntryPoint">
+  <int value="0" label="Password manager settings"/>
+  <int value="1" label="Password promo card"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/profiles/batch_upload/batch_upload_service.h:EntryPoint) -->
+
 <!-- LINT.IfChange(BookmarkGUIDSource) -->
 
 <enum name="BookmarkGUIDSource">

@@ -106,11 +106,12 @@ BatchUploadDialogView::~BatchUploadDialogView() {
 BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
     Browser& browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
+    BatchUploadService::EntryPoint entry_point,
     BatchUploadSelectedDataTypeItemsCallback complete_callback) {
   std::unique_ptr<BatchUploadDialogView> dialog_view =
       base::WrapUnique(new BatchUploadDialogView(
           browser.profile(), std::move(local_data_description_list),
-          std::move(complete_callback)));
+          entry_point, std::move(complete_callback)));
   BatchUploadDialogView* dialog_view_ptr = dialog_view.get();
 
   gfx::NativeWindow window = browser.tab_strip_model()
@@ -125,8 +126,10 @@ BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
 BatchUploadDialogView::BatchUploadDialogView(
     Profile* profile,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
+    BatchUploadService::EntryPoint entry_point,
     BatchUploadSelectedDataTypeItemsCallback complete_callback)
-    : complete_callback_(std::move(complete_callback)) {
+    : complete_callback_(std::move(complete_callback)),
+      entry_point_(entry_point) {
   SetModalType(ui::mojom::ModalType::kWindow);
   // No native buttons.
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -239,7 +242,7 @@ void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
     widget->Show();
 
     RecordAvailableDataTypes(data_item_count_map_);
-    base::UmaHistogramBoolean("Sync.BatchUpload.Opened", true);
+    base::UmaHistogramEnumeration("Sync.BatchUpload.Opened", entry_point_);
   }
 }
 
@@ -293,9 +296,10 @@ views::WebView* BatchUploadDialogView::GetWebViewForTesting() {
 void BatchUploadUIDelegate::ShowBatchUploadDialogInternal(
     Browser& browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
+    BatchUploadService::EntryPoint entry_point,
     BatchUploadSelectedDataTypeItemsCallback complete_callback) {
   BatchUploadDialogView::CreateBatchUploadDialogView(
-      browser, std::move(local_data_description_list),
+      browser, std::move(local_data_description_list), entry_point,
       std::move(complete_callback));
 }
 

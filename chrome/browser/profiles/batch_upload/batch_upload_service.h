@@ -37,13 +37,29 @@ class BatchUploadService : public KeyedService {
   BatchUploadService& operator=(const BatchUploadService&) = delete;
   ~BatchUploadService() override;
 
+  // Lists the different entry points to the Batch Upload Dialog.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(EntryPoint)
+  enum class EntryPoint {
+    kPasswordManagerSettings = 0,
+    kPasswordPromoCard = 1,
+
+    kMaxValue = kPasswordPromoCard,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BatchUploadEntryPoint)
+
   // Attempts to open the Batch Upload modal dialog that allows uploading the
   // local profile data. The dialog will only be opened if there are some local
   // data (of any type) to show and the dialog is not shown already in the
   // profile. `dialog_shown_callback` returns whether the dialog was shown or
   // not.
+  // TODO(crbug.com/375351323): Remove the default entry point value when adding
+  // the real entry points at the call sites.
   void OpenBatchUpload(
       Browser* browser,
+      EntryPoint entry_point = EntryPoint::kPasswordManagerSettings,
       base::OnceCallback<void(bool)> dialog_shown_callback = base::DoNothing());
 
   // Returns whether the dialog is currently showing on a browser.
@@ -96,6 +112,8 @@ class BatchUploadService : public KeyedService {
     struct DialogState {
       // Browser that is showing the dialog.
       raw_ptr<Browser> browser_;
+      // Entry point of the dialog.
+      EntryPoint entry_point_ = EntryPoint::kPasswordManagerSettings;
       // Called when the decision about showing the dialog is made.
       // Returns whether it was shown or not.
       base::OnceCallback<void(bool)> dialog_shown_callback_;
