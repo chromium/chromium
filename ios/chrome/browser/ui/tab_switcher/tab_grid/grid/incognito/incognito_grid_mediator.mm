@@ -17,6 +17,7 @@
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -269,6 +270,13 @@
     }
     [self configureToolbarsButtons];
   }
+}
+
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateIncognitoLockState:(IncognitoLockState)incogitoLockState {
+  [self reauthAgent:agent
+      didUpdateAuthenticationRequirement:incogitoLockState !=
+                                         IncognitoLockState::kNone];
 }
 
 #pragma mark - FamilyLinkUserCapabilitiesObserving

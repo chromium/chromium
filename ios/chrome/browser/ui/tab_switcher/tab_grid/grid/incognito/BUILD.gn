@@ -21,6 +21,7 @@ source_set("incognito") {
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
