@@ -22,7 +22,7 @@
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/lottie/animation.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/models/image_model.h"  // nogncheck
 #include "ui/color/color_id.h"           // nogncheck
 #include "ui/color/color_provider.h"     // nogncheck
@@ -67,7 +67,7 @@ gfx::ImageSkia CreateImageSkia(Animation* content) {
                         rep.pixel_size());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Creates a |cc::SkottieColorMap| with theme colors from a |ui::ColorProvider|.
 cc::SkottieColorMap CreateColorMap(const ui::ColorProvider* color_provider) {
   return {
@@ -155,7 +155,7 @@ gfx::ImageSkia ParseLottieAsStillImage(std::vector<uint8_t> data) {
   return CreateImageSkia(content.get());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 ui::ImageModel ParseLottieAsThemedStillImage(std::vector<uint8_t> data) {
   const gfx::Size size = std::make_unique<Animation>(
                              cc::SkottieWrapper::UnsafeCreateSerializable(data))
