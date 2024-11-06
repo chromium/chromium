@@ -18,7 +18,8 @@ BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
 BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
              "AutofillPasswordUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Default enabled in M131. Remove in or after M134.
+// Default enabled in M131. Remove in or after M134 and after
+// PasswordManualFallbackAvailable feature is cleaned up.
 BASE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
              "WebAuthnUsePasskeyFromAnotherDeviceInContextMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
