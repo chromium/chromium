@@ -225,6 +225,10 @@ public class ArchivedTabsMessageService extends MessageService
                     .get()
                     .removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         }
+
+        if (mArchivedTabModel != null) {
+            mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
+        }
     }
 
     // CustomMessageCardViewProvider implementation.
