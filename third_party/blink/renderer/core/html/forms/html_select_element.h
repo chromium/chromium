@@ -367,6 +367,9 @@ class CORE_EXPORT HTMLSelectElement final
   void ChangeRendering();
   void UpdateUserAgentShadowTree(ShadowRoot& root);
 
+  // Helper to update the select descendants' mutation observer.
+  void UpdateMutationObserver();
+
   // list_items_ contains HTMLOptionElement, HTMLOptGroupElement, and
   // HTMLHRElement objects.
   mutable ListItems list_items_;

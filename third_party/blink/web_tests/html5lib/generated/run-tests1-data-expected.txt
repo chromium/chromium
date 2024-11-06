@@ -1,8 +1,6 @@
 CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
 CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
-CONSOLE ERROR: A descendant of a <select> does not follow the content model.
 CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
-CONSOLE ERROR: A descendant of a <select> does not follow the content model.
 ../resources/tests1.dat:
 30
 100

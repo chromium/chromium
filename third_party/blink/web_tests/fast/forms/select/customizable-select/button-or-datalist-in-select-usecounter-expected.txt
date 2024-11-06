@@ -1,5 +1,3 @@
-CONSOLE ERROR: A descendant of a <select> does not follow the content model.
-CONSOLE ERROR: A descendant of a <select> does not follow the content model.
 This is a testharness.js-based test.
 [FAIL] UseCounter is counted when putting button in select.
   assert_true: button in select expected true got false

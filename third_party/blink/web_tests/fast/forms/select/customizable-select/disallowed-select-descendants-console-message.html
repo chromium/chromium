@@ -26,6 +26,21 @@
   </option>
 </select>
 
+<select id="delayed" style="display:none">
+  <input>
+  <option></option>
+</select>
+
 <script>
+  requestAnimationFrame(() => {
+    document.getElementById('delayed').style.display = '';
+    requestAnimationFrame(() => {
+        testRunner.notifyDone();
+    });
+  });
+</script>
+
+<script>
+testRunner.waitUntilDone();
 testRunner.dumpAsText();
 </script>

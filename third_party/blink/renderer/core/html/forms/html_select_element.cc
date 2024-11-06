@@ -102,16 +102,15 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
  public:
   explicit SelectDescendantsObserver(HTMLSelectElement& select)
       : select_(select), observer_(MutationObserver::Create(this)) {
-    // TODO(crbug.com/370735374) The addition of this mutation observer causes
-    // significant perf regressions for adding and removing options to a
-    // select. It's important to fix those regressions before shipping this
-    // feature.
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+    DCHECK(select_->IsAppearanceBasePicker());
 
     MutationObserverInit* init = MutationObserverInit::Create();
     init->setChildList(true);
     init->setSubtree(true);
     observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
+    // Traverse descendants that have been added to the select so far.
+    TraverseDescendants();
   }
 
   ExecutionContext* GetExecutionContext() const override {
@@ -123,23 +122,18 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     for (const auto& record : records) {
       if (record->type() == "childList") {
         for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
-          if (auto* html_element =
-                  DynamicTo<HTMLElement>(record->addedNodes()->item(i))) {
-            if (!IsDescendantAllowed(html_element)) {
-              // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as
-              // well.
-              html_element->AddConsoleMessage(
-                  mojom::blink::ConsoleMessageSource::kRecommendation,
-                  mojom::blink::ConsoleMessageLevel::kError,
-                  "A descendant of a <select> does not follow the content "
-                  "model.");
-              break;
-            }
+          auto* descendant = record->addedNodes()->item(i);
+          if (descendant->IsTextNode() &&
+              descendant->textContent().ContainsOnlyWhitespaceOrEmpty()) {
+            continue;
           }
+          AddWarningToElement(DynamicTo<HTMLElement>(descendant));
         }
       }
     }
   }
+
+  void Disconnect() { observer_->disconnect(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(select_);
@@ -148,6 +142,26 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
  private:
+  void TraverseDescendants() {
+    for (Element* current_element = ElementTraversal::FirstWithin(*select_);
+         current_element;) {
+      AddWarningToElement(DynamicTo<HTMLElement>(current_element));
+      current_element = ElementTraversal::Next(*current_element, select_);
+    }
+  }
+
+  void AddWarningToElement(HTMLElement* html_element) {
+    if (!html_element || IsDescendantAllowed(html_element)) {
+      return;
+    }
+    // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as well.
+    html_element->AddConsoleMessage(
+        mojom::blink::ConsoleMessageSource::kRecommendation,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "A descendant of a <select> does not follow the content "
+        "model.");
+  }
+
   bool IsDescendantAllowed(HTMLElement* element) {
     // TODO(ansollan): This should be looking at the tree structure to decide if
     // this is a valid descendant.
@@ -160,6 +174,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
            IsA<HTMLSpanElement>(element) ||
            IsA<HTMLSelectedOptionElement>(element);
   }
+
   Member<HTMLSelectElement> select_;
   Member<MutationObserver> observer_;
 };
@@ -176,10 +191,6 @@ HTMLSelectElement::HTMLSelectElement(Document& document)
   select_type_ = SelectType::Create(*this);
   SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    descendants_observer_ =
-        MakeGarbageCollected<SelectDescendantsObserver>(*this);
-  }
 }
 
 HTMLSelectElement::~HTMLSelectElement() = default;
@@ -442,8 +453,9 @@ void HTMLSelectElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kSizeAttr) {
     unsigned old_size = size_;
-    if (!ParseHTMLNonNegativeInteger(params.new_value, size_))
+    if (!ParseHTMLNonNegativeInteger(params.new_value, size_)) {
       size_ = 0;
+    }
     SetNeedsValidityCheck();
     if (size_ != old_size) {
       ChangeRendering();
@@ -1234,6 +1246,21 @@ void HTMLSelectElement::ParseMultipleAttribute(const AtomicString& value) {
   select_type_->UpdateTextStyleAndContent();
 }
 
+void HTMLSelectElement::UpdateMutationObserver() {
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    return;
+  }
+  if (UsesMenuList() && isConnected() && IsAppearanceBasePicker()) {
+    if (!descendants_observer_) {
+      descendants_observer_ =
+          MakeGarbageCollected<SelectDescendantsObserver>(*this);
+    }
+  } else if (descendants_observer_) {
+    descendants_observer_->Disconnect();
+    descendants_observer_ = nullptr;
+  }
+}
+
 void HTMLSelectElement::AppendToFormData(FormData& form_data) {
   const AtomicString& name = GetName();
   if (name.empty())
@@ -1598,6 +1625,7 @@ void HTMLSelectElement::DidRecalcStyle(const StyleRecalcChange change) {
     }
   }
   select_type_->DidRecalcStyle(change);
+  UpdateMutationObserver();
 }
 
 void HTMLSelectElement::AttachLayoutTree(AttachContext& context) {
@@ -1654,6 +1682,7 @@ void HTMLSelectElement::ChangeRendering() {
   SetForceReattachLayoutTree();
   SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
                                              style_change_reason::kControl));
+  UpdateMutationObserver();
 }
 
 const ComputedStyle* HTMLSelectElement::OptionStyle() const {
