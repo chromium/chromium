@@ -1297,11 +1297,6 @@ BASE_FEATURE(kMediaFoundationD3D11VideoCaptureZeroCopy,
              "MediaFoundationD3D11VideoCaptureZeroCopy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables VP8 decode acceleration for Windows.
-BASE_FEATURE(kMediaFoundationVP8Decoding,
-             "MediaFoundationVP8Decoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the use of MediaFoundationRenderer for clear content on supported
 // systems.
 BASE_FEATURE(kMediaFoundationClearPlayback,
