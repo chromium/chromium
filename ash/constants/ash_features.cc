@@ -1803,6 +1803,11 @@ BASE_FEATURE(kLobsterDogfood,
              "LobsterDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables lobster right click menu entry point.
+BASE_FEATURE(kLobsterRightClickMenu,
+             "LobsterRightClickMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables / Disables the lobster feature from the feature management module.
 BASE_FEATURE(kFeatureManagementLobster,
              "FeatureManagementLobster",

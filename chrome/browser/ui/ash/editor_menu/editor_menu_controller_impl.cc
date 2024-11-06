@@ -8,11 +8,13 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -254,7 +256,9 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
     const gfx::Rect& anchor_bounds,
     const EditorContext& context) {
   LobsterMenuMode lobster_menu_mode =
-      card_session_ != nullptr && card_session_->lobster_manager() != nullptr
+      base::FeatureList::IsEnabled(ash::features::kLobsterRightClickMenu) &&
+              card_session_ != nullptr &&
+              card_session_->lobster_manager() != nullptr
           ? LobsterMenuMode::kEnabled
           : LobsterMenuMode::kBlocked;
 
