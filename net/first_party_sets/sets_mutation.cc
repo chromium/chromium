@@ -32,9 +32,10 @@ SetsMutation::SetsMutation(
       site_counts[site]++;
     }
   }
-  CHECK(base::ranges::all_of(
-      site_counts,
-      [](const std::pair<SchemefulSite, int> p) { return p.second == 1; }));
+  CHECK(base::ranges::all_of(site_counts,
+                             [](const std::pair<const SchemefulSite, int>& p) {
+                               return p.second == 1;
+                             }));
 }
 
 SetsMutation::SetsMutation() = default;
