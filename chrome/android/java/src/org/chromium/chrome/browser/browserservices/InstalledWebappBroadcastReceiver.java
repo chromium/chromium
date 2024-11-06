@@ -10,7 +10,6 @@ import android.content.Intent;
 
 import org.chromium.base.Log;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.components.embedder_support.util.Origin;
@@ -70,25 +69,18 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
 
     private final ClearDataStrategy mClearDataStrategy;
     private final InstalledWebappDataRegister mDataRegister;
-    private final PermissionUpdater mPermissionUpdater;
 
     /** Constructor with default dependencies for Android. */
     @Inject
     public InstalledWebappBroadcastReceiver() {
-        this(
-                new ClearDataStrategy(),
-                new InstalledWebappDataRegister(),
-                ChromeApplicationImpl.getComponent().resolvePermissionUpdater());
+        this(new ClearDataStrategy(), new InstalledWebappDataRegister());
     }
 
     /** Constructor to allow dependency injection in tests. */
     public InstalledWebappBroadcastReceiver(
-            ClearDataStrategy strategy,
-            InstalledWebappDataRegister dataRegister,
-            PermissionUpdater permissionUpdater) {
+            ClearDataStrategy strategy, InstalledWebappDataRegister dataRegister) {
         mClearDataStrategy = strategy;
         mDataRegister = dataRegister;
-        mPermissionUpdater = permissionUpdater;
     }
 
     @Override
@@ -122,7 +114,7 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
-        mClearDataStrategy.execute(context, mDataRegister, mPermissionUpdater, uid, uninstalled);
+        mClearDataStrategy.execute(context, mDataRegister, uid, uninstalled);
         clearPreferences(uid, uninstalled);
     }
 
@@ -139,7 +131,6 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
         public void execute(
                 Context context,
                 InstalledWebappDataRegister dataRegister,
-                PermissionUpdater permissionUpdater,
                 int uid,
                 boolean uninstalled) {
             // Retrieving domains and origins ahead of time, because the register is about to be
@@ -149,7 +140,7 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
 
             for (String originAsString : origins) {
                 Origin origin = Origin.create(originAsString);
-                if (origin != null) permissionUpdater.onClientAppUninstalled(origin);
+                if (origin != null) PermissionUpdater.onClientAppUninstalled(origin);
             }
 
             String appName = dataRegister.getAppNameForRegisteredUid(uid);

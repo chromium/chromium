@@ -59,7 +59,6 @@ public class LocationPermissionUpdaterTest {
 
     @Mock private InstalledWebappBridge.Natives mNativeMock;
 
-    private LocationPermissionUpdater mLocationPermissionUpdater;
     private ShadowPackageManager mShadowPackageManager;
 
     @ContentSettingValues private int mLocationPermission;
@@ -75,7 +74,7 @@ public class LocationPermissionUpdaterTest {
         mShadowPackageManager.installPackage(generateTestPackageInfo(PACKAGE_NAME));
         mShadowPackageManager.installPackage(generateTestPackageInfo(OTHER_PACKAGE_NAME));
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
-        mLocationPermissionUpdater = new LocationPermissionUpdater(mTrustedWebActivityClient);
+        TrustedWebActivityClient.setInstanceForTesting(mTrustedWebActivityClient);
 
         doAnswer(
                         invocation -> {
@@ -108,7 +107,7 @@ public class LocationPermissionUpdaterTest {
         installTrustedWebActivityService(SCOPE, PACKAGE_NAME);
         setLocationPermissionForClient(ContentSettingValues.BLOCK);
 
-        mLocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
+        LocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
 
         verifyPermissionUpdated(ContentSettingValues.BLOCK);
     }
@@ -119,7 +118,7 @@ public class LocationPermissionUpdaterTest {
         installTrustedWebActivityService(SCOPE, PACKAGE_NAME);
         setLocationPermissionForClient(ContentSettingValues.ALLOW);
 
-        mLocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
+        LocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
 
         verifyPermissionUpdated(ContentSettingValues.ALLOW);
     }
@@ -129,11 +128,11 @@ public class LocationPermissionUpdaterTest {
     public void updatesPermission_onSubsequentCalls() {
         installTrustedWebActivityService(SCOPE, PACKAGE_NAME);
         setLocationPermissionForClient(ContentSettingValues.ALLOW);
-        mLocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
+        LocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
         verifyPermissionUpdated(ContentSettingValues.ALLOW);
 
         setLocationPermissionForClient(ContentSettingValues.BLOCK);
-        mLocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
+        LocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
         verifyPermissionUpdated(ContentSettingValues.BLOCK);
     }
 
@@ -142,13 +141,13 @@ public class LocationPermissionUpdaterTest {
     public void updatesPermission_onNewClient() {
         installTrustedWebActivityService(SCOPE, PACKAGE_NAME);
         setLocationPermissionForClient(ContentSettingValues.ALLOW);
-        mLocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
+        LocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
         verifyPermissionUpdated(ContentSettingValues.ALLOW);
 
         installBrowsableIntentHandler(SCOPE, OTHER_PACKAGE_NAME);
         installTrustedWebActivityService(SCOPE, OTHER_PACKAGE_NAME);
         setLocationPermissionForClient(ContentSettingValues.BLOCK);
-        mLocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
+        LocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
         verifyPermissionUpdated(OTHER_PACKAGE_NAME, ContentSettingValues.BLOCK);
     }
 
@@ -158,10 +157,10 @@ public class LocationPermissionUpdaterTest {
         installTrustedWebActivityService(SCOPE, PACKAGE_NAME);
         setLocationPermissionForClient(ContentSettingValues.ALLOW);
 
-        mLocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
+        LocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
 
         uninstallTrustedWebActivityService(SCOPE);
-        mLocationPermissionUpdater.onClientAppUninstalled(ORIGIN);
+        LocationPermissionUpdater.onClientAppUninstalled(ORIGIN);
 
         verifyPermissionReset();
     }
@@ -252,7 +251,7 @@ public class LocationPermissionUpdaterTest {
                 .when(mTrustedWebActivityClient)
                 .checkLocationPermission(eq(SCOPE), any());
 
-        mLocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
+        LocationPermissionUpdater.checkPermission(ORIGIN, SCOPE, CALLBACK);
         verifyPermissionUpdated(PACKAGE_NAME, ContentSettingValues.BLOCK);
     }
 
@@ -266,7 +265,7 @@ public class LocationPermissionUpdaterTest {
         installTrustedWebActivityService(twaScope, PACKAGE_NAME);
         setLocationPermissionForClient(ContentSettingValues.ALLOW);
 
-        mLocationPermissionUpdater.checkPermission(
+        LocationPermissionUpdater.checkPermission(
                 Origin.create(twaScope), incorrectScope, CALLBACK);
 
         // verify permission not updated.
@@ -278,7 +277,7 @@ public class LocationPermissionUpdaterTest {
                         eq(ContentSettingsType.GEOLOCATION),
                         anyInt());
 
-        mLocationPermissionUpdater.checkPermission(Origin.create(twaScope), twaScope, CALLBACK);
+        LocationPermissionUpdater.checkPermission(Origin.create(twaScope), twaScope, CALLBACK);
         verifyPermissionUpdated(PACKAGE_NAME, ContentSettingValues.ALLOW);
     }
 }

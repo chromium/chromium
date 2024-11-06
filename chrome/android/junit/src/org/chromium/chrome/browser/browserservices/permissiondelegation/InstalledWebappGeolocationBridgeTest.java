@@ -63,9 +63,8 @@ public class InstalledWebappGeolocationBridgeTest {
         mScope = JUnitTestGURLs.URL_1;
         mOtherScope = JUnitTestGURLs.URL_2;
 
-        mGeolocation =
-                new InstalledWebappGeolocationBridge(
-                        NATIVE_POINTER, mScope, mTrustedWebActivityClient);
+        TrustedWebActivityClient.setInstanceForTesting(mTrustedWebActivityClient);
+        mGeolocation = new InstalledWebappGeolocationBridge(NATIVE_POINTER, mScope);
     }
 
     @Test

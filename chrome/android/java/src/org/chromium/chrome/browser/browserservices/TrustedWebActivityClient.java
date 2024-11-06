@@ -33,10 +33,10 @@ import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.ConnectionPool;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
@@ -54,11 +54,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /** A client for calling methods on a {@link TrustedWebActivityService}. */
-@Singleton
 public class TrustedWebActivityClient {
     private static final String TAG = "TWAClient";
 
@@ -83,6 +79,8 @@ public class TrustedWebActivityClient {
 
     private final ConnectionPool mConnectionPool;
 
+    private static TrustedWebActivityClient sInstance;
+
     /** Interface for callbacks to get a permission setting from a TWA app. */
     public interface PermissionCallback {
         /** Called when the app answered with a permission setting. */
@@ -99,10 +97,23 @@ public class TrustedWebActivityClient {
         void onNoTwaFound();
     }
 
+    public static TrustedWebActivityClient getInstance() {
+        if (sInstance == null) sInstance = new TrustedWebActivityClient();
+        return sInstance;
+    }
+
+    public static void setInstanceForTesting(TrustedWebActivityClient connection) {
+        var oldValue = sInstance;
+        sInstance = connection;
+        ResettersForTesting.register(() -> sInstance = oldValue);
+    }
+
     /** Creates a TrustedWebActivityClient. */
-    @Inject
-    public TrustedWebActivityClient(TrustedWebActivityServiceConnectionPool connectionPool) {
-        this(TrustedWebActivityClientWrappers.wrap(connectionPool));
+    private TrustedWebActivityClient() {
+        this(
+                TrustedWebActivityClientWrappers.wrap(
+                        TrustedWebActivityServiceConnectionPool.create(
+                                ContextUtils.getApplicationContext())));
     }
 
     /** Creates a TrustedWebActivityClient for tests. */
@@ -537,17 +548,10 @@ public class TrustedWebActivityClient {
      * that is verified for the given url. If such an Activity is found, an Intent to start that
      * Activity as a Trusted Web Activity is returned. Otherwise {@code null} is returned.
      *
-     * If multiple {@link ResolveInfo}s in the list match this criteria, the first will be chosen.
+     * <p>If multiple {@link ResolveInfo}s in the list match this criteria, the first will be
+     * chosen.
      */
-    public static @Nullable Intent createLaunchIntentForTwa(
-            Context appContext, String url, List<ResolveInfo> resolveInfosForUrl) {
-        // This is ugly, but the call site for this is static and called by native.
-        TrustedWebActivityClient client =
-                ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
-        return client.createLaunchIntentForTwaInternal(appContext, url, resolveInfosForUrl);
-    }
-
-    private @Nullable Intent createLaunchIntentForTwaInternal(
+    public @Nullable Intent createLaunchIntentForTwa(
             Context appContext, String url, List<ResolveInfo> resolveInfosForUrl) {
         Origin origin = Origin.create(url);
         if (origin == null) return null;

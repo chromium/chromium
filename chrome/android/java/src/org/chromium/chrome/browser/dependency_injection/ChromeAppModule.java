@@ -8,8 +8,6 @@ import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQuali
 
 import android.content.Context;
 
-import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -23,7 +21,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 /** Module for {@link ChromeAppComponent}. */
 @Module
@@ -52,15 +49,6 @@ public class ChromeAppModule {
     @Provides
     public WarmupManager provideWarmupManager() {
         return WarmupManager.getInstance();
-    }
-
-    @Provides
-    @Singleton
-    public TrustedWebActivityServiceConnectionPool providesTwaServiceConnectionManager(
-            @Named(APP_CONTEXT) Context context) {
-        // TrustedWebActivityServiceConnectionManager comes from AndroidX Browser
-        // so we can't make it injectable.
-        return TrustedWebActivityServiceConnectionPool.create(context);
     }
 
     @Provides

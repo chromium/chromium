@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -30,6 +29,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -44,10 +44,8 @@ public class PermissionUpdaterTest {
 
     @Mock InstalledWebappPermissionStore mStore;
 
-    @Mock public NotificationPermissionUpdater mNotificationsPermissionUpdater;
-    @Mock public LocationPermissionUpdater mLocationPermissionUpdater;
+    @Mock public TrustedWebActivityClient mTrustedWebActivityClient;
 
-    private PermissionUpdater mPermissionUpdater;
     private ShadowPackageManager mShadowPackageManager;
 
     @Before
@@ -58,8 +56,7 @@ public class PermissionUpdaterTest {
         mShadowPackageManager = shadowOf(pm);
         mShadowPackageManager.installPackage(generateTestPackageInfo(PACKAGE_NAME));
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
-        mPermissionUpdater =
-                new PermissionUpdater(mNotificationsPermissionUpdater, mLocationPermissionUpdater);
+        TrustedWebActivityClient.setInstanceForTesting(mTrustedWebActivityClient);
     }
 
     private PackageInfo generateTestPackageInfo(String packageName) {
@@ -83,7 +80,7 @@ public class PermissionUpdaterTest {
     @Test
     @Feature("TrustedWebActivities")
     public void doesntRegister_whenClientDoesntHandleIntents() {
-        mPermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
+        PermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
 
         verifyPermissionNotUpdated();
     }
@@ -93,7 +90,7 @@ public class PermissionUpdaterTest {
     public void doesntRegister_whenOtherClientHandlesIntent() {
         installBrowsableIntentHandler(ORIGIN, "com.package.other");
 
-        mPermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
+        PermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
 
         verifyPermissionNotUpdated();
     }
@@ -103,7 +100,7 @@ public class PermissionUpdaterTest {
     public void doesRegister_whenClientHandleIntentCorrectly() {
         installBrowsableIntentHandler(ORIGIN, PACKAGE_NAME);
 
-        mPermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
+        PermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
 
         verifyPermissionWillUpdate();
     }
@@ -121,13 +118,11 @@ public class PermissionUpdaterTest {
 
     private void verifyPermissionNotUpdated() {
         verify(mStore, never()).addDelegateApp(any(), any());
-        verify(mNotificationsPermissionUpdater, never())
-                .onOriginVerified(any(), any(), anyString());
+        verify(mTrustedWebActivityClient, never()).checkNotificationPermission(any(), any());
     }
 
     private void verifyPermissionWillUpdate() {
         verify(mStore).addDelegateApp(eq(ORIGIN), any());
-        verify(mNotificationsPermissionUpdater)
-                .onOriginVerified(eq(ORIGIN), eq(URL), eq(PACKAGE_NAME));
+        verify(mTrustedWebActivityClient).checkNotificationPermission(eq(URL), any());
     }
 }

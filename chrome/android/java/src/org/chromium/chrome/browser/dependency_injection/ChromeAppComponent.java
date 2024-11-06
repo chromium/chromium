@@ -9,8 +9,6 @@ import dagger.Component;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.customtabs.CustomTabsClientFileProcessor;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
@@ -34,10 +32,6 @@ public interface ChromeAppComponent {
     SharedPreferencesManager resolveChromeSharedPreferences();
 
     ClearDataDialogResultRecorder resolveClearDataDialogResultRecorder();
-
-    PermissionUpdater resolvePermissionUpdater();
-
-    TrustedWebActivityClient resolveTrustedWebActivityClient();
 
     ExternalAuthUtils resolveExternalAuthUtils();
 

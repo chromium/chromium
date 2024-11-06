@@ -58,7 +58,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
     @Before
     public void setUp() throws TimeoutException, RemoteException {
         ChromeAppComponent component = ChromeApplicationImpl.getComponent();
-        mClient = component.resolveTrustedWebActivityClient();
+        mClient = TrustedWebActivityClient.getInstance();
 
         // TestTrustedWebActivityService is in the test support apk.
         InstalledWebappPermissionManager.addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);

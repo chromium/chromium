@@ -32,7 +32,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
@@ -74,7 +73,7 @@ public class DigitalGoodsTest {
 
         InstalledWebappPermissionManager.addDelegateApp(
                 Origin.createOrThrow(TWA_SERVICE_SCOPE), "org.chromium.chrome.tests.support");
-        mClient = ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
+        mClient = TrustedWebActivityClient.getInstance();
 
         // TWAs only work with HTTPS.
         mTestServer =
@@ -149,8 +148,7 @@ public class DigitalGoodsTest {
         // To work around this, we create our own DigitalGoodsImpl with a custom Delegate that
         // provides the URL we want to see.
         DigitalGoodsImpl.Delegate delegate = () -> new GURL(TWA_SERVICE_SCOPE);
-        DigitalGoodsAdapter adapter = new DigitalGoodsAdapter(mClient);
-        return new DigitalGoodsImpl(adapter, delegate);
+        return new DigitalGoodsImpl(delegate);
     }
 
     private void setTwaServiceResponse(String name, Bundle args) throws TimeoutException {
