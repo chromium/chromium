@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/wtf_serialization.h"
@@ -61,7 +60,7 @@ class TestWTFImpl : public TestWTF {
 
 class WTFTypesTest : public testing::Test {
  public:
-  WTFTypesTest() { mojo::core::Init(); }
+  WTFTypesTest() {}
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
