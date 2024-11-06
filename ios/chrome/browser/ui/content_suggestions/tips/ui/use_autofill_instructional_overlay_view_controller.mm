@@ -37,4 +37,32 @@ NSString* const kUseAutofillInstructionalOverlayAXID =
   self.view.accessibilityIdentifier = kUseAutofillInstructionalOverlayAXID;
 }
 
+#pragma mark - BottomSheetViewController
+
+- (void)expandBottomSheet {
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  // Expand to medium detent.
+  [presentationController animateChanges:^{
+    presentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierMedium;
+  }];
+}
+
+- (void)setUpBottomSheetPresentationController {
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+}
+
+- (void)setUpBottomSheetDetents {
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  presentationController.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+}
+
 @end
