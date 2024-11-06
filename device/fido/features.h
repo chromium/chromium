@@ -114,6 +114,11 @@ BASE_DECLARE_FEATURE(kWebAuthnSecurityKeyAndQrCodeUiRefresh);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHelloSignal);
 
+// When enabled, skips configuring hybrid when Windows can do hybrid. Hybrid may
+// still be delegated to Windows regardless of this flag.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnSkipHybridConfigIfSystemSupported);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -1219,7 +1219,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 #if BUILDFLAG(IS_WIN)
     bool has_win_hybrid = base::Contains(
         test.params, TransportAvailabilityParam::kWindowsHandlesHybrid);
-    fake_win_webauthn_api.set_version(has_win_hybrid ? 6 : 4);
+    fake_win_webauthn_api.set_version(has_win_hybrid ? 7 : 4);
 #endif
 
     TransportAvailabilityInfo transports_info;
@@ -1498,7 +1498,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
       &fake_win_webauthn_api);
 
-  for (const int win_webauthn_api_version : {4, 6}) {
+  for (const int win_webauthn_api_version : {4, 7}) {
     fake_win_webauthn_api.set_version(win_webauthn_api_version);
     for (const bool is_passkey_request : {false, true}) {
       SCOPED_TRACE(testing::Message() << "passkey req? " << is_passkey_request);
@@ -1531,7 +1531,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
                            /*is_conditional_mediation=*/false);
 
       const bool win_ui_was_immediately_triggered =
-          !is_passkey_request || win_webauthn_api_version == 6;
+          !is_passkey_request || win_webauthn_api_version == 7;
       if (!win_ui_was_immediately_triggered) {
         EXPECT_NE(model->step(), Step::kNotStarted);
         // Canceling the Windows UI ends the request because the user must have
@@ -1542,7 +1542,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
 
       EXPECT_EQ(model->step(), Step::kNotStarted);
 
-      if (win_webauthn_api_version >= 6) {
+      if (win_webauthn_api_version >= 7) {
         // Windows handles hybrid itself starting with this version, so
         // canceling shouldn't try to show Chrome UI.
         EXPECT_FALSE(controller.OnWinUserCancelled());

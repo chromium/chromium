@@ -395,17 +395,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       &fake_win_webauthn_api);
 #endif
 
-  enum WinHybridExpectation {
-    kNoWinHybrid,
-    kWinHybridPasskeySyncing,
-    kWinHybridNoPasskeySyncing,
-  };
-
-  for (const WinHybridExpectation windows_has_hybrid : {
-           kNoWinHybrid,
+  for (const bool windows_has_hybrid : {
+           false,
 #if BUILDFLAG(IS_WIN)
-           kWinHybridPasskeySyncing,
-           kWinHybridNoPasskeySyncing,
+           true,
 #endif
        }) {
     unsigned test_case = 0;
@@ -414,16 +407,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       test_case++;
 
 #if BUILDFLAG(IS_WIN)
-      fake_win_webauthn_api.set_version(windows_has_hybrid == kNoWinHybrid ? 4
-                                                                           : 7);
-      base::test::ScopedFeatureList scoped_feature_list;
-      if (windows_has_hybrid == kWinHybridNoPasskeySyncing) {
-        scoped_feature_list.InitWithFeatures(
-            {}, {syncer::kSyncWebauthnCredentials});
-      } else if (windows_has_hybrid == kWinHybridPasskeySyncing) {
-        scoped_feature_list.InitWithFeatures({syncer::kSyncWebauthnCredentials},
-                                             {});
-      }
+      fake_win_webauthn_api.set_version(windows_has_hybrid ? 7 : 4);
       SCOPED_TRACE(windows_has_hybrid);
 #endif
 
@@ -439,9 +423,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           /*user_name=*/std::nullopt, test.extensions,
           /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
-      switch (windows_has_hybrid == kWinHybridNoPasskeySyncing
-                  ? test.expected_result_with_system_hybrid
-                  : test.expected_result) {
+      switch (windows_has_hybrid ? test.expected_result_with_system_hybrid
+                                 : test.expected_result) {
         case Result::kNone:
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
           EXPECT_TRUE(discovery_factory.cable_data.empty());
