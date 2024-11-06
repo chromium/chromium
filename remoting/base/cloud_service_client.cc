@@ -279,8 +279,6 @@ using ProvisionGceInstanceRequest =
 using Empty = google::internal::remoting::cloud::v1alpha::Empty;
 using GenerateHostTokenRequest =
     google::internal::remoting::cloud::v1alpha::GenerateHostTokenRequest;
-using GenerateIceConfigRequest =
-    google::internal::remoting::cloud::v1alpha::GenerateIceConfigRequest;
 using ReauthorizeHostRequest =
     google::internal::remoting::cloud::v1alpha::ReauthorizeHostRequest;
 using RemoteAccessHost =
@@ -433,9 +431,8 @@ void CloudServiceClient::GenerateIceConfig(GenerateIceConfigCallback callback) {
   constexpr char path[] = "/v1alpha/networkTraversal:generateIceConfig";
 
   ExecuteRequest(kGenerateIceConfigTrafficAnnotation, path, /*api_key=*/"",
-                 net::HttpRequestHeaders::kPostMethod,
-                 std::make_unique<GenerateIceConfigRequest>(),
-                 std::move(callback));
+                 net::HttpRequestHeaders::kGetMethod,
+                 /*request_config=*/nullptr, std::move(callback));
 }
 
 void CloudServiceClient::VerifySessionToken(
