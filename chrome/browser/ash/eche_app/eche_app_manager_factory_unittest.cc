@@ -264,24 +264,5 @@ TEST_F(EcheAppManagerFactoryTest, GetSystemInfo) {
   EXPECT_EQ("Chrome device", system_info->GetDeviceType());
 }
 
-TEST_F(EcheAppManagerFactoryTest, GetSystemInfo_flagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheSWA},
-      /*disabled_features=*/{features::kEcheMetricsRevamp});
-  const char kLsbRelease[] =
-      "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
-      "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
-  const base::Time lsb_release_time(
-      base::Time::FromSecondsSinceUnixEpoch(12345.6));
-  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
-  std::unique_ptr<SystemInfo> system_info =
-      EcheAppManagerFactory::GetInstance()->GetSystemInfo(GetProfile());
-
-  EXPECT_EQ("", system_info->GetOsVersion());
-  EXPECT_EQ("Chrome device", system_info->GetDeviceType());
-}
-
 }  // namespace eche_app
 }  // namespace ash

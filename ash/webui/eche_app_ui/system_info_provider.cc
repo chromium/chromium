@@ -87,10 +87,8 @@ void SystemInfoProvider::GetSystemInfo(
                       display::Screen::GetScreen()->InTabletMode());
   json_dictionary.Set(kJsonGaiaIdKey, system_info_->GetGaiaId());
   json_dictionary.Set(kJsonDeviceTypeKey, system_info_->GetDeviceType());
-  if (features::IsEcheMetricsRevampEnabled()) {
-    json_dictionary.Set(kJsonOsVersionKey, system_info_->GetOsVersion());
-    json_dictionary.Set(kJsonChannelKey, system_info_->GetChannel());
-  }
+  json_dictionary.Set(kJsonOsVersionKey, system_info_->GetOsVersion());
+  json_dictionary.Set(kJsonChannelKey, system_info_->GetChannel());
   auto found_type = CONNECTION_STATE_TYPE.find(wifi_connection_state_);
   std::string connecton_state_string =
       found_type == CONNECTION_STATE_TYPE.end() ? "" : found_type->second;

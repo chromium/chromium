@@ -341,10 +341,8 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
       .SetGaiaId(gaia_id)
       .SetDeviceType(base::UTF16ToUTF8(device_type));
 
-  if (features::IsEcheMetricsRevampEnabled()) {
-    system_info.SetOsVersion(base::SysInfo::OperatingSystemVersion())
-        .SetChannel(chrome::GetChannelName(chrome::WithExtendedStable(true)));
-  }
+  system_info.SetOsVersion(base::SysInfo::OperatingSystemVersion())
+      .SetChannel(chrome::GetChannelName(chrome::WithExtendedStable(true)));
 
   return system_info.Build();
 }
