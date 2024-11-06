@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_CONTROLLER_DELEGATE_H_
 #define COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_CONTROLLER_DELEGATE_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 
 namespace collaboration {
 
@@ -35,25 +35,23 @@ class CollaborationControllerDelegate {
   using ResultCallback = base::OnceCallback<void(bool)>;
 
   // Request to show the error page/dialog.
-  virtual void ShowError(const ResultCallback& result,
-                         const ErrorInfo& error) = 0;
+  virtual void ShowError(ResultCallback result, const ErrorInfo& error) = 0;
 
   // Request to cancel and close the current UI screen.
-  virtual void Cancel(const ResultCallback& result) = 0;
+  virtual void Cancel(ResultCallback result) = 0;
 
   // Request to show the authentication screen.
-  virtual void ShowAuthenticationUi(const ResultCallback& result) = 0;
+  virtual void ShowAuthenticationUi(ResultCallback result) = 0;
 
   // Notification for when sign-in or sync status has been updated to ensure
   // that the update propagated to all relevant components.
-  virtual void NotifySignInAndSyncStatusChange(
-      const ResultCallback& result) = 0;
+  virtual void NotifySignInAndSyncStatusChange(ResultCallback result) = 0;
 
   // Request to show the invitation dialog.
-  virtual void ShowJoinDialog(const ResultCallback& result) = 0;
+  virtual void ShowJoinDialog(ResultCallback result) = 0;
 
   // Request to show the share dialog.
-  virtual void ShowShareDialog(const ResultCallback& result) = 0;
+  virtual void ShowShareDialog(ResultCallback result) = 0;
 };
 
 }  // namespace collaboration

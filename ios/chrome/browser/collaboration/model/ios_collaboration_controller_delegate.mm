@@ -13,32 +13,31 @@ IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate() {
 IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 
 // CollaborationControllerDelegate.
-void IOSCollaborationControllerDelegate::ShowError(const ResultCallback& result,
+void IOSCollaborationControllerDelegate::ShowError(ResultCallback result,
                                                    const ErrorInfo& error) {
   // TODO(crbug.com/377306986): Implement this.
 }
 
-void IOSCollaborationControllerDelegate::Cancel(const ResultCallback& result) {
+void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
   // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
-    const ResultCallback& result) {
+    ResultCallback result) {
   // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange(
-    const ResultCallback& result) {
+    ResultCallback result) {
   // TODO(crbug.com/377306986): Implement this.
 }
 
-void IOSCollaborationControllerDelegate::ShowJoinDialog(
-    const ResultCallback& result) {
+void IOSCollaborationControllerDelegate::ShowJoinDialog(ResultCallback result) {
   // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
-    const ResultCallback& result) {
+    ResultCallback result) {
   // TODO(crbug.com/377306986): Implement this.
 }
 
