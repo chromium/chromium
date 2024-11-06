@@ -33810,6 +33810,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="165" label="ForcedColors"/>
   <int value="166" label="WhiteSpaceCollapse"/>
   <int value="167" label="ImageOrientation"/>
+  <int value="168" label="LogicalProperties"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
