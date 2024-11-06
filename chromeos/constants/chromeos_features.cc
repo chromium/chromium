@@ -305,6 +305,37 @@ BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              "UploadOfficeToCloudForEnterprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls the use of scope extensions for the Microsoft 365 PWA from finch as
+// a fallback.
+BASE_FEATURE(kMicrosoft365ScopeExtensions,
+             "Microsoft365ScopeExtensions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Comma separated list of scope extension URLs for the Microsoft 365 PWA.
+const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsURLs{
+    &kMicrosoft365ScopeExtensions, "m365-scope-extensions-urls",
+    /*default*/
+
+    // The Office editors (Word, Excel, PowerPoint) are located on the
+    // OneDrive origin.
+    "https://onedrive.live.com/,"
+
+    // Links to opening Office editors go via this URL shortener origin.
+    "https://1drv.ms/,"
+
+    // The old branding of the Microsoft 365 web app. Many links within
+    // Microsoft 365 still link to the old www.office.com origin.
+    "https://www.office.com/"};
+
+// Comma separated list of scope extension domains for the Microsoft 365 PWA.
+const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsDomains{
+    &kMicrosoft365ScopeExtensions, "m365-scope-extensions-domains",
+    /*default*/
+
+    // The OneDrive Business domain (for the extension to match
+    // https://<customer>-my.sharepoint.com).
+    "https://sharepoint.com"};
+
 // Enables the Microsoft OneDrive integration workflow for enterprise users to
 // cloud integration support.
 BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
@@ -565,6 +596,10 @@ bool IsUploadOfficeToCloudForEnterpriseEnabled() {
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud) &&
          base::FeatureList::IsEnabled(kUploadOfficeToCloudForEnterprise);
 #endif
+}
+
+bool IsMicrosoft365ScopeExtensionsEnabled() {
+  return base::FeatureList::IsEnabled(kMicrosoft365ScopeExtensions);
 }
 
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {

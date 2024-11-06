@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/buildflag.h"
 
 // This file is only for the feature flags that are shared between ash-chrome
@@ -98,6 +99,13 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationWidthIncrease);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kOfficeNavigationCapturingReimpl);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+BASE_DECLARE_FEATURE(kMicrosoft365ScopeExtensions);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsURLs;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::FeatureParam<std::string>
+    kMicrosoft365ScopeExtensionsDomains;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kOverviewSessionInitOptimizations);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
@@ -190,6 +198,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudForEnterpriseEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsMicrosoft365ScopeExtensionsEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

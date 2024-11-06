@@ -9,6 +9,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,30 +21,23 @@ namespace web_app {
 
 namespace {
 
-constexpr const char* kMicrosoftOfficeWebAppExperimentScopeExtensions[] = {
-    // The Office editors (Word, Excel, PowerPoint) are located on the
-    // OneDrive origin.
-    "https://onedrive.live.com/",
-
-    // Links to opening Office editors go via this URL shortener origin.
-    "https://1drv.ms/",
-
-    // The old branding of the Microsoft 365 web app. Many links within
-    // Microsoft 365 still link to the old www.office.com origin.
-    "https://www.office.com/",
-};
-
-constexpr const char* kMicrosoftOfficeWebAppExperimentDomainScopeExtensions[] =
-    {
-        // The OneDrive Business domain (for the extension to match
-        // https://<customer>-my.sharepoint.com).
-        "https://sharepoint.com",
-};
-
 bool g_always_enabled_for_testing = false;
 
 bool IsExperimentEnabled(const webapps::AppId& app_id) {
   return g_always_enabled_for_testing || app_id == ash::kMicrosoft365AppId;
+}
+
+// IsValidScopeExtenion returns whether a url can be successfully turned into
+// a scope extension or not.
+bool IsValidScopeExtension(const GURL& url) {
+  return url.is_valid() && url.IsStandard() && url.has_host() &&
+         !base::StartsWith(url.host(), ".");
+}
+
+std::vector<std::string> GetListFromFinchParam(const std::string& finch_param) {
+  return base::SplitString(finch_param, ",",
+                           base::WhitespaceHandling::TRIM_WHITESPACE,
+                           base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
 std::optional<std::vector<const char*>>&
@@ -72,12 +66,28 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
     return extensions;
   }
 
-  for (const auto* url : kMicrosoftOfficeWebAppExperimentScopeExtensions) {
+  const auto microsoft365_scope_extension_urls = GetListFromFinchParam(
+      chromeos::features::kMicrosoft365ScopeExtensionsURLs.Get());
+  for (const auto& url_string : microsoft365_scope_extension_urls) {
+    const GURL url = GURL(url_string);
+    if (!IsValidScopeExtension(url)) {
+      LOG(WARNING) << "Skipping invalid M365 scope extension URL from Finch: "
+                   << url_string;
+      continue;
+    }
     extensions.insert(
         ScopeExtensionInfo{.origin = url::Origin::Create(GURL(url))});
   }
-  for (const auto* url :
-       kMicrosoftOfficeWebAppExperimentDomainScopeExtensions) {
+  const auto microsoft365_scope_extension_domains = GetListFromFinchParam(
+      chromeos::features::kMicrosoft365ScopeExtensionsDomains.Get());
+  for (const auto& url_string : microsoft365_scope_extension_domains) {
+    const GURL url = GURL(url_string);
+    if (!IsValidScopeExtension(url)) {
+      LOG(WARNING)
+          << "Skipping invalid M365 scope extension domain from Finch: "
+          << url_string;
+      continue;
+    }
     extensions.insert(ScopeExtensionInfo{
         .origin = url::Origin::Create(GURL(url)), .has_origin_wildcard = true});
   }
