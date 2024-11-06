@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.gpu.fyi builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
@@ -797,6 +798,9 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    # TODO(crbug.com/40942991): This config is experimental and currently
+    # is too difficult for gardeners to keep green.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ChromeOS|Intel",
         short_name = "vlt",
