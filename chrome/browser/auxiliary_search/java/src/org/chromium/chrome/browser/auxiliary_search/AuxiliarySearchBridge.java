@@ -34,7 +34,9 @@ public class AuxiliarySearchBridge {
      * @param profile The Profile to retrieve the corresponding information.
      */
     public AuxiliarySearchBridge(@NonNull Profile profile) {
-        if (!ChromeFeatureList.sAndroidAppIntegration.isEnabled() || profile.isOffTheRecord()) {
+        if ((!ChromeFeatureList.sAndroidAppIntegration.isEnabled()
+                        && !ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled())
+                || profile.isOffTheRecord()) {
             mNativeBridge = 0;
         } else {
             mNativeBridge = AuxiliarySearchBridgeJni.get().getForProfile(profile);

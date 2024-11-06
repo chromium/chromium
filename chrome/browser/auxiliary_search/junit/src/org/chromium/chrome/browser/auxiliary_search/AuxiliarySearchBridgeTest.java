@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
@@ -56,6 +57,18 @@ public final class AuxiliarySearchBridgeTest {
     @Test
     @SmallTest
     public void getForProfileTest() {
+        doReturn(false).when(mProfile).isOffTheRecord();
+        AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
+        assertNotNull(bridge);
+
+        verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_V2)
+    public void getForProfileTestV2() {
         doReturn(false).when(mProfile).isOffTheRecord();
         AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
         assertNotNull(bridge);

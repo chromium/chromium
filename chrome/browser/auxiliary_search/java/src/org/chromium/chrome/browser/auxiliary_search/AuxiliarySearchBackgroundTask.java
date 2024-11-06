@@ -138,7 +138,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         new AsyncTask<>() {
             @Override
             protected Object doInBackground() {
-                File tabDonateFile = AuxiliarySearchProvider.getTabDonateFile(mContext);
+                File tabDonateFile = AuxiliarySearchUtils.getTabDonateFile(mContext);
                 if (!tabDonateFile.exists()) {
                     return null;
                 }
@@ -182,7 +182,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
             @NonNull AuxiliarySearchController auxiliarySearchController,
             @Nullable List<AuxiliarySearchEntry> tabs) {
         if (tabs == null || tabs.isEmpty()) {
-            taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
+            onTaskFinished(taskFinishedCallback);
             return;
         }
 
@@ -209,8 +209,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                         tabs,
                                         mTabIdToFaviconMap,
                                         (success) -> {
-                                            taskFinishedCallback.taskFinished(
-                                                    /* needsReschedule= */ false);
+                                            onTaskFinished(taskFinishedCallback);
                                             AuxiliarySearchMetrics.recordScheduledDonationResult(
                                                     success
                                                             ? DonateResult.SUCCEED
@@ -221,12 +220,21 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                 AuxiliarySearchMetrics.recordScheduledFaviconDonateCount(size);
                             } else {
                                 // There isn't any favicons to donate, stops here.
-                                taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
+                                onTaskFinished(taskFinishedCallback);
                                 AuxiliarySearchMetrics.recordScheduledDonationResult(
                                         DonateResult.NO_DATA);
                             }
                         }
                     });
+        }
+    }
+
+    @VisibleForTesting
+    public void onTaskFinished(TaskFinishedCallback taskFinishedCallback) {
+        taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
+        if (mAuxiliarySearchController != null) {
+            mAuxiliarySearchController.destroy();
+            mAuxiliarySearchController = null;
         }
     }
 }

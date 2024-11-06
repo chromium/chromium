@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -22,6 +23,11 @@ public class AuxiliarySearchControllerFactory {
         AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
         if (hooks == null || !hooks.isEnabled()) {
             return null;
+        }
+
+        if (ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled()
+                && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector);
         }
 
         return hooks.createAuxiliarySearchController(context, profile, tabModelSelector);
