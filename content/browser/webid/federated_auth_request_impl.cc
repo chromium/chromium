@@ -170,11 +170,7 @@ std::string ComputeUrlEncodedTokenPostData(
   }
   query += "is_auto_selected=" + is_auto_selected;
 
-  // TODO(crbug.com/40284792): ActiveMode is enabled by default on the browser
-  // side to support origin trials. To avoid sending "mode=passive" for all
-  // existing traffic, we restrict it to traffic that uses the active mode for
-  // now. We should remove this restriction before shipping the active flow.
-  if (IsFedCmActiveModeEnabled() && rp_mode == RpMode::kActive) {
+  if (IsFedCmActiveModeEnabled()) {
     // Shares with IdP the type of the request.
     std::string rp_mode_str = rp_mode == RpMode::kActive ? "active" : "passive";
     if (!query.empty()) {

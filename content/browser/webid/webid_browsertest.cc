@@ -1421,6 +1421,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
             content += "is_auto_selected=false&";
+            content += "mode=passive&";
             // Asserts that the fields and params parameters
             // were passed correctly to the id assertion endpoint.
             content += "fields=name,email,picture&";
@@ -1538,6 +1539,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
             content += "is_auto_selected=false&";
+            content += "mode=passive&";
             content += "fields=locale";
 
             EXPECT_EQ(request.content, content);

@@ -3497,7 +3497,8 @@ TEST_F(FederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true" +
-      "&is_auto_selected=false&fields=name,email,picture&disclosure_shown_for="
+      "&is_auto_selected=false&mode=passive&fields=name,email,picture&"
+      "disclosure_shown_for="
       "name,email,picture");
   SetNetworkRequestManager(std::move(checker));
 
@@ -3518,11 +3519,11 @@ TEST_F(FederatedAuthRequestImplTest, DisclosureTextNotShownForReturningUser) {
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
-  checker->SetExpectedTokenPostData("client_id=" + std::string(kClientId) +
-                                    "&nonce=" + std::string(kNonce) +
-                                    "&account_id=" + std::string(kAccountId) +
-                                    "&disclosure_text_shown=false&is_auto_"
-                                    "selected=false&fields=name,email,picture");
+  checker->SetExpectedTokenPostData(
+      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
+      "&account_id=" + std::string(kAccountId) +
+      "&disclosure_text_shown=false&is_auto_"
+      "selected=false&mode=passive&fields=name,email,picture");
   SetNetworkRequestManager(std::move(checker));
 
   MockConfiguration config = kConfigurationValid;
@@ -3543,7 +3544,8 @@ TEST_F(FederatedAuthRequestImplTest, TokenEndpointPostDataEscaping) {
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=account+id&disclosure_text_"
-      "shown=true&is_auto_selected=false&fields=name,email,picture&disclosure_"
+      "shown=true&is_auto_selected=false&mode=passive&fields=name,email,"
+      "picture&disclosure_"
       "shown_for=name,email,picture");
   SetNetworkRequestManager(std::move(checker));
 
@@ -3558,7 +3560,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoSelectedFlagForNewUser) {
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true" +
-      "&is_auto_selected=false&fields=name,email,picture&disclosure_shown_for="
+      "&is_auto_selected=false&mode=passive&fields=name,email,picture&"
+      "disclosure_shown_for="
       "name,email,picture");
   SetNetworkRequestManager(std::move(checker));
 
@@ -3584,7 +3587,7 @@ TEST_F(FederatedAuthRequestImplTest,
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
       "&disclosure_text_shown=false" +
-      "&is_auto_selected=false&fields=name,email,picture");
+      "&is_auto_selected=false&mode=passive&fields=name,email,picture");
   SetNetworkRequestManager(std::move(checker));
 
   MockConfiguration config = kConfigurationValid;
@@ -3616,7 +3619,7 @@ TEST_F(FederatedAuthRequestImplTest,
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
       "&disclosure_text_shown=false" +
-      "&is_auto_selected=true&fields=name,email,picture");
+      "&is_auto_selected=true&mode=passive&fields=name,email,picture");
   SetNetworkRequestManager(std::move(checker));
 
   MockConfiguration config = kConfigurationValid;
@@ -3649,11 +3652,11 @@ TEST_F(FederatedAuthRequestImplTest, AutoSelectedFlagIfInQuietPeriod) {
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
-  checker->SetExpectedTokenPostData("client_id=" + std::string(kClientId) +
-                                    "&nonce=" + std::string(kNonce) +
-                                    "&account_id=" + std::string(kAccountId) +
-                                    "&disclosure_text_shown=false&is_auto_"
-                                    "selected=false&fields=name,email,picture");
+  checker->SetExpectedTokenPostData(
+      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
+      "&account_id=" + std::string(kAccountId) +
+      "&disclosure_text_shown=false&is_auto_"
+      "selected=false&mode=passive&fields=name,email,picture");
   SetNetworkRequestManager(std::move(checker));
 
   RequestExpectations expectations = kExpectationSuccess;
