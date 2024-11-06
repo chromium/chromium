@@ -52,19 +52,33 @@ class TestApp extends CrLitElement {
   static override get properties() {
     return {
       listItems: {type: Array},
+      useDefaultScroll: {type: Boolean},
     };
   }
 
   listItems: Array<{name: string}> = [];
+  useDefaultScroll: boolean = false;
 
   override render() {
-    return html`
-    <cr-infinite-list .items="${this.listItems}" .scrollTarget="${this}"
-        .template=${(item: {name: string}, idx: number, tabidx: number) => html`
-            <test-item name="${item.name}" id="item-${idx}"
-                tabindex="${tabidx}">
-            </test-item>`}>
-    </cr-infinite-list>`;
+    return this.useDefaultScroll ?
+        html`
+      <cr-infinite-list .items="${this.listItems}" style="flex: 1;"
+          .itemSize="${SAMPLE_ITEM_HEIGHT}"
+          .template=${
+            (item: {name: string}, idx: number, tabidx: number) =>
+                html`<test-item name="${item.name}" id="item-${idx}"
+                       tabindex="${tabidx}">
+                   </test-item>`}>
+      </cr-infinite-list>` :
+        html`
+      <cr-infinite-list .items="${this.listItems}" .scrollTarget="${this}"
+          .itemSize="${SAMPLE_ITEM_HEIGHT}"
+          .template=${
+            (item: {name: string}, idx: number, tabidx: number) =>
+                html`<test-item name="${item.name}" id="item-${idx}"
+                       tabindex="${tabidx}">
+                   </test-item>`}>
+      </cr-infinite-list>`;
   }
 }
 
@@ -99,12 +113,16 @@ function getKeyboardFocusableItem(infiniteList: CrInfiniteListElement):
   return item;
 }
 
-function createTestApp(): TestApp {
+function createTestApp(useDefaultScroll: boolean = false): TestApp {
   const testApp = document.createElement('test-app') as TestApp;
+  testApp.useDefaultScroll = useDefaultScroll;
   testApp.style.height = `${SAMPLE_AVAIL_HEIGHT}px`;
   testApp.style.maxHeight = `${SAMPLE_AVAIL_HEIGHT}px`;
-  testApp.style.display = 'block';
-  testApp.style.overflowY = 'auto';
+  testApp.style.display = useDefaultScroll ? 'flex' : 'block';
+  if (useDefaultScroll) {
+    testApp.style.flexDirection = 'column';
+  }
+  testApp.style.overflowY = useDefaultScroll ? 'hidden' : 'auto';
   testApp.style.overflowX = 'hidden';
   document.body.appendChild(testApp);
   return testApp;
@@ -115,9 +133,10 @@ suite('InfiniteListTest', () => {
   let testApp: TestApp;
   let innerList: HTMLElement;
 
-  async function setupTest(sampleData: Array<{name: string}>) {
+  async function setupTest(
+      sampleData: Array<{name: string}>, useDefaultScroll: boolean = false) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testApp = createTestApp();
+    testApp = createTestApp(useDefaultScroll);
     testApp.listItems = sampleData;
 
     infiniteList = testApp.shadowRoot!.querySelector('cr-infinite-list')!;
@@ -127,7 +146,7 @@ suite('InfiniteListTest', () => {
     await eventToPromise('viewport-filled', infiniteList);
   }
 
-  test('Populates template parameters correctly', async () => {
+  test('Populates template and size parameters correctly', async () => {
     const testItems = getTestItems(5);
     await setupTest(testItems);
     const expectations = testItems.map((item, index) => {
@@ -141,6 +160,11 @@ suite('InfiniteListTest', () => {
       assertEquals(expectations[index]!.name, item.name);
       assertEquals(expectations[index]!.index.toString(), item.id.slice(5));
       assertEquals(expectations[index]!.tabindex, item.tabIndex);
+      assertEquals(
+          'auto 56px',
+          (item.computedStyleMap().get('contain-intrinsic-size') as
+           CSSStyleValue)
+              .toString());
     });
   });
 
@@ -185,6 +209,26 @@ suite('InfiniteListTest', () => {
         SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems(infiniteList).length);
     focusable = getKeyboardFocusableItem(infiniteList);
     assertEquals('Seven', focusable.name);
+  });
+
+
+  test('Default scroll target', async () => {
+    const numItems = 2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT;
+    const testItems = getTestItems(numItems);
+    await setupTest(testItems, true);
+    assertEquals(
+        SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems(infiniteList).length);
+    // Overflow-y is set to auto, since the infinite list itself is the
+    // scrolling container.
+    assertEquals(
+        'auto',
+        (infiniteList.computedStyleMap().get('overflow-y') as CSSKeywordValue)
+            .value);
+
+    // Scrolling the list element renders all items.
+    infiniteList.scrollTop = SAMPLE_AVAIL_HEIGHT;
+    await eventToPromise('viewport-filled', infiniteList);
+    assertEquals(numItems, queryItems(infiniteList).length);
   });
 });
 

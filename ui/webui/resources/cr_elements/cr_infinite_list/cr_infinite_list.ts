@@ -30,7 +30,7 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
         html`<cr-lazy-list id="list" .scrollTarget="${this.scrollTarget}"
           .scrollOffset="${this.scrollOffset}"
           .listItemHost="${(this.getRootNode() as ShadowRoot).host}"
-          .items="${this.items}"
+          .items="${this.items}" .itemSize="${this.itemSize}"
           .template="${
             (item: T, index: number) => this.template(
                 item, index, index === this.focusedIndex ? 0 : -1)}"
@@ -49,16 +49,23 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
     return {
       scrollOffset: {type: Number},
       scrollTarget: {type: Object},
+      usingDefaultScrollTarget: {
+        type: Boolean,
+        reflect: true,
+      },
       items: {type: Array},
       focusedIndex: {type: Number},
+      itemSize: {type: Number},
       template: {type: Object},
       focusedItem_: {type: Object},
     };
   }
 
   scrollOffset: number = 0;
-  scrollTarget: HTMLElement = document.documentElement;
+  scrollTarget: HTMLElement = this;
+  usingDefaultScrollTarget: boolean = true;
   items: T[] = [];
+  itemSize: number = 100;
   // Unlike cr-lazy-list, cr-infinite-list provides a tabindex parameter for
   // clients as is provided by iron-list. Like iron-list, cr-infinite-list will
   // pass 0 for this parameter if the list item should be keyboard focusable,
@@ -71,6 +78,10 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+
+    if (changedProperties.has('scrollTarget')) {
+      this.usingDefaultScrollTarget = this.scrollTarget === this;
+    }
 
     if (changedProperties.has('items')) {
       if (this.focusedIndex >= this.items.length) {

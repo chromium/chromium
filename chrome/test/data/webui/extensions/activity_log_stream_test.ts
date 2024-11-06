@@ -58,6 +58,11 @@ suite('ExtensionsActivityLogStreamTest', function() {
     proxyDelegate = new TestService();
 
     activityLogStream = document.createElement('activity-log-stream');
+    // Apply the same styling that is applied by the parent activity-log,
+    // so that the list will have a non-zero height.
+    activityLogStream.style.bottom = '0';
+    activityLogStream.style.position = 'absolute';
+    activityLogStream.style.top = '0';
 
     activityLogStream.extensionId = EXTENSION_ID;
     activityLogStream.delegate = proxyDelegate;
