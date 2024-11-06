@@ -5,6 +5,9 @@
     text-orientation: sideways;
     font: 32px sans-serif;
   }
+  textPath {
+    font-size: 20px;
+  }
   </style>
 
   <circle cx="40" cy="20" r="3" fill="rgba(255,0,0,0.8)"></circle>
@@ -26,4 +29,16 @@
   <text x="200" y="20">My
   <tspan textLength="100" lengthAdjust="spacingAndGlyphs">text</tspan>
   <tspan textLength="30" lengthAdjust="spacingAndGlyphs">text</tspan> text.</text>
+
+  <!-- textPath -->
+  <path id="p1" stroke="rgba(255,0,0,0.8)" d="M250,100 L350,100"/>
+  <path id="p2" stroke="rgba(255,0,0,0.8)" d="M350,100 L350,200"/>
+  <path id="p3" stroke="rgba(255,0,0,0.8)" d="M350,200 L250,200"/>
+  <path id="p4" stroke="rgba(255,0,0,0.8)" d="M250,200 L250,100"/>
+  <text>
+    <textPath href="#p1">My text</textPath>
+    <textPath href="#p2">My text</textPath>
+    <textPath href="#p3">My text</textPath>
+    <textPath href="#p4">My text</textPath>
+  </text>
 </svg>

@@ -667,10 +667,11 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
           //      mid is x + advance / 2 + offset
           //   -> false
           //      mid is y + advance / 2 + offset
+          const float char_offset = IsHorizontal()         ? *info.x
+                                    : IsVerticalDownward() ? *info.y
+                                                           : -*info.y;
           const float mid =
-              ((horizontal_ ? *info.x : *info.y) + info.inline_size / 2) /
-                  scaling_factor +
-              offset;
+              (char_offset + info.inline_size / 2) / scaling_factor + offset;
 
           // 5.1.2.3. Let length be the length of path.
           // 5.1.2.9. If path is a closed subpath depending on the values of
@@ -698,18 +699,24 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
               info.hidden = true;
             }
             point_tangent.tangent_in_degrees += info.rotate.value_or(0.0f);
-            if (!horizontal_) {
+            if (IsVerticalDownward()) {
               point_tangent.tangent_in_degrees -= 90;
+            } else if (IsVerticalUpward()) {
+              point_tangent.tangent_in_degrees += 90;
             }
             info.rotate = point_tangent.tangent_in_degrees;
             if (*info.rotate == 0.0f) {
-              if (horizontal_) {
+              if (IsHorizontal()) {
                 info.x = point_tangent.point.x() * scaling_factor -
                          info.inline_size / 2;
                 info.y = point_tangent.point.y() * scaling_factor + *info.y;
-              } else {
+              } else if (IsVerticalDownward()) {
                 info.x = point_tangent.point.x() * scaling_factor + *info.x;
                 info.y = point_tangent.point.y() * scaling_factor -
+                         info.inline_size / 2;
+              } else {
+                info.x = point_tangent.point.x() * scaling_factor + *info.x;
+                info.y = point_tangent.point.y() * scaling_factor +
                          info.inline_size / 2;
               }
             } else {
@@ -717,7 +724,9 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
               // point along the path. The character is moved by an
               // AffineTransform produced from baseline_shift and inline_size/2.
               // See |FragmentItem::BuildSVGTransformForTextPath()|.
-              info.baseline_shift = horizontal_ ? *info.y : *info.x;
+              info.baseline_shift = IsHorizontal()         ? *info.y
+                                    : IsVerticalDownward() ? *info.x
+                                                           : -*info.x;
               info.x = point_tangent.point.x() * scaling_factor;
               info.y = point_tangent.point.y() * scaling_factor;
             }
@@ -769,12 +778,15 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
               reverse_result_range,
               [](const auto& info) { return !info.hidden && !info.middle; });
           if (iter != reverse_result_range.end()) {
-            if (horizontal_) {
+            if (IsHorizontal()) {
               path_end_x = *iter->x + iter->inline_size;
               path_end_y = *iter->y;
-            } else {
+            } else if (IsVerticalDownward()) {
               path_end_x = *iter->x;
               path_end_y = *iter->y + iter->inline_size;
+            } else {
+              path_end_x = *iter->x;
+              path_end_y = *iter->y - iter->inline_size;
             }
           } else {
             path_end_x = 0.0f;

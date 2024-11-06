@@ -709,12 +709,22 @@ AffineTransform FragmentItem::BuildSvgTransformForTextPath(
   // PositionOnPath()|.
   float x = svg_data.rect.x();
   float y = svg_data.rect.y();
-  if (IsHorizontal()) {
-    y += font_data->GetFontMetrics().FixedAscent(font_baseline);
-    transform.Translate(-svg_data.rect.width() / 2, svg_data.baseline_shift);
-  } else {
-    x += font_data->GetFontMetrics().FixedDescent(font_baseline);
-    transform.Translate(svg_data.baseline_shift, -svg_data.rect.height() / 2);
+  switch (GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      y += font_data->GetFontMetrics().FixedAscent(font_baseline);
+      transform.Translate(-svg_data.rect.width() / 2, svg_data.baseline_shift);
+      break;
+    case WritingMode::kVerticalLr:
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      x += font_data->GetFontMetrics().FixedDescent(font_baseline);
+      transform.Translate(svg_data.baseline_shift, -svg_data.rect.height() / 2);
+      break;
+    case WritingMode::kSidewaysLr:
+      x += font_data->GetFontMetrics().FixedAscent(font_baseline);
+      y = svg_data.rect.bottom();
+      transform.Translate(-svg_data.baseline_shift, svg_data.rect.height() / 2);
+      break;
   }
   transform.PreConcat(length_adjust);
   transform.SetE(transform.E() + x);
