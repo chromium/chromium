@@ -37,11 +37,16 @@ class HeadlessScreen : public display::ScreenBase {
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override;
 
+  bool IsNaturalPortrait() const { return natural_portrait_; }
+  bool IsNaturalLandscape() const { return !natural_portrait_; }
+
  private:
   HeadlessScreen(const gfx::Rect& bounds, float scale_factor);
 
   void UpdateScreenSizeForScreenOrientationImpl(
       display::mojom::ScreenOrientation screen_orientation);
+
+  bool natural_portrait_ = false;
 };
 
 }  // namespace headless

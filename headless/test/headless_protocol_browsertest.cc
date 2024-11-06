@@ -363,9 +363,6 @@ HEADLESS_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
 
 HEADLESS_PROTOCOL_TEST(GrantPermissions, "sanity/grant_permissions.js")
 
-HEADLESS_PROTOCOL_TEST(ScreenOrientationLock,
-                       "sanity/screen-orientation-lock.js")
-
 #if !defined(HEADLESS_USE_EMBEDDED_RESOURCES)
 HEADLESS_PROTOCOL_TEST(AutoHyphenation, "sanity/auto-hyphenation.js")
 #endif
@@ -571,6 +568,16 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(ScreenScaleFactor,
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     ScreenSizeOrientation,
     "sanity/screen-size-orientation.js",
+    "--window-size=600,800")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenOrientationLockNaturalLandscape,
+    "sanity/screen-orientation-lock-natural-landscape.js",
+    "--window-size=800,600")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenOrientationLockNaturalPortrait,
+    "sanity/screen-orientation-lock-natural-portrait.js",
     "--window-size=600,800")
 
 }  // namespace headless

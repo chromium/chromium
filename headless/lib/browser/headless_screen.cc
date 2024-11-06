@@ -4,6 +4,8 @@
 
 #include "headless/lib/browser/headless_screen.h"
 
+#include "base/check_deref.h"
+
 namespace headless {
 
 // static
@@ -38,7 +40,8 @@ display::Display HeadlessScreen::GetDisplayNearestWindow(
   return GetPrimaryDisplay();
 }
 
-HeadlessScreen::HeadlessScreen(const gfx::Rect& bounds, float scale_factor) {
+HeadlessScreen::HeadlessScreen(const gfx::Rect& bounds, float scale_factor)
+    : natural_portrait_(bounds.height() > bounds.width()) {
   static int64_t synthesized_display_id = 2000;
   display::Display display(synthesized_display_id++);
   display.SetScaleAndBounds(scale_factor, bounds);
@@ -48,8 +51,9 @@ HeadlessScreen::HeadlessScreen(const gfx::Rect& bounds, float scale_factor) {
 // static
 void HeadlessScreen::UpdateScreenSizeForScreenOrientation(
     display::mojom::ScreenOrientation screen_orientation) {
-  auto* headless_screen = static_cast<HeadlessScreen*>(GetScreen());
-  headless_screen->UpdateScreenSizeForScreenOrientationImpl(screen_orientation);
+  auto& headless_screen =
+      CHECK_DEREF(static_cast<HeadlessScreen*>(GetScreen()));
+  headless_screen.UpdateScreenSizeForScreenOrientationImpl(screen_orientation);
 }
 
 void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
@@ -59,14 +63,30 @@ void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
   bool needs_swap = false;
   switch (screen_orientation) {
     case display::mojom::ScreenOrientation::kUndefined:
-    case display::mojom::ScreenOrientation::kPortraitSecondary:
-    case display::mojom::ScreenOrientation::kLandscapeSecondary:
       break;
     case display::mojom::ScreenOrientation::kPortraitPrimary:
       needs_swap = display.is_landscape();
+      display.set_panel_rotation(IsNaturalPortrait()
+                                     ? display::Display::ROTATE_0
+                                     : display::Display::ROTATE_90);
+      break;
+    case display::mojom::ScreenOrientation::kPortraitSecondary:
+      needs_swap = display.is_landscape();
+      display.set_panel_rotation(IsNaturalPortrait()
+                                     ? display::Display::ROTATE_180
+                                     : display::Display::ROTATE_270);
       break;
     case display::mojom::ScreenOrientation::kLandscapePrimary:
       needs_swap = !display.is_landscape();
+      display.set_panel_rotation(IsNaturalLandscape()
+                                     ? display::Display::ROTATE_0
+                                     : display::Display::ROTATE_90);
+      break;
+    case display::mojom::ScreenOrientation::kLandscapeSecondary:
+      needs_swap = !display.is_landscape();
+      display.set_panel_rotation(IsNaturalLandscape()
+                                     ? display::Display::ROTATE_180
+                                     : display::Display::ROTATE_270);
       break;
   }
 
