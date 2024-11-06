@@ -45,8 +45,14 @@ void LobsterBubbleCoordinator::LoadUI(Profile* profile,
       url, profile, IDS_ACCNAME_ORCA,
       /*esc_closes_ui=*/false);
 
-  views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<LobsterView>(contents_wrapper_.get(), gfx::Rect()));
+  std::unique_ptr<LobsterView> lobster_view =
+      std::make_unique<LobsterView>(contents_wrapper_.get(), gfx::Rect());
+  auto bubble = lobster_view->GetWeakPtr();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(lobster_view));
+
+  if (bubble->GetWidget()) {
+    widget_observation_.Observe(bubble->GetWidget());
+  }
 }
 
 void LobsterBubbleCoordinator::ShowUI() {
@@ -60,6 +66,7 @@ void LobsterBubbleCoordinator::CloseUI() {
     contents_wrapper_->CloseUI();
     contents_wrapper_ = nullptr;
   }
+  widget_observation_.Reset();
 }
 
 bool LobsterBubbleCoordinator::IsShowingUI() const {
@@ -67,6 +74,10 @@ bool LobsterBubbleCoordinator::IsShowingUI() const {
   // the JS has finished loading instead of checking this pointer.
   return contents_wrapper_ != nullptr &&
          contents_wrapper_->GetHost() != nullptr;
+}
+
+void LobsterBubbleCoordinator::OnWidgetDestroying(views::Widget* widget) {
+  CloseUI();
 }
 
 }  // namespace ash

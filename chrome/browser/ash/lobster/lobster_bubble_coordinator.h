@@ -9,7 +9,9 @@
 #include <string_view>
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
+#include "base/scoped_observation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget_observer.h"
 
 class WebUIContentsWrapper;
 class Profile;
@@ -17,12 +19,12 @@ class Profile;
 namespace ash {
 
 // Class used to manage the state of Lobster WebUI bubble contents.
-class LobsterBubbleCoordinator {
+class LobsterBubbleCoordinator : public views::WidgetObserver {
  public:
   LobsterBubbleCoordinator();
   LobsterBubbleCoordinator(const LobsterBubbleCoordinator&) = delete;
   LobsterBubbleCoordinator& operator=(const LobsterBubbleCoordinator&) = delete;
-  ~LobsterBubbleCoordinator();
+  ~LobsterBubbleCoordinator() override;
 
   void LoadUI(Profile* profile,
               std::optional<std::string_view> query,
@@ -33,7 +35,12 @@ class LobsterBubbleCoordinator {
  private:
   bool IsShowingUI() const;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 }  // namespace ash
