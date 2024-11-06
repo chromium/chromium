@@ -19,8 +19,6 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageElementId);
 
-const char kGooglePageUrl[] = "https://www.google.com/";
-
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules-v2",
                                        "#container"};
@@ -62,7 +60,7 @@ ModuleDetails kMostRelevantTabResumptionModuleDetails = {
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#disable"},
     {{{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
        "ntp-most-relevant-tab-resumption", "#urlVisits", "a"},
-      kGooglePageUrl}},
+      "https://www.google.com"}},
 };
 
 ModuleDetails kGoogleCalendarModuleDetails = {
@@ -130,16 +128,6 @@ class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpCommandLine(command_line);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSignedOutNtpModulesSwitch);
-  }
-
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    embedded_test_server()->StartAcceptingConnections();
-  }
-
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   InteractiveTestApi::MultiStep LoadNewTabPage() {
@@ -220,7 +208,6 @@ class NewTabPageModulesInteractiveUiTest
   void operator=(const NewTabPageModulesInteractiveUiTest&) = delete;
 
   void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     features.InitWithFeaturesAndParameters(
         ModuleDetails().features,
         /*disabled_features=*/ntp::ComputeDisabledFeaturesList(
@@ -312,7 +299,6 @@ class NewTabPageModulesInteractiveLinkUiTest
   void operator=(const NewTabPageModulesInteractiveLinkUiTest&) = delete;
 
   void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     features.InitWithFeaturesAndParameters(GetParam().first, {});
     InteractiveBrowserTest::SetUp();
   }
@@ -324,17 +310,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageModulesInteractiveLinkUiTest,
                          ::testing::ValuesIn(GetAllModuleLinks(kAllModules)));
 
-// TODO(crbug.com/347914816): Fix test failure on Mac.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_ClickingEntryNavigatesToCorrectPage \
-  DISABLED_ClickingEntryNavigatesToCorrectPage
-#else
-#define MAYBE_ClickingEntryNavigatesToCorrectPage \
-  ClickingEntryNavigatesToCorrectPage
-#endif
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
-                       MAYBE_ClickingEntryNavigatesToCorrectPage) {
+                       ClickingEntryNavigatesToCorrectPage) {
   RunTestSequence(
       // 1. Wait for new tab page to load.
       LoadNewTabPage(),
