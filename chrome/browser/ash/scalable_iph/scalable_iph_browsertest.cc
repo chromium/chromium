@@ -22,6 +22,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/test_widget_builder.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -57,10 +58,12 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/account_id/account_id.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/constants.h"
@@ -889,6 +892,35 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, NoTimeTickEventWithLockScreen) {
   ash::ScreenLockerTester tester;
   tester.Lock();
   task_runner()->FastForwardBy(base::Minutes(3));
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
+class ScalableIphBrowserTestUnlock : public ScalableIphBrowserTest {
+ protected:
+  ScalableIphBrowserTestBase::MockTrackerFactoryMethod
+  GetMockTrackerFactoryMethod() override {
+    return base::BindRepeating(&ScalableIphBrowserTestUnlock::CreateMockTracker,
+                               base::Unretained(this));
+  }
+
+ private:
+  std::unique_ptr<KeyedService> CreateMockTracker(
+      content::BrowserContext* browser_context) {
+    std::unique_ptr<feature_engagement::test::MockTracker> mock_tracker =
+        ScalableIphBrowserTestBase::SetUpFakeInitializationCalls(
+            std::make_unique<feature_engagement::test::MockTracker>());
+
+    EXPECT_CALL(*mock_tracker, NotifyEvent(scalable_iph::kEventNameUnlocked));
+
+    return mock_tracker;
+  }
+};
+
+// Session start should be recorded as an unlock event in `ScalableIph`.
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestUnlock,
+                       SessionStartUnlockedEvent) {
+  // The expectation is set in
+  // `ScalableIphBrowserTestUnlock::CreateMockTracker`.
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 

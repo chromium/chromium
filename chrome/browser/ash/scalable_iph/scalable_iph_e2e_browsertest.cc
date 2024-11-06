@@ -146,9 +146,7 @@ void ApplyExperiment(
 class ScalableIphE2EBrowserTest : public ash::ScalableIphBrowserTestBase {
  public:
   explicit ScalableIphE2EBrowserTest(const std::string& experiment_name)
-      : experiment_name_(experiment_name) {
-    enable_mock_tracker_ = false;
-  }
+      : experiment_name_(experiment_name) {}
 
   void InitializeScopedFeatureList() override {
     const variations::FieldTrialTestingStudy* study = FindStudy();
@@ -182,6 +180,11 @@ class ScalableIphE2EBrowserTest : public ash::ScalableIphBrowserTestBase {
     // Note that there is an async operation before network status change has
     // been propagated to `ScalableIph`. This does NOT wait it.
     AddOnlineNetwork();
+  }
+
+ protected:
+  MockTrackerFactoryMethod GetMockTrackerFactoryMethod() override {
+    return MockTrackerFactoryMethod();
   }
 
  private:
@@ -259,4 +262,3 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestHelpAppBased, E2E) {
 
   // TODO(b/285225729): add more expectations to test the config.
 }
-
