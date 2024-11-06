@@ -1515,8 +1515,7 @@ struct BrowserInitParams {
   [MinVersion=64]
   bool REMOVED_64@64;
 
-  // If true, the DriveFsBulkPinning flag and it's accompanying feature
-  // management flag has been enabled.
+  // If true, the DriveFsBulkPinning feature management flag has been enabled.
   [MinVersion=65, RenamedFrom="is_drivefs_bulk_pinning_enabled"]
   bool is_drivefs_bulk_pinning_available@65;
 
