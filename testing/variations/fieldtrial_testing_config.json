@@ -6130,26 +6130,6 @@
             ]
         }
     ],
-    "ConditionallySkipGpuChannelFlush": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ConditionallySkipGpuChannelFlush"
-                    ]
-                }
-            ]
-        }
-    ],
     "ConfigurableV8CodeCacheHotHours": [
         {
             "platforms": [
@@ -16714,6 +16694,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
                         "ExpandedPrefetchRange",
@@ -16743,6 +16724,7 @@
                     },
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
@@ -16769,6 +16751,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
@@ -16791,6 +16774,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
@@ -16812,6 +16796,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
