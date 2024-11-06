@@ -118,7 +118,7 @@ BASE_FEATURE(kWebAuthnAmbientSignin,
 // Not yet enabled by default.
 BASE_FEATURE(kWebAuthniCloudKeychainPrf,
              "WebAuthenticationiCloudKeychainPrf",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This is a deprecation flag. It is now enabled by default, but we want to
 // disable it eventually.
