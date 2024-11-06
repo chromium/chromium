@@ -22,6 +22,9 @@ constexpr base::TimeDelta fast_forward_timeskip =
     BocaSessionManager::kIndefinitePollingInterval + base::Seconds(1);
 constexpr char kTestUrl1[] = "https://www.test1.com";
 constexpr char kTestUrl2[] = "https://www.test2.com";
+constexpr char kTestEmail1[] = "test1@gmail.com";
+constexpr char kTestEmail2[] = "test2@gmail.com";
+constexpr char kTestEmail3[] = "test3@gmail.com";
 
 class BocaMetricsManagerTest : public testing::Test {
  protected:
@@ -68,6 +71,31 @@ TEST_F(BocaMetricsManagerProducerTest,
   histograms.ExpectTotalCount(kBocaOnTaskUnlockedSessionDurationPercentage, 1);
   histograms.ExpectBucketCount(kBocaOnTaskUnlockedSessionDurationPercentage,
                                expected_percentage_unlocked, 1);
+}
+
+TEST_F(
+    BocaMetricsManagerProducerTest,
+    RecordNumOfStudentsJoinedViaCodeDuringSessionMetricsForProducerCorrectly) {
+  base::HistogramTester histograms;
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  ::boca::Roster roster;
+  auto* student_groups_1 = roster.mutable_student_groups()->Add();
+  student_groups_1->set_group_source(::boca::StudentGroup::JOIN_CODE);
+  student_groups_1->add_students()->set_email(kTestEmail1);
+  student_groups_1->add_students()->set_email(kTestEmail2);
+  auto* student_groups_2 = roster.mutable_student_groups()->Add();
+  student_groups_2->set_group_source(::boca::StudentGroup::CLASSROOM);
+  student_groups_2->add_students()->set_email(kTestEmail3);
+  metrics_manager_.OnSessionRosterUpdated(roster);
+  metrics_manager_.OnSessionEnded("test_session_id");
+
+  const int expected_num_of_students = 2;
+  histograms.ExpectTotalCount(
+      kBocaOnTaskNumOfStudentsJoinedViaCodeDuringSession, 1);
+  histograms.ExpectBucketCount(
+      kBocaOnTaskNumOfStudentsJoinedViaCodeDuringSession,
+      expected_num_of_students, 1);
 }
 
 TEST_F(BocaMetricsManagerProducerTest,
@@ -128,6 +156,23 @@ TEST_F(BocaMetricsManagerConsumerTest,
 
   histograms.ExpectTotalCount(kBocaOnTaskLockedSessionDurationPercentage, 0);
   histograms.ExpectTotalCount(kBocaOnTaskUnlockedSessionDurationPercentage, 0);
+}
+
+TEST_F(BocaMetricsManagerConsumerTest,
+       DoNotRecordNumOfStudentsJoinedViaCodeDuringSessionMetricsForConsumer) {
+  base::HistogramTester histograms;
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  ::boca::Roster roster;
+  auto* student_groups = roster.mutable_student_groups()->Add();
+  student_groups->set_group_source(::boca::StudentGroup::JOIN_CODE);
+  student_groups->add_students()->set_email(kTestEmail1);
+  student_groups->add_students()->set_email(kTestEmail2);
+  metrics_manager_.OnSessionRosterUpdated(roster);
+  metrics_manager_.OnSessionEnded("test_session_id");
+
+  histograms.ExpectTotalCount(
+      kBocaOnTaskNumOfStudentsJoinedViaCodeDuringSession, 0);
 }
 
 TEST_F(BocaMetricsManagerConsumerTest,

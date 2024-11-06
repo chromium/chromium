@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_METRICS_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_METRICS_MANAGER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -25,6 +26,7 @@ class BocaMetricsManager : public boca::BocaSessionManager::Observer {
                         const ::boca::UserIdentity& producer) override;
   void OnSessionEnded(const std::string& session_id) override;
   void OnBundleUpdated(const ::boca::Bundle& bundle) override;
+  void OnSessionRosterUpdated(const ::boca::Roster& roster) override;
 
  private:
   // Calculates the duration for the specified `locked_state`. `locked_state` is
@@ -42,6 +44,10 @@ class BocaMetricsManager : public boca::BocaSessionManager::Observer {
   base::TimeDelta unlocked_mode_cumulative_duration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Set of emails of students that joined the session via code.
+  base::flat_set<std::string> students_join_via_code_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Current number of tabs in the bundle sent by the provider.
   int num_of_tabs_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;

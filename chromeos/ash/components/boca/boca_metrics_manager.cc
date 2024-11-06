@@ -31,12 +31,15 @@ void BocaMetricsManager::OnSessionEnded(const std::string& session_id) {
   if (is_producer_) {
     RecordOnTaskLockedStateDurationPercentage(
         unlocked_mode_cumulative_duration_, locked_mode_cumulative_duration_);
+    RecordOnTaskNumOfStudentsJoinedViaCodeDuringSession(
+        students_join_via_code_.size());
     RecordOnTaskNumOfTabsWhenSessionEnded(num_of_tabs_);
     RecordOnTaskMaxNumOfTabsDuringSession(max_num_of_tabs_);
   }
   last_switch_locked_mode_timestamp_ = base::TimeTicks();
   unlocked_mode_cumulative_duration_ = base::TimeDelta();
   locked_mode_cumulative_duration_ = base::TimeDelta();
+  students_join_via_code_.clear();
   num_of_tabs_ = 0;
   max_num_of_tabs_ = 0;
 }
@@ -51,6 +54,18 @@ void BocaMetricsManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   }
   CalculateDurationForContentState(is_lock_window_);
   is_lock_window_ = bundle.locked();
+}
+
+void BocaMetricsManager::OnSessionRosterUpdated(const ::boca::Roster& roster) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& group : roster.student_groups()) {
+    if (group.group_source() == ::boca::StudentGroup::JOIN_CODE) {
+      for (const auto& student : group.students()) {
+        students_join_via_code_.insert(student.email());
+      }
+    }
+  }
 }
 
 void BocaMetricsManager::CalculateDurationForContentState(bool locked_state) {
