@@ -448,7 +448,9 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
         &synthetic_trial_registry, &platform_field_trials, safe_seed_manager_,
-        /*add_entropy_source_to_variations_ids=*/true);
+        /*add_entropy_source_to_variations_ids=*/true,
+        *metrics_state_manager_->CreateEntropyProviders(
+            /*enable_limited_entropy_mode=*/false));
   }
 
   // Passthrough, to expose the underlying method to tests without making it
@@ -960,7 +962,9 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true));
+      /*add_entropy_source_to_variations_ids=*/true,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false)));
 
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
   EXPECT_EQ(
@@ -1015,7 +1019,9 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true));
+      /*add_entropy_source_to_variations_ids=*/true,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false)));
 
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));
@@ -1791,7 +1797,12 @@ TEST_P(LimitedEntropyProcessingTest,
           std::vector<base::FeatureList::FeatureOverrideInfo>(),
           std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
           &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-          /*add_entropy_source_to_variations_ids=*/true));
+          /*add_entropy_source_to_variations_ids=*/true,
+          *metrics_state_manager->CreateEntropyProviders(
+              VariationsFieldTrialCreatorBase::
+                  IsLimitedEntropyRandomizationSourceEnabled(
+                      variations_service_client.GetChannelForVariations(),
+                      test_case.trial))));
 
   // Verifies that the limited entropy test study is randomized.
   EXPECT_EQ(test_case.is_limited_study_active,
@@ -1900,7 +1911,9 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true));
+      /*add_entropy_source_to_variations_ids=*/true,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false)));
 
   // Each form factor specific feature should be enabled iff the current form
   // factor matches the feature's targetted form factor.

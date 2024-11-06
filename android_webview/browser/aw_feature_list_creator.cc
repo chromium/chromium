@@ -38,6 +38,7 @@
 #include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/metrics/android_metrics_helper.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -292,7 +293,9 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       std::move(feature_list), metrics_client->metrics_state_manager(),
       metrics_client->GetSyntheticTrialRegistry(), aw_field_trials_.get(),
       &ignored_safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false);
+      /*add_entropy_source_to_variations_ids=*/false,
+      *metrics_client->metrics_state_manager()->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false));
 }
 
 }  // namespace android_webview

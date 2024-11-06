@@ -351,6 +351,11 @@ VariationsService::VariationsService(
       policy_pref_service_(local_state),
       resource_request_allowed_notifier_(std::move(notifier)),
       safe_seed_manager_(local_state),
+      entropy_providers_(state_manager_->CreateEntropyProviders(
+          VariationsFieldTrialCreatorBase::
+              IsLimitedEntropyRandomizationSourceEnabled(
+                  client_->GetChannelForVariations(),
+                  &limited_entropy_synthetic_trial_))),
       field_trial_creator_(
           client_.get(),
           std::make_unique<VariationsSeedStore>(
@@ -938,15 +943,9 @@ void VariationsService::PerformSimulationWithVersion(
   if (!version.IsValid())
     return;
 
-  auto entropy_providers = state_manager_->CreateEntropyProviders(
-      VariationsFieldTrialCreatorBase::
-          IsLimitedEntropyRandomizationSourceEnabled(
-              client()->GetChannelForVariations(),
-              &limited_entropy_synthetic_trial_));
-
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(version);
-  auto result = SimulateSeedStudies(seed, *client_state, *entropy_providers);
+  auto result = SimulateSeedStudies(seed, *client_state, *entropy_providers_);
 
   NotifyObservers(result);
 }
@@ -984,7 +983,7 @@ bool VariationsService::SetUpFieldTrials(
       variation_ids, command_line_variation_ids, extra_overrides,
       std::move(feature_list), state_manager_, synthetic_trial_registry_,
       platform_field_trials, &safe_seed_manager_,
-      /*add_entropy_source_to_variations_ids=*/true);
+      /*add_entropy_source_to_variations_ids=*/true, *entropy_providers_);
 }
 
 std::vector<StudyGroupNames> VariationsService::GetStudiesAvailableToForce() {
