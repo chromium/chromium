@@ -337,8 +337,11 @@ BASE_FEATURE(kAllowlistedAiDataExtensions,
 
 const base::FeatureParam<std::string> kAllowlistedExtensions{
     &kAllowlistedAiDataExtensions, "allowlisted_extension_ids",
-    /*default_value=*/
-    "hpkopmikdojpadgmioifjjodbmnjjjca,nfdaijodggdcjengofmbibbkcnopmikg"};
+    /*default_value=*/""};
+
+const base::FeatureParam<std::string> kBlocklistedExtensions{
+    &kAllowlistedAiDataExtensions, "blocked_extension_ids",
+    /*default_value=*/""};
 
 }  // namespace
 
@@ -346,6 +349,11 @@ AiDataKeyedService::AiDataKeyedService(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
 AiDataKeyedService::~AiDataKeyedService() = default;
+
+const base::Feature&
+AiDataKeyedService::GetAllowlistedAiDataExtensionsFeatureForTesting() {
+  return kAllowlistedAiDataExtensions;
+}
 
 void AiDataKeyedService::GetAiData(int dom_node_id,
                                    content::WebContents* web_contents,
@@ -360,5 +368,23 @@ std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
   std::vector<std::string> allowlisted_extensions =
       base::SplitString(kAllowlistedExtensions.Get(), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  static const std::vector<std::string> kHardcodedAllowlistedExtensions = {
+      // https://issues.chromium.org/373645534
+      "hpkopmikdojpadgmioifjjodbmnjjjca",
+      // https://issues.chromium.org/373462321
+      "nfdaijodggdcjengofmbibbkcnopmikg"};
+  allowlisted_extensions.insert(allowlisted_extensions.end(),
+                                kHardcodedAllowlistedExtensions.begin(),
+                                kHardcodedAllowlistedExtensions.end());
+  std::vector<std::string> blocklisted_extensions =
+      base::SplitString(kBlocklistedExtensions.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  auto it = std::remove_if(
+      allowlisted_extensions.begin(), allowlisted_extensions.end(),
+      [&](const std::string& extension_id) {
+        return base::Contains(blocklisted_extensions, extension_id);
+      });
+  allowlisted_extensions.erase(it, allowlisted_extensions.end());
+
   return allowlisted_extensions;
 }

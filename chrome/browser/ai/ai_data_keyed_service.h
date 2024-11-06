@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
@@ -41,6 +42,9 @@ class AiDataKeyedService : public KeyedService {
                  std::string user_input,
                  AiDataCallback callback);
 
+  static const base::Feature& GetAllowlistedAiDataExtensionsFeatureForTesting();
+
+ private:
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
 
