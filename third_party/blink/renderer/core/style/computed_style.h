@@ -2287,11 +2287,13 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kBefore &&
-             IsScrollContainer();
+             IsScrollContainer() &&
+             HasPseudoElementStyle(kPseudoIdScrollMarkerGroup);
     }
     if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter &&
-             IsScrollContainer();
+             IsScrollContainer() &&
+             HasPseudoElementStyle(kPseudoIdScrollMarkerGroup);
     }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
