@@ -42,6 +42,12 @@ class FilePathWatcherChangeTracker {
   // soon so we don't need to finish coalescing events yet.
   std::vector<ChangeInfo> PopChanges(bool next_change_soon);
 
+  bool HasPendingDelete() { return last_deleted_change_.has_value(); }
+
+  std::optional<ChangeInfo> TakePendingDelete() {
+    return std::exchange(last_deleted_change_, std::nullopt);
+  }
+
  private:
   enum class ExistenceStatus {
     // We know the file exists.

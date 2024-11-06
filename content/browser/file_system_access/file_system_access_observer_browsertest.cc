@@ -899,7 +899,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq(expected_change_type));
 }
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 // TODO(b/360153904): Disabled on Mac due to flakiness.
 #if !BUILDFLAG(IS_MAC)
@@ -1287,7 +1287,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
               relative_path_component_matcher);
 }
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
