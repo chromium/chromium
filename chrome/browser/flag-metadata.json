@@ -852,6 +852,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "autofill-throttle-filtered-doc-form-scan",
+    "owners": ["vincb@google.com", "tmartino@google.com", "bling-transactions@google.com"],
+    "expiry_milestone": 136
+  },
+  {
     "name": "autofill-unmask-card-request-timeout",
     "owners": ["junhuihe@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 135

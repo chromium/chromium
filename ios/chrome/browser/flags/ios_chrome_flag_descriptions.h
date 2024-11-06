@@ -139,6 +139,12 @@ extern const char kAutofillStickyInfobarDescription[];
 extern const char kAutofillThrottleDocumentFormScanName[];
 extern const char kAutofillThrottleDocumentFormScanDescription[];
 
+// Title and description for the flag that enables the throttling of Autofill
+// filtered document form scans. Those are the scans used to take the latest
+// snapshot of a specific form, on the spot.
+extern const char kAutofillThrottleFilteredDocumentFormScanName[];
+extern const char kAutofillThrottleFilteredDocumentFormScanDescription[];
+
 // Title and description for the flag that sets a client-side timeout on
 // UnmaskCardRequests to Google Payments servers.
 extern const char kAutofillUnmaskCardRequestTimeoutName[];
