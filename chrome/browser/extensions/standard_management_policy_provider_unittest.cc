@@ -128,9 +128,7 @@ TEST_F(StandardManagementPolicyProviderTest,
   EXPECT_NE(std::u16string(), error16);
 
   // CWS extensions should remain enabled when installed by external policy.
-  EXPECT_FALSE(
-      provider_.MustRemainDisabled(extension.get(), nullptr, &error16));
-  EXPECT_NE(std::u16string(), error16);
+  EXPECT_FALSE(provider_.MustRemainDisabled(extension.get(), nullptr));
   EXPECT_TRUE(provider_.MustRemainEnabled(extension.get(), &error16));
   EXPECT_NE(std::u16string(), error16);
 }
@@ -143,7 +141,7 @@ TEST_F(StandardManagementPolicyProviderTest, UnsupportedDeveloperExtension) {
   auto extension = CreateExtension(ManifestLocation::kUnpacked);
 
   std::u16string error16;
-  EXPECT_TRUE(provider_.MustRemainDisabled(extension.get(), nullptr, &error16));
+  EXPECT_TRUE(provider_.MustRemainDisabled(extension.get(), nullptr));
 }
 
 // Tests the behavior of the ManagementPolicy provider methods for a component

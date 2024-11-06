@@ -178,17 +178,11 @@ bool StandardManagementPolicyProvider::MustRemainEnabled(
 
 bool StandardManagementPolicyProvider::MustRemainDisabled(
     const Extension* extension,
-    disable_reason::DisableReason* reason,
-    std::u16string* error) const {
+    disable_reason::DisableReason* reason) const {
   std::string required_version;
   if (!settings_->CheckMinimumVersion(extension, &required_version)) {
-    if (reason)
+    if (reason) {
       *reason = disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY;
-    if (error) {
-      *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSION_DISABLED_UPDATE_REQUIRED_BY_POLICY,
-          base::UTF8ToUTF16(extension->name()),
-          base::ASCIIToUTF16(required_version));
     }
     return true;
   }
@@ -197,11 +191,6 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     if (reason) {
       *reason = disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
     }
-    if (error) {
-      *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSION_DISABLED_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
-          base::UTF8ToUTF16(extension->name()));
-    }
     return true;
   }
 
@@ -209,22 +198,12 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     if (reason) {
       *reason = disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION;
     }
-    if (error) {
-      // TODO(crbug.com/362756477): Replace temporary string with disable
-      // unsupported developer string once ready.
-      *error = u"Unpacked extension blocked by developer mode requirement.";
-    }
     return true;
   }
 
   if (settings_->ShouldBlockForceInstalledOffstoreExtension(*extension)) {
     if (reason) {
       *reason = disable_reason::DISABLE_NOT_VERIFIED;
-    }
-    if (error) {
-      *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE,
-          l10n_util::GetStringUTF16(IDS_EXTENSION_WEB_STORE_TITLE));
     }
     return true;
   }

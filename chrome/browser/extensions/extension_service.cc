@@ -1267,9 +1267,10 @@ void ExtensionService::CheckManagementPolicy() {
   // Loop through the extensions list, finding extensions we need to disable.
   for (const auto& extension : registry_->enabled_extensions()) {
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-    if (system_->management_policy()->MustRemainDisabled(
-            extension.get(), &disable_reason, nullptr))
+    if (system_->management_policy()->MustRemainDisabled(extension.get(),
+                                                         &disable_reason)) {
       to_disable[extension->id()] = disable_reason;
+    }
   }
 
   ExtensionManagement* management =
@@ -1324,15 +1325,14 @@ void ExtensionService::CheckManagementPolicy() {
     disable_reason::DisableReason install_verifier_disable_reason =
         disable_reason::DISABLE_NONE;
     InstallVerifier::Get(GetBrowserContext())
-        ->MustRemainDisabled(extension.get(), &install_verifier_disable_reason,
-                             nullptr);
+        ->MustRemainDisabled(extension.get(), &install_verifier_disable_reason);
     if (install_verifier_disable_reason == disable_reason::DISABLE_NONE &&
         !management->ShouldBlockForceInstalledOffstoreExtension(*extension)) {
       disable_reasons &= ~disable_reason::DISABLE_NOT_VERIFIED;
     }
 
     if (!system_->management_policy()->MustRemainDisabled(extension.get(),
-                                                          nullptr, nullptr)) {
+                                                          nullptr)) {
       disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
     }
 
@@ -2215,8 +2215,8 @@ int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
   disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
   // Extensions disabled by management policy should always be disabled, even
   // if it's force-installed.
-  if (system_->management_policy()->MustRemainDisabled(
-          extension, &disable_reason, nullptr)) {
+  if (system_->management_policy()->MustRemainDisabled(extension,
+                                                       &disable_reason)) {
     // A specified reason is required to disable the extension.
     DCHECK(disable_reason != disable_reason::DISABLE_NONE);
     return disable_reason;
@@ -2325,8 +2325,7 @@ void ExtensionService::PreAddExtension(const Extension* extension,
 }
 
 bool ExtensionService::CanEnableExtension(const Extension* extension) {
-  return !system_->management_policy()->MustRemainDisabled(extension, nullptr,
-                                                           nullptr);
+  return !system_->management_policy()->MustRemainDisabled(extension, nullptr);
 }
 
 bool ExtensionService::CanDisableExtension(const Extension* extension) {

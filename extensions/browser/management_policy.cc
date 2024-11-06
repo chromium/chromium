@@ -56,8 +56,7 @@ bool ManagementPolicy::Provider::MustRemainEnabled(
 
 bool ManagementPolicy::Provider::MustRemainDisabled(
     const Extension* extension,
-    disable_reason::DisableReason* reason,
-    std::u16string* error) const {
+    disable_reason::DisableReason* reason) const {
   return false;
 }
 
@@ -129,10 +128,10 @@ bool ManagementPolicy::MustRemainEnabled(const Extension* extension,
       &Provider::MustRemainEnabled, "Disabling", false, extension, error);
 }
 
-bool ManagementPolicy::MustRemainDisabled(const Extension* extension,
-                                          disable_reason::DisableReason* reason,
-                                          std::u16string* error) const {
-  if (!UserMayLoad(extension, error)) {
+bool ManagementPolicy::MustRemainDisabled(
+    const Extension* extension,
+    disable_reason::DisableReason* reason) const {
+  if (!UserMayLoad(extension, /*error=*/nullptr)) {
     if (reason) {
       *reason = disable_reason::DISABLE_BLOCKED_BY_POLICY;
     }
@@ -140,7 +139,7 @@ bool ManagementPolicy::MustRemainDisabled(const Extension* extension,
   }
 
   for (const auto& provider : providers_) {
-    if (provider->MustRemainDisabled(extension, reason, error)) {
+    if (provider->MustRemainDisabled(extension, reason)) {
       return true;
     }
   }

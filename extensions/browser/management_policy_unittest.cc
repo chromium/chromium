@@ -152,33 +152,31 @@ TEST_F(ManagementPolicyTest, MustRemainEnabled) {
 
 TEST_F(ManagementPolicyTest, MustRemainDisabled) {
   // No providers registered.
-  std::u16string error;
-  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, nullptr, &error));
-  EXPECT_TRUE(error.empty());
+  extensions::disable_reason::DisableReason reason =
+      extensions::disable_reason::DISABLE_NONE;
+  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, &reason));
+  EXPECT_EQ(extensions::disable_reason::DISABLE_NONE, reason);
 
   // One provider, no relevant restriction.
   policy_.RegisterProvider(&allow_all_);
-  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, nullptr, &error));
-  EXPECT_TRUE(error.empty());
+  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, &reason));
+  EXPECT_EQ(extensions::disable_reason::DISABLE_NONE, reason);
 
   // Two providers, no relevant restrictions.
   policy_.RegisterProvider(&no_modify_status_);
-  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, nullptr, &error));
-  EXPECT_TRUE(error.empty());
+  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, &reason));
+  EXPECT_EQ(extensions::disable_reason::DISABLE_NONE, reason);
 
   // Three providers, one with a relevant restriction.
-  extensions::disable_reason::DisableReason reason =
-      extensions::disable_reason::DISABLE_NONE;
   policy_.RegisterProvider(&must_remain_disabled_);
-  EXPECT_TRUE(policy_.MustRemainDisabled(nullptr, &reason, &error));
-  EXPECT_FALSE(error.empty());
+  EXPECT_TRUE(policy_.MustRemainDisabled(nullptr, &reason));
   EXPECT_EQ(extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT, reason);
 
   // Remove the restriction.
   policy_.UnregisterProvider(&must_remain_disabled_);
-  error.clear();
-  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, nullptr, &error));
-  EXPECT_TRUE(error.empty());
+  reason = extensions::disable_reason::DISABLE_NONE;
+  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, &reason));
+  EXPECT_EQ(extensions::disable_reason::DISABLE_NONE, reason);
 }
 
 TEST_F(ManagementPolicyTest, MustRemainInstalled) {

@@ -95,10 +95,10 @@ class ManagementPolicy {
                                    std::u16string* error) const;
 
     // Similar to MustRemainEnabled, but for whether an extension must remain
-    // disabled, and returns an error and/or reason if the caller needs it.
-    virtual bool MustRemainDisabled(const Extension* extension,
-                                    disable_reason::DisableReason* reason,
-                                    std::u16string* error) const;
+    // disabled, and populates the reason, if any.
+    virtual bool MustRemainDisabled(
+        const Extension* extension,
+        disable_reason::DisableReason* reason) const;
 
     // Similar to MustRemainEnabled, but for whether an extension must remain
     // installed, and returns an error and/or reason if the caller needs it.
@@ -162,8 +162,7 @@ class ManagementPolicy {
   // Returns true immediately if any registered provider's UserMayLoad() returns
   // false or MustRemainDisabled() returns true.
   bool MustRemainDisabled(const Extension* extension,
-                          disable_reason::DisableReason* reason,
-                          std::u16string* error) const;
+                          disable_reason::DisableReason* reason) const;
 
   // Returns true immediately if any registered provider's MustRemainInstalled
   // function returns true.

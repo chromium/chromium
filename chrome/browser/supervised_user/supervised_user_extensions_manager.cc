@@ -202,8 +202,7 @@ bool SupervisedUserExtensionsManager::UserMayLoad(
 
 bool SupervisedUserExtensionsManager::MustRemainDisabled(
     const extensions::Extension* extension,
-    extensions::disable_reason::DisableReason* reason,
-    std::u16string* error) const {
+    extensions::disable_reason::DisableReason* reason) const {
   ExtensionState state = GetExtensionState(*extension);
   // Only extensions that require approval should be disabled.
   // Blocked extensions should be not loaded at all, and are taken care of
@@ -215,9 +214,6 @@ bool SupervisedUserExtensionsManager::MustRemainDisabled(
   }
   if (reason) {
     *reason = extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED;
-  }
-  if (error) {
-    *error = GetExtensionsLockedMessage();
   }
   return true;
 }
