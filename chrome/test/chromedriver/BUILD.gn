@@ -625,6 +625,7 @@ if (is_win || is_posix) {
       "net/test_http_server.cc",
       "net/test_http_server.h",
       "test/devtools_client_impl_integrationtest.cc",
+      "test/element_commands_integrationtest.cc",
       "test/integration_test.cc",
       "test/integration_test.h",
       "test/navigation_tracker_integrationtest.cc",

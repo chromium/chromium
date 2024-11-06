@@ -1375,20 +1375,18 @@ TEST(ParseInspectorError, ExecutionContextWasDestroyed) {
   const std::string error(
       "{\"code\":-32000,\"message\":\"Execution context was destroyed.\"}");
   Status status = internal::ParseInspectorError(error);
-  ASSERT_EQ(kNavigationDetectedByRemoteEnd, status.code());
-  ASSERT_EQ(
-      "navigation detected by remote end: Execution context was destroyed.",
-      status.message());
+  ASSERT_EQ(kAbortedByNavigation, status.code());
+  ASSERT_EQ("aborted by navigation: Execution context was destroyed.",
+            status.message());
 }
 
 TEST(ParseInspectorError, InspectedTargetNavigatedOrClosed) {
   const std::string error(
       "{\"code\":-32000,\"message\":\"Inspected target navigated or closed\"}");
   Status status = internal::ParseInspectorError(error);
-  ASSERT_EQ(kNavigationDetectedByRemoteEnd, status.code());
-  ASSERT_EQ(
-      "navigation detected by remote end: Inspected target navigated or closed",
-      status.message());
+  ASSERT_EQ(kAbortedByNavigation, status.code());
+  ASSERT_EQ("aborted by navigation: Inspected target navigated or closed",
+            status.message());
 }
 
 TEST_F(DevToolsClientImplTest, HandleEventsUntil) {

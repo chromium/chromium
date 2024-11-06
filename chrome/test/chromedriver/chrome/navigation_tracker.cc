@@ -24,7 +24,7 @@ Status MakeNavigationCheckFailedStatus(Status command_status) {
   // Report specific errors to callers for proper handling
   if (command_status.code() == kUnexpectedAlertOpen ||
       command_status.code() == kTimeout ||
-      command_status.code() == kNavigationDetectedByRemoteEnd ||
+      command_status.code() == kAbortedByNavigation ||
       command_status.code() == kNoSuchExecutionContext) {
     return command_status;
   }

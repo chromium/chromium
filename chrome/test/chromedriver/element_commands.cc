@@ -174,6 +174,13 @@ Status SendKeysToElement(Session* session,
   return SendKeysOnWindow(web_view, key_list, true, &session->sticky_modifiers);
 }
 
+Status WrapIfTargetDetached(Status status, StatusCode new_code) {
+  if (status.code() == kTargetDetached) {
+    return Status{new_code, status};
+  }
+  return status;
+}
+
 }  // namespace
 
 Status ExecuteElementCommand(const ElementCommand& command,
@@ -274,24 +281,28 @@ Status ExecuteClickElement(Session* session,
   std::string tag_name;
   Status status = GetElementTagName(session, web_view, element_id, &tag_name);
   if (status.IsError())
-    return status;
+    return WrapIfTargetDetached(status, kAbortedByNavigation);
   if (tag_name == "option") {
     bool is_toggleable;
     status = IsOptionElementTogglable(
         session, web_view, element_id, &is_toggleable);
     if (status.IsError())
-      return status;
-    if (is_toggleable)
-      return ToggleOptionElement(session, web_view, element_id);
-    return SetOptionElementSelected(session, web_view, element_id, true);
+      return WrapIfTargetDetached(status, kAbortedByNavigation);
+    if (is_toggleable) {
+      status = ToggleOptionElement(session, web_view, element_id);
+      return WrapIfTargetDetached(status, kAbortedByNavigation);
+    }
+    status = SetOptionElementSelected(session, web_view, element_id, true);
+    return WrapIfTargetDetached(status, kAbortedByNavigation);
   }
 
   if (tag_name == "input") {
     std::unique_ptr<base::Value> get_element_type;
     status = GetElementAttribute(session, web_view, element_id, "type",
                                  &get_element_type);
-    if (status.IsError())
-      return status;
+    if (status.IsError()) {
+      return WrapIfTargetDetached(status, kAbortedByNavigation);
+    }
     std::string element_type;
     if (get_element_type->is_string())
       element_type = base::ToLowerASCII(get_element_type->GetString());
@@ -302,16 +313,20 @@ Status ExecuteClickElement(Session* session,
   status = GetElementClickableLocation(session, web_view, element_id,
                                        &absolute_location);
   if (status.IsError())
-    return status;
+    return WrapIfTargetDetached(status, kAbortedByNavigation);
 
   WebView* containing_web_view =
       web_view->FindContainerForFrame(session->GetCurrentFrameId());
+  if (containing_web_view == nullptr) {
+    return Status{kAbortedByNavigation,
+                  "frame was destroyed before click completion"};
+  }
 
   WebPoint relative_location;
   status = GetElementClickableLocation(session, containing_web_view, element_id,
                                        &relative_location);
   if (status.IsError()) {
-    return status;
+    return WrapIfTargetDetached(status, kAbortedByNavigation);
   }
 
   std::vector<MouseEvent> events;
@@ -326,6 +341,13 @@ Status ExecuteClickElement(Session* session,
                       session->sticky_modifiers, 1, 1);
   status = containing_web_view->DispatchMouseEvents(
       events, session->GetCurrentFrameId(), false);
+  if (status.code() == kTargetDetached) {
+    // Potential causes:
+    // * navigation detaches the OOPIF
+    // * window or frame is destroyed
+    // We assume that this is a side effect of the click.
+    status = Status{kOk};
+  }
   if (status.IsOk())
     session->mouse_position = absolute_location;
   return status;

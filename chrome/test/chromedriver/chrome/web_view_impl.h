@@ -60,6 +60,7 @@ class WebViewImpl : public WebView {
   // Overridden from WebView:
   bool IsServiceWorker() const override;
   std::string GetId() override;
+  std::string GetSessionId() override;
   bool WasCrashed() override;
   Status AttachTo(DevToolsClient* root_client);
   Status AttachChildView(WebViewImpl* child);

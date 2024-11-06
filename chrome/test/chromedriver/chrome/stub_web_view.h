@@ -18,6 +18,7 @@ class StubWebView : public WebView {
   // Overridden from WebView:
   bool IsServiceWorker() const override;
   std::string GetId() override;
+  std::string GetSessionId() override;
   bool WasCrashed() override;
   Status HandleEventsUntil(const ConditionalFunc& conditional_func,
                            const Timeout& timeout) override;
@@ -147,6 +148,7 @@ class StubWebView : public WebView {
 
  private:
   std::string id_;
+  std::string session_id_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_STUB_WEB_VIEW_H_

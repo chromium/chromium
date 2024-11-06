@@ -1485,7 +1485,7 @@ Status ParseInspectorError(const std::string& error_json) {
                error_message == kInspectedTargetNavigatedOrClosed) {
       // The error messages that arise if navigation was started by the
       // asynchronous script before the script execution was finished..
-      return Status{kNavigationDetectedByRemoteEnd, error_message};
+      return Status{kAbortedByNavigation, error_message};
     }
     std::optional<int> error_code = error_dict->FindInt("code");
     if (error_code == kInvalidParamsInspectorCode) {

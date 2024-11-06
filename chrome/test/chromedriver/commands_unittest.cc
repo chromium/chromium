@@ -730,7 +730,7 @@ TEST(CommandsTest, FindElementWhileNavigating) {
   NavigatingWebView web_view("some_frame");
   web_view.initial_error_codes = {
       kNoSuchExecutionContext,
-      kNavigationDetectedByRemoteEnd,
+      kAbortedByNavigation,
   };
   web_view.SetUpToRespondWithSingleElement();
 
@@ -749,7 +749,7 @@ TEST(CommandsTest, FindElementWhileNavigating) {
 TEST(CommandsTest, FindElementWhileNavigatingTooLong) {
   NavigatingWebView web_view("some_frame");
   web_view.initial_error_codes = {
-      kNavigationDetectedByRemoteEnd,
+      kAbortedByNavigation,
       kNoSuchExecutionContext,
   };
   web_view.SetUpToRespondWithSingleElement();
@@ -770,7 +770,7 @@ TEST(CommandsTest, FindElementsWhileNavigating) {
   NavigatingWebView web_view("some_frame");
   web_view.initial_error_codes = {
       kNoSuchExecutionContext,
-      kNavigationDetectedByRemoteEnd,
+      kAbortedByNavigation,
   };
   web_view.SetUpToRespondWithMultipleElements();
 
@@ -789,7 +789,7 @@ TEST(CommandsTest, FindElementsWhileNavigating) {
 TEST(CommandsTest, FindElementsWhileNavigatingTooLong) {
   NavigatingWebView web_view("some_frame");
   web_view.initial_error_codes = {
-      kNavigationDetectedByRemoteEnd,
+      kAbortedByNavigation,
       kNoSuchExecutionContext,
   };
   web_view.SetUpToRespondWithMultipleElements();
