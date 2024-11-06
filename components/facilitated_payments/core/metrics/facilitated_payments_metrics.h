@@ -24,7 +24,8 @@ enum class PayflowExitedReason {
   kInvalidCode = 1,
   kUserOptedOut = 2,
   kNoLinkedAccount = 3,
-  kMaxValue = kNoLinkedAccount
+  kLandscapeScreenOrientation = 4,
+  kMaxValue = kLandscapeScreenOrientation
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is

@@ -218,7 +218,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(PayflowExitedReason::kCodeValidatorFailed,
                     PayflowExitedReason::kInvalidCode,
                     PayflowExitedReason::kUserOptedOut,
-                    PayflowExitedReason::kNoLinkedAccount));
+                    PayflowExitedReason::kNoLinkedAccount,
+                    PayflowExitedReason::kLandscapeScreenOrientation));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:

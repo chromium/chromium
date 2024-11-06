@@ -220,7 +220,7 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestInLandscapeMode,
                            PixPayflowBlockedWhenFlagDisabled);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestInLandscapeMode,
-                           HistogramForPaymentNotOfferedReason);
+                           PayflowExitedReason_LandscapeScreenOrientation);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.

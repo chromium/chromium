@@ -1012,7 +1012,7 @@ TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
 }
 
 TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
-       HistogramForPaymentNotOfferedReason) {
+       PayflowExitedReason_LandscapeScreenOrientation) {
   base::HistogramTester histogram_tester;
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
@@ -1024,8 +1024,8 @@ TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
   // In landscape mode, if the `EnablePixPaymentsInLandscapeMode` flag is
   // disabled, Pix payment is not offered, and a histogram should be logged.
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
-      /*sample=*/PaymentNotOfferedReason::kLandscapeScreenOrientation,
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kLandscapeScreenOrientation,
       /*expected_bucket_count=*/IsPaymentEnabledInLandscapeMode() ? 0 : 1);
 }
 

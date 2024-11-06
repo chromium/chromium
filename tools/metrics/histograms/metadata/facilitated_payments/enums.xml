@@ -29,6 +29,9 @@ reviewer.
   <int value="2"
       label="User opted out of the flow using the Settings page pref"/>
   <int value="3" label="No linked account"/>
+  <int value="4"
+      label="The device was in landscape orientation when the payflow was
+             triggered"/>
 </enum>
 
 <enum name="FacilitatedPayments.PaymentNotOfferedReason">
