@@ -133,12 +133,30 @@ std::optional<ui::ColorId> MdTextButton::GetBgColorIdOverride() const {
 
 void MdTextButton::SetStrokeColorIdOverride(
     const std::optional<ui::ColorId> color_id) {
+  CHECK(!stroke_color_override_.has_value());
+
   if (color_id == stroke_color_id_override_) {
     return;
   }
   stroke_color_id_override_ = color_id;
   UpdateColors();
   OnPropertyChanged(&stroke_color_id_override_, kPropertyEffectsNone);
+}
+
+void MdTextButton::SetStrokeColorOverrideDeprecated(
+    const std::optional<SkColor>& color) {
+  CHECK(!stroke_color_id_override_.has_value());
+
+  if (color == stroke_color_override_) {
+    return;
+  }
+  stroke_color_override_ = color;
+  UpdateColors();
+  OnPropertyChanged(&stroke_color_override_, kPropertyEffectsNone);
+}
+
+std::optional<SkColor> MdTextButton::GetStrokeColorOverrideDeprecated() const {
+  return stroke_color_override_;
 }
 
 std::optional<ui::ColorId> MdTextButton::GetStrokeColorIdOverride() const {
@@ -319,6 +337,8 @@ void MdTextButton::UpdateBackgroundColor() {
       is_disabled ? ui::kColorButtonBorderDisabled : ui::kColorButtonBorder);
   if (stroke_color_id_override_.has_value()) {
     stroke_color = color_provider->GetColor(stroke_color_id_override_.value());
+  } else if (stroke_color_override_) {
+    stroke_color = *stroke_color_override_;
   } else if (style_ == ui::ButtonStyle::kProminent ||
              style_ == ui::ButtonStyle::kText ||
              style_ == ui::ButtonStyle::kTonal) {

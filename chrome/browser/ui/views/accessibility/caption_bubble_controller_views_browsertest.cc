@@ -40,6 +40,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -100,10 +101,16 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
                        : nullptr;
   }
 
-  views::Label* GetLanguageLabel() {
-    return controller_
-               ? controller_->caption_bubble_->GetLanguageLabelForTesting()
-               : nullptr;
+  views::Label* GetSourceLanguageLabel() {
+    return controller_ ? controller_->caption_bubble_
+                             ->GetSourceLanguageLabelForTesting()
+                       : nullptr;
+  }
+
+  views::Label* GetTargetLanguageLabel() {
+    return controller_ ? controller_->caption_bubble_
+                             ->GetTargetLanguageLabelForTesting()
+                       : nullptr;
   }
 
   views::View* GetHeader() {
@@ -135,6 +142,30 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   views::Button* GetExpandButton() {
     return controller_ ? controller_->caption_bubble_->expand_button_.get()
                        : nullptr;
+  }
+
+  views::MdTextButton* GetSourceLanguageButton() {
+    return controller_ ? controller_->caption_bubble_
+                             ->GetSourceLanguageButtonForTesting()
+                       : nullptr;
+  }
+
+  views::MdTextButton* GetTargetLanguageButton() {
+    return controller_ ? controller_->caption_bubble_
+                             ->GetTargetLanguageButtonForTesting()
+                       : nullptr;
+  }
+
+  views::View* GetTranslateIconAndText() {
+    return controller_ ? controller_->caption_bubble_
+                             ->GetTranslateIconAndTextForTesting()
+                       : nullptr;
+  }
+
+  views::View* GetTranslateArrowIcon() {
+    return controller_
+               ? controller_->caption_bubble_->GetTranslateArrowIconForTesting()
+               : nullptr;
   }
 
   views::Button* GetCollapseButton() {
@@ -177,6 +208,11 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   bool HasMediaFoundationError() {
     return controller_ &&
            controller_->caption_bubble_->HasMediaFoundationError();
+  }
+
+  void SetTargetLanguage(std::string language_code) {
+    GetController()->caption_bubble_->SetTargetLanguageForTesting(
+        language_code);
   }
 
   void DestroyController() { controller_.reset(nullptr); }
@@ -694,6 +730,13 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        UpdateCaptionStyleTextColor) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                               true);
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "en");
+  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                              "fr");
+
   SkColor default_color = browser()->window()->GetColorProvider()->GetColor(
       ui::kColorLiveCaptionBubbleForegroundDefault);
   ui::CaptionStyle caption_style;
@@ -705,6 +748,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to red.
   caption_style.text_color = "rgba(255,0,0,1)";
@@ -712,6 +757,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(SK_ColorRED, GetLabel()->GetEnabledColor());
   EXPECT_EQ(SK_ColorRED, GetTitle()->GetEnabledColor());
   EXPECT_EQ(SK_ColorRED, GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorRED, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorRED, GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to the empty string.
   caption_style.text_color = "";
@@ -719,6 +766,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to blue !important with 0.5 opacity.
   caption_style.text_color = "rgba(0,0,255,0.5) !important";
@@ -735,6 +784,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetLabel()->GetEnabledColor());
   EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetTitle()->GetEnabledColor());
   EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a),
+            GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a),
+            GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to a bad string.
   caption_style.text_color = "green";
@@ -742,6 +795,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to green with spaces between the commas.
   caption_style.text_color = "rgba(0, 255, 0, 1)";
@@ -749,6 +804,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(SK_ColorGREEN, GetLabel()->GetEnabledColor());
   EXPECT_EQ(SK_ColorGREEN, GetTitle()->GetEnabledColor());
   EXPECT_EQ(SK_ColorGREEN, GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorGREEN, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorGREEN, GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to magenta with 0 opacity.
   caption_style.text_color = "rgba(255,0,255,0)";
@@ -756,6 +813,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTargetLanguageLabel()->GetEnabledColor());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -767,6 +826,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   GetController()->UpdateCaptionStyle(std::nullopt);
   OnPartialTranscription("Most marsupials are nocturnal.");
   EXPECT_EQ(default_color, GetBubble()->color());
+  EXPECT_EQ(ui::kColorLiveCaptionBubbleButtonBackground,
+            GetSourceLanguageButton()->GetBgColorIdOverride());
+  EXPECT_EQ(ui::kColorLiveCaptionBubbleButtonBackground,
+            GetTargetLanguageButton()->GetBgColorIdOverride());
 
   // Set the window color to red with 0.5 opacity.
   caption_style.window_color = "rgba(255,0,0,0.5)";
@@ -796,20 +859,19 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   GetController()->UpdateCaptionStyle(caption_style);
   EXPECT_EQ(default_color, GetBubble()->color());
 
-  // Set the window color to green and the background color to majenta. The
+  // Set the window color to green and the background color to magenta. The
   // window color is applied to the caption bubble.
   caption_style.window_color = "rgba(0,255,0,1)";
   caption_style.background_color = "rgba(255,0,255,1)";
   GetController()->UpdateCaptionStyle(caption_style);
   EXPECT_EQ(SK_ColorGREEN, GetBubble()->color());
 
-  // Set the window color to transparent and the background color to majenta.
+  // Set the window color to transparent and the background color to magenta.
   // The non-transparent color is applied to the caption bubble.
   caption_style.window_color = "rgba(0,255,0,0)";
   caption_style.background_color = "rgba(255,0,255,1)";
   GetController()->UpdateCaptionStyle(caption_style);
   EXPECT_EQ(SK_ColorMAGENTA, GetBubble()->color());
-
   // Set the window color to yellow and the background color to transparent.
   // The non-transparent color is applied to the caption bubble.
   caption_style.window_color = "rgba(255,255,0,1)";
@@ -1178,32 +1240,49 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
   browser()->profile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "en");
   browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                                              "fr");
+                                              "en");
 
   OnPartialTranscription("Penguins' feet change colors as they get older.");
   EXPECT_TRUE(IsWidgetVisible());
-  ASSERT_TRUE(GetLanguageLabel()->GetVisible());
+  ASSERT_TRUE(GetSourceLanguageButton()->GetVisible());
+  ASSERT_FALSE(GetTranslateIconAndText()->GetVisible());
+  ASSERT_FALSE(GetTranslateArrowIcon()->GetVisible());
+  ASSERT_FALSE(GetTargetLanguageButton()->GetVisible());
 
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
                                                true);
+  ASSERT_FALSE(GetSourceLanguageButton()->GetVisible());
+  ASSERT_FALSE(GetTranslateIconAndText()->GetVisible());
+  ASSERT_FALSE(GetTranslateArrowIcon()->GetVisible());
+  ASSERT_TRUE(GetTargetLanguageButton()->GetVisible());
+  EXPECT_EQ("English", base::UTF16ToUTF8(GetTargetLanguageButton()->GetText()));
+
+  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                              "fr");
   OnPartialTranscription(
       "Sea otters can hold their breath for over 5 minutes.");
-  ASSERT_TRUE(GetLanguageLabel()->GetVisible());
-  EXPECT_EQ("Translating French to English",
-            base::UTF16ToUTF8(GetLanguageLabel()->GetText()));
-  EXPECT_EQ(line_height, GetLanguageLabel()->GetLineHeight());
+  ASSERT_TRUE(GetSourceLanguageButton()->GetVisible());
+  ASSERT_TRUE(GetTranslateIconAndText()->GetVisible());
+  ASSERT_TRUE(GetTranslateArrowIcon()->GetVisible());
+  ASSERT_TRUE(GetTargetLanguageButton()->GetVisible());
+  EXPECT_EQ("French", base::UTF16ToUTF8(GetSourceLanguageButton()->GetText()));
+  EXPECT_EQ("English", base::UTF16ToUTF8(GetTargetLanguageButton()->GetText()));
+  EXPECT_EQ(line_height, GetSourceLanguageLabel()->GetLineHeight());
+  EXPECT_EQ(line_height, GetTargetLanguageLabel()->GetLineHeight());
 
   ui::CaptionStyle caption_style;
   caption_style.text_size = "200%";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(line_height * 2, GetLanguageLabel()->GetLineHeight());
+  EXPECT_EQ(line_height * 2, GetSourceLanguageLabel()->GetLineHeight());
+  EXPECT_EQ(line_height * 2, GetTargetLanguageLabel()->GetLineHeight());
   caption_style.text_size = "50%";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(line_height / 2, GetLanguageLabel()->GetLineHeight());
+  EXPECT_EQ(line_height / 2, GetSourceLanguageLabel()->GetLineHeight());
+  EXPECT_EQ(line_height / 2, GetTargetLanguageLabel()->GetLineHeight());
 
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
                                                false);
-  ASSERT_TRUE(GetLanguageLabel()->GetVisible());
+  ASSERT_TRUE(GetSourceLanguageButton()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
@@ -1215,27 +1294,35 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
   EXPECT_EQ(2u, GetHeader()->children().size());
   views::View* left_header_container = GetHeader()->children()[0];
 
-  // The left header container should contain the language label button.
+  // The left header container should contain the translate
+  // header{{icon, text}, source language button, arrow icon, and
+  // target language button}.
   EXPECT_EQ(1u, left_header_container->children().size());
+  views::View* translate_header_container =
+      left_header_container->children()[0];
+  EXPECT_EQ(4u, translate_header_container->children().size());
+  EXPECT_EQ(2u, GetTranslateIconAndText()->children().size());
 
-  auto* language_label = left_header_container->children()[0].get();
-  ASSERT_TRUE(language_label->GetVisible());
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                               false);
+  auto* source_language_button = GetSourceLanguageButton();
+  ASSERT_TRUE(source_language_button->GetVisible());
+  ASSERT_FALSE(GetTranslateIconAndText()->GetVisible());
+  ASSERT_FALSE(GetTranslateArrowIcon()->GetVisible());
+  ASSERT_FALSE(GetTargetLanguageButton()->GetVisible());
   ASSERT_EQ(4, static_cast<views::BoxLayout*>(
                    left_header_container->GetLayoutManager())
                    ->inside_border_insets()
                    .left());
   EXPECT_EQ(488, left_header_container->GetPreferredSize().width());
 
-  EXPECT_EQ(u"English",
-            static_cast<views::LabelButton*>(language_label)->GetText());
+  EXPECT_EQ(u"English", source_language_button->GetText());
 
   OnLanguageIdentificationEvent("fr-FR");
-  EXPECT_EQ(u"French (auto-detected)",
-            static_cast<views::LabelButton*>(language_label)->GetText());
+  EXPECT_EQ(u"French (auto-detected)", source_language_button->GetText());
 
   OnLanguageIdentificationEvent("en-GB");
-  EXPECT_EQ(u"English",
-            static_cast<views::LabelButton*>(language_label)->GetText());
+  EXPECT_EQ(u"English", source_language_button->GetText());
 
   // Enable Live Translate.
   browser()->profile()->GetPrefs()->SetString(
@@ -1245,21 +1332,28 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
                                                true);
 
-  ASSERT_TRUE(language_label->GetVisible());
+  auto* translate_language_button = GetTargetLanguageButton();
+  ASSERT_TRUE(source_language_button->GetVisible());
+  ASSERT_TRUE(GetTranslateIconAndText()->GetVisible());
+  ASSERT_TRUE(GetTranslateArrowIcon()->GetVisible());
+  ASSERT_TRUE(translate_language_button->GetVisible());
   ASSERT_EQ(4, static_cast<views::BoxLayout*>(
                    left_header_container->GetLayoutManager())
                    ->inside_border_insets()
                    .left());
-  EXPECT_EQ(u"Translating French to English",
-            static_cast<views::LabelButton*>(language_label)->GetText());
+  EXPECT_EQ(u"French", source_language_button->GetText());
+  EXPECT_EQ(u"English", translate_language_button->GetText());
 
   OnLanguageIdentificationEvent("it-IT");
-  EXPECT_EQ(u"Translating Italian (auto-detected) to English",
-            static_cast<views::LabelButton*>(language_label)->GetText());
+  EXPECT_EQ(u"Italian (auto-detected)", source_language_button->GetText());
+  EXPECT_EQ(u"English", translate_language_button->GetText());
 
   OnLanguageIdentificationEvent("en-US");
-  EXPECT_EQ(u"English (auto-detected)",
-            static_cast<views::LabelButton*>(language_label)->GetText());
+  ASSERT_FALSE(source_language_button->GetVisible());
+  ASSERT_FALSE(GetTranslateIconAndText()->GetVisible());
+  ASSERT_FALSE(GetTranslateArrowIcon()->GetVisible());
+  ASSERT_TRUE(translate_language_button->GetVisible());
+  EXPECT_EQ(u"English (auto-detected)", translate_language_button->GetText());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -1300,16 +1394,60 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LabelTextDirection) {
       "Chipmunks are born blind and hairless, and they weigh only about 3 "
       "grams.");
   EXPECT_TRUE(IsWidgetVisible());
-  ASSERT_TRUE(GetLanguageLabel()->GetVisible());
+  ASSERT_TRUE(GetSourceLanguageButton()->GetVisible());
 
   EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_LEFT,
             GetLabel()->GetHorizontalAlignment());
 
   browser()->profile()->GetPrefs()->SetString(
-      prefs::kLiveTranslateTargetLanguageCode, "he");
+      prefs::kLiveTranslateTargetLanguageCode, "iw");
   OnPartialTranscription("Sloths can sleep for up to 20 hours a day.");
   EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_RIGHT,
             GetLabel()->GetHorizontalAlignment());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, TranslateSynonyms) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                               true);
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "en");
+  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                              "fr");
+
+  OnPartialTranscription(
+      "Chipmunks are born blind and hairless, and they weigh only about 3 "
+      "grams.");
+  EXPECT_TRUE(IsWidgetVisible());
+  ASSERT_TRUE(GetTargetLanguageButton()->GetVisible());
+
+  auto* target_language_label = GetTargetLanguageLabel();
+  ASSERT_EQ(u"English", target_language_label->GetText());
+
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "he");
+  ASSERT_EQ(u"Hebrew", target_language_label->GetText());
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "kok");
+  ASSERT_EQ(u"Konkani", target_language_label->GetText());
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "jv");
+  ASSERT_EQ(u"Javanese", target_language_label->GetText());
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "fil");
+  ASSERT_EQ(u"Filipino", target_language_label->GetText());
+
+  SetTargetLanguage("iw");
+  ASSERT_EQ("he", browser()->profile()->GetPrefs()->GetString(
+                      prefs::kLiveTranslateTargetLanguageCode));
+  SetTargetLanguage("gom");
+  ASSERT_EQ("kok", browser()->profile()->GetPrefs()->GetString(
+                       prefs::kLiveTranslateTargetLanguageCode));
+  SetTargetLanguage("jw");
+  ASSERT_EQ("jv", browser()->profile()->GetPrefs()->GetString(
+                      prefs::kLiveTranslateTargetLanguageCode));
+  SetTargetLanguage("tl");
+  ASSERT_EQ("fil", browser()->profile()->GetPrefs()->GetString(
+                       prefs::kLiveTranslateTargetLanguageCode));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

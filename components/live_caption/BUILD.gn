@@ -43,13 +43,16 @@ if (!is_android && !is_ios) {
       public_deps = [ "//ui/base/mojom:ui_base_types" ]
 
       deps += [
+        "//components/language/core/common",
         "//components/strings",
+        "//components/translate/core/browser",
         "//components/vector_icons",
         "//third_party/re2",
         "//ui/accessibility",
         "//ui/base",
         "//ui/compositor",
         "//ui/gfx",
+        "//ui/menus",
         "//ui/strings:ui_strings_grit",
         "//ui/views",
       ]

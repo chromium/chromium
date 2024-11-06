@@ -112,6 +112,7 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
       SkColorSetA(gfx::kGoogleGrey900, 0xE6)};
   mixer[kColorLiveCaptionBubbleButtonIcon] =
       ui::DeriveDefaultIconColor(kColorLiveCaptionBubbleForegroundDefault);
+  mixer[kColorLiveCaptionBubbleButtonBackground] = {SK_ColorTRANSPARENT};
   mixer[kColorLiveCaptionBubbleButtonIconDisabled] = ui::SetAlpha(
       kColorLiveCaptionBubbleButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorLiveCaptionBubbleForegroundDefault] =

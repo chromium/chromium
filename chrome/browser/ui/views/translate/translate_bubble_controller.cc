@@ -230,8 +230,6 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
         &language_codes);
     auto translate_ui_languages_manager =
         std::make_unique<translate::TranslateUILanguagesManager>(
-            ChromeTranslateClient::GetManagerFromWebContents(web_contents)
-                ->GetWeakPtr(),
             language_codes, source_language, target_language);
 
     Profile* profile =
