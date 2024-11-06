@@ -286,6 +286,9 @@ void MahiManagerImpl::GetContent(MahiContentCallback callback) {
 }
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
+  // Resets latest_elucidation_ to avoid messing up the feedback body.
+  latest_elucidation_ = std::u16string();
+
   if (!MaybeInitializeAndDiscardPendingRequests()) {
     latest_response_status_ = MahiResponseStatus::kUnknownError;
     std::move(callback).Run(u"", latest_response_status_);
@@ -345,6 +348,9 @@ void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
 }
 
 void MahiManagerImpl::GetElucidation(MahiElucidationCallback callback) {
+  // Resets latest_summary_ to avoid messing up feedback.
+  latest_summary_ = std::u16string();
+
   if (!MaybeInitializeAndDiscardPendingRequests()) {
     latest_response_status_ = MahiResponseStatus::kUnknownError;
     std::move(callback).Run(u"", latest_response_status_);
@@ -564,17 +570,26 @@ void MahiManagerImpl::OnContextMenuClicked(
 
 void MahiManagerImpl::OpenFeedbackDialog() {
   std::string description_template = base::StringPrintf(
-      "#Mahi user feedback:\n\n-----------\nlatest status code: %d\nlatest "
-      "summary: %s",
-      static_cast<int>(latest_response_status_),
-      base::UTF16ToUTF8(latest_summary_).c_str());
+      "#Mahi user feedback:\n\n-----------\nlatest status code: %d",
+      static_cast<int>(latest_response_status_));
 
-  if (!current_panel_qa_.empty()) {
-    base::StringAppendF(&description_template, "\nQA history:");
-    for (const auto& [question, answer] : current_panel_qa_) {
-      base::StringAppendF(&description_template, "\nQ:%s\nA:%s\n",
-                          question.c_str(), answer.c_str());
+  if (!latest_summary_.empty()) {
+    base::StringAppendF(&description_template, "\nlatest summary: %s",
+                        base::UTF16ToUTF8(latest_summary_).c_str());
+
+    if (!current_panel_qa_.empty()) {
+      base::StringAppendF(&description_template, "\nQA history:");
+      for (const auto& [question, answer] : current_panel_qa_) {
+        base::StringAppendF(&description_template, "\nQ:%s\nA:%s\n",
+                            question.c_str(), answer.c_str());
+      }
     }
+  } else if (!latest_elucidation_.empty()) {
+    base::StringAppendF(
+        &description_template,
+        "\nlatest simplified text: %s\n\nfor the selected text: %s\n",
+        base::UTF16ToUTF8(latest_elucidation_).c_str(),
+        base::UTF16ToUTF8(current_selected_text_).c_str());
   }
 
   base::Value::Dict ai_metadata;
