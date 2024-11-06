@@ -99,10 +99,6 @@ void UpdateOptInFlowResultUMA(OptInFlowResult result) {
   LogStabilityUmaEnum("Arc.OptInResult", result);
 }
 
-void UpdateOptInNetworkErrorActionUMA(OptInNetworkErrorActionType type) {
-  base::UmaHistogramEnumeration("Arc.OptInNetworkErrorAction", type);
-}
-
 void UpdateOptinTosLoadResultUMA(bool success) {
   base::UmaHistogramBoolean("Arc.OptinTosLoadResult", success);
 }

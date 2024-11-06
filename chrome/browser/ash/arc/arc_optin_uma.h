@@ -281,7 +281,6 @@ void UpdateEnabledStateByUserTypeUMA();
 void UpdateOptInActionUMA(OptInActionType type);
 void UpdateOptInCancelUMA(OptInCancelReason reason);
 void UpdateOptInFlowResultUMA(OptInFlowResult result);
-void UpdateOptInNetworkErrorActionUMA(OptInNetworkErrorActionType type);
 void UpdateProvisioningStatusUMA(ProvisioningStatus status,
                                  const Profile* profile);
 void UpdateProvisioningDpcResultUMA(ArcProvisioningDpcResult result,

@@ -1665,17 +1665,6 @@ chromium-metrics-reviews@google.com.
   <summary>Arc OptIn cancelation reason.</summary>
 </histogram>
 
-<histogram name="Arc.OptInNetworkErrorAction" enum="ArcOptInNetworkErrorAction"
-    expires_after="2024-12-15">
-  <owner>mhasank@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>
-    Records user action on the optin dialog when a network-related provisioning
-    failure occurs by type: close window, retry, send feedback and check network
-    connection.
-  </summary>
-</histogram>
-
 <histogram name="Arc.OptInResult" enum="ArcOptInResult"
     expires_after="2025-03-23">
   <owner>mhasank@google.com</owner>
