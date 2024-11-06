@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/overloaded.h"
@@ -11,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
-#include "chrome/browser/policy/policy_util.h"
 #include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
@@ -287,7 +287,7 @@ void CertProvisioningUserInvalidator::Register(
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
           CertScope::kUser,
           invalidation_provider->GetInvalidationServiceOrListener(
-              policy::GetInvalidationProjectNumber()),
+              std::string(GetCertProvisioningInvalidationProjectNumber())),
           topic, listener_type, std::move(on_invalidation_event_callback));
 
   if (!invalidation_handler_) {

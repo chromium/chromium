@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_POLICY_UTIL_H_
 #define CHROME_BROWSER_POLICY_POLICY_UTIL_H_
 
-#include <string>
+#include <string_view>
 
 class GURL;
 class PrefService;
@@ -21,7 +21,8 @@ bool IsOriginInAllowlist(const GURL& url,
                          const char* allowlist_pref_name,
                          const char* always_allow_pref_name = nullptr);
 
-std::string GetInvalidationProjectNumber();
+// Returns GCP number for policy invalidations.
+std::string_view GetPolicyInvalidationProjectNumber();
 
 }  // namespace policy
 

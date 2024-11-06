@@ -4,17 +4,24 @@
 
 #include "chrome/browser/policy/policy_util.h"
 
-#include <string>
+#include <string_view>
 
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/invalidation/invalidation_constants.h"
 #include "components/invalidation/invalidation_features.h"
-#include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 namespace policy {
+
+namespace {
+// GCP number to be used for policy invalidations. Policy update is not
+// considered critical to receive invalidation.
+constexpr std::string_view kPolicyInvalidationProjectNumber =
+    invalidation::kNonCriticalInvalidationsProjectNumber;
+}  // namespace
 
 bool IsOriginInAllowlist(const GURL& url,
                          const PrefService* prefs,
@@ -49,9 +56,9 @@ bool IsOriginInAllowlist(const GURL& url,
   return false;
 }
 
-std::string GetInvalidationProjectNumber() {
+std::string_view GetPolicyInvalidationProjectNumber() {
   if (invalidation::IsInvalidationsWithDirectMessagesEnabled()) {
-    return invalidation::InvalidationListener::kProjectNumberEnterprise;
+    return kPolicyInvalidationProjectNumber;
   }
   return kPolicyFCMInvalidationSenderID;
 }

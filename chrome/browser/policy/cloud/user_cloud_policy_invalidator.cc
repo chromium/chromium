@@ -13,7 +13,6 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
@@ -71,7 +70,7 @@ void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
   }
 
   Initialize(invalidation_provider->GetInvalidationServiceOrListener(
-      GetInvalidationProjectNumber()));
+      std::string(GetPolicyInvalidationProjectNumber())));
 }
 
 }  // namespace policy

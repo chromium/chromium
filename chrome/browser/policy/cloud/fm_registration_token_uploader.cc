@@ -155,7 +155,7 @@ FmRegistrationTokenUploader::FmRegistrationTokenUploader(
          "accounts";
   LOG_POLICY(WARNING, REMOTE_COMMANDS)
       << "Starting FmRegistrationTokenUploader for " << ToString(scope_)
-      << " scope";
+      << " scope, " << invalidation_listener_->project_number() << " project";
   invalidation_listener_->Start(this);
 }
 
@@ -252,8 +252,9 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
 
   if (!result.IsSuccess()) {
     LOG_POLICY(ERROR, REMOTE_COMMANDS)
-        << "Upload failed for " << ToString(scope_)
-        << " scope: " << result.GetDMServerError();
+        << "Upload failed for " << ToString(scope_) << " scope, "
+        << invalidation_listener_->project_number()
+        << " project: " << result.GetDMServerError();
 
     invalidation_listener_->SetRegistrationUploadStatus(
         invalidation::InvalidationListener::RegistrationTokenUploadStatus::
@@ -268,7 +269,8 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
   }
 
   LOG_POLICY(ERROR, REMOTE_COMMANDS)
-      << "Registration token uploaded for " << ToString(scope_) << " scope";
+      << "Registration token uploaded for " << ToString(scope_) << " scope, "
+      << invalidation_listener_->project_number() << " project";
 
   invalidation_listener_->SetRegistrationUploadStatus(
       invalidation::InvalidationListener::RegistrationTokenUploadStatus::

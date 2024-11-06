@@ -63,6 +63,11 @@ const invalidation::Topic kTopicB = "topic_b";
 constexpr char kFakeSenderId[] = "fake_sender_id";
 constexpr char kTestLogPrefix[] = "test";
 constexpr char kFakeRegistrationToken[] = "fake_registration_token";
+
+std::string GetGcmAppId(auto project_number) {
+  return base::StrCat(
+      {invalidation::InvalidationListener::kFmAppId, "-", project_number});
+}
 }  // namespace
 
 class FakeRegistrationTokenHandler
@@ -139,8 +144,7 @@ class CloudPolicyInvalidatorWithListenerTestBase : public testing::Test {
   CloudPolicyInvalidatorWithListenerTestBase();
 
   void SetUp() override {
-    ON_CALL(mock_instance_id_driver_,
-            GetInstanceID(invalidation::InvalidationListener::kFmAppId))
+    ON_CALL(mock_instance_id_driver_, GetInstanceID(GetGcmAppId(kFakeSenderId)))
         .WillByDefault(Return(&mock_instance_id_));
   }
 
