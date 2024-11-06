@@ -261,20 +261,14 @@ class LazilyDeallocatedDeque {
     void push_front(T&& t) {
       // Mustn't appear to become empty.
       CHECK_NE(CircularDecrement(before_front_index_), back_index_);
-      // SAFETY: `before_front_index_` is one before the first element in the
-      // array. It always points in bounds of the `data_` buffer, never to
-      // one-past-the-end, as maintained by CircularDecrement.
-      new (UNSAFE_BUFFERS(data_.data() + before_front_index_)) T(std::move(t));
+      std::construct_at(data_.get_at(before_front_index_), std::move(t));
       before_front_index_ = CircularDecrement(before_front_index_);
     }
 
     void push_back(T&& t) {
       back_index_ = CircularIncrement(back_index_);
       CHECK(!empty());  // Mustn't appear to become empty.
-      // SAFETY: `back_index_` is the last element in the array. It always
-      // points in bounds of the `data_` buffer, never to one-past-the-end, as
-      // maintained by CircularIncrement.
-      new (UNSAFE_BUFFERS(data_.data() + back_index_)) T(std::move(t));
+      std::construct_at(data_.get_at(back_index_), std::move(t));
     }
 
     void pop_front() {

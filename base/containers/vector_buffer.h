@@ -116,6 +116,8 @@ class VectorBuffer {
     return as_span().subspan(index, size);
   }
 
+  T* get_at(size_t index) { return as_span().get_at(index); }
+
   // DestructRange ------------------------------------------------------------
 
   static void DestructRange(span<T> range) {
