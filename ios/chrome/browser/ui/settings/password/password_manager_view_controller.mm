@@ -26,6 +26,7 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -190,7 +191,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }  // namespace
 
 @interface PasswordManagerViewController () <
-    ChromeAccountManagerServiceObserver,
+    IdentityManagerObserverBridgeDelegate,
     PopoverLabelViewControllerDelegate,
     TableViewIllustratedEmptyViewDelegate>
 
@@ -271,9 +272,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   std::vector<password_manager::CredentialUIEntry> _blockedSites;
   // The list of the user's saved grouped passwords.
   std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
-  // AcountManagerService Observer.
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
+  // IdentityManager Observer.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   // Boolean indicating if password forms have been received for the first time.
   // Used to show a loading indicator while waiting for the store response.
   BOOL _didReceivePasswords;
@@ -304,17 +305,16 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 #pragma mark - Initialization
 
-- (instancetype)initWithChromeAccountManagerService:
-                    (ChromeAccountManagerService*)accountManagerService
-                                        prefService:(PrefService*)prefService
-                             shouldOpenInSearchMode:
-                                 (BOOL)shouldOpenInSearchMode {
+- (instancetype)initWithIdentityManager:
+                    (signin::IdentityManager*)identityManager
+                            prefService:(PrefService*)prefService
+                 shouldOpenInSearchMode:(BOOL)shouldOpenInSearchMode {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _prefService = prefService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, accountManagerService);
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
 
     self.shouldDisableDoneButtonOnEdit = YES;
     self.searchTerm = @"";
@@ -331,7 +331,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 - (void)dealloc {
   // Not an invariant due to possible race conditions. DCHECKing for debugging
   // purposes. See crbug.com/40067451.
-  DCHECK(!_accountManagerServiceObserver.get());
+  DCHECK(!_identityManagerObserver.get());
 }
 
 - (void)setReauthenticationModule:
@@ -643,17 +643,17 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)reportDismissalUserAction {
   base::RecordAction(base::UserMetricsAction("MobilePasswordsSettingsClose"));
-  _accountManagerServiceObserver.reset();
+  _identityManagerObserver.reset();
 }
 
 - (void)reportBackUserAction {
   base::RecordAction(base::UserMetricsAction("MobilePasswordsSettingsBack"));
-  _accountManagerServiceObserver.reset();
+  _identityManagerObserver.reset();
 }
 
 - (void)settingsWillBeDismissed {
   CHECK(self.prefService);
-  _accountManagerServiceObserver.reset();
+  _identityManagerObserver.reset();
   self.prefService = nullptr;
 }
 
@@ -2098,9 +2098,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
+#pragma mark - IdentityManagerObserverBridgeDelegate
 
-- (void)identityListChanged {
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
   [self reloadData];
 }
 
@@ -2110,7 +2111,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSPasswordsSettingsCloseWithSwipe"));
-  _accountManagerServiceObserver.reset();
+  _identityManagerObserver.reset();
 }
 
 #pragma mark - TableViewIllustratedEmptyViewDelegate
