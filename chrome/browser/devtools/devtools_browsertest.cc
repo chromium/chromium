@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <deque>
 #include <memory>
 #include <optional>
@@ -152,6 +148,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_switches.h"
@@ -204,7 +201,7 @@ void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
                                   const char* method,
                                   T... args) {
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
-  const char* args_array[] = {method, args...};
+  std::array args_array = {method, args...};
   std::ostringstream script;
   script << "uiTests.dispatchOnTestSuite([";
   for (size_t i = 0; i < std::size(args_array); ++i) {
@@ -2108,14 +2105,17 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
             base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
                 .AppendASCII("content/test/data/devtools/navigation.html"))
             .spec();
+    constexpr std::string_view kFileSchemeAndSep = "file:///";
+    ASSERT_TRUE(base::StartsWith(file_url, kFileSchemeAndSep));
 
     const Extension* extension =
         LoadExtensionFromPath(dir.UnpackedPath(), allow_file_access);
     ASSERT_TRUE(extension);
 
-    std::string url = base::StringPrintf(
+    std::string url = absl::StrFormat(
         R"(data:text/html,<script>//%%23%%20sourceMappingURL=data:application/json,{"version":3,"sources":["%s:%s"]}</script>)",
-        url_scheme.c_str(), file_url.c_str() + strlen("file:///"));
+        url_scheme,
+        std::string_view(file_url).substr(kFileSchemeAndSep.length()));
     OpenDevToolsWindow(url, false);
     RunTestFunction(window_, "waitForTestResultsAsMessage");
   }
