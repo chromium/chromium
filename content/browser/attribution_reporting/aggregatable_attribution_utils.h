@@ -13,10 +13,12 @@
 #include "base/numerics/checked_math.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
+class AggregatableNamedBudgetDefs;
 class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
@@ -69,6 +71,9 @@ base::CheckedNumeric<int64_t> GetTotalAggregatableValues(
 
 void SetAttributionDestination(base::Value::Dict&,
                                const net::SchemefulSite& destination);
+
+CONTENT_EXPORT StoredSource::AggregatableNamedBudgets ConvertNamedBudgetsMap(
+    const attribution_reporting::AggregatableNamedBudgetDefs&);
 
 }  // namespace content
 

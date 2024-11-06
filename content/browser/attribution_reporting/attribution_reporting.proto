@@ -102,3 +102,13 @@ message AttributionScopesData {
   // Must be positive.
   optional uint32 max_event_states = 3;
 }
+
+message AggregatableNamedBudgetPair {
+  // Must be positive.
+  optional uint32 original_budget = 1;
+  optional uint32 remaining_budget = 2;
+}
+
+message AggregatableNamedBudgets {
+  map<string, AggregatableNamedBudgetPair> budgets = 1;
+}

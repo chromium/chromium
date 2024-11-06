@@ -458,6 +458,8 @@ source_set("browser") {
     "attribution_reporting/aggregatable_debug_rate_limit_table.h",
     "attribution_reporting/aggregatable_debug_report.cc",
     "attribution_reporting/aggregatable_debug_report.h",
+    "attribution_reporting/aggregatable_named_budget_pair.cc",
+    "attribution_reporting/aggregatable_named_budget_pair.h",
     "attribution_reporting/attribution_background_registrations_id.h",
     "attribution_reporting/attribution_beacon_id.h",
     "attribution_reporting/attribution_config.cc",

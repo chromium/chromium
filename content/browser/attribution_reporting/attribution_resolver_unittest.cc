@@ -30,6 +30,8 @@
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -51,6 +53,7 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver_impl.h"
@@ -5389,6 +5392,161 @@ TEST_F(AttributionResolverTest,
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Conversions.UniqueReportingOriginsPerSiteForAttribution"),
               base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
+}
+
+TEST_F(AttributionResolverTest, SourceAggregatableNamedBudgets_RoundTrips) {
+  auto budgets =
+      *attribution_reporting::AggregatableNamedBudgetDefs::FromBudgetMap({
+          {"a", 5},
+      });
+  storage()->StoreSource(
+      SourceBuilder().SetAggregatableNamedBudgetDefs(budgets).Build());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(AggregatableNamedBudgetsIs(
+                  StoredSource::AggregatableNamedBudgets(
+                      {{"a", *AggregatableNamedBudgetPair::Create(5, 5)}}))));
+}
+
+TEST_F(AttributionResolverTest, MaxAggregatableBudgetPerNamedBudgetPerSource) {
+  storage()->StoreSource(
+      TestAggregatableSourceProvider()
+          .GetBuilder()
+          .SetAggregatableNamedBudgetDefs(
+              *attribution_reporting::AggregatableNamedBudgetDefs::
+                  FromBudgetMap({{"a", 5}, {"b", 5}}))
+          .Build());
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{7})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      "a", attribution_reporting::FilterPair())})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kInsufficientBudget));
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{5})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      "a", attribution_reporting::FilterPair())})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kSuccess));
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{1})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      "a", attribution_reporting::FilterPair())})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kInsufficientBudget));
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{5})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      "b", attribution_reporting::FilterPair())})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kSuccess));
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{5})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      "c", attribution_reporting::FilterPair())})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kSuccess));
+}
+
+TEST_F(AttributionResolverTest,
+       MaxAggregatableBudgetPerNamedBudgetPerFilteredSource) {
+  storage()->StoreSource(
+      TestAggregatableSourceProvider()
+          .GetBuilder()
+          .SetFilterData(*FilterData::Create({{"abc", {"123"}}}))
+          .SetAggregatableNamedBudgetDefs(
+              *attribution_reporting::AggregatableNamedBudgetDefs::
+                  FromBudgetMap({{"a", 10}, {"b", 5}}))
+          .Build());
+
+  // Different filters should not match named buckets together.
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{11})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      "a", FilterPair(/*positive=*/{*FilterConfig::Create({
+                                          {"abc", {"456"}},
+                                      })},
+                                      /*negative=*/{}))})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kSuccess));
+
+  // No named bucket is matched as the provided name is null.
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{11})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      /*name=*/std::nullopt,
+                      FilterPair(/*positive=*/{*FilterConfig::Create({
+                                     {"abc", {"123"}},
+                                 })},
+                                 /*negative=*/{}))})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kSuccess));
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{11})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                      "a", FilterPair(/*positive=*/{*FilterConfig::Create({
+                                          {"abc", {"123"}},
+                                      })},
+                                      /*negative=*/{}))})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kInsufficientBudget));
+
+  // First named budget ignored, second used.
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(
+              /*histogram_values=*/{7})
+              .SetAggregatableNamedBudgetCandidates(
+                  {attribution_reporting::AggregatableNamedBudgetCandidate(
+                       "a", FilterPair(/*positive=*/{*FilterConfig::Create({
+                                           {"abc", {"456"}},
+                                       })},
+                                       /*negative=*/{})),
+                   attribution_reporting::AggregatableNamedBudgetCandidate(
+                       "b", FilterPair(/*positive=*/{*FilterConfig::Create({
+                                           {"abc", {"123"}},
+                                       })},
+                                       /*negative=*/{}))})
+              .Build()),
+      CreateReportAggregatableStatusIs(
+          AttributionTrigger::AggregatableResult::kInsufficientBudget));
 }
 
 }  // namespace content

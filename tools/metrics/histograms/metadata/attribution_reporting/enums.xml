@@ -194,6 +194,8 @@ chromium-metrics-reviews@google.com.
       label="Corresponding source - invalid randomized response rate"/>
   <int value="32"
       label="Corresponding source - invalid attribution scopes data"/>
+  <int value="33"
+      label="Corresponding source - invalid aggregatable named budgets"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:ReportCorruptionStatus) -->

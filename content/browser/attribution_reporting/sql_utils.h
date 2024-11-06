@@ -127,6 +127,12 @@ base::expected<std::optional<attribution_reporting::AttributionScopesData>,
                absl::monostate>
 DeserializeAttributionScopesData(sql::Statement&, int col);
 
+std::string SerializeAggregatableNamedBudgets(
+    const StoredSource::AggregatableNamedBudgets&);
+
+std::optional<StoredSource::AggregatableNamedBudgets>
+DeserializeAggregatableNamedBudgets(sql::Statement& stmt, int col);
+
 void DeduplicateSourceIds(std::vector<StoredSource::Id>&);
 
 }  // namespace content

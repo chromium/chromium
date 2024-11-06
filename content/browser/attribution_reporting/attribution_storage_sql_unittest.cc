@@ -116,6 +116,7 @@ struct AttributionSourceRecord {
   int remaining_aggregatable_debug_budget;
   int num_aggregatable_debug_reports;
   std::optional<std::string> attribution_scopes_data;
+  std::string aggregatable_named_budgets;
 };
 
 struct AttributionReportRecord {
@@ -343,7 +344,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     static constexpr char kStoreSourceSql[] =
         "INSERT INTO sources "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?)";
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?,?)";
     sql::Statement statement(raw_db.GetUniqueStatement(kStoreSourceSql));
     statement.BindInt64(0, record.source_id);
     statement.BindInt64(1, record.source_event_id);
@@ -377,6 +378,7 @@ class AttributionStorageSqlTest : public testing::Test {
     } else {
       statement.BindNull(21);
     }
+    statement.BindBlob(22, record.aggregatable_named_budgets);
     ASSERT_TRUE(statement.Run());
   }
 
@@ -2364,7 +2366,8 @@ TEST_F(AttributionStorageSqlTest,
       .aggregation_keys = "foo",
       .filter_data = "bar",
       .read_only_source_data = "baz",
-      .attribution_scopes_data = "qux"};
+      .attribution_scopes_data = "qux",
+      .aggregatable_named_budgets = "quux"};
   AttributionReportRecord report_record{
       .report_id = 1,
       .source_id = 2,
@@ -2457,7 +2460,11 @@ TEST_F(AttributionStorageSqlTest,
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidAttributionScopesData,
                                2);
-  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 29);
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
+                               AttributionStorageSql::ReportCorruptionStatus::
+                                   kSourceInvalidAggregatableNamedBudgets,
+                               2);
+  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 31);
 }
 
 TEST_F(AttributionStorageSqlTest, SourceRemainingAggregatableBudget) {

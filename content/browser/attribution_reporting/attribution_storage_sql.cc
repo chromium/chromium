@@ -38,8 +38,11 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_utils.h"
@@ -63,6 +66,7 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -226,7 +230,7 @@ std::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement, int col) {
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
-constexpr int kSourceColumnCount = 21;
+constexpr int kSourceColumnCount = 22;
 
 int64_t GetStorageFileSizeKB(const base::FilePath& path_to_database) {
   std::optional<int64_t> file_size = base::GetFileSize(path_to_database);
@@ -234,6 +238,21 @@ int64_t GetStorageFileSizeKB(const base::FilePath& path_to_database) {
     return -1;
   }
   return file_size.value() / 1024;
+}
+
+base::optional_ref<const std::string> FindMatchingAggregatableNamedBudget(
+    const StoredSource& source,
+    const std::vector<attribution_reporting::AggregatableNamedBudgetCandidate>&
+        candidates,
+    base::Time trigger_time) {
+  for (const auto& candidate : candidates) {
+    if (source.filter_data().Matches(source.common_info().source_type(),
+                                     source.source_time(), trigger_time,
+                                     candidate.filters())) {
+      return candidate.name();
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -333,6 +352,14 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   if (!attribution_scopes_data.has_value()) {
     corruption_causes.Put(
         ReportCorruptionStatus::kSourceInvalidAttributionScopesData);
+  }
+
+  std::optional<StoredSource::AggregatableNamedBudgets>
+      aggregatable_named_budgets =
+          DeserializeAggregatableNamedBudgets(statement, col++);
+  if (!aggregatable_named_budgets.has_value()) {
+    corruption_causes.Put(
+        ReportCorruptionStatus::kSourceInvalidAggregatableNamedBudgets);
   }
 
   bool event_level_active = statement.ColumnBool(col++);
@@ -456,7 +483,8 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       *attribution_logic, *active_state, source_id,
       remaining_aggregatable_attribution_budget, *randomized_response_rate,
       trigger_data_matching, event_level_epsilon, aggregatable_debug_key_piece,
-      remaining_aggregatable_debug_budget, *std::move(attribution_scopes_data));
+      remaining_aggregatable_debug_budget, *std::move(attribution_scopes_data),
+      *std::move(aggregatable_named_budgets));
   if (!stored_source.has_value()) {
     // TODO(crbug.com/40287459): Consider enumerating errors from StoredSource.
     return base::unexpected(ReportCorruptionStatusSetAndIds(
@@ -659,8 +687,8 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
       "num_aggregatable_attribution_reports,"
       "aggregatable_source,filter_data,read_only_source_data,"
       "remaining_aggregatable_debug_budget,num_aggregatable_debug_reports,"
-      "attribution_scopes_data)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,0,?)";
+      "attribution_scopes_data,aggregatable_named_budgets)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,0,?,?)";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(reg.source_event_id));
@@ -707,6 +735,10 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
     statement.BindNull(19);
   }
 
+  StoredSource::AggregatableNamedBudgets named_budgets(
+      ConvertNamedBudgetsMap(reg.aggregatable_named_budget_defs));
+  statement.BindBlob(20, SerializeAggregatableNamedBudgets(named_budgets));
+
   if (!statement.Run()) {
     return std::nullopt;
   }
@@ -738,7 +770,8 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
       randomized_response_rate, reg.trigger_data_matching,
       reg.event_level_epsilon,
       reg.aggregatable_debug_reporting_config.config().key_piece,
-      remaining_aggregatable_debug_budget, reg.attribution_scopes_data);
+      remaining_aggregatable_debug_budget, reg.attribution_scopes_data,
+      std::move(named_budgets));
 }
 
 base::expected<std::optional<AttributionStorageSql::ReportIdAndPriority>,
@@ -2074,8 +2107,9 @@ bool AttributionStorageSql::CreateSchema() {
   // All of the columns in this table are designed to be "const" except for
   // |num_attributions|, |remaining_aggregatable_attribution_budget|,
   // |num_aggregatable_attribution_reports|, |num_aggregatable_debug_budget|,
-  // |num_aggregatable_debug_reports|, |event_level_active| and
-  // |aggregatable_active| which are updated when a new trigger is received.
+  // |num_aggregatable_debug_reports|, |event_level_active|,
+  // |aggregatable_active|, and |aggregatable_named_budgets| which are updated
+  // when a new trigger is received.
   // |num_attributions| is the number of times an event-level report has been
   // created for a given source. |remaining_aggregatable_attribution_budget| is
   // the aggregatable attribution budget that remains for a given source.
@@ -2111,6 +2145,9 @@ bool AttributionStorageSql::CreateSchema() {
   // |attribution_scopes_data| is a serialized
   // `attribution_reporting::AttributionScopeData` used for pre-attribution
   // source matching.
+  // |aggregatable_named_budgets| contains a map setting a budget limit on
+  // specified names. This field is updated when an incoming trigger shares a
+  // same bucket name to its matched source.
   //
   // |source_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
@@ -2141,7 +2178,8 @@ bool AttributionStorageSql::CreateSchema() {
       "read_only_source_data BLOB NOT NULL,"
       "remaining_aggregatable_debug_budget INTEGER NOT NULL,"
       "num_aggregatable_debug_reports INTEGER NOT NULL,"
-      "attribution_scopes_data BLOB)";
+      "attribution_scopes_data BLOB,"
+      "aggregatable_named_budgets BLOB)";
   if (!db_.Execute(kImpressionTableSql)) {
     return false;
   }
@@ -2549,8 +2587,14 @@ bool AggregatableAttributionAllowedForBudgetLimit(
 
 bool AttributionStorageSql::AdjustBudgetConsumedForSource(
     StoredSource::Id source_id,
-    int additional_budget_consumed) {
+    int additional_budget_consumed,
+    const StoredSource::AggregatableNamedBudgets* budgets) {
   DCHECK_GE(additional_budget_consumed, 0);
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
 
   static constexpr char kAdjustBudgetConsumedForSourceSql[] =
       "UPDATE sources "
@@ -2560,11 +2604,33 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
       "num_aggregatable_attribution_reports="
       "num_aggregatable_attribution_reports+1 "
       "WHERE source_id=?";
-  sql::Statement statement(
+  sql::Statement budget_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kAdjustBudgetConsumedForSourceSql));
-  statement.BindInt64(0, additional_budget_consumed);
-  statement.BindInt64(1, *source_id);
-  return statement.Run() && db_.GetLastChangeCount() == 1;
+  budget_statement.BindInt64(0, additional_budget_consumed);
+  budget_statement.BindInt64(1, *source_id);
+
+  if (!budget_statement.Run() || db_.GetLastChangeCount() != 1) {
+    return false;
+  }
+
+  if (budgets) {
+    static constexpr char kAdjustNamedBudgetConsumedForSourceSql[] =
+        "UPDATE sources "
+        "SET "
+        "aggregatable_named_budgets=? "
+        "WHERE source_id=?";
+    sql::Statement named_budget_statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, kAdjustNamedBudgetConsumedForSourceSql));
+    named_budget_statement.BindBlob(
+        0, SerializeAggregatableNamedBudgets(*budgets));
+    named_budget_statement.BindInt64(1, *source_id);
+
+    if (!named_budget_statement.Run() || db_.GetLastChangeCount() != 1) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
 }
 
 std::optional<AttributionReport::Id>
@@ -2675,10 +2741,12 @@ AttributionStorageSql::StoreAttributionReport(
 
 CreateReportResult::Aggregatable
 AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
-    StoredSource::Id source_id,
+    const StoredSource& source,
     int remaining_aggregatable_attribution_budget,
     int num_aggregatable_attribution_reports,
     std::optional<uint64_t> dedup_key,
+    const std::vector<attribution_reporting::AggregatableNamedBudgetCandidate>&
+        trigger_budget_candidates,
     CreateReportResult::AggregatableSuccess success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -2695,7 +2763,35 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
 
   if (!AggregatableAttributionAllowedForBudgetLimit(
           *aggregatable_attribution,
-          remaining_aggregatable_attribution_budget)) {
+          source.remaining_aggregatable_attribution_budget())) {
+    return CreateReportResult::InsufficientBudget();
+  }
+
+  base::CheckedNumeric<int64_t> budget_required =
+      aggregatable_attribution->BudgetRequired();
+  // The value was already validated by
+  // `AggregatableAttributionAllowedForBudgetLimit()` above.
+  CHECK(budget_required.IsValid());
+  int64_t budget_required_64 = budget_required.ValueOrDie();
+  CHECK(base::IsValueInRangeForNumericType<int>(budget_required_64));
+  int budget_required_value = static_cast<int>(budget_required_64);
+
+  base::optional_ref<const std::string> budget_candidate =
+      FindMatchingAggregatableNamedBudget(
+          source, trigger_budget_candidates,
+          /*trigger_time=*/report.attribution_info().time);
+  // Intentionally make a copy as to not modify underlying source information.
+  StoredSource::AggregatableNamedBudgets source_named_budgets =
+      source.aggregatable_named_budgets();
+  const auto named_budget_iter =
+      budget_candidate.has_value()
+          ? source_named_budgets.find(*budget_candidate)
+          : source_named_budgets.end();
+
+  if (named_budget_iter != source_named_budgets.end() &&
+      !named_budget_iter->second.SubtractRemainingBudget(
+          budget_required_value)) {
+    // TODO(crbug.com/369865063): Return `InsufficientNamedBudget()`.
     return CreateReportResult::InsufficientBudget();
   }
 
@@ -2704,15 +2800,12 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
     return CreateReportResult::InternalError();
   }
 
-  base::CheckedNumeric<int64_t> budget_required =
-      aggregatable_attribution->BudgetRequired();
-  // The value was already validated by
-  // `AggregatableAttributionAllowedForBudgetLimit()` above.
-  CHECK(budget_required.IsValid());
-  int64_t budget_required_value = budget_required.ValueOrDie();
-  CHECK(base::IsValueInRangeForNumericType<int>(budget_required_value));
-  if (!AdjustBudgetConsumedForSource(source_id,
-                                     static_cast<int>(budget_required_value))) {
+  StoredSource::Id source_id = source.source_id();
+  if (!AdjustBudgetConsumedForSource(
+          source_id, budget_required_value,
+          named_budget_iter != source_named_budgets.end()
+              ? &source_named_budgets
+              : nullptr)) {
     return CreateReportResult::InternalError();
   }
 

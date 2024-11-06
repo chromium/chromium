@@ -19,6 +19,8 @@
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -36,6 +38,8 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -261,6 +265,12 @@ SourceBuilder& SourceBuilder::SetAttributionScopesData(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetAggregatableNamedBudgetDefs(
+    attribution_reporting::AggregatableNamedBudgetDefs budgets) {
+  registration_.aggregatable_named_budget_defs = std::move(budgets);
+  return *this;
+}
+
 StorableSource SourceBuilder::Build() const {
   StorableSource source(reporting_origin_, registration_, source_origin_,
                         source_type_, is_within_fenced_frame_);
@@ -270,6 +280,8 @@ StorableSource SourceBuilder::Build() const {
 
 StoredSource SourceBuilder::BuildStored() const {
   base::Time expiry_time = source_time_ + registration_.expiry;
+  StoredSource::AggregatableNamedBudgets named_budgets =
+      ConvertNamedBudgetsMap(registration_.aggregatable_named_budget_defs);
   StoredSource source = *StoredSource::Create(
       CommonSourceInfo(source_origin_, reporting_origin_, source_type_,
                        cookie_based_debug_allowed_),
@@ -283,7 +295,7 @@ StoredSource SourceBuilder::BuildStored() const {
       registration_.trigger_data_matching, registration_.event_level_epsilon,
       registration_.aggregatable_debug_reporting_config.config().key_piece,
       remaining_aggregatable_debug_budget_,
-      registration_.attribution_scopes_data);
+      registration_.attribution_scopes_data, named_budgets);
   source.dedup_keys() = dedup_keys_;
   source.aggregatable_dedup_keys() = aggregatable_dedup_keys_;
   return source;
@@ -419,6 +431,13 @@ TriggerBuilder& TriggerBuilder::SetAttributionScopes(
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetAggregatableNamedBudgetCandidates(
+    std::vector<attribution_reporting::AggregatableNamedBudgetCandidate>
+        budgets) {
+  aggregatable_named_budget_candidates_ = std::move(budgets);
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
   attribution_reporting::TriggerRegistration reg;
@@ -444,6 +463,8 @@ AttributionTrigger TriggerBuilder::Build(
   reg.aggregatable_debug_reporting_config =
       aggregatable_debug_reporting_config_;
   reg.attribution_scopes = attribution_scopes_;
+  reg.aggregatable_named_budget_candidates =
+      aggregatable_named_budget_candidates_;
 
   return AttributionTrigger(reporting_origin_, std::move(reg),
                             destination_origin_, is_within_fenced_frame_);
@@ -659,6 +680,16 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out,
+                         StoredSource::AggregatableNamedBudgets budgets) {
+  out << "{";
+  for (const auto& [key, value] : budgets) {
+    out << key << ": { original_budget=" << value.original_budget()
+        << ", remaining_budget=" << value.remaining_budget() << " }, ";
+  }
+  return out << "}";
+}
+
+std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion) {
   return out << "{registration=" << conversion.registration()
              << ",destination_origin=" << conversion.destination_origin()
@@ -721,6 +752,7 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
               ? SerializeAttributionJson(
                     source.attribution_scopes_data()->ToJson())
               : "null")
+      << ",aggregatable_named_budgets=" << source.aggregatable_named_budgets()
       << ",dedup_keys=[";
 
   const char* separator = "";

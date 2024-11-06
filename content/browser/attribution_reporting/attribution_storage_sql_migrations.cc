@@ -706,6 +706,12 @@ bool To65(sql::Database& db) {
   return db.Execute(kRateLimitAttributionDestinationReportingSiteIndexSql);
 }
 
+bool To66(sql::Database& db) {
+  static constexpr char kNamedBudgetsColumnSql[] =
+      "ALTER TABLE sources ADD aggregatable_named_budgets BLOB";
+  return db.Execute(kNamedBudgetsColumnSql);
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -731,14 +737,15 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 61, &To62) &&
             MaybeMigrate(db, meta_table, 62, &To63) &&
             MaybeMigrate(db, meta_table, 63, &To64) &&
-            MaybeMigrate(db, meta_table, 64, &To65);
+            MaybeMigrate(db, meta_table, 64, &To65) &&
+            MaybeMigrate(db, meta_table, 65, &To66);
   if (!ok) {
     return false;
   }
 
   DeleteCorruptedReports(storage);
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 65,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 66,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

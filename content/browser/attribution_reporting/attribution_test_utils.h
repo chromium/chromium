@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
+class AggregatableNamedBudgetCandidate;
 class AggregatableValues;
 class AggregationKeys;
 class AttributionScopesData;
@@ -133,6 +135,9 @@ class SourceBuilder {
   SourceBuilder& SetAttributionScopesData(
       attribution_reporting::AttributionScopesData);
 
+  SourceBuilder& SetAggregatableNamedBudgetDefs(
+      attribution_reporting::AggregatableNamedBudgetDefs);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
@@ -150,6 +155,7 @@ class SourceBuilder {
   // `base::StrongAlias` does not automatically initialize the value here.
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
+  StoredSource::AggregatableNamedBudgets aggregatable_named_budgets_;
   std::vector<uint64_t> dedup_keys_;
   int remaining_aggregatable_attribution_budget_ =
       attribution_reporting::kMaxAggregatableValue;
@@ -225,6 +231,9 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregatableFilteringIdMaxBytes(
       attribution_reporting::AggregatableFilteringIdsMaxBytes);
 
+  TriggerBuilder& SetAggregatableNamedBudgetCandidates(
+      std::vector<attribution_reporting::AggregatableNamedBudgetCandidate>);
+
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
@@ -253,6 +262,8 @@ class TriggerBuilder {
   attribution_reporting::AggregatableDebugReportingConfig
       aggregatable_debug_reporting_config_;
   attribution_reporting::AttributionScopesSet attribution_scopes_;
+  std::vector<attribution_reporting::AggregatableNamedBudgetCandidate>
+      aggregatable_named_budget_candidates_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -458,6 +469,11 @@ MATCHER_P(AttributionScopesDataIs, matcher, "") {
 
 MATCHER_P(AttributionScopesSetIs, matcher, "") {
   return ExplainMatchResult(matcher, arg->attribution_scopes_set(),
+                            result_listener);
+}
+
+MATCHER_P(AggregatableNamedBudgetsIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.aggregatable_named_budgets(),
                             result_listener);
 }
 

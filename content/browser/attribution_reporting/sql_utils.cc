@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/sql_utils.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <iterator>
@@ -23,6 +24,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
@@ -35,6 +37,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -48,6 +51,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::AggregatableNamedBudgetDefs;
 using ::attribution_reporting::AggregatableTriggerConfig;
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::SuitableOrigin;
@@ -551,6 +555,54 @@ DeserializeAttributionScopesData(sql::Statement& stmt, int col) {
 
 void DeduplicateSourceIds(std::vector<StoredSource::Id>& ids) {
   ids = base::flat_set<StoredSource::Id>(std::move(ids)).extract();
+}
+
+std::string SerializeAggregatableNamedBudgets(
+    const StoredSource::AggregatableNamedBudgets& budgets) {
+  proto::AggregatableNamedBudgets msg;
+
+  for (const auto& [name, budget] : budgets) {
+    proto::AggregatableNamedBudgetPair budget_pair;
+    budget_pair.set_original_budget(budget.original_budget());
+    budget_pair.set_remaining_budget(budget.remaining_budget());
+    (*msg.mutable_budgets())[name] = std::move(budget_pair);
+  }
+  return msg.SerializeAsString();
+}
+
+std::optional<StoredSource::AggregatableNamedBudgets>
+DeserializeAggregatableNamedBudgets(sql::Statement& stmt, int col) {
+  if (stmt.GetColumnType(col) == sql::ColumnType::kNull) {
+    return StoredSource::AggregatableNamedBudgets();
+  }
+
+  proto::AggregatableNamedBudgets msg;
+  if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
+      !msg.ParseFromArray(blob.data(), blob.size()) ||
+      static_cast<size_t>(msg.budgets_size()) >
+          attribution_reporting::kMaxAggregatableNamedBudgetsPerSource) {
+    return std::nullopt;
+  }
+
+  StoredSource::AggregatableNamedBudgets::container_type budgets;
+  budgets.reserve(msg.budgets_size());
+
+  for (const auto& [name, budget] : msg.budgets()) {
+    if (name.length() >
+        attribution_reporting::kMaxLengthPerAggregatableNamedBudgetName) {
+      return std::nullopt;
+    }
+
+    auto budget_pair = AggregatableNamedBudgetPair::Create(
+        budget.original_budget(), budget.remaining_budget());
+    if (!budget_pair.has_value()) {
+      return std::nullopt;
+    }
+
+    budgets.emplace_back(name, *budget_pair);
+  }
+
+  return budgets;
 }
 
 }  // namespace content

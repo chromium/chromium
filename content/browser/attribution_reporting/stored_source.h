@@ -8,8 +8,10 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -25,10 +27,14 @@
 
 namespace content {
 
+class AggregatableNamedBudgetPair;
+
 // Contains attributes specific to a stored source.
 class CONTENT_EXPORT StoredSource {
  public:
   using Id = base::StrongAlias<StoredSource, int64_t>;
+  using AggregatableNamedBudgets =
+      base::flat_map<std::string, AggregatableNamedBudgetPair>;
 
   // Note that aggregatable reports are not subject to the attribution logic.
   enum class AttributionLogic {
@@ -69,7 +75,8 @@ class CONTENT_EXPORT StoredSource {
       attribution_reporting::EventLevelEpsilon,
       absl::uint128 aggregatable_debug_key_piece,
       int remaining_aggregatable_debug_budget,
-      std::optional<attribution_reporting::AttributionScopesData>);
+      std::optional<attribution_reporting::AttributionScopesData>,
+      AggregatableNamedBudgets);
 
   ~StoredSource();
 
@@ -157,6 +164,10 @@ class CONTENT_EXPORT StoredSource {
     return attribution_scopes_data_;
   }
 
+  const AggregatableNamedBudgets& aggregatable_named_budgets() const {
+    return aggregatable_named_budgets_;
+  }
+
  private:
   StoredSource(CommonSourceInfo common_info,
                uint64_t source_event_id,
@@ -178,7 +189,8 @@ class CONTENT_EXPORT StoredSource {
                attribution_reporting::EventLevelEpsilon,
                absl::uint128 aggregatable_debug_key_piece,
                int remaining_aggregatable_debug_budget,
-               std::optional<attribution_reporting::AttributionScopesData>);
+               std::optional<attribution_reporting::AttributionScopesData>,
+               AggregatableNamedBudgets);
 
   CommonSourceInfo common_info_;
 
@@ -217,6 +229,8 @@ class CONTENT_EXPORT StoredSource {
 
   std::optional<attribution_reporting::AttributionScopesData>
       attribution_scopes_data_;
+
+  AggregatableNamedBudgets aggregatable_named_budgets_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

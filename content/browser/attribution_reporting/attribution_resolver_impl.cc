@@ -747,10 +747,12 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
   if (CreateReportResult::AggregatableSuccess* success =
           GetSuccessResult(*aggregatable_result)) {
     aggregatable_result = storage_.MaybeStoreAggregatableAttributionReportData(
-        source_to_attribute->source.source_id(),
+        source_to_attribute->source,
         source_to_attribute->source.remaining_aggregatable_attribution_budget(),
         source_to_attribute->num_aggregatable_attribution_reports,
-        aggregatable_dedup_key, std::move(*success));
+        aggregatable_dedup_key,
+        trigger_registration.aggregatable_named_budget_candidates,
+        std::move(*success));
   }
 
   if (IsInternalError(*event_level_result) ||

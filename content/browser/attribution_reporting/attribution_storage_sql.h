@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
+class AggregatableNamedBudgetCandidate;
 class AggregatableTriggerConfig;
 class SuitableOrigin;
 }  // namespace attribution_reporting
@@ -68,11 +69,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 65;
+  static constexpr int kCurrentVersionNumber = 66;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 65;
+  static constexpr int kCompatibleVersionNumber = 66;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -167,7 +168,8 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceDedupKeyQueryFailed = 30,
     kSourceInvalidRandomizedResponseRate = 31,
     kSourceInvalidAttributionScopesData = 32,
-    kMaxValue = kSourceInvalidAttributionScopesData,
+    kSourceInvalidAggregatableNamedBudgets = 33,
+    kMaxValue = kSourceInvalidAggregatableNamedBudgets,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionCorruptReportStatus)
 
@@ -370,10 +372,13 @@ class CONTENT_EXPORT AttributionStorageSql {
   // consumed and dedup keys. The report itself will be stored in
   // `GenerateNullAggregatableReportsAndStoreReports()`.
   CreateReportResult::Aggregatable MaybeStoreAggregatableAttributionReportData(
-      StoredSource::Id source_id,
+      const StoredSource&,
       int remaining_aggregatable_attribution_budget,
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
+      const std::vector<
+          attribution_reporting::AggregatableNamedBudgetCandidate>&
+          trigger_budget_candidates,
       CreateReportResult::AggregatableSuccess);
 
   struct ReportIdAndPriority {
@@ -481,11 +486,13 @@ class CONTENT_EXPORT AttributionStorageSql {
 
   // Aggregate Attribution:
 
-  // Adjusts the aggregatable budget for the source event by
-  // `additional_budget_consumed`.
+  // Adjusts the aggregatable budget and selected named budget, if any, for the
+  // source event by `additional_budget_consumed`.
   [[nodiscard]] bool AdjustBudgetConsumedForSource(
       StoredSource::Id source_id,
-      int additional_budget_consumed) VALID_CONTEXT_REQUIRED(sequence_checker_);
+      int additional_budget_consumed,
+      const StoredSource::AggregatableNamedBudgets*)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] std::optional<AttributionReport::Id> StoreAttributionReport(
       int64_t source_id,

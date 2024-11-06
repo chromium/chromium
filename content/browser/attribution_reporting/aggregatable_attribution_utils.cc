@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_utils.h"
@@ -37,8 +39,10 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
@@ -256,6 +260,23 @@ base::CheckedNumeric<int64_t> GetTotalAggregatableValues(
 void SetAttributionDestination(base::Value::Dict& dict,
                                const net::SchemefulSite& destination) {
   dict.Set("attribution_destination", destination.Serialize());
+}
+
+StoredSource::AggregatableNamedBudgets ConvertNamedBudgetsMap(
+    const attribution_reporting::AggregatableNamedBudgetDefs& reg_budgets) {
+  StoredSource::AggregatableNamedBudgets::container_type named_budgets;
+  const auto& reg_budget_map = reg_budgets.budgets();
+  named_budgets.reserve(reg_budget_map.size());
+
+  for (const auto& [name, original_budget] : reg_budget_map) {
+    // Budget already validated from parsing.
+    auto budget_pair = AggregatableNamedBudgetPair::Create(
+        original_budget, /*remaining_budget=*/original_budget);
+    DCHECK(budget_pair.has_value());
+    named_budgets.emplace_back(name, *std::move(budget_pair));
+  };
+  return StoredSource::AggregatableNamedBudgets(base::sorted_unique,
+                                                std::move(named_budgets));
 }
 
 }  // namespace content
