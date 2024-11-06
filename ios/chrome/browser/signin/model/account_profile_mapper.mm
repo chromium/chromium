@@ -528,6 +528,22 @@ void AccountProfileMapper::IterateOverIdentities(
   system_identity_manager_->IterateOverIdentities(manager_callback);
 }
 
+void AccountProfileMapper::IterateOverAllIdentitiesOnDevice(
+    IdentityIteratorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  system_identity_manager_->IterateOverIdentities(base::BindRepeating(
+      [](IdentityIteratorCallback callback,
+         id<SystemIdentity> identity) -> SystemIdentityManager::IteratorResult {
+        switch (callback.Run(identity)) {
+          case IteratorResult::kContinueIteration:
+            return SystemIdentityManager::IteratorResult::kContinueIteration;
+          case IteratorResult::kInterruptIteration:
+            return SystemIdentityManager::IteratorResult::kInterruptIteration;
+        }
+      },
+      callback));
+}
+
 void AccountProfileMapper::IdentityUpdated(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NotifyIdentityUpdated(

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <string_view>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
+struct AccountInfo;
 class PrefService;
 @protocol RefreshAccessTokenError;
 @class ResizedAvatarCache;
@@ -72,6 +74,9 @@ class ChromeAccountManagerService : public KeyedService,
       delete;
   ~ChromeAccountManagerService() override;
 
+  // Returns the name of the profile that this service belongs to.
+  const std::string& GetProfileName() const;
+
   // Returns true if there is at least one identity known by the service.
   bool HasIdentities() const;
 
@@ -111,6 +116,21 @@ class ChromeAccountManagerService : public KeyedService,
   // Adds and removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Returns the SystemIdentity with the given Gaia ID, or nil if no matching
+  // identity exists on the device. Similar to GetIdentityWithGaiaID(), but as
+  // opposed to that (and most other methods in this service), this also handles
+  // accounts that are assigned to other profiles.
+  id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(
+      std::string_view gaia_id) const;
+  id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(NSString* gaia_id) const;
+  // Converts a vector of AccountInfos, as returned by
+  // IdentityManager::GetAccountsOnDevice(), to `SystemIdentities (by looking
+  // them up via their Gaia IDs). Note that, as opposed to most other methods in
+  // this service, this also handles accounts that are assigned to other
+  // profiles.
+  NSArray<id<SystemIdentity>>* GetIdentitiesOnDeviceWithGaiaIDs(
+      const std::vector<AccountInfo>& account_infos) const;
 
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() override;

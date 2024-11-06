@@ -78,6 +78,10 @@ class AccountProfileMapper {
   void IterateOverIdentities(IdentityIteratorCallback callback,
                              std::string_view profile_name);
 
+  // Iterates over all known identities on the device, i.e. including the ones
+  // assigned to other profiles. Using this should be rare!
+  void IterateOverAllIdentitiesOnDevice(IdentityIteratorCallback callback);
+
  private:
   class Assigner;
 
