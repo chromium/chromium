@@ -4,12 +4,17 @@
 
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 
-#include <cmath>
+#include <algorithm>
 #include <map>
+#include <optional>
+#include <string>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -102,21 +107,20 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
     FetchOptions::FetchSources requested_fetch_sources,
     const FetcherConfig& config,
     std::vector<history::AnnotatedVisit> annotated_visits) {
-  if (features::kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits
+  if (!annotated_visits.empty() &&
+      features::kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits
           .Get()) {
-    size_t original_visit_count = annotated_visits.size();
-    const auto kZeroMillis = base::Milliseconds(0);
-    std::erase_if(
-        annotated_visits,
-        [&kZeroMillis](const history::AnnotatedVisit& annotated_visit) {
-          return annotated_visit.visit_row.visit_duration == kZeroMillis;
-        });
+    const size_t original_visit_count = annotated_visits.size();
+    std::erase_if(annotated_visits,
+                  [](const history::AnnotatedVisit& annotated_visit) {
+                    return annotated_visit.visit_row.visit_duration.is_zero();
+                  });
     base::UmaHistogramCustomCounts(
         "VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits."
         "InOutPercentage",
-        std::round((static_cast<float>(annotated_visits.size()) /
-                    original_visit_count) *
-                   100),
+        base::ClampRound((static_cast<float>(annotated_visits.size()) /
+                          original_visit_count) *
+                         100),
         1, 100, 100);
   }
 
