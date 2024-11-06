@@ -44,7 +44,13 @@ export class BubbleController {
       scrollMode,
       longClick,
       dictation,
+      heldActions,
     } = this.getStateGesture_();
+
+    if (heldActions) {
+      heldActions.forEach((displayText) => {this.baseText_.push(displayText)});
+    }
+
     if (paused) {
       this.baseText_.push(chrome.i18n.getMessage(
           'facegaze_state_paused',
@@ -241,6 +247,7 @@ export namespace BubbleController {
     scrollMode: FacialGesture|undefined;
     longClick: FacialGesture|undefined;
     dictation: FacialGesture|undefined;
+    heldActions: string[];
   }
 }
 

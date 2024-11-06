@@ -1805,6 +1805,12 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
       'Custom key combination: ctrl + c (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
+  // Message should persist while the gesture and key press is still being held.
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'Custom key combination: ctrl + c (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
   // Release jaw open for custom key release.
   result = new MockFaceLandmarkerResult().addGestureWithConfidence(
       MediapipeFacialGesture.JAW_OPEN, 0.1);
@@ -1813,6 +1819,152 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
   this.triggerBubbleControllerTimeout();
   assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
+
+AX_TEST_F(
+    'FaceGazeTest', 'BubbleTextKeyCombinationAdditionalGesture',
+    async function() {
+      const gestureToMacroName =
+          new Map()
+              .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_LEFT)
+              .set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
+      const gestureToConfidence = new Map()
+                                      .set(FacialGesture.BROW_INNER_UP, 0.6)
+                                      .set(FacialGesture.JAW_OPEN, 0.7);
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence);
+      await this.configureFaceGaze(config);
+
+      assertNullOrUndefined(
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Set the gestures to key combinations preference.
+      const keyCombination = {
+        key: KeyCode.C,
+        keyDisplay: 'c',
+        modifiers: {ctrl: true},
+      };
+      await this.setPref(
+          GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+          {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
+
+      // Verify that the preference propagated to FaceGaze.
+      assertEquals(
+          this.getFaceGaze().gestureHandler_.gesturesToKeyCombos_.size, 1);
+
+      // Jaw open for custom key press.
+      let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result);
+
+      assertEquals(
+          'Custom key combination: ctrl + c (Open your mouth wide)',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Trigger a mouse press and maintain key press.
+      result =
+          new MockFaceLandmarkerResult()
+              .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
+              .addGestureWithConfidence(
+                  MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+      this.processFaceLandmarkerResult(result);
+
+      // Newly triggered action should populate message.
+      assertEquals(
+          'Left-click the mouse (Raise eyebrows)',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Message for key combo should persist while the gesture and key press is
+      // still being held.
+      this.triggerBubbleControllerTimeout();
+      assertEquals(
+          'Custom key combination: ctrl + c (Open your mouth wide)',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Release jaw open for custom key release.
+      result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.1);
+      this.processFaceLandmarkerResult(result);
+
+      this.triggerBubbleControllerTimeout();
+      assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'BubbleTextKeyCombinationAdditionalState',
+    async function() {
+      const gestureToMacroName =
+          new Map()
+              .set(FacialGesture.BROW_INNER_UP, MacroName.TOGGLE_SCROLL_MODE)
+              .set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
+      const gestureToConfidence = new Map()
+                                      .set(FacialGesture.BROW_INNER_UP, 0.6)
+                                      .set(FacialGesture.JAW_OPEN, 0.7);
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence);
+      await this.configureFaceGaze(config);
+
+      assertNullOrUndefined(
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Set the gestures to key combinations preference.
+      const keyCombination = {
+        key: KeyCode.C,
+        keyDisplay: 'c',
+        modifiers: {ctrl: true},
+      };
+      await this.setPref(
+          GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+          {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
+
+      // Verify that the preference propagated to FaceGaze.
+      assertEquals(
+          this.getFaceGaze().gestureHandler_.gesturesToKeyCombos_.size, 1);
+
+      // Jaw open for custom key press.
+      let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result);
+
+      assertEquals(
+          'Custom key combination: ctrl + c (Open your mouth wide)',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Toggle scroll mode and maintain key press.
+      result =
+          new MockFaceLandmarkerResult()
+              .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
+              .addGestureWithConfidence(
+                  MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+      this.processFaceLandmarkerResult(result);
+
+      // Newly triggered action should populate message.
+      assertEquals(
+          'Enter scroll mode (Raise eyebrows)',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Message for key combo and state should persist while the gesture and
+      // key press is still being held.
+      this.triggerBubbleControllerTimeout();
+      assertEquals(
+          'Custom key combination: ctrl + c (Open your mouth wide), ' +
+              'Scroll mode active. Raise eyebrows to exit. Other ' +
+              'gestures temporarily unavailable.',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Release jaw open for custom key release.
+      result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.1);
+      this.processFaceLandmarkerResult(result);
+
+      assertEquals(
+          'Scroll mode active. Raise eyebrows to exit. Other gestures ' +
+              'temporarily unavailable.',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+    });
 
 AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
   const gestureToMacroName =
