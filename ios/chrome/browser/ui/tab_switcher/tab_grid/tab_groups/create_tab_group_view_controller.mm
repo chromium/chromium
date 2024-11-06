@@ -188,7 +188,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   [self updateViews:self.view previousTraitCollection:nil];
 
   if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
+    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                        withAction:@selector(updateViews:
                                       previousTraitCollection:)];
   }

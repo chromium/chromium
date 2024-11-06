@@ -232,7 +232,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitPreferredContentSizeCategory.self, UITraitUserInterfaceStyle.self
+        UITraitPreferredContentSizeCategory.class,
+        UITraitUserInterfaceStyle.class
       ]);
       __weak __typeof(self) weakSelf = self;
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,

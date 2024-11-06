@@ -181,7 +181,7 @@ void PositionView(UIView* view, CGPoint point) {
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.self ]);
+          @[ UITraitPreferredContentSizeCategory.class ]);
       __weak __typeof(self) weakSelf = self;
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                        UITraitCollection* previousCollection) {
@@ -637,7 +637,7 @@ void PositionView(UIView* view, CGPoint point) {
   }
   if (@available(iOS 17, *)) {
     [self.window.windowScene
-        registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
+        registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withTarget:self
                          action:@selector(interfaceStyleChangedForWindow:
                                                          traitCollection:)];

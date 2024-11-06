@@ -125,7 +125,7 @@ CGFloat const kTitleLogoHeight = 32;
 
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitUserInterfaceStyle.self ])
+                                      @[ UITraitUserInterfaceStyle.class ])
                        withAction:@selector(resizeLogoOnTraitChange)];
   }
 }

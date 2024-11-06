@@ -368,7 +368,7 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   if (@available(iOS 17, *)) {
     __weak __typeof(self) weakSelf = self;
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.self ]);
+        @[ UITraitPreferredContentSizeCategory.class ]);
     UITraitChangeHandler traitChangeHandler =
         ^(id<UITraitEnvironment> traitEnvironment,
           UITraitCollection* previousCollection) {

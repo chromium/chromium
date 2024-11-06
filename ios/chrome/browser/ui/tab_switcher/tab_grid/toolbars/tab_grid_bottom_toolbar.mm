@@ -51,8 +51,9 @@
     [self setupViews];
     [self updateLayout];
     if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self ]);
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
+      ]);
       [self registerForTraitChanges:traits withAction:@selector(updateLayout)];
     }
   }

@@ -238,7 +238,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   [self.downloadControlsRow addArrangedSubview:self.closeButton];
   [self.view addSubview:self.downloadControlsRow];
   if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateActionButtonLayout)];
   }
 

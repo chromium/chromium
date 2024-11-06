@@ -50,8 +50,9 @@ const CGFloat kMinimumWidth = 44;
 
     if (@available(iOS 17, *)) {
       __weak __typeof(self) weakSelf = self;
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self ]);
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
+      ]);
 
       [self registerForTraitChanges:traits
                         withHandler:^(id<UITraitEnvironment> traitEnvironment,

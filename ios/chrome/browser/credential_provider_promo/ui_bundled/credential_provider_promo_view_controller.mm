@@ -59,7 +59,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitVerticalSizeClass.self, UITraitUserInterfaceStyle.self ]);
+        @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(updateUIOnTraitChange)];
   }

@@ -66,7 +66,7 @@ const CGFloat kAnimationHeightPercent = 0.75;
       LayoutSides::kTrailing | LayoutSides::kLeading | LayoutSides::kTop);
 
   if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(updateAnimation)];
   }
 }

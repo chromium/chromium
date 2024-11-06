@@ -44,8 +44,8 @@
         [weakSelf updateUIOnTraitChange:previousCollection];
       };
       NSArray<UITrait>* traits = @[
-        UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self,
-        UITraitPreferredContentSizeCategory.self
+        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+        UITraitPreferredContentSizeCategory.class
       ];
       [self registerForTraitChanges:traits withHandler:handler];
     }

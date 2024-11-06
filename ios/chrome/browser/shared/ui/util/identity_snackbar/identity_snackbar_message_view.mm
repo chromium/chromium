@@ -225,7 +225,7 @@ const CGFloat kTextOffset = 2.;
     if (@available(iOS 17, *)) {
       if (_snackbarMessage.managed) {
         NSArray<UITrait>* traits =
-            TraitCollectionSetForTraits(@[ UITraitLayoutDirection.self ]);
+            TraitCollectionSetForTraits(@[ UITraitLayoutDirection.class ]);
         __weak __typeof(self) weakSelf = self;
         UITraitChangeHandler handler =
             ^(id<UITraitEnvironment> traitEnvironment,

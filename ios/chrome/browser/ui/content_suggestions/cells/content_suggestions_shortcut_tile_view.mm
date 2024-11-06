@@ -165,7 +165,7 @@ const CGFloat kCountBorderWidth = 24;
 // trait's values change.
 - (void)registerViewForTraitChanges API_AVAILABLE(ios(17.0)) {
   NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.self ]);
+      @[ UITraitPreferredContentSizeCategory.class ]);
   [self registerForTraitChanges:traits
                      withAction:@selector(updateTitleLabelFontOnTraitChange)];
 }

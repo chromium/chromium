@@ -37,7 +37,7 @@ constexpr CGFloat kPaddingHeight = 50;
       first_run::kEnterpriseLoadingScreenAccessibilityIdentifier;
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.self ]);
+        @[ UITraitPreferredContentSizeCategory.class ]);
     __weak EnterpriseLoadScreenViewController* weakSelf = self;
     UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                      UITraitCollection* previousCollection) {

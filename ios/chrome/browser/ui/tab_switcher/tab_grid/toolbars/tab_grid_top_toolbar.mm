@@ -73,8 +73,9 @@ const CGFloat kSymbolSearchImagePointSize = 22;
     [self setupViews];
     [self setItemsForTraitCollection:self.traitCollection];
     if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self ]);
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
+      ]);
       __weak TabGridTopToolbar* weakSelf = self;
       [weakSelf
           registerForTraitChanges:traits

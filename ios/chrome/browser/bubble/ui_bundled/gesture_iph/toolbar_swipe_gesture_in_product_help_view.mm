@@ -57,7 +57,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
     }
     if (@available(iOS 17, *)) {
       [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                        @[ UITraitVerticalSizeClass.self ])
+                                        @[ UITraitVerticalSizeClass.class ])
                          withAction:@selector(updateUIOnTraitChange)];
     }
   }
