@@ -127,7 +127,6 @@ bool TryCopySubTextureINTERNALMemory(
     GLsizei width,
     GLsizei height,
     gfx::Rect dest_cleared_rect,
-    GLboolean unpack_flip_y,
     const Mailbox& source_mailbox,
     SkiaImageRepresentation* dest_shared_image,
     SkiaImageRepresentation::ScopedWriteAccess* dest_scoped_access,
@@ -135,13 +134,14 @@ bool TryCopySubTextureINTERNALMemory(
     SharedContextState* shared_context_state,
     const std::vector<GrBackendSemaphore>& begin_semaphores,
     std::vector<GrBackendSemaphore>& end_semaphores) {
-  if (unpack_flip_y) {
-    return false;
-  }
-
   auto source_shared_image =
       representation_factory->ProduceMemory(source_mailbox);
   if (!source_shared_image) {
+    return false;
+  }
+
+  if (source_shared_image->surface_origin() !=
+      dest_shared_image->surface_origin()) {
     return false;
   }
 
@@ -221,7 +221,6 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     GLint y,
     GLsizei width,
     GLsizei height,
-    GLboolean unpack_flip_y,
     const volatile GLbyte* mailboxes) {
   Mailbox source_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(mailboxes)[0]);
@@ -296,9 +295,9 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   // Attempt to upload directly from CPU shared memory to destination texture.
   if (TryCopySubTextureINTERNALMemory(
           xoffset, yoffset, x, y, width, height, new_cleared_rect,
-          unpack_flip_y, source_mailbox, dest_shared_image.get(),
-          dest_scoped_access.get(), representation_factory_,
-          shared_context_state_, begin_semaphores, end_semaphores)) {
+          source_mailbox, dest_shared_image.get(), dest_scoped_access.get(),
+          representation_factory_, shared_context_state_, begin_semaphores,
+          end_semaphores)) {
     // Cancel cleanup as TryCopySubTextureINTERNALMemory already handles it.
     std::move(cleanup).Cancel();
     return base::ok();
@@ -363,9 +362,6 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
         GLError(GL_INVALID_VALUE, "glCopySubTexture",
                 "Couldn't create SkImage from source shared image."));
   } else {
-    // Skia will flip the image if the surface origins do not match.
-    DCHECK_EQ(unpack_flip_y, source_shared_image->surface_origin() !=
-                                 dest_shared_image->surface_origin());
     if (dest_format.is_single_plane()) {
       auto* canvas = dest_scoped_access->surface()->getCanvas();
 

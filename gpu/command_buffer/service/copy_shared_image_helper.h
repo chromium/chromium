@@ -45,7 +45,6 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLint y,
       GLsizei width,
       GLsizei height,
-      GLboolean unpack_flip_y,
       const volatile GLbyte* mailboxes);
   // Only used by passthrough decoder.
   // TODO(crbug.com/40064510): Handle this use-case for graphite.

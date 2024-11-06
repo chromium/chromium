@@ -863,7 +863,6 @@ virtual void CopySharedImageINTERNAL(GLint xoffset,
                                      GLint y,
                                      GLsizei width,
                                      GLsizei height,
-                                     GLboolean unpack_flip_y,
                                      const GLbyte* mailboxes) = 0;
 virtual void CopySharedImageToTextureINTERNAL(GLuint texture,
                                               GLenum target,

@@ -1650,10 +1650,9 @@ void GL_APIENTRY GLES2CopySharedImageINTERNAL(GLint xoffset,
                                               GLint y,
                                               GLsizei width,
                                               GLsizei height,
-                                              GLboolean unpack_flip_y,
                                               const GLbyte* mailboxes) {
-  gles2::GetGLContext()->CopySharedImageINTERNAL(
-      xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
+  gles2::GetGLContext()->CopySharedImageINTERNAL(xoffset, yoffset, x, y, width,
+                                                 height, mailboxes);
 }
 void GL_APIENTRY
 GLES2CopySharedImageToTextureINTERNAL(GLuint texture,

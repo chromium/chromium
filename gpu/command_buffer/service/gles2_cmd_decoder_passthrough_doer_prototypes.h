@@ -1071,7 +1071,6 @@ error::Error DoCopySharedImageINTERNAL(GLint xoffset,
                                        GLint y,
                                        GLsizei width,
                                        GLsizei height,
-                                       GLboolean unpack_flip_y,
                                        const volatile GLbyte* mailboxes);
 error::Error DoCopySharedImageToTextureINTERNAL(
     GLuint texture,

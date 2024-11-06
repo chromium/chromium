@@ -3011,8 +3011,8 @@ TEST_F(GLES2ImplementationTest, CopySharedImageINTERNAL) {
     data[jj] = static_cast<GLbyte>(jj);
   }
   Cmds expected;
-  expected.cmd.Init(1, 2, 3, 4, 5, 6, true, &data[0]);
-  gl_->CopySharedImageINTERNAL(1, 2, 3, 4, 5, 6, true, &data[0]);
+  expected.cmd.Init(1, 2, 3, 4, 5, 6, &data[0]);
+  gl_->CopySharedImageINTERNAL(1, 2, 3, 4, 5, 6, &data[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 

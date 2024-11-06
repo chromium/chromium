@@ -5232,7 +5232,6 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageINTERNALImmediate(
   GLint y = static_cast<GLint>(c.y);
   GLsizei width = static_cast<GLsizei>(c.width);
   GLsizei height = static_cast<GLsizei>(c.height);
-  GLboolean unpack_flip_y = static_cast<GLboolean>(c.unpack_flip_y);
   uint32_t mailboxes_size;
   if (!GLES2Util::ComputeDataSize<GLbyte, 32>(1, &mailboxes_size)) {
     return error::kOutOfBounds;
@@ -5255,8 +5254,7 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageINTERNALImmediate(
   if (mailboxes == nullptr) {
     return error::kOutOfBounds;
   }
-  DoCopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height,
-                            unpack_flip_y, mailboxes);
+  DoCopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height, mailboxes);
   return error::kNoError;
 }
 

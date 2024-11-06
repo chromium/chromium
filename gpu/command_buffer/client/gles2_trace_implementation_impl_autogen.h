@@ -2394,11 +2394,10 @@ void GLES2TraceImplementation::CopySharedImageINTERNAL(
     GLint y,
     GLsizei width,
     GLsizei height,
-    GLboolean unpack_flip_y,
     const GLbyte* mailboxes) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CopySharedImageINTERNAL");
   gl_->CopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height,
-                               unpack_flip_y, mailboxes);
+                               mailboxes);
 }
 
 void GLES2TraceImplementation::CopySharedImageToTextureINTERNAL(
