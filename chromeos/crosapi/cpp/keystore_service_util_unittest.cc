@@ -6,47 +6,103 @@
 
 #include <optional>
 
+#include "base/numerics/safe_math.h"
+#include "base/values.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crosapi {
 namespace keystore_service_util {
 
-TEST(KeystoreServiceUtil, ECDSA) {
+static constexpr unsigned int kModulusLength = 1024;
+static constexpr bool kSoftwareBacked = true;
+
+// Equals to 65537.
+static constexpr uint8_t kDefaultPublicExponent[] = {0x01, 0x00, 0x01};
+
+TEST(KeystoreServiceUtil, EcdsaDictionary) {
   base::Value::Dict value;
   value.Set("name", kWebCryptoEcdsa);
   value.Set("namedCurve", kWebCryptoNamedCurveP256);
 
   std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
-      SigningAlgorithmFromDictionary(value);
+      MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
   std::optional<base::Value::Dict> value2 =
-      DictionaryFromSigningAlgorithm(ptr.value());
+      MakeDictionaryFromKeystoreAlgorithm(ptr.value());
   ASSERT_TRUE(value2);
 
   EXPECT_EQ(value, value2);
 }
 
-TEST(KeystoreServiceUtil, PKCS) {
+TEST(KeystoreServiceUtil, RsassaPkcs1v15Dictionary) {
   base::Value::Dict value;
   value.Set("name", kWebCryptoRsassaPkcs1v15);
-  value.Set("modulusLength", 5);
+  value.Set("modulusLength", base::checked_cast<int>(kModulusLength));
 
-  // Equals 65537.
-  static constexpr uint8_t kDefaultPublicExponent[] = {0x01, 0x00, 0x01};
   value.Set("publicExponent",
             base::Value::BlobStorage(std::begin(kDefaultPublicExponent),
                                      std::end(kDefaultPublicExponent)));
 
   std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
-      SigningAlgorithmFromDictionary(value);
+      MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
   std::optional<base::Value::Dict> value2 =
-      DictionaryFromSigningAlgorithm(ptr.value());
+      MakeDictionaryFromKeystoreAlgorithm(ptr.value());
   ASSERT_TRUE(value2);
 
   EXPECT_EQ(value, value2);
+}
+
+TEST(KeystoreServiceUtil, RsaOaepDictionary) {
+  base::Value::Dict value;
+  value.Set("name", kWebCryptoRsaOaep);
+  value.Set("modulusLength", base::checked_cast<int>(kModulusLength));
+
+  value.Set("publicExponent",
+            base::Value::BlobStorage(std::begin(kDefaultPublicExponent),
+                                     std::end(kDefaultPublicExponent)));
+
+  std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
+      MakeKeystoreAlgorithmFromDictionary(value);
+  ASSERT_TRUE(ptr);
+
+  std::optional<base::Value::Dict> value2 =
+      MakeDictionaryFromKeystoreAlgorithm(ptr.value());
+  ASSERT_TRUE(value2);
+
+  EXPECT_EQ(value, value2);
+}
+
+TEST(KeystoreServiceUtil, MakeRsassaPkcs1v15KeystoreAlgorithm) {
+  crosapi::mojom::KeystoreSigningAlgorithmPtr algorithm_ptr =
+      MakeRsassaPkcs1v15KeystoreAlgorithm(kModulusLength, kSoftwareBacked);
+
+  EXPECT_EQ(algorithm_ptr->which(),
+            crosapi::mojom::KeystoreSigningAlgorithm::Tag::kPkcs115);
+  EXPECT_EQ(algorithm_ptr->get_pkcs115()->modulus_length, kModulusLength);
+  EXPECT_TRUE(algorithm_ptr->get_pkcs115()->sw_backed);
+}
+
+TEST(KeystoreServiceUtil, MakeRsaOaepKeystoreAlgorithm) {
+  crosapi::mojom::KeystoreSigningAlgorithmPtr algorithm_ptr =
+      MakeRsaOaepKeystoreAlgorithm(kModulusLength, kSoftwareBacked);
+
+  EXPECT_EQ(algorithm_ptr->which(),
+            crosapi::mojom::KeystoreSigningAlgorithm::Tag::kRsaOaep);
+  EXPECT_EQ(algorithm_ptr->get_rsa_oaep()->modulus_length, kModulusLength);
+  EXPECT_TRUE(algorithm_ptr->get_rsa_oaep()->sw_backed);
+}
+
+TEST(KeystoreServiceUtil, MakeEcdsaKeystoreAlgorithm) {
+  crosapi::mojom::KeystoreSigningAlgorithmPtr algorithm_ptr =
+      MakeEcdsaKeystoreAlgorithm(kWebCryptoNamedCurveP256);
+
+  EXPECT_EQ(algorithm_ptr->which(),
+            crosapi::mojom::KeystoreSigningAlgorithm::Tag::kEcdsa);
+  EXPECT_EQ(algorithm_ptr->get_ecdsa()->named_curve, kWebCryptoNamedCurveP256);
 }
 
 }  // namespace keystore_service_util

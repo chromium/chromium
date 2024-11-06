@@ -245,7 +245,7 @@ void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
 
   api_pki::GetPublicKey::Results::Algorithm algorithm;
   std::optional<base::Value::Dict> dict =
-      crosapi::keystore_service_util::DictionaryFromSigningAlgorithm(
+      crosapi::keystore_service_util::MakeDictionaryFromKeystoreAlgorithm(
           result->get_success_result()->algorithm_properties);
   if (!dict) {
     Respond(Error(kErrorInvalidSigningAlgorithm));
