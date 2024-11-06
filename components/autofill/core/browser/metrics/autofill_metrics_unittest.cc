@@ -5485,7 +5485,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   EXPECT_THAT(SamplesOf({kFillable, kBefore, kAll, kBitmask}),
               BucketsAre(Bucket(kName | kNumber | kExp | kCvc, 2)));
   EXPECT_THAT(SamplesOf({kFillable, kAfter, kAll, kBitmask}),
-              BucketsAre(Bucket(kName | kExp, 1), Bucket(kNumber | kCvc, 1)));
+              BucketsAre(Bucket(kName | kExp, 1), Bucket(kNumber, 1)));
   EXPECT_THAT(
       SamplesOf({kFills, kBefore, kAll, kBitmask}),
       BucketsAre(Bucket(kName | kNumber | kExp, 1), Bucket(kNumber, 1)));
@@ -5574,7 +5574,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
 
            {UkmBuilder::kFillable_BeforeSecurity_BitmaskName,
             kName | kNumber | kExp | kCvc},
-           {UkmBuilder::kFillable_AfterSecurity_BitmaskName, kNumber | kCvc},
+           {UkmBuilder::kFillable_AfterSecurity_BitmaskName, kNumber},
            {UkmBuilder::kFilled_BeforeSecurity_BitmaskName, kNumber},
            {UkmBuilder::kFilled_AfterSecurity_BitmaskName, kNumber},
 

@@ -973,13 +973,17 @@ class BrowserAutofillManagerTest : public testing::Test {
       AutofillTriggerDetails trigger_details = {
           .trigger_source = AutofillTriggerSource::kPopup}) {
     std::vector<FormFieldData> filled_fields;
-    std::vector<FieldGlobalId> global_ids;
-    for (const auto& field : input_form.fields()) {
-      global_ids.push_back(field.global_id());
-    }
     EXPECT_CALL(*autofill_driver_, ApplyFormAction)
-        .WillOnce(
-            DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
+        .WillOnce([&filled_fields](
+                      mojom::FormActionType action_type,
+                      mojom::ActionPersistence action_persistence,
+                      base::span<const FormFieldData> data,
+                      const url::Origin& triggered_origin,
+                      const base::flat_map<FieldGlobalId, FieldType>&) {
+          filled_fields = std::vector<FormFieldData>(data.begin(), data.end());
+          return base::MakeFlatSet<FieldGlobalId>(data, {},
+                                                  &FormFieldData::global_id);
+        });
     FillAutofillFormData(input_form, input_field, guid, trigger_details);
     FormData result_form = input_form;
     // Copy the filled data into the form.
