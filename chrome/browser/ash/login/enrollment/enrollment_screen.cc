@@ -867,8 +867,17 @@ bool EnrollmentScreen::ShouldAutoRetryOnError() const {
 }
 
 bool EnrollmentScreen::AutoCloseEnrollmentConfirmationOnSuccess() const {
-  return prescribed_config_.mode ==
-         policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
+  if (prescribed_config_.mode ==
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED) {
+    return true;
+  }
+  const std::optional<bool> skip_enrollment_success_screen =
+      context()->configuration.FindBool(
+          configuration::kSkipEnrollmentSuccessScreen);
+  if (!skip_enrollment_success_screen.has_value()) {
+    return false;
+  }
+  return skip_enrollment_success_screen.value();
 }
 
 bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {
