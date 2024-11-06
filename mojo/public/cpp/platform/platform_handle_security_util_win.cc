@@ -71,11 +71,6 @@ std::optional<bool> IsReadOnlyHandle(HANDLE handle) {
 
 void DcheckIfFileHandleIsUnsafe(HANDLE handle) {
 #if DCHECK_IS_ON()
-  if (!base::FeatureList::IsEnabled(
-          base::features::kEnforceNoExecutableFileHandles)) {
-    return;
-  }
-
   if (GetFileType(handle) != FILE_TYPE_DISK) {
     return;
   }

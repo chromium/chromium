@@ -1128,11 +1128,6 @@ bool PreReadFile(const FilePath& file_path,
 }
 
 bool PreventExecuteMappingInternal(const FilePath& path, bool skip_path_check) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnforceNoExecutableFileHandles)) {
-    return true;
-  }
-
   bool is_path_safe = skip_path_check || IsPathSafeToSetAclOn(path);
 
   if (!is_path_safe) {

@@ -33,12 +33,6 @@ namespace base::features {
 
 // Alphabetical:
 
-// Enforce that writeable file handles passed to untrusted processes are not
-// backed by executable files.
-BASE_FEATURE(kEnforceNoExecutableFileHandles,
-             "EnforceNoExecutableFileHandles",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 // Activate base::FeatureParamWithCache internal cache.
 // TODO(https://crbug.com/340824113): Remove the feature flag below.
 BASE_FEATURE(kFeatureParamWithCache,
