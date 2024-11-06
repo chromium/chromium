@@ -36,6 +36,7 @@ external/wpt/css/geometry/*
 external/wpt/css/reference/*
 external/wpt/digital-credentials/*
 external/wpt/ecmascript/*
+external/wpt/encoding/*
 external/wpt/font-access/*
 external/wpt/fullscreen/*
 external/wpt/js*
