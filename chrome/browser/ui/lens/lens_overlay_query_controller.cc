@@ -523,6 +523,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
       /*request_params=*/
       EndpointFetcher::RequestParams::Builder()
           .SetCredentialsMode(CredentialsMode::kInclude)
+          .SetSetSiteForCookies(true)
           .Build());
 }
 
