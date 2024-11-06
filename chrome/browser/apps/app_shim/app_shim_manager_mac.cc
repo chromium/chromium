@@ -83,13 +83,6 @@
 
 namespace {
 
-// A feature to control whether or not the profile icons are sent over mojo.
-// This is used to debug crashes that are only seen in release builds.
-// https://crbug.com/1274236
-BASE_FEATURE(kAppShimProfileMenuIcons,
-             "AppShimProfileMenuIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A crash key that is used when dumping because of errors when building and
 // verifying the app shim requirement.
 crash_reporter::CrashKeyString<256> app_shim_requirement_crash_key(
@@ -1788,10 +1781,8 @@ void AppShimManager::RebuildProfileMenuItemsFromAvatarMenu() {
     mojo_item->menu_index = item.menu_index;
     mojo_item->active = item.active;
     mojo_item->profile_path = item.profile_path;
-    if (base::FeatureList::IsEnabled(kAppShimProfileMenuIcons)) {
-      mojo_item->icon =
-          profiles::GetAvatarIconForNSMenu(item.profile_path).ToImageSkia()[0];
-    }
+    mojo_item->icon =
+        profiles::GetAvatarIconForNSMenu(item.profile_path).ToImageSkia()[0];
     profile_menu_items_.push_back(std::move(mojo_item));
   }
 }
