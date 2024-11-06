@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -54,6 +55,22 @@ SystemMetricsSampler::Sampler::~Sampler() = default;
 void SystemMetricsSampler::Sampler::SampleSystemMetrics() {
   cpu_probe_->RequestSample(
       base::BindOnce(&Sampler::OnCpuProbeResult, base::Unretained(this)));
+  std::optional<base::CpuThroughputEstimationResult> cpu_throughput =
+      base::EstimateCpuThroughput();
+  if (cpu_throughput) {
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+                  perfetto::CounterTrack("EstimatedCpuThroughput",
+                                         perfetto::Track::Global(0)),
+                  cpu_throughput->estimated_frequency);
+  }
+
+#if BUILDFLAG(IS_WIN)
+  base::CpuFrequencyInfo cpu_info = base::GetCpuFrequencyInfo();
+  TRACE_COUNTER(
+      TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+      perfetto::CounterTrack("NumActiveCpus", perfetto::Track::Global(0)),
+      cpu_info.num_active_cpus);
+#endif
 }
 
 void SystemMetricsSampler::Sampler::OnCpuProbeResult(

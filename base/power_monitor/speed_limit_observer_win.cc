@@ -198,7 +198,6 @@ float SpeedLimitObserverWin::EstimateThrottlingLevel() const {
   // 1, the `CurrentIdleState` will always be 0 and the C-States are not
   // supported.
   int num_non_idle_cpus = 0;
-  [[maybe_unused]] int num_active_cpus = 0;
   float load_fraction_total = 0.0;
   for (size_t i = 0; i < num_cpus(); ++i) {
     // Amount of "non-idleness" is the distance from the max idle state.
@@ -215,23 +214,12 @@ float SpeedLimitObserverWin::EstimateThrottlingLevel() const {
     load_fraction_total += load_fraction;
     // Used for a sanity check only.
     num_non_idle_cpus += (info[i].CurrentIdleState < info[i].MaxIdleState);
-
-    // Count the amount of CPU that are in the C0 state (active). If
-    // `MaxIdleState` is 1, C-states are not supported and we consider the CPU
-    // is active.
-    if (info[i].MaxIdleState == 1 || info[i].CurrentIdleState == 1) {
-      num_active_cpus++;
-    }
   }
 
   DCHECK_LE(load_fraction_total, static_cast<float>(num_non_idle_cpus))
       << " load_fraction_total: " << load_fraction_total
       << " num_non_idle_cpus:" << num_non_idle_cpus;
   throttling_level = (load_fraction_total / num_cpus());
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  TRACE_COUNTER(kPowerTraceCategory, "num_active_cpus", num_active_cpus);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   return throttling_level;
 }
