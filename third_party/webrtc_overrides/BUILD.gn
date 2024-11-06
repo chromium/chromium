@@ -15,6 +15,7 @@ webrtc_public_configs = [ "//third_party/webrtc:common_inherited_config" ]
 
 webrtc_public_deps = [
   ":bridge_ice_controller",
+  ":environment",
   ":init_webrtc",
   ":metrics",
   ":task_queue_factory",
@@ -60,6 +61,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/audio_codecs/opus:audio_decoder_opus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_multiopus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_opus",
+  "//third_party/webrtc/api/environment",
   "//third_party/webrtc/api/environment:environment_factory",
   "//third_party/webrtc/api/metronome",
   "//third_party/webrtc/api/rtc_event_log:rtc_event_log_factory",
@@ -270,6 +272,21 @@ source_set("task_queue_factory") {
     "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/api/task_queue:pending_task_safety_flag",
     "//third_party/webrtc/api/units:time_delta",
+    "//third_party/webrtc/rtc_base/system:rtc_export",
+  ]
+}
+
+source_set("environment") {
+  visibility = [ ":*" ]
+  sources = [
+    "environment.cc",
+    "environment.h",
+  ]
+  configs += [ "//third_party/webrtc:library_impl_config" ]
+  deps = [
+    ":task_queue_factory",
+    "//third_party/webrtc/api/environment",
+    "//third_party/webrtc/api/environment:environment_factory",
     "//third_party/webrtc/rtc_base/system:rtc_export",
   ]
 }

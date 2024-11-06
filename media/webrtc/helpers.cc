@@ -13,8 +13,10 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/webrtc/webrtc_features.h"
+#include "third_party/webrtc/api/audio/audio_processing.h"
+#include "third_party/webrtc/api/audio/builtin_audio_processing_builder.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
-#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace media {
 namespace {
@@ -131,8 +133,6 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   if (!settings.NeedWebrtcAudioProcessing())
     return nullptr;
 
-  webrtc::AudioProcessingBuilder ap_builder;
-
   webrtc::AudioProcessing::Config apm_config;
   apm_config.pipeline.multi_channel_render = true;
   apm_config.pipeline.multi_channel_capture =
@@ -150,6 +150,7 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   apm_config.echo_canceller.mobile_mode = false;
 #endif
   ConfigAutomaticGainControl(settings, apm_config);
-  return ap_builder.SetConfig(apm_config).Create();
+  return webrtc::BuiltinAudioProcessingBuilder(apm_config)
+      .Build(WebRtcEnvironment());
 }
 }  // namespace media
