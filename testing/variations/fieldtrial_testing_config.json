@@ -13426,6 +13426,27 @@
             ]
         }
     ],
+    "MHTML_Improvements": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MHTML_Improvements"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacAccessibilityAPIMigration": [
         {
             "platforms": [
