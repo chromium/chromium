@@ -60,6 +60,10 @@ inline constexpr int kPanelDefaultWidth = 360;
 inline constexpr int kPanelDefaultHeight = 492;
 inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
 
+// The maximum height and width the panel can be resized to.
+inline constexpr int kPanelMaximumWidth = 540;
+inline constexpr int kPanelMaximumHeight = 600;
+
 inline constexpr int kScrollViewWidth = kPanelDefaultWidth -
                                         views::kHighlightBorderThickness * 2 -
                                         kPanelPadding.width();

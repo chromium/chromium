@@ -30,6 +30,12 @@ class MahiFrameView : public NonClientFrameViewAsh {
     return gfx::Size(mahi_constants::kPanelDefaultWidth,
                      mahi_constants::kPanelDefaultHeight);
   }
+
+  // views::NonClientFrameView:
+  gfx::Size GetMaximumSize() const override {
+    return gfx::Size(mahi_constants::kPanelMaximumWidth,
+                     mahi_constants::kPanelMaximumHeight);
+  }
 };
 
 }  // namespace

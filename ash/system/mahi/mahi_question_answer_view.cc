@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -48,6 +49,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -172,8 +174,18 @@ views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
 std::unique_ptr<views::View> CreateQuestionAnswerRow(const std::u16string& text,
                                                      bool is_question) {
   views::Builder<views::FlexLayoutView> row_builder =
-      views::Builder<views::FlexLayoutView>().SetOrientation(
-          views::LayoutOrientation::kHorizontal);
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
+            // TODO(crbug.com/377582486): When respecting size constraints, the
+            // layout manager has no layout cache, so multiple levels of
+            // FlexLayoutView nesting have performance issues here (see
+            // crbug.com/40232718). Only needs to be disabled if resizing is
+            // enabled.
+            layout->SetLayoutManagerUseConstrainedSpace(
+                !base::FeatureList::IsEnabled(
+                    chromeos::features::kMahiPanelResizable));
+          }));
 
   views::Builder<views::FlexLayoutView> spacer =
       views::Builder<views::FlexLayoutView>().CustomConfigure(
@@ -234,11 +246,19 @@ MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
     : MahiUiController::Delegate(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller);
 
+  // TODO(crbug.com/377576663) add performance metrics for resizing.
   SetOrientation(views::LayoutOrientation::kVertical);
   SetInteriorMargin(kQuestionAnswerInteriorMargin);
   SetIgnoreDefaultMainAxisMargins(true);
   SetCollapseMargins(true);
   SetDefault(views::kMarginsKey, gfx::Insets::VH(kBetweenChildSpacing, 0));
+  // TODO(crbug.com/377582486): When respecting size constraints, the
+  // layout manager has no layout cache, so multiple levels of
+  // FlexLayoutView nesting have performance issues here (see
+  // crbug.com/40232718).
+  // Only needs to be disabled if resizing is enabled.
+  SetLayoutManagerUseConstrainedSpace(
+      !base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable));
 }
 
 MahiQuestionAnswerView::~MahiQuestionAnswerView() {
