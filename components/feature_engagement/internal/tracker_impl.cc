@@ -117,7 +117,7 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
 // //components/feature_engagement/public/tracker.h
 // and should be linked in to any binary using Tracker::Create.
 // static
-Tracker* Tracker::Create(
+std::unique_ptr<Tracker> Tracker::Create(
     const base::FilePath& storage_dir,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
@@ -130,7 +130,7 @@ Tracker* Tracker::Create(
     // not set.
     std::string chosen_feature_name = base::GetFieldTrialParamValueByFeature(
         kIPHDemoMode, kIPHDemoModeFeatureChoiceParam);
-    return CreateDemoModeTracker(chosen_feature_name).release();
+    return CreateDemoModeTracker(chosen_feature_name);
   }
 
   base::FilePath event_storage_dir =
@@ -172,7 +172,7 @@ Tracker* Tracker::Create(
   auto availability_model = std::make_unique<AvailabilityModelImpl>(
       std::move(availability_store_loader));
 
-  return new TrackerImpl(
+  return std::make_unique<TrackerImpl>(
       std::move(event_model), std::move(availability_model),
       std::move(configuration), std::make_unique<DisplayLockControllerImpl>(),
       std::move(condition_validator), std::move(time_provider),

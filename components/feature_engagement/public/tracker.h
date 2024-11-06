@@ -156,7 +156,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // The |background_task_runner| will be used for all disk reads and writes.
   // If `configuration_providers` is not specified, a default set of providers
   // will be provided.
-  static Tracker* Create(
+  static std::unique_ptr<Tracker> Create(
       const base::FilePath& storage_dir,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
