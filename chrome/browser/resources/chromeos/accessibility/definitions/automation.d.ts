@@ -357,6 +357,7 @@ declare namespace chrome {
       EXPANDED = 'expanded',
       FOCUSABLE = 'focusable',
       FOCUSED = 'focused',
+      HAS_ACTIONS = 'hasActions',
       HORIZONTAL = 'horizontal',
       HOVERED = 'hovered',
       IGNORED = 'ignored',

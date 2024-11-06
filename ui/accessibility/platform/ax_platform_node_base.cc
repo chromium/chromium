@@ -1178,6 +1178,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("autocomplete", "list", attributes);
   }
 
+  if (HasState(ax::mojom::State::kHasActions)) {
+    AddAttributeToList("has-actions", "true", attributes);
+  }
+
   std::u16string role_description =
       GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute();
   if (!role_description.empty() ||

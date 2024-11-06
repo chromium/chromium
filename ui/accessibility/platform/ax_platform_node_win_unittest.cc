@@ -4120,9 +4120,10 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(root_node, UIA_FullDescriptionPropertyId,
                      L"fake description");
   EXPECT_UIA_BSTR_EQ(root_node, UIA_AriaRolePropertyId, L"list");
-  EXPECT_UIA_BSTR_EQ(root_node, UIA_AriaPropertiesPropertyId,
-                     L"readonly=true;expanded=false;multiline=false;"
-                     L"multiselectable=false;required=false;setsize=2");
+  EXPECT_UIA_BSTR_EQ(
+      root_node, UIA_AriaPropertiesPropertyId,
+      L"readonly=true;expanded=false;multiline=false;"
+      L"multiselectable=false;required=false;setsize=2;hasactions=false");
   EXPECT_UIA_BSTR_EQ(root_node, UIA_NamePropertyId, L"fake name");
   EXPECT_UIA_INT_EQ(root_node, UIA_ControlTypePropertyId,
                     int{UIA_ListControlTypeId});
@@ -4145,7 +4146,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(
       child_node1, UIA_AriaPropertiesPropertyId,
       L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
-      L"posinset=1;required=false;current=page");
+      L"posinset=1;required=false;hasactions=false;current=page");
 
   ComPtr<IRawElementProviderSimple> child_node2 =
       QueryInterfaceFromNode<IRawElementProviderSimple>(
@@ -4154,7 +4155,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(
       child_node2, UIA_AriaPropertiesPropertyId,
       L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
-      L"required=false");
+      L"required=false;hasactions=false");
 }
 
 TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {

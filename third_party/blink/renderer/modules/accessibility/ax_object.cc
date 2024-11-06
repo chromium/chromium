@@ -2564,6 +2564,13 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     }
   }
 
+  // Check for presence of aria-actions. Even if the value is empty because the
+  // targets are hidden, we still want to expose that there could be actions.
+  if (RuntimeEnabledFeatures::AriaActionsEnabled() &&
+      HasAriaAttribute(html_names::kAriaActionsAttr)) {
+    node_data->AddState(ax::mojom::blink::State::kHasActions);
+  }
+
   if (IsScrollableContainer())
     SerializeScrollAttributes(node_data);
 

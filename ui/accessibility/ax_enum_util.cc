@@ -1016,6 +1016,8 @@ const char* ToString(ax::mojom::State state) {
       return "expanded";
     case ax::mojom::State::kFocusable:
       return "focusable";
+    case ax::mojom::State::kHasActions:
+      return "hasActions";
     case ax::mojom::State::kHorizontal:
       return "horizontal";
     case ax::mojom::State::kHovered:
