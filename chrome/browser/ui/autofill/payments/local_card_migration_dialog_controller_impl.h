@@ -63,6 +63,7 @@ class LocalCardMigrationDialogControllerImpl
   void ShowErrorDialog();
 
   void AddObserver(LocalCardMigrationControllerObserver* observer);
+  void RemoveObserver(LocalCardMigrationControllerObserver* observer);
 
   // LocalCardMigrationDialogController:
   LocalCardMigrationDialogState GetViewState() const override;
@@ -139,7 +140,7 @@ class LocalCardMigrationDialogControllerImpl
 
   // Contains observer listening to user's interactions with the dialog. The
   // observer is responsible for setting flow step upon these interactions.
-  base::ObserverList<LocalCardMigrationControllerObserver>::Unchecked
+  base::ObserverList<LocalCardMigrationControllerObserver>
       observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
