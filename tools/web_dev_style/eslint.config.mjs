@@ -38,8 +38,7 @@ export default [
       // conformance.
       'chrome/test/data/extensions/**/*',
 
-      // TODO(https://crbug.com/370730323): 1-month exception. This can be
-      // removed in November 2024.
+      // Un-ignore CrOS Settings dir to enable linting.
       '!chrome/browser/resources/ash/settings/**/*',
     ],
   },
@@ -438,28 +437,4 @@ export default [
       'no-restricted-syntax': 'off',
     },
   },
-  {
-    // 1-month exception for //chrome/browser/resources/ash/settings. This can
-    // be removed November 15 2024.
-    files: ['chrome/browser/resources/ash/settings/**/*.[jt]s'],
-
-    rules: {
-      '@typescript-eslint/explicit-function-return-type': [
-        'error', {
-          allowExpressions: true,
-          allowedNames: ['is', 'template', 'properties', 'observers'],
-        }
-      ],
-
-      '@typescript-eslint/no-inferrable-types': [
-        'error', {
-          ignoreParameters: true,
-          ignoreProperties: true,
-        }
-      ],
-
-      'prefer-arrow-callback': 'error',
-      'quote-props': ['error', 'consistent-as-needed'],
-    },
-  }
 ];
