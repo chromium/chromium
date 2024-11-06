@@ -45,6 +45,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -425,7 +426,8 @@ class IbanBubbleViewFullFormBrowserTest
     LocationBarBubbleDelegateView* iban_bubble_view = nullptr;
     switch (GetBubbleType()) {
       case IbanBubbleType::kLocalSave:
-      case IbanBubbleType::kUploadSave: {
+      case IbanBubbleType::kUploadSave:
+      case IbanBubbleType::kUploadInProgress: {
         iban_bubble_view = GetSaveIbanBubbleView();
         CHECK(iban_bubble_view);
         break;
@@ -773,8 +775,8 @@ class IbanBubbleViewSyncTransportFullFormBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests the upload save bubble. Ensures that clicking the 'Save' button
-// successfully causes the bubble to go away.
+// Tests the upload save bubble. Ensures that the bubble does not go away right
+// after clicking the 'Save' button.
 IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
                        Upload_ClickingSaveClosesBubble_Success) {
   SetUploadIbanRpcPaymentsSucceeds();
@@ -787,12 +789,14 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
 
   ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE,
                                DialogEvent::ACCEPT_UPLOAD_SAVE_IBAN_COMPLETE});
-  ClickOnSaveButton();
+  ClickOnDialogView(FindViewInBubbleById(DialogViewId::OK_BUTTON));
+
+  EXPECT_TRUE(GetSaveIbanBubbleView());
   ASSERT_TRUE(WaitForObservedEvent());
 }
 
-// Tests the upload save bubble. Ensures that clicking the 'Save' button
-// successfully causes the bubble to go away. Also, verify that a failed IBAN
+// Tests the upload save bubble. Ensures that the bubble does not go away right
+// after clicking the 'Save' button. Also, verify that a failed IBAN
 // upload adds a strike to the strike database.
 IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
                        Upload_ClickingSaveClosesBubble_Fail) {
@@ -806,7 +810,9 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
 
   ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE,
                                DialogEvent::ACCEPT_UPLOAD_SAVE_IBAN_FAILED});
-  ClickOnSaveButton();
+  ClickOnDialogView(FindViewInBubbleById(DialogViewId::OK_BUTTON));
+
+  EXPECT_TRUE(GetSaveIbanBubbleView());
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_EQ(
       1, iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
@@ -848,6 +854,33 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
 
   ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
   ClickOnSaveButton();
+  ASSERT_TRUE(WaitForObservedEvent());
+}
+
+// Tests the upload save bubble. Ensures that clicking the [Save] button
+// does not close the bubble, causes a loading throbber to appear and hides the
+// other dialog buttons.
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
+                       Upload_ClickingSave_ShowsLoadingView) {
+  SetUploadIbanRpcPaymentsSucceeds();
+  SetUpForSyncTransportModeTest();
+  FillForm();
+  SubmitFormAndWaitForUploadSaveBubble();
+
+  // Clicking "Save" should accept it and then send an UploadIbanRequest to
+  // Google Payments.
+  ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE,
+                               DialogEvent::ACCEPT_UPLOAD_SAVE_IBAN_COMPLETE});
+
+  // Dialog waits for confirmation after "Save" button is clicked. So need to
+  // wait for the dialog to close.
+  ClickOnDialogView(FindViewInBubbleById(DialogViewId::OK_BUTTON));
+
+  // Expect that the loading view is correctly shown.
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::LOADING_THROBBER)->IsDrawn());
+  EXPECT_EQ(FindViewInBubbleById(DialogViewId::OK_BUTTON), nullptr);
+  EXPECT_EQ(FindViewInBubbleById(DialogViewId::CANCEL_BUTTON), nullptr);
+
   ASSERT_TRUE(WaitForObservedEvent());
 }
 

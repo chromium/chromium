@@ -151,6 +151,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
   switch (bubble_type) {
     case IbanBubbleType::kLocalSave:
     case IbanBubbleType::kUploadSave:
+    case IbanBubbleType::kUploadInProgress:
       return ShowBubble<SaveIbanBubbleView>(
           toolbar_button_provider_, PageActionIconType::kSaveIban, web_contents,
           controller, is_user_gesture);
