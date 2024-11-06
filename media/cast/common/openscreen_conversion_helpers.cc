@@ -66,6 +66,9 @@ base::TimeDelta ToTimeDelta(openscreen::Clock::duration tp) {
 
 const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
     const SenderEncodedFrame& encoded_frame) {
+  // Open Screen does not permit nullptr data properties. We also cannot set it
+  // here, since it needs to be owned outside of `encoded_frame.`
+  CHECK(encoded_frame.data.data());
   return openscreen::cast::EncodedFrame(
       encoded_frame.dependency, encoded_frame.frame_id,
       encoded_frame.referenced_frame_id, encoded_frame.rtp_timestamp,

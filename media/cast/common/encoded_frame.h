@@ -5,10 +5,7 @@
 #ifndef MEDIA_CAST_COMMON_ENCODED_FRAME_H_
 #define MEDIA_CAST_COMMON_ENCODED_FRAME_H_
 
-#include <cstdint>
-#include <string>
-
-#include "base/containers/span.h"
+#include "base/containers/heap_array.h"
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/common/frame_id.h"
@@ -22,12 +19,6 @@ namespace media::cast {
 struct EncodedFrame {
   EncodedFrame();
   virtual ~EncodedFrame();
-
-  // Convenience accessors to data as an array of uint8_t elements.
-  base::span<const uint8_t> bytes() const { return base::as_byte_span(data); }
-  base::span<uint8_t> mutable_bytes() {
-    return base::as_writable_byte_span(data);
-  }
 
   // Copies all data members except |data| to |dest|.
   // Does not modify |dest->data|.
@@ -67,7 +58,7 @@ struct EncodedFrame {
   uint16_t new_playout_delay_ms = 0;
 
   // The encoded signal data.
-  std::string data;
+  base::HeapArray<uint8_t> data;
 };
 
 }  // namespace media::cast

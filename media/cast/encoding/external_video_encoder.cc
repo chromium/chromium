@@ -408,13 +408,11 @@ class ExternalVideoEncoder::VEAClientImpl final
       encoded_frame->capture_end_time =
           request.video_frame->metadata().capture_end_time;
 
-      std::string header = stream_header_.str();
-      if (!header.empty()) {
-        encoded_frame->data = std::move(header);
-        std::ostringstream().swap(stream_header_);
-      }
-      encoded_frame->data.append(output_buffer_memory,
-                                 metadata.payload_size_bytes);
+      std::string data = stream_header_.str();
+      std::ostringstream().swap(stream_header_);
+      data.append(output_buffer_memory, metadata.payload_size_bytes);
+      encoded_frame->data = base::HeapArray<uint8_t>::CopiedFrom(base::span(
+          reinterpret_cast<const uint8_t*>(data.c_str()), data.size()));
 
       // If FRAME_DURATION metadata was provided in the source VideoFrame,
       // compute the utilization metrics.
@@ -451,13 +449,9 @@ class ExternalVideoEncoder::VEAClientImpl final
         // and all the following delta frames.
         if (metadata.key_frame || key_frame_quantizer_parsable_) {
           if (IsVpxProfile(codec_profile_)) {
-            quantizer = ParseVpxHeaderQuantizer(
-                reinterpret_cast<const uint8_t*>(encoded_frame->data.data()),
-                encoded_frame->data.size());
+            quantizer = ParseVpxHeaderQuantizer(encoded_frame->data);
           } else if (codec_profile_ == media::H264PROFILE_MAIN) {
-            quantizer = GetH264FrameQuantizer(
-                reinterpret_cast<const uint8_t*>(encoded_frame->data.data()),
-                encoded_frame->data.size());
+            quantizer = GetH264FrameQuantizer(encoded_frame->data);
           } else {
             NOTIMPLEMENTED();
           }
@@ -543,14 +537,12 @@ class ExternalVideoEncoder::VEAClientImpl final
 
   // Parse H264 SPS, PPS, and Slice header, and return the averaged frame
   // quantizer in the range of [0, 51], or -1 on parse error.
-  double GetH264FrameQuantizer(const uint8_t* encoded_data, off_t size) {
+  double GetH264FrameQuantizer(base::span<uint8_t> encoded_data) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    DCHECK(encoded_data);
-
-    if (!size) {
+    if (encoded_data.empty()) {
       return -1;
     }
-    h264_parser_.SetStream(encoded_data, size);
+    h264_parser_.SetStream(encoded_data.data(), encoded_data.size());
     double total_quantizer = 0;
     int num_slices = 0;
 

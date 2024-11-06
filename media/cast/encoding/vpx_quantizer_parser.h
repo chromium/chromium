@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "media/cast/cast_config.h"
 
 namespace media {
@@ -15,7 +16,7 @@ namespace cast {
 
 // Partially parse / skip data in the header and the first partition,
 // and return the base quantizer in the range [0,63], or -1 on parse error.
-int ParseVpxHeaderQuantizer(const uint8_t* data, size_t size);
+int ParseVpxHeaderQuantizer(base::span<const uint8_t> data);
 
 }  // namespace cast
 }  // namespace media

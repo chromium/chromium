@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/heap_array.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -73,13 +74,11 @@ class RemotingSender::SenderEncodedFrameFactory {
     remoting_frame->frame_id = frame_id;
 
     // DecoderBuffer data must be encoded in a special format.
-    std::vector<uint8_t> data =
+    remoting_frame->data =
         media::cast::DecoderBufferToByteArray(decoder_buffer);
-    if (!decoder_buffer.end_of_stream() && data.empty()) {
+    if (!decoder_buffer.end_of_stream() && remoting_frame->data.empty()) {
       return nullptr;
     }
-    remoting_frame->data =
-        std::string(reinterpret_cast<const char*>(data.data()), data.size());
 
     const bool is_key_frame =
         !decoder_buffer.end_of_stream() && decoder_buffer.is_key_frame();
