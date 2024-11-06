@@ -17,7 +17,8 @@ class Profile;
 
 // Callback type alias for page content bytes retrieved.
 using SupportedLanguagesRetrievedCallback =
-    base::OnceCallback<void(std::vector<lens::mojom::LanguagePtr>,
+    base::OnceCallback<void(const std::string&,
+                            std::vector<lens::mojom::LanguagePtr>,
                             std::vector<lens::mojom::LanguagePtr>)>;
 
 namespace lens {
@@ -48,6 +49,10 @@ class LensOverlayLanguagesController {
 
   // The profile used to make requests.
   raw_ptr<Profile> profile_;
+
+  // The locale used in the language request. Stored since technically, the
+  // locale can change before a response was received.
+  std::string locale_;
 
   // A url loader to load the request to get supported languages.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

@@ -183,6 +183,19 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       lens::features::IsLensOverlayContextualSearchboxEnabled());
   html_source->AddBoolean("showContextualSearchboxGhostLoader",
                           lens::features::ShowContextualSearchboxGhostLoader());
+  html_source->AddBoolean(
+      "shouldFetchSupportedLanguages",
+      lens::features::IsLensOverlayTranslateLanguagesFetchEnabled());
+  html_source->AddString(
+      "translateSourceLanguages",
+      lens::features::GetLensOverlayTranslateSourceLanguages());
+  html_source->AddString(
+      "translateTargetLanguages",
+      lens::features::GetLensOverlayTranslateSourceLanguages());
+  html_source->AddDouble(
+      "languagesCacheTimeout",
+      lens::features::GetLensOverlaySupportedLanguagesCacheTimeoutMs()
+          .InMilliseconds());
 
   // Controller doesn't exist in unsupported context but WebUI should still
   // load.

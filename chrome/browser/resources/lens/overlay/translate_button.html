@@ -466,7 +466,7 @@
       <span id="starsIcon" slot="prefix-icon"></span>
       <span id="sourceLanguageLabel"
           class="button-label language-picker-label">
-        [[getSourceLanguageDisplayName(translateLanguageList,
+        [[getSourceLanguageDisplayName(sourceLanguageList,
             sourceLanguage, contentLanguage)]]
       </span>
     </cr-button>
@@ -507,7 +507,7 @@
         <div id="menuDetectedLanguage"
             class="language-picker-menu-detected-language">
           [[getContentLanguageDisplayName(
-              translateLanguageList, contentLanguage)]]
+              sourceLanguageList, contentLanguage)]]
         </div>
         <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
       </cr-button>
@@ -517,7 +517,7 @@
         $i18n{allLanguages}
       </h3>
       <template id="sourceLanguagePickerContainer" is="dom-repeat"
-          items="[[translateLanguageList]]" as="language">
+          items="[[sourceLanguageList]]" as="language">
         <cr-button class="button language-picker-menu-button"
             on-click="onSourceLanguageMenuItemClick">
           <cr-icon icon="cr:check" slot="prefix-icon"
@@ -548,7 +548,7 @@
         $i18n{allLanguages}
       </h3>
       <template id="targetLanguagePickerContainer" is="dom-repeat"
-          items="[[translateLanguageList]]" as="language">
+          items="[[targetLanguageList]]" as="language">
         <cr-button class="button language-picker-menu-button"
             on-click="onTargetLanguageMenuItemClick">
           <cr-icon icon="cr:check" slot="prefix-icon"

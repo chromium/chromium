@@ -95,7 +95,7 @@ void LensOverlayLanguagesController::SendGetSupportedLanguagesRequest(
 void LensOverlayLanguagesController::OnGetSupportedLanguagesResponse(
     std::optional<std::string> response_body) {
   if (!response_body) {
-    std::move(callback_).Run(std::vector<mojom::LanguagePtr>(),
+    std::move(callback_).Run(locale_, std::vector<mojom::LanguagePtr>(),
                              std::vector<mojom::LanguagePtr>());
     return;
   }
@@ -109,13 +109,13 @@ void LensOverlayLanguagesController::OnGetSupportedLanguagesResponse(
 void LensOverlayLanguagesController::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
-    std::move(callback_).Run(std::vector<mojom::LanguagePtr>(),
+    std::move(callback_).Run(locale_, std::vector<mojom::LanguagePtr>(),
                              std::vector<mojom::LanguagePtr>());
     return;
   }
 
   if (!result->is_dict()) {
-    std::move(callback_).Run(std::vector<mojom::LanguagePtr>(),
+    std::move(callback_).Run(locale_, std::vector<mojom::LanguagePtr>(),
                              std::vector<mojom::LanguagePtr>());
     return;
   }
@@ -131,7 +131,7 @@ void LensOverlayLanguagesController::OnJsonParsed(
       RetrieveLanguagesFromResults(target_language_list);
 
   if (callback_) {
-    std::move(callback_).Run(std::move(source_languages),
+    std::move(callback_).Run(locale_, std::move(source_languages),
                              std::move(target_languages));
   }
 }
@@ -169,9 +169,9 @@ LensOverlayLanguagesController::InitializeURLLoader() {
       std::make_unique<network::ResourceRequest>();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-  const auto locale = g_browser_process->GetApplicationLocale();
-  const auto country = l10n_util::GetCountry(locale);
-  const auto language = l10n_util::GetLanguage(locale);
+  locale_ = g_browser_process->GetApplicationLocale();
+  const auto country = l10n_util::GetCountry(locale_);
+  const auto language = l10n_util::GetLanguage(locale_);
   resource_request->url = BuildTranslateLanguagesURL(country, language);
 
   google_apis::AddDefaultAPIKeyToRequest(*resource_request,

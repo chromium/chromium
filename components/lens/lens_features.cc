@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace lens::features {
@@ -331,6 +332,28 @@ constexpr base::FeatureParam<bool> kUseWebpageInteractionType{
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
     "https://translate-pa.googleapis.com/v1/supportedLanguages"};
+constexpr base::FeatureParam<std::string> kSupportedSourceTranslateLanguages{
+    &kLensOverlayTranslateLanguages, "supported-source-languages",
+    "aa,ab,ace,ach,af,ak,alz,am,ar,as,av,awa,ay,az,ba,ban,bbc,bci,be,bem,ber-"
+    "Latn,bew,bg,bho,bik,bm,bn,bo,br,bs,bts,btx,bua,ca,ce,ceb,cgg,ch,chk,chm,"
+    "ckb,cnh,co,crh,crs,cs,cv,cy,da,de,doi,dov,dyu,dz,ee,el,en,eo,es,et,eu,fa,"
+    "fa-AF,ff,fi,fj,fo,fon,fr,fur,fy,ga,gaa,gd,gl,gn,gom,gu,gv,ha,haw,hi,hil,"
+    "hmn,hr,hrx,ht,hu,hy,iba,id,ig,ilo,is,it,iw,ja,jam,jw,ka,kac,kek,kg,kha,kk,"
+    "kl,km,kn,ko,kr,kri,ktu,ku,kv,ky,la,lb,lg,li,lij,lmo,ln,lo,lt,ltg,luo,lus,"
+    "lv,mad,mai,mak,mam,mfe,mg,mh,mi,min,mk,ml,mn,mr,ms,ms-Arab,mt,mwr,my,ndc-"
+    "ZW,ne,new,nhe,nl,no,nr,nso,nus,ny,oc,om,or,os,pa,pa-Arab,pag,pam,pap,pl,"
+    "ps,pt,pt-PT,qu,rn,ro,rom,ru,rw,sa,sah,sat-Latn,scn,sd,se,sg,si,sk,sl,sm,"
+    "sn,so,sq,sr,ss,st,su,sus,sv,sw,szl,ta,tcy,te,tet,tg,th,ti,tiv,tk,tl,tn,to,"
+    "tpi,tr,trp,ts,tt,tum,ty,tyv,udm,ug,uk,ur,uz,ve,vec,vi,war,wo,xh,yi,yo,yua,"
+    "yue,zap,zh-CN,zh-TW,zu"};
+// To get the supported translate languages, we combine the source with these
+// additional languages.
+constexpr base::FeatureParam<std::string> kSupportedTargetTranslateLanguages{
+    &kLensOverlayTranslateLanguages, "supported-target-languages",
+    "bal,ber,bm-Nkoo,din,dv,mni-Mtei,shn"};
+constexpr base::FeatureParam<base::TimeDelta> kSupportedLanguagesCacheTimeoutMs{
+    &kLensOverlayTranslateLanguages, "supported-languages-cache-timeout-ms",
+    base::Days(30)};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -796,12 +819,28 @@ base::TimeDelta GetLensOverlaySurveyResultsTime() {
   return kLensOverlaySurveyResultsTime.Get();
 }
 
+bool IsLensOverlayTranslateLanguagesFetchEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayTranslateLanguages);
+}
+
 std::string GetLensOverlayTranslateEndpointURL() {
   return kTranslateEndpointUrl.Get();
 }
 
 bool ShowContextualSearchboxGhostLoader() {
   return kShowContextualSearchboxGhostLoader.Get();
+}
+
+std::string GetLensOverlayTranslateSourceLanguages() {
+  return kSupportedSourceTranslateLanguages.Get();
+}
+
+std::string GetLensOverlayTranslateTargetLanguages() {
+  return kSupportedTargetTranslateLanguages.Get();
+}
+
+base::TimeDelta GetLensOverlaySupportedLanguagesCacheTimeoutMs() {
+  return kSupportedLanguagesCacheTimeoutMs.Get();
 }
 
 }  // namespace lens::features

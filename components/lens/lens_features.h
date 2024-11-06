@@ -635,13 +635,32 @@ extern bool IsLensOverlayEarlyInteractionOptimizationEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern base::TimeDelta GetLensOverlaySurveyResultsTime();
 
-// Time delay for the results trigger of the Lens Overlay HaTS survey.
+// Whether to enable a fetch to get the list of languages supported by the Lens
+// server.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayTranslateLanguagesFetchEnabled();
+
+// The translate endpoint URL for fetching supported languages.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayTranslateEndpointURL();
 
 // Returns whether to show the ghost loader in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShowContextualSearchboxGhostLoader();
+
+// The list of source languages supported by Lens.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayTranslateSourceLanguages();
+
+// The list of additional target translate languages supported by Lens. To get
+// the full list of supported target languages, we add this value to the list of
+// source languages supported by Lens.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayTranslateTargetLanguages();
+
+// The timeout for resetting the cache of supported languages in the WebUI.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern base::TimeDelta GetLensOverlaySupportedLanguagesCacheTimeoutMs();
 
 }  // namespace lens::features
 

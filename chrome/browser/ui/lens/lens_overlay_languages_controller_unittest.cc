@@ -83,14 +83,17 @@ TEST_F(LensOverlayLanguagesControllerTest,
        SendGetSupportedLanguagesRequest_SuccessfulResponse) {
   auto languages_controller =
       std::make_unique<LensOverlayLanguagesController>(profile());
+  std::string locale;
   std::vector<mojom::LanguagePtr> sent_source_languages;
   std::vector<mojom::LanguagePtr> sent_target_languages;
 
   base::RunLoop run_loop;
   languages_controller->SendGetSupportedLanguagesRequest(
       base::BindLambdaForTesting(
-          [&](std::vector<mojom::LanguagePtr> source_languages,
+          [&](const std::string& browser_locale,
+              std::vector<mojom::LanguagePtr> source_languages,
               std::vector<mojom::LanguagePtr> target_languages) {
+            locale = browser_locale;
             sent_source_languages = std::move(source_languages);
             sent_target_languages = std::move(target_languages);
             run_loop.Quit();
@@ -98,6 +101,8 @@ TEST_F(LensOverlayLanguagesControllerTest,
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       BuildTranslateLanguagesURL("US", "en").spec(), kExampleJsonResponse);
   run_loop.Run();
+
+  EXPECT_EQ(locale, "en-US");
 
   EXPECT_EQ(sent_source_languages.size(), 2UL);
   const auto& detect_language = sent_source_languages.at(0);
@@ -120,14 +125,17 @@ TEST_F(LensOverlayLanguagesControllerTest,
        SendGetSupportedLanguagesRequest_RequestTimeOut) {
   auto languages_controller =
       std::make_unique<LensOverlayLanguagesController>(profile());
+  std::string locale;
   std::vector<mojom::LanguagePtr> sent_source_languages;
   std::vector<mojom::LanguagePtr> sent_target_languages;
 
   base::RunLoop run_loop;
   languages_controller->SendGetSupportedLanguagesRequest(
       base::BindLambdaForTesting(
-          [&](std::vector<mojom::LanguagePtr> source_languages,
+          [&](const std::string& browser_locale,
+              std::vector<mojom::LanguagePtr> source_languages,
               std::vector<mojom::LanguagePtr> target_languages) {
+            locale = browser_locale;
             sent_source_languages = std::move(source_languages);
             sent_target_languages = std::move(target_languages);
             run_loop.Quit();
@@ -137,6 +145,7 @@ TEST_F(LensOverlayLanguagesControllerTest,
       net::HTTP_REQUEST_TIMEOUT);
   run_loop.Run();
 
+  EXPECT_EQ(locale, "en-US");
   EXPECT_EQ(sent_source_languages.size(), 0UL);
   EXPECT_EQ(sent_target_languages.size(), 0UL);
 }
@@ -145,14 +154,17 @@ TEST_F(LensOverlayLanguagesControllerTest,
        SendGetSupportedLanguagesRequest_EmptyResponse) {
   auto languages_controller =
       std::make_unique<LensOverlayLanguagesController>(profile());
+  std::string locale;
   std::vector<mojom::LanguagePtr> sent_source_languages;
   std::vector<mojom::LanguagePtr> sent_target_languages;
 
   base::RunLoop run_loop;
   languages_controller->SendGetSupportedLanguagesRequest(
       base::BindLambdaForTesting(
-          [&](std::vector<mojom::LanguagePtr> source_languages,
+          [&](const std::string& browser_locale,
+              std::vector<mojom::LanguagePtr> source_languages,
               std::vector<mojom::LanguagePtr> target_languages) {
+            locale = browser_locale;
             sent_source_languages = std::move(source_languages);
             sent_target_languages = std::move(target_languages);
             run_loop.Quit();
@@ -161,6 +173,7 @@ TEST_F(LensOverlayLanguagesControllerTest,
       BuildTranslateLanguagesURL("US", "en").spec(), "");
   run_loop.Run();
 
+  EXPECT_EQ(locale, "en-US");
   EXPECT_EQ(sent_source_languages.size(), 0UL);
   EXPECT_EQ(sent_target_languages.size(), 0UL);
 }
@@ -169,14 +182,17 @@ TEST_F(LensOverlayLanguagesControllerTest,
        SendGetSupportedLanguagesRequest_IncorrectResponse) {
   auto languages_controller =
       std::make_unique<LensOverlayLanguagesController>(profile());
+  std::string locale;
   std::vector<mojom::LanguagePtr> sent_source_languages;
   std::vector<mojom::LanguagePtr> sent_target_languages;
 
   base::RunLoop run_loop;
   languages_controller->SendGetSupportedLanguagesRequest(
       base::BindLambdaForTesting(
-          [&](std::vector<mojom::LanguagePtr> source_languages,
+          [&](const std::string& browser_locale,
+              std::vector<mojom::LanguagePtr> source_languages,
               std::vector<mojom::LanguagePtr> target_languages) {
+            locale = browser_locale;
             sent_source_languages = std::move(source_languages);
             sent_target_languages = std::move(target_languages);
             run_loop.Quit();
@@ -186,6 +202,7 @@ TEST_F(LensOverlayLanguagesControllerTest,
       kExampleIncorrectJsonResponse);
   run_loop.Run();
 
+  EXPECT_EQ(locale, "en-US");
   EXPECT_EQ(sent_source_languages.size(), 0UL);
   EXPECT_EQ(sent_target_languages.size(), 0UL);
 }
