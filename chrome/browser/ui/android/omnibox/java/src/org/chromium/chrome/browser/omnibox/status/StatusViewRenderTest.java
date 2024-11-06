@@ -155,6 +155,12 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
         runOnUiThreadBlocking(
                 () -> {
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
+                            R.drawable.status_view_ripple);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
@@ -179,6 +185,12 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                             new PermissionIconResource(locationIcon, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
+                            R.drawable.status_view_ripple);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });
@@ -200,6 +212,12 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                             new PermissionIconResource(storeIconDrawable, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
+                            R.drawable.status_view_ripple);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });
