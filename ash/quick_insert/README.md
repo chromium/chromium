@@ -12,4 +12,4 @@ leaving the input field.
 * `views/`: The UI related code.
 * `metrics/`: Code for recording metrics.
 * `QuickInsertController`: Controls the visibility of the Picker.
-* `PickerClient`: Used by `QuickInsertController` to talk to the browser.
+* `QuickInsertClient`: Used by `QuickInsertController` to talk to the browser.

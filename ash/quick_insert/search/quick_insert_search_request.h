@@ -27,7 +27,7 @@
 
 namespace ash {
 
-class PickerClient;
+class QuickInsertClient;
 class PickerClipboardHistoryProvider;
 
 // Represents a single Picker search query. Constructing this class starts a
@@ -47,7 +47,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
       std::optional<QuickInsertCategory> category,
       SearchResultsCallback callback,
       DoneCallback done_callback,
-      PickerClient* client,
+      QuickInsertClient* client,
       base::span<const QuickInsertCategory> available_categories = {},
       bool caps_lock_state_to_search = false,
       bool search_case_transforms = false);
@@ -87,7 +87,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
   void MaybeCallDoneClosure();
 
   bool is_category_specific_search_;
-  const raw_ref<PickerClient> client_;
+  const raw_ref<QuickInsertClient> client_;
 
   std::unique_ptr<PickerClipboardHistoryProvider> clipboard_provider_;
 

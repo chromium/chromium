@@ -44,9 +44,9 @@ namespace user_manager {
 class User;
 }
 
-// Implements the PickerClient used by Ash.
+// Implements the QuickInsertClient used by Ash.
 class QuickInsertClientImpl
-    : public ash::PickerClient,
+    : public ash::QuickInsertClient,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
   // Sets this instance as the client of `controller`.
@@ -58,7 +58,7 @@ class QuickInsertClientImpl
   QuickInsertClientImpl& operator=(const QuickInsertClientImpl&) = delete;
   ~QuickInsertClientImpl() override;
 
-  // ash::PickerClient:
+  // ash::QuickInsertClient:
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   void StartCrosSearch(const std::u16string& query,

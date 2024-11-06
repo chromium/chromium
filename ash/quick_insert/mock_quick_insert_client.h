@@ -21,10 +21,10 @@ namespace ash {
 
 struct PickerWebPasteTarget;
 
-class ASH_EXPORT MockPickerClient : public PickerClient {
+class ASH_EXPORT MockQuickInsertClient : public QuickInsertClient {
  public:
-  MockPickerClient();
-  ~MockPickerClient() override;
+  MockQuickInsertClient();
+  ~MockQuickInsertClient() override;
 
   MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
               GetSharedURLLoaderFactory,

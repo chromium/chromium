@@ -6,8 +6,8 @@
 
 namespace ash {
 
-MockPickerClient::~MockPickerClient() = default;
+MockQuickInsertClient::~MockQuickInsertClient() = default;
 
-MockPickerClient::MockPickerClient() = default;
+MockQuickInsertClient::MockQuickInsertClient() = default;
 
 }  // namespace ash

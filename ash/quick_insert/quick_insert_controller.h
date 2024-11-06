@@ -56,7 +56,7 @@ class SharedURLLoaderFactory;
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerClient;
+class QuickInsertClient;
 class QuickInsertModel;
 class PickerPasteRequest;
 class PickerActionOnNextFocusRequest;
@@ -94,7 +94,7 @@ class ASH_EXPORT QuickInsertController : public PickerViewDelegate,
   // class, or until AFTER `SetClient` is called with a different client.
   // Caution: If `client` outlives this class, the client should avoid calling
   // this method on a destructed class instance to avoid a use after free.
-  void SetClient(PickerClient* client);
+  void SetClient(QuickInsertClient* client);
 
   // This should be run when the Prefs from the client is ready.
   void OnClientPrefsSet(PrefService* prefs);
@@ -208,7 +208,7 @@ class ASH_EXPORT QuickInsertController : public PickerViewDelegate,
   PickerSuggestionsController suggestions_controller_;
   PickerSearchController search_controller_;
 
-  raw_ptr<PickerClient> client_ = nullptr;
+  raw_ptr<QuickInsertClient> client_ = nullptr;
 
   base::OnceCallback<void(std::optional<std::string> preset_query_id,
                           std::optional<std::string> freeform_text)>

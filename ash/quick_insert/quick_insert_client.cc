@@ -6,8 +6,8 @@
 
 namespace ash {
 
-PickerClient::PickerClient() = default;
+QuickInsertClient::QuickInsertClient() = default;
 
-PickerClient::~PickerClient() = default;
+QuickInsertClient::~QuickInsertClient() = default;
 
 }  // namespace ash

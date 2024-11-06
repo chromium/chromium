@@ -27,7 +27,7 @@ class PrefService;
 
 namespace ash {
 
-class PickerClient;
+class QuickInsertClient;
 
 class ASH_EXPORT PickerSearchController {
  public:
@@ -44,7 +44,7 @@ class ASH_EXPORT PickerSearchController {
 
   // `client` must remain valid until `StopSearch` is called or until this
   // object is destroyed.
-  void StartSearch(PickerClient* client,
+  void StartSearch(QuickInsertClient* client,
                    std::u16string_view query,
                    std::optional<QuickInsertCategory> category,
                    base::span<const QuickInsertCategory> available_categories,

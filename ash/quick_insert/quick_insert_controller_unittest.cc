@@ -151,13 +151,13 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
   MOCK_METHOD(void, OpenFile, (const base::FilePath& file_path), (override));
 };
 
-// A PickerClient implementation used for testing.
+// A QuickInsertClient implementation used for testing.
 // Automatically sets itself as the client when it's created, and unsets itself
 // when it's destroyed.
-class TestPickerClient : public MockPickerClient {
+class TestQuickInsertClient : public MockQuickInsertClient {
  public:
-  TestPickerClient(QuickInsertController* controller,
-                   sync_preferences::TestingPrefServiceSyncable* prefs)
+  TestQuickInsertClient(QuickInsertController* controller,
+                        sync_preferences::TestingPrefServiceSyncable* prefs)
       : controller_(controller), prefs_(prefs) {
     controller_->SetClient(this);
     // Set default behaviours. These can be overridden with `WillOnce` and
@@ -167,7 +167,7 @@ class TestPickerClient : public MockPickerClient {
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>);
     ON_CALL(*this, GetPrefs).WillByDefault(Return(prefs_));
   }
-  ~TestPickerClient() override { controller_->SetClient(nullptr); }
+  ~TestQuickInsertClient() override { controller_->SetClient(nullptr); }
 
   PrefRegistrySimple* registry() { return prefs_->registry(); }
 
@@ -184,8 +184,8 @@ class QuickInsertControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     controller_ = std::make_unique<QuickInsertController>();
-    client_ = std::make_unique<NiceMock<TestPickerClient>>(controller_.get(),
-                                                           &prefs_);
+    client_ = std::make_unique<NiceMock<TestQuickInsertClient>>(
+        controller_.get(), &prefs_);
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
     PickerSessionMetrics::RegisterProfilePrefs(prefs_.registry());
     metrics_recorder_ =
@@ -206,7 +206,7 @@ class QuickInsertControllerTest : public AshTestBase {
 
   QuickInsertController& controller() { return *controller_; }
 
-  NiceMock<TestPickerClient>& client() { return *client_; }
+  NiceMock<TestQuickInsertClient>& client() { return *client_; }
 
   sync_preferences::TestingPrefServiceSyncable& prefs() { return prefs_; }
 
@@ -218,7 +218,7 @@ class QuickInsertControllerTest : public AshTestBase {
   MockNewWindowDelegate new_window_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<QuickInsertController> controller_;
-  std::unique_ptr<NiceMock<TestPickerClient>> client_;
+  std::unique_ptr<NiceMock<TestQuickInsertClient>> client_;
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
       metrics_recorder_;
 };
@@ -853,10 +853,11 @@ TEST_F(QuickInsertControllerTest,
        GetResultsForCategoryReturnsEmptyForEmptyResults) {
   base::test::TestFuture<std::vector<QuickInsertSearchResultsSection>> future;
   EXPECT_CALL(client(), GetSuggestedLinkResults)
-      .WillRepeatedly([](size_t max_results,
-                         TestPickerClient::SuggestedLinksCallback callback) {
-        std::move(callback).Run({});
-      });
+      .WillRepeatedly(
+          [](size_t max_results,
+             TestQuickInsertClient::SuggestedLinksCallback callback) {
+            std::move(callback).Run({});
+          });
 
   controller().ToggleWidget();
   controller().GetResultsForCategory(QuickInsertCategory::kLinks,
