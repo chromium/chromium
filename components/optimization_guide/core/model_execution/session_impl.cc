@@ -30,7 +30,6 @@
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
-#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
@@ -296,11 +295,9 @@ void SessionImpl::Score(const std::string& text,
     std::move(callback).Run(std::nullopt);
     return;
   }
-  on_device_state_->session->Score(
-      text,
-      base::BindOnce([](float score) { return std::optional<float>(score); })
-          .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                            std::nullopt)));
+  on_device_state_->session->Score(text, base::BindOnce([](float score) {
+                                           return std::optional<float>(score);
+                                         }).Then(std::move(callback)));
 }
 
 void SessionImpl::ExecuteModel(
@@ -781,8 +778,8 @@ void SessionImpl::SendSuccessCompletionCallback(
                          success_response_metadata);
     on_device_state_->MutableLoggedResponse()->set_status(
         proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
-    log_entry =
-        std::make_unique<ModelQualityLogEntry>(model_quality_uploader_service_);
+    log_entry = std::make_unique<ModelQualityLogEntry>(
+        model_quality_uploader_service_);
     log_entry->log_ai_data_request()->MergeFrom(
         *on_device_state_->log_ai_data_request);
     std::string model_execution_id = GenerateExecutionId();
@@ -981,16 +978,13 @@ SessionImpl::ExecuteModelHistogramLogger::~ExecuteModelHistogramLogger() {
 void SessionImpl::GetSizeInTokens(
     const std::string& text,
     OptimizationGuideModelSizeInTokenCallback callback) {
-  // TODO(crbug.com/377539962): Return nullopt on error instead.
   if (!ShouldUseOnDeviceModel()) {
     std::move(callback).Run(0);
     return;
   }
   auto input = on_device_model::mojom::Input::New();
   input->pieces.push_back(text);
-  GetOrCreateSession().GetSizeInTokens(
-      std::move(input),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
+  GetOrCreateSession().GetSizeInTokens(std::move(input), std::move(callback));
 }
 
 void SessionImpl::GetExecutionInputSizeInTokens(
@@ -1019,7 +1013,6 @@ void SessionImpl::GetSizeInTokensInternal(
     const google::protobuf::MessageLite& request,
     OptimizationGuideModelSizeInTokenCallback callback,
     bool want_input_context) {
-  // TODO(crbug.com/377539962): Return nullopt on error instead.
   if (!ShouldUseOnDeviceModel()) {
     std::move(callback).Run(0);
     return;
@@ -1030,9 +1023,8 @@ void SessionImpl::GetSizeInTokensInternal(
     std::move(callback).Run(0);
     return;
   }
-  GetOrCreateSession().GetSizeInTokens(
-      std::move(input->input),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
+  GetOrCreateSession().GetSizeInTokens(std::move(input->input),
+                                       std::move(callback));
 }
 
 }  // namespace optimization_guide
