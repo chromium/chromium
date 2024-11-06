@@ -724,11 +724,6 @@ BASE_FEATURE(kEnableOAuthIpp,
              "EnableOAuthIpp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Kiosk UI in Login screen.
-BASE_FEATURE(kEnableKioskLoginScreen,
-             "EnableKioskLoginScreen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
 BASE_FEATURE(kEnableAllSystemWebApps,
@@ -4295,10 +4290,6 @@ bool AreOngoingProcessesEnabled() {
 
 bool IsOobeGaiaInfoScreenEnabled() {
   return base::FeatureList::IsEnabled(kOobeGaiaInfoScreen);
-}
-
-bool IsKioskLoginScreenEnabled() {
-  return base::FeatureList::IsEnabled(kEnableKioskLoginScreen);
 }
 
 bool IsOobeJellyEnabled() {

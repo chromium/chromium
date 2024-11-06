@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
@@ -189,8 +188,6 @@ class KioskSkuVisibilityTest : public LoginUIShelfVisibilityTest {
  public:
   KioskSkuVisibilityTest() {
     device_state_.set_skip_initial_policy_setup(true);
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableKioskLoginScreen);
   }
   ~KioskSkuVisibilityTest() override = default;
   KioskSkuVisibilityTest(const KioskSkuVisibilityTest&) = delete;
@@ -205,7 +202,6 @@ class KioskSkuVisibilityTest : public LoginUIShelfVisibilityTest {
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   policy::DevicePolicyCrosTestHelper policy_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that shelf buttons of Guest mode and Add user are shown, and kiosk

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -18,7 +17,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -112,8 +110,6 @@ class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
  public:
   EnterpriseManagedTest() {
     device_state_.set_skip_initial_policy_setup(true);
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kEnableKioskLoginScreen);
   }
   ~EnterpriseManagedTest() override = default;
   EnterpriseManagedTest(const EnterpriseManagedTest&) = delete;
@@ -129,7 +125,6 @@ class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   policy::DevicePolicyCrosTestHelper policy_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that the management device mode is indeed Kiosk Sku.
