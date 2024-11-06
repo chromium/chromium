@@ -354,6 +354,10 @@ OnTaskSessionManager::SystemWebAppLaunchHelper::~SystemWebAppLaunchHelper() =
 
 void OnTaskSessionManager::SystemWebAppLaunchHelper::LaunchBocaSWA() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (launch_in_progress_) {
+    // Another Boca SWA launch is in progress. Return.
+    return;
+  }
   launch_in_progress_ = true;
   system_web_app_manager_->LaunchSystemWebAppAsync(
       base::BindOnce(&SystemWebAppLaunchHelper::OnBocaSWALaunched,
