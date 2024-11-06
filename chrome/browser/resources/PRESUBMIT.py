@@ -144,7 +144,6 @@ def CheckNoNewJs(input_api, output_api):
     'chrome/browser/resources/hangout_services/',
     'chrome/browser/resources/image_editor/',
     'chrome/browser/resources/identity_scope_approval_dialog/',
-    'chrome/browser/resources/internals/lens/',
     'chrome/browser/resources/internals/notifications/',
     'chrome/browser/resources/internals/query_tiles/',
     'chrome/browser/resources/inspect/',

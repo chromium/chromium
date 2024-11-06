@@ -17,14 +17,8 @@ generate_grd("build_grd") {
     deps = [ "user_education:build_grdp" ]
     grdp_files = [ "$target_gen_dir/user_education/resources.grdp" ]
   } else {
-    deps = [
-      "lens:build_grdp",
-      "notifications:build_grdp",
-    ]
-    grdp_files = [
-      "$target_gen_dir/lens/resources.grdp",
-      "$target_gen_dir/notifications/resources.grdp",
-    ]
+    deps = [ "notifications:build_grdp" ]
+    grdp_files = [ "$target_gen_dir/notifications/resources.grdp" ]
   }
 }
 

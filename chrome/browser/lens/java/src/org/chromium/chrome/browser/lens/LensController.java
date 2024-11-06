@@ -104,25 +104,11 @@ public class LensController {
     // was designed to be only used in the Prime classification query.
     /**
      * Whether the Lens is enabled based on user signals.
+     *
      * @param lensQueryParams A wrapper object which contains params for the enablement check.
      * @return True if Lens is enabled.
      */
     public boolean isLensEnabled(@NonNull LensQueryParams lensQueryParams) {
         return mDelegate.isLensEnabled(lensQueryParams);
-    }
-
-    /** Enables lens debug mode for chrome://internals/lens. */
-    public void enableDebugMode() {
-        mDelegate.enableDebugMode();
-    }
-
-    /** Disables lens debug mode for chrome://internals/lens. */
-    public void disableDebugMode() {
-        mDelegate.disableDebugMode();
-    }
-
-    /** Gets debug data to populate chrome://internals/lens. */
-    public String[][] getDebugData() {
-        return mDelegate.getDebugData();
     }
 }
