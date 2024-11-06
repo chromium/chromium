@@ -48,13 +48,6 @@ source_set("memory_pressure") {
       "system_memory_pressure_evaluator_fuchsia.h",
     ]
   }
-
-  if (is_linux || is_chromeos_lacros) {
-    sources += [
-      "system_memory_pressure_evaluator_linux.cc",
-      "system_memory_pressure_evaluator_linux.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -86,10 +79,6 @@ source_set("unit_tests") {
   if (is_fuchsia) {
     deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp" ]
     sources += [ "system_memory_pressure_evaluator_fuchsia_unittest.cc" ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
-    sources += [ "system_memory_pressure_evaluator_linux_unittest.cc" ]
   }
 }
 
