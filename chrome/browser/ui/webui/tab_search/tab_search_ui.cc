@@ -153,6 +153,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"thumbsDown", IDS_TAB_ORGANIZATION_THUMBS_DOWN},
       {"thumbsUp", IDS_TAB_ORGANIZATION_THUMBS_UP},
       // Declutter UI strings
+      {"declutterCloseTabAriaLabel", IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL},
       {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
       {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},
       {"declutterTimestamp", IDS_DECLUTTER_TIMESTAMP},
@@ -161,6 +162,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"autoTabGroupsSelectorHeading", IDS_AUTO_TAB_GROUPS_SELECTOR_HEADING},
       {"autoTabGroupsSelectorSubheading",
        IDS_AUTO_TAB_GROUPS_SELECTOR_SUBHEADING},
+      {"backButtonAriaLabel", IDS_TAB_ORGANIZATION_BACK_BUTTON_ARIA_LABEL},
       {"declutterSelectorSubheading", IDS_DECLUTTER_SELECTOR_SUBHEADING},
   };
   source->AddLocalizedStrings(kStrings);

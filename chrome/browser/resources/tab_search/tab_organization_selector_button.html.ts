@@ -10,7 +10,7 @@ export function getHtml(this: TabOrganizationSelectorButtonElement) {
   // clang-format off
   return html`
 <!--_html_template_start_-->
-<cr-button ?disabled="${this.disabled}">
+<cr-button ?disabled="${this.disabled}" aria-label="${this.heading}">
   <div id="buttonContent">
     <div id="iconTextRow">
       <div id="prefixIcon">

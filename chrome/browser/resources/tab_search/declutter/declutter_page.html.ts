@@ -13,6 +13,7 @@ export function getHtml(this: DeclutterPageElement) {
       ${
       this.showBackButton ? html`
         <cr-icon-button
+            aria-label="${this.getBackButtonAriaLabel_()}"
             iron-icon="cr:arrow-back"
             @click="${this.onBackClick_}">
         </cr-icon-button>
@@ -37,6 +38,8 @@ export function getHtml(this: DeclutterPageElement) {
         <div id="staleTabList" class="tabList">
           ${this.staleTabDatas_.map((item, index) => html`
               <tab-search-item class="mwb-list-item" .data="${item}"
+                  close-button-aria-label=
+                      "${this.getCloseButtonAriaLabel_(item)}"
                   close-button-icon="tab-search:remove"
                   role="option"
                   data-index="${index}"

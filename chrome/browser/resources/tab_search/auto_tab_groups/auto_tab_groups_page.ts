@@ -396,6 +396,10 @@ export class AutoTabGroupsPageElement extends CrLitElement {
         return '';
     }
   }
+
+  protected getBackButtonAriaLabel_(): string {
+    return loadTimeData.getStringF('backButtonAriaLabel', this.getTitle_());
+  }
 }
 
 declare global {

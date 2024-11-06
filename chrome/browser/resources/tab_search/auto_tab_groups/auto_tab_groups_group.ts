@@ -251,6 +251,11 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     this.$.selector.select(-1);
   }
 
+  protected getCloseButtonAriaLabel_(tabData: TabData): string {
+    return loadTimeData.getStringF(
+        'tabOrganizationCloseTabAriaLabel', tabData.tab.title);
+  }
+
   protected onEditClick_() {
     this.showInput_ = true;
   }

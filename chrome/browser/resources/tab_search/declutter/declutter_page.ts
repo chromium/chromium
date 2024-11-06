@@ -149,6 +149,16 @@ export class DeclutterPageElement extends CrLitElement {
     }
   }
 
+  protected getBackButtonAriaLabel_(): string {
+    return loadTimeData.getStringF(
+        'backButtonAriaLabel', loadTimeData.getString('declutterTitle'));
+  }
+
+  protected getCloseButtonAriaLabel_(tabData: TabData): string {
+    return loadTimeData.getStringF(
+        'declutterCloseTabAriaLabel', tabData.tab.title);
+  }
+
   protected onBackClick_() {
     this.fire('back-click');
   }

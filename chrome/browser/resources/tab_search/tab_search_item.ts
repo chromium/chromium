@@ -64,6 +64,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
       buttonRipples_: {type: Boolean},
       inSuggestedGroup: {type: Boolean},
       hideUrl: {type: Boolean},
+      closeButtonAriaLabel: {type: String},
       closeButtonIcon: {type: String},
 
       compact: {
@@ -95,6 +96,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
   compact: boolean = false;
   hideUrl: boolean = false;
   closeButtonIcon: string = 'tab-search:close';
+  closeButtonAriaLabel: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -230,11 +232,10 @@ export class TabSearchItemElement extends TabSearchItemBase {
   }
 
   protected ariaLabelForButton_(): string {
-    const title = this.data.tab.title;
-    if (this.inSuggestedGroup) {
-      return loadTimeData.getStringF('tabOrganizationCloseTabAriaLabel', title);
+    if (this.closeButtonAriaLabel) {
+      return this.closeButtonAriaLabel;
     }
-    return `${loadTimeData.getString('closeTab')} ${title}`;
+    return `${loadTimeData.getString('closeTab')} ${this.data.tab.title}`;
   }
 
   protected tooltipForButton_(): string {

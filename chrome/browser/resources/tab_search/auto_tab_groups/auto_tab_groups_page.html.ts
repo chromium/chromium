@@ -18,6 +18,7 @@ export function getHtml(this: AutoTabGroupsPageElement) {
       ${
       this.showBackButton ? html`
         <cr-icon-button class="back-button"
+            aria-label="${this.getBackButtonAriaLabel_()}"
             iron-icon="cr:arrow-back"
             @click="${this.onBackClick_}">
         </cr-icon-button>
