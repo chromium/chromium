@@ -1442,6 +1442,24 @@
             ]
         }
     ],
+    "AutofillAiTeamfood": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAi"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillCreditCardUserPerceptionSurvey": [
         {
             "platforms": [
@@ -2357,24 +2375,6 @@
                     "enable_features": [
                         "AutofillOverwritePlaceholdersOnly",
                         "AutofillSkipPreFilledFields"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillPredictionImprovementsTeamfood": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPredictionImprovements"
                     ]
                 }
             ]
