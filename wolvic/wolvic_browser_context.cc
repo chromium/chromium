@@ -20,6 +20,7 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
@@ -61,10 +62,21 @@
 
 namespace wolvic {
 
-WolvicBrowserContext::WolvicBrowserContext(bool off_the_record)
-    : off_the_record_(off_the_record) {
+WolvicBrowserContext::WolvicBrowserContext(const base::FilePath& path,
+                                           bool off_the_record)
+      : off_the_record_(off_the_record),
+        path_(path) {
   LOG(ERROR) << "WolvicLifecycle WolvicBrowserContext()";
   InitWhileIOAllowed();
+
+  // TODO(jfernandez): I don't know whether we need the ProtoDatabaseProvide instance
+  // at all; we just need to call GetDefaultStoragePartition() once, so that the
+  // StoragePartition instance is created. This is done in //chrome when creatin the
+  // Profile instance.
+  auto proto_db_provider = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
+      path, /*is_in_memory=*/false);
+  GetDefaultStoragePartition()->SetProtoDatabaseProvider(std::move(proto_db_provider));
+
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
 
@@ -154,13 +166,7 @@ void WolvicBrowserContext::CreateFieldInfoManager() {
 }
 
 base::FilePath WolvicBrowserContext::GetPrefStorePath() {
-  // TODO(zvoit): Assign path based on profile
-  base::FilePath pref_store_path;
-  base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pref_store_path);
-  pref_store_path =
-      pref_store_path.Append(FILE_PATH_LITERAL("Default/Preferences"));
-
-  return pref_store_path;
+  return path_.AppendASCII(FILE_PATH_LITERAL("Preferences"));
 }
 
 void WolvicBrowserContext::CreateUserPrefService() {

@@ -4,6 +4,8 @@
 
 #include "wolvic/wolvic_main_parts.h"
 
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "net/android/network_change_notifier_factory_android.h"
@@ -12,6 +14,20 @@
 #include "wolvic/wolvic_browser_context.h"
 
 namespace wolvic {
+
+// TODO(jfernandez): Should define these constants in a separated file ?
+namespace wolvic {
+  const char kInitialProfile[] = "Default";
+}
+
+namespace {
+
+  static base::FilePath GetInitialProfileDir() {
+  base::FilePath profile_dir;
+  base::PathService::Get(base::DIR_ANDROID_APP_DATA, &profile_dir);
+  return profile_dir.AppendASCII(wolvic::kInitialProfile);
+  }
+}
 
 WolvicMainParts::WolvicMainParts() {}
 
@@ -28,8 +44,8 @@ int WolvicMainParts::PreMainMessageLoopRun() {
   // Required before profile creation).
   PreProfileInit();
 
-  set_browser_context(new WolvicBrowserContext(false));
-  set_off_the_record_browser_context(new WolvicBrowserContext(true));
+  set_browser_context(new WolvicBrowserContext(GetInitialProfileDir(), false));
+  set_off_the_record_browser_context(new WolvicBrowserContext(GetInitialProfileDir(), true));
   content::ShellDevToolsManagerDelegate::StartHttpHandler(
       browser_context_.get());
 

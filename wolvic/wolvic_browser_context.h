@@ -40,7 +40,7 @@ class WolvicBrowserContext : public content::BrowserContext,
  public:
   // If |delay_services_creation| is true, the owner is responsible for calling
   // CreateBrowserContextServices() for this BrowserContext.
-  WolvicBrowserContext(bool off_the_record);
+  WolvicBrowserContext(const base::FilePath& path, bool off_the_record);
 
   WolvicBrowserContext(const WolvicBrowserContext&) = delete;
   WolvicBrowserContext& operator=(const WolvicBrowserContext&) = delete;
