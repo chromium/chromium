@@ -542,9 +542,12 @@ bool CloudOpenTask::OpenOrMoveFiles() {
     }
   }
   cloud_open_metrics_->LogSourceVolume(source_volume);
-
+  std::string ext = file_urls_.front().path().Extension();
   if (cloud_provider_ == CloudProvider::kGoogleDrive &&
       PathIsOnDriveFS(profile_, file_urls_.front().path())) {
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << "Opening a " << ext << " file from Google Drive";
+
     // The files are on Drive already.
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     cloud_open_metrics_->LogTransferRequired(
@@ -555,6 +558,9 @@ bool CloudOpenTask::OpenOrMoveFiles() {
 
   if (cloud_provider_ == CloudProvider::kOneDrive &&
       source_volume == OfficeFilesSourceVolume::kMicrosoftOneDrive) {
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << "Opening a " << ext << " file from OneDrive";
+
     // The files are on OneDrive already, selected from ODFS.
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     cloud_open_metrics_->LogTransferRequired(
@@ -566,6 +572,9 @@ bool CloudOpenTask::OpenOrMoveFiles() {
   if (cloud_provider_ == CloudProvider::kOneDrive &&
       source_volume ==
           OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider) {
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << "Opening a " << ext << " file from Android OneDrive";
+
     // The files are on OneDrive already, selected from Android OneDrive.
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     cloud_open_metrics_->LogTransferRequired(
@@ -584,6 +593,13 @@ bool CloudOpenTask::OpenOrMoveFiles() {
         GetUploadType(profile_, file_urls_.front()) == UploadType::kCopy
             ? OfficeFilesTransferRequired::kCopy
             : OfficeFilesTransferRequired::kMove;
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << (operation == OfficeFilesTransferRequired::kCopy ? "Copy"
+                                                                     : "Mov")
+                 << "ing a " << ext << " file to "
+                 << (cloud_provider_ == CloudProvider::kGoogleDrive
+                         ? "Google Drive"
+                         : "OneDrive");
     transfer_required_ = operation;
     cloud_open_metrics_->LogTransferRequired(operation);
     return ConfirmMoveOrStartUpload();
@@ -1279,8 +1295,12 @@ void CloudOpenTask::OnSetupDialogComplete(const std::string& user_response) {
   } else if (user_response == kUserActionCancel) {
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);
     // Do nothing.
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << "Cancelled setup";
   } else if (!user_response.empty()) {
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kLocalFileTask);
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << "Chose local file task";
     LaunchLocalFileTask(user_response);
   } else {
     // Always map an empty user response to a Cancel user response. This can
@@ -1291,6 +1311,8 @@ void CloudOpenTask::OnSetupDialogComplete(const std::string& user_response) {
       LOG(ERROR) << "Empty user response not due to the files app closing";
     }
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << "Cancelled setup";
   }
 }
 
@@ -1338,6 +1360,8 @@ void CloudOpenTask::OnMoveConfirmationComplete(
              user_response == kUserActionCancelOneDrive) {
     cloud_open_metrics_->LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << "Cancelled move";
   } else if (!user_response.empty()) {
     LOG(ERROR) << "Unhandled response: " << user_response;
   } else {
@@ -1350,6 +1374,8 @@ void CloudOpenTask::OnMoveConfirmationComplete(
     }
     cloud_open_metrics_->LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
+    // Set as WARNING as INFO is not allowed.
+    LOG(WARNING) << "Cancelled move";
   }
 }
 
