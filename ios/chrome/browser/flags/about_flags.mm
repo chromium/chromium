@@ -1072,11 +1072,15 @@ const FeatureEntry::FeatureParam
     kSendTabIOSPushNotificationsWithMagicStackCard[] = {
         {send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
          "true"}};
+const FeatureEntry::FeatureParam kSendTabIOSPushNotificationsWithURLImage[] = {
+    {send_tab_to_self::kSendTabIOSPushNotificationsURLImageParam, "true"}};
 const FeatureEntry::FeatureVariation kSendTabIOSPushNotificationsVariations[] =
     {
         {"With Magic Stack Card",
          kSendTabIOSPushNotificationsWithMagicStackCard,
          std::size(kSendTabIOSPushNotificationsWithMagicStackCard), nullptr},
+        {"With URL Image", kSendTabIOSPushNotificationsWithURLImage,
+         std::size(kSendTabIOSPushNotificationsWithURLImage), nullptr},
 };
 
 const FeatureEntry::FeatureParam kSegmentedDefaultBrowserStatic[] = {

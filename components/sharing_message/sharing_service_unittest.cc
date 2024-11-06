@@ -333,8 +333,9 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
 }
 
 TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
-  scoped_features_.InitAndEnableFeature(
-      send_tab_to_self::kSendTabToSelfIOSPushNotifications);
+  scoped_features_.InitAndEnableFeatureWithParameters(
+      send_tab_to_self::kSendTabToSelfIOSPushNotifications,
+      {{send_tab_to_self::kSendTabIOSPushNotificationsURLImageParam, "true"}});
 
   const std::string title = "title";
   const std::string device_name = "device name";
