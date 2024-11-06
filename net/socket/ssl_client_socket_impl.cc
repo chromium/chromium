@@ -1385,17 +1385,24 @@ void SSLClientSocketImpl::DoPeek() {
     // requires that the max value sentinel be named |kMaxValue|, transform the
     // max-value sentinel into a one-past-the-end ("boundary") sentinel by
     // adding 1, in order to be able to use the three-parameter macro.
+    ssl_early_data_reason_t early_data_reason =
+        SSL_get_early_data_reason(ssl_.get());
     UMA_HISTOGRAM_ENUMERATION("Net.SSLHandshakeEarlyDataReason",
-                              SSL_get_early_data_reason(ssl_.get()),
+                              early_data_reason,
                               ssl_early_data_reason_max_value + 1);
     if (IsGoogleHost(host_and_port_.host())) {
       // Most Google hosts are known to implement 0-RTT, so this gives more
       // targeted metrics as we initially roll out client support. See
       // https://crbug.com/641225.
       UMA_HISTOGRAM_ENUMERATION("Net.SSLHandshakeEarlyDataReason.Google",
-                                SSL_get_early_data_reason(ssl_.get()),
+                                early_data_reason,
                                 ssl_early_data_reason_max_value + 1);
     }
+    net_log_.AddEvent(NetLogEventType::SSL_HANDSHAKE_EARLY_DATA_REASON, [&] {
+      base::Value::Dict dict;
+      dict.Set("early_data_reason", early_data_reason);
+      return dict;
+    });
 
     // On early data reject, clear early data on any other sessions in the
     // cache, so retries do not get stuck attempting 0-RTT. See
