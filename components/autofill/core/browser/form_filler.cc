@@ -830,9 +830,15 @@ void FormFiller::FillOrPreviewForm(
         return std::make_pair(field->global_id(),
                               field->Type().GetStorableType());
       });
-  std::erase_if(result_fields, [&skip_reasons](const FormFieldData& field) {
-    return !skip_reasons[field.global_id()].empty();
-  });
+  // Remove fields that won't be filled. This includes:
+  // - Fields that have a skip reason.
+  // - Fields that don't have a cached equivalent, because those fields don't
+  //   have skip reasons and yet won't be filled.
+  std::erase_if(result_fields,
+                [&skip_reasons, &form_structure](const FormFieldData& field) {
+                  return !skip_reasons[field.global_id()].empty() ||
+                         !form_structure->GetFieldById(field.global_id());
+                });
   base::flat_set<FieldGlobalId> safe_fields =
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
