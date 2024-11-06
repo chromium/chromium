@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -30,8 +29,7 @@ ChromeVoxHintDetector::ChromeVoxHintDetector(const base::TickClock* clock,
 ChromeVoxHintDetector::~ChromeVoxHintDetector() {}
 
 void ChromeVoxHintDetector::StartIdleDetection() {
-  if (!features::IsOobeChromeVoxHintEnabled() ||
-      switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {
+  if (switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {
     return;
   }
 

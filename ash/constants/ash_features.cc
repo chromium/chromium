@@ -734,11 +734,6 @@ BASE_FEATURE(kEnableOAuthIpp,
              "EnableOAuthIpp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the OOBE ChromeVox hint dialog and announcement feature.
-BASE_FEATURE(kEnableOobeChromeVoxHint,
-             "EnableOobeChromeVoxHint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Kiosk UI in Login screen.
 BASE_FEATURE(kEnableKioskLoginScreen,
              "EnableKioskLoginScreen",
@@ -4306,10 +4301,6 @@ bool IsNssDbClientCertsRollbackEnabled() {
 
 bool AreOngoingProcessesEnabled() {
   return base::FeatureList::IsEnabled(kOngoingProcesses);
-}
-
-bool IsOobeChromeVoxHintEnabled() {
-  return base::FeatureList::IsEnabled(kEnableOobeChromeVoxHint);
 }
 
 bool IsOobeGaiaInfoScreenEnabled() {
