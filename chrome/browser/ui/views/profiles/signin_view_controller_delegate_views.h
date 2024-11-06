@@ -125,7 +125,9 @@ class SigninViewControllerDelegateViews
       ui::mojom::ModalType dialog_modal_type,
       bool wait_for_size,
       bool should_show_close_button,
-      bool delete_profile_on_cancel = false);
+      bool delete_profile_on_cancel = false,
+      base::ScopedClosureRunner on_closed_callback =
+          base::ScopedClosureRunner());
   ~SigninViewControllerDelegateViews() override;
 
   // Creates a WebView for a dialog with the specified URL.
@@ -154,6 +156,7 @@ class SigninViewControllerDelegateViews
   const raw_ptr<Browser> browser_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
+  base::ScopedClosureRunner on_closed_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_SIGNIN_VIEW_CONTROLLER_DELEGATE_VIEWS_H_

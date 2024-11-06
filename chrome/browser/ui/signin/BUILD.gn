@@ -151,6 +151,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/webui/signin:test_support_ui",
       "//chrome/test:sync_integration_test_support",
       "//chrome/test:test_support_ui",

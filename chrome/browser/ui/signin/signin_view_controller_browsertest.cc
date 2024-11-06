@@ -8,8 +8,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
@@ -18,6 +20,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome_signout_confirmation_prompt.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -191,7 +195,8 @@ class SigninViewControllerBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kExplicitBrowserSigninUIOnDesktop,
-         switches::kImprovedSigninUIOnDesktop},
+         switches::kImprovedSigninUIOnDesktop,
+         features::kManagedProfileRequiredInterstitial},
         /*disabled_features=*/{});
   }
 
@@ -514,6 +519,42 @@ IN_PROC_BROWSER_TEST_F(
   browser()->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
       kTestExtensionName, future.GetCallback());
   EXPECT_TRUE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowModalManagedUserNoticeDialog) {
+  AccountInfo account_info;
+  account_info.email = "email@example.com";
+  base::MockCallback<signin::SigninChoiceCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+  browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info,
+          /*is_oidc_account=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
+  EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
+      browser()->profile()));
+  browser()->signin_view_controller()->CloseModalSignin();
+  EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
+      browser()->profile()));
+
+  browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info,
+          /*is_oidc_account=*/false,
+          /*profile_creation_required_by_policy=*/true,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
+  EXPECT_TRUE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
+      browser()->profile()));
+  browser()->signin_view_controller()->CloseModalSignin();
+  EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
+      browser()->profile()));
 }
 
 class SigninViewControllerBrowserCookieParamTest

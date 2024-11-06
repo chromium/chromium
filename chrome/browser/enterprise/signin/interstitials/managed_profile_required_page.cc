@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/enterprise/connectors/core/enterprise_interstitial_util.h"
@@ -88,9 +89,18 @@ void ManagedProfileRequiredPage::CommandReceived(const std::string& command) {
 
   switch (cmd) {
     case security_interstitials::CMD_DONT_PROCEED:
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      if (!ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
+              web_contents()->GetBrowserContext())) {
+        controller()->metrics_helper()->RecordUserDecision(
+            MetricsHelper::DONT_PROCEED);
+        controller()->Reload();
+      }
+#else
       controller()->metrics_helper()->RecordUserDecision(
           MetricsHelper::DONT_PROCEED);
-      controller()->GoBack();
+      controller()->Reload();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       break;
     case security_interstitials::CMD_PROCEED:
     case security_interstitials::CMD_OPEN_HELP_CENTER:

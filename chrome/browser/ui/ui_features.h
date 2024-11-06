@@ -265,6 +265,7 @@ BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingPolicies);
 BASE_DECLARE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel);
 BASE_DECLARE_FEATURE(kEnterpriseUpdatedProfileCreationScreen);
+BASE_DECLARE_FEATURE(kManagedProfileRequiredInterstitial);
 
 BASE_DECLARE_FEATURE(kWebUITabStrip);
 

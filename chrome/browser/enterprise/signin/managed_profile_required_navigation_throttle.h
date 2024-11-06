@@ -8,21 +8,23 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
-class DiceWebSigninInterceptor;
-
 namespace content {
+class BrowserContext;
 class NavigationHandle;
+class WebContents;
 }  // namespace content
 
 // This navigation throttle will show an interstitial on a page where an
 // an enterprise signin interception where a managed profile is required by
 // policy occurs.
-// The navigation is canceled and an interstitial is shown when the WebContents
-// of the navigation is the same as the one of DiceWebSigninInterceptor and the
-// current interception time is an forced enterprise interception.
+// After a call to `BlockNavigationUntilEnterpriseActionTaken`, a `BlockingInfo`
+// user data is set on the browser context. All navigations happening on
+// WebContents from the specified BrowserContext are blocked, unless that
+// WebContent is specifically allowed in the `BlockingInfo`.
 class ManagedProfileRequiredNavigationThrottle
     : public content::NavigationThrottle {
  public:
@@ -32,9 +34,8 @@ class ManagedProfileRequiredNavigationThrottle
   static std::unique_ptr<ManagedProfileRequiredNavigationThrottle>
   MaybeCreateThrottleFor(content::NavigationHandle* navigation_handle);
 
-  ManagedProfileRequiredNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
-      DiceWebSigninInterceptor* signin_interceptor);
+  explicit ManagedProfileRequiredNavigationThrottle(
+      content::NavigationHandle* navigation_handle);
 
   ManagedProfileRequiredNavigationThrottle(
       const ManagedProfileRequiredNavigationThrottle&) = delete;
@@ -48,9 +49,19 @@ class ManagedProfileRequiredNavigationThrottle
   ThrottleCheckResult WillFailRequest() override;
   const char* GetNameForLogging() override;
 
+  static bool IsBlockingNavigations(content::BrowserContext* browser_context);
+
+  // Blocks all navigations in the specified `browser_context` except for
+  // `allowed_web_contents` if set. This returns a callback that re-allows
+  // navigations. The callback must be run when appropriate to re-enable
+  // navigation on the `browser_context`.
+  [[nodiscard]] static base::ScopedClosureRunner
+  BlockNavigationUntilEnterpriseActionTaken(
+      content::BrowserContext* browser_context,
+      content::WebContents* allowed_web_contents = nullptr);
+
  private:
   ThrottleCheckResult ProcessThrottleEvent();
-  raw_ptr<DiceWebSigninInterceptor> signin_interceptor_;
   base::WeakPtrFactory<ManagedProfileRequiredNavigationThrottle>
       weak_ptr_factory_{this};
 };
