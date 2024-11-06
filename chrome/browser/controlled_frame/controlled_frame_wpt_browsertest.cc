@@ -28,6 +28,7 @@ namespace controlled_frame {
 namespace {
 const auto kTestFiles = testing::Values("add_content_scripts.window.js",
                                         "camera.window.js",
+                                        "client_hints_user_agent.window.js",
                                         "geolocation.window.js",
                                         "new_window.window.js",
                                         "no_callback.window.js",

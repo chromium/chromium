@@ -79,6 +79,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/menus/simple_menu_model.h"
@@ -782,17 +783,49 @@ void WebViewGuest::Reload() {
   GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
-void WebViewGuest::SetUserAgentOverride(
-    const std::string& user_agent_override) {
-  is_overriding_user_agent_ = !user_agent_override.empty();
-  if (is_overriding_user_agent_) {
+void WebViewGuest::SetUserAgentOverride(const std::string& ua_string_override) {
+  bool is_overriding_ua_string = !ua_string_override.empty();
+  if (is_overriding_ua_string) {
     base::RecordAction(UserMetricsAction("WebView.Guest.OverrideUA"));
   }
+
+  std::optional<blink::UserAgentOverride> default_user_agent_override =
+      web_view_guest_delegate_
+          ? web_view_guest_delegate_->GetDefaultUserAgentOverride()
+          : std::nullopt;
+
+  is_overriding_user_agent_ =
+      is_overriding_ua_string || default_user_agent_override.has_value();
+
+  // `ua_string_override` may change the "User-Agent" header. 2 possible cases
+  // for `ua_string_override`:
+  // - Non-empty string "abc" (i.e. app is setting a special user-agent).
+  // - Empty string "" (i.e. app is not overriding user-agent or app is revoking
+  // a special user-agent).
+
+  // `default_user_agent_override` may change the "User-Agent" header and the
+  // client hints user agent headers(i.e. Sec-CH-UA*). 2 possible cases for
+  // `default_user_agent_override`:
+  // - nullopt (i.e. guest does not have a special override).
+  // - non-null (i.e. guest has a special override).
+  //   - If `default_user_agent_override` has value, then the
+  //   `ua_string_override` string within must also be non-empty.
+
+  if (default_user_agent_override.has_value()) {
+    CHECK(!default_user_agent_override.value().ua_string_override.empty());
+    if (is_overriding_ua_string) {
+      default_user_agent_override.value().ua_string_override =
+          ua_string_override;
+    }
+  }
+
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     NOTIMPLEMENTED();
   } else {
     web_contents()->SetUserAgentOverride(
-        blink::UserAgentOverride::UserAgentOnly(user_agent_override), false);
+        default_user_agent_override.value_or(
+            blink::UserAgentOverride::UserAgentOnly(ua_string_override)),
+        false);
   }
 }
 
@@ -1008,14 +1041,19 @@ void WebViewGuest::UserAgentOverrideSet(
     const blink::UserAgentOverride& ua_override) {
   content::NavigationController& controller = GetController();
   content::NavigationEntry* entry = controller.GetVisibleEntry();
+  if (!entry) {
+    return;
+  }
+  entry->SetIsOverridingUserAgent(!ua_override.ua_string_override.empty());
+
   // If we're on the initial NavigationEntry and no navigation had committed,
   // return early. This preserves legacy behavior when the initial
   // NavigationEntry used to not exist (which might still happen if the
   // InitialNavigationEntry is disabled).
-  if (!entry || controller.IsInitialNavigation())
+  if (controller.IsInitialNavigation()) {
     return;
-  entry->SetIsOverridingUserAgent(!ua_override.ua_string_override.empty());
-  GetController().Reload(content::ReloadType::NORMAL, false);
+  }
+  controller.Reload(content::ReloadType::NORMAL, false);
 }
 
 void WebViewGuest::FrameNameChanged(RenderFrameHost* render_frame_host,

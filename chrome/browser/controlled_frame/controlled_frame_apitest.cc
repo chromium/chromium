@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -1245,6 +1247,102 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityTest, Verify) {
     EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundCode(app_frame));
     EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
   }
+}
+
+class ControlledFrameRequestHeaderTest : public ControlledFrameTestBase {
+ public:
+  [[nodiscard]] bool CreateControlledFrameWithUserAgent(
+      content::RenderFrameHost* frame,
+      const GURL& src,
+      std::string user_agent) {
+    const std::string kCreateControlledFrame = R"(
+new Promise((resolve, reject) => {
+  const controlledframe = document.createElement('controlledframe');
+  if (!('src' in controlledframe)) {
+    // Tag is undefined or generates a malformed response.
+    reject('FAIL');
+    return;
+  }
+  controlledframe.setAttribute('src', $1);
+  controlledframe.setUserAgentOverride($2);
+  controlledframe.addEventListener('loadstop', resolve);
+  controlledframe.addEventListener('loadabort', reject);
+  document.body.appendChild(controlledframe);
+});
+    )";
+    return ExecJs(frame,
+                  content::JsReplace(kCreateControlledFrame, src, user_agent));
+  }
+
+  bool RemoveUserAgentAndReload(content::RenderFrameHost* frame) {
+    const std::string kRemoveUserAgentAndReload = R"(
+new Promise((resolve, reject) => {
+  const controlledframe = document.getElementsByTagName('controlledframe')[0];
+  if (!('src' in controlledframe)) {
+    reject('FAIL');
+    return;
+  }
+  controlledframe.addEventListener('loadstop', resolve);
+  controlledframe.addEventListener('loadabort', reject);
+  // |setUserAgentOverride| should automatically reload
+  controlledframe.setUserAgentOverride('');
+});
+    )";
+    return ExecJs(frame, kRemoveUserAgentAndReload);
+  }
+
+  void VerifyRequest(const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/index.html") {
+      return;
+    }
+    last_seen_ua_ = request.headers.at("User-Agent");
+    EXPECT_THAT(request.headers.at("Sec-CH-UA"),
+                testing::HasSubstr("ControlledFrame"));
+  }
+
+  const std::string& last_seen_ua() const { return last_seen_ua_; }
+
+ private:
+  std::string last_seen_ua_;
+};
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
+                       HasDefaultClientHintsUABrandWithoutOverride) {
+  embedded_https_test_server().RegisterRequestMonitor(
+      base::BindRepeating(&ControlledFrameRequestHeaderTest::VerifyRequest,
+                          base::Unretained(this)));
+  StartContentServer("web_apps/simple_isolated_app");
+
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  EXPECT_EQ(last_seen_ua(), embedder_support::GetUserAgent());
+}
+
+// First sets the "User-Agent" override to a custom value, verifies that the
+// custom value is received in the request header. Then sets override to an
+// empty string, and verifies the default UA is used.
+IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
+                       HasDefaultClientHintsUABrandWithOverride) {
+  embedded_https_test_server().RegisterRequestMonitor(
+      base::BindRepeating(&ControlledFrameRequestHeaderTest::VerifyRequest,
+                          base::Unretained(this)));
+
+  StartContentServer("web_apps/simple_isolated_app");
+
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrameWithUserAgent(
+      app_frame, embedded_https_test_server().GetURL("/index.html"), "foobar"));
+  EXPECT_EQ(last_seen_ua(), "foobar");
+
+  ASSERT_TRUE(RemoveUserAgentAndReload(app_frame));
+  EXPECT_EQ(last_seen_ua(), embedder_support::GetUserAgent());
 }
 
 }  // namespace controlled_frame

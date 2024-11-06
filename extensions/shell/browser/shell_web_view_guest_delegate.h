@@ -5,9 +5,15 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_WEB_VIEW_GUEST_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_WEB_VIEW_GUEST_DELEGATE_H_
 
+#include <optional>
+
 #include "extensions/browser/guest_view/web_view/web_view_guest_delegate.h"
 
 class GURL;
+
+namespace blink {
+struct UserAgentOverride;
+}  // namespace blink
 
 namespace extensions {
 
@@ -26,6 +32,8 @@ class ShellWebViewGuestDelegate : public WebViewGuestDelegate {
                          const content::ContextMenuParams& params) override;
   void OnShowContextMenu(int request_id) override;
   bool NavigateToURLShouldBlock(const GURL& url) override;
+  std::optional<blink::UserAgentOverride> GetDefaultUserAgentOverride()
+      override;
 };
 
 }  // namespace extensions

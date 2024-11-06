@@ -123,9 +123,12 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Reload the guest.
   void Reload();
 
-  // Overrides the user agent for this guest.
-  // This affects subsequent guest navigations.
-  void SetUserAgentOverride(const std::string& user_agent_override);
+  // Overrides the "User-Agent" header for this guest if `ua_string_override` is
+  // non-empty. This override is applied on top of the default
+  // `UserAgentOverride` of the guest, see
+  // `WebViewGuestDelegate::GetDefaultUserAgentOverride`. This affects
+  // subsequent guest navigations.
+  void SetUserAgentOverride(const std::string& ua_string_override);
 
   // Stop loading the guest.
   void Stop();

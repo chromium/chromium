@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GUEST_VIEW_WEB_VIEW_CHROME_WEB_VIEW_GUEST_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +16,10 @@
 
 class GURL;
 class RenderViewContextMenuBase;
+
+namespace blink {
+struct UserAgentOverride;
+}  // namespace blink
 
 namespace extensions {
 
@@ -33,6 +38,8 @@ class ChromeWebViewGuestDelegate : public WebViewGuestDelegate {
                          const content::ContextMenuParams& params) override;
   void OnShowContextMenu(int request_id) override;
   bool NavigateToURLShouldBlock(const GURL& url) override;
+  std::optional<blink::UserAgentOverride> GetDefaultUserAgentOverride()
+      override;
 
   WebViewGuest* web_view_guest() const { return web_view_guest_; }
 

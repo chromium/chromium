@@ -5,10 +5,16 @@
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_GUEST_DELEGATE_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_GUEST_DELEGATE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "components/guest_view/browser/guest_view_base.h"
 
 class GURL;
+
+namespace blink {
+struct UserAgentOverride;
+}  // namespace blink
 
 namespace content {
 class RenderFrameHost;
@@ -36,6 +42,11 @@ class WebViewGuestDelegate {
   // Called during `LoadURLWithParams` to check whether delegates have more
   // scheme blocks in place.
   virtual bool NavigateToURLShouldBlock(const GURL& url) = 0;
+
+  // Returns the default UserAgentOverride value for the guest, or null if the
+  // guest does not have a special default.
+  virtual std::optional<blink::UserAgentOverride>
+  GetDefaultUserAgentOverride() = 0;
 };
 
 }  // namespace extensions

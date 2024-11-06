@@ -5,9 +5,11 @@
 #include "chrome/browser/guest_view/web_view/chrome_web_view_guest_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "build/build_config.h"
+#include "chrome/browser/controlled_frame/controlled_frame_user_agent_util.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
@@ -119,6 +121,15 @@ bool ChromeWebViewGuestDelegate::NavigateToURLShouldBlock(const GURL& url) {
     }
   }
   return false;
+}
+
+std::optional<blink::UserAgentOverride>
+ChromeWebViewGuestDelegate::GetDefaultUserAgentOverride() {
+  // Controlled Frame has its own UserAgentOverride.
+  if (web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
+    return controlled_frame::GetDefaultControlledFrameUserAgentOverride();
+  }
+  return std::nullopt;
 }
 
 }  // namespace extensions
