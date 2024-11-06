@@ -120,7 +120,7 @@ export class ClientDelegateFactory {
             id: course.id,
             name: course.name,
             // TODO(b/356706279): Add section data.
-            section: 'default',
+            section: '',
           };
         });
       },

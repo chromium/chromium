@@ -271,8 +271,8 @@ suite('ClientDelegateTest', function() {
         const result = await clientDelegateImpl.getInstance().getCourseList();
         assertDeepEquals(
             [
-              {id: '1', name: 'course1', section: 'default'},
-              {id: '2', name: 'course2', section: 'default'},
+              {id: '1', name: 'course1', section: ''},
+              {id: '2', name: 'course2', section: ''},
             ],
             result);
       });
