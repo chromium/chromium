@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_AI_AI_CREATE_ON_DEVICE_SESSION_TASK_H_
 #define CHROME_BROWSER_AI_AI_CREATE_ON_DEVICE_SESSION_TASK_H_
 
+#include "base/state_transitions.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-forward.h"
 
-// A base class for tasks which create an on-device session. See the method
-// comment of `Run()` for the details.
+// A base class for tasks which create an on-device session.
 class CreateOnDeviceSessionTask
     : public AIContextBoundObject,
       public optimization_guide::OnDeviceModelAvailabilityObserver {
@@ -24,23 +24,13 @@ class CreateOnDeviceSessionTask
   CreateOnDeviceSessionTask& operator=(const CreateOnDeviceSessionTask&) =
       delete;
 
-  bool observing_availability() const { return observing_availability_; }
+  bool IsPending() const { return state_ == State::kPending; }
 
-  // Attempts to create an on-device session.
-  //
-  // * If `service_` is null, immediately calls `OnFinish()` with a nullptr,
-  //   indicating failure.
-  // * If creation succeeds, calls `OnFinish()` with the newly created session.
-  // * If creation fails:
-  //   * If the failure reason is in `kWaitableReasons` (indicating a
-  //     potentially temporary issue):
-  //     * Registers itself to observe model availability changes in `service_`.
-  //     * Waits until the `reason` is no longer in `kWaitableReasons`, then
-  //       retries session creation.
-  //     * Updates the `observing_availability_` to true.
-  //   * Otherwise (for non-recoverable errors), calls `OnFinish()` with a
-  //     nullptr.
-  void Run();
+  // Starts the process of creating an on-device model session.
+  // It may succeed or fail immediately, or it may move into the `kPending`
+  // state if it needs to wait for the on-device model availability changes.
+  // See `kWaitableReasons` for more details.
+  void Start();
 
  protected:
   // Cancels the creation task, and deletes itself.
@@ -55,6 +45,33 @@ class CreateOnDeviceSessionTask
       optimization_guide::SessionConfigParams* config_params) {}
 
  private:
+  // The state of `CreateOnDeviceSessionTask`.
+  // The possible transitions of state are:
+  // - kNotStarted -> kFinished
+  // - kNotStarted -> kPending
+  // - kPending -> kFinished
+  // - kPending -> kCancelled
+  enum class State {
+    // The task is created but not started yet.
+    kNotStarted,
+    // The task has started, but the on-device model is not readily available
+    // and is expected to be ready soon.
+    // When the task is in `kPending` state, it should be kept alive by the
+    // creator as it needs to keep observing the on-device model availability
+    // changes.
+    // See `kWaitableReasons` for more details.
+    kPending,
+    // The task is finished, but it's not guaranteed that the session has been
+    // created successfully.
+    kFinished,
+    // The task is cancelled before finishing.
+    kCancelled,
+  };
+  friend base::StateTransitions<State>;
+  friend std::ostream& operator<<(std::ostream& os, State state);
+
+  void SetState(State state);
+
   // `AIContextBoundObject` implementation.
   void SetDeletionCallback(base::OnceClosure deletion_callback) override;
 
@@ -66,16 +83,15 @@ class CreateOnDeviceSessionTask
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
   StartSession();
 
+  void Finish(
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session> session);
+
   OptimizationGuideKeyedService* GetOptimizationGuideService();
 
   const raw_ptr<content::BrowserContext> browser_context_;
   const optimization_guide::ModelBasedCapabilityKey feature_;
-  // The state indicates if the current `CreateOnDeviceSessionTask` is pending.
-  // It is set to true when the on-device model is not readily available, but
-  // it's expected to be ready soon. See `kWaitableReasons` for more details.
-  // If this is true, the `CreateOnDeviceSessionTas` should be kept alive as it
-  // needs to keep observing the on-device model availability.
-  bool observing_availability_ = false;
+  State state_ = CreateOnDeviceSessionTask::State::kNotStarted;
   base::OnceClosure deletion_callback_;
 };
 

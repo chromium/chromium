@@ -127,16 +127,17 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
           std::unique_ptr<
               optimization_guide::OptimizationGuideModelExecutor::Session>,
           mojo::PendingReceiver<ContextBoundObjectReceiverInterface>)>;
-  static void Start(content::BrowserContext* browser_context,
-                    optimization_guide::ModelBasedCapabilityKey feature,
-                    AIContextBoundObjectSet::ReceiverContext context,
-                    CreateOptionsPtrType options,
-                    mojo::PendingRemote<ClientRemoteInterface> client) {
+  static void CreateAndStart(
+      content::BrowserContext* browser_context,
+      optimization_guide::ModelBasedCapabilityKey feature,
+      AIContextBoundObjectSet::ReceiverContext context,
+      CreateOptionsPtrType options,
+      mojo::PendingRemote<ClientRemoteInterface> client) {
     auto task = std::make_unique<CreateContextBoundObjectTask>(
         base::PassKey<CreateContextBoundObjectTask>(), browser_context, feature,
         context, std::move(options), std::move(client));
-    task->Run();
-    if (task->observing_availability()) {
+    task->Start();
+    if (task->IsPending()) {
       // Put `task` to AIContextBoundObjectSet to continue observing the model
       // availability.
       AIContextBoundObjectSet::GetFromContext(context)->AddContextBoundObject(
@@ -238,13 +239,12 @@ void AIManagerKeyedService::CanCreateAssistant(
                    std::move(callback));
 }
 
-void AIManagerKeyedService::CreateAssistantInternal(
+std::unique_ptr<CreateAssistantOnDeviceSessionTask>
+AIManagerKeyedService::CreateAssistantInternal(
     const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
     AIContextBoundObjectSet& context_bound_object_set,
     base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
-    const std::optional<const AIAssistant::Context>& context,
-    const std::optional<AIContextBoundObjectSet::ReceiverContext>
-        receiver_context) {
+    const std::optional<const AIAssistant::Context>& context) {
   CHECK(browser_context_);
   auto task = std::make_unique<CreateAssistantOnDeviceSessionTask>(
       browser_context_.get(), sampling_params,
@@ -268,14 +268,8 @@ void AIManagerKeyedService::CreateAssistantInternal(
           },
           browser_context_->GetWeakPtr(), std::ref(context_bound_object_set),
           context, std::move(callback)));
-  task->Run();
-  if (task->observing_availability()) {
-    CHECK(receiver_context.has_value());
-    // Put `task` to AIContextBoundObjectSet to continue observing the model
-    // availability.
-    AIContextBoundObjectSet::GetFromContext(receiver_context.value())
-        ->AddContextBoundObject(std::move(task));
-  }
+  task->Start();
+  return task;
 }
 
 void AIManagerKeyedService::CreateAssistant(
@@ -338,12 +332,16 @@ void AIManagerKeyedService::CreateAssistant(
       std::move(client), std::ref(*context_bound_object_set),
       std::move(options));
 
-  // When creating a new assistant, the `context` will be set to `nullopt` since
-  // it should start fresh. The `receiver_context` needs to be provided to store
-  // the `CreateAssistantOnDeviceSessionTask` when it's pending.
-  CreateAssistantInternal(sampling_params, *context_bound_object_set,
-                          std::move(create_assistant_callback),
-                          /*context=*/std::nullopt, receiver_context);
+  // When creating a new assistant, the `context` will not be set since it
+  // should start fresh.
+  auto task = CreateAssistantInternal(sampling_params, *context_bound_object_set,
+                                      std::move(create_assistant_callback));
+  if (task->IsPending()) {
+    // Put `task` to AIContextBoundObjectSet to continue observing the model
+    // availability.
+    AIContextBoundObjectSet::GetFromContext(receiver_context)
+        ->AddContextBoundObject(std::move(task));
+  }
 }
 
 void AIManagerKeyedService::CanCreateSummarizer(
@@ -358,10 +356,10 @@ void AIManagerKeyedService::CreateSummarizer(
   CreateContextBoundObjectTask<AISummarizer, blink::mojom::AISummarizer,
                                blink::mojom::AIManagerCreateSummarizerClient,
                                blink::mojom::AISummarizerCreateOptionsPtr>::
-      Start(browser_context_,
-            optimization_guide::ModelBasedCapabilityKey::kSummarize,
-            receivers_.current_context(), std::move(options),
-            std::move(client));
+      CreateAndStart(browser_context_,
+                     optimization_guide::ModelBasedCapabilityKey::kSummarize,
+                     receivers_.current_context(), std::move(options),
+                     std::move(client));
 }
 
 void AIManagerKeyedService::GetModelInfo(GetModelInfoCallback callback) {
@@ -377,10 +375,10 @@ void AIManagerKeyedService::CreateWriter(
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
                                blink::mojom::AIManagerCreateWriterClient,
                                blink::mojom::AIWriterCreateOptionsPtr>::
-      Start(browser_context_,
-            optimization_guide::ModelBasedCapabilityKey::kCompose,
-            receivers_.current_context(), std::move(options),
-            std::move(client));
+      CreateAndStart(browser_context_,
+                     optimization_guide::ModelBasedCapabilityKey::kCompose,
+                     receivers_.current_context(), std::move(options),
+                     std::move(client));
 }
 
 void AIManagerKeyedService::CreateRewriter(
@@ -400,10 +398,10 @@ void AIManagerKeyedService::CreateRewriter(
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
                                blink::mojom::AIManagerCreateRewriterClient,
                                blink::mojom::AIRewriterCreateOptionsPtr>::
-      Start(browser_context_,
-            optimization_guide::ModelBasedCapabilityKey::kCompose,
-            receivers_.current_context(), std::move(options),
-            std::move(client));
+      CreateAndStart(browser_context_,
+                     optimization_guide::ModelBasedCapabilityKey::kCompose,
+                     receivers_.current_context(), std::move(options),
+                     std::move(client));
 }
 
 void AIManagerKeyedService::CanCreateSession(
@@ -477,14 +475,14 @@ void AIManagerKeyedService::CreateAssistantForCloning(
       },
       std::ref(context_bound_object_set), std::move(client_remote));
   // When cloning an existing assistant, the `context` from the source of clone
-  // should be provided. The `receiver_context` can be left as `std::nullopt`
-  // since the on-device model must be available before the existing assistant
-  // was created, so the `CreateAssistantOnDeviceSessionTask` should complete
-  // without the needs of being stored in the `receiver_context` and waiting for
-  // the on-device model availability changes.
-  CreateAssistantInternal(sampling_params, context_bound_object_set,
-                          std::move(create_assistant_callback), context,
-                          /*receiver_context=*/std::nullopt);
+  // should be provided.
+  auto task =
+      CreateAssistantInternal(sampling_params, context_bound_object_set,
+                              std::move(create_assistant_callback), context);
+  // The on-device model must be available before the existing assistant was
+  // created, so the `CreateAssistantOnDeviceSessionTask` should complete
+  // without waiting for the on-device model availability changes.
+  CHECK(!task->IsPending());
 }
 
 void AIManagerKeyedService::OnModelPathValidationComplete(
