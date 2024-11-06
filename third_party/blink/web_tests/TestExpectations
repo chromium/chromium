@@ -5287,9 +5287,6 @@ crbug.com/1239175 http/tests/navigation/same-and-different-back.html [ Failure P
 # Sheriff 2021-08-20
 crbug.com/1194498 http/tests/misc/iframe-script-modify-attr.html [ Crash Failure Pass Timeout ]
 
-# Sheriff 2021-08-26
-crbug.com/1243707 [ Debug Linux ] http/tests/inspector-protocol/target/auto-attach-related-sw.js [ Crash Pass ]
-
 # Sheriff 2021-09-03
 crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Failure Pass Timeout ]
 
