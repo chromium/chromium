@@ -58,6 +58,36 @@ void BM_WebSafeBase64Escape_string(benchmark::State& state) {
 }
 BENCHMARK(BM_WebSafeBase64Escape_string);
 
+void BM_HexStringToBytes(benchmark::State& state) {
+  const int size = state.range(0);
+  std::string input, output;
+  for (int i = 0; i < size; ++i) input += "1c";
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(input);
+    bool result = absl::HexStringToBytes(input, &output);
+    benchmark::DoNotOptimize(result);
+    benchmark::DoNotOptimize(output);
+  }
+}
+BENCHMARK(BM_HexStringToBytes)->Range(1, 1 << 8);
+
+void BM_HexStringToBytes_Fail(benchmark::State& state) {
+  std::string binary;
+  absl::string_view hex_input1 = "1c2f003";
+  absl::string_view hex_input2 = "1c2f0032f40123456789abcdef**";
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(hex_input1);
+    bool result1 = absl::HexStringToBytes(hex_input1, &binary);
+    benchmark::DoNotOptimize(result1);
+    benchmark::DoNotOptimize(binary);
+    benchmark::DoNotOptimize(hex_input2);
+    bool result2 = absl::HexStringToBytes(hex_input2, &binary);
+    benchmark::DoNotOptimize(result2);
+    benchmark::DoNotOptimize(binary);
+  }
+}
+BENCHMARK(BM_HexStringToBytes_Fail);
+
 // Used for the CEscape benchmarks
 const char kStringValueNoEscape[] = "1234567890";
 const char kStringValueSomeEscaped[] = "123\n56789\xA1";

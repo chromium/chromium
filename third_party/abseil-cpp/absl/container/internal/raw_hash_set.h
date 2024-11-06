@@ -3471,7 +3471,16 @@ class raw_hash_set {
     if (outer->capacity() > inner->capacity()) std::swap(outer, inner);
     for (const value_type& elem : *outer) {
       auto it = PolicyTraits::apply(FindElement{*inner}, elem);
-      if (it == inner->end() || !(*it == elem)) return false;
+      if (it == inner->end()) return false;
+      // Note: we used key_equal to check for key equality in FindElement, but
+      // we may need to do an additional comparison using
+      // value_type::operator==. E.g. the keys could be equal and the
+      // mapped_types could be unequal in a map or even in a set, key_equal
+      // could ignore some fields that aren't ignored by operator==.
+      static constexpr bool kKeyEqIsValueEq =
+          std::is_same<key_type, value_type>::value &&
+          std::is_same<key_equal, hash_default_eq<key_type>>::value;
+      if (!kKeyEqIsValueEq && !(*it == elem)) return false;
     }
     return true;
   }

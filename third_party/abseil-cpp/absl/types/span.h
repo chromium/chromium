@@ -219,12 +219,14 @@ class ABSL_ATTRIBUTE_VIEW Span {
   static const size_type npos = ~(size_type(0));
 
   constexpr Span() noexcept : Span(nullptr, 0) {}
-  constexpr Span(pointer array, size_type length) noexcept
+  constexpr Span(pointer array ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                 size_type length) noexcept
       : ptr_(array), len_(length) {}
 
   // Implicit conversion constructors
   template <size_t N>
-  constexpr Span(T (&a)[N]) noexcept  // NOLINT(google-explicit-constructor)
+  constexpr Span(T(  // NOLINT(google-explicit-constructor)
+      &a ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) noexcept
       : Span(a, N) {}
 
   // Explicit reference constructor for a mutable `Span<T>` type. Can be

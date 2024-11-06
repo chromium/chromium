@@ -17,6 +17,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -335,6 +336,19 @@ TEST(FlatHashSet, MovedFromCleared_EqMustBeValid) {
   s1.clear();
   s1.insert(2);
   EXPECT_THAT(s1, UnorderedElementsAre(2));
+}
+
+TEST(FlatHashSet, Equality) {
+  {
+    flat_hash_set<int> s1 = {1, 2, 3};
+    flat_hash_set<int> s2 = {1, 2, 3};
+    EXPECT_EQ(s1, s2);
+  }
+  {
+    flat_hash_set<std::string> s1 = {"a", "b", "c"};
+    flat_hash_set<std::string> s2 = {"a", "b", "c"};
+    EXPECT_EQ(s1, s2);
+  }
 }
 
 }  // namespace
