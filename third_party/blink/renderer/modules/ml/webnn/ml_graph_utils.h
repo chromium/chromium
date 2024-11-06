@@ -82,6 +82,9 @@ Vector<uint32_t> CreateAllAxes(const wtf_size_t rank);
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
 Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank);
 
+// Create a default strides vector [1, ..., 1] for slice.
+Vector<uint32_t> CreateSliceDefaultStrides(wtf_size_t rank);
+
 // Helper to validate filer layout for Nhwc input layout.
 base::expected<void, String> ValidateFilterLayout(
     bool depthwise,

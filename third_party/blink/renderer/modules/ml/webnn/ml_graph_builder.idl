@@ -201,6 +201,10 @@ dictionary MLScatterOptions : MLOperatorOptions {
   [EnforceRange] unsigned long axis = 0;
 };
 
+dictionary MLSliceOptions : MLOperatorOptions {
+  [EnforceRange] sequence<[EnforceRange] unsigned long> strides;
+};
+
 dictionary MLTransposeOptions : MLOperatorOptions {
   sequence<[EnforceRange] unsigned long> permutation;
 };
@@ -368,7 +372,10 @@ dictionary MLTriangularOptions : MLOperatorOptions {
 
   [RaisesException] MLOperand sigmoid(MLOperand input, optional MLOperatorOptions options = {});
 
-  [RaisesException] MLOperand slice(MLOperand input, sequence<[EnforceRange] unsigned long> starts, sequence<[EnforceRange] unsigned long> sizes, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand slice(MLOperand input,
+                                    sequence<[EnforceRange] unsigned long> starts,
+                                    sequence<[EnforceRange] unsigned long> sizes,
+                                    optional MLSliceOptions options = {});
 
   // TODO: crbug.com/342919187 - Remove the deprecated version once ort-web 1.18.* supporting softmax(input, aixs) is released.
   [RaisesException] MLOperand softmax(MLOperand input, optional MLOperatorOptions options = {});

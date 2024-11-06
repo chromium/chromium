@@ -13,6 +13,7 @@ component("cpp") {
     "ml_tensor_usage.h",
     "operand_descriptor.cc",
     "operand_descriptor.h",
+    "range.h",
     "supported_data_types.h",
     "webnn_errors.cc",
     "webnn_errors.h",

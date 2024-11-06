@@ -488,9 +488,14 @@ struct Pool2d {
   string label;
 };
 
-struct StartAndSize {
+// The range attribute of slice operator.
+struct Range {
+  // The starting point of the window to slice.
   uint32 start;
+  // The window size.
   uint32 size;
+  // Indicates how many elements to traverse when slicing.
+  uint32 stride;
 };
 
 struct Slice {
@@ -500,9 +505,8 @@ struct Slice {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
-  // An array containing the number of elements of the input window in each
-  // dimension.
-  array<StartAndSize> starts_and_sizes;
+  // An array containing the ranges to slice for each input dimension.
+  array<Range> ranges;
   // User defined label from MLOperatorOptions.
   string label;
 };

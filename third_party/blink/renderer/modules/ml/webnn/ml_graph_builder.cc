@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_scatter_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_slice_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -2673,7 +2674,7 @@ MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
 MLOperand* MLGraphBuilder::slice(const MLOperand* input,
                                  const Vector<uint32_t>& starts,
                                  const Vector<uint32_t>& sizes,
-                                 const MLOperatorOptions* options,
+                                 const MLSliceOptions* options,
                                  ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
@@ -2681,6 +2682,9 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
   webnn::SliceAttributes attributes;
   attributes.sizes.assign(sizes.begin(), sizes.end());
   attributes.starts.assign(starts.begin(), starts.end());
+  Vector<uint32_t> strides =
+      options->getStridesOr(CreateSliceDefaultStrides(input->Rank()));
+  attributes.strides.assign(strides.begin(), strides.end());
   attributes.label = options->label().Utf8();
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
@@ -2688,8 +2692,8 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
       webnn::ValidateSliceAndInferOutput(ml_context_->GetProperties(),
                                          input->Descriptor(), attributes));
 
-  auto* slice =
-      MakeGarbageCollected<MLSliceOperator>(this, starts, sizes, options);
+  auto* slice = MakeGarbageCollected<MLSliceOperator>(this, starts, sizes,
+                                                      strides, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), slice);
 

@@ -2408,6 +2408,16 @@ base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
         "The length of sizes must be equal to the rank of the input tensor."));
   }
 
+  if (attributes.strides.size() != input_rank) {
+    return base::unexpected(
+        ErrorWithLabel(label,
+                       "The length of strides must be equal to the rank of the "
+                       "input tensor."));
+  }
+
+  std::vector<uint32_t> output_shape;
+  output_shape.reserve(input_rank);
+
   for (uint32_t i = 0; i < input_rank; ++i) {
     if (attributes.starts[i] >= input.shape()[i]) {
       return base::unexpected(ErrorWithLabel(
@@ -2425,6 +2435,14 @@ base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
                      "For dimension (%u): the number of elements to slice "
                      "must not be 0.",
                      i)));
+    }
+
+    if (attributes.strides[i] < 1) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          base::StringPrintf(
+              "For dimension (%u): the stride (%u) must not be less than 1.", i,
+              attributes.strides[i])));
     }
 
     auto checked_ending_index =
@@ -2445,11 +2463,12 @@ base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
                              "must not be greater than input size (%u).",
                              i, input.shape()[i])));
     }
+
+    uint32_t output_size = attributes.sizes[i] / attributes.strides[i] +
+                           (attributes.sizes[i] % attributes.strides[i] != 0);
+    output_shape.push_back(output_size);
   }
 
-  // The output is a tensor the same as the specified slice sizes.
-  std::vector<uint32_t> output_shape;
-  output_shape.assign(attributes.sizes.begin(), attributes.sizes.end());
   return OperandDescriptor::Create(input.data_type(), std::move(output_shape));
 }
 

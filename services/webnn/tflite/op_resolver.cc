@@ -235,6 +235,10 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_SQRT,
              ::tflite::ops::builtin::Register_SQRT());
+  AddBuiltin(::tflite::BuiltinOperator_STRIDED_SLICE,
+             ::tflite::ops::builtin::Register_STRIDED_SLICE(),
+             /* min_version = */ 1,
+             /* max_version = */ 8);
   AddBuiltin(::tflite::BuiltinOperator_SUB,
              ::tflite::ops::builtin::Register_SUB(),
              /* min_version = */ 1,

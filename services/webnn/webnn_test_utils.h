@@ -542,8 +542,9 @@ class GraphInfoBuilder final {
 
   void BuildSlice(uint64_t input_operand_id,
                   uint64_t output_operand_id,
-                  std::vector<uint32_t> starts,
-                  std::vector<uint32_t> sizes);
+                  base::span<const uint32_t> starts,
+                  base::span<const uint32_t> sizes,
+                  base::span<const uint32_t> strides);
 
   const mojom::GraphInfo& GetGraphInfo() const { return *graph_info_; }
 

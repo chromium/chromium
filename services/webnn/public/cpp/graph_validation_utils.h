@@ -373,9 +373,12 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) SliceAttributes {
   // The sequence of unsigned integer values indicating the starting index to
   // slice of each input dimension.
   std::vector<uint32_t> starts;
-  // The sequence of unsigned integer values indicating the number of elements
-  // to slice of each input dimension.
+  // The sequence of unsigned integer values indicating the window size to slice
+  // of each input dimension.
   std::vector<uint32_t> sizes;
+  // The sequence of unsigned integer values indicating the strides to slice of
+  // each input dimension.
+  std::vector<uint32_t> strides;
   // The operator label defined by the user.
   std::string label = "";
 };

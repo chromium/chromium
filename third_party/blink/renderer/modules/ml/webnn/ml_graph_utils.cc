@@ -261,6 +261,10 @@ Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank) {
   return default_axes;
 }
 
+Vector<uint32_t> CreateSliceDefaultStrides(wtf_size_t rank) {
+  return Vector<uint32_t>(rank, 1);
+}
+
 base::expected<void, String> ValidateFilterLayout(
     bool depthwise,
     V8MLInputOperandLayout input_layout,

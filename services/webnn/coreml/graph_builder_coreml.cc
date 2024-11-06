@@ -140,7 +140,7 @@ constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpScatterElementsTypeName[] = "scatter_along_axis";
 constexpr char kOpScatterNDTypeName[] = "scatter_nd";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
-constexpr char kOpSliceTypeName[] = "slice_by_size";
+constexpr char kOpSliceTypeName[] = "slice_by_index";
 constexpr char kOpSoftmaxTypeName[] = "softmax";
 constexpr char kOpSoftplusTypeName[] = "softplus";
 constexpr char kOpSoftsignTypeName[] = "softsign";
@@ -3003,22 +3003,23 @@ void GraphBuilderCoreml::AddOperationForSlice(
                       operation.input_operand_id);
 
   static constexpr char kParamBegin[] = "begin";
-  static constexpr char kParamSize[] = "size";
-  base::FixedArray<int32_t> beginnings(operation.starts_and_sizes.size());
-  base::FixedArray<int32_t> sizes(operation.starts_and_sizes.size());
-  for (size_t i = 0; i < operation.starts_and_sizes.size(); ++i) {
-    if (operation.starts_and_sizes[i]->size == 0) {
-      continue;
-    }
-    beginnings[i] =
-        base::checked_cast<int32_t>(operation.starts_and_sizes[i]->start);
-    sizes[i] = base::checked_cast<int32_t>(operation.starts_and_sizes[i]->size);
+  static constexpr char kParamEnd[] = "end";
+  static constexpr char kParamStride[] = "stride";
+  base::FixedArray<int32_t> beginnings(operation.ranges.size());
+  base::FixedArray<int32_t> endings(operation.ranges.size());
+  base::FixedArray<int32_t> strides(operation.ranges.size());
+  for (size_t i = 0; i < operation.ranges.size(); ++i) {
+    beginnings[i] = base::checked_cast<int32_t>(operation.ranges[i].start);
+    endings[i] = base::checked_cast<int32_t>(operation.ranges[i].start +
+                                             operation.ranges[i].size);
+    strides[i] = base::checked_cast<int32_t>(operation.ranges[i].stride);
   }
 
   SetInputsWithValues(
       *op->mutable_inputs(),
       {{kParamBegin, Create1DTensorImmediateValue<int32_t>(beginnings)},
-       {kParamSize, Create1DTensorImmediateValue<int32_t>(sizes)}});
+       {kParamEnd, Create1DTensorImmediateValue<int32_t>(endings)},
+       {kParamStride, Create1DTensorImmediateValue<int32_t>(strides)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 }

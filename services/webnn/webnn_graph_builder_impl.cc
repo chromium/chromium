@@ -498,11 +498,13 @@ webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
 webnn::SliceAttributes ConvertToSliceAttributes(
     const webnn::mojom::Slice& slice) {
   webnn::SliceAttributes component_attributes;
-  component_attributes.starts.reserve(slice.starts_and_sizes.size());
-  component_attributes.sizes.reserve(slice.starts_and_sizes.size());
-  for (const auto& start_and_size : slice.starts_and_sizes) {
-    component_attributes.starts.push_back(start_and_size->start);
-    component_attributes.sizes.push_back(start_and_size->size);
+  component_attributes.starts.reserve(slice.ranges.size());
+  component_attributes.sizes.reserve(slice.ranges.size());
+  component_attributes.strides.reserve(slice.ranges.size());
+  for (const auto& range : slice.ranges) {
+    component_attributes.starts.push_back(range.start);
+    component_attributes.sizes.push_back(range.size);
+    component_attributes.strides.push_back(range.stride);
   }
   component_attributes.label = slice.label;
 

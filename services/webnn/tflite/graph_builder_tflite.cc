@@ -4526,28 +4526,58 @@ auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
   CHECK(context_properties_.data_type_limits.slice_input.Has(
       GetOperand(slice.input_operand_id).descriptor.data_type()));
 
-  // The number of starts and sizes are the same as input rank that is verified
-  // in ValidateSliceAndInferOutput() function.
-  base::FixedArray<int32_t> slice_starts(slice.starts_and_sizes.size());
-  base::FixedArray<int32_t> slice_sizes(slice.starts_and_sizes.size());
-  for (size_t i = 0; i < slice.starts_and_sizes.size(); ++i) {
-    const auto& start_and_size = slice.starts_and_sizes[i];
-    auto checked_start = base::MakeCheckedNum<int32_t>(start_and_size->start);
-    auto checked_size = base::MakeCheckedNum<int32_t>(start_and_size->size);
-    if (!checked_start.IsValid() || !checked_size.IsValid()) {
-      return base::unexpected("The start or size of slice is too large.");
+  // The number of starts, sizes and strides are the same as input rank that is
+  // verified in ValidateSliceAndInferOutput() function.
+  base::FixedArray<int32_t> slice_starts(slice.ranges.size());
+  base::FixedArray<int32_t> slice_ends(slice.ranges.size());
+  base::FixedArray<int32_t> slice_strides(slice.ranges.size());
+  for (size_t i = 0; i < slice.ranges.size(); ++i) {
+    const auto& range = slice.ranges[i];
+    auto checked_start = base::MakeCheckedNum<int32_t>(range.start);
+    auto checked_end =
+        base::MakeCheckedNum<int32_t>(range.size) + checked_start;
+    auto checked_stride = base::MakeCheckedNum<int32_t>(range.stride);
+    if (!checked_start.IsValid() || !checked_end.IsValid() ||
+        !checked_stride.IsValid()) {
+      return base::unexpected(
+          "The start, end or stride of slice is too large.");
     }
     slice_starts[i] = checked_start.ValueOrDie();
-    slice_sizes[i] = checked_size.ValueOrDie();
+    slice_ends[i] = checked_end.ValueOrDie();
+    slice_strides[i] = checked_stride.ValueOrDie();
   }
 
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(slice.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
                    SerializeOutputTensorInfo(slice.output_operand_id));
-  return SerializeSliceOperation(input_tensor_info.index,
-                                 output_tensor_info.index, slice_starts,
-                                 slice_sizes);
+
+  auto checked_number = base::MakeCheckedNum<int32_t>(slice.ranges.size());
+  if (!checked_number.IsValid()) {
+    return base::unexpected("The input rank is too large.");
+  }
+  // Serialize the starting index of each input dimension.
+  const std::array<int32_t, 1> range_shape = {checked_number.ValueOrDie()};
+  const int32_t starts_tensor_index =
+      SerializeTensorWithBuffer<int32_t>(std::move(slice_starts), range_shape);
+
+  // Serialize the ending index of each input dimension.
+  const int32_t ends_tensor_index =
+      SerializeTensorWithBuffer<int32_t>(std::move(slice_ends), range_shape);
+
+  // Serialize the strides of each input dimension.
+  const int32_t strides_tensor_index =
+      SerializeTensorWithBuffer<int32_t>(std::move(slice_strides), range_shape);
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_STRIDED_SLICE);
+  const std::array<int32_t, 4> op_inputs = {
+      input_tensor_info.index, starts_tensor_index, ends_tensor_index,
+      strides_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_info.index};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
 }
 
 auto GraphBuilderTflite::SerializeSoftmax(const mojom::Softmax& softmax)

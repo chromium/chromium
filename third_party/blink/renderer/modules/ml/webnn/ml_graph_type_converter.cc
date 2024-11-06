@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_scatter_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_slice_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -1607,18 +1608,16 @@ OperationPtr CreateSliceOperation(const OperandToIdMap& operand_to_id_map,
   const MLSliceOperator* slice_operator =
       static_cast<const MLSliceOperator*>(slice);
   CHECK_EQ(slice_operator->Sizes().size(), slice_operator->Starts().size());
-  slice_mojo->starts_and_sizes.reserve(slice_operator->Starts().size());
-  for (uint32_t i = 0; i < slice_operator->Starts().size(); ++i) {
-    webnn::mojom::blink::StartAndSizePtr start_and_size =
-        webnn::mojom::blink::StartAndSize::New();
-    start_and_size->start = slice_operator->Starts()[i];
-    start_and_size->size = slice_operator->Sizes()[i];
-    slice_mojo->starts_and_sizes.push_back(std::move(start_and_size));
+  CHECK_EQ(slice_operator->Sizes().size(), slice_operator->Strides().size());
+
+  slice_mojo->ranges.reserve(slice_operator->Starts().size());
+  for (wtf_size_t i = 0; i < slice_operator->Starts().size(); ++i) {
+    slice_mojo->ranges.emplace_back(slice_operator->Starts()[i],
+                                    slice_operator->Sizes()[i],
+                                    slice_operator->Strides()[i]);
   }
 
-  const auto* options =
-      static_cast<const blink::MLOperatorOptions*>(slice->Options());
-  slice_mojo->label = options->label();
+  slice_mojo->label = slice->Options()->label();
   return webnn::mojom::blink::Operation::NewSlice(std::move(slice_mojo));
 }
 

@@ -51,6 +51,7 @@ class MLPool2dOptions;
 class MLReduceOptions;
 class MLResample2dOptions;
 class MLScatterOptions;
+class MLSliceOptions;
 class MLSplitOptions;
 class MLTransposeOptions;
 class MLTriangularOptions;
@@ -449,7 +450,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* slice(const MLOperand* input,
                    const Vector<uint32_t>& starts,
                    const Vector<uint32_t>& sizes,
-                   const MLOperatorOptions* options,
+                   const MLSliceOptions* options,
                    ExceptionState& exception_state);
 
   MLOperand* softmax(const MLOperand* input,

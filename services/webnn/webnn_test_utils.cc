@@ -498,19 +498,17 @@ void GraphInfoBuilder::BuildWhere(uint64_t condition_operand_id,
 
 void GraphInfoBuilder::BuildSlice(uint64_t input_operand_id,
                                   uint64_t output_operand_id,
-                                  std::vector<uint32_t> starts,
-                                  std::vector<uint32_t> sizes) {
-  CHECK(starts.size() == sizes.size());
+                                  base::span<const uint32_t> starts,
+                                  base::span<const uint32_t> sizes,
+                                  base::span<const uint32_t> strides) {
+  CHECK_EQ(starts.size(), sizes.size());
+  CHECK_EQ(starts.size(), strides.size());
   mojom::SlicePtr slice = mojom::Slice::New();
   slice->input_operand_id = input_operand_id;
   slice->output_operand_id = output_operand_id;
-  for (uint32_t i = 0; i < starts.size(); ++i) {
-    mojom::StartAndSizePtr start_and_size = mojom::StartAndSize::New();
-    start_and_size->start = starts[i];
-    start_and_size->size = sizes[i];
-    slice->starts_and_sizes.push_back(std::move(start_and_size));
+  for (size_t i = 0; i < starts.size(); ++i) {
+    slice->ranges.emplace_back(starts[i], sizes[i], strides[i]);
   }
-
   graph_info_->operations.push_back(
       mojom::Operation::NewSlice(std::move(slice)));
 }
