@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -62,9 +61,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // The part to be painted / sized.
   enum Part {
     kCheckbox,
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
     kFrameTopArea,
 #endif
     kInnerSpinButton,
@@ -575,7 +572,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     return should_use_system_accent_color_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // This should only be used by the ChromeOS Accessibility system.
   static void SetPrefersAlwaysShowScrollbar(
       bool prefers_always_show_scrollbar) {
