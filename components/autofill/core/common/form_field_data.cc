@@ -116,8 +116,9 @@ bool DeserializeSection1(base::PickleIterator* iter,
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum
     // values.
-    field_data->set_form_control_type(StringToFormControlTypeDiscouraged(
-        form_control_type, /*fallback=*/FormControlType::kInputText));
+    field_data->set_form_control_type(
+        StringToFormControlTypeDiscouraged(form_control_type)
+            .value_or(FormControlType::kInputText));
   }
   return success;
 }
@@ -463,9 +464,8 @@ std::string_view FormControlTypeToString(FormControlType type) {
   NOTREACHED();
 }
 
-FormControlType StringToFormControlTypeDiscouraged(
-    std::string_view type_string,
-    std::optional<FormControlType> fallback) {
+std::optional<FormControlType> StringToFormControlTypeDiscouraged(
+    std::string_view type_string) {
   for (auto i = base::to_underlying(FormControlType::kMinValue);
        i <= base::to_underlying(FormControlType::kMaxValue); ++i) {
     FormControlType type = static_cast<FormControlType>(i);
@@ -474,10 +474,7 @@ FormControlType StringToFormControlTypeDiscouraged(
       return type;
     }
   }
-  if (fallback) {
-    return *fallback;
-  }
-  NOTREACHED();
+  return std::nullopt;
 }
 
 void SerializeFormFieldData(const FormFieldData& field_data,

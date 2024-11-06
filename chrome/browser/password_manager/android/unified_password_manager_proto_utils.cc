@@ -97,8 +97,9 @@ std::optional<FormData> DeserializeFormData(
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum
     // values.
-    field.set_form_control_type(autofill::StringToFormControlTypeDiscouraged(
-        *field_type, /*fallback=*/autofill::FormControlType::kInputText));
+    field.set_form_control_type(
+        autofill::StringToFormControlTypeDiscouraged(*field_type)
+            .value_or(autofill::FormControlType::kInputText));
     form_fields.push_back(field);
   }
 
