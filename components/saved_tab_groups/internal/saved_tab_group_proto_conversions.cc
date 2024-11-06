@@ -269,7 +269,9 @@ SavedTabGroupTab DataToSavedTabGroupTab(const proto::SavedTabGroupData& data) {
       base::Uuid::ParseLowercase(specific.tab().group_guid()),
       specific.tab().position(), base::Uuid::ParseLowercase(specific.guid()),
       std::nullopt, std::move(creator_cache_guid),
-      std::move(last_updater_cache_guid), creation_time, update_time);
+      std::move(last_updater_cache_guid), creation_time, update_time,
+      /*favicon=*/std::nullopt,
+      data.local_tab_group_data().is_tab_pending_sanitization());
   return tab;
 }
 
@@ -309,6 +311,8 @@ proto::SavedTabGroupData SavedTabGroupTabToData(const SavedTabGroupTab& tab) {
   // Note: When adding a new syncable field, also update IsSyncEquivalent().
 
   pb_data.set_version(kCurrentSchemaVersion);
+  pb_data.mutable_local_tab_group_data()->set_is_tab_pending_sanitization(
+      tab.is_pending_sanitization());
   return pb_data;
 }
 
