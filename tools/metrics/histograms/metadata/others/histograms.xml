@@ -5441,6 +5441,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ImportantFile.FileReplaceResult{ImportantFileClients}"
+    enum="ImportantFileReplaceResult" expires_after="2025-03-09">
+  <owner>etienneb@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <summary>
+    The result when ImportantFileWriter moves the temporary file to its final
+    location. Recorded on every write with ImportantFileWriter. If retries were
+    needed, the retry count is recorded in ImportantFile.FileReplaceRetryCount2.
+  </summary>
+  <token key="ImportantFileClients" variants="ImportantFileClients"/>
+</histogram>
+
 <histogram name="ImportantFile.FileReplaceRetryCount" units="attempt count"
     expires_after="never">
 <!-- expires-never: Detects failures to write important files. -->
@@ -5452,6 +5464,20 @@ chromium-metrics-reviews@google.com.
     final location. Zero means that ReplaceFile worked the first time. Ten means
     that it never succeeded.
   </summary>
+</histogram>
+
+<histogram name="ImportantFile.FileReplaceRetryCount2{ImportantFileClients}"
+    units="attempt count" expires_after="2025-03-09">
+  <owner>etienneb@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <summary>
+    The number of retries needed for ImportantFileWriter to move the temporary
+    file to its final location, succeed or fail. The success or failure of the
+    operation is recorded in ImportantFile.FileReplaceesult. Unlike
+    ImportantFile.FileReplaceRetryCount, this is only logged if a retry is
+    needed.
+  </summary>
+  <token key="ImportantFileClients" variants="ImportantFileClients"/>
 </histogram>
 
 <histogram name="ImportantFile.SerializationDuration{ImportantFileClients}"
