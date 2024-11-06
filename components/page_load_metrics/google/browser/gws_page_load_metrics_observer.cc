@@ -193,14 +193,10 @@ std::unordered_map<std::string, ExpectedHeaderInfo> GetExpectedHeaderInfo() {
                            ExpectedHeaderInfo({"private, max-age=0"}, false));
   expected_headers.emplace("content-encoding",
                            ExpectedHeaderInfo({"br"}, false));
-  expected_headers.emplace(
-      "content-security-policy",
-      ExpectedHeaderInfo(
-          {"object-src 'none';base-uri 'self';script-src "
-           "'nonce-732GkElp7qZBZj5NI2fQIQ' 'strict-dynamic' 'report-sample' "
-           "'unsafe-eval' 'unsafe-inline' https: http:;report-uri "
-           "https://csp.withgoogle.com/csp/gws/clkf"},
-          true));
+  // CSP value will be checked via
+  // `CheckContentSecurityPolicyHeaderConsistency()`.
+  expected_headers.emplace("content-security-policy",
+                           ExpectedHeaderInfo({}, true));
   expected_headers.emplace(
       "content-type", ExpectedHeaderInfo({"text/html; charset=UTF-8"}, false));
   expected_headers.emplace(
@@ -246,6 +242,23 @@ AllocateCrashKeyString(const std::string& name) {
       base::debug::AllocateCrashKeyString(
           base::StrCat({name, "-value"}).c_str(),
           base::debug::CrashKeySize::Size256));
+}
+
+// Check the Content-Security-Policy header is expected, except for the `nonce`.
+bool CheckContentSecurityPolicyHeaderConsistency(
+    const std::string header_value) {
+  const std::string first_half =
+      "object-src 'none';base-uri 'self';script-src 'nonce-";
+  const std::string second_half =
+      "' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: "
+      "http:;report-uri https://csp.withgoogle.com/csp/gws/";
+  if (header_value.find(first_half) == std::string::npos) {
+    return false;
+  }
+  if (header_value.find(second_half) == std::string::npos) {
+    return false;
+  }
+  return true;
 }
 }  // namespace
 
@@ -695,6 +708,17 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
       base::debug::SetCrashKeyString(crash_keys.second, value);
       set_crash_key = true;
       continue;
+    }
+    if (name == "content-security-policy") {
+      // Check content-security-policy separately. The CSP value should be
+      // consistent except for the `nonce` value.
+      if (!CheckContentSecurityPolicyHeaderConsistency(value)) {
+        static const auto crash_keys =
+            AllocateCrashKeyString("GWSHeaderValueMismatched");
+        base::debug::SetCrashKeyString(crash_keys.first, name);
+        base::debug::SetCrashKeyString(crash_keys.second, value);
+        set_crash_key = true;
+      }
     }
     auto* expected = &expected_headers[name];
     expected->found_in_actual_headers = true;
