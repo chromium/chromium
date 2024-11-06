@@ -11825,6 +11825,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Name this group
         </message>
       </if>
+
       <if expr="use_titlecase">
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP" desc="In Title Case: The label of the tab group header context menu item for saving the current group.">
           Save Group
@@ -11875,398 +11876,497 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
 
     <!-- Data Sharing -->
       <!-- Title Case Specific IDs -->
-      <if expr="use_titlecase">
-        <!-- Data Sharing Create Flow -->
-          <message name ="IDS_DATA_SHARING_SHARE_GROUP_TITLE" desc="The Title for the creation flow for a shared group.">
-            Share “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” Tab Group
-          </message>
-        <!-- /Data Sharing Create Flow -->
+        <if expr="use_titlecase">
+          <!-- Data Sharing Create Flow -->
+            <message name ="IDS_DATA_SHARING_SHARE_GROUP_TITLE" desc="The Title for the creation flow for a shared group.">
+              Share “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” Tab Group
+            </message>
+          <!-- /Data Sharing Create Flow -->
 
-        <!-- Data Sharing Owner Manage Flow -->
-          <message name ="IDS_DATA_SHARING_MANAGE_GROUP_TITLE" desc="The Title for the manage flow dialog for a shared group.">
-            Manage “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” Tab Group
-          </message>
-          <message name ="IDS_DATA_SHARING_MANAGE_STOP_SHARING_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
-            Stop Sharing
-          </message>
-        <!-- !Data Sharing Owner Manage Flow -->
+          <!-- Data Sharing Owner Manage Flow -->
+            <message name ="IDS_DATA_SHARING_MANAGE_GROUP_TITLE" desc="The Title for the manage flow dialog for a shared group.">
+              Manage “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” Tab Group
+            </message>
+            <message name ="IDS_DATA_SHARING_MANAGE_STOP_SHARING_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
+              Stop Sharing
+            </message>
+          <!-- !Data Sharing Owner Manage Flow -->
 
-        <!-- Data Sharing Owner Stop Sharing Dialog -->
-          <message name ="IDS_DATA_SHARING_OWNER_STOP_SHARING_DIALOG_TITLE" desc="The title for the stop sharing dialog.">
-            Stop Sharing?
-          </message>
-        <!-- Stop Sharing Owner Stop Sharing Dialog -->
+          <!-- Data Sharing Owner Stop Sharing Dialog -->
+            <message name ="IDS_DATA_SHARING_OWNER_STOP_SHARING_DIALOG_TITLE" desc="The title for the stop sharing dialog.">
+              Stop Sharing?
+            </message>
+          <!-- Stop Sharing Owner Stop Sharing Dialog -->
 
-        <!-- Data Sharing Owner Remove Member Dialog -->
-          <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_TITLE" desc="The title of the remove member dialog.">
-            Remove <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
-          </message>
-          <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_CONFIRM" desc="The confirmation button for the remove member dialog.">
-            Remove
-          </message>
-        <!-- DataSharing Owner Remove Member Dialog -->
+          <!-- Data Sharing Owner Remove Member Dialog -->
+            <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_TITLE" desc="The title of the remove member dialog.">
+              Remove <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
+            </message>
+            <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_CONFIRM" desc="The confirmation button for the remove member dialog.">
+              Remove
+            </message>
+          <!-- DataSharing Owner Remove Member Dialog -->
 
-        <!-- Data Sharing Owner Delete Group -->
-          <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE" desc="The title of the group owner's delete group dialog.">
-            Delete Tab Group?
-          </message>
-          <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM" desc="The confirmation button for the delete group dialog.">
-            Delete
-          </message>
-        <!-- /Data Sharing Owner Delete Group -->
+          <!-- Data Sharing Owner Delete Group -->
+            <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE" desc="The title of the group owner's delete group dialog.">
+              Delete Tab Group?
+            </message>
+            <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM" desc="The confirmation button for the delete group dialog.">
+              Delete
+            </message>
+          <!-- /Data Sharing Owner Delete Group -->
 
-        <!-- Data Sharing Preview Dialog -->
-          <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
-            Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
-            {NUM_OTHER_MEMBERS, plural,
-              =0 {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>}
-              =1 {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Other}
-              other {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Others}
-            }
-          </message>
-          <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
-            Join and Open
-          </message>
-          <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TITLE" desc="The title for the details page of the dialog that shows a preview of a tab group.">
-            Tab Group Details
-          </message>
-          <message name="IDS_DATA_SHARING_LINK_FAILED_TITLE" desc="The title for the link failed dialog.">
-            This Link Doesn’t Work
-          </message>
-        <!-- /Data Sharing Preview Dialog -->
+          <!-- Data Sharing Preview Dialog -->
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
+              {NUM_OTHER_MEMBERS, plural,
+                =0 {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>}
+                =1 {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Other}
+                other {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Others}
+              }
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
+              Join and Open
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TITLE" desc="The title for the details page of the dialog that shows a preview of a tab group.">
+              Tab Group Details
+            </message>
+            <message name="IDS_DATA_SHARING_LINK_FAILED_TITLE" desc="The title for the link failed dialog.">
+              This Link Doesn’t Work
+            </message>
+          <!-- /Data Sharing Preview Dialog -->
 
-        <!-- Data Sharing Leave Dialog -->
-          <message name="IDS_DATA_SHARING_LEAVE_DIALOG_TITLE" desc="The title for the leave group dialog.">
-            Leave Tab Group?
-          </message>
-        <!-- /Data Sharing Leave Dialog -->
+          <!-- Data Sharing Leave Dialog -->
+            <message name="IDS_DATA_SHARING_LEAVE_DIALOG_TITLE" desc="The title for the leave group dialog.">
+              Leave Tab Group?
+            </message>
+          <!-- /Data Sharing Leave Dialog -->
 
-        <!-- Data Sharing Block and Leave Dialog -->
-          <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_TITLE" desc="The title for the block and leave group dialog.">
-            Block and Leave Group?
-          </message>
-          <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_CONFIRM" desc="The text for a button to block and leave a shared group.">
-            Block and Leave
-          </message>
-        <!-- /Data Sharing Block and Leave Dialog -->
+          <!-- Data Sharing Block and Leave Dialog -->
+            <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_TITLE" desc="The title for the block and leave group dialog.">
+              Block and Leave Group?
+            </message>
+            <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_CONFIRM" desc="The text for a button to block and leave a shared group.">
+              Block and Leave
+            </message>
+          <!-- /Data Sharing Block and Leave Dialog -->
 
-        <!-- Sign in Sync Flow -->
-          <message name="IDS_DATA_SHARING_NEED_SIGN_IN" desc="The title of dialog that prompts users to sign in and sync.">
-            Sign in and Sync Needed
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_SYNC" desc="The title of dialog that prompts users to sync.">
-            Sync Is Needed
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS" desc="The title of dialog that prompts users to sync tab groups.">
-            Sync Your Tab Groups
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT" desc="The title of dialog that prompts users to verify the account.">
-            Verify Your Account
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BUTTON" desc="The confirm button of dialog that prompts users to verify the account.">
-            Verify It's You
-          </message>
+          <!-- Sign in Sync Flow -->
+            <message name="IDS_DATA_SHARING_NEED_SIGN_IN" desc="The title of dialog that prompts users to sign in and sync.">
+              Sign in and Sync Needed
+            </message>
+            <message name="IDS_DATA_SHARING_NEED_SYNC" desc="The title of dialog that prompts users to sync.">
+              Sync Is Needed
+            </message>
+            <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS" desc="The title of dialog that prompts users to sync tab groups.">
+              Sync Your Tab Groups
+            </message>
+            <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT" desc="The title of dialog that prompts users to verify the account.">
+              Verify Your Account
+            </message>
+            <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BUTTON" desc="The confirm button of dialog that prompts users to verify the account.">
+              Verify It's You
+            </message>
 
-        <!-- errors and warnings -->
-          <message name="IDS_DATA_SHARING_GOT_IT" desc="The general confirm button of informative dialogs.">
-            Got It
-          </message>
-          <message name="IDS_DATA_SHARING_SOMETHING_WRONG" desc="The title of the generic failure dialog.">
-            Something Went Wrong
-          </message>
-          <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN" desc="The title of the organization disallowing signin dialog.">
-            Your Organization Doesn't Allow You to Sign in
-          </message>
-          <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE" desc="The title of the organization limiting saving to account dialog.">
-            Your Organization Limits What You Can Save
-          </message>
-          <message name="IDS_DATA_SHARING_SIGNED_OUT" desc="The title of the dialog that prompts users to allow Chrome sign in.">
-            You’re Signed out
-          </message>
-          <message name="IDS_DATA_SHARING_GROUP_FULL" desc="The title of the group being full dialog.">
-            This Tab Group Is Full
-          </message>
+          <!-- errors and warnings -->
+            <message name="IDS_DATA_SHARING_GOT_IT" desc="The general confirm button of informative dialogs.">
+              Got It
+            </message>
+            <message name="IDS_DATA_SHARING_SOMETHING_WRONG" desc="The title of the generic failure dialog.">
+              Something Went Wrong
+            </message>
+            <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN" desc="The title of the organization disallowing signin dialog.">
+              Your Organization Doesn't Allow You to Sign in
+            </message>
+            <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE" desc="The title of the organization limiting saving to account dialog.">
+              Your Organization Limits What You Can Save
+            </message>
+            <message name="IDS_DATA_SHARING_SIGNED_OUT" desc="The title of the dialog that prompts users to allow Chrome sign in.">
+              You’re Signed out
+            </message>
+            <message name="IDS_DATA_SHARING_GROUP_FULL" desc="The title of the group being full dialog.">
+              This Tab Group Is Full
+            </message>
 
-        <!-- Delete Last Tab Dialog -->
-          <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog.">
-            Keep Tab Group?
-          </message>
-          <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_CANCEL" desc="cancel button text for the delete last tab dialog.">
-            Keep Group
-          </message>
-          <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the owner of the group.">
-            Delete Group
-          </message>
-          <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the member of the group.">
-            Leave Group
-          </message>
-        <!-- /Delete Last Tab Dialog -->
-      </if>
-      <if expr="not use_titlecase">
-        <!-- Data Sharing Create Flow -->
-          <message name ="IDS_DATA_SHARING_SHARE_GROUP_TITLE" desc="The Title for the creation flow for a shared group.">
-            Share “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group
-          </message>
-        <!-- /Data Sharing Create Flow -->
+          <!-- Delete Last Tab Dialog -->
+            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog.">
+              Keep Tab Group?
+            </message>
+            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_CANCEL" desc="Cancel button text for the delete last tab dialog.">
+              Keep Group
+            </message>
+            <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CONFIRM" desc="Confirm button text for the delete last tab dialog if the user is the owner of the group.">
+              Delete Group
+            </message>
+            <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM" desc="Confirm button text for the delete last tab dialog if the user is the member of the group.">
+              Leave Group
+            </message>
+          <!-- /Delete Last Tab Dialog -->
 
-        <!-- Data Sharing Owner Manage Flow -->
-          <message name ="IDS_DATA_SHARING_MANAGE_GROUP_TITLE" desc="The Title for the manage flow dialog for a shared group.">
-            Manage “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group
-          </message>
-          <message name ="IDS_DATA_SHARING_MANAGE_STOP_SHARING_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
-            Stop sharing
-          </message>
-        <!-- !Data Sharing Owner Manage Flow -->
 
-        <!-- Data Sharing Owner Stop Sharing Dialog -->
-          <message name ="IDS_DATA_SHARING_OWNER_STOP_SHARING_DIALOG_TITLE" desc="The title for the stop sharing dialog.">
-            Stop sharing?
-          </message>
-        <!-- Stop Sharing Owner Stop Sharing Dialog -->
+          <!-- Recent Activity -->
+            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE" desc="Title for the recent activity dialog.">
+              Recent Activity
+            </message>
+            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_TAB" desc="Title for the subsection for the last tab update.">
+              Last Update to this Tab
+            </message>
+            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_GROUP" desc="Title for the subsection for the last group updates.">
+              Latest Updates to this Group
+            </message>
+          <!-- /Recent Activity -->
+        </if>
+        <if expr="not use_titlecase">
+                <!-- Data Sharing Create Flow -->
+            <message name ="IDS_DATA_SHARING_SHARE_GROUP_TITLE" desc="The Title for the creation flow for a shared group.">
+              Share “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group
+            </message>
+          <!-- /Data Sharing Create Flow -->
 
-        <!-- Data Sharing Owner Remove Member Dialog -->
-          <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_TITLE" desc="The title of the remove member dialog.">
-            Remove <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
-          </message>
-          <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_CONFIRM" desc="The confirmation button for the remove member dialog.">
-            Remove
-          </message>
-        <!-- DataSharing Owner Remove Member Dialog -->
+          <!-- Data Sharing Owner Manage Flow -->
+            <message name ="IDS_DATA_SHARING_MANAGE_GROUP_TITLE" desc="The Title for the manage flow dialog for a shared group.">
+              Manage “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group
+            </message>
+            <message name ="IDS_DATA_SHARING_MANAGE_STOP_SHARING_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
+              Stop sharing
+            </message>
+          <!-- !Data Sharing Owner Manage Flow -->
 
-        <!-- Data Sharing Owner Delete Group -->
-          <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE" desc="The title of the group owner's delete group dialog.">
-            Delete tab group?
-          </message>
-          <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM" desc="The confirmation button for the delete group dialog.">
-            Delete
-          </message>
-        <!-- /Data Sharing Owner Delete Group -->
+          <!-- Data Sharing Owner Stop Sharing Dialog -->
+            <message name ="IDS_DATA_SHARING_OWNER_STOP_SHARING_DIALOG_TITLE" desc="The title for the stop sharing dialog.">
+              Stop sharing?
+            </message>
+          <!-- Stop Sharing Owner Stop Sharing Dialog -->
 
-        <!-- Data Sharing Preview Dialog -->
-          <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
+          <!-- Data Sharing Owner Remove Member Dialog -->
+            <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_TITLE" desc="The title of the remove member dialog.">
+              Remove <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
+            </message>
+            <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_CONFIRM" desc="The confirmation button for the remove member dialog.">
+              Remove
+            </message>
+          <!-- DataSharing Owner Remove Member Dialog -->
 
-            {NUM_OTHER_MEMBERS, plural,
-              =0 {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>}
-              =1 {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # other}
-              other {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # others}
-            }
-          </message>
-          <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
-            Join and open
-          </message>
-          <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TITLE" desc="The title for the details page of the dialog that shows a preview of a tab group.">
-            Tab group details
-          </message>
-          <message name="IDS_DATA_SHARING_LINK_FAILED_TITLE" desc="The title for the link failed dialog.">
-            This link doesn’t work
-          </message>
-        <!-- /Data Sharing Preview Dialog -->
+          <!-- Data Sharing Owner Delete Group -->
+            <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE" desc="The title of the group owner's delete group dialog.">
+              Delete tab group?
+            </message>
+            <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM" desc="The confirmation button for the delete group dialog.">
+              Delete
+            </message>
+          <!-- /Data Sharing Owner Delete Group -->
 
-        <!-- Data Sharing Leave Dialog -->
-          <message name="IDS_DATA_SHARING_LEAVE_DIALOG_TITLE" desc="The title for the leave group dialog.">
-            Leave tab group?
-          </message>
-        <!-- /Data Sharing Leave Dialog -->
+          <!-- Data Sharing Preview Dialog -->
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
 
-        <!-- Data Sharing Block and Leave Dialog -->
-          <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_TITLE" desc="The title for the block and leave group dialog.">
-            Block and leave group?
-          </message>
-          <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_CONFIRM" desc="The text for a button to block and leave a shared group.">
-            Block and leave
-          </message>
-        <!-- /Data Sharing Block and Leave Dialog -->
+              {NUM_OTHER_MEMBERS, plural,
+                =0 {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>}
+                =1 {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # other}
+                other {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # others}
+              }
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
+              Join and open
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TITLE" desc="The title for the details page of the dialog that shows a preview of a tab group.">
+              Tab group details
+            </message>
+            <message name="IDS_DATA_SHARING_LINK_FAILED_TITLE" desc="The title for the link failed dialog.">
+              This link doesn’t work
+            </message>
+          <!-- /Data Sharing Preview Dialog -->
 
-        <!-- Sign in Sync Flow -->
-          <message name="IDS_DATA_SHARING_NEED_SIGN_IN" desc="The title of dialog that prompts users to sign in and sync.">
-            Sign in and sync needed
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_SYNC" desc="The title of dialog that prompts users to sync.">
-            Sync is needed
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS" desc="The title of dialog that prompts users to sync tab groups.">
-            Sync your tab groups
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT" desc="The title of dialog that prompts users to verify the account.">
-            Verify your account
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BUTTON" desc="The confirm button of dialog that prompts users to verify the account.">
-            Verify it's you
-          </message>
+          <!-- Data Sharing Leave Dialog -->
+            <message name="IDS_DATA_SHARING_LEAVE_DIALOG_TITLE" desc="The title for the leave group dialog.">
+              Leave tab group?
+            </message>
+          <!-- /Data Sharing Leave Dialog -->
 
-        <!-- errors and warnings -->
-          <message name="IDS_DATA_SHARING_GOT_IT" desc="The general confirm button of informative dialogs.">
-            Got it
-          </message>
-          <message name="IDS_DATA_SHARING_SOMETHING_WRONG" desc="The title of the generic failure dialog.">
-            Something went wrong
-          </message>
-          <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN" desc="The title of the organization disallowing signin dialog.">
-            Your organization doesn't allow you to sign in
-          </message>
-          <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE" desc="The title of the organization limiting saving to account dialog.">
-            Your organization limits what you can save
-          </message>
-          <message name="IDS_DATA_SHARING_SIGNED_OUT" desc="The title of the dialog that prompts users to allow Chrome sign in.">
-            You’re signed out
-          </message>
-          <message name="IDS_DATA_SHARING_GROUP_FULL" desc="The title of the group being full dialog when joining.">
-            This tab group is full
-          </message>
+          <!-- Data Sharing Block and Leave Dialog -->
+            <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_TITLE" desc="The title for the block and leave group dialog.">
+              Block and leave group?
+            </message>
+            <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_CONFIRM" desc="The text for a button to block and leave a shared group.">
+              Block and leave
+            </message>
+          <!-- /Data Sharing Block and Leave Dialog -->
 
-        <!-- Delete Last Tab Dialog -->
-          <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog.">
-            Keep tab group?
-          </message>
-          <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_CANCEL" desc="cancel button text for the delete last tab dialog.">
-            Keep group
-          </message>
-          <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the owner of the group.">
-            Delete group
-          </message>
-          <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the member of the group.">
-            Leave group
-          </message>
-        <!-- /Delete Last Tab Dialog -->
-      </if>
+          <!-- Sign in Sync Flow -->
+            <message name="IDS_DATA_SHARING_NEED_SIGN_IN" desc="The title of dialog that prompts users to sign in and sync.">
+              Sign in and sync needed
+            </message>
+            <message name="IDS_DATA_SHARING_NEED_SYNC" desc="The title of dialog that prompts users to sync.">
+              Sync is needed
+            </message>
+            <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS" desc="The title of dialog that prompts users to sync tab groups.">
+              Sync your tab groups
+            </message>
+            <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT" desc="The title of dialog that prompts users to verify the account.">
+              Verify your account
+            </message>
+            <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BUTTON" desc="The confirm button of dialog that prompts users to verify the account.">
+              Verify it's you
+            </message>
+
+          <!-- errors and warnings -->
+            <message name="IDS_DATA_SHARING_GOT_IT" desc="The general confirm button of informative dialogs.">
+              Got it
+            </message>
+            <message name="IDS_DATA_SHARING_SOMETHING_WRONG" desc="The title of the generic failure dialog.">
+              Something went wrong
+            </message>
+            <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN" desc="The title of the organization disallowing signin dialog.">
+              Your organization doesn't allow you to sign in
+            </message>
+            <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE" desc="The title of the organization limiting saving to account dialog.">
+              Your organization limits what you can save
+            </message>
+            <message name="IDS_DATA_SHARING_SIGNED_OUT" desc="The title of the dialog that prompts users to allow Chrome sign in.">
+              You’re signed out
+            </message>
+            <message name="IDS_DATA_SHARING_GROUP_FULL" desc="The title of the group being full dialog when joining.">
+              This tab group is full
+            </message>
+
+          <!-- Delete Last Tab Dialog -->
+            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_TITLE" desc="Title for the delete last tab dialog.">
+              Keep tab group?
+            </message>
+            <message name="IDS_DATA_SHARING_DELETE_LAST_TAB_CANCEL" desc="cancel button text for the delete last tab dialog.">
+              Keep group
+            </message>
+            <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the owner of the group.">
+              Delete group
+            </message>
+            <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM" desc="confirm button text for the delete last tab dialog if the user is the member of the group.">
+              Leave group
+            </message>
+          <!-- /Delete Last Tab Dialog -->
+
+          <!-- Recent Activity -->
+            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE" desc="Title for the recent activity dialog.">
+              Recent activity
+            </message>
+            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_TAB" desc="Title for the subsection for the last tab update.">
+              Last update to this tab
+            </message>
+            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_GROUP" desc="Title for the subsection for the last group updates.">
+              Latest updates to this group
+            </message>
+          <!-- /Recent Activity -->
+        </if>
       <!-- /Title Case Specific IDs -->
 
-        <!-- Data Sharing Create Flow -->
-          <message name ="IDS_DATA_SHARING_SHARE_GROUP_BODY" desc="The description of how shared group links work.">Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.</message>
-          <message name ="IDS_DATA_SHARING_SHARE_GROUP_SHARE_AS" desc="A sublabel showing which profile the shared group is being shared as.">Share as <ph name="OWNER_FULL_NAME">$1<ex>John Doe</ex></ph></message>
-        <!-- /Data Sharing Create Flow -->
+      <!-- Data Sharing Create Flow -->
+        <message name ="IDS_DATA_SHARING_SHARE_GROUP_BODY" desc="The description of how shared group links work.">
+          Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.
+        </message>
+        <message name ="IDS_DATA_SHARING_SHARE_GROUP_SHARE_AS" desc="A sublabel showing which profile the shared group is being shared as.">
+          Share as <ph name="OWNER_FULL_NAME">$1<ex>John Doe</ex></ph>
+        </message>
+      <!-- /Data Sharing Create Flow -->
 
-        <!-- Data Sharing Owner Manage Flow -->
-          <message name ="IDS_DATA_SHARING_MANAGE_SHARE_WISELY" desc="The description of how link sharing works.">
-            Always share wisely. Links expire in 48 hours.
-          </message>
-        <!-- !Data Sharing Owner Manage Flow -->
+      <!-- Data Sharing Owner Manage Flow -->
+        <message name ="IDS_DATA_SHARING_MANAGE_SHARE_WISELY" desc="The description of how link sharing works.">
+          Always share wisely. Links expire in 48 hours.
+        </message>
+      <!-- !Data Sharing Owner Manage Flow -->
 
-        <!-- Data Sharing Owner Stop Sharing Dialog -->
-          <message name ="IDS_DATA_SHARING_OWNER_STOP_SHARING_DIALOG_BODY" desc="The body for the owner's stop sharing dialog.">
-            Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and all invitation links will be turned off
-          </message>
-        <!-- Stop Sharing Owner Stop Sharing Dialog -->
+      <!-- Data Sharing Owner Stop Sharing Dialog -->
+        <message name ="IDS_DATA_SHARING_OWNER_STOP_SHARING_DIALOG_BODY" desc="The body for the owner's stop sharing dialog.">
+          Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and all invitation links will be turned off
+        </message>
+      <!-- Stop Sharing Owner Stop Sharing Dialog -->
 
-        <!-- Data Sharing Owner Remove Member Dialog -->
-          <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_BODY" desc="The body for the owner's remove member dialog.">
-            <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph> (<ph name="EMAIL">$2<ex>johndoe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>” tab group
-          </message>
-        <!-- DataSharing Owner Remove Member Dialog -->
+      <!-- Data Sharing Owner Remove Member Dialog -->
+        <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_BODY" desc="The body for the owner's remove member dialog.">
+          <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph> (<ph name="EMAIL">$2<ex>johndoe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>” tab group
+        </message>
+      <!-- DataSharing Owner Remove Member Dialog -->
 
-        <!-- Data Sharing Owner Delete Group -->
-          <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY" desc="The body for the owner's delete group dialog.">
-            Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and it will be deleted from all devices
-          </message>
-        <!-- /Data Sharing Owner Delete Group -->
+      <!-- Data Sharing Owner Delete Group -->
+        <message name ="IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY" desc="The body for the owner's delete group dialog.">
+          Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and it will be deleted from all devices
+        </message>
+      <!-- /Data Sharing Owner Delete Group -->
 
-        <!-- Data Sharing Preview Dialog -->
-          <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_BODY" desc="The body for the dialog that shows a preview of a tab group.">
-            <ph name="OWNER_FULL_NAME">$1<ex>Ali Connors</ex></ph> (<ph name="OWNER_EMAIL">$2<ex>ali.connors@gmail.com</ex></ph>) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
-          </message>
-          <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TABS_IN_GROUP" desc="The title for the tabs in group section in the preview details for a group.">
-            Tabs in group
-          </message>
-          <message name="IDS_DATA_SHARING_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
-            Contact the sender to ask for a new link
-          </message>
-        <!-- /Data Sharing Preview Dialog -->
+      <!-- Data Sharing Preview Dialog -->
+        <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_BODY" desc="The body for the dialog that shows a preview of a tab group.">
+          <ph name="OWNER_FULL_NAME">$1<ex>Ali Connors</ex></ph> (<ph name="OWNER_EMAIL">$2<ex>ali.connors@gmail.com</ex></ph>) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
+        </message>
+        <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TABS_IN_GROUP" desc="The title for the tabs in group section in the preview details for a group.">
+          Tabs in group
+        </message>
+        <message name="IDS_DATA_SHARING_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
+          Contact the sender to ask for a new link
+        </message>
+      <!-- /Data Sharing Preview Dialog -->
 
-        <!-- Data Sharing Leave Dialog -->
-          <message name="IDS_DATA_SHARING_LEAVE_DIALOG_BODY" desc="The body for the leave group dialog.">
-            You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and it will be deleted from all your devices
-          </message>
-          <message name="IDS_DATA_SHARING_LEAVE_DIALOG_CONFIRM" desc="The text for the confirmation button for the leave group dialog.">
-            Leave
-          </message>
-        <!-- /Data Sharing Leave Dialog -->
+      <!-- Data Sharing Leave Dialog -->
+        <message name="IDS_DATA_SHARING_LEAVE_DIALOG_BODY" desc="The body for the leave group dialog.">
+          You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and it will be deleted from all your devices
+        </message>
+        <message name="IDS_DATA_SHARING_LEAVE_DIALOG_CONFIRM" desc="The text for the confirmation button for the leave group dialog.">
+          Leave
+        </message>
+      <!-- /Data Sharing Leave Dialog -->
 
-        <!-- Data Sharing Block and Leave Dialog -->
-          <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_BODY" desc="The body for the block and leave group dialog.">
-            You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and <ph name="BLOCKED_MEMBER_FULL_NAME">$1<ex>Ali Connors</ex></ph> (<ph name="BLOCKED_MEMBER_EMAIL">$2<ex>ali.connors@gmail.com</ex></ph>) will no longer be able to interact with you across Google services.
-          </message>
-          <message name="IDS_DATA_SHARING_BLOCK_LEAVE_LEARN_MORE" desc="The text for the learn more link for the block and leave group dialog.">
-            Learn about blocked accounts
-          </message>
-        <!-- /Data Sharing Block and Leave Dialog -->
+      <!-- Data Sharing Block and Leave Dialog -->
+        <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_BODY" desc="The body for the block and leave group dialog.">
+          You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and <ph name="BLOCKED_MEMBER_FULL_NAME">$1<ex>Ali Connors</ex></ph> (<ph name="BLOCKED_MEMBER_EMAIL">$2<ex>ali.connors@gmail.com</ex></ph>) will no longer be able to interact with you across Google services.
+        </message>
+        <message name="IDS_DATA_SHARING_BLOCK_LEAVE_LEARN_MORE" desc="The text for the learn more link for the block and leave group dialog.">
+          Learn about blocked accounts
+        </message>
+      <!-- /Data Sharing Block and Leave Dialog -->
 
-        <!-- Sign in Sync Flow -->
-          <message name="IDS_DATA_SHARING_NEED_SIGN_IN_BODY" desc="The body of dialog that prompts users to sign in and sync.">
-            To share or join tab groups, you need to sign in and turn on sync
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_SIGN_IN_CONTINUE_BUTTON" desc="The continue button of dialog that prompts users to sign in and sync.">
-            Continue
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_SYNC_BODY" desc="The body of dialog that prompts users to sync.">
-            To share or join tab groups, you need to turn on sync
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS_BODY" desc="The body of dialog that prompts users to sync tab groups.">
-            To share, join, and collaborate in tab groups, sync your tab groups in Settings
-          </message>
-          <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BODY" desc="The body of dialog that prompts users to verify account.">
-            To share, join, and collaborate in tab groups, verify it’s you
-          </message>
-        <!-- /Sign in Sync Flow -->
+      <!-- Sign in Sync Flow -->
+        <message name="IDS_DATA_SHARING_NEED_SIGN_IN_BODY" desc="The body of dialog that prompts users to sign in and sync.">
+          To share or join tab groups, you need to sign in and turn on sync
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SIGN_IN_CONTINUE_BUTTON" desc="The continue button of dialog that prompts users to sign in and sync.">
+          Continue
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SYNC_BODY" desc="The body of dialog that prompts users to sync.">
+          To share or join tab groups, you need to turn on sync
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS_BODY" desc="The body of dialog that prompts users to sync tab groups.">
+          To share, join, and collaborate in tab groups, sync your tab groups in Settings
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BODY" desc="The body of dialog that prompts users to verify account.">
+          To share, join, and collaborate in tab groups, verify it’s you
+        </message>
+      <!-- /Sign in Sync Flow -->
 
-        <!-- errors and warnings -->
-          <message name="IDS_DATA_SHARING_SOMETHING_WRONG_BODY" desc="The body text of the generic failure dialog.">
-            There was an error. Try again.
-          </message>
-          <message name="IDS_DATA_SHARING_SHARE_ERROR_BODY" desc="The body text of the share error bubble.">
-            Something went wrong. Try again.
-          </message>
-          <message name="IDS_DATA_SHARING_JOIN_WARNING" desc="The warning at the top of join dialog.">
-            Make sure you trust the person that sent this invitation
-          </message>
-          <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN_BODY" desc="The body text of the organization disallowing signin dialog.">
-            To share or join tab groups, you must be able to sign in to Chrome
-          </message>
-          <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE_BODY" desc="The body text of the organization limiting saving to account dialog.">
-            When your organization limits saving to your Google Account, you can’t share or join tab groups
-          </message>
-          <message name="IDS_DATA_SHARING_SIGNED_OUT_BODY" desc="The body text of the dialog that prompts users to allow Chrome sign in.">
-            To share, join, and collaborate in tab groups, open settings and turn on Allow Chrome sign-in
-          </message>
-          <message name="IDS_DATA_SHARING_SETTINGS" desc="The generic text on buttons that take users to Chrome settings page.">
-            Settings
-          </message>
-          <message name="IDS_DATA_SHARING_GROUP_FULL_BODY" desc="The body text of the group being full dialog when joining.">
-            Contact the person who sent this link
-          </message>
-          <message name="IDS_DATA_SHARING_OWNER_CANNOT_SHARE" desc="The warning on the manage dialog that warns the owner cannot share the link because group is full.">
-            Your tab group is full, new members can’t join with the link
-          </message>
-        <!-- /errors and warnings -->
+      <!-- errors and warnings -->
+        <message name="IDS_DATA_SHARING_SOMETHING_WRONG_BODY" desc="The body text of the generic failure dialog.">
+          There was an error. Try again.
+        </message>
+        <message name="IDS_DATA_SHARING_SHARE_ERROR_BODY" desc="The body text of the share error bubble.">
+          Something went wrong. Try again.
+        </message>
+        <message name="IDS_DATA_SHARING_JOIN_WARNING" desc="The warning at the top of join dialog.">
+          Make sure you trust the person that sent this invitation
+        </message>
+        <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN_BODY" desc="The body text of the organization disallowing signin dialog.">
+          To share or join tab groups, you must be able to sign in to Chrome
+        </message>
+        <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE_BODY" desc="The body text of the organization limiting saving to account dialog.">
+          When your organization limits saving to your Google Account, you can’t share or join tab groups
+        </message>
+        <message name="IDS_DATA_SHARING_SIGNED_OUT_BODY" desc="The body text of the dialog that prompts users to allow Chrome sign in.">
+          To share, join, and collaborate in tab groups, open settings and turn on Allow Chrome sign-in
+        </message>
+        <message name="IDS_DATA_SHARING_SETTINGS" desc="The generic text on buttons that take users to Chrome settings page.">
+          Settings
+        </message>
+        <message name="IDS_DATA_SHARING_GROUP_FULL_BODY" desc="The body text of the group being full dialog when joining.">
+          Contact the person who sent this link
+        </message>
+        <message name="IDS_DATA_SHARING_OWNER_CANNOT_SHARE" desc="The warning on the manage dialog that warns the owner cannot share the link because group is full.">
+          Your tab group is full, new members can’t join with the link
+        </message>
+      <!-- /errors and warnings -->
 
-        <!-- Delete Last Tab Dialog -->
-          <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the owner deleting the last tab of the shared group.">
-            Keep this group to add tabs later, or delete it if you no longer need it.
-          </message>
-          <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY_2" desc="More description for the confirming the owner deleting the last tab of the shared group.">
-            If you delete it, everyone will immediately lose access to the "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices.
-          </message>
-          <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the member deleting the last tab of the shared group.">
-            Keep this group to add tabs later, or leave it if you no longer want access to it
-          </message>
-        <!-- /Delete Last Tab Dialog -->
+      <!-- Delete Last Tab Dialog -->
+        <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the owner deleting the last tab of the shared group.">
+          Keep this group to add tabs later, or delete it if you no longer need it.
+        </message>
+        <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY_2" desc="More description for the confirming the owner deleting the last tab of the shared group.">
+          If you delete it, everyone will immediately lose access to the "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices.
+        </message>
+        <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the member deleting the last tab of the shared group.">
+          Keep this group to add tabs later, or leave it if you no longer want access to it
+        </message>
+      <!-- /Delete Last Tab Dialog -->
 
-        <!-- Misc -->
-          <message name ="IDS_DATA_SHARING_LEARN_ABOUT_SHARED_GROUPS" desc="The title for a link that can be clicked to go to the help page for shared groups.">
-            Learn about shared tab groups
-          </message>
-          <message name ="IDS_DATA_SHARING_PEOPLE_WITH_ACCESS" desc="Text describing a list of members of a group.">
-            People with access
-          </message>
-          <message name ="IDS_DATA_SHARING_LINK_EDIT_ACCESS" desc="Text describing how link sharing works.">
-            Anyone with the link can edit all tabs
-          </message>
-          <message name ="IDS_DATA_SHARING_LINK_JOIN_TOGGLE" desc="A description of how the the toggle for link sharing works.">
-            Let anyone with the link join
-          </message>
-          <message name ="IDS_DATA_SHARING_CANCEL" desc="The label for buttons that cancel any dialogs in data sharing.">
-            Cancel
-          </message>
-        <!-- /Misc -->
+      <!-- Recent Activity -->
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TIME" desc="A display of time since for a row in the recent activity dialog.">
+          {TIME_DIMENSION, plural,
+            =0 {<ph name="TIME_COUNT">$1<ex>2</ex></ph>m ago}
+            =1 {<ph name="TIME_COUNT">$1<ex>2</ex></ph>h ago}
+            other {<ph name="TIME_COUNT">$1<ex>2</ex></ph>d ago}
+          }
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_TAB" desc="A description of the user changing the tab for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed a tab
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_REMOVED_TAB" desc="A description of the user removing the tab for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> removed a tab
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_TAB" desc="A description of the user adding the tab for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added a tab
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_JOINED_GROUP" desc="A description of the user joining the group for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> joined the group
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_LEFT_GROUP" desc="A description of the user leaving the group for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> left the group
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_GROUP_NAME" desc="A description of the user changing the group name for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed the group name
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_GROUP_COLOR" desc="A description of the user changing the group color for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed the group color
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB" desc="A description of the user adding the current tab for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added this tab
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB" desc="A description of the user changing the current tab for the recent activity dialog.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed this tab
+        </message>
+      <!-- /Recent Activity -->
+
+      <!-- Page Action -->
+        <message name="IDS_DATA_SHARING_PAGE_ACTION_ADDED_NEW_TAB" desc="A description of a member adding a new tab for the data sharing page action.">
+          Added this tab
+        </message>
+        <message name="IDS_DATA_SHARING_PAGE_ACTION_CHANGED_TAB" desc="A description of a member changing a tab for the data sharing page action.">
+          Changed this tab
+        </message>
+      <!-- /Page Action -->
+
+      <!-- Toast -->
+        <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED" desc="A description of the member removing a tab for the toast.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> removed tab “<ph name="WEBSITE_TITLE">$2<ex>chromium.org</ex></ph>”
+        </message>
+        <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED_ACTION" desc="The action that can be taken from the toast when a member removes a tab.">
+          Reopen
+        </message>
+        <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER" desc="A description of a new member being added to a shared group for the toast.">
+          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> joined "<ph name="GROUP_NAME">$2<ex>Vacation</ex></ph>" tab group
+        </message>
+        <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER_ACTION" desc="The action that can be taken from the toast when a member is added to a shared group.">
+          Manage
+        </message>
+        <message name="IDS_DATA_SHARING_TOAST_BLOCK_LEAVE" desc="A description of a member being blocked/leaving from a shared group for the toast.">
+          The "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group is no longer available
+        </message>
+      <!-- /Toast -->
+
+      <!-- User Education -->
+        <message name="IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE" desc="A description of how shared tabs work in a shared group for user education.">
+          Changes made are seen by everyone in the group
+        </message>
+      <!-- /User Education -->
+
+      <!-- Misc -->
+        <message name ="IDS_DATA_SHARING_LEARN_ABOUT_SHARED_GROUPS" desc="The title for a link that can be clicked to go to the help page for shared groups.">
+          Learn about shared tab groups
+        </message>
+        <message name ="IDS_DATA_SHARING_PEOPLE_WITH_ACCESS" desc="Text describing a list of members of a group.">
+          People with access
+        </message>
+        <message name ="IDS_DATA_SHARING_LINK_EDIT_ACCESS" desc="Text describing how link sharing works.">
+          Anyone with the link can edit all tabs
+        </message>
+        <message name ="IDS_DATA_SHARING_LINK_JOIN_TOGGLE" desc="A description of how the the toggle for link sharing works.">
+          Let anyone with the link join
+        </message>
+        <message name ="IDS_DATA_SHARING_CANCEL" desc="The label for buttons that cancel any dialogs in data sharing.">
+          Cancel
+        </message>
+      <!-- /Misc -->
 
     <!-- /Data Sharing -->
 
