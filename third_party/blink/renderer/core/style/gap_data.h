@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_COLOR_DATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_COLOR_DATA_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_H_
 
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -73,4 +73,4 @@ typedef HeapVector<GapColorData, 1> GapDataVector;
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GapColorData)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_COLOR_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_H_

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_COLOR_DATA_LIST_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_COLOR_DATA_LIST_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
 
-#include "third_party/blink/renderer/core/style/gap_color_data.h"
+#include "third_party/blink/renderer/core/style/gap_data.h"
 
 namespace blink {
 
@@ -55,4 +55,4 @@ class CORE_EXPORT GapColorDataList {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_COLOR_DATA_LIST_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
