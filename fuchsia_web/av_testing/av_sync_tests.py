@@ -11,19 +11,23 @@ import logging
 import multiprocessing
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
+import urllib.request
 
 from contextlib import AbstractContextManager
 
 import camera
 import server
+import video_analyzer
 
 TEST_SCRIPTS_ROOT = os.path.join(os.path.dirname(__file__), '..', '..',
                                  'build', 'fuchsia', 'test')
 sys.path.append(TEST_SCRIPTS_ROOT)
 
+import monitors
 import version
 from browser_runner import BrowserRunner
 from chrome_driver_wrapper import ChromeDriverWrapper
@@ -35,6 +39,7 @@ from run_webpage_test import WebpageTestRunner, capture_devtools_addr
 
 HTTP_SERVER_PORT = get_free_local_port()
 LOG_DIR = os.environ.get('ISOLATED_OUTDIR', '/tmp')
+TEMP_DIR = os.environ.get('TMPDIR', '/tmp')
 
 VIDEOS = {'720p24fpsVP9_gangnam_sync.webm': {'length': 251}}
 
@@ -59,27 +64,38 @@ class StartProcess(AbstractContextManager):
 
 def parameters_of(file: str) -> camera.Parameters:
     result = camera.Parameters()
-    result.output_path = LOG_DIR
+    result.file = file
+    # Recorded videos are huge, instead of placing them into the LOG_DIR which
+    # will be uploaded to CAS output, use TEMP_DIR provided by luci-swarming to
+    # be cleaned up automatically after the test run.
+    result.output_path = TEMP_DIR
+    # max_frames controls the maximum number of umcompressed frames in the
+    # memory. And if the number of uncompressed frames reaches the max_frames,
+    # the basler camera recorder will fail. The camera being used may use up to
+    # 388,800 bytes per frame, or ~467MB for 1200 frames, setting the max_frames
+    # to 1200 would avoid OOM. Also limit the fps to 120 to ensure the processor
+    # of the host machine is capable to compress the camera stream on time
+    # without exhausting the in-memory frame queue.
+    # TODO(crbug.com/40935291): These two values need to be adjusted to reach
+    # 300fps for a more accurate analysis result when the test is running on
+    # more performant host machines.
+    result.max_frames = 1200
+    result.fps = 120
     # Record several extra seconds to cover the video buffering.
     result.duration_sec = VIDEOS[file]['length'] + 5
-
-    # Testing purpose now. The video will later be uploaded to the GCS bucket
-    # for analysis rather than storing in the cas output.
-    result.duration_sec = 10
-
     return result
 
 
 def run_test(proc: subprocess.Popen) -> None:
     device, port = capture_devtools_addr(proc, LOG_DIR)
     logging.warning('DevTools is now running on %s:%s', device, port)
-    # Replace the last byte to 1, by default it's the ip address of the host
-    # machine being accessible on the device.
-    host = '.'.join(device.split('.')[:-1] + ['1'])
+    camera_params = parameters_of('720p24fpsVP9_gangnam_sync.webm')
     with ChromeDriverWrapper((device, port)) as driver:
-        file = '720p24fpsVP9_gangnam_sync.webm'
+        # Replace the last byte to 1, by default it's the ip address of the host
+        # machine being accessible on the device.
+        host = '.'.join(device.split('.')[:-1] + ['1'])
         if running_unattended():
-            param = f'file={file}'
+            param = f'file={camera_params.file}'
             proxy_host = os.environ.get('GCS_PROXY_HOST')
             if proxy_host:
                 # This is a hacky way to get the ip address of the host machine
@@ -88,18 +104,35 @@ def run_test(proc: subprocess.Popen) -> None:
         else:
             param = 'local'
         driver.get(f'http://{host}:{HTTP_SERVER_PORT}/video.html?{param}')
-        with StartProcess(camera.start, [parameters_of(file)], False):
+        with StartProcess(camera.start, [camera_params], False):
             video = driver.find_element_by_id('video')
             video.click()
-            # Video playback should finish almost within the same time as the
-            # camera recording, and this check may only be necessary to indicate
-            # a very heavy network laggy and buffering.
-            # TODO(crbug.com/40935291): Consider a way to record the extra time
-            # over the camera recording.
+        # Video playback should finish almost within the same time as the camera
+        # recording, and this check is only necessary to indicate a very heavy
+        # network laggy and buffering.
+        # TODO(crbug.com/40935291): May need to adjust the strategy here, the
+        # final frame / barcode is considered laggy and drops the score.
+        with monitors.time_consumption('video_perf', 'playback', 'laggy'):
             while not driver.execute_script('return arguments[0].ended;',
                                             video):
                 time.sleep(1)
-            logging.warning('Video finished')
+        logging.warning('Video finished')
+
+    # Download the original video file for local comparison.
+    original_video = os.path.join(TEMP_DIR, camera_params.file)
+    assert camera_params.video_file != original_video
+    # The http address should match the one in video.html.
+    urllib.request.urlretrieve(
+        f'http://172.31.186.18/test_site/mediaFiles/videostack/'
+        f'{camera_params.file}', original_video)
+
+    results = video_analyzer.from_original_video(camera_params.video_file,
+                                                 original_video)
+    logging.warning('Video analysis result: %s', results)
+
+    # Move the info csv to the cas-output for debugging purpose. Video files are
+    # huge and will be ignored.
+    shutil.move(camera_params.info_file, LOG_DIR)
 
 
 def main() -> int:
