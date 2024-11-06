@@ -570,6 +570,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kCounterSet, WebDXFeature::kCounterSet},
           {CSSSampleId::kObjectViewBox, WebDXFeature::kObjectViewBox},
           {CSSSampleId::kForcedColorAdjust, WebDXFeature::kForcedColors},
+          {CSSSampleId::kWhiteSpaceCollapse, WebDXFeature::kWhiteSpaceCollapse},
       }};
 
   return *kMap;

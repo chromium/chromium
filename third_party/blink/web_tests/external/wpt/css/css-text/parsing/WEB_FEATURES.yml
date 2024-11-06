@@ -5,3 +5,6 @@ features:
 - name: text-wrap-pretty
   files:
   - text-wrap-pretty.html
+- name: white-space-collapse
+  files:
+  - white-space-collapse-*
