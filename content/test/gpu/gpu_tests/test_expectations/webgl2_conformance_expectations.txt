@@ -268,8 +268,6 @@ crbug.com/angleproject/6748 [ angle-swiftshader passthrough ] WebglExtension_KHR
 # The Mac OpenGL driver doesn't support shader images, and therefore does not support PLS.
 crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_pixel_local_storage [ Skip ]
 
-# Fragment position generation rounds incorrectly on intel line primitives.
-crbug.com/1507168 [ chromeos intel passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -565,7 +563,6 @@ crbug.com/371971708 conformance2/state/gl-enum-tests.html [ Failure ]
 # ========================
 
 # Failing new updated tests
-crbug.com/338008895 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/1131224 [ angle-d3d11 desktop no-asan oop-c passthrough release win10 ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
@@ -929,8 +926,6 @@ crbug.com/906737 [ android angle-disabled no-passthrough qualcomm ] conformance/
 crbug.com/1176485 [ android qualcomm ] conformance2/glsl3/uint-int-shift-bug.html [ Failure ]
 crbug.com/1027125 [ android angle-disabled no-passthrough qualcomm ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 
-# Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
-crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 
 ## Pixel 2 ##
@@ -960,7 +955,6 @@ crbug.com/375117795 [ android android-pixel-4 ] deqp/functional/gles3/multisampl
 #####################
 
 crbug.com/1380411 [ chromeos passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Skip ]
-crbug.com/1380411 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 passthrough target-cpu-64 ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1380411 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 passthrough target-cpu-64 ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1380411 [ chromeos passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
 crbug.com/1213198 [ chromeos chromeos-board-amd64-generic ] WebglExtension_OVR_multiview2 [ Failure ]
@@ -1017,8 +1011,6 @@ crbug.com/1492258 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/g
 crbug.com/1492270 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
 crbug.com/1499516 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
 crbug.com/1499523 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/data/gles3/shaders/arrays.html [ Failure ]
-crbug.com/1499527 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/shadermatrix/inverse.html [ Failure ]
-crbug.com/1499532 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/shadertexturefunction/texturelodoffset.html [ Failure ]
 crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/basic_types* [ Failure ]
 crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/interpolation* [ Failure ]
 crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
@@ -1036,8 +1028,6 @@ crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/* [ Retry
 
 ## Volteer ##
 crbug.com/1507164 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
-crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/extensions/oes-draw-buffers-indexed.html [ RetryOnFailure ]
 
 #####################
