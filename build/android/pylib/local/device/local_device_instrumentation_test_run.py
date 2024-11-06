@@ -32,7 +32,6 @@ from incremental_install import installer
 from pylib import constants
 from pylib.base import base_test_result
 from pylib.base import output_manager
-from pylib.base import test_exception
 from pylib.constants import host_paths
 from pylib.instrumentation import instrumentation_parser
 from pylib.instrumentation import instrumentation_test_instance
@@ -405,21 +404,14 @@ class LocalDeviceInstrumentationTestRun(
         @trace_event.traced
         def install_helper_internal(d, apk_path=None):
           # pylint: disable=unused-argument
-          try:
-            d.Install(
-                apk,
-                modules=modules,
-                fake_modules=fake_modules,
-                permissions=permissions,
-                additional_locales=additional_locales,
-                instant_app=instant_app,
-                force_queryable=self._test_instance.IsApkForceQueryable(apk))
-          except device_errors.CommandFailedError as e:
-            raise test_exception.InstallationFailedError(e) from e
-          except device_errors.CommandTimeoutError as e:
-            raise test_exception.InstallationTimeoutError(e) from e
-          except base_error.BaseError as e:
-            raise test_exception.InstallationError(e) from e
+          d.Install(
+              apk,
+              modules=modules,
+              fake_modules=fake_modules,
+              permissions=permissions,
+              additional_locales=additional_locales,
+              instant_app=instant_app,
+              force_queryable=self._test_instance.IsApkForceQueryable(apk))
 
         return install_helper_internal
 
@@ -437,14 +429,7 @@ class LocalDeviceInstrumentationTestRun(
         @trace_event.traced
         def incremental_install_helper_internal(d, apk_path=None):
           # pylint: disable=unused-argument
-          try:
-            installer.Install(d, json_path, apk=apk, permissions=permissions)
-          except device_errors.CommandFailedError as e:
-            raise test_exception.InstallationFailedError(e) from e
-          except device_errors.CommandTimeoutError as e:
-            raise test_exception.InstallationTimeoutError(e) from e
-          except base_error.BaseError as e:
-            raise test_exception.InstallationError(e) from e
+          installer.Install(d, json_path, apk=apk, permissions=permissions)
 
         return incremental_install_helper_internal
 
@@ -1126,15 +1111,8 @@ class LocalDeviceInstrumentationTestRun(
 
     with ui_capture_dir:
       with self._ArchiveLogcat(device, test_name) as logcat_file:
-        try:
-          output = device.StartInstrumentation(
-              target, raw=True, extras=extras, timeout=timeout, retries=0)
-        except device_errors.CommandFailedError as e:
-          raise test_exception.StartInstrumentationFailedError(e) from e
-        except device_errors.CommandTimeoutError as e:
-          raise test_exception.StartInstrumentationTimeoutError(e) from e
-        except base_error.BaseError as e:
-          raise test_exception.StartInstrumentationError(e) from e
+        output = device.StartInstrumentation(
+            target, raw=True, extras=extras, timeout=timeout, retries=0)
 
       duration_ms = time_ms() - start_ms
 
