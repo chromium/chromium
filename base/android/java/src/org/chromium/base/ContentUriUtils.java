@@ -194,6 +194,18 @@ public abstract class ContentUriUtils {
     }
 
     /**
+     * Returns whether uriString is a Document URI as per DocumentsContract#isDocumentUri().
+     *
+     * @param uriString the content URI to look up.
+     * @return whether uriString is a Document URI.
+     */
+    @CalledByNative
+    private static boolean isDocumentUri(@JniType("std::string") String uriString) {
+        return DocumentsContract.isDocumentUri(
+                ContextUtils.getApplicationContext(), Uri.parse(uriString));
+    }
+
+    /**
      * Retrieve the MIME type for the content URI.
      *
      * @param uriString the content URI to look up.

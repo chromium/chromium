@@ -47,6 +47,9 @@ std::vector<FileEnumerator::FileInfo> ListContentUriDirectory(
 // Deletes a content URI.
 bool DeleteContentUri(const FilePath& content_uri);
 
+// Returns whether `content_uri` is a Document URI.
+bool IsDocumentUri(const FilePath& content_uri);
+
 }  // namespace internal
 
 // Gets MIME type from a content URI. Returns an empty string if the URI is

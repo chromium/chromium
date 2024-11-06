@@ -105,6 +105,12 @@ bool DeleteContentUri(const FilePath& content_uri) {
   return Java_ContentUriUtils_delete(env, content_uri.value());
 }
 
+bool IsDocumentUri(const FilePath& content_uri) {
+  DCHECK(content_uri.IsContentUri());
+  JNIEnv* env = android::AttachCurrentThread();
+  return Java_ContentUriUtils_isDocumentUri(env, content_uri.value());
+}
+
 }  // namespace internal
 
 void JNI_ContentUriUtils_AddFileInfoToVector(

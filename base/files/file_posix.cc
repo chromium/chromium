@@ -448,11 +448,19 @@ bool File::GetInfo(Info* info) const {
 #if BUILDFLAG(IS_ANDROID)
   if (path_.IsContentUri()) {
     // Content-URIs may represent files on the local disk, or may be virtual
-    // files backed by a ContentProvider. First attempt to use fstat(fd) with a
-    // FD from ContentResolver#openAssetFileDescriptor(). Some files may not
-    // succeed at all, or may have size=0 in which case we will attempt to get
-    // info via DocumentFile.
-    return (success && info->size > 0) ||
+    // files backed by a ContentProvider which may or may not use FUSE to back
+    // the FDs.
+    //
+    // For Document URIs, always use ContentUriGetFileInfo() since it will
+    // succeed by using the Java API DocumentFile, which can provide
+    // last-modified where FUSE cannot. FUSE always returns the current-time
+    // which is problematic because Blobs are registered with an
+    // expected-last-modified, and will fail if it changes by the time a client
+    // accesses it.
+    //
+    // For other Content-URIS, if fstat() succeeded with a non-zero size, then
+    // use the result, otherwise try via the Java APIs.
+    return (success && info->size > 0 && !internal::IsDocumentUri(path_)) ||
            internal::ContentUriGetFileInfo(path_, info);
   }
 #endif
