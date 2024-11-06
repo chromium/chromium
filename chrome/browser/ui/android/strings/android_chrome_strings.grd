@@ -4201,6 +4201,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_BASED_ON_YOUR_USAGE_DESCRIPTION" desc="Description for based on your usage option.">
         Current recommendation:  <ph name="RECOMMENDATION">%1$s<ex>New tab</ex></ph>
       </message>
+      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_BASED_ON_WINDOW_WIDTH_DESCRIPTION" desc="Description for based window width option.">
+        Only available for small windows
+      </message>
       <message name="IDS_TOOLBAR_SHORTCUT" desc="Title for toolbar shortcut toggle button in adaptive toolbar button preference page.">
         Toolbar shortcut
       </message>
