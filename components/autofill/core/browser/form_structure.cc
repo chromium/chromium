@@ -226,17 +226,8 @@ void FormStructure::DetermineHeuristicTypes(
 
   UpdateAutofillCount();
   AssignSections(fields_);
-
-  FormStructureRationalizer rationalizer(&fields_);
-  rationalizer.RationalizeContentEditables(log_manager);
-  rationalizer.RationalizeAutocompleteAttributes(log_manager);
-  if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
-    rationalizer.RationalizeRepeatedFields(
-        form_signature_, form_interactions_ukm_logger, log_manager);
-  }
-  rationalizer.RationalizeFieldTypePredictions(
-      main_frame_origin_, client_country_, current_page_language_, log_manager);
-  rationalizer.RationalizePhoneNumbersForFilling();
+  RationalizeFormStructure(form_interactions_ukm_logger, log_manager);
+  RationalizePhoneNumberFieldsForFilling();
 
   // Log the field type predicted by rationalization.
   // The sections are mapped to consecutive natural numbers starting at 1.
