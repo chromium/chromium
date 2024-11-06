@@ -21,9 +21,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -121,7 +123,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
         return opt.has_value() ? base::NumberToString(opt.value())
                                : std::string("<none>");
       };
-      oss << "State change: " << kActionNames[int{action}]
+      oss << "State change: " << StringifyActionName(action)
           << "\n  Source index: " << optional_to_string(src_index)
           << "\n  Destination index: " << optional_to_string(dst_index)
           << "\n  Source contents: " << src_contents
@@ -138,9 +140,6 @@ class MockTabStripModelObserver : public TabStripModelObserver {
              change_reason == state.change_reason &&
              foreground == state.foreground && action == state.action;
     }
-
-   private:
-    static const char* const kActionNames[];
   };
 
   int GetStateCount() const { return static_cast<int>(states_.size()); }
@@ -368,26 +367,38 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   void ClearStates() { states_.clear(); }
 
  private:
+  static std::string_view StringifyActionName(
+      TabStripModelObserverAction action) {
+    using enum TabStripModelObserverAction;
+    constexpr auto kObserverActionNames =
+        base::MakeFixedFlatMap<TabStripModelObserverAction, std::string_view>({
+            {INSERT, "INSERT"},
+            {CLOSE, "CLOSE"},
+            {DETACH, "DETACH"},
+            {ACTIVATE, "ACTIVATE"},
+            {DEACTIVATE, "DEACTIVATE"},
+            {SELECT, "SELECT"},
+            {MOVE, "MOVE"},
+            {CHANGE, "CHANGE"},
+            {PINNED, "PINNED"},
+            {REPLACED, "REPLACED"},
+            {CLOSE_ALL, "CLOSE_ALL"},
+            {CLOSE_ALL_CANCELED, "CLOSE_ALL_CANCELED"},
+            {CLOSE_ALL_COMPLETED, "CLOSE_ALL_COMPLETED"},
+            {GROUP_CHANGED, "GROUP_CHANGED"},
+        });
+    const auto iter = kObserverActionNames.find(action);
+    if (iter != kObserverActionNames.end()) {
+      return iter->second;
+    }
+
+    NOTREACHED() << "bogus `TabStripModelObserverAction`: " << action;
+  }
+
   std::vector<State> states_;
   TabStripSelectionChange latest_selection_change;
   std::map<tab_groups::TabGroupId, TabGroupUpdate> group_updates_;
 };
-
-const char* const MockTabStripModelObserver::State::kActionNames[]{
-    "INSERT",
-    "CLOSE",
-    "DETACH",
-    "ACTIVATE",
-    "DEACTIVATE",
-    "SELECT",
-    "MOVE",
-    "CHANGE",
-    "PINNED",
-    "REPLACED",
-    "CLOSE_ALL",
-    "CLOSE_ALL_CANCELED",
-    "CLOSE_ALL_COMPLETED",
-    "GROUP_CHANGED"};
 
 }  // namespace
 
