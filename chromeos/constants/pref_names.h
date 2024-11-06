@@ -51,6 +51,11 @@ inline constexpr char kDeviceRestrictionSchedule[] =
 inline constexpr char kDeviceRestrictionScheduleShowPostLogoutNotification[] =
     "device_restriction_schedule_show_post_logout_notification";
 
+// A time pref containing the highest seen system time. Used to prevent
+// tampering with the system time.
+inline constexpr char kDeviceRestrictionScheduleHighestSeenTime[] =
+    "device_restriction_schedule_highest_seen_time";
+
 }  // namespace chromeos::prefs
 
 #endif  // CHROMEOS_CONSTANTS_PREF_NAMES_H_
