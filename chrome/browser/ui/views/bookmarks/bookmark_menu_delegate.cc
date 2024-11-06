@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -91,18 +92,17 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
  public:
   BookmarkModelDropObserver(Profile* profile,
                             const bookmarks::BookmarkNodeData drop_data,
-                            const bookmarks::BookmarkNode* drop_parent,
+                            const BookmarkParentFolder& drop_parent,
                             const size_t index_to_drop_at)
       : profile_(profile),
         drop_data_(std::move(drop_data)),
         drop_parent_(drop_parent),
         index_to_drop_at_(index_to_drop_at),
-        bookmark_model_(BookmarkModelFactory::GetForBrowserContext(profile)) {
+        bookmark_service_(
+            BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)) {
     DCHECK(drop_data_.is_valid());
-    DCHECK(drop_parent_);
-
-    DCHECK(bookmark_model_);
-    bookmark_model_observation_.Observe(bookmark_model_);
+    CHECK(bookmark_service_);
+    bookmark_model_observation_.Observe(bookmark_service_->bookmark_model());
   }
 
   BookmarkModelDropObserver(const BookmarkModelDropObserver&) = delete;
@@ -112,17 +112,14 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
 
   void Drop(const ui::DropTargetEvent& event,
             ui::mojom::DragOperation& output_drag_op) {
-    if (!bookmark_model_) {  // Don't drop
+    if (!bookmark_service_) {  // Don't drop
       return;
     }
 
     bool copy = event.source_operations() == ui::DragDropTypes::DRAG_COPY;
-    // TODO(crbug.com/369304373): Update to use
-    // `BookmarkUIOperationsHelperMergedSurfaces` once this class is migrated to
-    // use `BookmarkMergedSurfaceService`.
     output_drag_op =
-        BookmarkUIOperationsHelperNonMergedSurfaces(bookmark_model_,
-                                                    drop_parent_)
+        BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
+                                                 &drop_parent_)
             .DropBookmarks(profile_, drop_data_, index_to_drop_at_, copy,
                            chrome::BookmarkReorderDropTarget::kBookmarkMenu);
   }
@@ -134,14 +131,14 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
 
   void CleanUp() {
     bookmark_model_observation_.Reset();
-    bookmark_model_ = nullptr;
+    bookmark_service_ = nullptr;
   }
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   const bookmarks::BookmarkNodeData drop_data_;
-  raw_ptr<const bookmarks::BookmarkNode> drop_parent_;
+  BookmarkParentFolder drop_parent_;
   const size_t index_to_drop_at_;
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<BookmarkMergedSurfaceService> bookmark_service_ = nullptr;
   base::ScopedObservation<BookmarkModel, BaseBookmarkModelObserver>
       bookmark_model_observation_{this};
 };
@@ -439,7 +436,8 @@ views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(
 
   std::unique_ptr<BookmarkModelDropObserver> drop_observer =
       std::make_unique<BookmarkModelDropObserver>(
-          profile_, std::move(drop_data_), drop_params->drop_parent,
+          profile_, std::move(drop_data_),
+          GetBookmarkParentFolderForNode(drop_params->drop_parent),
           drop_params->index_to_drop_at);
   return base::BindOnce(
       [](BookmarkModelDropObserver* drop_observer,
