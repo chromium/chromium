@@ -141,7 +141,10 @@
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  [self updateAvatarImageWithIdentity:identity];
+  if ([identity isEqual:_authenticationService->GetPrimaryIdentity(
+                            signin::ConsentLevel::kSignin)]) {
+    [self updateAvatarImageWithIdentity:identity];
+  }
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
