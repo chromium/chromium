@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, StartAndStop) {
   MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222675
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/1222675 https://crbug.com/377684694
 #define MAYBE_StartAndDataAvailable DISABLED_StartAndDataAvailable
 #else
 #define MAYBE_StartAndDataAvailable StartAndDataAvailable
@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
 
 // TODO(crbug.com/40903193): Seems the test is not working quite well on
 // android-12l-x64-dbg-tests.
-#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/377684694)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // https://crbug.com/1222675
 #define MAYBE_ResumeAndDataAvailable DISABLED_ResumeAndDataAvailable
 #else
@@ -177,7 +178,13 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, RecordWithTransparency) {
+// TODO(https://crbug.com/377684694)
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RecordWithTransparency DISABLED_RecordWithTransparency
+#else
+#define MAYBE_RecordWithTransparency RecordWithTransparency
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_RecordWithTransparency) {
   MakeTypicalCall(base::StringPrintf("testRecordWithTransparency(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
