@@ -104,6 +104,10 @@ bool IsAppCapturingSettingForcedOff(const webapps::AppId& app_id) {
 
 }  // namespace
 
+BASE_FEATURE(kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff,
+             "PreinstalledBrowserTabWebAppsForcedDefaultCaptureOff",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 bool WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
     blink::mojom::DisplayMode display_mode) {
@@ -1165,6 +1169,14 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
       return true;
     case proto::LinkCapturingUserPreference::DO_NOT_CAPTURE_SUPPORTED_LINKS:
       return false;
+  }
+
+  if (web_app->GetSources() ==
+          WebAppManagementTypes({WebAppManagement::Type::kDefault}) &&
+      web_app->user_display_mode() == mojom::UserDisplayMode::kBrowser &&
+      base::FeatureList::IsEnabled(
+          kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff)) {
+    return false;
   }
 
   // Reaching here means that the default link capturing behavior is 'on' and

@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -71,6 +72,11 @@ using DiyAppCount = base::StrongAlias<class DiyAppCountTag, int>;
 using InstallableAppCount =
     base::StrongAlias<class InstallableAppCountTag, int>;
 using NonSyncingAppCount = base::StrongAlias<class NonSyncingAppCountTag, int>;
+
+// Enabling this will force all apps that are exclusively preinstalled and open
+// in a browser tab to have the default link capturing setting be 'off'. This is
+// a safety switch in case something goes wrong with link capturing launch.
+BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff);
 
 // A registry model. This is a read-only container, which owns WebApp objects.
 class WebAppRegistrar {

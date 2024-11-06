@@ -25,6 +25,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
@@ -1566,5 +1567,62 @@ IN_PROC_BROWSER_TEST_P(
   // user may have already updated their preference.
   WaitForSupportedLinksPreference(app_id, /*is_preferred_app=*/false);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
+class PreinstalledWebAppNavigationCapturing
+    : public PreinstalledWebAppManagerBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PreinstalledWebAppNavigationCapturing() {
+    std::vector<base::test::FeatureRefAndParams> features =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            apps::test::LinkCapturingFeatureVersion::kV2DefaultOn);
+    if (GetParam()) {
+      features.emplace_back(
+          kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff,
+          base::FieldTrialParams());
+    }
+    nav_capturing_on_.InitWithFeaturesAndParameters(features, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList nav_capturing_on_;
+};
+
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppNavigationCapturing,
+                       PreinstalledAppsCaptureLinks) {
+  base::AutoReset<bool> bypass_offline_manifest_requirement =
+      PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const auto manifest = base::ReplaceStringPlaceholders(
+      R"({
+        "app_url": "$1",
+        "is_preferred_app_for_supported_links": false,
+        "launch_container": "tab",
+        "user_type": ["unmanaged"]
+      })",
+      {GetAppUrl().spec()}, nullptr);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, GetAppUrl());
+
+  // Install the app for the first time.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+
+  bool is_setting_forced_off = GetParam();
+  EXPECT_EQ(!is_setting_forced_off, registrar().CapturesLinksInScope(app_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PreinstalledWebAppNavigationCapturing,
+                         testing::Values(true, false),
+                         [](const auto& param_info) {
+                           return param_info.param ? "ForcedOff" : "Default";
+                         });
+
+#endif
 
 }  // namespace web_app
