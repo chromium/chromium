@@ -507,6 +507,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSNesting, WebDXFeature::kNesting},
           {WebFeature::kCSSSelectorNthChildOfSelector,
            WebDXFeature::kNthChildOf},
+          {WebFeature::kForcedColorsMediaFeature, WebDXFeature::kForcedColors},
       }};
 
   return *kMap;
@@ -568,6 +569,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kContentVisibility, WebDXFeature::kContentVisibility},
           {CSSSampleId::kCounterSet, WebDXFeature::kCounterSet},
           {CSSSampleId::kObjectViewBox, WebDXFeature::kObjectViewBox},
+          {CSSSampleId::kForcedColorAdjust, WebDXFeature::kForcedColors},
       }};
 
   return *kMap;

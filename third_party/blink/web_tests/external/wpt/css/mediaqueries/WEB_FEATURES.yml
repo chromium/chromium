@@ -3,3 +3,7 @@ features:
   files:
   - prefers-color-scheme.html
   - prefers-color-scheme-*
+features:
+- name: forced-colors
+  files:
+  - forced-colors.html

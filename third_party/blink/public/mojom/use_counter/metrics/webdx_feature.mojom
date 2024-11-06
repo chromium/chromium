@@ -220,6 +220,7 @@ enum WebDXFeature {
   kRlh = 162,
   kNesting = 163,
   kNthChildOf = 164,
+  kForcedColors = 165,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
