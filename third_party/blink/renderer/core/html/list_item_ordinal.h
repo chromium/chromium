@@ -38,6 +38,7 @@ class CORE_EXPORT ListItemOrdinal {
   // element.
   std::optional<int> ExplicitValue() const;
   void SetExplicitValue(int, const Element&);
+  bool UseExplicitValue() const { return type_ == kExplicit; }
   void ClearExplicitValue(const Node&);
   void MarkDirty() { SetType(kNeedsUpdate); }
 
@@ -60,7 +61,6 @@ class CORE_EXPORT ListItemOrdinal {
   enum ValueType { kNeedsUpdate, kUpdated, kExplicit };
   ValueType Type() const { return static_cast<ValueType>(type_); }
   void SetType(ValueType type) const { type_ = type; }
-  bool HasExplicitValue() const { return type_ == kExplicit; }
 
   static bool IsListOwner(const Node&);
   // https://drafts.csswg.org/css-contain-2/#containment-style
@@ -94,6 +94,9 @@ class CORE_EXPORT ListItemOrdinal {
   static void ItemUpdated(const LayoutObject*, UpdateType type);
 
   mutable int value_ = 0;
+  // `explicit_value_` represents the value of li elements. When the `type` is
+  // set to `kExplicit`, the value of `value_` is the same as `explicit_value_`.
+  mutable std::optional<int> explicit_value_;
   mutable unsigned type_ : 2;  // ValueType
 };
 
