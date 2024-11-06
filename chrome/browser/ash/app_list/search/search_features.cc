@@ -19,10 +19,6 @@ BASE_FEATURE(kLauncherKeywordExtractionScoring,
              "LauncherKeywordExtractionScoring",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLauncherQueryFederatedAnalyticsPHH,
-             "LauncherQueryFederatedAnalyticsPHH",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLauncherFuzzyMatchForOmnibox,
              "LauncherFuzzyMatchForOmnibox",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -81,10 +77,6 @@ bool IsLauncherGameSearchEnabled() {
 
 bool IsLauncherKeywordExtractionScoringEnabled() {
   return base::FeatureList::IsEnabled(kLauncherKeywordExtractionScoring);
-}
-
-bool IsLauncherQueryFederatedAnalyticsPHHEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherQueryFederatedAnalyticsPHH);
 }
 
 bool IsLauncherFuzzyMatchForOmniboxEnabled() {
