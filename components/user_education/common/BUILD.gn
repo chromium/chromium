@@ -7,6 +7,8 @@ import("//build/config/ui.gni")
 
 source_set("common") {
   sources = [
+    "anchor_element_provider.cc",
+    "anchor_element_provider.h",
     "feature_promo/feature_promo_controller.cc",
     "feature_promo/feature_promo_controller.h",
     "feature_promo/feature_promo_handle.cc",
@@ -95,6 +97,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "anchor_element_provider_unittest.cc",
     "feature_promo/feature_promo_controller_unittest.cc",
     "feature_promo/feature_promo_lifecycle_unittest.cc",
     "feature_promo/feature_promo_specification_unittest.cc",

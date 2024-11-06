@@ -9,6 +9,8 @@ source_set("test") {
   testonly = true
 
   sources = [
+    "mock_anchor_element_provider.cc",
+    "mock_anchor_element_provider.h",
     "mock_feature_promo_controller.cc",
     "mock_feature_promo_controller.h",
     "test_help_bubble.cc",
