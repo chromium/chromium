@@ -387,6 +387,13 @@ void LogProbeResultToHistogram(MigrationCause cause, bool success) {
           histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
+void LogSessionCreationInitiatorToHistogram(
+    MultiplexedSessionCreationInitiator session_creation) {
+  base::UmaHistogramEnumeration(
+      "Net.QuicSession.GoogleSearch.SessionCreationInitiator",
+      session_creation);
+}
+
 }  // namespace
 
 // static
@@ -1080,6 +1087,10 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
       observed_ecn_transition_ ? incoming_packets_before_ecn_transition_ : 0);
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumTotalStreams",
                           num_total_streams_);
+
+  if (num_total_streams_ > 0 && IsGoogleHostWithAlpnH3(session_key_.host())) {
+    LogSessionCreationInitiatorToHistogram(session_creation_initiator_);
+  }
 
   if (!OneRttKeysAvailable()) {
     return;

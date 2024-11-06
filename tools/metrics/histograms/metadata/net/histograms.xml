@@ -6079,6 +6079,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.{ProtocolType}.GoogleSearch.SessionCreationInitiator"
+    enum="MultiplexedSessionCreationInitiator" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The session creation initiator for a {ProtocolType} to GoogleSearch. This is
+    recorded for each session with at least one stream created, when closing the
+    session to GoogleSearch.
+  </summary>
+  <token key="ProtocolType">
+    <variant name="QuicSession"/>
+    <variant name="SpdySession"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
