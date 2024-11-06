@@ -108,12 +108,6 @@ class VisitedURLRankingService : public KeyedService {
   // this method.
   using DecorateURLVisitAggregatesCallback =
       base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
-  // TODO(crbug/364577990): Remove this function when callers switch to the
-  // version that uses metadata.
-  virtual void DecorateURLVisitAggregates(
-      const Config& config,
-      std::vector<URLVisitAggregate> visit_aggregates,
-      DecorateURLVisitAggregatesCallback callback) = 0;
   virtual void DecorateURLVisitAggregates(
       const Config& config,
       visited_url_ranking::URLVisitsMetadata url_visits_metadata,

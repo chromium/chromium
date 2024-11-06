@@ -120,11 +120,13 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
 
     ranking_service_->RankURLVisitAggregates(
         config_, std::move(aggregates),
-        base::BindOnce(&FetchAndRankFlow::OnRanked, base::RetainedRef(this)));
+        base::BindOnce(&FetchAndRankFlow::OnRanked, base::RetainedRef(this),
+                       std::move(url_visits_metadata)));
   }
 
   // Continuing after OnFetched()'s call to RankVisitAggregates().
-  void OnRanked(ResultStatus status,
+  void OnRanked(URLVisitsMetadata url_visits_metadata,
+                ResultStatus status,
                 std::vector<URLVisitAggregate> aggregates) {
     if (status != ResultStatus::kSuccess) {
       Java_VisitedUrlRankingBackend_onSuggestions(env_, j_suggestions_,
@@ -133,7 +135,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
     }
 
     ranking_service_->DecorateURLVisitAggregates(
-        {}, std::move(aggregates),
+        {}, std::move(url_visits_metadata), std::move(aggregates),
         base::BindOnce(&FetchAndRankFlow::PassResults,
                        base::RetainedRef(this)));
   }
