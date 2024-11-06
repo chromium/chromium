@@ -26,7 +26,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -63,7 +62,6 @@ public class TrustedWebActivityPermissionsTest {
     private String mTestPage;
     private Origin mOrigin;
     private String mPackage;
-    private InstalledWebappPermissionManager mPermissionManager;
 
     @Before
     public void setUp() throws TimeoutException {
@@ -84,14 +82,13 @@ public class TrustedWebActivityPermissionsTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(), mTestPage));
 
-        mPermissionManager = ChromeApplicationImpl.getComponent().resolvePermissionManager();
-        mPermissionManager.clearForTesting();
+        WebappRegistry.getInstance().getPermissionStore().clearForTesting();
         assertEquals("\"default\"", getNotificationPermission());
     }
 
     @After
     public void tearDown() {
-        mPermissionManager.clearForTesting();
+        WebappRegistry.getInstance().getPermissionStore().clearForTesting();
     }
 
     @Test
@@ -99,7 +96,7 @@ public class TrustedWebActivityPermissionsTest {
     public void allowNotifications() throws TimeoutException {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
+                        InstalledWebappPermissionManager.updatePermission(
                                 mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
     }
@@ -109,7 +106,7 @@ public class TrustedWebActivityPermissionsTest {
     public void blockNotifications() throws TimeoutException {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
+                        InstalledWebappPermissionManager.updatePermission(
                                 mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.BLOCK));
         assertEquals("\"denied\"", getNotificationPermission());
     }
@@ -119,11 +116,11 @@ public class TrustedWebActivityPermissionsTest {
     public void unregisterTwa() throws TimeoutException {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
+                        InstalledWebappPermissionManager.updatePermission(
                                 mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
 
-        runOnUiThreadBlocking(() -> mPermissionManager.unregister(mOrigin));
+        runOnUiThreadBlocking(() -> InstalledWebappPermissionManager.unregister(mOrigin));
         assertEquals("\"default\"", getNotificationPermission());
     }
 
@@ -132,11 +129,11 @@ public class TrustedWebActivityPermissionsTest {
     public void detectTwa() {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
+                        InstalledWebappPermissionManager.updatePermission(
                                 mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertTrue(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
 
-        runOnUiThreadBlocking(() -> mPermissionManager.unregister(mOrigin));
+        runOnUiThreadBlocking(() -> InstalledWebappPermissionManager.unregister(mOrigin));
         assertFalse(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
     }
 
@@ -145,7 +142,7 @@ public class TrustedWebActivityPermissionsTest {
     public void allowGeolocation() {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
+                        InstalledWebappPermissionManager.updatePermission(
                                 mOrigin, mPackage, GEOLOCATION, ContentSettingValues.ALLOW));
         assertEquals(
                 Integer.valueOf(ContentSettingValues.ALLOW),
@@ -159,7 +156,7 @@ public class TrustedWebActivityPermissionsTest {
     public void blockGeolocation() {
         runOnUiThreadBlocking(
                 () ->
-                        mPermissionManager.updatePermission(
+                        InstalledWebappPermissionManager.updatePermission(
                                 mOrigin, mPackage, GEOLOCATION, ContentSettingValues.BLOCK));
         assertEquals(
                 Integer.valueOf(ContentSettingValues.BLOCK),

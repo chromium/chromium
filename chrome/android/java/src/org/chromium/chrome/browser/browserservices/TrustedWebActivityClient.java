@@ -82,7 +82,6 @@ public class TrustedWebActivityClient {
     private static final String EXTRA_MESSENGER = "messenger";
 
     private final ConnectionPool mConnectionPool;
-    private final InstalledWebappPermissionManager mPermissionManager;
 
     /** Interface for callbacks to get a permission setting from a TWA app. */
     public interface PermissionCallback {
@@ -102,17 +101,13 @@ public class TrustedWebActivityClient {
 
     /** Creates a TrustedWebActivityClient. */
     @Inject
-    public TrustedWebActivityClient(
-            TrustedWebActivityServiceConnectionPool connectionPool,
-            InstalledWebappPermissionManager permissionManager) {
-        this(TrustedWebActivityClientWrappers.wrap(connectionPool), permissionManager);
+    public TrustedWebActivityClient(TrustedWebActivityServiceConnectionPool connectionPool) {
+        this(TrustedWebActivityClientWrappers.wrap(connectionPool));
     }
 
     /** Creates a TrustedWebActivityClient for tests. */
-    public TrustedWebActivityClient(
-            ConnectionPool connectionPool, InstalledWebappPermissionManager permissionManager) {
+    public TrustedWebActivityClient(ConnectionPool connectionPool) {
         mConnectionPool = connectionPool;
-        mPermissionManager = permissionManager;
     }
 
     /**
@@ -124,7 +119,7 @@ public class TrustedWebActivityClient {
     public boolean twaExistsForScope(Uri scope) {
         Origin origin = Origin.create(scope);
         if (origin == null) return false;
-        Set<Token> possiblePackages = mPermissionManager.getAllDelegateApps(origin);
+        Set<Token> possiblePackages = InstalledWebappPermissionManager.getAllDelegateApps(origin);
         if (possiblePackages == null) return false;
         return mConnectionPool.serviceExistsForScope(scope, possiblePackages);
     }
@@ -429,7 +424,7 @@ public class TrustedWebActivityClient {
                     public void onConnected(Origin origin, Connection service)
                             throws RemoteException {
                         if (!service.areNotificationsEnabled(channelDisplayName)) {
-                            mPermissionManager.updatePermission(
+                            InstalledWebappPermissionManager.updatePermission(
                                     origin,
                                     service.getComponentName().getPackageName(),
                                     ContentSettingsType.NOTIFICATIONS,
@@ -528,7 +523,7 @@ public class TrustedWebActivityClient {
             return;
         }
 
-        Set<Token> possiblePackages = mPermissionManager.getAllDelegateApps(origin);
+        Set<Token> possiblePackages = InstalledWebappPermissionManager.getAllDelegateApps(origin);
         if (possiblePackages == null || possiblePackages.isEmpty()) {
             callback.onNoTwaFound();
             return;
@@ -563,7 +558,7 @@ public class TrustedWebActivityClient {
         ComponentName componentName =
                 searchVerifiedApps(
                         appContext.getPackageManager(),
-                        mPermissionManager.getAllDelegateApps(origin),
+                        InstalledWebappPermissionManager.getAllDelegateApps(origin),
                         resolveInfosForUrl);
 
         if (componentName == null) return null;

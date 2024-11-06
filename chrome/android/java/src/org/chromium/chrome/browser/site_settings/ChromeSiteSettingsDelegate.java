@@ -217,7 +217,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public @Nullable String getDelegateAppNameForOrigin(
             Origin origin, @ContentSettingsType.EnumType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            return InstalledWebappPermissionManager.get().getDelegateAppName(origin);
+            return InstalledWebappPermissionManager.getDelegateAppName(origin);
         }
 
         return null;
@@ -227,7 +227,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public @Nullable String getDelegatePackageNameForOrigin(
             Origin origin, @ContentSettingsType.EnumType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            return InstalledWebappPermissionManager.get().getDelegatePackageName(origin);
+            return InstalledWebappPermissionManager.getDelegatePackageName(origin);
         }
 
         return null;
@@ -283,7 +283,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public Set<String> getAllDelegatedNotificationOrigins() {
-        return InstalledWebappPermissionManager.get().getAllDelegatedOrigins();
+        return InstalledWebappPermissionManager.getAllDelegatedOrigins();
     }
 
     @Override

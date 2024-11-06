@@ -35,9 +35,9 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
-import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.Origin;
@@ -72,13 +72,9 @@ public class DigitalGoodsTest {
         // Native needs to be initialized to start the test server.
         LibraryLoader.getInstance().ensureInitialized();
 
-        ChromeAppComponent component = ChromeApplicationImpl.getComponent();
-        component
-                .resolvePermissionManager()
-                .addDelegateApp(
-                        Origin.createOrThrow(TWA_SERVICE_SCOPE),
-                        "org.chromium.chrome.tests.support");
-        mClient = component.resolveTrustedWebActivityClient();
+        InstalledWebappPermissionManager.addDelegateApp(
+                Origin.createOrThrow(TWA_SERVICE_SCOPE), "org.chromium.chrome.tests.support");
+        mClient = ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
 
         // TWAs only work with HTTPS.
         mTestServer =

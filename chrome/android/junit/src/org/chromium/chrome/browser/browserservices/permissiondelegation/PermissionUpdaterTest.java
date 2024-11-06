@@ -12,8 +12,12 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.Signature;
+import android.content.pm.SigningInfo;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +30,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.Origin;
 
 /** Tests for {@link PermissionUpdater}. */
@@ -35,8 +40,9 @@ public class PermissionUpdaterTest {
     private static final Origin ORIGIN = Origin.create("https://www.website.com");
     private static final String URL = "https://www.website.com";
     private static final String PACKAGE_NAME = "com.package.name";
+    private static final String APP_LABEL = "name";
 
-    @Mock public InstalledWebappPermissionManager mPermissionManager;
+    @Mock InstalledWebappPermissionStore mStore;
 
     @Mock public NotificationPermissionUpdater mNotificationsPermissionUpdater;
     @Mock public LocationPermissionUpdater mLocationPermissionUpdater;
@@ -50,11 +56,28 @@ public class PermissionUpdaterTest {
 
         PackageManager pm = RuntimeEnvironment.application.getPackageManager();
         mShadowPackageManager = shadowOf(pm);
+        mShadowPackageManager.installPackage(generateTestPackageInfo(PACKAGE_NAME));
+        WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
         mPermissionUpdater =
-                new PermissionUpdater(
-                        mPermissionManager,
-                        mNotificationsPermissionUpdater,
-                        mLocationPermissionUpdater);
+                new PermissionUpdater(mNotificationsPermissionUpdater, mLocationPermissionUpdater);
+    }
+
+    private PackageInfo generateTestPackageInfo(String packageName) {
+        ApplicationInfo appInfo = new ApplicationInfo();
+        appInfo.flags = ApplicationInfo.FLAG_INSTALLED;
+        appInfo.packageName = packageName;
+        appInfo.sourceDir = "/";
+        appInfo.name = APP_LABEL;
+
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = packageName;
+        packageInfo.applicationInfo = appInfo;
+        packageInfo.versionCode = 1;
+        packageInfo.signingInfo = new SigningInfo();
+
+        Signature[] signatures = new Signature[] {new Signature("01234567")};
+        shadowOf(packageInfo.signingInfo).setSignatures(signatures);
+        return packageInfo;
     }
 
     @Test
@@ -97,13 +120,13 @@ public class PermissionUpdaterTest {
     }
 
     private void verifyPermissionNotUpdated() {
-        verify(mPermissionManager, never()).addDelegateApp(any(), anyString());
+        verify(mStore, never()).addDelegateApp(any(), any());
         verify(mNotificationsPermissionUpdater, never())
                 .onOriginVerified(any(), any(), anyString());
     }
 
     private void verifyPermissionWillUpdate() {
-        verify(mPermissionManager).addDelegateApp(eq(ORIGIN), eq(PACKAGE_NAME));
+        verify(mStore).addDelegateApp(eq(ORIGIN), any());
         verify(mNotificationsPermissionUpdater)
                 .onOriginVerified(eq(ORIGIN), eq(URL), eq(PACKAGE_NAME));
     }

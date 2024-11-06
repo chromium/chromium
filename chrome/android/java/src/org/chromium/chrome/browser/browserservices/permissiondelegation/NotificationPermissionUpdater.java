@@ -39,14 +39,10 @@ public class NotificationPermissionUpdater {
 
     private static final @ContentSettingsType.EnumType int TYPE = ContentSettingsType.NOTIFICATIONS;
 
-    private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;
 
     @Inject
-    public NotificationPermissionUpdater(
-            InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityClient trustedWebActivityClient) {
-        mPermissionManager = permissionManager;
+    public NotificationPermissionUpdater(TrustedWebActivityClient trustedWebActivityClient) {
         mTrustedWebActivityClient = trustedWebActivityClient;
     }
 
@@ -103,7 +99,7 @@ public class NotificationPermissionUpdater {
 
                     @Override
                     public void onNoTwaFound() {
-                        mPermissionManager.unregister(origin);
+                        InstalledWebappPermissionManager.unregister(origin);
                     }
                 });
     }
@@ -147,7 +143,7 @@ public class NotificationPermissionUpdater {
     private void requestPermissionFromWebApk(
             Origin origin, long callback, @Nullable String packageName) {
         if (TextUtils.isEmpty(packageName)) {
-            mPermissionManager.resetStoredPermission(origin, TYPE);
+            InstalledWebappPermissionManager.resetStoredPermission(origin, TYPE);
             InstalledWebappBridge.runPermissionCallback(callback, ContentSettingValues.BLOCK);
             return;
         }
@@ -188,7 +184,7 @@ public class NotificationPermissionUpdater {
             String packageName,
             @ContentSettingValues int settingValue) {
         Log.d(TAG, "Updating notification permission to: %d", settingValue);
-        mPermissionManager.updatePermission(origin, packageName, TYPE, settingValue);
+        InstalledWebappPermissionManager.updatePermission(origin, packageName, TYPE, settingValue);
         InstalledWebappBridge.runPermissionCallback(callback, settingValue);
     }
 }

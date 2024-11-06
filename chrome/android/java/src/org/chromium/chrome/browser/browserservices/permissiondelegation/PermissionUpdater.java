@@ -24,17 +24,13 @@ import javax.inject.Singleton;
 public class PermissionUpdater {
     private static final String TAG = "PermissionUpdater";
 
-    private final InstalledWebappPermissionManager mPermissionManager;
-
     private final NotificationPermissionUpdater mNotificationPermissionUpdater;
     private final LocationPermissionUpdater mLocationPermissionUpdater;
 
     @Inject
     public PermissionUpdater(
-            InstalledWebappPermissionManager permissionManager,
             NotificationPermissionUpdater notificationPermissionUpdater,
             LocationPermissionUpdater locationPermissionUpdater) {
-        mPermissionManager = permissionManager;
         mNotificationPermissionUpdater = notificationPermissionUpdater;
         mLocationPermissionUpdater = locationPermissionUpdater;
     }
@@ -56,7 +52,7 @@ public class PermissionUpdater {
             return;
         }
 
-        mPermissionManager.addDelegateApp(origin, packageName);
+        InstalledWebappPermissionManager.addDelegateApp(origin, packageName);
 
         mNotificationPermissionUpdater.onOriginVerified(origin, url, packageName);
     }

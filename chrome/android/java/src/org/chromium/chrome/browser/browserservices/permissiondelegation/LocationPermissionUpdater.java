@@ -27,14 +27,10 @@ public class LocationPermissionUpdater {
 
     private static final @ContentSettingsType.EnumType int TYPE = ContentSettingsType.GEOLOCATION;
 
-    private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;
 
     @Inject
-    public LocationPermissionUpdater(
-            InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityClient trustedWebActivityClient) {
-        mPermissionManager = permissionManager;
+    public LocationPermissionUpdater(TrustedWebActivityClient trustedWebActivityClient) {
         mTrustedWebActivityClient = trustedWebActivityClient;
     }
 
@@ -44,7 +40,7 @@ public class LocationPermissionUpdater {
      * location permission to what it was before any client app was installed.
      */
     void onClientAppUninstalled(Origin origin) {
-        mPermissionManager.resetStoredPermission(origin, TYPE);
+        InstalledWebappPermissionManager.resetStoredPermission(origin, TYPE);
     }
 
     /**
@@ -70,7 +66,7 @@ public class LocationPermissionUpdater {
                     public void onNoTwaFound() {
                         if (mCalled) return;
                         mCalled = true;
-                        mPermissionManager.resetStoredPermission(origin, TYPE);
+                        InstalledWebappPermissionManager.resetStoredPermission(origin, TYPE);
                         InstalledWebappBridge.runPermissionCallback(
                                 callback, ContentSettingValues.BLOCK);
                     }
@@ -83,7 +79,8 @@ public class LocationPermissionUpdater {
             ComponentName app,
             @ContentSettingValues int settingValue) {
         boolean enabled = settingValue == ContentSettingValues.ALLOW;
-        mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, settingValue);
+        InstalledWebappPermissionManager.updatePermission(
+                origin, app.getPackageName(), TYPE, settingValue);
         Log.d(TAG, "Updating origin location permissions to: %b", enabled);
 
         InstalledWebappBridge.runPermissionCallback(callback, settingValue);

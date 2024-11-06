@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.StandardNotificationBuilder;
@@ -137,7 +138,7 @@ public class TrustedWebActivityClientTest {
         mClient = component.resolveTrustedWebActivityClient();
 
         // TestTrustedWebActivityService is in the test support apk.
-        component.resolvePermissionManager().addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
+        InstalledWebappPermissionManager.addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
 
         // The MessengerService lives in the same package as the TestTrustedWebActivityService.
         // We use it as a side channel to verify what the TestTrustedWebActivityService does.
@@ -270,9 +271,7 @@ public class TrustedWebActivityClientTest {
                 TrustedWebActivityClient.createLaunchIntentForTwa(
                         context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
 
-        ChromeApplicationImpl.getComponent()
-                .resolvePermissionManager()
-                .addDelegateApp(Origin.create(SCOPE), targetPackageName);
+        InstalledWebappPermissionManager.addDelegateApp(Origin.create(SCOPE), targetPackageName);
 
         Assert.assertNotNull(
                 TrustedWebActivityClient.createLaunchIntentForTwa(

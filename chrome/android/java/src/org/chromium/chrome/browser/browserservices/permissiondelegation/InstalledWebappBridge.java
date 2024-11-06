@@ -66,7 +66,7 @@ public class InstalledWebappBridge {
 
     @CalledByNative
     private static Permission[] getPermissions(@ContentSettingsType.EnumType int type) {
-        return InstalledWebappPermissionManager.get().getPermissions(type);
+        return InstalledWebappPermissionManager.getPermissions(type);
     }
 
     @CalledByNative

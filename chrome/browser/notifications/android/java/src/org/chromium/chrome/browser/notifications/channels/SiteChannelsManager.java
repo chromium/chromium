@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge.SiteChannel;
@@ -32,14 +33,21 @@ public class SiteChannelsManager {
 
     private final NotificationManagerProxy mNotificationManager;
 
+    private static SiteChannelsManager sInstance;
+
     public static SiteChannelsManager getInstance() {
-        return LazyHolder.INSTANCE;
+        if (sInstance == null) {
+            sInstance =
+                    new SiteChannelsManager(
+                            new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
+        }
+        return sInstance;
     }
 
-    private static class LazyHolder {
-        public static final SiteChannelsManager INSTANCE =
-                new SiteChannelsManager(
-                        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
+    public static void setInstanceForTesting(SiteChannelsManager instance) {
+        var oldValue = sInstance;
+        sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     @VisibleForTesting
