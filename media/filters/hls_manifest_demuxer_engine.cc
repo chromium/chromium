@@ -808,7 +808,8 @@ void HlsManifestDemuxerEngine::OnStreamContainerDetermined(
   host_->SetSequenceMode(parse_info.role, true);
 
   auto rendition = HlsRendition::CreateRendition(
-      host_, this, parse_info.role, std::move(playlist), parse_info.uri);
+      host_, this, parse_info.role, std::move(playlist), parse_info.uri,
+      media_log_.get());
 
   if (parse_info.role == kPrimary) {
     auto duration_or_live = rendition->GetDuration();

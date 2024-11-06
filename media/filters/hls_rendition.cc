@@ -41,11 +41,12 @@ std::unique_ptr<HlsRendition> HlsRendition::CreateRendition(
     HlsRenditionHost* rendition_host,
     std::string role,
     scoped_refptr<hls::MediaPlaylist> playlist,
-    GURL uri) {
+    GURL uri,
+    MediaLog* media_log) {
   auto duration = GetPlaylistDuration(playlist.get());
   return std::make_unique<HlsRenditionImpl>(
       engine_host, rendition_host, std::move(role), std::move(playlist),
-      duration, std::move(uri));
+      duration, std::move(uri), media_log);
 }
 
 }  // namespace media

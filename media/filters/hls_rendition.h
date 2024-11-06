@@ -74,7 +74,8 @@ class MEDIA_EXPORT HlsRendition {
       HlsRenditionHost* rendition_host,
       std::string role,
       scoped_refptr<hls::MediaPlaylist> playlist,
-      GURL uri);
+      GURL uri,
+      MediaLog* media_log);
 };
 
 }  // namespace media

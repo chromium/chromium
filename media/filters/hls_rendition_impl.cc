@@ -26,7 +26,8 @@ HlsRenditionImpl::HlsRenditionImpl(ManifestDemuxerEngineHost* engine_host,
                                    std::string role,
                                    scoped_refptr<hls::MediaPlaylist> playlist,
                                    std::optional<base::TimeDelta> duration,
-                                   GURL media_playlist_uri)
+                                   GURL media_playlist_uri,
+                                   MediaLog* media_log)
     : engine_host_(engine_host),
       rendition_host_(rendition_host),
       segments_(std::make_unique<hls::SegmentStream>(
@@ -35,7 +36,8 @@ HlsRenditionImpl::HlsRenditionImpl(ManifestDemuxerEngineHost* engine_host,
       role_(std::move(role)),
       duration_(duration),
       media_playlist_uri_(std::move(media_playlist_uri)),
-      last_download_time_(base::TimeTicks::Now()) {}
+      last_download_time_(base::TimeTicks::Now()),
+      media_log_(media_log->Clone()) {}
 
 std::optional<base::TimeDelta> HlsRenditionImpl::GetDuration() {
   return duration_;
@@ -338,6 +340,9 @@ base::TimeDelta HlsRenditionImpl::ClearOldSegments(base::TimeDelta media_time) {
     engine_host_->Remove(role_, base::TimeDelta(), remove_until);
   }
 
+  auto ranges = engine_host_->GetBufferedRanges(role_);
+  media_log_->SetProperty<MediaLogProperty::kHlsBufferedRanges>(ranges);
+
   return base::TimeTicks::Now() - removal_start;
 }
 
@@ -365,6 +370,8 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
   if (auto enc = segment->GetEncryptionData()) {
     is_fetching_new_key = enc->NeedsKeyFetch();
   }
+  media_log_->AddEvent<MediaLogEvent::kHlsSegmentFetch>(
+      segment->GetUri().PathForRequest());
   rendition_host_->ReadMediaSegment(
       *segment, /*read_chunked=*/false, include_init,
       base::BindOnce(&HlsRenditionImpl::OnSegmentData,
@@ -476,6 +483,8 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
   // for the seek to complete. In this case, we just keep fetching until
   // the seek time is loaded.
   auto ranges = engine_host_->GetBufferedRanges(role_);
+  media_log_->SetProperty<MediaLogProperty::kHlsBufferedRanges>(ranges);
+
   if (ranges.size() && ranges.contains(ranges.size() - 1, required_time)) {
     std::move(cb).Run();
     return;
