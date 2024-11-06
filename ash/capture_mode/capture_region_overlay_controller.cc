@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/scanner/scanner_text.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -53,7 +54,7 @@ gfx::Rect GetRectCenteredAtOrigin(const gfx::Size& size) {
 }  // namespace
 
 CaptureRegionOverlayController::CaptureRegionOverlayController() {
-  DCHECK(features::CanStartSunfishSession());
+  DCHECK(CanStartSunfishSession());
 }
 
 CaptureRegionOverlayController::~CaptureRegionOverlayController() = default;

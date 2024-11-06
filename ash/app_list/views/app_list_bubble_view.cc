@@ -32,6 +32,7 @@
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -282,7 +283,7 @@ void AppListBubbleView::InitContentsView() {
 
   // Skip the assistant button on arrow up/down in app list.
   button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>();
-  if (features::CanStartSunfishSession()) {
+  if (CanStartSunfishSession()) {
     button_focus_skipper_->AddButton(search_box_view_->sunfish_button());
   }
   button_focus_skipper_->AddButton(search_box_view_->assistant_button());

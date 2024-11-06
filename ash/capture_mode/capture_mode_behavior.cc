@@ -20,6 +20,7 @@
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -100,7 +101,7 @@ class DefaultBehavior : public CaptureModeBehavior {
     // TODO(crbug.com/376103983): Verify `CaptureRegionOverlayController` works
     // correctly. It is always created in Sunfish session to paint the region
     // selection UI, but should only support text overlay if Scanner is enabled.
-    return features::CanStartSunfishSession();
+    return CanStartSunfishSession();
   }
   bool CanPaintRegionOverlay() const override {
     auto* controller = CaptureModeController::Get();
@@ -347,7 +348,7 @@ class SunfishBehavior : public CaptureModeBehavior {
     }
   }
   bool ShouldRegionOverlayBeAllowed() const override {
-    return features::CanStartSunfishSession();
+    return CanStartSunfishSession();
   }
   bool CanPaintRegionOverlay() const override { return true; }
   bool ShouldShowUserNudge() const override { return false; }

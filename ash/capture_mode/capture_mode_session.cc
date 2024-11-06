@@ -34,6 +34,7 @@
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -3244,7 +3245,7 @@ void CaptureModeSession::RemoveAllActionButtons() {
 }
 
 void CaptureModeSession::UpdateFeedbackButtonWidget() {
-  if (!features::CanStartSunfishSession()) {
+  if (!CanStartSunfishSession()) {
     return;
   }
 

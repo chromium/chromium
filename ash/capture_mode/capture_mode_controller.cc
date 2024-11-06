@@ -27,6 +27,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -526,7 +527,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
       CHECK(features::IsGameDashboardEnabled());
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      DCHECK(features::CanStartSunfishSession());
+      DCHECK(CanStartSunfishSession());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
@@ -681,7 +682,7 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 // static
 bool CaptureModeController::IsSunfishAllowedAndEnabled() {
-  return features::CanStartSunfishSession() &&
+  return CanStartSunfishSession() &&
          // When `AppListControllerImpl` is initialised and indirectly calls
          // this function, the active user session has not been started yet.
          // Gracefully handle this case.
@@ -859,7 +860,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 }
 
 void CaptureModeController::StartSunfishSession() {
-  DCHECK(features::CanStartSunfishSession());
+  DCHECK(CanStartSunfishSession());
   if (!GetActiveUserPrefService()->GetBoolean(kSunfishEnabledPrefName)) {
     return;
   }

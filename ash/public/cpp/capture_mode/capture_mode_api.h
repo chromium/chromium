@@ -14,6 +14,12 @@ namespace ash {
 // Note: this won't start a capture mode session.
 void ASH_EXPORT CaptureScreenshotsOfAllDisplays();
 
+// Returns true if the active account can bypass the feature key check.
+bool ASH_EXPORT IsSunfishFeatureEnabledWithFeatureKey();
+
+// Returns true if sunfish can be started.
+bool ASH_EXPORT CanStartSunfishSession();
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_API_H_
