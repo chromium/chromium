@@ -5808,6 +5808,9 @@
         <message name="IDS_FIRMWARE_UPDATING_INFO_TEXT" desc="Label for communicating information about what actions a user can take during an update.">
           While the firmware is updating, do not unplug this external device or shut down your computer. You can minimize this window. This update may take a few minutes and your external device may not work during this time.
         </message>
+        <message name="IDS_UEFI_FIRMWARE_UPDATING_INFO_TEXT" desc="Label for communicating information about what actions a user can take during an update.">
+          This update requires you to restart your computer to complete installation. This update may take a few minutes to complete. While the firmware is updating, do not unplug or shut down your computer.
+        </message>
         <message name="IDS_FIRMWARE_INSTALLING_TEXT" desc="Label that displays what percentage of the update has been installed.">
           Updating (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
         </message>
@@ -5846,6 +5849,9 @@
         </message>
         <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google.">
           This update is provided by the external device manufacturer and hasn't been verified by Google.
+        </message>
+        <message name="IDS_UEFI_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google, but isn't externally located.">
+          This update is provided by the device manufacturer and hasn't been verified by Google.
         </message>
         <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_ICON_ARIA_LABEL" desc="The alt-text read by the screen reader when the warning disclaimer is selected.">
           Warning
