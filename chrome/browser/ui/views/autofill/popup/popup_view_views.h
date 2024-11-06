@@ -218,11 +218,11 @@ class PopupViewViews : public PopupBaseView,
   void OnSuggestionsChanged(bool prefer_prev_arrow_side) override;
 
   // PopupBaseView:
-  bool DoUpdateBoundsAndRedrawPopup() override;
+  [[nodiscard]] bool DoUpdateBoundsAndRedrawPopup() override;
 
   // If `prefer_prev_arrow_side` is `true`, the view takes prev arrow side as
   // the first preferred when recalculating the popup position.
-  bool DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side);
+  [[nodiscard]] bool DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side);
 
   // ExpandablePopupParentView:
   void OnMouseEnteredInChildren() override;
