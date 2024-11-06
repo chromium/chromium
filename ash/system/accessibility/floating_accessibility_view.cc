@@ -128,10 +128,13 @@ bool FloatingAccessibilityBubbleView::AcceleratorPressed(
   return true;
 }
 
-void FloatingAccessibilityBubbleView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->SetNameExplicitlyEmpty();
-  TrayBubbleView::GetAccessibleNodeData(node_data);
+void FloatingAccessibilityBubbleView::AdjustAccessibleName(
+    std::u16string& new_name,
+    ax::mojom::NameFrom& name_from) {
+  if (!delegate() || !CanActivate()) {
+    new_name = std::u16string();
+    name_from = ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
+  }
 }
 
 BEGIN_METADATA(FloatingAccessibilityBubbleView)

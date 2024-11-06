@@ -34,6 +34,7 @@
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
 
@@ -613,6 +614,21 @@ TEST_F(ImeMenuTrayTest, ImeMenuHasBottomInsetsOnLockScreen) {
                           ->GetViewByID(VIEW_ID_IME_LIST_VIEW_SCROLLER)
                           ->GetProperty(views::kMarginsKey);
   EXPECT_GT(container_margins->bottom(), 0);
+}
+
+TEST_F(ImeMenuTrayTest, BubbleViewAccessibleName) {
+  Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
+      /*is_extra_input_options_enabled=*/true, /*is_emoji_enabled=*/true,
+      /*is_handwriting_enabled=*/true, /*is_voice_enabled=*/true);
+
+  // Show IME tray bubble.
+  GetTray()->ShowBubble();
+
+  TrayBubbleView* bubble_view = GetTray()->GetBubbleView();
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTray()->GetAccessibleNameForBubble());
 }
 
 }  // namespace ash

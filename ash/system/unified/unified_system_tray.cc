@@ -59,6 +59,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -525,6 +526,11 @@ void UnifiedSystemTray::ShowBubbleInternal() {
     return;
   }
   SetIsActive(true);
+
+  // UnifiedSystemTray::GetAccessibleNameForBubble() changes based on the value
+  // of ShowBubble(), so we need to set the accessible name once the bubble
+  // exists and is shown.
+  bubble_->bubble_view_->UpdateAccessibleName();
 }
 
 void UnifiedSystemTray::HideBubbleInternal() {

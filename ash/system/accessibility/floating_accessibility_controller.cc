@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 
 namespace ash {
@@ -33,18 +34,22 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 // object.
 class ScopedBubbleViewActivator {
  public:
-  explicit ScopedBubbleViewActivator(
-      ash::FloatingAccessibilityBubbleView* bubble_view)
+  ScopedBubbleViewActivator(ash::FloatingAccessibilityBubbleView* bubble_view,
+                            std::u16string accessible_name)
       : bubble_view_(bubble_view) {
     DCHECK(bubble_view_);
     bubble_view_->SetCanActivate(true);
+    bubble_view_->GetViewAccessibility().SetName(accessible_name);
   }
 
   ScopedBubbleViewActivator(const ScopedBubbleViewActivator&) = delete;
   ScopedBubbleViewActivator& operator=(const ScopedBubbleViewActivator&) =
       delete;
 
-  ~ScopedBubbleViewActivator() { bubble_view_->SetCanActivate(false); }
+  ~ScopedBubbleViewActivator() {
+    bubble_view_->SetCanActivate(false);
+    bubble_view_->GetViewAccessibility().SetName(std::u16string());
+  }
 
  private:
   raw_ptr<ash::FloatingAccessibilityBubbleView> bubble_view_ = nullptr;
@@ -170,7 +175,8 @@ void FloatingAccessibilityController::SetMenuPosition(
 void FloatingAccessibilityController::FocusOnMenu() {
   // Temporarily activate floating accessibility bubble view when processing
   // a keyboard shortcut to allow getting focus.
-  ScopedBubbleViewActivator activator(bubble_view_);
+  ScopedBubbleViewActivator activator(bubble_view_,
+                                      GetAccessibleNameForBubble());
 
   bubble_view_->GetFocusManager()->ClearFocus();
   bubble_view_->GetFocusManager()->AdvanceFocus(false /* reverse */);

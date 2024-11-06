@@ -360,6 +360,7 @@ void FocusModeTray::ShowBubble() {
 
   session_snapshot_ =
       controller->current_session()->GetSnapshot(base::Time::Now());
+  bubble_view->UpdateAccessibleName();
   UpdateBubbleViews(session_snapshot_.value());
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
@@ -421,6 +422,9 @@ void FocusModeTray::OnFocusModeChanged(FocusModeSession::State session_state) {
                             focus_mode_controller->congratulatory_index()));
 
   if (bubble_) {
+    if (auto* bubble_view = bubble_->GetBubbleView()) {
+      bubble_view->UpdateAccessibleName();
+    }
     UpdateBubbleViews(session_snapshot_.value());
   } else if (session_snapshot_->state == FocusModeSession::State::kEnding) {
     bounce_in_animation_finished_ = false;
@@ -431,6 +435,9 @@ void FocusModeTray::OnFocusModeChanged(FocusModeSession::State session_state) {
 void FocusModeTray::OnTimerTick(
     const FocusModeSession::Snapshot& session_snapshot) {
   session_snapshot_ = session_snapshot;
+  if (bubble_ && bubble_->GetBubbleView()) {
+    bubble_->GetBubbleView()->UpdateAccessibleName();
+  }
   image_view_->SetTooltipText(GetAccessibleTrayName(
       session_snapshot_.value(),
       FocusModeController::Get()->congratulatory_index()));
@@ -452,6 +459,9 @@ void FocusModeTray::OnTimerTick(
 void FocusModeTray::OnActiveSessionDurationChanged(
     const FocusModeSession::Snapshot& session_snapshot) {
   session_snapshot_ = session_snapshot;
+  if (bubble_ && bubble_->GetBubbleView()) {
+    bubble_->GetBubbleView()->UpdateAccessibleName();
+  }
   image_view_->SetTooltipText(GetAccessibleTrayName(
       session_snapshot_.value(),
       FocusModeController::Get()->congratulatory_index()));

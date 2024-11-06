@@ -210,6 +210,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
                                /*available_imes=*/{ime_english, ime_pinyin});
   }
 
+  std::u16string GetAccessibleNameForBubble() {
+    return controller()->GetAccessibleNameForBubble();
+  }
+
  protected:
   base::test::ScopedFeatureList features_;
 };
@@ -769,6 +773,12 @@ TEST_F(FloatingAccessibilityControllerTest,
 
   bubble_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+  // FloatingAccessibilityController::Show sets the
+  // FloatingAccessibleBubbleView's CanActivate() to false, so we expect the
+  // accessible name to be empty.
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            std::u16string());
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 TEST_F(FloatingAccessibilityControllerTest, CheckOpacity) {

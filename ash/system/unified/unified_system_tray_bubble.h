@@ -125,6 +125,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
 
  private:
   friend class SystemTrayTestApi;
+  friend class UnifiedSystemTray;
 
   void UpdateBubbleBounds();
 

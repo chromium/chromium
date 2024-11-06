@@ -134,6 +134,9 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // Returns whether the recent files placeholder is shown.
   bool RecentFilesPlaceholderShown() const;
 
+  // Returns the accessible name for the bubble.
+  std::u16string GetAccessibleNameForBubble();
+
  private:
   raw_ptr<HoldingSpaceTray, DanglingUntriaged> holding_space_tray_ = nullptr;
 };

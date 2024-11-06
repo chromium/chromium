@@ -2213,6 +2213,19 @@ TEST_F(HoldingSpaceTrayTest, CheckTrayTooltipText) {
   EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()), u"Tote");
 }
 
+TEST_F(HoldingSpaceTrayTest, BubbleViewAccessibleName) {
+  StartSession();
+
+  test_api()->Show();
+  views::View* bubble = test_api()->GetBubble();
+  ASSERT_TRUE(bubble);
+
+  ui::AXNodeData node_data;
+  bubble->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            test_api()->GetAccessibleNameForBubble());
+}
+
 using HoldingSpacePreviewsTrayTest = HoldingSpaceTrayTestBase;
 
 TEST_F(HoldingSpacePreviewsTrayTest, HideButtonOnChangeToEmptyModel) {
