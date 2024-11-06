@@ -87,12 +87,12 @@ void EmptyDataSharingService::HandleShareURLNavigationIntercepted(
     const GURL& url,
     std::unique_ptr<ShareURLInterceptionContext> context) {}
 
-std::unique_ptr<GURL> EmptyDataSharingService::GetDataSharingURL(
+std::unique_ptr<GURL> EmptyDataSharingService::GetDataSharingUrl(
     const GroupData& group_data) {
   return nullptr;
 }
 
-DataSharingService::ParseURLResult EmptyDataSharingService::ParseDataSharingURL(
+DataSharingService::ParseUrlResult EmptyDataSharingService::ParseDataSharingUrl(
     const GURL& url) {
   return GroupToken();
 }
@@ -112,12 +112,8 @@ void EmptyDataSharingService::SetSDKDelegate(
 void EmptyDataSharingService::SetUIDelegate(
     std::unique_ptr<DataSharingUIDelegate> ui_delegate) {}
 
-DataSharingUIDelegate* EmptyDataSharingService::GetUIDelegate() {
+DataSharingUIDelegate* EmptyDataSharingService::GetUiDelegate() {
   return nullptr;
-}
-
-ServiceStatus EmptyDataSharingService::GetServiceStatus() {
-  return ServiceStatus();
 }
 
 }  // namespace data_sharing

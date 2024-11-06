@@ -102,8 +102,8 @@ class DataSharingServiceImpl : public DataSharingService,
   void HandleShareURLNavigationIntercepted(
       const GURL& url,
       std::unique_ptr<ShareURLInterceptionContext> context) override;
-  std::unique_ptr<GURL> GetDataSharingURL(const GroupData& group_data) override;
-  ParseURLResult ParseDataSharingURL(const GURL& url) override;
+  std::unique_ptr<GURL> GetDataSharingUrl(const GroupData& group_data) override;
+  ParseUrlResult ParseDataSharingUrl(const GURL& url) override;
   void Shutdown() override;
   void EnsureGroupVisibility(
       const GroupId& group_id,
@@ -117,8 +117,7 @@ class DataSharingServiceImpl : public DataSharingService,
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
-  DataSharingUIDelegate* GetUIDelegate() override;
-  ServiceStatus GetServiceStatus() override;
+  DataSharingUIDelegate* GetUiDelegate() override;
 
   // GroupDataModel::Observer implementation.
   void OnModelLoaded() override;
@@ -176,7 +175,6 @@ class DataSharingServiceImpl : public DataSharingService,
   // model to be updated too.
   void OnSDKDelegateUpdated();
 
-  ServiceStatus current_status_;
   // It must be destroyed after the `sdk_delegate_` member because
   // `sdk_delegate` needs the `data_sharing_network_loader_`.
   std::unique_ptr<DataSharingNetworkLoader> data_sharing_network_loader_;

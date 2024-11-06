@@ -111,18 +111,6 @@ DataSharingServiceImpl::DataSharingServiceImpl(
           std::move(change_processor), std::move(data_type_store_factory));
 
   OnSDKDelegateUpdated();
-
-  // Initialize ServiceStatus.
-  current_status_.collaboration_status = CollaborationStatus::kDisabled;
-  if (base::FeatureList::IsEnabled(features::kDataSharingFeature)) {
-    current_status_.collaboration_status =
-        CollaborationStatus::kEnabledCreateAndJoin;
-  }
-
-  // TODO(b/360184707): Add identity manager and sync service to observe state
-  // changes.
-  current_status_.signin_status = SigninStatus::kNotSignedIn;
-  current_status_.sync_status = SyncStatus::kNotSyncing;
 }
 
 DataSharingServiceImpl::~DataSharingServiceImpl() {
@@ -515,7 +503,7 @@ DataSharingServiceImpl::GetCollaborationGroupSyncBridgeForTesting() {
 
 bool DataSharingServiceImpl::ShouldInterceptNavigationForShareURL(
     const GURL& url) {
-  return ParseDataSharingURL(url).has_value();
+  return ParseDataSharingUrl(url).has_value();
 }
 
 void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(
@@ -527,7 +515,7 @@ void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(
   ui_delegate_->HandleShareURLIntercepted(url, std::move(context));
 }
 
-std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingURL(
+std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingUrl(
     const GroupData& group_data) {
   if (!group_data.group_token.IsValid()) {
     return nullptr;
@@ -542,12 +530,12 @@ std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingURL(
   return std::make_unique<GURL>(url);
 }
 
-DataSharingService::ParseURLResult DataSharingServiceImpl::ParseDataSharingURL(
+DataSharingService::ParseUrlResult DataSharingServiceImpl::ParseDataSharingUrl(
     const GURL& url) {
   GURL data_sharing_url = GURL(data_sharing::features::kDataSharingURL.Get());
   if (url.host() != data_sharing_url.host() ||
       url.path() != data_sharing_url.path()) {
-    return base::unexpected(ParseURLStatus::kHostOrPathMismatchFailure);
+    return base::unexpected(ParseUrlStatus::kHostOrPathMismatchFailure);
   }
 
   std::string group_id;
@@ -556,7 +544,7 @@ DataSharingService::ParseURLResult DataSharingServiceImpl::ParseDataSharingURL(
   net::GetValueForKeyInQuery(url, kTokenBlobKey, &access_token);
 
   if (group_id.empty() || access_token.empty()) {
-    return base::unexpected(ParseURLStatus::kQueryMissingFailure);
+    return base::unexpected(ParseUrlStatus::kQueryMissingFailure);
   }
 
   return GroupToken(GroupId(group_id), access_token);
@@ -607,12 +595,8 @@ void DataSharingServiceImpl::SetUIDelegate(
   ui_delegate_ = std::move(ui_delegate);
 }
 
-DataSharingUIDelegate* DataSharingServiceImpl::GetUIDelegate() {
+DataSharingUIDelegate* DataSharingServiceImpl::GetUiDelegate() {
   return ui_delegate_.get();
-}
-
-ServiceStatus DataSharingServiceImpl::GetServiceStatus() {
-  return current_status_;
 }
 
 void DataSharingServiceImpl::OnAccessTokenAdded(

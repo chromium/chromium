@@ -32,9 +32,9 @@ public class DataSharingConversionBridge {
     }
 
     @CalledByNative
-    public static DataSharingService.ParseURLResult createParseURLResult(
+    public static DataSharingService.ParseUrlResult createParseUrlResult(
             GroupToken groupToken, int status) {
-        return new DataSharingService.ParseURLResult(groupToken, status);
+        return new DataSharingService.ParseUrlResult(groupToken, status);
     }
 
     @CalledByNative

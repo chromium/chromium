@@ -54,12 +54,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
-import org.chromium.components.data_sharing.DataSharingService.ParseURLResult;
+import org.chromium.components.data_sharing.DataSharingService.ParseUrlResult;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.GroupToken;
-import org.chromium.components.data_sharing.ParseURLStatus;
+import org.chromium.components.data_sharing.ParseUrlStatus;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
@@ -172,24 +172,18 @@ public class DataSharingTabManagerUnitTest {
         mActivity = activity;
     }
 
-    private void mockSuccessfulParseDataSharingURL() {
+    private void mockSuccessfulParseDataSharingUrl() {
         GroupToken groupToken = new GroupToken(GROUP_ID, ACCESS_TOKEN);
-        ParseURLResult result =
-                new DataSharingService.ParseURLResult(groupToken, ParseURLStatus.SUCCESS);
-        when(mDataSharingService.parseDataSharingURL(any())).thenReturn(result);
+        ParseUrlResult result =
+                new DataSharingService.ParseUrlResult(groupToken, ParseUrlStatus.SUCCESS);
+        when(mDataSharingService.parseDataSharingUrl(any())).thenReturn(result);
     }
 
-    private void mockUnsuccessfulParseDataSharingURL(@ParseURLStatus int status) {
-        assert status != ParseURLStatus.SUCCESS;
-        ParseURLResult result =
-                new DataSharingService.ParseURLResult(/* groupToken= */ null, status);
-        when(mDataSharingService.parseDataSharingURL(any())).thenReturn(result);
-    }
-
-    @Test
-    public void testInvalidUrl() {
-        mockUnsuccessfulParseDataSharingURL(ParseURLStatus.UNKNOWN);
-        mDataSharingTabManager.initiateJoinFlow(null, null);
+    private void mockUnsuccessfulParseDataSharingUrl(@ParseUrlStatus int status) {
+        assert status != ParseUrlStatus.SUCCESS;
+        ParseUrlResult result =
+                new DataSharingService.ParseUrlResult(/* groupToken= */ null, status);
+        when(mDataSharingService.parseDataSharingUrl(any())).thenReturn(result);
     }
 
     @Test
@@ -207,14 +201,14 @@ public class DataSharingTabManagerUnitTest {
         mDataSharingTabManager.initiateJoinFlow(null, TEST_URL);
 
         // Verify we never parse the URL without a profile.
-        verify(mDataSharingService, never()).parseDataSharingURL(TEST_URL);
+        verify(mDataSharingService, never()).parseDataSharingUrl(TEST_URL);
     }
 
     @Test
-    public void testInvalidURL() {
-        doReturn(new DataSharingService.ParseURLResult(null, ParseURLStatus.UNKNOWN))
+    public void testInvalidUrl() {
+        doReturn(new DataSharingService.ParseUrlResult(null, ParseUrlStatus.UNKNOWN))
                 .when(mDataSharingService)
-                .parseDataSharingURL(TEST_URL);
+                .parseDataSharingUrl(TEST_URL);
 
         mDataSharingTabManager.initiateJoinFlow(null, TEST_URL);
 
@@ -224,7 +218,7 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     public void testJoinFlowWithExistingTabGroup() {
-        mockSuccessfulParseDataSharingURL();
+        mockSuccessfulParseDataSharingUrl();
 
         // Mock exist in sync.
         String[] tabId = new String[] {GROUP_ID};
@@ -244,10 +238,10 @@ public class DataSharingTabManagerUnitTest {
     @Test
     public void testJoinFlowWithExistingTabGroupSyncOnly() {
         doReturn(
-                        new DataSharingService.ParseURLResult(
-                                new GroupToken(GROUP_ID, ACCESS_TOKEN), ParseURLStatus.SUCCESS))
+                        new DataSharingService.ParseUrlResult(
+                                new GroupToken(GROUP_ID, ACCESS_TOKEN), ParseUrlStatus.SUCCESS))
                 .when(mDataSharingService)
-                .parseDataSharingURL(any());
+                .parseDataSharingUrl(any());
 
         // Mock exist in sync.
         doReturn(new String[] {GROUP_ID}).when(mTabGroupSyncService).getAllGroupIds();
@@ -271,7 +265,7 @@ public class DataSharingTabManagerUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testOldUiJoinFlowWithNewTabGroup() {
-        mockSuccessfulParseDataSharingURL();
+        mockSuccessfulParseDataSharingUrl();
 
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
 
@@ -316,7 +310,7 @@ public class DataSharingTabManagerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testJoinFlowWithNewTabGroup() {
-        mockSuccessfulParseDataSharingURL();
+        mockSuccessfulParseDataSharingUrl();
 
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
 
@@ -347,7 +341,7 @@ public class DataSharingTabManagerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testJoinFlowWithNewTabGroupOpenedBeforeJoinCallback() {
-        mockSuccessfulParseDataSharingURL();
+        mockSuccessfulParseDataSharingUrl();
 
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
 
@@ -385,7 +379,7 @@ public class DataSharingTabManagerUnitTest {
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testDestroy() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mockSuccessfulParseDataSharingURL();
+        mockSuccessfulParseDataSharingUrl();
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
         mDataSharingTabManager.initiateJoinFlow(null, /* dataSharingURL= */ null);
@@ -417,13 +411,13 @@ public class DataSharingTabManagerUnitTest {
         doCallback(1, (Callback<GroupDataOrFailureOutcome> callback) -> callback.onResult(outcome))
                 .when(mDataSharingService)
                 .ensureGroupVisibility(any(), any());
-        doReturn(TEST_URL).when(mDataSharingService).getDataSharingURL(eq(groupData));
+        doReturn(TEST_URL).when(mDataSharingService).getDataSharingUrl(eq(groupData));
         doReturn(TEST_URL)
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
         mDataSharingTabManager.createGroupFlow(null, TEST_GROUP_DISPLAY_NAME, LOCAL_ID, null);
         // Verifying showShareSheet() method is called.
-        verify(mDataSharingService).getDataSharingURL(eq(groupData));
+        verify(mDataSharingService).getDataSharingUrl(eq(groupData));
         verify(mShareDelegate).share(any(), any(), eq(ShareDelegate.ShareOrigin.TAB_GROUP));
     }
 
@@ -433,7 +427,7 @@ public class DataSharingTabManagerUnitTest {
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
-        doReturn(TEST_URL).when(mDataSharingService).getDataSharingURL(any());
+        doReturn(TEST_URL).when(mDataSharingService).getDataSharingUrl(any());
         doReturn(TEST_URL)
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
@@ -478,7 +472,7 @@ public class DataSharingTabManagerUnitTest {
                 .when(mDataSharingService)
                 .createGroup(any(), any());
 
-        doReturn(TEST_URL).when(mDataSharingService).getDataSharingURL(eq(groupData));
+        doReturn(TEST_URL).when(mDataSharingService).getDataSharingUrl(eq(groupData));
         doReturn(TEST_URL)
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
@@ -519,7 +513,7 @@ public class DataSharingTabManagerUnitTest {
 
         var groupDataProto = getSyncGroupData();
 
-        doReturn(TEST_URL).when(mDataSharingService).getDataSharingURL(any());
+        doReturn(TEST_URL).when(mDataSharingService).getDataSharingUrl(any());
         doReturn(TEST_URL)
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
@@ -567,7 +561,7 @@ public class DataSharingTabManagerUnitTest {
                 .when(mDataSharingService)
                 .createGroup(any(), any());
 
-        doReturn(TEST_URL).when(mDataSharingService).getDataSharingURL(any());
+        doReturn(TEST_URL).when(mDataSharingService).getDataSharingUrl(any());
         doReturn(TEST_URL)
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
@@ -596,7 +590,7 @@ public class DataSharingTabManagerUnitTest {
     @Test
     public void testParseDataSharingUrlFailure() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mockUnsuccessfulParseDataSharingURL(ParseURLStatus.HOST_OR_PATH_MISMATCH_FAILURE);
+        mockUnsuccessfulParseDataSharingUrl(ParseUrlStatus.HOST_OR_PATH_MISMATCH_FAILURE);
 
         mDataSharingTabManager.initiateJoinFlow(null, /* dataSharingURL= */ null);
         verify(mModalDialogManager).showDialog(mPropertyModelCaptor.capture(), anyInt());
@@ -611,7 +605,7 @@ public class DataSharingTabManagerUnitTest {
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testAddMemberFailure() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mockSuccessfulParseDataSharingURL();
+        mockSuccessfulParseDataSharingUrl();
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         mDataSharingTabManager.initiateJoinFlow(null, /* dataSharingURL= */ null);

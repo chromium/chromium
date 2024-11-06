@@ -86,15 +86,15 @@ public class TestDataSharingService implements DataSharingService {
     }
 
     @Override
-    public GURL getDataSharingURL(GroupData groupData) {
+    public GURL getDataSharingUrl(GroupData groupData) {
         return null;
     }
 
     @Override
-    public ParseURLResult parseDataSharingURL(GURL url) {
-        return new ParseURLResult(
+    public ParseUrlResult parseDataSharingUrl(GURL url) {
+        return new ParseUrlResult(
                 new GroupToken(/* groupId= */ null, /* accessToken= */ null),
-                ParseURLStatus.UNKNOWN);
+                ParseUrlStatus.UNKNOWN);
     }
 
     @Override
@@ -118,11 +118,5 @@ public class TestDataSharingService implements DataSharingService {
     @Override
     public DataSharingUIDelegate getUiDelegate() {
         return null;
-    }
-
-    @Override
-    public ServiceStatus getServiceStatus() {
-        return new ServiceStatus(
-                SigninStatus.NOT_SIGNED_IN, SyncStatus.NOT_SYNCING, CollaborationStatus.DISABLED);
     }
 }

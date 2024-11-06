@@ -96,7 +96,7 @@ GURL data_sharing::GetShareLink(const std::string& group_id,
   // `group_id` and `access_token` are served by webui and should never be null
   // when they get here. So the sharing url must be valid.
   std::unique_ptr<GURL> url_ptr =
-      data_sharing_service->GetDataSharingURL(group_data);
+      data_sharing_service->GetDataSharingUrl(group_data);
   CHECK(url_ptr);
   return *url_ptr;
 }

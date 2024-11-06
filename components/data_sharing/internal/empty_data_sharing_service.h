@@ -62,8 +62,8 @@ class EmptyDataSharingService : public DataSharingService {
   void HandleShareURLNavigationIntercepted(
       const GURL& url,
       std::unique_ptr<ShareURLInterceptionContext> context) override;
-  std::unique_ptr<GURL> GetDataSharingURL(const GroupData& group_data) override;
-  ParseURLResult ParseDataSharingURL(const GURL& url) override;
+  std::unique_ptr<GURL> GetDataSharingUrl(const GroupData& group_data) override;
+  ParseUrlResult ParseDataSharingUrl(const GURL& url) override;
   void EnsureGroupVisibility(
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
@@ -76,8 +76,7 @@ class EmptyDataSharingService : public DataSharingService {
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
-  DataSharingUIDelegate* GetUIDelegate() override;
-  ServiceStatus GetServiceStatus() override;
+  DataSharingUIDelegate* GetUiDelegate() override;
 };
 
 }  // namespace data_sharing

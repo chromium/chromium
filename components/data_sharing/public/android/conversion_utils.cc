@@ -9,7 +9,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/data_sharing/public/group_data.h"
-#include "components/data_sharing/public/service_status.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -17,7 +16,6 @@
 #include "components/data_sharing/public/jni_headers/GroupData_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupMember_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupToken_jni.h"
-#include "components/data_sharing/public/jni_headers/ServiceStatus_jni.h"
 #include "components/data_sharing/public/jni_headers/SharedTabGroupPreview_jni.h"
 #include "components/data_sharing/public/jni_headers/TabPreview_jni.h"
 
@@ -28,15 +26,6 @@ using base::android::ToJavaByteArray;
 using base::android::ToTypedJavaArrayOfObjects;
 
 namespace data_sharing::conversion {
-
-ScopedJavaLocalRef<jobject> CreateJavaServiceStatus(
-    JNIEnv* env,
-    const ServiceStatus& status) {
-  return Java_ServiceStatus_createServiceStatus(
-      env, static_cast<int>(status.signin_status),
-      static_cast<int>(status.sync_status),
-      static_cast<int>(status.collaboration_status));
-}
 
 ScopedJavaLocalRef<jobject> CreateJavaGroupMember(JNIEnv* env,
                                                   const GroupMember& member) {

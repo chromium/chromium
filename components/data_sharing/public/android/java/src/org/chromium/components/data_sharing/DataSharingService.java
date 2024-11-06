@@ -4,8 +4,6 @@
 
 package org.chromium.components.data_sharing;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.url.GURL;
@@ -77,7 +75,7 @@ public interface DataSharingService {
     }
 
     /** Result that contains a groupToken and an status of the action that was requested. */
-    public static class ParseURLResult {
+    public static class ParseUrlResult {
         /**
          * The group data requested.
          *
@@ -86,9 +84,9 @@ public interface DataSharingService {
         public final GroupToken groupToken;
 
         /** Result of the action */
-        public final @ParseURLStatus int status;
+        public final @ParseUrlStatus int status;
 
-        public ParseURLResult(GroupToken groupToken, int status) {
+        public ParseUrlResult(GroupToken groupToken, int status) {
             this.groupToken = groupToken;
             this.status = status;
         }
@@ -216,15 +214,15 @@ public interface DataSharingService {
      * @param groupData The group information needed to create the URL.
      * @return Associated data sharing GURL if successful, else returns null.
      */
-    GURL getDataSharingURL(GroupData groupData);
+    GURL getDataSharingUrl(GroupData groupData);
 
     /**
      * Parse and validate a data sharing URL.
      *
      * @param url The url to be parsed.
-     * @return The parsing result as ParseURLResult.
+     * @return The parsing result as ParseUrlResult.
      */
-    ParseURLResult parseDataSharingURL(GURL url);
+    ParseUrlResult parseDataSharingUrl(GURL url);
 
     /**
      * Ensure that an existing group is visible for new user to join.
@@ -245,8 +243,4 @@ public interface DataSharingService {
 
     /** Returns The current instance of {@link DataSharingUIDelegate}. */
     DataSharingUIDelegate getUiDelegate();
-
-    /** Returns the current {@link ServiceStatus} of the service. */
-    @NonNull
-    ServiceStatus getServiceStatus();
 }

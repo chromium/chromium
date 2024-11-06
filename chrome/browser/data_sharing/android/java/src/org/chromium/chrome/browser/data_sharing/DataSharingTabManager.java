@@ -33,7 +33,7 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupToken;
-import org.chromium.components.data_sharing.ParseURLStatus;
+import org.chromium.components.data_sharing.ParseUrlStatus;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
@@ -233,9 +233,9 @@ public class DataSharingTabManager {
         assert tabGroupSyncService != null;
         assert dataSharingService != null;
 
-        DataSharingService.ParseURLResult parseResult =
-                dataSharingService.parseDataSharingURL(dataSharingUrl);
-        if (parseResult.status != ParseURLStatus.SUCCESS) {
+        DataSharingService.ParseUrlResult parseResult =
+                dataSharingService.parseDataSharingUrl(dataSharingUrl);
+        if (parseResult.status != ParseUrlStatus.SUCCESS) {
             showInvitationFailureDialog();
             DataSharingMetrics.recordJoinActionFlowState(
                     DataSharingMetrics.JoinActionStateAndroid.PARSE_URL_FAILED);
@@ -535,7 +535,7 @@ public class DataSharingTabManager {
         DataSharingService dataSharingService =
                 DataSharingServiceFactory.getForProfile(
                         mProfileSupplier.get().getOriginalProfile());
-        GURL url = dataSharingService.getDataSharingURL(groupData);
+        GURL url = dataSharingService.getDataSharingUrl(groupData);
         if (url == null) {
             // TODO(ritikagup) : Show error dialog showing fetching URL failed. Contact owner for
             // new link.

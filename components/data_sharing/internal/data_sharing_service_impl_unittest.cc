@@ -336,8 +336,8 @@ TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
   GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
                   "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
 
-  DataSharingService::ParseURLResult result =
-      data_sharing_service_->ParseDataSharingURL(url);
+  DataSharingService::ParseUrlResult result =
+      data_sharing_service_->ParseDataSharingUrl(url);
 
   // Verify valid path.
   EXPECT_TRUE(result.has_value());
@@ -349,25 +349,25 @@ TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
   // Verify host/path error.
   std::string invalid = "https://www.test.com/";
   url = GURL(invalid + "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
-  result = data_sharing_service_->ParseDataSharingURL(url);
+  result = data_sharing_service_->ParseDataSharingUrl(url);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
-            DataSharingService::ParseURLStatus::kHostOrPathMismatchFailure);
+            DataSharingService::ParseUrlStatus::kHostOrPathMismatchFailure);
   EXPECT_FALSE(
       data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 
   // Verify query missing error.
   url = GURL(data_sharing::features::kDataSharingURL.Get() +
              "?group_id=" + kGroupId);
-  result = data_sharing_service_->ParseDataSharingURL(url);
+  result = data_sharing_service_->ParseDataSharingUrl(url);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
-            DataSharingService::ParseURLStatus::kQueryMissingFailure);
+            DataSharingService::ParseUrlStatus::kQueryMissingFailure);
   EXPECT_FALSE(
       data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 }
 
-TEST_P(DataSharingServiceImplTest, GetDataSharingURL) {
+TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {
   GroupData group_data = GroupData();
   group_data.group_token =
       GroupToken(data_sharing::GroupId(kGroupId), kTokenBlob);
@@ -375,14 +375,14 @@ TEST_P(DataSharingServiceImplTest, GetDataSharingURL) {
                   kEncodedGroupId + "&token_blob=" + kEncodedTokenBlob);
 
   std::unique_ptr<GURL> result_url =
-      data_sharing_service_->GetDataSharingURL(group_data);
+      data_sharing_service_->GetDataSharingUrl(group_data);
 
   // Verify valid path.
   EXPECT_TRUE(result_url);
   EXPECT_EQ(url, *result_url);
 
   // Verify invalid group data.
-  result_url = data_sharing_service_->GetDataSharingURL(GroupData());
+  result_url = data_sharing_service_->GetDataSharingUrl(GroupData());
   EXPECT_FALSE(result_url);
 }
 

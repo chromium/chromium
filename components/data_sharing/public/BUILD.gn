@@ -18,8 +18,6 @@ source_set("public") {
     "data_sharing_ui_delegate.h",
     "group_data.cc",
     "group_data.h",
-    "service_status.cc",
-    "service_status.h",
     "share_url_interception_context.cc",
     "share_url_interception_context.h",
   ]
@@ -58,7 +56,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
-      "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
       "android/java/src/org/chromium/components/data_sharing/SharedDataPreview.java",
       "android/java/src/org/chromium/components/data_sharing/SharedTabGroupPreview.java",
       "android/java/src/org/chromium/components/data_sharing/TabPreview.java",
@@ -90,7 +87,6 @@ if (is_android) {
       "data_sharing_network_loader.h",
       "data_sharing_service.h",
       "group_data.h",
-      "service_status.h",
     ]
   }
 
@@ -102,7 +98,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
-      "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
       "android/java/src/org/chromium/components/data_sharing/SharedTabGroupPreview.java",
       "android/java/src/org/chromium/components/data_sharing/TabPreview.java",
     ]

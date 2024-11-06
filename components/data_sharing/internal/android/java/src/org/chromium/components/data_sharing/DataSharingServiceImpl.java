@@ -98,15 +98,15 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
-    public GURL getDataSharingURL(GroupData groupData) {
+    public GURL getDataSharingUrl(GroupData groupData) {
         return DataSharingServiceImplJni.get()
-                .getDataSharingURL(
+                .getDataSharingUrl(
                         mNativePtr, groupData.groupToken.groupId, groupData.groupToken.accessToken);
     }
 
     @Override
-    public DataSharingService.ParseURLResult parseDataSharingURL(GURL url) {
-        return DataSharingServiceImplJni.get().parseDataSharingURL(mNativePtr, url);
+    public DataSharingService.ParseUrlResult parseDataSharingUrl(GURL url) {
+        return DataSharingServiceImplJni.get().parseDataSharingUrl(mNativePtr, url);
     }
 
     @Override
@@ -126,11 +126,6 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Override
     public DataSharingUIDelegate getUiDelegate() {
         return DataSharingServiceImplJni.get().getUiDelegate(mNativePtr);
-    }
-
-    @Override
-    public ServiceStatus getServiceStatus() {
-        return DataSharingServiceImplJni.get().getServiceStatus(mNativePtr);
     }
 
     @CalledByNative
@@ -180,10 +175,10 @@ public class DataSharingServiceImpl implements DataSharingService {
 
         DataSharingNetworkLoader getNetworkLoader(long nativeDataSharingServiceAndroid);
 
-        GURL getDataSharingURL(
+        GURL getDataSharingUrl(
                 long nativeDataSharingServiceAndroid, String groupId, String accessToken);
 
-        DataSharingService.ParseURLResult parseDataSharingURL(
+        DataSharingService.ParseUrlResult parseDataSharingUrl(
                 long nativeDataSharingServiceAndroid, GURL url);
 
         void ensureGroupVisibility(
@@ -198,7 +193,5 @@ public class DataSharingServiceImpl implements DataSharingService {
                 Callback<SharedDataPreviewOrFailureOutcome> callback);
 
         DataSharingUIDelegate getUiDelegate(long nativeDataSharingServiceAndroid);
-
-        ServiceStatus getServiceStatus(long nativeDataSharingServiceAndroid);
     }
 }
