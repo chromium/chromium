@@ -551,10 +551,20 @@ void GpuServiceImpl::InitializeWithHost(
     mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
     gpu::GpuProcessShmCount use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
+#if BUILDFLAG(IS_ANDROID)
     gpu::SyncPointManager* sync_point_manager,
     gpu::SharedImageManager* shared_image_manager,
     gpu::Scheduler* scheduler,
+#endif
     base::WaitableEvent* shutdown_event) {
+#if !BUILDFLAG(IS_ANDROID)
+  // On platforms other than Android these objects are *always* created
+  // internally.
+  gpu::SyncPointManager* sync_point_manager = nullptr;
+  gpu::SharedImageManager* shared_image_manager = nullptr;
+  gpu::Scheduler* scheduler = nullptr;
+#endif
+
   DCHECK(main_runner_->BelongsToCurrentThread());
 
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));

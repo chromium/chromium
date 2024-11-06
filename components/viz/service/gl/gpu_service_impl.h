@@ -149,9 +149,11 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       mojo::PendingRemote<mojom::GpuHost> gpu_host,
       gpu::GpuProcessShmCount use_shader_cache_shm_count,
       scoped_refptr<gl::GLSurface> default_offscreen_surface,
+#if BUILDFLAG(IS_ANDROID)
       gpu::SyncPointManager* sync_point_manager = nullptr,
       gpu::SharedImageManager* shared_image_manager = nullptr,
       gpu::Scheduler* scheduler = nullptr,
+#endif
       base::WaitableEvent* shutdown_event = nullptr);
   void Bind(mojo::PendingReceiver<mojom::GpuService> pending_receiver);
 

@@ -95,9 +95,12 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
   if (!dependencies_.io_thread_task_runner)
     io_thread_ = CreateAndStartIOThread();
 
-  if (dependencies_.viz_compositor_thread_runner) {
-    viz_compositor_thread_runner_ = dependencies_.viz_compositor_thread_runner;
-  } else {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the compositor thread runner may be created externally and
+  // passed in (in particular, for WebView).
+  viz_compositor_thread_runner_ = dependencies_.viz_compositor_thread_runner;
+#endif
+  if (!viz_compositor_thread_runner_) {
     viz_compositor_thread_runner_impl_ =
         std::make_unique<VizCompositorThreadRunnerImpl>();
     viz_compositor_thread_runner_ = viz_compositor_thread_runner_impl_.get();
@@ -201,8 +204,12 @@ void VizMainImpl::CreateGpuService(
       gpu_host.Unbind(),
       gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
       gpu_init_->TakeDefaultOffscreenSurface(),
+#if BUILDFLAG(IS_ANDROID)
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
-      dependencies_.scheduler, dependencies_.shutdown_event);
+      dependencies_.scheduler,
+#endif
+      dependencies_.shutdown_event);
+
   gpu_service_->Bind(std::move(pending_receiver));
 
   {
