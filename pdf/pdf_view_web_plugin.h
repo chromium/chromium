@@ -50,10 +50,6 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-#include "pdf/pdf_ink_module_client.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #endif
@@ -89,6 +85,7 @@ class Thumbnail;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 class PdfInkModule;
+class PdfInkModuleClient;
 #endif
 
 class PdfViewWebPlugin final : public PDFiumEngineClient,
@@ -99,9 +96,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
                                public PdfAccessibilityImageFetcher,
-#if BUILDFLAG(ENABLE_PDF_INK2)
-                               public PdfInkModuleClient,
-#endif
                                public PreviewModeClient::Client {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
@@ -432,21 +426,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   SkBitmap GetImageForOcr(int32_t page_index,
                           int32_t page_object_index) override;
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-  // PdfInkModuleClient:
-  PageOrientation GetOrientation() const override;
-  gfx::Rect GetPageContentsRect(int index) override;
-  gfx::Vector2dF GetViewportOriginOffset() override;
-  float GetZoom() const override;
-  bool IsPageVisible(int page_index) override;
-  void OnAnnotationModeToggled(bool enable) override;
-  void PostMessage(base::Value::Dict message) override;
-  void StrokeFinished() override;
-  void UpdateInkCursorImage(SkBitmap bitmap) override;
-  void UpdateThumbnail(int page_index) override;
-  int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
-#endif
-
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;
   void PreviewDocumentLoadFailed() override;
@@ -482,6 +461,12 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     next_accessibility_page_index_ = index;
   }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  PdfInkModuleClient* ink_module_client_for_testing() {
+    return ink_module_client_.get();
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
  private:
   // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
   // load the URL, and `result` is the result code for the load.
@@ -508,6 +493,10 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     // Page index in destination document.
     int dest_page_index = -1;
   };
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  class PdfInkModuleClientImpl;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
@@ -673,6 +662,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                      Thumbnail thumbnail);
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+  static std::unique_ptr<PdfInkModuleClient> MaybeCreatePdfInkModuleClient(
+      PdfViewWebPlugin& plugin);
+  static std::unique_ptr<PdfInkModule> MaybeCreatePdfInkModule(
+      PdfInkModuleClient* client);
+
   void GenerateAndSendInkThumbnail(int page_index, const gfx::Size& size);
 #endif
 
@@ -706,7 +700,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  // Null if `features::kPdfInk2` is not enabled.
+  // Both are non-null if `features::kPdfInk2` is enabled.
+  // Both are null if `features::kPdfInk2` is disabled.
+  //
+  // `ink_module_client_` must outlive `ink_module_`.
+  std::unique_ptr<PdfInkModuleClient> const ink_module_client_;
   std::unique_ptr<PdfInkModule> const ink_module_;
 #endif
 
