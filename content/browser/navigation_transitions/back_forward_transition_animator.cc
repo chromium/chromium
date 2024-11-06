@@ -950,12 +950,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       break;
     }
     case State::kDisplayingCancelAnimation: {
-      CHECK(navigation_state_ == NavigationState::kNotStarted ||
-            navigation_state_ == NavigationState::kCancelled ||
-            navigation_state_ == NavigationState::kCancelledBeforeStart)
-          << NavigationStateToString(navigation_state_);
-
-      // A new navigation to C finished while we are displaying the cancel
+      // A new navigation to C commits while we are displaying the cancel
       // animation. The live page will be replaced by C.
       break;
     }
