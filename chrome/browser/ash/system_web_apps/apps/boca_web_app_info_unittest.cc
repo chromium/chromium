@@ -75,7 +75,7 @@ TEST_F(BocaSystemAppProviderDelegateTest, AllowMaximize) {
 }
 
 TEST_F(BocaSystemAppProviderDelegateTest, HasMinimalSize) {
-  EXPECT_EQ(gfx::Size(400, 100), delegate()->GetMinimumWindowSize());
+  EXPECT_EQ(gfx::Size(400, 400), delegate()->GetMinimumWindowSize());
 }
 
 TEST_F(BocaSystemAppProviderDelegateTest, UsesDefaultTabMenuModel) {

@@ -117,7 +117,7 @@ bool BocaSystemAppDelegate::ShouldShowInLauncher() const {
 
 gfx::Size BocaSystemAppDelegate::GetMinimumWindowSize() const {
   if (!IsConsumerProfile(profile())) {
-    return {400, 100};
+    return {400, 400};
   }
   return SystemWebAppDelegate::GetMinimumWindowSize();
 }
