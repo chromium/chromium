@@ -186,6 +186,26 @@ TEST_F(SunfishTest, PressEscapeKey) {
   EXPECT_FALSE(controller->capture_mode_session());
 }
 
+TEST_F(SunfishTest, NoCrashOnEscapeBeforePanelShown) {
+  UpdateDisplay("800x600,800x600");
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(810, 10, 400, 400)));
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(root_windows[0], w1->GetRootWindow());
+  ASSERT_EQ(root_windows[1], w2->GetRootWindow());
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+
+  // Simulate pressing the Escape key, then the panel loading after the session
+  // is ended.
+  auto* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  controller->OnSearchUrlFetched(gfx::Rect(10, 10, 400, 400), gfx::ImageSkia(),
+                                 GURL("kTestUrl"));
+}
+
 // Tests that the Enter key does not attempt to perform capture or image search.
 TEST_F(SunfishTest, PressEnterKey) {
   auto* controller = CaptureModeController::Get();
