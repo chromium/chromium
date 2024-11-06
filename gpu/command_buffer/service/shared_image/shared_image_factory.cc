@@ -740,7 +740,7 @@ void SharedImageFactory::RegisterSharedImageBackingFactoryForTesting(
 gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   gpu::SharedImageCapabilities shared_image_caps;
   shared_image_caps.supports_scanout_shared_images =
-      SharedImageManager::SupportsScanoutImages();
+      shared_image_manager_->SupportsScanoutImages();
 
 #if BUILDFLAG(IS_WIN)
   // Scanout for software video frames is supported on Windows except on D3D9.
