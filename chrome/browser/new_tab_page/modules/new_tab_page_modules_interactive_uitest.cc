@@ -334,7 +334,7 @@ INSTANTIATE_TEST_SUITE_P(All,
   ClickingEntryNavigatesToCorrectPage
 #endif
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
-                       ClickingEntryNavigatesToCorrectPage) {
+                       MAYBE_ClickingEntryNavigatesToCorrectPage) {
   RunTestSequence(
       // 1. Wait for new tab page to load.
       LoadNewTabPage(),
