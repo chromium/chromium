@@ -268,7 +268,8 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   }
 
   void SendLatencyGen204IfEnabled(base::TimeDelta latency_ms,
-                                  bool is_translate_query) override {
+                                  bool is_translate_query,
+                                  std::string vit_query_param_value) override {
     if (is_translate_query) {
       num_full_page_translate_gen204_pings_sent_++;
     } else {
@@ -1238,7 +1239,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(visual_input_type, "pdf");
   ASSERT_TRUE(has_invocation_source);
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 2);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
@@ -1351,7 +1352,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 2);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
@@ -1464,7 +1465,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 2);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);

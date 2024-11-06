@@ -174,7 +174,8 @@ class LensOverlayQueryController {
 
   // Sends a latency Gen204 ping if enabled.
   virtual void SendLatencyGen204IfEnabled(base::TimeDelta full_image_latency,
-                                          bool is_translate_query);
+                                          bool is_translate_query,
+                                          std::string vit_query_param_value);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -317,6 +318,9 @@ class LensOverlayQueryController {
   // are not expecting a response.
   void PerformPageContentRequest(lens::LensOverlayServerRequest request,
                                  std::vector<std::string> headers);
+
+  // Handles the endpoint fetch response for the page content request.
+  void PageContentResponseHandler(std::unique_ptr<EndpointResponse> response);
 
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.

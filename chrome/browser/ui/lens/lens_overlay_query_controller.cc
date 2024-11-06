@@ -76,6 +76,7 @@ constexpr char kHtmlMimeType[] = "text/html";
 constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
 constexpr char kPdfVisualInputTypeQueryParameterValue[] = "pdf";
 constexpr char kWebpageVisualInputTypeQueryParameterValue[] = "wp";
+constexpr char kImageVisualInputTypeQueryParameterValue[] = "img";
 constexpr char kContextualVisualInputTypeQueryParameterValue[] = "video";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
@@ -527,10 +528,11 @@ LensOverlayQueryController::CreateEndpointFetcher(
 
 void LensOverlayQueryController::SendLatencyGen204IfEnabled(
     base::TimeDelta full_image_latency,
-    bool is_translate_query) {
+    bool is_translate_query,
+    std::string vit_query_param_value) {
   gen204_controller_->SendLatencyGen204IfEnabled(
-      full_image_latency, cluster_info_fetch_response_time_,
-      is_translate_query);
+      full_image_latency, cluster_info_fetch_response_time_, is_translate_query,
+      vit_query_param_value);
   cluster_info_fetch_response_time_.reset();
 }
 
@@ -858,7 +860,8 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   base::TimeDelta elapsed_time =
       base::TimeTicks::Now() -
       latest_full_image_request_data_->query_start_time_;
-  SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value());
+  SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value(),
+                             kImageVisualInputTypeQueryParameterValue);
 
   if (!cluster_info_.has_value()) {
     cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
@@ -950,7 +953,23 @@ void LensOverlayQueryController::PerformPageContentRequest(
       base::BindOnce(
           &LensOverlayQueryController::OnPageContentEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
-      base::DoNothing());
+      base::BindOnce(&LensOverlayQueryController::PageContentResponseHandler,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LensOverlayQueryController::PageContentResponseHandler(
+    std::unique_ptr<EndpointResponse> response) {
+  page_content_endpoint_fetcher_.reset();
+
+  base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() -
+      latest_full_image_request_data_->query_start_time_;
+  std::string vit_param_value =
+      underlying_content_type_ == lens::PageContentMimeType::kPdf
+          ? kPdfVisualInputTypeQueryParameterValue
+          : kWebpageVisualInputTypeQueryParameterValue;
+  SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value(),
+                             vit_param_value);
 }
 
 void LensOverlayQueryController::SendInteraction(
