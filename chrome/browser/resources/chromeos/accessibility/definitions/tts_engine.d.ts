@@ -32,6 +32,10 @@ declare global {
         FEMALE = 'female',
       }
 
+      export interface LanguageUninstallOptions {
+        uninstallImmediately: boolean;
+      }
+
       export enum LanguageInstallStatus {
         NOT_INSTALLED = 'notInstalled',
         INSTALLING = 'installing',
@@ -92,6 +96,10 @@ declare global {
 
       export const onInstallLanguageRequest:
           ChromeEvent<(requestor: TtsClient, lang: string) => void>;
+
+      export const onUninstallLanguageRequest: ChromeEvent<
+          (requestor: TtsClient, lang: string,
+           uninstallOptions: LanguageUninstallOptions) => void>;
 
       export const onLanguageStatusRequest:
           ChromeEvent<(requestor: TtsClient, lang: string) => void>;

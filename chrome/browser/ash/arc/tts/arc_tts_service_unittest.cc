@@ -58,6 +58,11 @@ class TestableTtsController : public content::TtsController {
       content::UpdateLanguageStatusDelegate* delegate) override {}
   void RemoveUpdateLanguageStatusDelegate(
       content::UpdateLanguageStatusDelegate* delegate) override {}
+  void UninstallLanguageRequest(content::BrowserContext* browser_context,
+                                const std::string& lang,
+                                const std::string& client_id,
+                                int source,
+                                bool uninstall_immediately) override {}
   void InstallLanguageRequest(content::BrowserContext* browser_context,
                               const std::string& lang,
                               const std::string& client_id,

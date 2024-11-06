@@ -674,6 +674,31 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, UpdateLanguageCallsDelegate) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_P(TtsApiTest, UninstallLanguageRequestEmitsEvent) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ExtensionTestMessageListener validate_lang_param_listener("lang:fr");
+  ExtensionTestMessageListener validate_requestor_param_listener(
+      "requestor.id:client ID 3, requestor.source:chromefeature");
+  ExtensionTestMessageListener validate_uninstall_immediately_param_listener(
+      "uninstallImmediately:true");
+
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("tts_engine/language_uninstall_request"));
+  ASSERT_TRUE(extension);
+
+  content::TtsController::GetInstance()->UninstallLanguageRequest(
+      profile(), /* lang= */ "fr", /* client_id= */ "client ID 3",
+      /* source= */
+      static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE),
+      /* uninstall_immediately= */ true);
+
+  ASSERT_TRUE(validate_lang_param_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(validate_requestor_param_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(
+      validate_uninstall_immediately_param_listener.WaitUntilSatisfied());
+}
+
 IN_PROC_BROWSER_TEST_P(TtsApiTest, LanguageInstallRequestEmitsEvent) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 

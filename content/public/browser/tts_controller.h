@@ -77,6 +77,12 @@ class CONTENT_EXPORT TtsEngineDelegate {
   virtual void Pause(TtsUtterance* utterance) = 0;
   // Resume speaking this utterance.
   virtual void Resume(TtsUtterance* utterance) = 0;
+  // Sends an UninstallLanguageRequest event to extensions.
+  virtual void UninstallLanguageRequest(BrowserContext* browser_context,
+                                        const std::string& lang,
+                                        const std::string& client_id,
+                                        int source,
+                                        bool uninstall_immediately) = 0;
   // Sends an InstallLanguageRequest event to extensions.
   virtual void InstallLanguageRequest(BrowserContext* browser_context,
                                       const std::string& lang,
@@ -184,6 +190,19 @@ class CONTENT_EXPORT TtsController {
   // Remove delegate that wants to be notified when the set of voices changes.
   virtual void RemoveUpdateLanguageStatusDelegate(
       UpdateLanguageStatusDelegate* delegate) = 0;
+
+  // Requests to remove an installed voice for the language.
+  // The `source` param can be defined by delegates and embedders. For example,
+  // Reading Mode uses the tts_engine_events::TtsClientSource.
+  // The `uninstall_immediately` param indicates whether the client wants the
+  // voice uninstalled immediately. If false, other criteria, such as recent
+  // usage, may be considered to determine when to uninstall.
+  virtual void UninstallLanguageRequest(
+      content::BrowserContext* browser_context,
+      const std::string& lang,
+      const std::string& client_id,
+      int source,
+      bool uninstall_immediately) = 0;
 
   // Requests to install a new voice for the language. For example, Reading Mode
   // manages voice installation by sending an InstallLanguageRequest event to

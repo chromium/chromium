@@ -47,6 +47,15 @@ chrome.ttsEngine.VoiceGender = {
 };
 
 /**
+ * Options for removing a given language.
+ * @typedef {{
+ *   uninstallImmediately: boolean
+ * }}
+ * @see https://developer.chrome.com/extensions/ttsEngine#type-LanguageUninstallOptions
+ */
+chrome.ttsEngine.LanguageUninstallOptions;
+
+/**
  * @enum {string}
  * @see https://developer.chrome.com/extensions/ttsEngine#type-LanguageInstallStatus
  */
@@ -197,6 +206,13 @@ chrome.ttsEngine.onResume;
  * @see https://developer.chrome.com/extensions/ttsEngine#event-onInstallLanguageRequest
  */
 chrome.ttsEngine.onInstallLanguageRequest;
+
+/**
+ * Fired when a TTS client indicates a language is no longer needed.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/ttsEngine#event-onUninstallLanguageRequest
+ */
+chrome.ttsEngine.onUninstallLanguageRequest;
 
 /**
  * Fired when a TTS client requests the install status of a language.
