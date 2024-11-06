@@ -194,19 +194,25 @@ GPUAdapter::GPUAdapter(
   GetHandle().GetLimits(&limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 
+  info_ = CreateAdapterInfoForAdapter();
+}
+
+GPUAdapterInfo* GPUAdapter::CreateAdapterInfoForAdapter() {
+  GPUAdapterInfo* info;
   if (RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled()) {
     // If WebGPU developer features have been enabled then provide all available
     // adapter info values.
-    info_ = MakeGarbageCollected<GPUAdapterInfo>(
+    info = MakeGarbageCollected<GPUAdapterInfo>(
         vendor_, architecture_, device_, description_, driver_,
         FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_),
         d3d_shader_model_, vk_driver_version_);
     for (GPUMemoryHeapInfo* memory_heap : memory_heaps_) {
-      info_->AppendMemoryHeapInfo(memory_heap);
+      info->AppendMemoryHeapInfo(memory_heap);
     }
   } else {
-    info_ = MakeGarbageCollected<GPUAdapterInfo>(vendor_, architecture_);
+    info = MakeGarbageCollected<GPUAdapterInfo>(vendor_, architecture_);
   }
+  return info;
 }
 
 void GPUAdapter::AddConsoleWarning(ExecutionContext* execution_context,

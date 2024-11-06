@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_adapter_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
@@ -196,6 +197,8 @@ void GPUDevice::Initialize(wgpu::Device handle,
 
   GetHandle().GetLimits(&limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
+
+  adapter_info_ = adapter_->CreateAdapterInfoForAdapter();
 
   GetHandle().SetLoggingCallback(logging_callback_->UnboundCallback(),
                                  logging_callback_->AsUserdata());
@@ -517,7 +520,7 @@ GPUSupportedFeatures* GPUDevice::features() const {
 }
 
 GPUAdapterInfo* GPUDevice::adapterInfo() const {
-  return adapter_->info();
+  return adapter_info_.Get();
 }
 
 ScriptPromise<GPUDeviceLostInfo> GPUDevice::lost(ScriptState* script_state) {
@@ -772,6 +775,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(adapter_);
   visitor->Trace(features_);
   visitor->Trace(limits_);
+  visitor->Trace(adapter_info_);
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
   visitor->Trace(external_texture_cache_);
