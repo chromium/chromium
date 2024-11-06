@@ -442,7 +442,9 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           FormatDurationHistogramNameFor(
               PlusAddressModalCompletionStatus::kModalCanceled,
               /*notice_shown=*/false),
-          1));
+          1),
+      CheckUserAction("PlusAddresses.ReserveErrorCanceled", 0),
+      CheckUserAction("PlusAddresses.CreateErrorCanceled", 0));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
@@ -822,7 +824,9 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kReservePlusAddressError,
           /*refresh_count=*/0, /*notice_shown=*/true),
-      CheckUserAction("PlusAddresses.Refreshed", 0));
+      CheckUserAction("PlusAddresses.Refreshed", 0),
+      CheckUserAction("PlusAddresses.ReserveErrorCanceled", 1),
+      CheckUserAction("PlusAddresses.CreateErrorCanceled", 0));
 }
 
 IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
@@ -875,7 +879,9 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kConfirmPlusAddressError,
           /*refresh_count=*/0, /*notice_shown=*/true),
-      CheckUserAction("PlusAddresses.Refreshed", 0));
+      CheckUserAction("PlusAddresses.Refreshed", 0),
+      CheckUserAction("PlusAddresses.ReserveErrorCanceled", 0),
+      CheckUserAction("PlusAddresses.CreateErrorCanceled", 1));
 }
 
 INSTANTIATE_TEST_SUITE_P(
