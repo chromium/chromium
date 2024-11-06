@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Configuration for an Android 15 Beta AVD on google_apis on x86_64
+# Configuration for an Android 15 (V, API 35) AVD on google_apis on x86_64
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
@@ -17,7 +17,6 @@ system_image_name: "system-images;android-35;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-35/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8735783234873256961
   # Patched gmscore version 24.26.32 in https://crrev.com/c/5735581
   version: "g78c3lisaEy84MSSH_dCGDrWQsyK6TAAgzMpYmOFpRcC"
 }
