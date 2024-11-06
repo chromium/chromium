@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "extensions/browser/extension_registry.h"
 
 namespace extensions {
 
@@ -40,9 +39,7 @@ WriteQuotaChecker::GetFactoryInstance() {
 }
 
 WriteQuotaChecker::WriteQuotaChecker(content::BrowserContext* context)
-    : bytes_limit_(kWriteLimit) {
-  extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
-}
+    : bytes_limit_(kWriteLimit) {}
 
 WriteQuotaChecker::~WriteQuotaChecker() = default;
 
@@ -69,12 +66,6 @@ void WriteQuotaChecker::ReturnBytes(const ExtensionId& extension_id,
   if (it->second == 0) {
     bytes_used_map_.erase(it);
   }
-}
-
-void WriteQuotaChecker::OnExtensionUnloaded(content::BrowserContext* context,
-                                            const Extension* extension,
-                                            UnloadedExtensionReason reason) {
-  bytes_used_map_.erase(extension->id());
 }
 
 }  // namespace extensions

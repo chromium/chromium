@@ -10,16 +10,13 @@
 #include <map>
 
 #include "base/auto_reset.h"
-#include "base/scoped_observation.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
-#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 // Tracks bytes quota per extension.
-class WriteQuotaChecker : public BrowserContextKeyedAPI,
-                          public extensions::ExtensionRegistryObserver {
+class WriteQuotaChecker : public BrowserContextKeyedAPI {
  public:
   class ScopedBytesLimitForTest {
    public:
@@ -49,19 +46,11 @@ class WriteQuotaChecker : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<WriteQuotaChecker>;
 
-  // ExtensionRegistryObserver:
-  void OnExtensionUnloaded(content::BrowserContext* browser_context,
-                           const Extension* extension,
-                           UnloadedExtensionReason reason) override;
-
   // Max pending write bytes.
   size_t bytes_limit_ = 0;
 
   // Tracked writing bytes per extension.
   std::map<ExtensionId, size_t> bytes_used_map_;
-
-  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observation_{this};
 };
 
 }  // namespace extensions
