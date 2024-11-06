@@ -131,6 +131,38 @@ suite('FirmwareUpdateAppTest', () => {
     return update;
   }
 
+  test('HeaderDependsOnFlexFlag', async () => {
+    loadTimeData.overrideValues({
+      IsFlexFirmwareUpdateEnabled: true,
+    });
+
+    // Setup the app.
+    initializePage();
+    await flushTasks();
+    assert(page);
+
+    let header = strictQuery(`#header`, page.shadowRoot, HTMLElement);
+    assertEquals(header.innerText.trim(), 'Firmware updates');
+
+
+    // Clear app element to reset the test.
+    page.remove();
+    await flushTasks();
+
+    loadTimeData.overrideValues({
+      IsFlexFirmwareUpdateEnabled: false,
+    });
+
+    initializePage();
+    await flushTasks();
+    assert(page);
+
+
+    header = strictQuery(`#header`, page.shadowRoot, HTMLElement);
+    assertEquals(
+        header.innerText.trim(), 'Firmware updates for external devices');
+  });
+
   test('SettingGettingTestProvider', () => {
     initializePage();
     const fake_provider = new FakeUpdateProvider();

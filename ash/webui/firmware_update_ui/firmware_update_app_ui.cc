@@ -48,11 +48,14 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                      ash::features::IsFirmwareUpdateUIV2Enabled());
   source->AddBoolean("isUpstreamTrustedReportsFirmwareEnabled",
                      ash::features::IsUpstreamTrustedReportsFirmwareEnabled());
+  source->AddBoolean("IsFlexFirmwareUpdateEnabled",
+                     ash::features::IsFlexFirmwareUpdateEnabled());
 }
 
 void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appTitle", IDS_FIRMWARE_TITLE_TEXT},
+      {"appTitleOnFlex", IDS_FLEX_FIRMWARE_TITLE_TEXT},
       {"confirmationTitle", IDS_CONFIRMATION_TITLE_TEXT},
       {"criticalUpdate", IDS_FIRMWARE_CRITICAL_UPDATE_TEXT},
       {"prepareDevice", IDS_FIRMWARE_PREPARE_DEVICE_TEXT},

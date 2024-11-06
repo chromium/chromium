@@ -5763,6 +5763,9 @@
         <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
           Firmware updates for external devices
         </message>
+        <message name="IDS_FLEX_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app on Flex devices with the firmware update feature flag.">
+          Firmware updates
+        </message>
         <message name="IDS_FIRMWARE_CRITICAL_UPDATE_TEXT" desc="The text shown when an update is deemed critcal.">
           Critical update
         </message>

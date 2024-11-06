@@ -14,6 +14,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './firmware_update_app.html.js';
+import {IsFlexFirmwareUpdateEnabled} from './firmware_update_utils.js';
 
 /**
  * @fileoverview
@@ -39,6 +40,13 @@ export class FirmwareUpdateAppElement extends FirmwareUpdateAppElementBase {
     (function() {
       ColorChangeUpdater.forDocument().start();
     })();
+  }
+
+  protected computeHeaderText(): string {
+    if (IsFlexFirmwareUpdateEnabled()) {
+      return this.i18n('appTitleOnFlex');
+    }
+    return this.i18n('appTitle');
   }
 }
 
