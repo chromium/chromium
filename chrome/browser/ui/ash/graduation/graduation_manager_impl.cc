@@ -10,6 +10,8 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -170,14 +172,24 @@ void GraduationManagerImpl::UpdateAppPinnedState() {
 }
 
 void GraduationManagerImpl::OnPrefChanged() {
-  UpdateAppPinnedState();
   MaybeScheduleAppStatusUpdate();
+
+  // Delay pin state update until after the blocked/unblocked app change has
+  // been processed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&GraduationManagerImpl::UpdateAppPinnedState,
+                                base::Unretained(this)));
 }
 
 void GraduationManagerImpl::OnMidnightTimer() {
   UpdateAppReadiness();
-  UpdateAppPinnedState();
   MaybeScheduleAppStatusUpdate();
+
+  // Delay pin state update until after the blocked/unblocked app change has
+  // been processed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&GraduationManagerImpl::UpdateAppPinnedState,
+                                base::Unretained(this)));
 }
 
 void GraduationManagerImpl::MaybeScheduleAppStatusUpdate() {

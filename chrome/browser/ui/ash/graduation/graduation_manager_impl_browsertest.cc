@@ -11,6 +11,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_model_observer.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,7 +58,8 @@ void OnLocaleSwitched(base::RunLoop* run_loop,
 }
 }  // namespace
 
-class GraduationManagerTest : public SystemWebAppBrowserTestBase {
+class GraduationManagerTest : public SystemWebAppBrowserTestBase,
+                              public ash::ShelfModelObserver {
  public:
   GraduationManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kGraduation);
@@ -170,8 +173,42 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase {
     return ash::graduation::GraduationManagerImpl::Get()->GetLanguageCode();
   }
 
+  void WaitForShelfItemAdd() {
+    base::RunLoop run_loop;
+    auto* shelf_model = ShelfModel::Get();
+    shelf_model->AddObserver(this);
+    item_added_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+    shelf_model->RemoveObserver(this);
+  }
+
+  void WaitForShefItemRemoved() {
+    base::RunLoop run_loop;
+    auto* shelf_model = ShelfModel::Get();
+    shelf_model->AddObserver(this);
+    item_removed_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+    shelf_model->RemoveObserver(this);
+  }
+
+  // ShelfModelObserver:
+  void ShelfItemAdded(int index) override {
+    if (item_added_callback_) {
+      item_added_callback_.Run();
+    }
+  }
+
+  void ShelfItemRemoved(int index, const ShelfItem& old_item) override {
+    if (item_removed_callback_) {
+      item_removed_callback_.Run();
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::RepeatingClosure item_added_callback_;
+  base::RepeatingClosure item_removed_callback_;
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
@@ -220,6 +257,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenStartDateIsReached) {
   // Fast forward to the policy enablement start date set in the pre-test.
   AdvanceTimeBy(base::Days(1));
   WaitForAppRegistryCommands(browser()->profile());
+  WaitForShelfItemAdd();
 
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kReady,
@@ -242,6 +280,8 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
   // Fast forward to the policy enablement start date set in the pre-test.
   AdvanceTimeBy(base::Days(2));
   WaitForAppRegistryCommands(browser()->profile());
+  // Wait for the new shelf iteme to finish.
+  WaitForShelfItemAdd();
 
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kReady,
@@ -316,6 +356,8 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenEndDateHasPassed) {
   // pre-test.
   AdvanceTimeBy(base::Days(2));
   WaitForAppRegistryCommands(browser()->profile());
+  // Wait for the shelf item to finish being removed.
+  WaitForShefItemRemoved();
 
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
             GetAppReadiness(ash::kGraduationAppId));
