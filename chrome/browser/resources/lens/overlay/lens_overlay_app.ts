@@ -227,7 +227,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         document, 'translate-mode-state-changed', (e: CustomEvent) => {
           this.isTranslateModeActive = e.detail.translateModeEnabled;
           this.searchBoxHidden =
-              this.isTranslateModeActive || this.sidePanelOpened;
+              e.detail.shouldHideSearchbox || this.sidePanelOpened;
         });
     this.eventTracker_.add(document, 'text-copied', () => {
       this.showToast(this.i18n('copyToastMessage'));
