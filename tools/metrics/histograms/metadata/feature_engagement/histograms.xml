@@ -539,8 +539,7 @@ chromium-metrics-reviews@google.com.
       summary="A message shown after the user signs out of a Google service
                on the web explaining that it does not sign them out of Chrome"/>
   <variant name="IPH_SupervisedUserProfileSignin"
-      summary="IPH mesagage shown on supervised user's signininforming them
-               about the applied parental controls."/>
+      summary="informing supervised users about parental controls"/>
   <variant name="IPH_TabAudioMuting" summary="muting tab audio"/>
   <variant name="IPH_TabGroupsDragAndDrop"
       summary="educating user to drop one tab on another tab to create group"/>
