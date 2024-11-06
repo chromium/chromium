@@ -508,6 +508,12 @@ extern const char kIOSSaveToPhotosDescription[];
 extern const char kIOSSaveToPhotosImprovementsName[];
 extern const char kIOSSaveToPhotosImprovementsDescription[];
 
+// Title and description for the flag to enable the new feed positionig
+// experiment on iOS. This experiments controls the UX of the most visited tiles
+// and the homestack.
+extern const char kNewFeedPositioningExperimentName[];
+extern const char kNewFeedPositioningExperimentDescription[];
+
 // Title and description of the flag to enable client side new tab page
 // experiments aimed at improving user retention.
 extern const char kNewTabPageFieldTrialName[];

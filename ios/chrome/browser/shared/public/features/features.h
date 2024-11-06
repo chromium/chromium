@@ -948,4 +948,16 @@ BASE_DECLARE_FEATURE(kProvisionalNotificationAlert);
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsProvisionalNotificationAlertEnabled();
 
+// Feature and parameters for the feed positioning experiment, which will
+// determine two things: 1) whether the MVT should be combined with the magic
+// stack 2) whether homestack should be enabled.
+BASE_DECLARE_FEATURE(kNewFeedPositioning);
+extern const char kNewFeedPositioningCombinedMVTForHighEngaged[];
+extern const char kNewFeedPositioningCombinedMVTForMidEngaged[];
+extern const char kNewFeedPositioningCombinedMVTForLowEngaged[];
+extern const char kNewFeedPositioningHomestackOnForAll[];
+
+// Returns whether homestack should be enabled.
+bool ShouldEnableHomestack();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -1168,6 +1168,45 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
          std::size(kAutofillThrottleFilteredDocFormScanLongPeriodParam),
          nullptr}};
 
+const FeatureEntry::FeatureParam kNewFeedPositioningArm2[] = {
+    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
+    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
+    {kNewFeedPositioningHomestackOnForAll, "true"},
+};
+
+const FeatureEntry::FeatureParam kNewFeedPositioningArm3[] = {
+    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
+    {kNewFeedPositioningHomestackOnForAll, "true"},
+};
+
+const FeatureEntry::FeatureParam kNewFeedPositioningArm4[] = {
+    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
+    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
+    {kNewFeedPositioningHomestackOnForAll, "false"},
+};
+
+const FeatureEntry::FeatureParam kNewFeedPositioningArm5[] = {
+    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
+    {kNewFeedPositioningHomestackOnForAll, "false"},
+};
+
+const FeatureEntry::FeatureVariation kNewFeedPositioningVariations[] = {
+    {"Enabled - Treatment  2", kNewFeedPositioningArm2,
+     std::size(kNewFeedPositioningArm2), nullptr},
+    {"Enabled - Treatment  3", kNewFeedPositioningArm3,
+     std::size(kNewFeedPositioningArm3), nullptr},
+    {"Enabled - Treatment  4", kNewFeedPositioningArm4,
+     std::size(kNewFeedPositioningArm4), nullptr},
+    {"Enabled - Treatment  5", kNewFeedPositioningArm5,
+     std::size(kNewFeedPositioningArm5), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2166,6 +2205,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kAutofillThrottleFilteredDocumentFormScanIos,
          kAutofillThrottleFilteredDocFormScanVariations,
          "AutofillThrottleFilteredDocumentFormScan")},
+    {"ios-new-feed-positioning",
+     flag_descriptions::kNewFeedPositioningExperimentName,
+     flag_descriptions::kNewFeedPositioningExperimentDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kNewFeedPositioning,
+                                    kNewFeedPositioningVariations,
+                                    "IOSNewFeedPositioningStudy")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -5343,6 +5343,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "ios-new-feed-positioning",
+    "owners": [ "ginnyhuang@chromium.org", "thegreenfrog@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "ios-page-info-last-visited",
     "owners": [
       "fsenra@google.com",
