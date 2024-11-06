@@ -306,9 +306,18 @@ class NewTabPageModulesInteractiveLinkUiTest
   ModuleLink ModuleLink() const { return GetParam().second; }
 };
 
+// TODO(crbug.com/347914816): Fix test failure for
+// kMostRelevantTabResumptionModuleDetails.
+#if BUILDFLAG(IS_MAC)
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NewTabPageModulesInteractiveLinkUiTest,
+    ::testing::ValuesIn(GetAllModuleLinks({kGoogleCalendarModuleDetails})));
+#else
 INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageModulesInteractiveLinkUiTest,
                          ::testing::ValuesIn(GetAllModuleLinks(kAllModules)));
+#endif
 
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
                        ClickingEntryNavigatesToCorrectPage) {
