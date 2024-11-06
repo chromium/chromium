@@ -412,6 +412,68 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     scheme_map_.emplace(scheme, CommitRequestPolicy::kRequestOnly);
   }
 
+  void AddCommittedOrigin(const url::Origin& origin) {
+    committed_origins_.emplace(origin);
+  }
+
+  std::string GetCommittedOriginsAsStringForDebugging() {
+    std::string str;
+    for (auto& origin : committed_origins_) {
+      base::StrAppend(&str,
+                      {(str.empty() ? "" : ","), origin.GetDebugString()});
+    }
+    return str;
+  }
+
+  bool MatchesCommittedOrigin(const GURL& url,
+                              bool url_is_for_precursor_origin) {
+    for (auto& origin : committed_origins_) {
+      // If the committed origin is non-opaque, check that the `url` has the
+      // same origin.
+      //
+      // TODO(crbug.com/40148776): Although this matches legacy enforcements,
+      // this check should ideally also enforce that the `url` does not
+      // correspond to an opaque origin's precursor, i.e. that
+      // `url_is_for_precursor_origin` is false, so that we do not match a
+      // non-opaque committed origin to an opaque one, even if the latter's
+      // precursor matches. This almost works, but has a corner case with
+      // dedicated workers, where a worker is allowed to be created with a data:
+      // script URL, resulting in an opaque origin with a precursor which needs
+      // to pass the check here. This case should be fixed (e.g., by adding that
+      // worker's origin to the list of committed origins).
+      if (!origin.opaque() && origin.IsSameOriginWith(url)) {
+        return true;
+      }
+
+      // For opaque committed origins, ensure that the passed-in URL represents
+      // a precursor of an opaque origin, and then check if it matches the
+      // committed origin's precursor.
+      if (origin.opaque() && url_is_for_precursor_origin &&
+          origin.GetTupleOrPrecursorTupleIfOpaque() ==
+              url::SchemeHostPort(url)) {
+        return true;
+      }
+
+      // Temporarily ignore hosts when comparing file origins. This allows
+      // file:///etc to match file://localhost/etc. See the
+      // DOMStorageBrowserTest.FileUrlWithHost test which exercises this. This
+      // is needed because ChildProcessSecurityPolicyImpl::CanAccessOrigin()
+      // currently converts the passed-in url::Origin into a GURL (which ends up
+      // as `url` here) via url::Origin::GetURL(), and the latter always
+      // converts origins for file URLs into a "file:///" URL without
+      // considering the host. Longer-term, we should either refactor
+      // ChildProcessSecurityPolicyImpl such that CanAccessOrigin() doesn't
+      // convert url::Origins into GURLs before passing them to
+      // CanAccessMaybeOpaqueOrigin(), and/or url::Origin::GetURL() should be
+      // fixed to preserve hosts for file URL origins.
+      if (url.SchemeIsFile() && origin.scheme() == url::kFileScheme) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   // Grant certain permissions to a file.
   void GrantPermissionsForFile(const base::FilePath& file, int permissions) {
     base::FilePath stripped = file.StripTrailingSeparators();
@@ -720,6 +782,24 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   // The map of URL origins to commit/request policies the child process has
   // been granted. There is no provision for revoking.
   OriginMap origin_map_;
+
+  // The set of all origins ever committed in the child process. Note that this
+  // is different from the `origin_map_` above: `origin_map_` tracks rules which
+  // allow new origins to be requested or committed in a particular process,
+  // while this set tracks origins that have already been committed, for the
+  // purposes of validating requests for a particular origin's data.
+  //
+  // Note that unlike `origin_map_`, this set tracks opaque origins and
+  // distinguishes them based on their precursors and nonces. This set may also
+  // lack certain entries that exist in `origin_map_`, such as special cases
+  // that allow a process to request particular origins (e.g., DevTools process
+  // being allowed to request DevTools extension resources).
+  //
+  // TODO(alexmos): Combine `origin_map_` and `committed_origins_` into one set
+  // that supports three kinds of lookup: CanRequest, CanCommitAndRequest, and
+  // HasCommittedAndCanRequest. This will hopefully result in simpler and more
+  // efficient origin tracking.
+  OriginSet committed_origins_;
 
   // The set of files the child process is permitted to upload to the web.
   FileMap file_permissions_;
@@ -1686,6 +1766,20 @@ size_t ChildProcessSecurityPolicyImpl::BrowsingInstanceIdCountForTesting(
   return 0;
 }
 
+bool ChildProcessSecurityPolicyImpl::MatchesCommittedOriginForTesting(
+    int child_id,
+    const GURL& url,
+    bool url_is_for_precursor_origin) {
+  base::AutoLock lock(lock_);
+  SecurityState* security_state = GetSecurityState(child_id);
+  if (!security_state) {
+    return false;
+  }
+
+  return security_state->MatchesCommittedOrigin(url,
+                                                url_is_for_precursor_origin);
+}
+
 CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     int child_id,
     const IsolationContext& isolation_context,
@@ -2167,8 +2261,12 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     AccessType access_type) {
-  // Ensure this is only called on the UI thread, which is the only thread
-  // with sufficient information to do the full set of checks.
+  // Ensure this is only called on the UI thread, which is the only thread with
+  // sufficient information to do the full set of checks.
+  //
+  // TODO(alexmos): Previously, this code could run on both UI and IO threads.
+  // Go through and clean up code paths that are no longer reachable on the IO
+  // thread.
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   base::AutoLock lock(lock_);
@@ -2198,14 +2296,75 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
                !IsAccessAllowedForPdfProcess(access_type)) {
       failure_reason = "pdf_restrictions";
     } else {
+      // For checking kHostsOrigin or kCanAccessDataForOrigin access types, we
+      // can use a simpler check based on tracking the list of committed
+      // origins (when that tracking is enabled).
+      //
+      // Note that it's important to perform this check *after* the PDF and
+      // sandboxing restrictions above, since those checks may deny access even
+      // for origins that have previously committed in a process. In other
+      // words, PDF and sandboxed processes should never be allowed to access
+      // data, even to their own committed origins.
+      bool can_use_committed_origin_checks =
+          (access_type == AccessType::kHostsOrigin ||
+           access_type == AccessType::kCanAccessDataForCommittedOrigin) &&
+          base::FeatureList::IsEnabled(features::kCommittedOriginTracking);
+      bool passes_committed_origin_checks =
+          can_use_committed_origin_checks &&
+          security_state->MatchesCommittedOrigin(
+              url, url_is_precursor_of_opaque_origin);
+
       // Perform Jail and Citadel checks. See PerformJailAndCitadelChecks() for
-      // more details. If these checks fail, collect crash keys below before
-      // returning false.
+      // more details. Eventually, `passes_committed_origin_checks` will replace
+      // these checks for kHostsOrigin and kCanAccessDataForOrigin access
+      // checks.
       bool passes_jail_and_citadel_checks = PerformJailAndCitadelChecks(
           child_id, security_state, url, url_is_precursor_of_opaque_origin,
           access_type, expected_process_lock, failure_reason);
-      if (passes_jail_and_citadel_checks) {
+
+      // Collect a DumpWithoutCrashing report when the two checks disagree. This
+      // is to validate the committed origin checks in the wild.
+      if (can_use_committed_origin_checks &&
+          passes_jail_and_citadel_checks != passes_committed_origin_checks) {
+        SCOPED_CRASH_KEY_BOOL("CommittedOrigins", "jc_check",
+                              passes_jail_and_citadel_checks);
+        SCOPED_CRASH_KEY_BOOL("CommittedOrigins", "co_check",
+                              passes_committed_origin_checks);
+        SCOPED_CRASH_KEY_STRING256("CommittedOrigins", "actual_process_lock",
+                                   actual_process_lock.ToString());
+        SCOPED_CRASH_KEY_STRING256(
+            "CommittedOrigins", "requested_url_origin",
+            url.DeprecatedGetOriginAsURL().possibly_invalid_spec());
+        SCOPED_CRASH_KEY_BOOL("CommittedOrigins", "is_precursor",
+                              url_is_precursor_of_opaque_origin);
+        SCOPED_CRASH_KEY_STRING256(
+            "CommittedOrigins", "list",
+            security_state->GetCommittedOriginsAsStringForDebugging());
+        base::debug::DumpWithoutCrashing();
+      }
+
+      if (can_use_committed_origin_checks &&
+          base::FeatureList::IsEnabled(
+              features::kCommittedOriginEnforcements)) {
+        // TODO(crbug.com/40148776): The actual committed origin enforcements
+        // are currently behind a feature: if the feature is on, it overrides
+        // the Jail and Citadel checks (for kHostsOrigin and
+        // kCanAccessDataForOrigin access types). If the check didn't pass, fall
+        // through to collect crash keys before returning false.
+        if (passes_committed_origin_checks) {
+          return true;
+        }
+      } else if (passes_jail_and_citadel_checks) {
+        // If the committed origin enforcements are off, or if we couldn't use
+        // them (i.e., for kCanCommitNewOrigin checks), Jail and Citadel checks
+        // are the source of truth. If they don't pass, collect crash keys below
+        // before returning false.
         return true;
+      }
+
+      if (can_use_committed_origin_checks) {
+        failure_reason +=
+            passes_committed_origin_checks ? " co_pass" : " co_fail";
       }
     }
   }
@@ -3145,6 +3304,20 @@ void ChildProcessSecurityPolicyImpl::RemoveProcessReferenceLocked(
                        policy->pending_remove_state_.erase(child_id);
                      },
                      base::Unretained(this), child_id));
+}
+
+void ChildProcessSecurityPolicyImpl::AddCommittedOrigin(
+    int child_id,
+    const url::Origin& origin) {
+  if (!base::FeatureList::IsEnabled(features::kCommittedOriginTracking)) {
+    return;
+  }
+
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::AutoLock lock(lock_);
+  auto* state = GetSecurityState(child_id);
+  DCHECK(state);
+  state->AddCommittedOrigin(origin);
 }
 
 }  // namespace content

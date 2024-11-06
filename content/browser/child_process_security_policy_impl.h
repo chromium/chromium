@@ -595,6 +595,14 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const url::Origin& origin,
       bool is_global_walk_or_frame_removal);
 
+  // Add `origin` to the list of committed origins for the process identified by
+  // `child_id`. An attempt to add the same origin more than once is safely
+  // ignored. Note that there is currently no way to revoke an origin once it
+  // has been committed, even if all associated documents and workers go away.
+  // This might need to be revisited in the future if the list of committed
+  // origins grows too large.
+  void AddCommittedOrigin(int child_id, const url::Origin& origin);
+
   // Allows tests to modify the delay in cleaning up BrowsingInstanceIds. If the
   // delay is set to zero, cleanup happens immediately.
   void SetBrowsingInstanceCleanupDelayForTesting(int64_t delay_in_seconds) {
@@ -606,6 +614,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   size_t BrowsingInstanceIdCountForTesting(int child_id);
 
   void ClearRegisteredSchemeForTesting(const std::string& scheme);
+
+  // Checks if the provided `url` matches any committed origin in the process
+  // `child_id`. Currently only exposed for testing, since normally this check
+  // happens within CanAccessMaybeOpaqueOrigin().
+  bool MatchesCommittedOriginForTesting(int child_id,
+                                        const GURL& url,
+                                        bool url_is_for_precursor_origin);
 
   // Exposes LookupOriginIsolationState() for tests.
   OriginAgentClusterIsolationState* LookupOriginIsolationStateForTesting(
@@ -642,6 +657,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
                            ParseIsolatedOrigins);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest, WildcardDefaultPort);
+  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
+                           MatchesCommittedOrigin);
 
   class SecurityState;
 

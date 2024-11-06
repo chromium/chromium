@@ -145,6 +145,10 @@ class WebDatabaseHostImplTest : public ::testing::Test {
             OriginAgentClusterIsolationState::CreateForDefaultIsolation(
                 &browser_context_)),
         process_id(), url);
+    // All tests in this file assume that they have committed an origin
+    // corresponding to `url`.
+    ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+        process_id(), url::Origin::Create(url));
   }
 
   storage::MockQuotaManager* quota_manager() { return quota_manager_.get(); }

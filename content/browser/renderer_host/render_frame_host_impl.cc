@@ -12687,6 +12687,19 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // earlier, when they are received from the renderer.
   if (request->common_params().post_data)
     GrantFileAccessFromResourceRequestBody(*request->common_params().post_data);
+
+  // Add the origin that will be committed by this navigation to the list of
+  // committed origins. We choose to do this at ready-to-commit time so that
+  // subsequent code can check that the new origin is valid for this
+  // RenderFrameHost's process prior to DidCommit time. For example,
+  // RenderFrameHostImpl::CommitNavigation() has code that checks
+  // CanAccessDataForOrigin while setting up storage interfaces.
+  //
+  // Note that GetOriginToCommit() internally CHECKs that the origin to commit
+  // is valid for this process, using CanAccessOrigin() to perform jail and
+  // citadel process lock checks, so this origin should to be safe to add.
+  ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+      GetProcess()->GetID(), request->GetOriginToCommit().value());
 }
 
 mojo::AssociatedRemote<mojom::NavigationClient>
@@ -14576,6 +14589,21 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         same_document_params &&
             same_document_params->same_document_navigation_type ==
                 blink::mojom::SameDocumentNavigationType::kHistoryApi);
+
+    // Add the origin from this navigation to the list of committed origins. In
+    // the common case, this is done in UpdatePermissionsForNavigation() at
+    // ready-to-commit time. However, synchronous renderer commits do not go
+    // through that flow, and it is possible that they legitimately introduce a
+    // new origin into a renderer process. Namely, this happens when adding a
+    // sandboxed about:blank frame, where the browser process will only hear
+    // about the new opaque origin here.
+    //
+    // Note that `params.origin` is safe to add since it's already been
+    // validated in ValidateDidCommitParams() above prior to getting here.
+    if (is_synchronous_about_blank_commit) {
+      ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+          GetProcess()->GetID(), params->origin);
+    }
   }
 
   DCHECK(navigation_request);

@@ -5738,7 +5738,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
                        NewBrowsingInstanceInOldProcess) {
   // This test is designed to run without strict site isolation.
   if (AreAllSitesIsolatedForTesting()) {
-    return;
+    GTEST_SKIP();
   }
 
   // Force process reuse for main frames in new BrowsingInstances.
@@ -5831,8 +5831,21 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // Now that the process only contains a BrowsingInstance where bar.com is
   // considered isolated and cannot reuse the old process, it should lose access
   // to bar.com's data due to citadel enforcement in CanAccessDataForOrigin.
-  EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
-                                              url::Origin::Create(bar_url)));
+  //
+  // However, note that the access won't be revoked if
+  // ChildProcessSecurityPolicy uses new security enforcements based on lists of
+  // committed origins, since committed origins are currently never revoked from
+  // a process.
+  // TODO(crbug.com/40148776): This may need to be revisited in the future,
+  // e.g., by marking newly isolated origins as needing revocation when their
+  // last instance goes away from a process.
+  if (base::FeatureList::IsEnabled(features::kCommittedOriginEnforcements)) {
+    EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id,
+                                               url::Origin::Create(bar_url)));
+  } else {
+    EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
+                                                url::Origin::Create(bar_url)));
+  }
 }
 
 // Verify that a process locked to foo.com is not reused for a navigation to

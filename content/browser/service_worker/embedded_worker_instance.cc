@@ -297,6 +297,13 @@ void EmbeddedWorkerInstance::Start(
   // rph->IsInitializedAndNotDead().
   CHECK(rph);
 
+  // Let the process know that it now has an instance of an origin that matches
+  // the worker's URL. This is needed so that the worker process can access data
+  // belonging to that origin.
+  const url::Origin origin = url::Origin::Create(params->script_url);
+  ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(process_id,
+                                                                    origin);
+
   rph->BindReceiver(client_.BindNewPipeAndPassReceiver());
   client_.set_disconnect_handler(
       base::BindOnce(&EmbeddedWorkerInstance::Detach, base::Unretained(this)));
@@ -346,7 +353,6 @@ void EmbeddedWorkerInstance::Start(
 
     // Create factory bundles for this worker to do loading. These bundles don't
     // support reconnection to the network service, see below comments.
-    const url::Origin origin = url::Origin::Create(params->script_url);
 
     // The bundle for new scripts is passed to ServiceWorkerScriptLoaderFactory
     // and used to request non-installed service worker scripts. It's only

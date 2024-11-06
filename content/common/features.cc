@@ -99,6 +99,24 @@ BASE_FEATURE(kCodeCacheDeletionWithoutFilter,
              "CodeCacheDeletionWithoutFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Turn on enforcements based on tracking the list of committed origins in
+// ChildProcessSecurityPolicy::CanAccessMaybeOpaqueOrigin(). Note that this only
+// controls whether or not the new security checks take effect; when this is
+// off, the security check is still performed and compared to the legacy jail
+// and citadel check to collect data about possible mismatches. Requires
+// CommittedOriginTracking to also be turned on to take effect. See
+// https://crbug.com/40148776.
+BASE_FEATURE(kCommittedOriginEnforcements,
+             "CommittedOriginEnforcements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Turn on the tracking of origins committed in each renderer process in
+// ChildProcessSecurityPolicy. This is required for committed origin
+// enforcements, which is gated behind kCommittedOriginEnforcements.
+BASE_FEATURE(kCommittedOriginTracking,
+             "CommittedOriginTracking",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables support for the `Critical-CH` response header.
 // https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
 BASE_FEATURE(kCriticalClientHint,
