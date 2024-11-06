@@ -27,6 +27,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -1410,9 +1411,9 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   // triggered before, but synchronously before (and navigations are async), so
   // this should not have updated to the new url that will be navigated to.
   std::optional<webapps::AppId> source_contents_app_id =
-      source_contents
-          ? WebAppTabHelper::FromWebContents(params.source_contents)->app_id()
-          : std::nullopt;
+      source_contents ? base::OptionalFromPtr(
+                            WebAppTabHelper::GetAppId(params.source_contents))
+                      : std::nullopt;
 
   std::optional<webapps::AppId> referrer_app_id =
       params.referrer.url.is_valid()
