@@ -204,20 +204,36 @@ void HTMLDialogElement::requestClose(const String& return_value) {
   // TODO(crbug.com/376516550): Implement this function.
 }
 
-String HTMLDialogElement::closedBy() const {
+ClosedByState HTMLDialogElement::ClosedBy() const {
   CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   auto attribute_value =
       FastGetAttribute(html_names::kClosedbyAttr).LowerASCII();
-  if (attribute_value == keywords::kAny || attribute_value == keywords::kNone ||
-      attribute_value == keywords::kCloserequest) {
-    return attribute_value;
+  if (attribute_value == keywords::kAny) {
+    return ClosedByState::kAny;
+  } else if (attribute_value == keywords::kNone) {
+    return ClosedByState::kNone;
+  } else if (attribute_value == keywords::kCloserequest) {
+    return ClosedByState::kCloseRequest;
   } else {
     // The closedby attribute's invalid value default and missing value default
     // are both the Auto state. The Auto state matches closerequest when the
     // element is modal; otherwise none.
-    return IsModal() ? keywords::kCloserequest : keywords::kNone;
+    return IsModal() ? ClosedByState::kCloseRequest : ClosedByState::kNone;
   }
 }
+
+String HTMLDialogElement::closedBy() const {
+  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
+  switch (ClosedBy()) {
+    case ClosedByState::kAny:
+      return keywords::kAny;
+    case ClosedByState::kCloseRequest:
+      return keywords::kCloserequest;
+    case ClosedByState::kNone:
+      return keywords::kNone;
+  }
+}
+
 void HTMLDialogElement::setClosedBy(const String& new_value) {
   CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   setAttribute(html_names::kClosedbyAttr, AtomicString(new_value));
@@ -326,14 +342,7 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
   if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-    // TODO(crbug.com/376516550): Implement spec behavior:
-    //  - Set this's close watcher to the result of establishing a close watcher
-    //    given this's relevant global object, with:
-    //  - cancelAction being to return the result of firing an event named
-    //    cancel at this, with the cancelable attribute initialized to true.
-    //  - closeAction being to close the dialog given this and null.
-    //  - enabled being true if this's closedby attribute state is Any or Close
-    //    Request; otherwise false.
+    CreateCloseWatcher();
   }
 
   // The layout must be updated here because setFocusForDialog calls
@@ -392,6 +401,27 @@ class DialogCloseWatcherEventListener : public NativeEventListener {
   WeakMember<HTMLDialogElement> dialog_;
 };
 
+void HTMLDialogElement::CreateCloseWatcher() {
+  CHECK(!close_watcher_);
+  LocalDOMWindow* window = GetDocument().domWindow();
+  if (!window) {
+    return;
+  }
+  close_watcher_ = CloseWatcher::Create(*window);
+  if (!close_watcher_) {
+    return;
+  }
+  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
+    ClosedByState closed_by = ClosedBy();
+    close_watcher_->setEnabled(closed_by == ClosedByState::kAny ||
+                               closed_by == ClosedByState::kCloseRequest);
+  }
+  auto* event_listener =
+      MakeGarbageCollected<DialogCloseWatcherEventListener>(this);
+  close_watcher_->addEventListener(event_type_names::kClose, event_listener);
+  close_watcher_->addEventListener(event_type_names::kCancel, event_listener);
+}
+
 void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   if (IsOpen()) {
     if (!IsModal()) {
@@ -436,28 +466,11 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   SetBooleanAttribute(html_names::kOpenAttr, true);
   SetIsModal(true);
 
-  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-    // TODO(crbug.com/376516550): Implement spec behavior:
-    // Set this's close watcher to...
-    //  - enabled being true if this's closedby attribute is in the Any, Close
-    //    Request, or Auto state; otherwise false.
-  }
-
   // Refresh the AX cache first, because most of it is changing.
   InertSubtreesChanged(document, old_modal_dialog);
   document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  if (LocalDOMWindow* window = GetDocument().domWindow()) {
-    close_watcher_ = CloseWatcher::Create(*window);
-    if (close_watcher_) {
-      auto* event_listener =
-          MakeGarbageCollected<DialogCloseWatcherEventListener>(this);
-      close_watcher_->addEventListener(event_type_names::kClose,
-                                       event_listener);
-      close_watcher_->addEventListener(event_type_names::kCancel,
-                                       event_listener);
-    }
-  }
+  CreateCloseWatcher();
 
   // Proposed new behavior: top layer elements like dialogs and fullscreen
   // elements can be nested inside popovers.
@@ -601,6 +614,20 @@ void HTMLDialogElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
+void HTMLDialogElement::AttributeChanged(
+    const AttributeModificationParams& params) {
+  HTMLElement::AttributeChanged(params);
+
+  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled() &&
+      params.name == html_names::kClosedbyAttr && IsOpen() &&
+      params.old_value != params.new_value) {
+    CHECK(close_watcher_);
+    ClosedByState closed_by = ClosedBy();
+    close_watcher_->setEnabled(closed_by == ClosedByState::kAny ||
+                               closed_by == ClosedByState::kCloseRequest);
+  }
+}
+
 void HTMLDialogElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled() &&
@@ -615,18 +642,6 @@ void HTMLDialogElement::ParseAttribute(
     console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
     GetDocument().AddConsoleMessage(console_message);
     close(/*return_value=*/String(), /*ignore_open_attribute=*/true);
-  }
-
-  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled() &&
-      params.name == html_names::kClosedbyAttr) {
-    // TODO(crbug.com/376516550): Implement spec behavior:
-    //  3. If element has no open attribute, then return.
-    //  4. If oldValue and value are in the same state, then return.
-    //  5. Assert : element's close watcher is not null.
-    //  6. If value is in the Any state, or Close Request state, or Auto state
-    //     and element's is modal flag is true, then let enabled to true;
-    //     otherwise false.
-    //  7. Set element's close watcher's enabled boolean to enabled.
   }
 
   HTMLElement::ParseAttribute(params);

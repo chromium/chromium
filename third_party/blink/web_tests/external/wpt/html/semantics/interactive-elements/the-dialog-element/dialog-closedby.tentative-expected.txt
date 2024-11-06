@@ -3,17 +3,9 @@ This is a testharness.js-based test.
   assert_true: Dialog should respond to light dismiss expected true got false
 [FAIL] closedby=any, Modal
   assert_true: Dialog should respond to light dismiss expected true got false
-[FAIL] closedby=none, Non-modal
-  assert_false: Dialog should NOT respond to ESC expected false got true
-[FAIL] closedby=none, Modal
-  assert_false: Dialog should NOT respond to ESC expected false got true
 [FAIL] closedby=AnY, Non-modal
   assert_true: Dialog should respond to light dismiss expected true got false
 [FAIL] closedby=AnY, Modal
   assert_true: Dialog should respond to light dismiss expected true got false
-[FAIL] closedby=NoNe, Non-modal
-  assert_false: Dialog should NOT respond to ESC expected false got true
-[FAIL] closedby=NoNe, Modal
-  assert_false: Dialog should NOT respond to ESC expected false got true
 Harness: the test ran to completion.
 
