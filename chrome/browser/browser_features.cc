@@ -129,14 +129,6 @@ BASE_FEATURE(kIncomingCallNotifications,
              "IncomingCallNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Enables locking the cookie database for profiles.
-// TODO(crbug.com/40901624): Remove after fully launched.
-BASE_FEATURE(kLockProfileCookieDatabase,
-             "LockProfileCookieDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-
 #if !BUILDFLAG(IS_ANDROID)
 // Adds a "Snooze" action to mute notifications during screen sharing sessions.
 BASE_FEATURE(kMuteNotificationSnoozeAction,

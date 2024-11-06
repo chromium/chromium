@@ -55,10 +55,6 @@ BASE_DECLARE_FEATURE(kUseAppBoundEncryptionProviderForEncryption);
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
 
-#if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
 #endif

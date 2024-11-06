@@ -217,33 +217,17 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 #if BUILDFLAG(IS_WIN)
-class ChromeNetworkServiceBrowserCookieLockTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class ChromeNetworkServiceBrowserCookieLockTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kLockProfileCookieDatabase, ShouldBeLocked());
-
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- protected:
-  const bool& ShouldBeLocked() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// This test verifies that if the kLockProfileCookieDatabase feature is enabled,
-// then the cookie store cannot be opened once sqlite has an exclusive lock on
-// the file.
-IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserCookieLockTest,
+// This test verifies that the cookie store cannot be opened once sqlite has an
+// exclusive lock on the file.
+IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceBrowserCookieLockTest,
                        CookiesAreLocked) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -259,16 +243,9 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserCookieLockTest,
     base::File cookie_file(
         cookie_filename,
         base::File::Flags::FLAG_OPEN_ALWAYS | base::File::Flags::FLAG_READ);
-    EXPECT_EQ(ShouldBeLocked(), !cookie_file.IsValid());
+    EXPECT_FALSE(cookie_file.IsValid());
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ChromeNetworkServiceBrowserCookieLockTest,
-                         ::testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "Locked" : "NotLocked";
-                         });
 
 #endif  // BUILDFLAG(IS_WIN)
 
