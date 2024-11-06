@@ -129,10 +129,21 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
     InProcessBrowserTest::SetUp();
   }
 
+  // Should we specify a size when opening pip with
+  // `kPictureInPictureDocumentPipPage`?  Ignored for other pages.
+  enum class SizingMode {
+    // Specify size when opening pip.
+    kSized,
+
+    // Do not specify size when opening pip.
+    kUnsized
+  };
+
   void SetUpDocumentPIP(
       std::optional<bool> disallow_return_to_opener = std::nullopt,
       const base::FilePath::CharType* pip_page_relative_path =
-          kPictureInPictureDocumentPipPage) {
+          kPictureInPictureDocumentPipPage,
+      SizingMode sizing_mode = SizingMode::kSized) {
     // Navigate to test url.
     GURL test_page_url = ui_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
@@ -146,10 +157,12 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
     // Enter document pip.
     auto* pip_window_controller_ = content::PictureInPictureWindowController::
         GetOrCreateDocumentPictureInPictureController(active_web_contents);
-    std::string disallow_return_to_opener_js_string =
+    const std::string disallow_return_to_opener_js_string =
         (disallow_return_to_opener.has_value()
              ? (*disallow_return_to_opener ? "true" : "false")
              : "undefined");
+    const std::string size_string =
+        (sizing_mode == SizingMode::kSized ? "300" : "undefined");
 
     if (pip_page_relative_path == kCameraPage) {
       GetUserMediaAndAccept(active_web_contents);
@@ -167,11 +180,13 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
               base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
       enter_pip_observer.Wait();
     } else {
-      ASSERT_EQ(true,
-                EvalJs(active_web_contents,
-                       base::StrCat(
-                           {"createDocumentPipWindow({disallowReturnToOpener: ",
-                            disallow_return_to_opener_js_string, "})"})));
+      ASSERT_EQ(
+          true,
+          EvalJs(active_web_contents,
+                 base::StrCat({"createDocumentPipWindow({width: ", size_string,
+                               ", height: ", size_string,
+                               ", disallowReturnToOpener: ",
+                               disallow_return_to_opener_js_string, "})"})));
     }
 
     // A pip window should have opened.
@@ -326,6 +341,33 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   // The pip window should return to its original bounds.
   EXPECT_EQ(initial_pip_bounds,
             pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+}
+
+// When a child dialog opens, causing a resize of the pip window, verify that
+// the pip window restores its original size even if no size was specified.
+// See crbug.com/377194135 for more information, but TL;DR: verify that we're
+// capturing the size properly even if we don't get a widget resize message.  We
+// sometimes don't on ChromeOS when the size is unspecified.  Other platforms
+// seem to get a resize either way.
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       UnsizedWindowResizesProperly) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP({}, kPictureInPictureDocumentPipPage,
+                                           SizingMode::kUnsized));
+
+  gfx::Rect initial_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
+                                    initial_pip_bounds.height() + 10);
+  auto child_dialog = OpenChildDialog(
+      child_dialog_size, gfx::ScaleToFlooredSize(child_dialog_size, 0.5f));
+  child_dialog->CloseNow();
+
+  // The pip window should return to its original bounds.  Allow some
+  // verification because wayland can be off by one and windows can be off by
+  // four.  We're mostly concerned that it's not minimum sized at the origin, so
+  // anything close is fine.
+  EXPECT_TRUE(initial_pip_bounds.ApproximatelyEqual(
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen(), 5));
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
