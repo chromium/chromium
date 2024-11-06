@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.9.0...chromium-bidi-v0.9.1) (2024-11-06)
+
+
+### Reverts
+
+* "chore: exclude targets that we do not interact with" ([#2736](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2736)) ([2a061d2](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2a061d2808b6171eaf097caba2e88c285cf4deb8))
+
 ## [0.9.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.8.1...chromium-bidi-v0.9.0) (2024-10-23)
 
 
