@@ -181,7 +181,7 @@ void SettingsWindowManager::ShowOSSettings(Profile* profile,
 }
 
 void SettingsWindowManager::ShowOSSettings(Profile* profile,
-                                           const std::string& sub_page,
+                                           std::string_view sub_page,
                                            int64_t display_id) {
   ShowChromePageForProfile(profile, chrome::GetOSSettingsUrl(sub_page),
                            display_id, /*callback=*/{});
@@ -189,7 +189,7 @@ void SettingsWindowManager::ShowOSSettings(Profile* profile,
 
 void SettingsWindowManager::ShowOSSettings(
     Profile* profile,
-    const std::string& sub_page,
+    std::string_view sub_page,
     const chromeos::settings::mojom::Setting setting_id,
     int64_t display_id) {
   std::string path_with_setting_id =

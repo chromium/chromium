@@ -403,8 +403,8 @@ void ShowSlow(Browser* browser) {
 #endif
 }
 
-GURL GetSettingsUrl(const std::string& sub_page) {
-  return GURL(std::string(kChromeUISettingsURL) + sub_page);
+GURL GetSettingsUrl(std::string_view sub_page) {
+  return GURL(base::StrCat({kChromeUISettingsURL, sub_page}));
 }
 
 bool IsTrustedPopupWindowWithScheme(const Browser* browser,
@@ -425,7 +425,7 @@ void ShowSettings(Browser* browser) {
   ShowSettingsSubPage(browser, std::string());
 }
 
-void ShowSettingsSubPage(Browser* browser, const std::string& sub_page) {
+void ShowSettingsSubPage(Browser* browser, std::string_view sub_page) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowSettingsSubPageForProfile(browser->profile(), sub_page);
 #else
@@ -434,7 +434,7 @@ void ShowSettingsSubPage(Browser* browser, const std::string& sub_page) {
 }
 
 void ShowSettingsSubPageForProfile(Profile* profile,
-                                   const std::string& sub_page) {
+                                   std::string_view sub_page) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // OS settings sub-pages are handled else where and should never be
   // encountered here.
@@ -447,7 +447,7 @@ void ShowSettingsSubPageForProfile(Profile* profile,
 }
 
 void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
-                                        const std::string& sub_page) {
+                                        std::string_view sub_page) {
   base::RecordAction(UserMetricsAction("ShowOptions"));
 
   // Since the user may be triggering navigation from another UI element such as
@@ -653,10 +653,10 @@ void ShowGraduationApp(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-GURL GetOSSettingsUrl(const std::string& sub_page) {
+GURL GetOSSettingsUrl(std::string_view sub_page) {
   DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
       << sub_page;
-  return GURL(std::string(kChromeUIOSSettingsURL) + sub_page);
+  return GURL(base::StrCat({kChromeUIOSSettingsURL, sub_page}));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
