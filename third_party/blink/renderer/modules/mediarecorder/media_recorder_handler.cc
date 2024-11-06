@@ -29,9 +29,7 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/decoder_buffer.h"
-#include "media/base/media_switches.h"
 #include "media/base/mime_util.h"
-#include "media/base/supported_types.h"
 #include "media/base/video_codec_string_parsers.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -74,6 +72,13 @@ namespace blink {
 BASE_FEATURE(kMediaRecorderEnableMp4Muxer,
              "MediaRecorderEnableMp4Muxer",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+BASE_FEATURE(kMediaRecorderHEVCSupport,
+             "MediaRecorderHEVCSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 namespace {
 
 constexpr double kDefaultVideoFrameRate = 30.0;
@@ -398,13 +403,9 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     if (codec_string.StartsWith("hvc1", kTextCaseASCIIInsensitive) &&
-        (!base::FeatureList::IsEnabled(media::kMediaRecorderHEVCSupport) ||
+        (!base::FeatureList::IsEnabled(kMediaRecorderHEVCSupport) ||
          // Only `mkv` and `mp4` are supported, `webm` is not supported.
-         EqualIgnoringASCIICase(type, "video/webm") ||
-         // Only if there are platform HEVC main profile support.
-         !media::IsEncoderSupportedVideoType(
-             {media::VideoCodec::kHEVC,
-              media::VideoCodecProfile::HEVCPROFILE_MAIN}))) {
+         EqualIgnoringASCIICase(type, "video/webm"))) {
       return false;
     }
 #endif
