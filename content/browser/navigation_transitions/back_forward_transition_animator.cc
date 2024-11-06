@@ -1189,9 +1189,14 @@ void BackForwardTransitionAnimator::OnTransformAnimated(
 }
 
 void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
-  CHECK_EQ(effect_.keyframe_models()[0]->TargetProperty(),
-           static_cast<int>(TargetProperty::kScrim));
   if (navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
+    if (effect_.keyframe_models().empty()) {
+      // http://crbug.com/377341853: We occasionally exhaust the scrim model and
+      // the opacity/transform models for the rrect/favicon when the cancel
+      // animation finishes. We need to add the scrim back as the user can still
+      // proceed the navigation, for which we need to play the invoke animation.
+      InitializeEffectForGestureProgressAnimation();
+    }
     AdvanceAndProcessState(State::kWaitingForBeforeUnloadUserInteraction);
     return;
   }
