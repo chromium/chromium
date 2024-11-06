@@ -1592,6 +1592,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kSoftwareDecoderOnly"/>
 </enum>
 
+<!-- LINT.IfChange(PictureInPictureDisallowedTypeEnum) -->
+
+<enum name="PictureInPictureDisallowedType">
+  <int value="0" label="Existing picture-in-picture window was closed"/>
+  <int value="1" label="New picture-in-picture window was closed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/picture_in_picture/picture_in_picture_window_manager.h:PictureInPictureDisallowedType) -->
+
 <enum name="PresentationUrlBySink">
   <int value="0" label="Unknown"/>
   <int value="1" label="https:-like URL to Chromecast"/>

@@ -4305,6 +4305,8 @@ static_library("browser") {
       "picture_in_picture/picture_in_picture_occlusion_tracker.h",
       "picture_in_picture/picture_in_picture_occlusion_tracker_observer.cc",
       "picture_in_picture/picture_in_picture_occlusion_tracker_observer.h",
+      "picture_in_picture/scoped_disallow_picture_in_picture.cc",
+      "picture_in_picture/scoped_disallow_picture_in_picture.h",
       "picture_in_picture/scoped_picture_in_picture_occlusion_observation.cc",
       "picture_in_picture/scoped_picture_in_picture_occlusion_observation.h",
       "policy/browsing_history_policy_handler.cc",
