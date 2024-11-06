@@ -30,6 +30,7 @@ export function getHtml(this: TraceReportElement) {
           @click="${this.onCopyScenarioClick_}">
         ${this.trace.scenarioName}
       </button>
+      <div class="info">Scenario</div>
     </div>
     <div class="trace-trigger-container">
       <button class="clickable-field copiable" title="${this.trace.uploadRuleName}"
