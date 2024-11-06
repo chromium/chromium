@@ -1875,6 +1875,17 @@ void CaptureModeController::OnImageCapturedForSearch(
   }
 
   if (ShouldFetchScannerActions(capture_type)) {
+    if (capture_type == PerformCaptureType::kSunfish) {
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::
+              kSunfishScreenInitialScreenCaptureSentToScannerServer);
+    }
+    if (capture_type == PerformCaptureType::kScanner) {
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::
+              kScreenCaptureModeInitialScreenCaptureSentToScannerServer);
+    }
+
     Shell::Get()->scanner_controller()->FetchActionsForImage(
         jpeg_bytes,
         base::BindOnce(&CaptureModeController::OnScannerActionsFetched,
