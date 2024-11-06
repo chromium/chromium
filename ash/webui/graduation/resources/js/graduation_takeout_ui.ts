@@ -196,6 +196,13 @@ export class GraduationTakeoutUi extends PolymerElement {
       return;
     }
 
+    // Don't attempt reload if the app is offline. This can cause a reload
+    // failure that causes the loading spinner to never go away, even when the
+    // app comes back online.
+    if (!navigator.onLine) {
+      return;
+    }
+
     if (this.webviewReloadHelper.isReloadCountLimitReached()) {
       this.webviewReloadHelper.reset();
       this.setIsWebviewLoading(false);
