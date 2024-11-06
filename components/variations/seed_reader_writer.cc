@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
@@ -23,11 +24,11 @@ namespace {
 // information.
 constexpr char kSeedWriterHistogramSuffix[] = "VariationsSeedsV1";
 
-// Returns true if a seed should be written to its new storage.
-bool ShouldWriteToNewSeedStorage(version_info::Channel channel) {
-  return channel == version_info::Channel::CANARY ||
-         channel == version_info::Channel::DEV ||
-         channel == version_info::Channel::BETA;
+// Returns true if a seed should be written to a seed file.
+bool ShouldWriteToSeedFile() {
+  // Use the plain FieldTrialList API here because the trial is registered
+  // client-side in VariationsSeedStore SetUpSeedFileTrial().
+  return base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
 }
 
 // Serializes and returns seed data used during write to disk. Will be run
@@ -52,11 +53,9 @@ SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
     const base::FilePath& seed_file_dir,
     base::FilePath::StringPieceType seed_filename,
-    const version_info::Channel channel,
     std::string_view seed_pref,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner)
     : local_state_(local_state),
-      channel_(channel),
       seed_pref_(seed_pref),
       file_task_runner_(std::move(file_task_runner)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -79,7 +78,7 @@ void SeedReaderWriter::StoreValidatedSeed(
     const std::string& base64_seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_state_->SetString(seed_pref_, base64_seed_data);
-  if (ShouldWriteToNewSeedStorage(channel_)) {
+  if (ShouldWriteToSeedFile()) {
     ScheduleSeedFileWrite(compressed_seed_data);
   }
 }
@@ -87,17 +86,18 @@ void SeedReaderWriter::StoreValidatedSeed(
 void SeedReaderWriter::ClearSeed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_state_->ClearPref(seed_pref_);
-  // TODO(crbug.com/372009105): Remove if-statement when all channels are ready
-  // to launch.
-  if (!ShouldWriteToNewSeedStorage(channel_) && seed_writer_ &&
-      !base::PathExists(seed_writer_->path())) {
+  // TODO(crbug.com/372009105): Remove if-statements when experiment has ended.
+  if (!seed_writer_) {
     return;
   }
-  // Although only pre-Stable clients write seeds to dedicated seed files,
-  // attempt to clear the seed file on all channels here. If a client
-  // switches from a pre-Stable client to a Stable client, their device
-  // could have a seed file.
-  ScheduleSeedFileWrite(std::string());
+
+  // Although only clients in the treatment group write seeds to dedicated seed
+  // files, attempt to clear the seed file for all groups here. If a client
+  // switches experiment groups or channels, their device could have a seed file
+  // with stale seed data.
+  if (ShouldWriteToSeedFile() || base::PathExists(seed_writer_->path())) {
+    ScheduleSeedFileWrite(std::string());
+  }
 }
 
 void SeedReaderWriter::SetTimerForTesting(base::OneShotTimer* timer_override) {

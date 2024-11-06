@@ -241,9 +241,9 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       local_state_.get(), /*initial_seed=*/std::move(seed),
       /*signature_verification_enabled=*/g_signature_verification_enabled,
       std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
-          local_state_.get(), client_->GetChannelForVariations(),
-          client_->GetVariationsSeedFileDir()),
+          local_state_.get(), client_->GetVariationsSeedFileDir()),
       client_->GetChannelForVariations(), client_->GetVariationsSeedFileDir(),
+      /*entropy_providers=*/nullptr,
       /*use_first_run_prefs=*/false);
 
   if (!seed_date.is_null())

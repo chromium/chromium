@@ -259,8 +259,7 @@ std::unique_ptr<CrOSVariationsFieldTrialCreator> GetFieldTrialCreator(
     safe_seed = std::make_unique<EarlyBootSafeSeed>(safe_seed_details.value());
   } else {
     safe_seed = std::make_unique<VariationsSafeSeedStoreLocalState>(
-        local_state, client->GetChannelForVariations(),
-        client->GetVariationsSeedFileDir());
+        local_state, client->GetVariationsSeedFileDir());
   }
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,

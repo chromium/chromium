@@ -18,6 +18,7 @@
 #include "components/variations/entropy_provider.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 
@@ -163,6 +164,9 @@ bool ContainsTrialAndGroupName(
     const std::vector<ActiveGroupId>& active_group_ids,
     std::string_view trial_name,
     std::string_view group_name);
+
+// Sets up the seed file experiment where `group_name` is the active group.
+void SetUpSeedFileTrial(std::string group_name);
 
 }  // namespace variations
 

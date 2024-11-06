@@ -17,11 +17,16 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/version_info/channel.h"
 
 class PrefService;
 
 namespace variations {
+
+// Trial and group names for the seed file experiment.
+const char kSeedFileTrial[] = "SeedFileTrial";
+const char kDefaultGroup[] = "Default";
+const char kControlGroup[] = "Control_V1";
+const char kSeedFilesGroup[] = "SeedFiles_V1";
 
 // Handles reading and writing seeds to disk.
 class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
@@ -32,16 +37,13 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Android Webview intentionally uses an empty path as it uses only local
   // state to store seeds.
   // `seed_filename` is the base name of a file in which seed data is stored.
-  // `channel` describes the browser's release channel.
   // `seed_pref` is a variations pref (kVariationsCompressedSeed or
   // kVariationsSafeCompressed) denoting the type of seed handled by this
   // SeedReaderWriter.
-  // `file_task_runner` handles IO-related tasks. Must not be
-  // null.
+  // `file_task_runner` handles IO-related tasks. Must not be null.
   SeedReaderWriter(PrefService* local_state,
                    const base::FilePath& seed_file_dir,
                    base::FilePath::StringPieceType seed_filename,
-                   const version_info::Channel channel,
                    std::string_view seed_pref,
                    scoped_refptr<base::SequencedTaskRunner> file_task_runner =
                        base::ThreadPool::CreateSequencedTaskRunner(
@@ -76,9 +78,6 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   // Pref service used to persist seeds.
   raw_ptr<PrefService> local_state_;
-
-  // Channel the client is apart of.
-  const version_info::Channel channel_;
 
   // A variations pref (kVariationsCompressedSeed or kVariationsSafeCompressed)
   // denoting the type of seed handled by this SeedReaderWriter.

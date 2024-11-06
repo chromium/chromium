@@ -23,12 +23,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
  public:
   // |local_state| should generally be the same value that VariationsSeedStore
   // uses.
-  // |channel| describes the release channel of the browser.
   // |seed_file_dir| is the file path to the seed file directory. If empty, the
   // seed is not stored in a separate seed file, only in |local_state_|.
   explicit VariationsSafeSeedStoreLocalState(
       PrefService* local_state,
-      const version_info::Channel channel,
       const base::FilePath& seed_file_dir);
 
   VariationsSafeSeedStoreLocalState(const VariationsSafeSeedStoreLocalState&) =
