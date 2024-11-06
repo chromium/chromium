@@ -14,6 +14,10 @@
 // tapped.
 - (void)closeButtonForActivitySummaryTapped;
 
+// Notifies the delegate that an activity button in the activity summary cell
+// is tapped.
+- (void)activityButtonForActivitySummaryTapped;
+
 @end
 
 // Cell representing the activity summary in a shared group.

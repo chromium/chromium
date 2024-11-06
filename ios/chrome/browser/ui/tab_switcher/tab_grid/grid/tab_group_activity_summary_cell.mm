@@ -99,10 +99,13 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
 
 // Returns a configured activity button.
 - (UIButton*)createActivityButton {
-  // TODO(crbug.com/370898260): Open the half sheet of the recent activity with
-  // the button.
+  __weak __typeof(self) weakSelf = self;
+  UIAction* openActivityAction =
+      [UIAction actionWithHandler:^(UIAction* action) {
+        [weakSelf.delegate activityButtonForActivitySummaryTapped];
+      }];
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem
-                                primaryAction:nil];
+                                primaryAction:openActivityAction];
   [button setAttributedTitle:
               [[NSAttributedString alloc]
                   initWithString:

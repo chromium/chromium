@@ -571,12 +571,6 @@ constexpr CGFloat kSpace = 8;
   [_handler hideTabGroup];
 }
 
-// Shows the recent activity of a shared tab group.
-- (void)showRecentActivity {
-  CHECK(_shared);
-  [_handler showRecentActivityForGroup:_tabGroup->GetWeakPtr()];
-}
-
 // Updates the safe area inset of the grid based on this VC safe areas and the
 // bottom toolbar, except the top one as the grid is below a toolbar.
 - (void)updateGridInsets {
@@ -619,6 +613,11 @@ constexpr CGFloat kSpace = 8;
 
 - (void)gridViewHeaderHidden:(BOOL)hidden {
   _titleView.hidden = !hidden;
+}
+
+- (void)showRecentActivity {
+  CHECK(_shared);
+  [_handler showRecentActivityForGroup:_tabGroup->GetWeakPtr()];
 }
 
 #pragma mark - TabGridToolbarsGridDelegate

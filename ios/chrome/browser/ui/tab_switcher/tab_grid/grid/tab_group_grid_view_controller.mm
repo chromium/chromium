@@ -191,4 +191,8 @@
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
+- (void)activityButtonForActivitySummaryTapped {
+  [self.viewDelegate showRecentActivity];
+}
+
 @end
