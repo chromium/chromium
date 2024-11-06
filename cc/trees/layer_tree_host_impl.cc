@@ -2288,9 +2288,7 @@ void LayerTreeHostImpl::ReclaimResources(
 void LayerTreeHostImpl::MaybeFlushPendingWork() {
   // If we're not in background, delayed work will be flushed "at some point",
   // and we also may have something better to do.
-  if (visible_ || !has_valid_layer_tree_frame_sink_ ||
-      !base::FeatureList::IsEnabled(
-          features::kReclaimResourcesFlushInBackground)) {
+  if (visible_ || !has_valid_layer_tree_frame_sink_) {
     return;
   }
 

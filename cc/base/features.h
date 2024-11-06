@@ -51,10 +51,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTilesAndroidGL);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUIEnableSharedImageCacheForGpu);
 
 // When LayerTreeHostImpl::ReclaimResources() is called in background, trigger a
-// flush to actually reclaim resources.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesFlushInBackground);
-
-// When LayerTreeHostImpl::ReclaimResources() is called in background, trigger a
 // additional delayed flush to reclaim resources.
 //
 // Enabled 03/2024, kept to run a holdback experiment.
