@@ -23394,8 +23394,6 @@
     "TransportSecurityFileWriterSchedule": [
         {
             "platforms": [
-                "android",
-                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
@@ -23403,7 +23401,25 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled1Minute_20240626",
+                    "name": "Enabled10Minutes_20241105",
+                    "params": {
+                        "commit_interval": "10m"
+                    },
+                    "enable_features": [
+                        "TransportSecurityFileWriterSchedule"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TransportSecurityFileWriterScheduleAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1Minute_20241105",
                     "params": {
                         "commit_interval": "1m"
                     },
