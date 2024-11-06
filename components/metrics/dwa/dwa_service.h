@@ -6,9 +6,16 @@
 #define COMPONENTS_METRICS_DWA_DWA_SERVICE_H_
 
 #include <cstdint>
+#include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "components/metrics/dwa/dwa_recorder.h"
+#include "components/metrics/dwa/dwa_reporting_service.h"
+#include "components/metrics/metrics_rotation_scheduler.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/unsent_log_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/dwa/deidentified_web_analytics.pb.h"
@@ -19,8 +26,20 @@ namespace metrics::dwa {
 // analytics events.
 class COMPONENT_EXPORT(DWA) DwaService {
  public:
-  DwaService();
+  DwaService(MetricsServiceClient* client, PrefService* pref_service);
+  DwaService(const DwaService&) = delete;
+  DwaService& operator=(const DwaService&) = delete;
+
   ~DwaService();
+
+  void EnableReporting();
+  void DisableReporting();
+
+  // Flushes any event currently in the recorder to prefs.
+  void Flush(metrics::MetricsLogsEventManager::CreateReason reason);
+
+  // Clears all event and log data.
+  void Purge();
 
   // Records coarse system profile into CoarseSystemInfo of the deidentified web
   // analytics report proto.
@@ -38,6 +57,40 @@ class COMPONENT_EXPORT(DWA) DwaService {
 
   // Register prefs from `dwa_pref_names.h`.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  metrics::UnsentLogStore* unsent_log_store();
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Periodically called by |scheduler_| to advance processing of logs.
+  void RotateLog();
+
+  // Constructs a new DeidentifiedWebAnalyticsReport from available data and
+  // stores it in |unsent_log_store_|.
+  void BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason reason);
+
+  // Retrieves the storage parameters to control the reporting service.
+  static UnsentLogStore::UnsentLogStoreLimits GetLogStoreLimits();
+
+  // Manages on-device recording of events.
+  raw_ptr<DwaRecorder> recorder_;
+
+  // The metrics client |this| is service is associated.
+  raw_ptr<MetricsServiceClient> client_;
+
+  // A weak pointer to the PrefService used to read and write preferences.
+  raw_ptr<PrefService> pref_service_;
+
+  // Service for uploading serialized logs.
+  DwaReportingService reporting_service_;
+
+  // The scheduler for determining when uploads should happen.
+  std::unique_ptr<MetricsRotationScheduler> scheduler_;
+
+  // Weak pointers factory used to post task on different threads. All weak
+  // pointers managed by this factory have the same lifetime as DwaService.
+  base::WeakPtrFactory<DwaService> self_ptr_factory_{this};
 };
 
 }  // namespace metrics::dwa

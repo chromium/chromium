@@ -4,6 +4,7 @@
 
 #include "components/metrics/dwa/dwa_service.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -60,11 +61,81 @@ constexpr auto kEuropeanEconomicAreaCountries =
     });
 
 // Number of seconds in a week or seven days. (604800 = 7 * 24 * 60 * 60)
-const int kOneWeekInSeconds = 7 * 24 * 60 * 60;
+const int kOneWeekInSeconds = base::Days(7).InSeconds();
 
-DwaService::DwaService() = default;
+const size_t kMinLogQueueCount = 10;
+const size_t kMinLogQueueSizeBytes = 300 * 1024;  // 300 KiB
+const size_t kMaxLogSizeBytes = 1024 * 1024;      // 1 MiB
 
-DwaService::~DwaService() = default;
+DwaService::DwaService(MetricsServiceClient* client, PrefService* local_state)
+    : recorder_(DwaRecorder::Get()),
+      client_(client),
+      pref_service_(local_state),
+      reporting_service_(client, local_state, GetLogStoreLimits()) {
+  reporting_service_.Initialize();
+  // Set up the scheduler for DwaService.
+  auto rotate_callback = base::BindRepeating(&DwaService::RotateLog,
+                                             self_ptr_factory_.GetWeakPtr());
+  auto get_upload_interval_callback =
+      base::BindRepeating(&metrics::MetricsServiceClient::GetUploadInterval,
+                          base::Unretained(client_));
+  bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
+  scheduler_ = std::make_unique<MetricsRotationScheduler>(
+      rotate_callback, get_upload_interval_callback, fast_startup_for_testing);
+  scheduler_->InitTaskComplete();
+}
+
+DwaService::~DwaService() {
+  recorder_->DisableRecording();
+  DisableReporting();
+}
+
+void DwaService::EnableReporting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (reporting_service_.reporting_active()) {
+    return;
+  }
+
+  scheduler_->Start();
+  reporting_service_.EnableReporting();
+  // Attempt to upload if there are unsent logs.
+  if (reporting_service_.unsent_log_store()->has_unsent_logs()) {
+    reporting_service_.Start();
+  }
+}
+
+void DwaService::DisableReporting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  reporting_service_.DisableReporting();
+  scheduler_->Stop();
+  Flush(metrics::MetricsLogsEventManager::CreateReason::kServiceShutdown);
+}
+
+void DwaService::Flush(metrics::MetricsLogsEventManager::CreateReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The log should not be built if there aren't any events to log.
+  if (!recorder_->HasPageLoadEvents()) {
+    return;
+  }
+
+  BuildAndStoreLog(reason);
+  reporting_service_.unsent_log_store()->TrimAndPersistUnsentLogs(true);
+}
+
+void DwaService::Purge() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  recorder_->Purge();
+  reporting_service_.unsent_log_store()->Purge();
+}
+
+// static
+UnsentLogStore::UnsentLogStoreLimits DwaService::GetLogStoreLimits() {
+  return UnsentLogStore::UnsentLogStoreLimits{
+      .min_log_count = kMinLogQueueCount,
+      .min_queue_size_bytes = kMinLogQueueSizeBytes,
+      .max_log_size_bytes = kMaxLogSizeBytes,
+  };
+}
 
 // static
 void DwaService::RecordCoarseSystemInformation(
@@ -157,10 +228,53 @@ uint64_t DwaService::GetEphemeralClientId(PrefService& local_state) {
   return client_id;
 }
 
+void DwaService::RotateLog() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!reporting_service_.unsent_log_store()->has_unsent_logs()) {
+    BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+  }
+  reporting_service_.Start();
+  scheduler_->RotationFinished();
+}
+
+void DwaService::BuildAndStoreLog(
+    metrics::MetricsLogsEventManager::CreateReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // There are no new page load events, so no new logs should be created.
+  if (!recorder_->HasPageLoadEvents()) {
+    return;
+  }
+
+  ::dwa::DeidentifiedWebAnalyticsReport report;
+  RecordCoarseSystemInformation(*client_, *pref_service_,
+                                report.mutable_coarse_system_info());
+  report.set_dwa_ephemeral_id(GetEphemeralClientId(*pref_service_));
+
+  std::vector<::dwa::PageLoadEvents> page_load_events =
+      recorder_->TakePageLoadEvents();
+  report.mutable_page_load_events()->Add(
+      std::make_move_iterator(page_load_events.begin()),
+      std::make_move_iterator(page_load_events.end()));
+
+  report.set_timestamp(MetricsLog::GetCurrentTime());
+
+  std::string serialized_log;
+  report.SerializeToString(&serialized_log);
+
+  LogMetadata metadata;
+  reporting_service_.unsent_log_store()->StoreLog(serialized_log, metadata,
+                                                  reason);
+}
+
 // static
 void DwaService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(prefs::kDwaClientId, 0u);
   registry->RegisterTimePref(prefs::kDwaClientIdLastUpdated, base::Time());
+  DwaReportingService::RegisterPrefs(registry);
+}
+
+metrics::UnsentLogStore* DwaService::unsent_log_store() {
+  return reporting_service_.unsent_log_store();
 }
 
 }  // namespace metrics::dwa

@@ -36,6 +36,10 @@ DwaReportingService::DwaReportingService(
 
 DwaReportingService::~DwaReportingService() = default;
 
+metrics::UnsentLogStore* DwaReportingService::unsent_log_store() {
+  return &unsent_log_store_;
+}
+
 // static
 void DwaReportingService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kUnsentLogStoreName);

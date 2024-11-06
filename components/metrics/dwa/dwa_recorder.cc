@@ -212,4 +212,9 @@ std::vector<::dwa::PageLoadEvents> DwaRecorder::TakePageLoadEvents() {
   return results;
 }
 
+bool DwaRecorder::HasPageLoadEvents() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !page_load_events_.empty();
+}
+
 }  // namespace metrics::dwa

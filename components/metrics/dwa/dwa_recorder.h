@@ -67,6 +67,9 @@ class COMPONENT_EXPORT(DWA) DwaRecorder {
   // Takes all existing |page_load_events_| out from DwaRecorder and returns it.
   std::vector<::dwa::PageLoadEvents> TakePageLoadEvents();
 
+  // Returns true if |page_load_events_| is non-empty.
+  bool HasPageLoadEvents();
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

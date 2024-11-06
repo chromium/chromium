@@ -40,8 +40,7 @@ class DwaReportingService : public metrics::ReportingService {
 
   ~DwaReportingService() override;
 
-  // metrics::ReportingService:
-  metrics::LogStore* log_store() override;
+  metrics::UnsentLogStore* unsent_log_store();
 
   // At startup, prefs needs to be called with a list of all the pref names and
   // types we'll be using.
@@ -49,6 +48,7 @@ class DwaReportingService : public metrics::ReportingService {
 
  private:
   // metrics::ReportingService:
+  metrics::LogStore* log_store() override;
   GURL GetUploadUrl() const override;
   GURL GetInsecureUploadUrl() const override;
   std::string_view upload_mime_type() const override;
