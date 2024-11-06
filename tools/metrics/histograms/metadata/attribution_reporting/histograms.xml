@@ -585,17 +585,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.DestinationRateLimitResult"
-    enum="AttributionDestinationRateLimitResult" expires_after="2024-06-30">
-  <owner>csharrison@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    For every successfully parsed attribution source that is also allowed by
-    browser policy, records the result of the time-based destination limit,
-    which governs whether a source can proceed to the storage layer.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ExtraReportDelay2" units="ms"
     expires_after="2025-04-20">
   <owner>apaseltiner@chromium.org</owner>

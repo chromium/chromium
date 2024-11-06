@@ -26,14 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AttributionDestinationRateLimitResult">
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Disallowed (global limit)"/>
-  <int value="2" label="Disallowed (reporting site limit)"/>
-  <int value="3" label="Disallowed (both limits)"/>
-  <int value="4" label="Internal error"/>
-</enum>
-
 <!-- LINT.IfChange(AttributionSourceDestinationLimitResult) -->
 
 <enum name="AttributionSourceDestinationLimitResult">

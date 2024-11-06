@@ -322,14 +322,9 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
-  RateLimitTable::DestinationRateLimitResult destination_rate_limit_result =
-      storage_.SourceAllowedForDestinationRateLimit(source, source_time);
-  base::UmaHistogramEnumeration("Conversions.DestinationRateLimitResult",
-                                destination_rate_limit_result);
-
   bool hit_global_destination_limit = false;
 
-  switch (destination_rate_limit_result) {
+  switch (storage_.SourceAllowedForDestinationRateLimit(source, source_time)) {
     case RateLimitTable::DestinationRateLimitResult::kAllowed:
       break;
     case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
