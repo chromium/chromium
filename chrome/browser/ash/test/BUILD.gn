@@ -28,6 +28,5 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//ui/base",
     "//ui/message_center",
-    "//ui/strings:ui_strings",
   ]
 }

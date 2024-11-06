@@ -29,7 +29,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/strings/grit/ui_strings.h"
 
 namespace policy {
 
@@ -115,11 +114,13 @@ std::u16string DeviceRestrictionScheduleController::RestrictionScheduleEndDay()
   const Day week_day_next_event = next_event.value().day_of_week();
 
   if (week_day_today == week_day_next_event) {
-    return l10n_util::GetStringUTF16(IDS_PAST_TIME_TODAY);
+    return l10n_util::GetStringUTF16(
+        IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TODAY);
   }
 
   if (WeeklyTimeChecked::NextDay(week_day_today) == week_day_next_event) {
-    return l10n_util::GetStringUTF16(IDS_TIME_TOMORROW);
+    return l10n_util::GetStringUTF16(
+        IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TOMORROW);
   }
 
   return l10n_util::GetStringUTF16(GetDayOfWeekStringId(week_day_next_event));

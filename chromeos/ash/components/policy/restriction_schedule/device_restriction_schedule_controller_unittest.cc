@@ -504,11 +504,11 @@ TEST_F(DeviceRestrictionScheduleControllerTest, RestrictionScheduleEndDayTime) {
     std::u16string expected_time;
   } kTestData[] = {
     // Inside restriction schedule, verify end time.
-    {Day::kWednesday, 15, 0, u"Today",       u"9:00\u202fPM"},
+    {Day::kWednesday, 15, 0, u"today",       u"9:00\u202fPM"},
     {Day::kFriday,    19, 0, u"on Monday",   u"6:00\u202fAM"},
     {Day::kSaturday,  19, 0, u"on Monday",   u"6:00\u202fAM"},
-    {Day::kSunday,    19, 0, u"Tomorrow",    u"6:00\u202fAM"},
-    {Day::kMonday,     1, 0, u"Today",       u"6:00\u202fAM"},
+    {Day::kSunday,    19, 0, u"tomorrow",    u"6:00\u202fAM"},
+    {Day::kMonday,     1, 0, u"today",       u"6:00\u202fAM"},
     // Inside regular schedule, verify that empty strings are returned.
     {Day::kWednesday, 10, 0, u"", u""},
     {Day::kTuesday,   10, 0, u"", u""},
@@ -582,7 +582,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
         .WillOnce(EXPECT_TIME_STR(t.sunday_midnight_utc));
     AdvanceTime(base::Hours(9));  // Sunday 04:00
     Mock::VerifyAndClearExpectations(&observer_);
-    EXPECT_EQ(u"Tomorrow", controller_->RestrictionScheduleEndDay());
+    EXPECT_EQ(u"tomorrow", controller_->RestrictionScheduleEndDay());
 
     // Monday midnight the text changes to "Today".
     EXPECT_CALL(observer_, OnRestrictionScheduleMessageChanged())
@@ -590,7 +590,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
         .WillOnce(EXPECT_TIME_STR(t.monday_midnight_utc));
     AdvanceTime(base::Days(1));  // Monday 04:00
     Mock::VerifyAndClearExpectations(&observer_);
-    EXPECT_EQ(u"Today", controller_->RestrictionScheduleEndDay());
+    EXPECT_EQ(u"today", controller_->RestrictionScheduleEndDay());
   }
 }
 

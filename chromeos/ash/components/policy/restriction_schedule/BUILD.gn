@@ -27,7 +27,6 @@ source_set("restriction_schedule") {
     "//base",
     "//chromeos/strings",
     "//components/prefs",
-    "//ui/strings:ui_strings",
   ]
 
   deps = [
