@@ -491,9 +491,7 @@ public class StatusMediator
             // Show the status icon primarily for incognito since it is defaulted off there.
             setStatusIconShown(/* show= */ true);
             icon = R.drawable.ic_arrow_back_24dp;
-            tint =
-                    ThemeUtils.getThemedToolbarIconTintRes(
-                            mLocationBarDataProvider.isIncognitoBranded());
+            tint = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
             doubleTapDescriptionRes = R.string.accessibility_toolbar_exit_hub_search;
             applyStatusIconAndTooltipProperties(
                     mModel.get(StatusProperties.SHOW_STATUS_ICON),
