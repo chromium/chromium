@@ -990,7 +990,14 @@ GetProtocolBlockedCookieReason(net::CookieInclusionStatus status) {
           net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR)) {
     blockedReasons->push_back(Network::CookieBlockedReasonEnum::UnknownError);
   }
-
+  if (status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_PORT_MISMATCH)) {
+    blockedReasons->push_back(Network::CookieBlockedReasonEnum::PortMismatch);
+  }
+  if (status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH)) {
+    blockedReasons->push_back(Network::CookieBlockedReasonEnum::SchemeMismatch);
+  }
   return blockedReasons;
 }
 

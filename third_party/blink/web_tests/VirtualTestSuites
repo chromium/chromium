@@ -1205,7 +1205,9 @@
   {
     "prefix": "port-bound-cookies",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases":[ "http/tests/inspector-protocol/issues/port-mismatch-exclusion.js" ],
+    "bases":[
+      "http/tests/inspector-protocol/issues/port-mismatch-exclusion.js",
+      "http/tests/inspector-protocol/network/blocked-cookie-port-mismatch.js"],
     "expires": "Mar 1, 2025",
     "exclusive_tests": "ALL",
     "args": [ "--enable-features=EnablePortBoundCookies"],
@@ -1215,7 +1217,9 @@
   {
     "prefix": "scheme-bound-cookies",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases":[ "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js" ],
+    "bases":[
+      "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js",
+      "http/tests/inspector-protocol/network/blocked-cookie-scheme-mismatch.js"],
     "expires": "Mar 1, 2025",
     "exclusive_tests": "ALL",
     "args": [ "--enable-features=EnableSchemeBoundCookies"],
