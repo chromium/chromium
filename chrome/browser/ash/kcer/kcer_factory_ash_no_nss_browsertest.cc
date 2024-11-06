@@ -77,12 +77,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
 // Test that Kcer for the sign in profile has correct tokens.
 IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
                        SignInProfileGetsCorrectTokens) {
-  base::WeakPtr<Kcer> expected_kcer;
-  if (ash::switches::IsSigninFrameClientCertsEnabled()) {
-    expected_kcer = ExtraInstances::GetDeviceKcer();
-  } else {
-    expected_kcer = ExtraInstances::GetEmptyKcer();
-  }
+  base::WeakPtr<Kcer> expected_kcer = ExtraInstances::GetDeviceKcer();
 
   base::WeakPtr<Kcer> signin_kcer =
       KcerFactoryAsh::GetKcer(ash::ProfileHelper::GetSigninProfile());
@@ -98,12 +93,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTestBase,
           .SetPath(ash::ProfileHelper::GetLockScreenProfileDir())
           .Build();
 
-  base::WeakPtr<Kcer> expected_kcer;
-  if (ash::switches::IsSigninFrameClientCertsEnabled()) {
-    expected_kcer = ExtraInstances::GetDeviceKcer();
-  } else {
-    expected_kcer = ExtraInstances::GetEmptyKcer();
-  }
+  base::WeakPtr<Kcer> expected_kcer = ExtraInstances::GetDeviceKcer();
 
   base::WeakPtr<Kcer> lockscreen_kcer =
       KcerFactoryAsh::GetKcer(lockscreen_profile.get());

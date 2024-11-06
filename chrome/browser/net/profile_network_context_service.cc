@@ -1110,9 +1110,8 @@ ProfileNetworkContextService::CreateClientCertStore() {
   // Note that while this applies to the whole sign-in profile / lock screen
   // profile, client certificates will only be selected for the StoragePartition
   // currently used in the sign-in frame (see SigninPartitionManager).
-  if (ash::switches::IsSigninFrameClientCertsEnabled() &&
-      (ash::ProfileHelper::IsSigninProfile(profile_) ||
-       ash::ProfileHelper::IsLockScreenProfile(profile_))) {
+  if (ash::ProfileHelper::IsSigninProfile(profile_) ||
+      ash::ProfileHelper::IsLockScreenProfile(profile_)) {
     use_system_key_slot = true;
   }
 

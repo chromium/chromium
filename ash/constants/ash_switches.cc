@@ -486,13 +486,6 @@ const char kDisablePerUserTimezone[] = "disable-per-user-timezone";
 // Disables rollback option on reset screen.
 const char kDisableRollbackOption[] = "disable-rollback-option";
 
-// Disables client certificate authentication on the sign-in frame on the Chrome
-// OS sign-in profile.
-// TODO(crbug.com/41389560): Remove this flag when reaching endpoints that
-// request client certs does not hang anymore when there is no system token yet.
-const char kDisableSigninFrameClientCerts[] =
-    "disable-signin-frame-client-certs";
-
 // Disables volume adjust sound.
 const char kDisableVolumeAdjustSound[] = "disable-volume-adjust-sound";
 
@@ -1225,11 +1218,6 @@ bool IsCellularFirstDevice() {
 
 bool IsRevenBranding() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kRevenBranding);
-}
-
-bool IsSigninFrameClientCertsEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kDisableSigninFrameClientCerts);
 }
 
 bool ShouldTetherHostScansIgnoreWiredConnections() {
