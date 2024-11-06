@@ -423,7 +423,8 @@ crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas
 
 
 # Flaky, but if it fails, retries also always fail.
-crbug.com/1494227 [ mac graphite-enabled intel ] Pixel_CSSFilterEffects [ Failure ]
+crbug.com/1494227 [ asan graphite-enabled intel mac no-clang-coverage release ] Pixel_CSSFilterEffects [ Failure ]
+crbug.com/1494227 [ graphite-enabled intel mac no-asan no-clang-coverage ] Pixel_CSSFilterEffects [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
@@ -483,7 +484,6 @@ crbug.com/371019880 [ android android-pixel-6 graphite-disabled renderer-skia-vu
 
 # Flaky hang on Mac AMD GL ASAN
 crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
-crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUToDataURL [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
