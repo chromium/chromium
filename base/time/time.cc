@@ -38,6 +38,10 @@ std::atomic<TimeNowFunction> g_time_now_from_system_time_function{
 std::atomic<TimeTicksNowFunction> g_time_ticks_now_function{
     &subtle::TimeTicksNowIgnoringOverride};
 
+std::atomic<TimeTicksLowResolutionNowFunction>
+    g_time_ticks_low_resolution_now_function{
+        &subtle::TimeTicksLowResolutionNowIgnoringOverride};
+
 std::atomic<LiveTicksNowFunction> g_live_ticks_now_function{
     &subtle::LiveTicksNowIgnoringOverride};
 
@@ -207,6 +211,12 @@ std::ostream& operator<<(std::ostream& os, Time time) {
 // static
 TimeTicks TimeTicks::Now() {
   return internal::g_time_ticks_now_function.load(std::memory_order_relaxed)();
+}
+
+// static
+TimeTicks TimeTicks::LowResolutionNow() {
+  return internal::g_time_ticks_low_resolution_now_function.load(
+      std::memory_order_relaxed)();
 }
 
 // static
