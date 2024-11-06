@@ -360,6 +360,17 @@ perfetto::StaticString ProcessPriorityToString(
   NOTREACHED();
 }
 
+perfetto::StaticString ProcessVisibilityToString(
+    mojom::RenderProcessVisibleState visible_state) {
+  switch (visible_state) {
+    case mojom::RenderProcessVisibleState::kVisible:
+      return "Visible";
+    case mojom::RenderProcessVisibleState::kHidden:
+      return "Hidden";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -489,10 +500,10 @@ RenderThreadImpl::RenderThreadImpl(
               .ExposesInterfacesToBrowser()
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
-      process_priority_track_("Renderer priority"),
       client_id_(client_id) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
   TRACE_EVENT_BEGIN("renderer", "Unknown", process_priority_track_);
+  TRACE_EVENT_BEGIN("renderer", "Unknown", process_visibility_track_);
   Init();
 }
 
@@ -521,10 +532,10 @@ RenderThreadImpl::RenderThreadImpl(
               .SetUrgentMessageObserver(scheduler.get())
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
-      process_priority_track_("Renderer priority"),
       client_id_(GetClientIdFromCommandLine()) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
   TRACE_EVENT_BEGIN("renderer", "Unknown", process_priority_track_);
+  TRACE_EVENT_BEGIN("renderer", "Unknown", process_visibility_track_);
   Init();
 }
 
@@ -681,6 +692,7 @@ void RenderThreadImpl::Init() {
 
 RenderThreadImpl::~RenderThreadImpl() {
   TRACE_EVENT_END("renderer", process_priority_track_);
+  TRACE_EVENT_END("renderer", process_visibility_track_);
 
   // The destructor should not run in multi-process mode because Shutdown()
   // terminates the process. The destructor only needs to clean up for tests.
@@ -1402,6 +1414,12 @@ void RenderThreadImpl::SetProcessState(
     TRACE_EVENT_END("renderer", process_priority_track_);
     TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(process_priority),
                       process_priority_track_);
+  }
+
+  if (visible_state_ != visible_state) {
+    TRACE_EVENT_END("renderer", process_visibility_track_);
+    TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(visible_state),
+                      process_visibility_track_);
   }
   process_priority_ = process_priority;
   visible_state_ = visible_state;

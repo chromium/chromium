@@ -490,8 +490,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // Updated via an IPC from the browser process. If nullopt, the browser
   // process has yet to send an update and the state is unknown.
   std::optional<base::Process::Priority> process_priority_;
-  perfetto::NamedTrack process_priority_track_;
+  perfetto::NamedTrack process_priority_track_{"Renderer priority"};
   std::optional<mojom::RenderProcessVisibleState> visible_state_;
+  perfetto::NamedTrack process_visibility_track_{"Renderer visibility"};
 
   // A read-only mapping of a std::atomic<base::TimeTicks> set to
   // TimeTicks::Now() by RenderProcessHostImpl when this process is foregrounded
