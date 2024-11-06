@@ -172,14 +172,12 @@ source_set("toolbar") {
     deps += [ "//ui/aura" ]
   }
   if (is_chromeos) {
-    deps += [ "//chromeos/components/mgs" ]
-  }
-  if (is_chromeos_ash) {
     public_deps += [ "//components/arc" ]
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/settings",
+      "//chromeos/components/mgs",
     ]
   }
 }

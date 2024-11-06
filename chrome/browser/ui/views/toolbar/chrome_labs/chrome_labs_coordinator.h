@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
@@ -56,7 +55,7 @@ class ChromeLabsCoordinator {
     return controller_.get();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetShouldCircumventDeviceCheckForTesting(bool should_circumvent) {
     should_circumvent_device_check_for_testing_ = should_circumvent;
   }
@@ -69,7 +68,7 @@ class ChromeLabsCoordinator {
   std::unique_ptr<ChromeLabsModel> model_;
   std::unique_ptr<ChromeLabsViewController> controller_;
   views::ViewTracker chrome_labs_bubble_view_tracker_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_waiting_to_show_ = false;
   bool should_circumvent_device_check_for_testing_ = false;
 #endif

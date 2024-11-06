@@ -8,7 +8,6 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "components/flags_ui/feature_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +19,7 @@
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -53,7 +52,7 @@ bool ChromeLabsCoordinator::BubbleExists() {
 }
 
 void ChromeLabsCoordinator::Show(ShowUserType user_type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Bypass possible incognito profile same as chrome://flags does.
   Profile* original_profile = browser_->profile()->GetOriginalProfile();
   if (user_type == ShowUserType::kChromeOsOwnerUserType) {
@@ -69,7 +68,7 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 #else
   flags_storage_ = std::make_unique<flags_ui::PrefServiceFlagsStorage>(
       g_browser_process->local_state());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   flags_state_ = about_flags::GetCurrentFlagsState();
 
@@ -117,7 +116,7 @@ void ChromeLabsCoordinator::Hide() {
 }
 
 void ChromeLabsCoordinator::ShowOrHide() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_waiting_to_show_) {
     return;
   }
@@ -130,7 +129,7 @@ void ChromeLabsCoordinator::ShowOrHide() {
   // ChromeOS verifying if the owner is signed in is async operation.
   // Asynchronously check if the user is the owner and show the Chrome Labs
   // bubble only after we have this information.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Bypass possible incognito profile same as chrome://flags does.
   Profile* original_profile = browser_->profile()->GetOriginalProfile();
   if ((base::SysInfo::IsRunningOnChromeOS() ||

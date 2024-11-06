@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/command_updater.h"
@@ -126,12 +125,8 @@
 #include "chrome/browser/recovery/recovery_install_global_error_factory.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -151,7 +146,7 @@ namespace {
 
 // Gets the display mode for a given browser.
 ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (browser->is_type_custom_tab())
     return ToolbarView::DisplayMode::CUSTOM_TAB;
 #endif
@@ -472,7 +467,7 @@ void ToolbarView::Init() {
   avatar_ = container_view_->AddChildView(
       std::make_unique<AvatarToolbarButton>(browser_view_));
   bool show_avatar_toolbar_button = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS only badges Incognito, Guest, and captive portal signin icons in
   // the browser window.
   show_avatar_toolbar_button =
@@ -480,8 +475,6 @@ void ToolbarView::Init() {
       browser_->profile()->IsGuestSession() ||
       (browser_->profile()->IsOffTheRecord() &&
        browser_->profile()->GetOTRProfileID().IsCaptivePortal());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  show_avatar_toolbar_button = !chromeos::IsManagedGuestSession();
 #else
   // DevTools profiles are OffTheRecord, so hide it there.
   show_avatar_toolbar_button = browser_->profile()->IsIncognitoProfile() ||
@@ -686,7 +679,7 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
 
   std::unique_ptr<BubbleSignInPromoDelegate> delegate;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   delegate =
       std::make_unique<BookmarkBubbleSignInDelegate>(browser_->profile());
 #endif
