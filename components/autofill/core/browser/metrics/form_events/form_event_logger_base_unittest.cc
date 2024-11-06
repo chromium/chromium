@@ -557,10 +557,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
-TEST_F(FormEventLoggerBaseKeyMetricsTest, NoEmailOnlyLeakage) {
+TEST_F(FormEventLoggerBaseKeyMetricsTest, EmailHeuristicOnlyAcceptance) {
   base::HistogramTester histogram_tester;
   // Reset `form_` to be of the type that the email heuristic only metric is
-  // interested in. With the feature off, that metric should not be logged.
+  // interested in.
   form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
 
   // Simulate that suggestion is shown and user accepts it.
@@ -572,7 +572,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, NoEmailOnlyLeakage) {
   SubmitForm(form_);
 
   ResetDriverToCommitMetrics();
-  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 1);
 }
 
 // Tests for Autofill.EmailHeuristicOnlyAcceptance. That metric is only written

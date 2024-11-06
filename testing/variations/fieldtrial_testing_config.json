@@ -1645,29 +1645,6 @@
             ]
         }
     ],
-    "AutofillEnableEmailHeuristicOnlyAddressForms": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AutocompleteAll",
-                    "params": {
-                        "autocomplete_email": "false"
-                    },
-                    "enable_features": [
-                        "AutofillEnableEmailHeuristicOnlyAddressForms"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableExpirationDateImprovements": [
         {
             "platforms": [

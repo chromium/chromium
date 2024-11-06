@@ -296,10 +296,11 @@ TEST_F(AutofillMetricsTest, StoredProfileCountAutofillableFormSubmission) {
 // Verify that when submitting a non-autofillable form, the stored profile
 // metric is not logged.
 TEST_F(AutofillMetricsTest, StoredProfileCountNonAutofillableFormSubmission) {
-  // Two fields is not enough to make it an autofillable form.
+  // Two non-email fields is not enough to make it an autofillable form.
   FormData form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText)});
+       CreateTestFormField("Last Name", "last-name", "",
+                           FormControlType::kInputText)});
 
   base::HistogramTester histogram_tester;
   SeeForm(form);
@@ -371,7 +372,8 @@ TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
 TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   FormData form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText)});
+       CreateTestFormField("Last Name", "last-name", "",
+                           FormControlType::kInputText)});
 
   // Ensure no metrics are logged when small form support is disabled (min
   // number of fields enforced).
@@ -425,7 +427,8 @@ TEST_F(AutofillMetricsTest,
        UkmDeveloperEngagement_LogFillableFormParsedWithoutTypeHints) {
   FormData form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText)});
+       CreateTestFormField("Last Name", "last-name", "",
+                           FormControlType::kInputText)});
 
   // Ensure no entries are logged when loading a non-fillable form.
   {
