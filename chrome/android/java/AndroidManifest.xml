@@ -1086,6 +1086,13 @@ by a child template that "extends" this file.
             android:documentLaunchMode="always"
             android:noHistory="true"/>
 
+        <!-- Activities for task manager. -->
+        <activity
+            android:name="org.chromium.chrome.browser.task_manager.TaskManagerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Chromium.Activity">
+        </activity>
+
         <receiver android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
             android:exported="false"/>
 

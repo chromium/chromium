@@ -1,0 +1,35 @@
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/task_manager/TaskManagerServiceBridge.java" ]
+}
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/task_manager/TaskManagerActivity.java",
+    "java/src/org/chromium/chrome/browser/task_manager/TaskManagerFactory.java",
+    "java/src/org/chromium/chrome/browser/task_manager/TaskManagerImpl.java",
+    "java/src/org/chromium/chrome/browser/task_manager/TaskManagerServiceBridge.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:log_java",
+    "//chrome/browser/task_manager/android:java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [ ":jni" ]
+
+  resources_package = "org.chromium.chrome.browser.task_manager"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/task_manager_activity.xml" ]
+}

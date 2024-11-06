@@ -3285,6 +3285,7 @@ static_library("browser") {
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab:jni_headers",
       "//chrome/browser/tab_resumption:jni_headers",
+      "//chrome/browser/task_manager/android",
       "//chrome/browser/touch_to_fill/autofill/android:public",
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android",

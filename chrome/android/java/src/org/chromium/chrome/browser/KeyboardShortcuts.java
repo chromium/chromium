@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.task_manager.TaskManager;
+import org.chromium.chrome.browser.task_manager.TaskManagerFactory;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.WebContents;
@@ -231,22 +233,24 @@ public class KeyboardShortcuts {
     /**
      * This should be called from the Activity's dispatchKeyEvent() to handle keyboard shortcuts.
      *
-     * Note: dispatchKeyEvent() is called before the active view or web page gets a chance to handle
-     * the key event. So the keys handled here cannot be overridden by any view or web page.
+     * <p>Note: dispatchKeyEvent() is called before the active view or web page gets a chance to
+     * handle the key event. So the keys handled here cannot be overridden by any view or web page.
      *
      * @param event The KeyEvent to handle.
      * @param uiInitialized Whether the UI has been initialized. If this is false, most keys will
-     *                      not be handled.
+     *     not be handled.
      * @param fullscreenManager Manages fullscreen state.
      * @param menuOrKeyboardActionController Controls keyboard actions.
+     * @param context The android context.
      * @return True if the event was handled. False if the event was ignored. Null if the event
-     *         should be handled by the activity's parent class.
+     *     should be handled by the activity's parent class.
      */
     public static Boolean dispatchKeyEvent(
             KeyEvent event,
             boolean uiInitialized,
             FullscreenManager fullscreenManager,
-            MenuOrKeyboardActionController menuOrKeyboardActionController) {
+            MenuOrKeyboardActionController menuOrKeyboardActionController,
+            Context context) {
         int keyCode = event.getKeyCode();
         if (!uiInitialized) {
             if (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_MENU) return true;
@@ -275,7 +279,8 @@ public class KeyboardShortcuts {
                     }
                     if (getMetaState(event) == CTRL
                             && ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK)) {
-                        // TODO(crbug.com/353596679) open task manager.
+                        TaskManager taskManager = TaskManagerFactory.createTaskManager();
+                        taskManager.launch(context);
                         return true;
                     }
                 }

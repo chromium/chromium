@@ -3423,7 +3423,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         event,
                         mUiWithNativeInitialized,
                         getFullscreenManager(),
-                        /* menuOrKeyboardActionController= */ this);
+                        /* menuOrKeyboardActionController= */ this,
+                        this);
         return result != null ? result : super.dispatchKeyEvent(event);
     }
 
