@@ -75,7 +75,7 @@ MATCHER_P(MatchesTestField, expected_test_field, "") {
 
 // Function template to access a member of `TestField`.
 template <typename T>
-T get_field(const TestField& test_field, T TestField::*member_ptr) {
+T get_field(const TestField& test_field, T TestField::* member_ptr) {
   return test_field.*member_ptr;
 }
 
@@ -226,7 +226,6 @@ class OptimizationGuideTestServer {
   BuildFormsAnnotationsResponse(
       const optimization_guide::proto::FormsAnnotationsRequest& request) {
     optimization_guide::proto::FormsAnnotationsResponse response;
-    int64_t entry_id = 0;
     for (const optimization_guide::proto::FormFieldData& field :
          request.form_data().fields()) {
       if (field.field_value().empty()) {
@@ -234,7 +233,6 @@ class OptimizationGuideTestServer {
       }
       optimization_guide::proto::UserAnnotationsEntry* entry =
           response.add_upserted_entries();
-      entry->set_entry_id(++entry_id);
       entry->set_key(field.field_label());
       entry->set_value(field.field_value());
     }
@@ -428,8 +426,7 @@ class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
     return NamedSteps(
         "Initialize", EnableAutofillAiPref(), InstrumentTab(kPrimaryTabId),
         WaitForWebContentsReady(kPrimaryTabId), CheckAutofillAiDelegateExists(),
-        CheckUserAnnotationsServiceExists(), RemoveAllEntries(),
-        CheckHasNoEntries());
+        CheckUserAnnotationsServiceExists());
   }
 
   MultiStep NavigateToFormPage() {
@@ -453,20 +450,6 @@ class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
     return NamedSteps("WaitForSaveBubbleAndAccept",
                       WaitForShow(views::DialogClientView::kOkButtonElementId),
                       PressButton(views::DialogClientView::kOkButtonElementId));
-  }
-
-  MultiStep WaitForFormImportedToUserAnnotations() {
-    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                        kFormWasImportedToUserAnnotationsState);
-    return NamedSteps(
-        "WaitForFormImportedToUserAnnotations",
-        Log("Start polling kFormWasImportedToUserAnnotationsState."),
-        PollState(kFormWasImportedToUserAnnotationsState,
-                  [&]() { return !GetAllEntries().empty(); }),
-        WaitForState(kFormWasImportedToUserAnnotationsState, true),
-        StopObservingState(kFormWasImportedToUserAnnotationsState),
-        Log("Stopped polling kFormWasImportedToUserAnnotationsState."),
-        VerifyDataImportedIntoUserAnnotations());
   }
 
   MultiStep NavigateToAboutBlank() {
@@ -498,6 +481,14 @@ class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
         "WaitForFieldsToBeFilledAutomatically",
         WaitForFieldsToBeFilled(
             &TestField::expected_value_for_import_and_automatic_filling));
+  }
+
+  void VerifyDataImportedIntoUserAnnotations() {
+    EXPECT_THAT(
+        GetAllEntries(),
+        UnorderedElementsAre(
+            MatchesTestField(kTestFieldsByQuery.at(kNameFieldQuery)),
+            MatchesTestField(kTestFieldsByQuery.at(kStreetAddressFieldQuery))));
   }
 
  private:
@@ -570,7 +561,7 @@ class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
   }
 
   template <typename T>
-  MultiStep WaitForFieldsToBeFilled(T TestField::*member_ptr) {
+  MultiStep WaitForFieldsToBeFilled(T TestField::* member_ptr) {
     MultiStep steps;
     for (const auto& [deep_query, test_field] : kTestFieldsByQuery) {
       const std::string expected_field_value =
@@ -625,18 +616,6 @@ class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
     return steps;
   }
 
-  MultiStep VerifyDataImportedIntoUserAnnotations() {
-    return NamedSteps(
-        "VerifyDataImportedIntoUserAnnotations", Do([&]() {
-          EXPECT_THAT(
-              GetAllEntries(),
-              UnorderedElementsAre(
-                  MatchesTestField(kTestFieldsByQuery.at(kNameFieldQuery)),
-                  MatchesTestField(
-                      kTestFieldsByQuery.at(kStreetAddressFieldQuery))));
-        }));
-  }
-
   MultiStep DisableAutofillPopupThreshold() {
     return NamedSteps(
         "DisableAutofillPopupThreshold", Do([&]() {
@@ -670,9 +649,11 @@ class MAYBE_AutofillAiBrowserTest : public AutofillAiBrowserBaseTest {
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillAiBrowserTest,
                        ImportAndFillFormSuccessful) {
   EnableSignin();
+  RunTestSequence(Initialize(), NavigateToFormPage(),
+                  ManuallyFillAndSubmitForm(), WaitForSaveBubbleAndAccept());
+  base::RunLoop().RunUntilIdle();
+  VerifyDataImportedIntoUserAnnotations();
   RunTestSequence(
-      Initialize(), NavigateToFormPage(), ManuallyFillAndSubmitForm(),
-      WaitForSaveBubbleAndAccept(), WaitForFormImportedToUserAnnotations(),
       NavigateToAboutBlank(), NavigateToFormPage(), ClickOnNameField(),
       WaitForAndAcceptSuggestion(
           kAutofillPredictionImprovementsTriggerElementId),
@@ -685,14 +666,16 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillAiBrowserTest,
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillAiBrowserTest,
                        ImportAndFillFormFailsAtRetrievingFillingSuggestions) {
   EnableSignin();
-  RunTestSequence(
-      Initialize(), NavigateToFormPage(), ManuallyFillAndSubmitForm(),
-      WaitForSaveBubbleAndAccept(), WaitForFormImportedToUserAnnotations(),
-      NavigateToAboutBlank(), NavigateToFormPage(), ClickOnNameField(),
-      WaitForAndAcceptSuggestion(
-          kAutofillPredictionImprovementsTriggerElementId,
-          ResponseType::kServerError),
-      WaitForShow(kAutofillPredictionImprovementsErrorElementId));
+  RunTestSequence(Initialize(), NavigateToFormPage(),
+                  ManuallyFillAndSubmitForm(), WaitForSaveBubbleAndAccept());
+  base::RunLoop().RunUntilIdle();
+  VerifyDataImportedIntoUserAnnotations();
+  RunTestSequence(NavigateToAboutBlank(), NavigateToFormPage(),
+                  ClickOnNameField(),
+                  WaitForAndAcceptSuggestion(
+                      kAutofillPredictionImprovementsTriggerElementId,
+                      ResponseType::kServerError),
+                  WaitForShow(kAutofillPredictionImprovementsErrorElementId));
 }
 
 }  // namespace

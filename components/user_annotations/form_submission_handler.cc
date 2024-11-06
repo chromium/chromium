@@ -85,8 +85,7 @@ void FormSubmissionHandler::OnModelExecuted(
     return;
   }
 
-  if (ShouldPersistUserAnnotations() &&
-      !user_annotations_service_->IsDatabaseReady()) {
+  if (!user_annotations_service_->IsDatabaseReady()) {
     SendFormSubmissionResult(
         base::unexpected(UserAnnotationsExecutionResult::kCryptNotInitialized),
         std::move(log_entry));

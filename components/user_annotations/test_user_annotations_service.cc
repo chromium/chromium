@@ -97,4 +97,11 @@ void TestUserAnnotationsService::GetCountOfValuesContainedBetween(
     base::OnceCallback<void(int)> callback) {
   std::move(callback).Run(entries_.size());
 }
+
+void TestUserAnnotationsService::SaveAutofillProfile(
+    const autofill::AutofillProfile& autofill_profile,
+    base::OnceCallback<void(UserAnnotationsExecutionResult)> callback) {
+  std::move(callback).Run(UserAnnotationsExecutionResult::kSuccess);
+}
+
 }  // namespace user_annotations
