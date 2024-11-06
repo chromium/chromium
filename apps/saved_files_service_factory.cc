@@ -40,9 +40,10 @@ SavedFilesServiceFactory::SavedFilesServiceFactory()
 
 SavedFilesServiceFactory::~SavedFilesServiceFactory() = default;
 
-KeyedService* SavedFilesServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SavedFilesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new SavedFilesService(context);
+  return std::make_unique<SavedFilesService>(context);
 }
 
 content::BrowserContext* SavedFilesServiceFactory::GetBrowserContextToUse(
