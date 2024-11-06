@@ -178,6 +178,9 @@ message PageContext {
 
   // A base64 encoded PNG of the tab screenshot.
   string tab_screenshot = 6;
+
+  // The base64 encoded PDF representation of the page.
+  string pdf_data = 7;
 }
 
 message FormData {
