@@ -289,6 +289,10 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
 
   float GetZoom() const override { return plugin_->zoom_; }
 
+  void Invalidate(const gfx::Rect& rect) override {
+    return plugin_->Invalidate(rect);
+  }
+
   bool IsPageVisible(int page_index) override {
     return plugin_->engine_->IsPageVisible(page_index);
   }

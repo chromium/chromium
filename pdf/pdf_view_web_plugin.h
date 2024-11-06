@@ -465,6 +465,12 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   PdfInkModuleClient* ink_module_client_for_testing() {
     return ink_module_client_.get();
   }
+
+  void set_in_paint_for_testing(bool in_paint) { in_paint_ = in_paint; }
+
+  const std::vector<gfx::Rect>& deferred_invalidates_for_testing() const {
+    return deferred_invalidates_;
+  }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
  private:
