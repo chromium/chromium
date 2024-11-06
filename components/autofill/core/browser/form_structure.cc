@@ -882,11 +882,9 @@ void FormStructure::RationalizeFormStructure(
   FormStructureRationalizer rationalizer(&fields_);
   rationalizer.RationalizeContentEditables(log_manager);
   rationalizer.RationalizeAutocompleteAttributes(log_manager);
-  rationalizer.RationalizeRepeatedFields(
-      form_signature(), form_interactions_ukm_logger, log_manager);
   rationalizer.RationalizeFieldTypePredictions(
-      main_frame_origin(), client_country(), current_page_language(),
-      log_manager);
+      main_frame_origin(), form_signature(), form_interactions_ukm_logger,
+      client_country(), current_page_language(), log_manager);
 }
 
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
