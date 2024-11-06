@@ -32,7 +32,9 @@ class DataOnlyBytesConsumer : public BytesConsumer {
  public:
   explicit DataOnlyBytesConsumer(scoped_refptr<EncodedFormData> form_data)
       : form_data_(std::move(form_data)) {
-    CHECK_EQ(EncodedFormData::FormDataType::kDataOnly, form_data_->GetType());
+    // TODO(crbug.com/374124998): we should have this type check.
+    // CHECK_EQ(EncodedFormData::FormDataType::kDataOnly,
+    // form_data_->GetType());
   }
 
   // BytesConsumer implementation
@@ -107,8 +109,9 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
   DataAndDataPipeBytesConsumer(ExecutionContext* execution_context,
                                EncodedFormData* form_data)
       : execution_context_(execution_context) {
-    CHECK_EQ(EncodedFormData::FormDataType::kDataAndDataPipe,
-             form_data->GetType());
+    // TODO(crbug.com/374124998): we should have this type check.
+    // CHECK_EQ(EncodedFormData::FormDataType::kDataAndDataPipe,
+    //       form_data->GetType());
     // Make a copy in case |form_data| will mutate while we read it. Copy()
     // works fine; we don't need to DeepCopy() the data and data pipe getter:
     // data is just a Vector<char> and data pipe getter can be shared.
@@ -201,7 +204,8 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
       return result;
     }
 
-    NOTREACHED_IN_MIGRATION() << "Invalid type: " << iter_->type_;
+    LOG(ERROR) << "Invalid type: " << iter_->type_;
+    base::debug::DumpWithoutCrashing();
     return Result::kError;
   }
 
@@ -369,8 +373,9 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
       scoped_refptr<EncodedFormData> form_data,
       BytesConsumer* consumer_for_testing)
       : form_data_(std::move(form_data)) {
-    CHECK_EQ(EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob,
-             form_data_->GetType());
+    // TODO(crbug.com/374124998): we should have this type check.
+    // CHECK_EQ(EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob,
+    //        form_data_->GetType());
     if (consumer_for_testing) {
       blob_bytes_consumer_ = consumer_for_testing;
       return;
@@ -410,7 +415,8 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
           }
           break;
         case FormDataElement::kDataPipe:
-          DUMP_WILL_BE_NOTREACHED() << "This consumer can't handle data pipes.";
+          LOG(ERROR) << "This consumer can't handle data pipes.";
+          base::debug::DumpWithoutCrashing();
           break;
       }
     }
@@ -436,6 +442,7 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
   }
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(
       BlobSizePolicy policy) override {
+    LOG(ERROR) << "DrainAsBlobDataHandle";
     scoped_refptr<BlobDataHandle> handle =
         blob_bytes_consumer_->DrainAsBlobDataHandle(policy);
     if (handle)
@@ -474,41 +481,23 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
   Member<BytesConsumer> blob_bytes_consumer_;
 };
 
-scoped_refptr<EncodedFormData> StripUnhandledElements(
-    scoped_refptr<EncodedFormData> form_data) {
-  scoped_refptr<EncodedFormData> new_data = EncodedFormData::Create();
-  new_data->SetBoundary(form_data->Boundary());
-  new_data->SetIdentifier(form_data->Identifier());
-  new_data->SetContainsPasswordData(form_data->ContainsPasswordData());
+EncodedFormData::FormDataType GetDeprecatedType(
+    const EncodedFormData* form_data) {
   EncodedFormData::FormDataType type = EncodedFormData::FormDataType::kDataOnly;
-  for (auto& element : form_data->MutableElements()) {
+  for (const auto& element : form_data->Elements()) {
     switch (element.type_) {
       case FormDataElement::kData:
         break;
       case FormDataElement::kEncodedFile:
       case FormDataElement::kEncodedBlob:
-        if (type == EncodedFormData::FormDataType::kDataAndDataPipe) {
-          type = EncodedFormData::FormDataType::kInvalid;
-        } else {
-          type = EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob;
-        }
+        type = EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob;
         break;
       case FormDataElement::kDataPipe:
-        if (type == EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob) {
-          type = EncodedFormData::FormDataType::kInvalid;
-        } else {
-          type = EncodedFormData::FormDataType::kDataAndDataPipe;
-        }
+        type = EncodedFormData::FormDataType::kDataAndDataPipe;
         break;
     }
-    if (type == EncodedFormData::FormDataType::kInvalid) {
-      return new_data;
-    }
-    new_data->MutableElements().push_back(std::move(element));
   }
-  DUMP_WILL_BE_CHECK_NE(EncodedFormData::FormDataType::kInvalid,
-                        form_data->GetType());
-  return new_data;
+  return type;
 }
 
 }  // namespace
@@ -554,15 +543,16 @@ BytesConsumer* FormDataBytesConsumer::GetImpl(
     scoped_refptr<EncodedFormData> form_data,
     BytesConsumer* consumer_for_testing) {
   DCHECK(form_data);
+  EncodedFormData::FormDataType form_data_type = form_data->GetType();
   // TODO(crbug.com/374124998): introduce canonical way not to lose elements.
   // Also see https://issues.chromium.org/u/1/issues/356183778#comment57
-  if (form_data->GetType() == EncodedFormData::FormDataType::kInvalid) {
+  if (form_data_type == EncodedFormData::FormDataType::kInvalid) {
     base::debug::DumpWithoutCrashing();
-    form_data = StripUnhandledElements(form_data);
+    form_data_type = GetDeprecatedType(form_data.get());
     DUMP_WILL_BE_CHECK_NE(EncodedFormData::FormDataType::kInvalid,
-                          form_data->GetType());
+                          form_data_type);
   }
-  switch (form_data->GetType()) {
+  switch (form_data_type) {
     case EncodedFormData::FormDataType::kDataOnly:
       return MakeGarbageCollected<DataOnlyBytesConsumer>(std::move(form_data));
     case EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob:
