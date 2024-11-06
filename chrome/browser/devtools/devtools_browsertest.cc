@@ -2091,6 +2091,10 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
         "<html><head><script src='devtools.js'></script></head></html>");
     dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
                   base::StringPrintf(R"(
+        Object.defineProperty(URL.prototype, "protocol", {
+          get: function() { return "http:"; }
+        });
+
         chrome.devtools.inspectedWindow.getResources((resources) => {
           const hasFile = !!resources.find(r => r.url.startsWith('file:'));
           setInterval(() => {
