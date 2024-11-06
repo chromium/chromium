@@ -23,8 +23,11 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/ui/push_notification/metrics.h"
+#import "ios/chrome/browser/ui/push_notification/prominence_notification_setting_alert_coordinator.h"
+#import "ios/chrome/browser/ui/push_notification/prominence_notification_setting_alert_coordinator_delegate.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -44,11 +47,16 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 
 }  // namespace
 
+@interface NotificationsOptInAlertCoordinator () <
+    ProminenceNotificationSettingAlertCoordinatorDelegate>
+@end
+
 @implementation NotificationsOptInAlertCoordinator {
   SEQUENCE_CHECKER(sequence_checker_);
   // The coordinator used to present the alert used when permission has
   // previously been denied.
   AlertCoordinator* _alertCoordinator;
+  ProminenceNotificationSettingAlertCoordinator* _prominenceAlertCoordinator;
 }
 
 - (void)start {
@@ -60,6 +68,16 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 - (void)stop {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
+}
+
+#pragma mark - ProminenceNotificationSettingAlertCoordinatorDelegate
+
+- (void)prominenceNotificationSettingAlertCoordinatorIsDone:
+    (ProminenceNotificationSettingAlertCoordinator*)coordinator {
+  DCHECK(coordinator == _prominenceAlertCoordinator);
+  [_prominenceAlertCoordinator stop];
+  _prominenceAlertCoordinator = nil;
+  [self setResult:NotificationsOptInAlertResult::kPermissionGranted];
 }
 
 #pragma mark - Private methods
@@ -101,6 +119,28 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
     if (self.confirmationMessage) {
       [self showConfirmationSnackbar];
     }
+    if (IsProvisionalNotificationAlertEnabled()) {
+      __weak __typeof(self) weakSelf = self;
+      [PushNotificationUtil
+          getPermissionSettings:^(UNNotificationSettings* settings) {
+            [weakSelf onPermissionSettingResult:settings];
+          }];
+    } else {
+      [self setResult:NotificationsOptInAlertResult::kPermissionGranted];
+    }
+  }
+}
+
+- (void)onPermissionSettingResult:(UNNotificationSettings*)settings {
+  if (settings.lockScreenSetting == UNNotificationSettingDisabled ||
+      settings.alertSetting == UNNotificationSettingDisabled) {
+    _prominenceAlertCoordinator =
+        [[ProminenceNotificationSettingAlertCoordinator alloc]
+            initWithBaseViewController:self.baseViewController
+                               browser:self.browser];
+    _prominenceAlertCoordinator.delegate = self;
+    [_prominenceAlertCoordinator start];
+  } else {
     [self setResult:NotificationsOptInAlertResult::kPermissionGranted];
   }
 }
