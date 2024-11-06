@@ -144,7 +144,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
 }
 
 // static
-std::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
+base::span<CSSSelector> CSSSelectorParser::ParseScopeBoundary(
     CSSParserTokenStream& stream,
     const CSSParserContext* context,
     CSSNestingType nesting_type,
@@ -158,13 +158,12 @@ std::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   stream.ConsumeWhitespace();
-  std::optional<base::span<CSSSelector>> result =
-      parser.ConsumeForgivingComplexSelectorList(stream, nesting_type);
-  DCHECK(result.has_value());
-  if (!stream.AtEnd()) {
-    return std::nullopt;
+  base::span<CSSSelector> result =
+      parser.ConsumeComplexSelectorList(stream, nesting_type);
+  if (result.empty() || !stream.AtEnd()) {
+    return {};
   }
-  parser.RecordUsageAndDeprecations(result.value());
+  parser.RecordUsageAndDeprecations(result);
   return result;
 }
 
