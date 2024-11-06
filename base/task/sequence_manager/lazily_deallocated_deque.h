@@ -15,9 +15,11 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
@@ -236,16 +238,9 @@ class LazilyDeallocatedDeque {
   FRIEND_TEST_ALL_PREFIXES(LazilyDeallocatedDequeTest, RingPushPopPushPop);
 
   struct Ring {
-    explicit Ring(size_t capacity)
-        : backing_store_(std::make_unique<char[]>(sizeof(T) * capacity)) {
-      // SAFETY: There is no other option to create a raw_span backed by an
-      // array on the heap. Allocation of sizeof(T) * capacity bytes starting
-      // at the address pointed by backing_store_ is done in the member
-      // initializer list.
-      data_ = UNSAFE_BUFFERS(base::raw_span<T>(
-          reinterpret_cast<T*>(backing_store_.get()), capacity));
+    explicit Ring(size_t capacity) {
       DCHECK_GE(capacity, kMinimumRingSize);
-      CHECK_LT(capacity, std::numeric_limits<size_t>::max() / sizeof(T));
+      std::tie(backing_store_, data_) = AlignedUninitCharArray<T>(capacity);
     }
     Ring(const Ring&) = delete;
     Ring& operator=(const Ring&) = delete;
@@ -255,52 +250,56 @@ class LazilyDeallocatedDeque {
       }
     }
 
-    bool empty() const { return back_index_ == front_index_; }
+    bool empty() const { return back_index_ == before_front_index_; }
 
     size_t capacity() const { return data_.size(); }
 
     bool CanPush() const {
-      return front_index_ != CircularIncrement(back_index_);
+      return before_front_index_ != CircularIncrement(back_index_);
     }
 
     void push_front(T&& t) {
       // Mustn't appear to become empty.
-      DCHECK_NE(CircularDecrement(front_index_), back_index_);
-      new (&data_[front_index_]) T(std::move(t));
-      front_index_ = CircularDecrement(front_index_);
+      CHECK_NE(CircularDecrement(before_front_index_), back_index_);
+      // SAFETY: `before_front_index_` is one before the first element in the
+      // array. It always points in bounds of the `data_` buffer, never to
+      // one-past-the-end, as maintained by CircularDecrement.
+      new (UNSAFE_BUFFERS(data_.data() + before_front_index_)) T(std::move(t));
+      before_front_index_ = CircularDecrement(before_front_index_);
     }
 
     void push_back(T&& t) {
       back_index_ = CircularIncrement(back_index_);
-      DCHECK(!empty());  // Mustn't appear to become empty.
-      new (&data_[back_index_]) T(std::move(t));
+      CHECK(!empty());  // Mustn't appear to become empty.
+      // SAFETY: `back_index_` is the last element in the array. It always
+      // points in bounds of the `data_` buffer, never to one-past-the-end, as
+      // maintained by CircularIncrement.
+      new (UNSAFE_BUFFERS(data_.data() + back_index_)) T(std::move(t));
     }
 
-    bool CanPop() const { return front_index_ != back_index_; }
-
     void pop_front() {
-      DCHECK(!empty());
-      front_index_ = CircularIncrement(front_index_);
-      data_[front_index_].~T();
+      CHECK(!empty());
+      before_front_index_ = CircularIncrement(before_front_index_);
+      data_[before_front_index_].~T();
     }
 
     T& front() LIFETIME_BOUND {
-      DCHECK(!empty());
-      return data_[CircularIncrement(front_index_)];
+      CHECK(!empty());
+      return data_[CircularIncrement(before_front_index_)];
     }
 
     const T& front() const LIFETIME_BOUND {
-      DCHECK(!empty());
-      return data_[CircularIncrement(front_index_)];
+      CHECK(!empty());
+      return data_[CircularIncrement(before_front_index_)];
     }
 
     T& back() LIFETIME_BOUND {
-      DCHECK(!empty());
+      CHECK(!empty());
       return data_[back_index_];
     }
 
     const T& back() const LIFETIME_BOUND {
-      DCHECK(!empty());
+      CHECK(!empty());
       return data_[back_index_];
     }
 
@@ -311,7 +310,7 @@ class LazilyDeallocatedDeque {
     }
 
     size_t CircularIncrement(size_t index) const {
-      DCHECK_LT(index, capacity());
+      CHECK_LT(index, capacity());
       ++index;
       if (index == capacity()) {
         return 0;
@@ -319,10 +318,14 @@ class LazilyDeallocatedDeque {
       return index;
     }
 
-    size_t front_index_ = 0;
+    AlignedHeapArray<char> backing_store_;
+    raw_span<T> data_;
+    // Indices into `data_` for one-before-the-first element and the last
+    // element. The back_index_ may be less than before_front_index_ if the
+    // elements wrap around the back of the array. If they are equal, then the
+    // Ring is empty.
+    size_t before_front_index_ = 0;
     size_t back_index_ = 0;
-    std::unique_ptr<char[]> backing_store_;
-    base::raw_span<T> data_;
     std::unique_ptr<Ring> next_ = nullptr;
   };
 
@@ -339,7 +342,8 @@ class LazilyDeallocatedDeque {
     Iterator& operator++() {
       if (index_ == ring_->back_index_) {
         ring_ = ring_->next_.get();
-        index_ = ring_ ? ring_->CircularIncrement(ring_->front_index_) : 0;
+        index_ =
+            ring_ ? ring_->CircularIncrement(ring_->before_front_index_) : 0;
       } else {
         index_ = ring_->CircularIncrement(index_);
       }
@@ -357,7 +361,7 @@ class LazilyDeallocatedDeque {
       }
 
       ring_ = ring;
-      index_ = ring_->CircularIncrement(ring->front_index_);
+      index_ = ring_->CircularIncrement(ring->before_front_index_);
     }
 
     raw_ptr<const Ring> ring_;
