@@ -43,9 +43,10 @@ AutofillImageFetcherFactory::AutofillImageFetcherFactory()
 
 AutofillImageFetcherFactory::~AutofillImageFetcherFactory() = default;
 
-KeyedService* AutofillImageFetcherFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutofillImageFetcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AutofillImageFetcherImpl(
+  return std::make_unique<AutofillImageFetcherImpl>(
       Profile::FromBrowserContext(context)->GetProfileKey());
 }
 
