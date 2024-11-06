@@ -2766,6 +2766,8 @@ static_library("browser") {
       "android/tab_browser_controls_constraints_helper.h",
       "android/tab_favicon.cc",
       "android/tab_favicon.h",
+      "android/tab_features_android.cc",
+      "android/tab_features_android.h",
       "android/tab_printer.cc",
       "android/tab_printer.h",
       "android/tab_web_contents_delegate_android.cc",

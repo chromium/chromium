@@ -53,13 +53,19 @@ void SyncSessionsWebContentsRouter::NotifyTabModified(
     delegate = GetSyncedTabDelegateFromWebContents(web_contents);
   }
 
-  if (handler_ && delegate) {
+  if (handler_) {
     handler_->OnLocalTabModified(delegate);
   }
 
   if (!flare_.is_null() && delegate && page_load_completed) {
     flare_.Run(syncer::SESSIONS);
     flare_.Reset();
+  }
+}
+
+void SyncSessionsWebContentsRouter::NotifyTabClosed() {
+  if (handler_) {
+    handler_->OnLocalTabClosed();
   }
 }
 

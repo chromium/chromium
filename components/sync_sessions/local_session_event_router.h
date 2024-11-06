@@ -31,6 +31,11 @@ class LocalSessionEventHandler {
   // for this instance of Chrome.
   virtual void OnLocalTabModified(SyncedTabDelegate* modified_tab) = 0;
 
+  // A local tab was closed. It's the job of the LocalSessionEventHandler to
+  // figure out which tab this is and to react accordingly.
+  // TODO(https://crbug.com/373057420): Make iOS use this as well.
+  virtual void OnLocalTabClosed() = 0;
+
  protected:
   LocalSessionEventHandler() = default;
 };

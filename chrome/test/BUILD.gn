@@ -7896,6 +7896,7 @@ test("unit_tests") {
       "//components/endpoint_fetcher:test_support",
       "//components/enterprise",
       "//components/enterprise:test_support",
+      "//components/favicon/content",
       "//components/feature_engagement/test:test_support",
       "//components/fullscreen_control",
       "//components/global_media_controls:test_support",
