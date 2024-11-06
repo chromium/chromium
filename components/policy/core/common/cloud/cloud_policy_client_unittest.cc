@@ -3171,6 +3171,7 @@ TEST_F(CloudPolicyClientTest, UploadFmRegistrationTokenRequest) {
   request.set_token_type(em::FmRegistrationTokenUploadRequest::USER);
   request.set_expiration_timestamp_ms(
       (base::Time::Now() + base::Minutes(5)).InMillisecondsSinceUnixEpoch());
+  request.set_project_number(1234567890);
 
   em::DeviceManagementRequest expected_request;
   expected_request.mutable_fm_registration_token_upload_request()->CopyFrom(

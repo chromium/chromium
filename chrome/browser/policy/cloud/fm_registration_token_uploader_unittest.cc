@@ -27,7 +27,8 @@ namespace {
 
 const char kFakeRegistrationToken[] = "fake_registration_token";
 const char kFakeDMToken[] = "fake_dm_token";
-const char kFakeProjectNumber[] = "fake_project_number";
+const char kFakeProjectNumberStr[] = "1234567890";
+const int64_t kFakeProjectNumber = 1234567890;
 const int kExpectedProtocolVersion = 1;
 const base::Time kFakeTokenEndOfLife = base::Time::Now();
 
@@ -50,7 +51,7 @@ class MockInvalidationListener : public invalidation::InvalidationListener {
   const std::string& project_number() const override { return project_number_; }
 
  private:
-  const std::string project_number_ = kFakeProjectNumber;
+  const std::string project_number_ = kFakeProjectNumberStr;
 };
 }  // namespace
 

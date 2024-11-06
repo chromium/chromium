@@ -4652,7 +4652,7 @@ message FmRegistrationTokenUploadRequest {
   optional int64 expiration_timestamp_ms = 4;
   // Project number used to regiester with FM and the token is associated with.
   // go/device-cloud-gcp#fcm-related-projects
-  optional string project_number = 5;
+  optional int64 project_number = 5;
 }
 
 // Response to `FmRegistrationTokenUploadRequest`.
