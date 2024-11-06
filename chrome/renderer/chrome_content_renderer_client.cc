@@ -92,6 +92,7 @@
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
 #include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history_clusters/core/config.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"

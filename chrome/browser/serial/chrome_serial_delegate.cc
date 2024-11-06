@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/serial/serial_chooser.h"
 #include "chrome/browser/ui/serial/serial_chooser_controller.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
-#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"

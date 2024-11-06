@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/permissions/bluetooth_delegate_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
-#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)

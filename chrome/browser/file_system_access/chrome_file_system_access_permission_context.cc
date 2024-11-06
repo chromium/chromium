@@ -51,6 +51,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"

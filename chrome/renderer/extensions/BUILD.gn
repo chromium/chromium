@@ -35,6 +35,7 @@ source_set("extensions") {
     "//chrome/common:non_code_constants",
     "//chrome/common/extensions",
     "//chrome/renderer:process_state",
+    "//components/guest_view/buildflags",
     "//content/public/renderer",
     "//extensions/common:common_constants",
     "//net",

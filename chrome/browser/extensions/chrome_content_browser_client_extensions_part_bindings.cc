@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "extensions/browser/event_router.h"

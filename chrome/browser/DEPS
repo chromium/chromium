@@ -173,6 +173,7 @@ include_rules = [
   "+components/google/core/browser",
   "+components/google/core/common",
   "+components/grit",
+  "+components/guest_view/buildflags",
   "+components/guest_view/browser",
   "+components/handoff",
   "+components/headless",
