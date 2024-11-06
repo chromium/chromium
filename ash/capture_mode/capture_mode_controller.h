@@ -174,6 +174,9 @@ class ASH_EXPORT CaptureModeController
 
   bool IsEventOnSearchResultsPanel(const gfx::Point& screen_location) const;
 
+  // Returns true if the panel is interactable.
+  bool IsSearchResultsPanelInteractable() const;
+
   // Returns true if this supports the new behavior provided by
   // `new_entry_type`.
   bool SupportsBehaviorChange(CaptureModeEntryType new_entry_type) const;

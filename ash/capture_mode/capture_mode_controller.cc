@@ -769,6 +769,14 @@ bool CaptureModeController::IsEventOnSearchResultsPanel(
              screen_location);
 }
 
+bool CaptureModeController::IsSearchResultsPanelInteractable() const {
+  // TODO(b/377594071): See if we can hide the panel instead of setting its
+  // opacity.
+  return search_results_panel_widget_ &&
+         search_results_panel_widget_->IsVisible() &&
+         search_results_panel_widget_->GetLayer()->GetTargetOpacity() == 1.f;
+}
+
 bool CaptureModeController::SupportsBehaviorChange(
     CaptureModeEntryType new_entry_type) const {
   // If no active session is running, we always support a new behavior type.

@@ -83,8 +83,6 @@ using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::WithArg;
 
-constexpr char kTestSearchUrl[] =
-    "https://www.google.com/search?q=cat&gsc=1&masfc=c";
 constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 constexpr std::string_view kSunfishEnabledPrefName =
@@ -563,16 +561,18 @@ TEST_F(SunfishTest, OnLocatedEvent) {
   ASSERT_TRUE(controller->IsActive());
 
   // Simulate opening the panel during an active session.
-  controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL(kTestSearchUrl));
+  auto* event_generator = GetEventGenerator();
+  SelectCaptureModeRegion(event_generator, gfx::Rect(50, 50, 400, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   views::Widget* widget = controller->search_results_panel_widget();
-  ASSERT_TRUE(widget);
+  ASSERT_TRUE(widget && widget->IsVisible());
   auto* search_results_panel =
       widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
   ASSERT_TRUE(controller->IsActive());
   EXPECT_FALSE(search_results_panel->mouse_events_received());
 
   // Simulate a click on the panel.
-  auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(
       search_results_panel->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
@@ -589,19 +589,25 @@ TEST_F(SunfishTest, UpdateCursor) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
 
-  // Simulate opening the panel during an active session.
-  controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL(kTestSearchUrl));
+  // Select a capture region that doesn't overlap with the panel when it is
+  // shown.
+  auto* event_generator = GetEventGenerator();
+  SelectCaptureModeRegion(event_generator, gfx::Rect(10, 10, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   views::Widget* widget = controller->search_results_panel_widget();
-  ASSERT_TRUE(widget);
-  auto* search_results_panel =
-      widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
+  ASSERT_TRUE(widget && widget->IsVisible());
+  widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
+
+  const gfx::Rect panel_bounds(widget->GetWindowBoundsInScreen());
+  ASSERT_FALSE(
+      panel_bounds.Contains(event_generator->current_screen_location()));
   ASSERT_TRUE(controller->IsActive());
+  event_generator->MoveMouseTo(panel_bounds.x() - 10, panel_bounds.y() - 10);
   EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
 
   // Simulate a click on the panel.
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(
-      search_results_panel->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveMouseTo(panel_bounds.CenterPoint());
   event_generator->PressLeftButton();
   EXPECT_EQ(ui::mojom::CursorType::kPointer,
             cursor_manager->GetCursor().type());
@@ -613,6 +619,35 @@ TEST_F(SunfishTest, UpdateCursor) {
   // Simulate mouse release in the panel.
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_manager->GetCursor().type());
+}
+
+TEST_F(SunfishTest, IsSearchResultsPanelInteractable) {
+  // Show the panel.
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* generator = GetEventGenerator();
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
+
+  SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  views::Widget* widget = controller->search_results_panel_widget();
+  ASSERT_TRUE(widget);
+  widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
+  ASSERT_TRUE(controller->IsActive());
+  const gfx::Rect panel_bounds(widget->GetWindowBoundsInScreen());
+
+  // Mouse over where the panel was shown.
+  generator->MoveMouseTo(panel_bounds.x() - 10, panel_bounds.y() - 10);
+  generator->PressLeftButton();
+  generator->MoveMouseTo(panel_bounds.CenterPoint());
+  ASSERT_TRUE(controller->capture_mode_session()->is_drag_in_progress());
+  ASSERT_EQ(widget->GetLayer()->GetTargetOpacity(), 0.f);
+
+  // Test the panel does not receive events.
+  EXPECT_EQ(ui::mojom::CursorType::kSouthEastResize,
+            cursor_manager->GetCursor().type());
 }
 
 // Tests that while a video recording is in progress, starting sunfish works
