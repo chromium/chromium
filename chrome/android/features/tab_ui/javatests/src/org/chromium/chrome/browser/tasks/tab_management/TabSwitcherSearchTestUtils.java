@@ -56,14 +56,22 @@ public class TabSwitcherSearchTestUtils {
         return activityTestRule.getTestServer();
     }
 
-    /** Opens the given urls in new tabs. Doesn't support "chrome:"" urls. */
+    /**
+     * Opens the given urls, the first URL will be opened in the current active tab. The rest of the
+     * URLs will be opened in new tabs.
+     */
     public static void openUrls(
             ChromeTabbedActivityTestRule activityTestRule,
             List<String> urlsToOpen,
             boolean incognito) {
-        for (String url : urlsToOpen) {
-            activityTestRule.loadUrlInNewTab(
-                    activityTestRule.getTestServer().getURL(url), incognito);
+        for (int i = 0; i < urlsToOpen.size(); i++) {
+            String url = urlsToOpen.get(i);
+            if (!incognito && i == 0) {
+                activityTestRule.loadUrl(activityTestRule.getTestServer().getURL(url));
+            } else {
+                activityTestRule.loadUrlInNewTab(
+                        activityTestRule.getTestServer().getURL(url), incognito);
+            }
         }
     }
 }

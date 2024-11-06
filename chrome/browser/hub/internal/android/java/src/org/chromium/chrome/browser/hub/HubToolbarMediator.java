@@ -269,7 +269,7 @@ public class HubToolbarMediator {
                         .newIntentBuilder()
                         .setPageUrl(new GURL(UrlConstants.NTP_NON_NATIVE_URL))
                         .setIncognito(mPropertyModel.get(IS_INCOGNITO))
-                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                        .setResolutionType(ResolutionType.OPEN_IN_CHROME)
                         .build());
     }
 }

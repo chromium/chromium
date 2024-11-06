@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
@@ -24,6 +25,7 @@ import static org.chromium.ui.base.DeviceFormFactor.TABLET;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -122,7 +124,10 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     public void testZeroPrefixSuggestions() {
-        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
+        List<String> urlsToOpen =
+                Arrays.asList(
+                        "/chrome/test/data/android/test.html",
+                        "/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -132,11 +137,7 @@ public class TabSwitcherSearchTest {
                 TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // ZPS for open tabs only shows the most recent 4 tabs.
-        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
-        verifySuggestions(
-                suggestions,
-                Arrays.asList("/chrome/test/data/android/navigate/one.html", "about:blank"),
-                "Last open tabs");
+        verifySuggestions(urlsToOpen, /* includePrefix= */ true);
 
         // Check the header text.
         onView(withText("Last open tabs")).check(matches(isCompletelyDisplayed()));
@@ -145,7 +146,10 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     public void testZeroPrefixSuggestions_OpenSuggestion() {
-        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
+        List<String> urlsToOpen =
+                Arrays.asList(
+                        "/chrome/test/data/android/test.html",
+                        "/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -156,7 +160,7 @@ public class TabSwitcherSearchTest {
         assertEquals(ActivityState.STOPPED, ApplicationStatus.getStateForActivity(cta));
         assertEquals(ActivityState.RESUMED, ApplicationStatus.getStateForActivity(searchActivity));
 
-        clickSuggestion("about:blank");
+        clickSuggestion(urlsToOpen.get(0), /* includePrefix= */ true);
         CriteriaHelper.pollUiThread(
                 () -> ActivityState.RESUMED == ApplicationStatus.getStateForActivity(cta));
         CriteriaHelper.pollUiThread(
@@ -166,7 +170,7 @@ public class TabSwitcherSearchTest {
         CriteriaHelper.pollUiThread(
                 () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
         assertEquals(
-                "about:blank",
+                mActivityTestRule.getTestServer().getURL(urlsToOpen.get(0)),
                 cta.getCurrentTabModel().getCurrentTabSupplier().get().getUrl().getSpec());
     }
 
@@ -184,7 +188,7 @@ public class TabSwitcherSearchTest {
         assertEquals(ActivityState.STOPPED, ApplicationStatus.getStateForActivity(cta));
         assertEquals(ActivityState.RESUMED, ApplicationStatus.getStateForActivity(searchActivity));
 
-        clickSuggestion(urlsToOpen.get(0));
+        clickSuggestion(urlsToOpen.get(0), /* includePrefix= */ true);
         CriteriaHelper.pollUiThread(
                 () -> ActivityState.RESUMED == ApplicationStatus.getStateForActivity(cta));
         CriteriaHelper.pollUiThread(
@@ -202,7 +206,10 @@ public class TabSwitcherSearchTest {
     @MediumTest
     // Regression test for the currently selected tab being included/excluded randomly.
     public void testZeroPrefixSuggestions_IgnoresHiddenTabs() {
-        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
+        List<String> urlsToOpen =
+                Arrays.asList(
+                        "/chrome/test/data/android/test.html",
+                        "/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -213,10 +220,7 @@ public class TabSwitcherSearchTest {
 
         // ZPS for open tabs only shows the most recent 4 tabs.
         ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
-        verifySuggestions(
-                suggestions,
-                Arrays.asList("/chrome/test/data/android/navigate/one.html", "about:blank"),
-                "Last open tabs");
+        verifySuggestions(urlsToOpen, /* includePrefix= */ true);
 
         // Check the header text.
         onView(withText("Last open tabs")).check(matches(isCompletelyDisplayed()));
@@ -227,10 +231,7 @@ public class TabSwitcherSearchTest {
 
         // ZPS for open tabs only shows the most recent 4 tabs.
         suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
-        verifySuggestions(
-                suggestions,
-                Arrays.asList("/chrome/test/data/android/navigate/one.html", "about:blank"),
-                "Last open tabs");
+        verifySuggestions(urlsToOpen, /* includePrefix= */ true);
 
         // Check the header text.
         onView(withText("Last open tabs")).check(matches(isCompletelyDisplayed()));
@@ -255,8 +256,10 @@ public class TabSwitcherSearchTest {
     @Test
     @LargeTest
     public void testZeroPrefixSuggestions_duplicateUrls() {
-        mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/test.html"));
-        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/test.html");
+        List<String> urlsToOpen =
+                Arrays.asList(
+                        "/chrome/test/data/android/test.html",
+                        "/chrome/test/data/android/test.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -266,11 +269,7 @@ public class TabSwitcherSearchTest {
                 TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // Tab URLs will be de-duped.
-        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
-        verifySuggestions(
-                suggestions,
-                Arrays.asList("/chrome/test/data/android/test.html"),
-                "Last open tabs");
+        verifySuggestions(urlsToOpen, /* includePrefix= */ true);
     }
 
     @Test
@@ -290,14 +289,16 @@ public class TabSwitcherSearchTest {
         omniboxTestUtils.typeText("one.html", /* execute= */ false);
         omniboxTestUtils.waitAnimationsComplete();
 
-        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
-        verifySuggestions(suggestions, urlsToOpen, null);
+        verifySuggestions(urlsToOpen, /* includePrefix= */ true);
     }
 
     @Test
     @MediumTest
     public void testTypedSuggestions_OpenSuggestion() {
-        List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
+        List<String> urlsToOpen =
+                Arrays.asList(
+                        "/chrome/test/data/android/test.html",
+                        "/chrome/test/data/android/test.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -310,10 +311,10 @@ public class TabSwitcherSearchTest {
 
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.requestFocus();
-        omniboxTestUtils.typeText("about:blank", /* execute= */ false);
+        omniboxTestUtils.typeText(urlsToOpen.get(0), /* execute= */ false);
         omniboxTestUtils.waitAnimationsComplete();
 
-        clickSuggestion("about:blank");
+        clickSuggestion(urlsToOpen.get(0), /* includePrefix= */ true);
         CriteriaHelper.pollUiThread(
                 () -> ActivityState.RESUMED == ApplicationStatus.getStateForActivity(cta));
         CriteriaHelper.pollUiThread(
@@ -323,7 +324,7 @@ public class TabSwitcherSearchTest {
         CriteriaHelper.pollUiThread(
                 () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
         assertEquals(
-                "about:blank",
+                mActivityTestRule.getTestServer().getURL(urlsToOpen.get(0)),
                 cta.getCurrentTabModel().getCurrentTabSupplier().get().getUrl().getSpec());
     }
 
@@ -346,7 +347,7 @@ public class TabSwitcherSearchTest {
         omniboxTestUtils.typeText("one.html", /* execute= */ false);
         omniboxTestUtils.waitAnimationsComplete();
 
-        clickSuggestion(urlsToOpen.get(0));
+        clickSuggestion(urlsToOpen.get(0), /* includePrefix= */ true);
         CriteriaHelper.pollUiThread(
                 () -> ActivityState.RESUMED == ApplicationStatus.getStateForActivity(cta));
         CriteriaHelper.pollUiThread(
@@ -377,8 +378,7 @@ public class TabSwitcherSearchTest {
         omniboxTestUtils.typeText("one.html", /* execute= */ false);
         omniboxTestUtils.waitAnimationsComplete();
 
-        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
-        verifySuggestions(suggestions, urlsToOpen, null);
+        verifySuggestions(urlsToOpen, /* includePrefix= */ true);
     }
 
     @Test
@@ -406,32 +406,62 @@ public class TabSwitcherSearchTest {
                 .check(matches(isCompletelyDisplayed()));
     }
 
-    private void verifySuggestions(
-            ViewGroup suggestions, List<String> suggestionUrls, String header) {
+    @Test
+    @MediumTest
+    public void testTypedSuggestions_OpenSearchSuggestion() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        SearchActivity searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        assertEquals(ActivityState.STOPPED, ApplicationStatus.getStateForActivity(cta));
+        assertEquals(ActivityState.RESUMED, ApplicationStatus.getStateForActivity(searchActivity));
+
+        OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
+        omniboxTestUtils.requestFocus();
+        omniboxTestUtils.typeText("foobar", /* execute= */ false);
+        omniboxTestUtils.waitAnimationsComplete();
+
+        clickSuggestion("foobar", /* includePrefix= */ false);
+        CriteriaHelper.pollUiThread(
+                () -> ActivityState.RESUMED == ApplicationStatus.getStateForActivity(cta));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ActivityState.DESTROYED
+                                == ApplicationStatus.getStateForActivity(searchActivity));
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
+        assertTrue(
+                cta.getCurrentTabModel()
+                        .getCurrentTabSupplier()
+                        .get()
+                        .getUrl()
+                        .getSpec()
+                        .contains("foobar"));
+    }
+
+    private void verifySuggestions(List<String> suggestionUrls, boolean includePrefix) {
         for (int i = 0; i < suggestionUrls.size(); i++) {
-            String url = suggestionUrls.get(i);
-            if (!url.startsWith("about:")) {
-                url = URL_PREFIX + url;
-            }
-            // Line 2 is the URL, the titles vary.
-            onView(
-                            allOf(
-                                    withId(R.id.line_2),
-                                    withText(url),
-                                    withEffectiveVisibility(Visibility.VISIBLE)))
+            String url = adjustUrl(suggestionUrls.get(i), includePrefix);
+            findMatchWithTextAndId(url, includePrefix ? R.id.line_2 : R.id.line_1)
                     .check(matches(isCompletelyDisplayed()));
         }
     }
 
-    private void clickSuggestion(String url) {
-        if (!url.startsWith("about:")) {
-            url = URL_PREFIX + url;
+    private void clickSuggestion(String url, boolean includePrefix) {
+        url = adjustUrl(url, includePrefix);
+        findMatchWithTextAndId(url, includePrefix ? R.id.line_2 : R.id.line_1).perform(click());
+    }
+
+    private ViewInteraction findMatchWithTextAndId(String text, int id) {
+        return onView(
+                allOf(withId(id), withText(text), withEffectiveVisibility(Visibility.VISIBLE)));
+    }
+
+    private String adjustUrl(String url, boolean includePrefix) {
+        if (includePrefix) {
+            return URL_PREFIX + url;
         }
-        onView(
-                        allOf(
-                                withId(R.id.line_2),
-                                withText(url),
-                                withEffectiveVisibility(Visibility.VISIBLE)))
-                .perform(click());
+        return url;
     }
 }
