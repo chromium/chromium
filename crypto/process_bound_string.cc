@@ -11,6 +11,8 @@
 #include <windows.h>
 
 #include <dpapi.h>
+
+#include "base/process/memory.h"
 #else
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -48,6 +50,9 @@ bool MaybeDecryptBuffer(base::span<uint8_t> buffer) {
   if (::CryptUnprotectMemory(buffer.data(), buffer.size(),
                              CRYPTPROTECTMEMORY_SAME_PROCESS)) {
     return true;
+  }
+  if (::GetLastError() == ERROR_WORKING_SET_QUOTA) {
+    base::TerminateBecauseOutOfMemory(0);
   }
 #endif  // BUILDFLAG(IS_WIN)
   return false;
