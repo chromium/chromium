@@ -671,18 +671,39 @@ bool IsElementInPage(content::RenderFrameHost* host,
 // 1. Find the full name of the test. The test name should follow the format:
 // `TestBaseName/TestSuite.TestClass/TestParams`, the name should be available
 // on the trybot failure page itself.
-// 2. Add the `TestParam` under BUILDFLAGs inside the `disabled_flaky_tests` set
-// below, to ensure that a single test is only disabled for the OS or builds it
-// is flaking on.
+// 2. Add the `TestParams` under BUILDFLAGs inside the `disabled_flaky_tests`
+// set below, to ensure that a single test is only disabled for the OS or builds
+// it is flaking on.
 // 3. Add the appropriate TODO with a public bug so that the flaky tests can be
 // tracked.
 //
 // Once flakiness has been fixed, please remove the entry from here so that test
 // suites can start running the test again.
 static const base::flat_set<std::string> disabled_flaky_tests = {
-// TODO(crbug.com/372119276): Fix flakiness for `Redirection_OpenInChrome` tests
-// on MacOS.
+#if defined(ADDRESS_SANITIZER)
+    // TODO(crbug.com/377425233): Fix flakiness on ASAN.
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_"
+    "ViaLink_MiddleClick_WithoutOpener_TargetBlank",
+    "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
+    "ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "kAppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
+    "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "kFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
+    "RightClick_WithoutOpener_TargetBlank",
+    "kFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
+    "RightClick_WithoutOpener_TargetBlank",
+    "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+#endif
 #if BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/372119276): Fix flakiness for `Redirection_OpenInChrome`
+    // tests on MacOS.
     "AppWnd_ScopeA2X_ServerSideViaB_ViaLink_ShiftClick_WithOpener_TargetBlank",
     "AppWnd_ScopeA2X_ServerSideViaA_ViaLink_ShiftClick_WithOpener_TargetBlank",
     "AppWnd_ScopeA2X_ServerSideViaA_ViaLink_MiddleClick_WithOpener_TargetBlank",
@@ -692,11 +713,6 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
     // TODO(crbug.com/359600606): Enable on CrOS if navigation capturing needs
     // to be supported.
     "*"
-#elif defined(ADDRESS_SANITIZER)
-    // TODO(crbug.com/377425233): Fix flakiness on ASAN.
-    "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
 #endif
 };
 
