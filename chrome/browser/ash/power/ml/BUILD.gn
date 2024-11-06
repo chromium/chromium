@@ -29,11 +29,13 @@ static_library("ml") {
     "user_activity_ukm_logger_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    ":user_activity_event_proto",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     ":screen_brightness_event_proto",
-    ":user_activity_event_proto",
     ":user_activity_ukm_logger_helpers",
     "//ash",
     "//ash/constants",
