@@ -58,6 +58,27 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
                                                     : off_by_default_label)}}}};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
+    LinkCapturingFeatureVersion version) {
+  switch (version) {
+    case LinkCapturingFeatureVersion::kV1DefaultOff:
+      return GetFeaturesToEnableLinkCapturingUX(
+          /*override_captures_by_default=*/false, /*use_v2=*/false);
+    case LinkCapturingFeatureVersion::kV2DefaultOff:
+      return GetFeaturesToEnableLinkCapturingUX(
+          /*override_captures_by_default=*/false, /*use_v2=*/true);
+#if !BUILDFLAG(IS_CHROMEOS)
+    case LinkCapturingFeatureVersion::kV1DefaultOn:
+      return GetFeaturesToEnableLinkCapturingUX(
+          /*override_captures_by_default=*/true, /*use_v2=*/false);
+    case LinkCapturingFeatureVersion::kV2DefaultOn:
+      return GetFeaturesToEnableLinkCapturingUX(
+          /*override_captures_by_default=*/true, /*use_v2=*/true);
+#endif
+  }
+}
+
 std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX() {
   CHECK_IS_TEST();
 #if BUILDFLAG(IS_CHROMEOS)

@@ -20,6 +20,19 @@ class NavigationHandle;
 
 namespace apps::test {
 
+// The valid link capturing configurations that can be enabled. ChromeOS does
+// not support default-on.
+enum class LinkCapturingFeatureVersion {
+  // TODO(https://crbug.com/377522792): Remove v1 values on non-ChromeOS
+  kV1DefaultOff,
+  kV2DefaultOff,
+#if !BUILDFLAG(IS_CHROMEOS)
+  // TODO(https://crbug.com/377522792): Remove this.
+  kV1DefaultOn,
+  kV2DefaultOn,
+#endif
+};
+
 // The functions should only be called from tests, and is used to enable or
 // disable link capturing UXes. Only use these if link capturing needs to be
 // enabled on all platforms, i.e. ChromeOS, Windows, Mac and Linux. For platform
@@ -29,6 +42,11 @@ namespace apps::test {
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     std::optional<bool> override_captures_by_default = std::nullopt,
     bool use_v2 = false);
+
+// Same as above, but simplifies to using an enum to only accept the valid
+// configurations for a given platform.
+std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
+    LinkCapturingFeatureVersion version);
 
 std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX();
 
