@@ -866,10 +866,12 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kCctSignInPromptRateLimited[] = {
     {"cadence_day", "14"},
-    {"show_limit", "2"}};
+    {"show_limit", "2"},
+    {"dismiss_count", "2"}};
 const FeatureEntry::FeatureParam kCctSignInPromptAlways[] = {
     {"cadence_day", "0"},
-    {"show_limit", "10000"}};
+    {"show_limit", "10000"},
+    {"dismiss_count", "10000"}};
 
 const FeatureEntry::FeatureVariation kCctSignInPromptVariations[] = {
     {"rate-limited", kCctSignInPromptRateLimited,
