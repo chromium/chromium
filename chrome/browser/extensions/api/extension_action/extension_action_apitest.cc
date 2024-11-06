@@ -693,8 +693,7 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, PRE_ValuesArePersisted) {
       dir_name = "extension_action/browser_action_persistence";
       break;
     case ActionInfo::Type::kPage:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   // Load up an extension, which then modifies the popup, title, and badge text
   // of the action. We need to use a "real" extension on disk here (rather than

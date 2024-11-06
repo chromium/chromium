@@ -120,7 +120,7 @@ std::optional<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
       break;
     }
     case ProxyPrefs::kModeCount:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return base::Value(std::move(extension_pref));
 }

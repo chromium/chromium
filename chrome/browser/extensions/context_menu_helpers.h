@@ -33,12 +33,13 @@ std::unique_ptr<extensions::MenuItem::Id> GetParentId(
 
   std::unique_ptr<extensions::MenuItem::Id> parent_id(
       new extensions::MenuItem::Id(is_off_the_record, key));
-  if (property.parent_id->as_integer)
+  if (property.parent_id->as_integer) {
     parent_id->uid = *property.parent_id->as_integer;
-  else if (property.parent_id->as_string)
+  } else if (property.parent_id->as_string) {
     parent_id->string_uid = *property.parent_id->as_string;
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
   return parent_id;
 }
 

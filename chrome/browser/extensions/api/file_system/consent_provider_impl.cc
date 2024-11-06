@@ -132,8 +132,7 @@ void ConsentProviderImpl::RequestConsent(content::RenderFrameHost* host,
     return;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Cannot request consent for non-grantable extensions.";
+  NOTREACHED() << "Cannot request consent for non-grantable extensions.";
 }
 
 bool ConsentProviderImpl::IsGrantable(const Extension& extension) {

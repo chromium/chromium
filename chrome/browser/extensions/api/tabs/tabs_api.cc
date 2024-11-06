@@ -269,8 +269,7 @@ ui::mojom::WindowShowState ConvertToWindowShowState(
     case windows::WindowState::kNone:
       return ui::mojom::WindowShowState::kDefault;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::WindowShowState::kDefault;
+  NOTREACHED();
 }
 
 bool IsValidStateForWindowsCreateFunction(
@@ -294,8 +293,7 @@ bool IsValidStateForWindowsCreateFunction(
     case windows::WindowState::kNone:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool ExtensionHasLockedFullscreenPermission(const Extension* extension) {
@@ -2408,10 +2406,8 @@ std::string TabsCaptureVisibleTabFunction::CaptureResultToErrorMessage(
     case FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP:
       return tabs_constants::kScreenshotsDisabledByDlp;
     case OK:
-      NOTREACHED_IN_MIGRATION()
-          << "CaptureResultToErrorMessage should not be called"
-             " with a successful result";
-      return kUnknownErrorDoNotUse;
+      NOTREACHED() << "CaptureResultToErrorMessage should not be called with a "
+                      "successful result";
   }
   return ErrorUtils::FormatErrorMessage("Failed to capture tab: *",
                                         reason_description);

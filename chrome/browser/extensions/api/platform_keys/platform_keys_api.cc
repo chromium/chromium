@@ -112,7 +112,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
             net::X509Certificate::kPublicKeyTypeRSA);
         break;
       case api_pk::ClientCertificateType::kNone:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

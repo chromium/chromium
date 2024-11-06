@@ -464,7 +464,7 @@ static void ExtractParameters(const std::string& params,
       EXPECT_TRUE(result->find(key) == result->end());
       (*result)[key] = (key_val.size() == 2) ? key_val[1] : std::string();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
@@ -2185,7 +2185,7 @@ class ExtensionUpdaterTest : public testing::Test {
       url1_query = fetched_urls[1].query();
       url2_query = fetched_urls[0].query();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     std::map<std::string, ParamsMap> url1_ping_data =

@@ -397,7 +397,7 @@ std::optional<base::Value::Dict> CreateProxyConfigDict(
     case ProxyPrefs::MODE_SYSTEM:
       return ProxyConfigDictionary::CreateSystem();
     case ProxyPrefs::kModeCount:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return std::nullopt;
 }
@@ -493,8 +493,7 @@ base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy_chain) {
       scheme = "socks5";
       break;
     case net::ProxyServer::SCHEME_INVALID:
-      NOTREACHED_IN_MIGRATION();
-      return out;
+      NOTREACHED();
   }
   out.Set(proxy_api_constants::kProxyConfigRuleScheme, scheme);
   out.Set(proxy_api_constants::kProxyConfigRuleHost,

@@ -269,9 +269,7 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
   bool enabled = (disable_reasons == extensions::disable_reason::DISABLE_NONE);
   if (extensions::blocklist_prefs::IsExtensionBlocklisted(id,
                                                           extension_prefs)) {
-    enabled = false;
-    NOTREACHED_IN_MIGRATION()
-        << "Blocklisted extensions should not be getting synced.";
+    NOTREACHED() << "Blocklisted extensions should not be getting synced.";
   }
 
   bool incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile_);
@@ -400,7 +398,7 @@ void ExtensionSyncService::ApplySyncData(
       case 0: state = INSTALLED_MATCHING; break;
       case 1: state = INSTALLED_NEWER; break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

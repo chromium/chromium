@@ -193,8 +193,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   cloud_devices::printer::DuplexTicketItem duplex;
@@ -213,8 +212,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       settings->set_duplex_mode(printing::mojom::DuplexMode::kShortEdge);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   cloud_devices::printer::OrientationTicketItem orientation;
@@ -230,8 +228,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       settings->SetOrientation(/*landscape=*/false);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   cloud_devices::printer::CopiesTicketItem copies;

@@ -42,10 +42,9 @@ const char* InstanceIDResultToError(instance_id::InstanceID::Result result) {
     case instance_id::InstanceID::UNKNOWN_ERROR:
       return kUnknownError;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected value of result cannot be converted: " << result;
+      NOTREACHED() << "Unexpected value of result cannot be converted: "
+                   << result;
   }
-  return "";
 }
 
 }  // namespace

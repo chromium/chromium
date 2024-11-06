@@ -112,7 +112,7 @@ apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
     // If a new value for app.launch.container is added, logic for it should be
     // added here. apps::LaunchContainer::kLaunchContainerWindow is not
     // present because there is no way to set it in a manifest.
-    NOTREACHED_IN_MIGRATION() << static_cast<int>(manifest_launch_container);
+    NOTREACHED() << static_cast<int>(manifest_launch_container);
   }
 
   // All paths should set |result|.

@@ -67,8 +67,8 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   LOG(ERROR) << "Component extension with id " << extension_id << " not in "
              << "allowlist and is not being loaded as a result.";
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED() << "Component extension with id " << extension_id << " not in "
+               << "allowlist and is not being loaded as a result.";
 }
 
 bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
@@ -101,8 +101,9 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
   LOG(ERROR) << "Component extension with manifest resource id "
              << manifest_resource_id << " not in allowlist and is not being "
              << "loaded as a result.";
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED() << "Component extension with manifest resource id "
+               << manifest_resource_id << " not in allowlist and is not being "
+               << "loaded as a result.";
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -1646,8 +1646,7 @@ class GetAuthTokenFunctionInteractivityTest
         break;
       case IdentityGetAuthTokenFunction::InteractivityStatus::
           kDisallowedSigninDisallowed:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     GetAuthTokenFunctionTest::SetUpOnMainThread();

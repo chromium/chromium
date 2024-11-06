@@ -137,8 +137,7 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
 
   if (!policy_value->is_list()) {
     // This should have been caught in CheckPolicySettings.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   int index = -1;
@@ -271,8 +270,7 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
   }
 
   if (!value->is_list()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Check that the list contains valid URLPattern strings only.

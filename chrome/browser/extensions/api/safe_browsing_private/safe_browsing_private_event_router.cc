@@ -85,8 +85,7 @@ safe_browsing::EventResult GetEventResultFromThreatType(
   if (threat_type.empty()) {
     return safe_browsing::EventResult::ALLOWED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return safe_browsing::EventResult::UNKNOWN;
+  NOTREACHED();
 }
 
 void AddAnalysisConnectorVerdictToEvent(

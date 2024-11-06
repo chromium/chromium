@@ -254,7 +254,7 @@ void ExtensionUpdater::CheckSoon() {
                                     weak_ptr_factory_.GetWeakPtr()))) {
     will_check_soon_ = true;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -756,7 +756,7 @@ void ExtensionUpdater::CleanUpCrxFileIfNeeded(const base::FilePath& crx_path,
   if (file_ownership_passed &&
       !GetExtensionFileTaskRunner()->PostTask(
           FROM_HERE, base::GetDeleteFileCallback(crx_path))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

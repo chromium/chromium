@@ -632,8 +632,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
       break;
 
     case GaiaRemoteConsentFlow::NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case GaiaRemoteConsentFlow::CANNOT_CREATE_WINDOW:
       error = IdentityGetAuthTokenError(
@@ -975,8 +974,7 @@ IdentityGetAuthTokenFunction::GetErrorFromInteractivityStatus(
       break;
     case InteractivityStatus::kAllowedWithGesture:
     case InteractivityStatus::kAllowedWithActivity:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DCHECK_NE(state, IdentityGetAuthTokenError::State::kNone);
   return IdentityGetAuthTokenError(state);

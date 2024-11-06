@@ -69,10 +69,8 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
     return CreateViewHostForExtension(extension, url, profile, view_type,
                                       browser, web_contents);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "We shouldn't be trying to create an incognito extension view unless "
-         "it has been enabled for incognito.";
-  return nullptr;
+  NOTREACHED() << "We shouldn't be trying to create an incognito extension "
+                  "view unless it has been enabled for incognito.";
 }
 
 // Returns the extension associated with |url| in |profile|. Returns NULL if

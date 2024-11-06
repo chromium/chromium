@@ -173,8 +173,7 @@ api::passwords_private::PasswordCheckState ConvertPasswordCheckState(
       return api::passwords_private::PasswordCheckState::kOtherError;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return api::passwords_private::PasswordCheckState::kNone;
+  NOTREACHED();
 }
 
 std::string FormatElapsedTime(base::Time time) {

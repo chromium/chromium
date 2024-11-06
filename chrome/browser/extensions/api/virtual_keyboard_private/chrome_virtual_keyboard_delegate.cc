@@ -73,8 +73,7 @@ keyboard::ContainerType ConvertKeyboardModeToContainerType(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return keyboard::ContainerType::kFullWidth;
+  NOTREACHED();
 }
 
 // Returns the ui::TextInputClient of the active InputMethod or nullptr.

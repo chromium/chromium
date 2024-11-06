@@ -164,8 +164,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
                         root, Extension::NO_FLAGS, &utf8_error);
   *error = base::UTF8ToUTF16(utf8_error);
   if (!extension.get()) {
-    NOTREACHED_IN_MIGRATION() << "Could not init extension " << *error;
-    return nullptr;
+    NOTREACHED() << "Could not init extension " << *error;
   }
 
   temp_dir.Take();  // The caller takes ownership of the directory.

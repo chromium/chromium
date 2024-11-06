@@ -651,7 +651,7 @@ scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
     if (file_ownership_passed &&
         !GetExtensionFileTaskRunner()->PostTask(
             FROM_HERE, base::GetDeleteFileCallback(file.path))) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     return nullptr;
@@ -895,7 +895,7 @@ bool ExtensionService::UninstallExtension(
                            std::move(extension_dir_to_delete),
                            profile_->GetPath()),
             subtask_done_callback)) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -1547,7 +1547,6 @@ void ExtensionService::AddExtension(const Extension* extension) {
     // location, but some bugs (e.g. crbug.com/692069) seem to indicate we do.
     // Track down the cases when this can happen, and remove this
     // DumpWithoutCrashing() (possibly replacing it with a CHECK).
-    NOTREACHED_IN_MIGRATION();
     DEBUG_ALIAS_FOR_CSTR(extension_id_copy, extension->id().c_str(), 33);
     ManifestLocation location = extension->location();
     int creation_flags = extension->creation_flags();
@@ -1555,8 +1554,7 @@ void ExtensionService::AddExtension(const Extension* extension) {
     base::debug::Alias(&location);
     base::debug::Alias(&creation_flags);
     base::debug::Alias(&type);
-    base::debug::DumpWithoutCrashing();
-    return;
+    NOTREACHED();
   }
 
   // TODO(jstritar): We may be able to get rid of this branch by overriding the
@@ -1772,7 +1770,7 @@ void ExtensionService::OnExtensionInstalled(
       if (!GetExtensionFileTaskRunner()->PostTask(
               FROM_HERE,
               base::GetDeletePathRecursivelyCallback(extension->path()))) {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
       return;
     }
@@ -1888,7 +1886,7 @@ void ExtensionService::OnExtensionInstalled(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unknown action for delayed install: " << action;
+  NOTREACHED() << "Unknown action for delayed install: " << action;
 }
 
 void ExtensionService::OnExtensionManagementSettingsChanged() {
@@ -1975,8 +1973,9 @@ bool ExtensionService::FinishDelayedInstallationIfReady(
   CHECK(delayed_install.get());
   delayed_installs_.Remove(extension_id);
 
-  if (!extension_prefs_->FinishDelayedInstallInfo(extension_id))
-    NOTREACHED_IN_MIGRATION();
+  if (!extension_prefs_->FinishDelayedInstallInfo(extension_id)) {
+    NOTREACHED();
+  }
 
   FinishInstallation(delayed_install.get());
   return true;

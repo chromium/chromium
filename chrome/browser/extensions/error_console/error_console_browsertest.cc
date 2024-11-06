@@ -262,7 +262,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
       case ACTION_NONE:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     observer.WaitForErrors();

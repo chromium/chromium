@@ -151,17 +151,11 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   // GlobalError overrides:
   bool HasMenuItem() override { return false; }
 
-  int MenuItemCommandID() override {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  int MenuItemCommandID() override { NOTREACHED(); }
 
-  std::u16string MenuItemLabel() override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
-  }
+  std::u16string MenuItemLabel() override { NOTREACHED(); }
 
-  void ExecuteMenuItem(Browser* browser) override { NOTREACHED_IN_MIGRATION(); }
+  void ExecuteMenuItem(Browser* browser) override { NOTREACHED(); }
 
   std::u16string GetBubbleViewTitle() override {
     return GenerateTitle(delegate_->GetBlocklistedExtensions(),

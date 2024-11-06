@@ -91,7 +91,7 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
       break;
     }
     case api::resources_private::Component::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::string app_locale =

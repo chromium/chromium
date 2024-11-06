@@ -227,14 +227,14 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
           FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
                                     service->install_directory(),
                                     extension_paths, /*unpacked=*/false))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (!GetExtensionFileTaskRunner()->PostTask(
           FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
                                     service->unpacked_install_directory(),
                                     extension_paths, /*unpacked=*/true))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -151,8 +151,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
                 PasswordProtectionTrigger::kPhishingReuse;
         break;
       case safe_browsing::PASSWORD_PROTECTION_TRIGGER_MAX:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

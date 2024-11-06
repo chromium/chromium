@@ -198,7 +198,7 @@ void FontSettingsEventRouter::OnFontFamilyMapPrefChanged(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FontSettingsEventRouter::OnFontNamePrefChanged(
@@ -210,8 +210,7 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
   CHECK(pref);
 
   if (!pref->GetValue()->is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   std::string font_name = pref->GetValue()->GetString();
   base::Value::List args;
@@ -355,15 +354,13 @@ FontSettingsGetFontListFunction::CopyFontsToResult(
   base::Value::List result;
   for (const auto& entry : fonts) {
     if (!entry.is_list()) {
-      NOTREACHED_IN_MIGRATION();
-      return Error("");
+      NOTREACHED();
     }
     const base::Value::List& font_list_value = entry.GetList();
 
     if (font_list_value.size() < 2 || !font_list_value[0].is_string() ||
         !font_list_value[1].is_string()) {
-      NOTREACHED_IN_MIGRATION();
-      return Error("");
+      NOTREACHED();
     }
     const std::string& name = font_list_value[0].GetString();
     const std::string& localized_name = font_list_value[1].GetString();

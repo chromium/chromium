@@ -120,7 +120,7 @@ bool StandardManagementPolicyProvider::UserMayLoad(
       break;
     }
     case Manifest::NUM_LOAD_TYPES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   ExtensionManagement::InstallationMode installation_mode =

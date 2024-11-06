@@ -312,9 +312,8 @@ bool ExtensionKeybindingRegistry::ExtensionMatchesFilter(
     case PLATFORM_APPS_ONLY:
       return extension->is_platform_app();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 bool ExtensionKeybindingRegistry::ExecuteCommands(

@@ -334,7 +334,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
     // The only platform that uses this check is Mac OS.  If you add one,
     // you need to implement base::VerifyPathControlledByAdmin() for
     // that platform.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif  // BUILDFLAG(IS_MAC)
   }
 

@@ -126,8 +126,7 @@ extensions::api::passwords_private::ExportProgressStatus ConvertStatus(
           kFailedWriteFailed;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return extensions::api::passwords_private::ExportProgressStatus::kNone;
+  NOTREACHED();
 }
 
 std::u16string GetReauthPurpose(
@@ -188,8 +187,7 @@ ConvertPlaintextReason(
     case extensions::api::passwords_private::PlaintextReason::kEdit:
       return password_manager::metrics_util::ACCESS_PASSWORD_EDITED;
     case extensions::api::passwords_private::PlaintextReason::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return password_manager::metrics_util::ACCESS_PASSWORD_VIEWED;
+      NOTREACHED();
   }
 }
 
@@ -208,8 +206,7 @@ ConvertToPasswordFormStores(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 extensions::api::passwords_private::ImportEntry ConvertImportEntry(

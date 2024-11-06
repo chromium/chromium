@@ -512,7 +512,7 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
 
     case language_settings_private::MoveType::kNone:
     case language_settings_private::MoveType::kMaxValue:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // On Desktop we can only move languages by one position.
@@ -572,9 +572,9 @@ void LanguageSettingsPrivateGetSpellcheckWordsFunction::
 void LanguageSettingsPrivateGetSpellcheckWordsFunction::
     OnCustomDictionaryChanged(
         const SpellcheckCustomDictionary::Change& dictionary_change) {
-  NOTREACHED_IN_MIGRATION() << "SpellcheckCustomDictionary::Observer: "
-                               "OnCustomDictionaryChanged() called before "
-                               "OnCustomDictionaryLoaded()";
+  NOTREACHED()
+      << "SpellcheckCustomDictionary::Observer: OnCustomDictionaryChanged() "
+         "called before OnCustomDictionaryLoaded()";
 }
 
 base::Value::List

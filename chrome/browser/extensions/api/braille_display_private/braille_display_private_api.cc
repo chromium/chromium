@@ -191,16 +191,15 @@ void BrailleDisplayPrivateWriteDotsFunction::WriteDotsOnIO() {
 
 ExtensionFunction::ResponseAction
 BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction::Run() {
-#if !BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_IN_MIGRATION();
-  return RespondNow(Error("Unsupported on this platform."));
-#else
+#if BUILDFLAG(IS_CHROMEOS)
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
   const std::string& address = args()[0].GetString();
   ash::AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(
       address);
   return RespondNow(NoArguments());
+#else
+  NOTREACHED();
 #endif
 }
 

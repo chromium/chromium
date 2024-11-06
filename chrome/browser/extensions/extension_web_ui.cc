@@ -89,8 +89,7 @@ void InitializeOverridesList(base::Value::List& list) {
       new_dict.Set(kEntry, entry_name);
       new_dict.Set(kActive, true);
     } else {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     // |entry_name| will be set by this point.
@@ -114,8 +113,7 @@ void AddOverridesToList(base::Value::List& list, const GURL& override_url) {
       entry = dict->FindString(kEntry);
     }
     if (!entry) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     if (*entry == spec) {
       dict->Set(kActive, true);
@@ -123,8 +121,7 @@ void AddOverridesToList(base::Value::List& list, const GURL& override_url) {
     }
     GURL entry_url(*entry);
     if (!entry_url.is_valid()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     if (entry_url.host() == override_url.host()) {
       dict->Set(kActive, true);
@@ -152,8 +149,7 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
       entry = val.GetDict().FindString(kEntry);
     }
     if (!entry) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     GURL override_url(*entry);
     if (!override_url.is_valid())
@@ -287,7 +283,7 @@ void RunFaviconCallbackAsync(favicon_base::FaviconResultsCallback callback,
 
       favicon_bitmap_results.push_back(bitmap_result);
     } else {
-      NOTREACHED_IN_MIGRATION() << "Could not encode extension favicon";
+      NOTREACHED() << "Could not encode extension favicon";
     }
   }
 
