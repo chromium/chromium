@@ -99,6 +99,7 @@ void IDBRequestLoader::StartNextValue() {
 #endif  // DCHECK_IS_ON()
   loader_ = MakeGarbageCollected<FileReaderLoader>(
       this, execution_context_->GetTaskRunner(TaskType::kDatabaseAccess));
+  start_loading_time_ = base::TimeTicks::Now();
   loader_->Start(unwrapper.WrapperBlobHandle());
 }
 
@@ -125,6 +126,8 @@ void IDBRequestLoader::DidFinishLoading() {
   file_reader_loading_ = false;
 #endif  // DCHECK_IS_ON()
 
+  base::UmaHistogramTimes("IndexedDB.WrappedBlobLoadTime",
+                          base::TimeTicks::Now() - start_loading_time_);
   IDBValueUnwrapper::Unwrap(std::move(wrapped_data_), **current_value_);
   ++current_value_;
 

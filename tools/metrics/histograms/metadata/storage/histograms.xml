@@ -359,6 +359,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IndexedDB.WrappedBlobLoadTime" units="ms"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the amount of time taken to load a blob from the IDB backing store.
+    This is measured from the renderer, starting when the bytes are requested
+    from the renderer process and finishing when loading is complete i.e. all
+    bytes are available in the renderer process. For simplicity's sake, this is
+    only logged for large values automatically wrapped in blobs, but the results
+    should be applicable to explicit Blobs as well.
+
+    If the blob bytes need to be unwrapped (decompressed), the time it takes to
+    do so is NOT taken into account. If interested in total time to receive the
+    uncompressed blob bytes, another histogram would need to be added.
+  </summary>
+</histogram>
+
 <histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
     expires_after="2025-04-27">
   <owner>ayui@chromium.org</owner>

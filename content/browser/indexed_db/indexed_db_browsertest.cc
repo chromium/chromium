@@ -1338,6 +1338,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {
       GetTestUrl("indexeddb", "write_and_read_large_value.html");
   SimpleTest(kTestUrl);
 
+  // The following metric is logged in the renderer process, so force those
+  // metrics to be collected before checking `histogram_tester`.
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount("IndexedDB.WrappedBlobLoadTime", 1);
+
   // Delete the blob file that got created.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1374,6 +1379,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {
   histogram_tester.ExpectUniqueSample("IndexedDB.LargeValueReadError",
                                       kFileErrorCodeNotFoundErr,
                                       kExpectedBucketCount);
+  histogram_tester.ExpectTotalCount("IndexedDB.WrappedBlobLoadTime", 1);
 }
 
 // The blob key corruption test runs in a separate class to avoid corrupting
