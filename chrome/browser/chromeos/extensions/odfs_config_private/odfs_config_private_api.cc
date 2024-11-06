@@ -12,14 +12,12 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/ash/cloud_upload/automated_mount_error_notification.h"
