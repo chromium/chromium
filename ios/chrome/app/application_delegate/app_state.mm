@@ -27,7 +27,9 @@
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/deferred_initialization_queue.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
@@ -66,7 +68,6 @@
 #import "ui/base/device_form_factor.h"
 
 namespace {
-NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 // Flushes the CookieStore on the IO thread and invoke `closure` upon
 // completion. The sequence where `closure` is invoked is unspecified.
@@ -181,6 +182,8 @@ BOOL ApplicationIsInBackground() {
     _agents = [[NSMutableArray alloc] init];
     _startupInformation = startupInformation;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];
+    _deferredRunner = [[DeferredInitializationRunner alloc]
+        initWithQueue:[DeferredInitializationQueue sharedInstance]];
 
     // Subscribe to scene connection notifications.
     [[NSNotificationCenter defaultCenter]
@@ -326,8 +329,8 @@ BOOL ApplicationIsInBackground() {
   }
 
   // Mark the startup as clean if it hasn't already been.
-  [[DeferredInitializationRunner sharedInstance]
-      runBlockIfNecessary:kStartupAttemptReset];
+  [_deferredRunner runBlockNamed:kStartupResetAttemptCount];
+
   // Set date/time that the background fetch handler was called in the user
   // defaults.
   [MetricsMediator logDateInUserDefaults];

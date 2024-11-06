@@ -20,6 +20,7 @@
 @class MemoryWarningHelper;
 @class MetricsMediator;
 @class ProfileState;
+@class DeferredInitializationRunner;
 @protocol StartupInformation;
 
 namespace base {
@@ -99,6 +100,9 @@ enum class PostCrashAction {
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.
 @property(nonatomic, readonly) NSArray<id<AppStateAgent>>* connectedAgents;
+
+// Can be used to schedule deferred initialization tasks.
+@property(nonatomic, readonly) DeferredInitializationRunner* deferredRunner;
 
 // Logs duration of the session and records that chrome is no longer in cold
 // start.

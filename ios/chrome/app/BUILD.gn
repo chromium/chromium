@@ -49,6 +49,8 @@ source_set("app") {
   sources = [
     "app_startup_parameters.h",
     "app_startup_parameters.mm",
+    "deferred_initialization_queue.h",
+    "deferred_initialization_queue.mm",
     "deferred_initialization_runner.h",
     "deferred_initialization_runner.mm",
   ]
@@ -377,6 +379,7 @@ source_set("app_internal") {
     ":launch_screen_ui",
     ":mode",
     ":safe_mode_app_state_agent",
+    ":task_names",
     ":tests_hook",
     ":variations_app_state_agent",
     "//base",
@@ -541,6 +544,13 @@ source_set("app_internal") {
   allow_circular_includes_from = [
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/shared/coordinator/scene",
+  ]
+}
+
+source_set("task_names") {
+  sources = [
+    "deferred_initialization_task_names.h",
+    "deferred_initialization_task_names.mm",
   ]
 }
 
