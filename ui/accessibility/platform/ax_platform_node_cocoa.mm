@@ -1506,6 +1506,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (!_node)
     return nil;  // Return nil when detached. Even for ax::mojom::Role.
 
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    // TODO(crbug.com/376723178): We should be able to add a NOTREACHED()
+    // here, but at the moment, test infrastructure still directly calls this
+    // api endpoint.
+    return nil;
+  }
+
   SEL selector = NSSelectorFromString(attribute);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
