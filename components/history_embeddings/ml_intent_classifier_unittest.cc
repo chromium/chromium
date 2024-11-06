@@ -4,7 +4,6 @@
 
 #include "components/history_embeddings/ml_intent_classifier.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/history_embeddings/history_embeddings_features.h"
@@ -90,7 +89,6 @@ class HistoryEmbeddingsMlIntentClassifierTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   NiceMock<MockClassifierSession> session_;
@@ -148,9 +146,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, FailToCreateSession) {
 }
 
 TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreTrue) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kHistoryEmbeddings, {{"EnableMlIntentClassifierScore", "true"}});
+  FeatureParameters feature_parameters = GetFeatureParameters();
+  feature_parameters.enable_ml_intent_classifier_score = true;
+  SetFeatureParametersForTesting(feature_parameters);
 
   // Above threshold.
   ON_CALL(session_, Score(_, _))
@@ -170,9 +168,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreTrue) {
 }
 
 TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreFalse) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kHistoryEmbeddings, {{"EnableMlIntentClassifierScore", "true"}});
+  FeatureParameters feature_parameters = GetFeatureParameters();
+  feature_parameters.enable_ml_intent_classifier_score = true;
+  SetFeatureParametersForTesting(feature_parameters);
 
   // below threshold.
   ON_CALL(session_, Score(_, _))
@@ -192,9 +190,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreFalse) {
 }
 
 TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreFailure) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kHistoryEmbeddings, {{"EnableMlIntentClassifierScore", "true"}});
+  FeatureParameters feature_parameters = GetFeatureParameters();
+  feature_parameters.enable_ml_intent_classifier_score = true;
+  SetFeatureParametersForTesting(feature_parameters);
 
   // Null score
   ON_CALL(session_, Score(_, _))

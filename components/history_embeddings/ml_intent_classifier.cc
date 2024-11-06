@@ -110,8 +110,8 @@ class MlIntentClassifier::Execution final {
   }
 
   bool EnableMlIntentClassifierScore() {
-    return kEnableMlIntentClassifierScore.Get() && model_metadata_ &&
-           !model_metadata_->score_token().empty();
+    return GetFeatureParameters().enable_ml_intent_classifier_score &&
+           model_metadata_ && !model_metadata_->score_token().empty();
   }
 
   std::string GetTokenToScore() {
