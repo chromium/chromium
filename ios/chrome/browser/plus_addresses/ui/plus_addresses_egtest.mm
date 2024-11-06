@@ -5,6 +5,7 @@
 #import "base/strings/escape.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/grit/plus_addresses_strings.h"
@@ -119,6 +120,9 @@ void ExpectModalTimeSample(
     config.iph_feature_enabled =
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
   }
+
+  config.features_disabled.push_back(
+      autofill::features::test::kAutofillServerCommunication);
 
   return config;
 }
