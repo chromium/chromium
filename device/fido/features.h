@@ -119,6 +119,11 @@ BASE_DECLARE_FEATURE(kWebAuthnHelloSignal);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSkipHybridConfigIfSystemSupported);
 
+// Enables linking of hybrid devices to Chrome, both pre-linking (i.e. through
+// Sync) and through hybrid for digital credentials requests.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kDigitalCredentialsHybridLinking);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

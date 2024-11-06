@@ -317,6 +317,25 @@ TEST(CableV2Encoding, RequestTypeToString) {
             RequestTypeFromString(""));
 }
 
+TEST(CableV2Encoding, ShouldOfferLinking) {
+  for (const auto type :
+       {FidoRequestType::kMakeCredential, FidoRequestType::kGetAssertion}) {
+    EXPECT_TRUE(ShouldOfferLinking(type));
+  }
+  {
+    base::test::ScopedFeatureList disable_linking_for_dc;
+    disable_linking_for_dc.InitAndDisableFeature(
+        device::kDigitalCredentialsHybridLinking);
+    EXPECT_FALSE(ShouldOfferLinking(CredentialRequestType::kPresentation));
+  }
+  {
+    base::test::ScopedFeatureList enable_linking_for_dc;
+    enable_linking_for_dc.InitAndEnableFeature(
+        device::kDigitalCredentialsHybridLinking);
+    EXPECT_TRUE(ShouldOfferLinking(CredentialRequestType::kPresentation));
+  }
+}
+
 TEST(CableV2Encoding, PaddedCBOR) {
   cbor::Value::MapValue map1;
   std::optional<std::vector<uint8_t>> encoded =

@@ -192,6 +192,10 @@ void Derive(uint8_t* out,
 COMPONENT_EXPORT(DEVICE_FIDO)
 const char* RequestTypeToString(RequestType request_type);
 
+// Whether the generated QR Code for hybrid flows should offer linking.
+COMPONENT_EXPORT(DEVICE_FIDO)
+bool ShouldOfferLinking(RequestType request_type);
+
 // RequestTypeFromString performs the inverse of `RequestTypeToString`. If the
 // value of `s` is unknown, `kGetAssertion` is returned.
 COMPONENT_EXPORT(DEVICE_FIDO)

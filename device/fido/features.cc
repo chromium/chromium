@@ -146,4 +146,9 @@ BASE_FEATURE(kWebAuthnSkipHybridConfigIfSystemSupported,
              "WebAuthenticationSkipHybridConfigIfSystemSupported",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Disabled by default.
+BASE_FEATURE(kDigitalCredentialsHybridLinking,
+             "DigitalCredentialsHybridLinking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device
