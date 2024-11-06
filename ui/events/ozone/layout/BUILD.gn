@@ -49,10 +49,7 @@ component("layout") {
       "xkb/xkb_modifier_converter.h",
     ]
 
-    deps += [
-      "//build:chromeos_buildflags",
-      "//ui/events/keycodes:xkb",
-    ]
+    deps += [ "//ui/events/keycodes:xkb" ]
   }
 }
 

@@ -43,7 +43,7 @@
 #include "ui/events/test/scoped_event_test_tick_clock.h"
 #include "ui/events/types/event_type.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -791,7 +791,7 @@ TEST_F(TabletEventConverterEvdevTest, StylusButtonPress) {
   EXPECT_EQ(true, event->IsRightMouseButton());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(TabletEventConverterEvdevTest, TabletButtonPress) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({ash::features::kInputDeviceSettingsSplit,

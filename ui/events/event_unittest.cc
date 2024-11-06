@@ -126,7 +126,7 @@ TEST(EventTest, RepeatedClick) {
   EXPECT_FALSE(MouseEvent::IsRepeatedClickEvent(event1, event2));
 }
 
-// Automatic repeat flag setting is disabled on Lacros,
+// Automatic repeat flag setting is disabled on Wayland,
 // because the repeated event is generated inside ui/ozone/platform/wayland
 // and reliable.
 TEST(EventTest, RepeatedKeyEvent) {

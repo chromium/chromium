@@ -93,7 +93,7 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
 
     // Whether a longpress should be generated immediately when a stylus button
     // is pressed, given that the longpress timeout is still active.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     bool stylus_button_accelerated_longpress_enabled = true;
 #else
     bool stylus_button_accelerated_longpress_enabled = false;

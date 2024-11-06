@@ -256,7 +256,7 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   float min_swipe_velocity_ = 20;
   // TODO(crbug.com/41095532): Disable and remove entirely when issues
   // with intermittent scroll end detection on the Pixel are resolved.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   int scroll_debounce_interval_in_ms_ = 30;
 #else
   int scroll_debounce_interval_in_ms_ = 0;
@@ -265,7 +265,7 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
 
   // When enabled, a cancel action affects only the corresponding pointer (vs
   // all pointers active at that time).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool single_pointer_cancel_enabled_ = true;
 #else
   bool single_pointer_cancel_enabled_ = false;

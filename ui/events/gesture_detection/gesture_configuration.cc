@@ -5,7 +5,6 @@
 #include "build/build_config.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
-#include "build/chromeos_buildflags.h"
 
 namespace ui {
 namespace {

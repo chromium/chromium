@@ -18,7 +18,6 @@
 #include "base/numerics/angle_conversions.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"

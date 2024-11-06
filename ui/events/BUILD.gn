@@ -140,10 +140,7 @@ component("events_base") {
 
   defines = [ "EVENTS_BASE_IMPLEMENTATION" ]
 
-  deps = [
-    ":dom_keycode_converter",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ ":dom_keycode_converter" ]
 
   public_deps = [
     ":event_constants",
@@ -346,8 +343,6 @@ component("events") {
       "gestures/gesture_recognizer_impl.cc",
       "gestures/motion_event_aura.cc",
     ]
-
-    deps += [ "//build:chromeos_buildflags" ]
   }
 
   if (is_win || is_apple || use_ozone) {
@@ -494,7 +489,6 @@ component("gesture_detection") {
   deps = [
     ":events_base",
     "//base",
-    "//build:chromeos_buildflags",
     "//ui/base:features",
     "//ui/display",
     "//ui/gfx",
@@ -586,7 +580,6 @@ static_library("test_support") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//skia",
     "//ui/events/platform",
     "//ui/gfx",

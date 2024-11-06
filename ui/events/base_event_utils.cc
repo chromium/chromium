@@ -10,7 +10,6 @@
 #include "base/lazy_instance.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_switches.h"
 
@@ -18,7 +17,7 @@ namespace ui {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const int kSystemKeyModifierMask = EF_ALT_DOWN | EF_COMMAND_DOWN;
 #elif BUILDFLAG(IS_APPLE)
 // Alt modifier is used to input extended characters on Mac.

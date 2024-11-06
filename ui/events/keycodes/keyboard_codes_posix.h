@@ -32,7 +32,6 @@
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODES_POSIX_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace ui {
 

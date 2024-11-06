@@ -29,7 +29,6 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -632,7 +631,7 @@ const PrintableSimpleEntry kSimpleMap[] = {
     {0x0259, VKEY_OEM_3},      // schwa
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void LoadKeymap(const std::string& layout_name,
                 scoped_refptr<base::SingleThreadTaskRunner> reply_runner,
                 LoadKeymapCallback reply_callback) {
@@ -695,7 +694,7 @@ std::string_view XkbKeyboardLayoutEngine::GetLayoutName() const {
 }
 
 bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
@@ -705,7 +704,7 @@ bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 void XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name,
     base::OnceCallback<void(bool)> callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   current_layout_name_ = layout_name;
   for (const auto& entry : xkb_keymaps_) {
     if (entry.layout_name == layout_name) {
@@ -725,7 +724,7 @@ void XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
                      std::move(reply_callback)));
 #else
   NOTIMPLEMENTED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void XkbKeyboardLayoutEngine::OnKeymapLoaded(
@@ -950,7 +949,7 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
 
 xkb_mod_mask_t XkbKeyboardLayoutEngine::EventFlagsToXkbFlags(
     int ui_flags) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In ChromeOS NumLock is always on.
   ui_flags |= ui::EF_NUM_LOCK_ON;
 #endif
@@ -993,11 +992,6 @@ DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(
       return KeycodeConverter::NativeKeycodeToDomCode(range.first->xkb_keycode);
     xkb_mod_mask_t xkb_modifiers =
         xkb_modifier_converter_.MaskFromNames(*modifiers);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // In ChromeOS NumLock is always on.
-    xkb_modifiers |=
-        xkb_modifier_converter_.MaskFromUiFlags(ui::EF_NUM_LOCK_ON);
-#endif
     // Note: value is already in the lexicographical order, so smaller keycode
     // comes first.
     for (std::unique_ptr<xkb_state, XkbStateDeleter> xkb_state(
