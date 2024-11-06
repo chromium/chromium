@@ -3894,6 +3894,7 @@ static_library("browser") {
       "performance_manager/policies/page_discarding_helper.h",
       "performance_manager/policies/urgent_page_discarding_policy.cc",
       "performance_manager/policies/urgent_page_discarding_policy.h",
+      "performance_manager/public/background_tab_loading_policy.h",
       "performance_manager/public/user_tuning/battery_saver_mode_manager.h",
       "performance_manager/public/user_tuning/performance_detection_manager.h",
       "performance_manager/public/user_tuning/user_performance_tuning_manager.h",

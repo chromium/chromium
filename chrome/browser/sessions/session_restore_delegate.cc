@@ -14,12 +14,12 @@
 #include <utility>
 
 #include "base/metrics/field_trial.h"
+#include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/sessions/session_restore_stats_collector.h"
 #include "chrome/browser/sessions/tab_loader.h"
 #include "chrome/common/url_constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/graph/policies/background_tab_loading_policy.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
