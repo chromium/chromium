@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.SystemClock;
@@ -82,7 +83,13 @@ public class PdfCoordinator {
         loadPdfFile(filepath);
     }
 
-    /** The class responsible for rendering pdf document. */
+    /**
+     * The class responsible for rendering pdf document.
+     *
+     * <p>Lint suppression for NewApi is added because inline pdf support is enabled via
+     * PdfUtils#shouldOpenPdfInline.
+     */
+    @SuppressLint("NewApi")
     public static class ChromePdfViewerFragment extends PdfViewerFragment {
         /** Whether the pdf has been loaded successfully. */
         boolean mIsLoadDocumentSuccess;
