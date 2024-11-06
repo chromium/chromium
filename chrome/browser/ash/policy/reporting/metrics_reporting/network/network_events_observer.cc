@@ -40,9 +40,6 @@ bool IsConnectedWifiNetwork(const ash::NetworkState* network_state) {
 BASE_FEATURE(kEnableWifiSignalEventsReporting,
              "EnableWifiSignalEventsReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableNetworkConnectionStateEventsReporting,
-             "EnableNetworkConnectionStateEventsReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableVpnConnectionStateEventsReporting,
              "EnableVpnConnectionStateEventsReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -74,9 +71,7 @@ void NetworkEventsObserver::NetworkConnectionStateChanged(
   const auto network_type =
       ::ash::NetworkTypePattern::Primitive(network->type());
 
-  if (network_type.MatchesPattern(ash::NetworkTypePattern::Physical()) &&
-      base::FeatureList::IsEnabled(
-          kEnableNetworkConnectionStateEventsReporting)) {
+  if (network_type.MatchesPattern(ash::NetworkTypePattern::Physical())) {
     metric_data.mutable_event_data()->set_type(
         MetricEventType::NETWORK_STATE_CHANGE);
   } else if (network_type.Equals(ash::NetworkTypePattern::VPN()) &&

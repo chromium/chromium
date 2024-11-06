@@ -18,7 +18,6 @@
 namespace reporting {
 
 BASE_DECLARE_FEATURE(kEnableWifiSignalEventsReporting);
-BASE_DECLARE_FEATURE(kEnableNetworkConnectionStateEventsReporting);
 BASE_DECLARE_FEATURE(kEnableVpnConnectionStateEventsReporting);
 
 class NetworkEventsObserver
