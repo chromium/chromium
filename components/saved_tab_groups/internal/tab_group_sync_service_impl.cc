@@ -350,7 +350,8 @@ void TabGroupSyncServiceImpl::UpdateTab(
   UpdateAttributions(group_id, tab_id);
 
   // Use the builder to create the updated tab.
-  bool will_update_url = tab_builder.url().SchemeIsHTTPOrHTTPS();
+  bool will_update_url = tab_builder.url().SchemeIsHTTPOrHTTPS() &&
+                         tab_builder.url() != tab->url();
   bool is_pending_sanitization =
       IsSanitizationRequired(*group, tab_builder.url()) &&
       !tab_builder.title().empty();
@@ -360,7 +361,7 @@ void TabGroupSyncServiceImpl::UpdateTab(
   updated_tab.SetIsPendingSanitization(is_pending_sanitization);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
-                           will_update_url);
+                           /*notify_observers=*/will_update_url);
   LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
 }
 

@@ -682,8 +682,9 @@ TEST_F(TabGroupSyncServiceTest, UpdateTab) {
   base::HistogramTester histogram_tester;
   auto local_tab_id_2 = test::GenerateRandomTabID();
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
-                                  u"random tab title", GURL("www.google.com"),
-                                  std::nullopt);
+                                  u"random tab title",
+                                  GURL("http://www.google.com"), std::nullopt);
+  WaitForPostedTasks();
 
   auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   auto* tab = group->GetTab(local_tab_id_2);
@@ -694,7 +695,7 @@ TEST_F(TabGroupSyncServiceTest, UpdateTab) {
 
   // Update tab and verify observers.
   std::u16string new_title = u"tab title 2";
-  GURL new_url = GURL("www.example.com");
+  GURL new_url = GURL("http://www.example.com");
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetTitle(new_title);
   tab_builder.SetURL(new_url);
@@ -730,6 +731,34 @@ TEST_F(TabGroupSyncServiceTest, UpdateTab) {
       .Times(0);
   tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_2,
                                      tab_builder2);
+  WaitForPostedTasks();
+}
+
+TEST_F(TabGroupSyncServiceTest, UpdateTabIgnoresSameUrl) {
+  auto local_tab_id_2 = test::GenerateRandomTabID();
+  std::u16string new_title = u"tab title 2";
+  GURL new_url = GURL("https://www.example.com");
+  tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2, new_title,
+                                  new_url, std::nullopt);
+  WaitForPostedTasks();
+
+  auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  auto* tab = group->GetTab(local_tab_id_2);
+  EXPECT_TRUE(group.has_value());
+  EXPECT_TRUE(tab);
+  VerifyCacheGuids(*group, tab, kTestCacheGuid, kTestCacheGuid, kTestCacheGuid,
+                   std::nullopt);
+
+  // Update tab and verify observers.
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetTitle(new_title);
+  tab_builder.SetURL(new_url);
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(0);
+  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_2,
+                                     tab_builder);
   WaitForPostedTasks();
 }
 
