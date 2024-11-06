@@ -6,6 +6,10 @@
 # Further documentation:
 # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
 
+external/wpt/accessibility/*
+external/wpt/acid/*
+external/wpt/ai/*
+external/wpt/apng/*
 external/wpt/css/css-align/*
 external/wpt/css/css-animations/*
 external/wpt/css/css-box/*
@@ -31,6 +35,7 @@ external/wpt/css/css-syntax/*
 external/wpt/css/css-transitions/*
 external/wpt/css/css-viewport/*
 external/wpt/css/fetching/*
+external/wpt/FileAPI/*
 external/wpt/css/fill-stroke/*
 external/wpt/css/geometry/*
 external/wpt/css/reference/*
@@ -58,6 +63,7 @@ external/wpt/webstorage/*
 external/wpt/xhr/*
 
 virtual/cookie-deprecation-label/*
+virtual/disable-raster-inducing-scroll/*
 virtual/float16array-enabled/external/wpt/xhr/*
 virtual/gpu/external/wpt/*
 virtual/keepalive-in-browser-migration/external/wpt/xhr/*
