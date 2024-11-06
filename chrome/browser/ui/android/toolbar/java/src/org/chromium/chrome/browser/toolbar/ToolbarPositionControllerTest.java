@@ -208,6 +208,7 @@ public class ToolbarPositionControllerTest {
 
     private Context mContext;
     private ObservableSupplierImpl<Boolean> mIsNtpShowing = new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mIsTabSwitcherShowing = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mIsOmniboxFocused = new ObservableSupplierImpl<>();
     private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private BottomControlsStacker mBottomControlsStacker;
@@ -232,12 +233,14 @@ public class ToolbarPositionControllerTest {
         mProgressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
         mProgressBarLayoutParams.setAnchorId(CONTROL_CONTAINER_ID);
         mIsNtpShowing.set(false);
+        mIsTabSwitcherShowing.set(false);
         mIsOmniboxFocused.set(false);
         mController =
                 new ToolbarPositionController(
                         mBrowserControlsSizer,
                         ContextUtils.getAppSharedPreferences(),
                         mIsNtpShowing,
+                        mIsTabSwitcherShowing,
                         mIsOmniboxFocused,
                         mIsFormFieldFocused,
                         mControlContainer,
@@ -321,6 +324,23 @@ public class ToolbarPositionControllerTest {
         assertControlsAtTop();
 
         mIsNtpShowing.set(false);
+        assertControlsAtBottom();
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testUpdatePositionChangesWithTabSwitcherState() {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
+                .commit();
+        assertControlsAtBottom();
+
+        mIsTabSwitcherShowing.set(true);
+        assertControlsAtTop();
+
+        mIsTabSwitcherShowing.set(false);
         assertControlsAtBottom();
     }
 

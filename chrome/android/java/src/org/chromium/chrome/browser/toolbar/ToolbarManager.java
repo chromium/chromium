@@ -222,6 +222,8 @@ public class ToolbarManager
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final ObservableSupplierImpl<Boolean> mIsNtpShowingSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIsTabSwitcherShowingSupplier =
+            new ObservableSupplierImpl<>();
     private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
     private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
             new ObservableSupplierImpl<>();
@@ -1278,6 +1280,7 @@ public class ToolbarManager
                         if (layoutType == LayoutType.TAB_SWITCHER) {
                             mLocationBarModel.updateForNonStaticLayout();
                             mToolbar.setTabSwitcherMode(false);
+                            mIsTabSwitcherShowingSupplier.set(false);
                             updateButtonStatus();
                             if (mToolbar.setForceTextureCapture(true)) {
                                 mControlContainer.invalidateBitmap();
@@ -1371,10 +1374,15 @@ public class ToolbarManager
         }
 
         mIsNtpShowingSupplier.set(getNewTabPageForCurrentTab() != null);
+        mIsTabSwitcherShowingSupplier.set(
+                mLayoutStateProvider != null
+                        ? mLayoutStateProvider.getActiveLayoutType() == LayoutType.TAB_SWITCHER
+                        : false);
         new ToolbarPositionController(
                 mBrowserControlsSizer,
                 ContextUtils.getAppSharedPreferences(),
                 mIsNtpShowingSupplier,
+                mIsTabSwitcherShowingSupplier,
                 mOmniboxFocusStateSupplier,
                 mFormFieldFocusedSupplier,
                 mControlContainer,
@@ -1412,6 +1420,7 @@ public class ToolbarManager
             mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
             updateButtonStatus();
         }
+        mIsTabSwitcherShowingSupplier.set(layoutType == LayoutType.TAB_SWITCHER);
         mToolbar.setContentAttached(layoutType == LayoutType.BROWSING);
     }
 
