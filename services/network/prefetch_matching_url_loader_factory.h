@@ -106,12 +106,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchMatchingURLLoaderFactory final
 
  private:
   void OnDisconnect();
+  bool IsRequestSafeForMatching(const ResourceRequest& request);
 
   const std::unique_ptr<cors::CorsURLLoaderFactory> next_;
-  const raw_ptr<const cors::OriginAccessList> origin_access_list_;
   const raw_ptr<NetworkContext> context_;
   const raw_ptr<PrefetchCache> cache_;
   mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
+  const bool use_matches_;
 };
 
 }  // namespace network
