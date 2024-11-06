@@ -65,8 +65,6 @@ enum class PlusAddressAction {
   return self;
 }
 
-#pragma mark - PlusAddressBottomSheetDelegate
-
 - (void)reservePlusAddress {
   __weak __typeof(self) weakSelf = self;
   auto callback = base::BindOnce(^(
@@ -79,6 +77,8 @@ enum class PlusAddressAction {
   _plusAddressService->ReservePlusAddress(_mainFrameOrigin,
                                           std::move(callback));
 }
+
+#pragma mark - PlusAddressBottomSheetDelegate
 
 - (void)confirmPlusAddress {
   __weak __typeof(self) weakSelf = self;
@@ -172,8 +172,6 @@ enum class PlusAddressAction {
 
 - (GURL)plusAddressURL:(PlusAddressURLType)type {
   switch (type) {
-    case PlusAddressURLType::kErrorReport:
-      return GURL(plus_addresses::features::kPlusAddressErrorReportUrl.Get());
     case PlusAddressURLType::kManagement:
       return GURL(plus_addresses::features::kPlusAddressManagementUrl.Get());
     case PlusAddressURLType::kLearnMore:
@@ -187,8 +185,6 @@ enum class PlusAddressAction {
 - (void)handlePlusAddressResult:
             (const plus_addresses::PlusProfileOrError&)maybePlusProfile
                       forAction:(PlusAddressAction)action {
-  BOOL errorStatesEnabled = base::FeatureList::IsEnabled(
-      plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled);
   switch (action) {
       // Both actions have the same success behavior.
     case PlusAddressAction::kPlusAddressActionReserve:
@@ -203,14 +199,12 @@ enum class PlusAddressAction {
         [self.consumer notifyError:plus_addresses::metrics::
                                        PlusAddressModalCompletionStatus::
                                            kReservePlusAddressError];
-        if (errorStatesEnabled) {
-          if (maybePlusProfile.error().IsQuotaError()) {
-            [_delegate displayPlusAddressQuotaErrorAlert:YES];
-          } else if (maybePlusProfile.error().IsTimeoutError()) {
-            [_delegate displayPlusAddressTimeoutErrorAlert:YES];
-          } else {
-            [_delegate displayPlusAddressGenericErrorAlert:YES];
-          }
+        if (maybePlusProfile.error().IsQuotaError()) {
+          [_delegate displayPlusAddressQuotaErrorAlert:YES];
+        } else if (maybePlusProfile.error().IsTimeoutError()) {
+          [_delegate displayPlusAddressTimeoutErrorAlert:YES];
+        } else {
+          [_delegate displayPlusAddressGenericErrorAlert:YES];
         }
       }
       break;
@@ -228,24 +222,19 @@ enum class PlusAddressAction {
                                              kConfirmPlusAddressError];
           _reservedPlusAddress = confirmedPlusAddress;
           // Show affiliation error.
-          if (errorStatesEnabled) {
-            [_delegate
-                displayPlusAddressAffiliationErrorAlert:*maybePlusProfile];
-          }
+          [_delegate displayPlusAddressAffiliationErrorAlert:*maybePlusProfile];
         }
       } else {
         // If the action failed, notify the error.
         [self.consumer notifyError:plus_addresses::metrics::
                                        PlusAddressModalCompletionStatus::
                                            kConfirmPlusAddressError];
-        if (errorStatesEnabled) {
-          if (maybePlusProfile.error().IsQuotaError()) {
-            [_delegate displayPlusAddressQuotaErrorAlert:NO];
-          } else if (maybePlusProfile.error().IsTimeoutError()) {
-            [_delegate displayPlusAddressTimeoutErrorAlert:NO];
-          } else {
-            [_delegate displayPlusAddressGenericErrorAlert:NO];
-          }
+        if (maybePlusProfile.error().IsQuotaError()) {
+          [_delegate displayPlusAddressQuotaErrorAlert:NO];
+        } else if (maybePlusProfile.error().IsTimeoutError()) {
+          [_delegate displayPlusAddressTimeoutErrorAlert:NO];
+        } else {
+          [_delegate displayPlusAddressGenericErrorAlert:NO];
         }
       }
       break;

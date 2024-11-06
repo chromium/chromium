@@ -120,18 +120,6 @@ void ExpectModalTimeSample(
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
   }
 
-  if ([self isRunningTest:@selector(testQuotaErrorAlertOnConfirm)] ||
-      [self isRunningTest:@selector(testAffiliationError)] ||
-      [self isRunningTest:@selector(testTimeOutAlertOnConfirm)] ||
-      [self isRunningTest:@selector(testGenericAlertOnConfirm)] ||
-      [self isRunningTest:@selector(testQuotaErrorAlertOnReserve)] ||
-      [self isRunningTest:@selector(testTimeoutErrorAlertOnReserve)] ||
-      [self isRunningTest:@selector(testGenericAlertOnReserve)]) {
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled,
-         {}});
-  }
-
   return config;
 }
 
@@ -165,18 +153,6 @@ void ExpectModalTimeSample(
 
   // Tapping it will trigger the UI.
   [[EarlGrey selectElementWithMatcher:userChip] performAction:grey_tap()];
-}
-
-id<GREYMatcher> GetMatcherForErrorReportLink() {
-  return grey_allOf(
-      // The link is within
-      // kPlusAddressModalErrorMessageAccessibilityIdentifier.
-      grey_ancestor(grey_accessibilityID(
-          kPlusAddressSheetErrorMessageAccessibilityIdentifier)),
-      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
-      // element in the label with attributed string.
-      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
 }
 
 // Returns a matcher for the email description.
@@ -241,70 +217,6 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   ExpectModalTimeSample(plus_addresses::metrics::
                             PlusAddressModalCompletionStatus::kModalConfirmed,
                         1);
-}
-
-// A basic test that simply opens the bottom sheet with an error and then
-// dismisses the bottom sheet.
-- (void)testShowPlusAddressBottomSheetWithError {
-  [PlusAddressAppInterface setShouldFailToReserve:YES];
-  [self openCreatePlusAddressBottomSheet];
-
-  // The primary email address should be shown.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:GetMatcherForEmailDescription(
-                                              [PlusAddressAppInterface
-                                                  primaryEmail])];
-
-  // The request to reserve a plus address is hitting the test server, and
-  // should fail immediately.
-  NSString* error_message = l10n_util::GetNSString(
-      IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_IOS);
-  id<GREYMatcher> parsed_error_message =
-      grey_text(ParseStringWithLinks(error_message).string);
-  // Ensure error message with link is shown and correctly parsed.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:parsed_error_message];
-
-  // Ensure the cancel button is shown.
-  id<GREYMatcher> cancelButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
-
-  // Click the cancel button, dismissing the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
-
-  ExpectModalHistogram(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1);
-  ExpectModalHistogram(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled, 1);
-  // The test server currently only response with reserve error. Thus, closing
-  // status is recorded as `kReservePlusAddressError`.
-  // TODO(b/321072266) Expand coverage to other responses.
-  ExpectModalTimeSample(
-      plus_addresses::metrics::PlusAddressModalCompletionStatus::
-          kReservePlusAddressError,
-      1);
-}
-
-- (void)testPlusAddressBottomSheetErrorReportLink {
-  [PlusAddressAppInterface setShouldFailToReserve:YES];
-  [self openCreatePlusAddressBottomSheet];
-
-  id<GREYMatcher> link_text = GetMatcherForErrorReportLink();
-
-  // Take note of how many tabs are open before clicking the link.
-  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
-  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:link_text];
-  [[EarlGrey selectElementWithMatcher:link_text] performAction:grey_tap()];
-
-  // A new tab should open after tapping the link.
-  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
-  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
-
-  // The bottom sheet should be dismissed.
-  [[EarlGrey selectElementWithMatcher:link_text]
-      assertWithMatcher:grey_notVisible()];
 }
 
 - (void)DISABLED_testSwipeToDismiss {

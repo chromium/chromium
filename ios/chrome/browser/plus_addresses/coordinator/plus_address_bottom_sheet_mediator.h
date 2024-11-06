@@ -46,6 +46,10 @@ class UrlLoadingBrowserAgent;
 @interface PlusAddressBottomSheetMediator
     : NSObject <PlusAddressBottomSheetDelegate, PlusAddressErrorAlertDelegate>
 
+// The bottom sheet plus_address consumer, which will be notified as data
+// becomes available or errors occur.
+@property(nonatomic, strong) id<PlusAddressBottomSheetConsumer> consumer;
+
 // Designated initializer of the mediator, with `service` used to interface with
 // the underlying data (and, transitively, the service that backs it).
 // `mainFrameOrigin` is the origin any plus addresses will be scoped to.
@@ -61,9 +65,8 @@ class UrlLoadingBrowserAgent;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// The bottom sheet plus_address consumer, which will be notified as data
-// becomes available or errors occur.
-@property(nonatomic, strong) id<PlusAddressBottomSheetConsumer> consumer;
+// Reserves a plus address.
+- (void)reservePlusAddress;
 
 @end
 
