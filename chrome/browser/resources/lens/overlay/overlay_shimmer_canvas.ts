@@ -111,6 +111,19 @@ const SEGMENTATION_STATE_CENTER_Y_AMPLITUDE_PERCENT = 20;
 // segmentation state.
 const SEGMENTATION_TRANSITION_DURATION = 750;
 
+// SEARCHBOX STATE CONSTANTS: These are the values that are only applied when
+// the shimmer is focusing on a searchbox. In the searchbox state,
+// these values are in relation to the searchbox bounding box smallest size,
+// rather than the entire viewport.
+const SEARCHBOX_STATE_RADIUS_PERCENT = 45;
+const SEARCHBOX_STATE_CIRCLE_BLUR = 2;
+const SEARCHBOX_STATE_RADIUS_AMPLITUDE_PERCENT = 5;
+const SEARCHBOX_STATE_CENTER_X_AMPLITUDE_PERCENT = 40;
+const SEARCHBOX_STATE_CENTER_Y_AMPLITUDE_PERCENT = 40;
+// The time it takes in MS to transition from a different state to the
+// searchbox state.
+const SEARCHBOX_TRANSITION_DURATION = 750;
+
 // The opacity of the sparkles. The sparkles opacity also is dictated by the
 // circle pixel opacity below it. Meaning, the true opacity value is
 // SPARKLES_OPACITY * CIRCLE_OPACITY.
@@ -133,6 +146,8 @@ enum ShimmerState {
   TRANSITION_FADE_OUT_TO_SEGMENTATION = 12,
   TRANSITION_FADE_OUT_TO_TRANSLATE = 13,
   TRANSLATE = 14,
+  TRANSITION_FADE_IN_TO_SEARCHBOX = 15,
+  SEARCHBOX = 16,
 }
 
 // An interface representing the current values of a circle on the canvas.
@@ -604,6 +619,12 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       case ShimmerControlRequester.TRANSLATE:
         this.setTransitionState(ShimmerState.TRANSITION_FADE_OUT_TO_TRANSLATE);
         break;
+      case ShimmerControlRequester.SEARCHBOX:
+        this.regionCenter = {x: centerX * 100, y: centerY * 100};
+        this.regionWidth = width;
+        this.regionHeight = height;
+        this.setTransitionState(ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX);
+        break;
       default:
         assertNotReached();
     }
@@ -778,7 +799,8 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       } else if (
           this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION ||
           this.shimmerState ===
-              ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION) {
+              ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION ||
+          this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX) {
         const smallestLength = Math.min(this.regionHeight, this.regionWidth);
         endCenter = structuredClone(this.regionCenter);
         endCenterXAmpPrecent = endCenterXAmpPrecent * this.regionWidth;
@@ -960,6 +982,18 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       keyframe.radius = SEGMENTATION_STATE_RADIUS_PERCENT;
       keyframe.radiusAmpPercent = SEGMENTATION_STATE_RADIUS_AMPLITUDE_PERCENT;
       keyframe.opacity = SEGMENTATION_STATE_OPACITY_PERCENT;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX) {
+      // The centerX and centerY can change in between key frames, so we use an
+      // instance member of this component to track that end.
+      keyframe.blur = SEARCHBOX_STATE_CIRCLE_BLUR;
+      keyframe.centerXAmpPercent = SEARCHBOX_STATE_CENTER_X_AMPLITUDE_PERCENT;
+      keyframe.centerYAmpPercent = SEARCHBOX_STATE_CENTER_Y_AMPLITUDE_PERCENT;
+      // This radius is dependent on a instance member of this component because
+      // it can change quickly in between key frames.
+      keyframe.radius = SEARCHBOX_STATE_RADIUS_PERCENT;
+      keyframe.radiusAmpPercent = SEARCHBOX_STATE_RADIUS_AMPLITUDE_PERCENT;
+      keyframe.opacity = INTERACTION_STATE_OPACITY_PERCENT;
     }
     return keyframe;
   }
@@ -973,7 +1007,8 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION ||
         this.shimmerState ===
         ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION ||
-        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_TRANSLATE;
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_TRANSLATE ||
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX;
   }
 
   private setCurrentAnimationStartTimeIfNeeded(currentTimeMs: number) {
@@ -1079,6 +1114,11 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       }));
       this.didLastTransitionFinish = true;
       this.shimmerState = ShimmerState.TRANSLATE;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX &&
+        elapsed >= SEARCHBOX_TRANSITION_DURATION) {
+      this.didLastTransitionFinish = true;
+      this.shimmerState = ShimmerState.SEARCHBOX;
     }
   }
 
@@ -1101,6 +1141,9 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
             ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION ||
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_TRANSLATE) {
       return FADE_OUT_TRANSITION_DURATION;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX) {
+      return SEARCHBOX_TRANSITION_DURATION;
     }
     return 0;
   }
