@@ -74,6 +74,8 @@ BASE_FEATURE(kFeaturePromoLifecycleTestAlert2,
 using TestBase = InteractiveFeaturePromoTestT<web_app::WebAppBrowserTestBase>;
 using user_education::FeaturePromoClosedReason;
 using user_education::FeaturePromoResult;
+using PromoType = user_education::FeaturePromoSpecification::PromoType;
+using PromoSubtype = user_education::FeaturePromoSpecification::PromoSubtype;
 
 class FeaturePromoLifecycleUiTest : public TestBase {
  public:
@@ -576,13 +578,9 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
   void RegisterPromos() override {
     RegisterTestFeature(
         browser(),
-        std::move(
-            user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-                &kFeaturePromoLifecycleTestPromo,
-                kToolbarAppMenuButtonElementId, IDS_OK)
-                .set_promo_subtype_for_testing(
-                    user_education::FeaturePromoSpecification::PromoSubtype::
-                        kKeyedNotice)));
+        user_education::FeaturePromoSpecification::CreateForTesting(
+            kFeaturePromoLifecycleTestPromo, kToolbarAppMenuButtonElementId,
+            IDS_OK, PromoType::kToast, PromoSubtype::kKeyedNotice));
   }
 };
 
@@ -649,27 +647,18 @@ class FeaturePromoLifecycleCriticalUiTest : public FeaturePromoLifecycleUiTest {
   void RegisterPromos() override {
     RegisterTestFeature(
         browser(),
-        std::move(
-            user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-                &kFeaturePromoLifecycleTestPromo,
-                kToolbarAppMenuButtonElementId, IDS_OK)
-                .set_promo_subtype_for_testing(
-                    user_education::FeaturePromoSpecification::PromoSubtype::
-                        kLegalNotice)));
+        user_education::FeaturePromoSpecification::CreateForTesting(
+            kFeaturePromoLifecycleTestPromo, kToolbarAppMenuButtonElementId,
+            IDS_OK, PromoType::kToast, PromoSubtype::kLegalNotice));
     RegisterTestFeature(
         browser(),
-        std::move(
-            user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-                &kFeaturePromoLifecycleTestPromo2,
-                kToolbarAppMenuButtonElementId, IDS_CANCEL)
-                .set_promo_subtype_for_testing(
-                    user_education::FeaturePromoSpecification::PromoSubtype::
-                        kLegalNotice)));
+        user_education::FeaturePromoSpecification::CreateForTesting(
+            kFeaturePromoLifecycleTestPromo2, kToolbarAppMenuButtonElementId,
+            IDS_CANCEL, PromoType::kToast, PromoSubtype::kLegalNotice));
     RegisterTestFeature(
-        browser(),
-        user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-            &kFeaturePromoLifecycleTestPromo3, kToolbarAppMenuButtonElementId,
-            IDS_CLEAR));
+        browser(), user_education::FeaturePromoSpecification::CreateForTesting(
+                       kFeaturePromoLifecycleTestPromo3,
+                       kToolbarAppMenuButtonElementId, IDS_CLEAR));
     RegisterTestFeature(
         browser(),
         std::move(

@@ -102,11 +102,6 @@ bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
     }
   }
 
-  // Features used for tests have this prefix and are excluded.
-  if (name.starts_with("TEST_")) {
-    return true;
-  }
-
   return false;
 }
 
@@ -404,6 +399,19 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForLegacyPromo(
          "instead.";
   return FeaturePromoSpecification(feature, PromoType::kLegacy,
                                    anchor_element_id, body_text_string_id);
+}
+
+// static
+FeaturePromoSpecification FeaturePromoSpecification::CreateForTesting(
+    const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
+    int body_text_string_id,
+    PromoType type,
+    PromoSubtype subtype) {
+  FeaturePromoSpecification result(&feature, type, anchor_element_id,
+                                   body_text_string_id);
+  result.set_promo_subtype_for_testing(subtype);  // IN-TEST
+  return result;
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleTitleText(

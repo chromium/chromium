@@ -686,8 +686,8 @@ TEST_F(BrowserFeaturePromoControllerTest, CancelPromoBeforeStartup) {
 
 TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleAnyContext) {
   registry()->RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &kOneOffIPHFeature, kOneOffIPHElementId, IDS_CHROME_TIP)
+      std::move(FeaturePromoSpecification::CreateForTesting(
+                    kOneOffIPHFeature, kOneOffIPHElementId, IDS_CHROME_TIP)
                     .SetInAnyContext(true)));
 
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kOneOffIPHFeature)))
@@ -721,8 +721,8 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleAnyContext) {
 
 TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleWithFilter) {
   registry()->RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &kOneOffIPHFeature, kOneOffIPHElementId, IDS_CHROME_TIP)
+      std::move(FeaturePromoSpecification::CreateForTesting(
+                    kOneOffIPHFeature, kOneOffIPHElementId, IDS_CHROME_TIP)
                     .SetAnchorElementFilter(base::BindLambdaForTesting(
                         [](const ui::ElementTracker::ElementList& elements) {
                           EXPECT_EQ(2U, elements.size());
@@ -752,8 +752,8 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleWithFilter) {
 TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleWithFilterAnyContext) {
   ui::ElementContext widget_context;
   registry()->RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &kOneOffIPHFeature, kOneOffIPHElementId, IDS_CHROME_TIP)
+      std::move(FeaturePromoSpecification::CreateForTesting(
+                    kOneOffIPHFeature, kOneOffIPHElementId, IDS_CHROME_TIP)
                     .SetInAnyContext(true)
                     .SetAnchorElementFilter(base::BindLambdaForTesting(
                         [&](const ui::ElementTracker::ElementList& elements) {
@@ -1356,8 +1356,8 @@ class BrowserFeaturePromoControllerViewsTest
 
   auto RegisterPromo(int body_string, int title_string = 0) {
     return Do([this, body_string, title_string]() {
-      auto spec = FeaturePromoSpecification::CreateForLegacyPromo(
-          &kStringTestIPHFeature, kToolbarAppMenuButtonElementId, body_string);
+      auto spec = FeaturePromoSpecification::CreateForTesting(
+          kStringTestIPHFeature, kToolbarAppMenuButtonElementId, body_string);
       if (title_string) {
         spec.SetBubbleTitleText(title_string);
       }

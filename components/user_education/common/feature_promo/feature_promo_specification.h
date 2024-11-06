@@ -338,6 +338,15 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
       ui::ElementIdentifier anchor_element_id,
       int body_text_string_id);
 
+  // Creates an arbitrary promo with minimal information for testing purposes.
+  // Use this only for testing low-level User Education infrastructure.
+  static FeaturePromoSpecification CreateForTesting(
+      const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
+      int body_text_string_id,
+      PromoType type = PromoType::kToast,
+      PromoSubtype subtype = PromoSubtype::kNormal);
+
   // Set the optional bubble title. This text appears above the body text in a
   // slightly larger font.
   FeaturePromoSpecification& SetBubbleTitleText(int title_text_string_id);
