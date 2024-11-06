@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -76,6 +77,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
     private BrowsingDataModel mBrowsingDataModel;
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
+    private SnackbarManager mSnackbarManager;
     private PrivacySandboxSnackbarController mPrivacySandboxController;
     private LargeIconBridge mLargeIconBridge;
 
@@ -103,6 +105,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
         snackbarManagerSupplier.onAvailable(
                 (snackbarManager) -> {
+                    mSnackbarManager = snackbarManager;
                     mPrivacySandboxController =
                             new PrivacySandboxSnackbarController(mContext, snackbarManager);
                 });
@@ -294,6 +297,16 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public void revokeFileSystemAccessGrant(String origin, String file) {
         ChromeSiteSettingsDelegateJni.get().revokeFileSystemAccessGrant(mProfile, origin, file);
+        if (mSnackbarManager != null) {
+            Snackbar snackbar =
+                    Snackbar.make(
+                            mContext.getString(
+                                    R.string.website_settings_file_system_revoke_grant_text),
+                            /* controller= */ null,
+                            Snackbar.TYPE_NOTIFICATION,
+                            Snackbar.UMA_REVOKE_FILE_EDIT_GRANT);
+            mSnackbarManager.showSnackbar(snackbar);
+        }
     }
 
     @Override

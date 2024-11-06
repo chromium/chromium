@@ -124,6 +124,7 @@ public class Snackbar {
     public static final int UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS = 69;
     public static final int UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS = 70;
     public static final int UMA_SETTINGS_BATCH_UPLOAD = 71;
+    public static final int UMA_REVOKE_FILE_EDIT_GRANT = 72;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;

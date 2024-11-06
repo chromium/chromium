@@ -31873,6 +31873,7 @@ Called by update_net_error_codes.py.-->
   <int value="69" label="UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS"/>
   <int value="70" label="UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS"/>
   <int value="71" label="UMA_SETTINGS_BATCH_UPLOAD"/>
+  <int value="72" label="UMA_REVOKE_FILE_EDIT_GRANT"/>
 </enum>
 
 <enum name="SnapshotItemId">
