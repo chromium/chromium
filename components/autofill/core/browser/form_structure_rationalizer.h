@@ -86,10 +86,6 @@ class FormStructureRationalizer {
  private:
   friend class FormStructureTestApi;
 
-  // This class wraps a vector of vectors of field indices. The indices of a
-  // vector belong to the same group.
-  class SectionedFieldsIndexes;
-
   // Fine-tunes the credit cards related predictions. For example: lone credit
   // card fields in an otherwise non-credit-card related form is unlikely to be
   // correct, the function will override that prediction.
@@ -129,7 +125,7 @@ class FormStructureRationalizer {
 
   // Set fields_[|field_index|] to |new_type| and log this change.
   void ApplyRationalizationsToFieldAndLog(
-      size_t field_index,
+      AutofillField& field,
       FieldType new_type,
       FormSignature form_signature,
       autofill_metrics::FormInteractionsUkmLogger*
@@ -138,7 +134,7 @@ class FormStructureRationalizer {
   // Two or three fields predicted as the whole address should be address lines
   // 1, 2 and 3 instead.
   void RationalizeAddressLineFields(
-      SectionedFieldsIndexes* sections_of_address_indexes,
+      const std::vector<AutofillField*>& fields,
       FormSignature form_signature,
       autofill_metrics::FormInteractionsUkmLogger*,
       LogManager* log_manager);

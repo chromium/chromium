@@ -209,55 +209,6 @@ void RationalizePhoneNumberFields(std::vector<AutofillField*>& fields) {
 
 }  // namespace
 
-class FormStructureRationalizer::SectionedFieldsIndexes {
- public:
-  SectionedFieldsIndexes() = default;
-  ~SectionedFieldsIndexes() = default;
-
-  size_t LastFieldIndex() const {
-    if (sectioned_indexes_.empty())
-      return std::numeric_limits<size_t>::max();  // Shouldn't happen.
-    return sectioned_indexes_.back().back();
-  }
-
-  void AddFieldIndex(const size_t index, bool is_new_section) {
-    if (is_new_section || Empty()) {
-      sectioned_indexes_.emplace_back();
-    }
-    sectioned_indexes_.back().push_back(index);
-  }
-
-  void WalkForwardToTheNextSection() { current_section_ptr_++; }
-
-  bool IsFinished() const {
-    return current_section_ptr_ >= sectioned_indexes_.size();
-  }
-
-  size_t CurrentIndex() const {
-    return current_section_ptr_ < sectioned_indexes_.size()
-               ? sectioned_indexes_[current_section_ptr_].front()
-               : std::numeric_limits<size_t>::max();
-  }
-
-  const std::vector<size_t>* CurrentSection() const {
-    return current_section_ptr_ < sectioned_indexes_.size()
-               ? &sectioned_indexes_[current_section_ptr_]
-               : nullptr;
-  }
-
-  void Reset() { current_section_ptr_ = 0; }
-
-  bool Empty() const { return sectioned_indexes_.empty(); }
-
- private:
-  // A vector of sections. Each section is a vector of some of the indexes
-  // that belong to the same section. The sections and indexes are sorted by
-  // their order of appearance on the form.
-  std::vector<std::vector<size_t>> sectioned_indexes_;
-  // Points to a vector of indexes that belong to the same section.
-  size_t current_section_ptr_ = 0;
-};
-
 FormStructureRationalizer::FormStructureRationalizer(
     std::vector<std::unique_ptr<AutofillField>>* fields)
     : fields_(*fields) {}
@@ -844,73 +795,38 @@ void FormStructureRationalizer::RationalizePhoneNumbersForFilling() {
 }
 
 void FormStructureRationalizer::ApplyRationalizationsToFieldAndLog(
-    size_t field_index,
+    AutofillField& field,
     FieldType new_type,
     FormSignature form_signature,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  if (field_index >= fields_->size())
-    return;
-  auto old_type = (*fields_)[field_index]->Type().GetStorableType();
-  (*fields_)[field_index]->SetTypeTo(AutofillType(new_type));
+  auto old_type = field.Type().GetStorableType();
+  field.SetTypeTo(AutofillType(new_type));
   if (form_interactions_ukm_logger) {
     form_interactions_ukm_logger->LogRepeatedServerTypePredictionRationalized(
-        form_signature, *(*fields_)[field_index], old_type);
+        form_signature, field, old_type);
   }
 }
 
 void FormStructureRationalizer::RationalizeAddressLineFields(
-    SectionedFieldsIndexes* sections_of_address_indexes,
+    const std::vector<AutofillField*>& fields,
     FormSignature form_signature,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
-  // The rationalization happens within sections.
-  for (sections_of_address_indexes->Reset();
-       !sections_of_address_indexes->IsFinished();
-       sections_of_address_indexes->WalkForwardToTheNextSection()) {
-    auto* current_section = sections_of_address_indexes->CurrentSection();
+  if (fields.size() != 2 && fields.size() != 3) {
+    return;
+  }
 
-    // The rationalization only applies to sections that have 2 or 3 visible
-    // street address predictions.
-    if (!current_section ||
-        (current_section->size() != 2 && current_section->size() != 3)) {
-      continue;
-    }
-
-    int nb_address_rationalized = 0;
-    for (auto field_index : *current_section) {
-      LOG_AF(log_manager)
-          << LoggingScope::kRationalization << LogMessage::kRationalization
-          << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to ";
-      switch (nb_address_rationalized) {
-        case 0:
-          ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE1,
-                                             form_signature,
-                                             form_interactions_ukm_logger);
-          LOG_AF(log_manager)
-              << LoggingScope::kRationalization << LogMessage::kRationalization
-              << "ADDRESS_HOME_LINE1";
-          break;
-        case 1:
-          ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE2,
-                                             form_signature,
-                                             form_interactions_ukm_logger);
-          LOG_AF(log_manager)
-              << LoggingScope::kRationalization << LogMessage::kRationalization
-              << "ADDRESS_HOME_LINE2";
-          break;
-        case 2:
-          ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE3,
-                                             form_signature,
-                                             form_interactions_ukm_logger);
-          LOG_AF(log_manager)
-              << LoggingScope::kRationalization << LogMessage::kRationalization
-              << "ADDRESS_HOME_LINE3";
-          break;
-        default:
-          NOTREACHED();
-      }
-      ++nb_address_rationalized;
-    }
+  constexpr std::array<FieldType, 3> kAddressLineTypes = {
+      ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
+  auto next_type = kAddressLineTypes.begin();
+  for (AutofillField* field : fields) {
+    LOG_AF(log_manager)
+        << LoggingScope::kRationalization << LogMessage::kRationalization
+        << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to "
+        << FieldTypeToString(*next_type);
+    ApplyRationalizationsToFieldAndLog(*field, *next_type, form_signature,
+                                       form_interactions_ukm_logger);
+    ++next_type;
   }
 }
 
@@ -918,39 +834,17 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
     FormSignature form_signature,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
-  // The type of every field whose index is in
-  // sectioned_field_indexes_by_type[|type|] is predicted by server as |type|.
-  // Example: sectioned_field_indexes_by_type[FULL_NAME] is a sectioned fields
-  // indexes of fields whose types are predicted as FULL_NAME by the server.
-  std::array<SectionedFieldsIndexes, MAX_VALID_FIELD_TYPE>
-      sectioned_field_indexes_by_type;
-
-  for (size_t i = 0; i < fields_->size(); ++i) {
-    const AutofillField& field = *(*fields_)[i];
-    // The unfocusable fields are considered invisible and therefore not
-    // considered when rationalizing.
-    if (!field.IsFocusable())
-      continue;
-    // The billing and non-billing types are aggregated.
-    auto current_type = field.Type().GetStorableType();
-
-    if (current_type != UNKNOWN_TYPE && current_type < MAX_VALID_FIELD_TYPE) {
-      // Look at the sectioned field indexes for the current type, if the
-      // current field belongs to that section, then the field index should be
-      // added to that same section, otherwise, start a new section.
-      sectioned_field_indexes_by_type[current_type].AddFieldIndex(
-          i,
-          /*is_new_section*/ sectioned_field_indexes_by_type[current_type]
-                  .Empty() ||
-              (*fields_)[sectioned_field_indexes_by_type[current_type]
-                             .LastFieldIndex()]
-                      ->section() != field.section());
+  std::map<Section, std::vector<AutofillField*>> street_address_fields;
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    if (field->IsFocusable() &&
+        field->Type().GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
+      street_address_fields[field->section()].push_back(field.get());
     }
   }
-
-  RationalizeAddressLineFields(
-      &sectioned_field_indexes_by_type[ADDRESS_HOME_STREET_ADDRESS],
-      form_signature, form_interactions_ukm_logger, log_manager);
+  for (auto& [section, fields] : street_address_fields) {
+    RationalizeAddressLineFields(fields, form_signature,
+                                 form_interactions_ukm_logger, log_manager);
+  }
 }
 
 void FormStructureRationalizer::RationalizeFieldTypePredictions(
