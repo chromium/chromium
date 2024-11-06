@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -58,9 +60,9 @@ public class TabGridDialogShareBottomSheetContent implements BottomSheetContent 
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public @NonNull String getSheetContentDescription(Context context) {
         // TODO(haileywang): Add strings for the sheet.
-        return R.string.undo_bar_close_all_message;
+        return context.getString(R.string.undo_bar_close_all_message);
     }
 
     @Override

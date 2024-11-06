@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.share.page_info_sheet.feedback;
 
+import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
@@ -64,8 +66,8 @@ class FeedbackSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.share_with_summary_feedback_sheet_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.share_with_summary_feedback_sheet_description);
     }
 
     @Override

@@ -354,6 +354,7 @@ robolectric_library("player_junit_java") {
     "//components/browser_ui/styles/android:java",
     "//components/prefs/android:java",
     "//net/android:net_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/androidx:androidx_test_core_java",

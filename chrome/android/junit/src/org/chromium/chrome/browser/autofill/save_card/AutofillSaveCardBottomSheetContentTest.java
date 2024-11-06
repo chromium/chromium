@@ -29,12 +29,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillSaveCardBottomSheetContentTest {
-    private static final String PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING
-        = "robolectric.useRealScrolling";
-
+    private static final String PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING =
+            "robolectric.useRealScrolling";
+    private Activity mActivity;
+    private AutofillSaveCardBottomSheetContent mContent;
     private View mContentView;
     private ScrollView mScrollView;
-    private AutofillSaveCardBottomSheetContent mContent;
     private boolean mIsRealScrollingEnabled;
 
     @Before
@@ -44,9 +44,9 @@ public class AutofillSaveCardBottomSheetContentTest {
         // Disable Robolectric's real scrolling for legacy compatibility.
         // We need to remove it after migrating tests to real scrolling.
         System.setProperty(PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING, "false");
-        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        mContentView = new View(activity);
-        mScrollView = new ScrollView(activity);
+        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mContentView = new View(mActivity);
+        mScrollView = new ScrollView(mActivity);
         mContent = new AutofillSaveCardBottomSheetContent(mContentView, mScrollView);
     }
 
@@ -123,8 +123,9 @@ public class AutofillSaveCardBottomSheetContentTest {
     @Test
     public void testSheetContentDescription() {
         assertEquals(
-                R.string.autofill_save_card_prompt_bottom_sheet_content_description,
-                mContent.getSheetContentDescriptionStringId());
+                mActivity.getString(
+                        R.string.autofill_save_card_prompt_bottom_sheet_content_description),
+                mContent.getSheetContentDescription(mActivity));
     }
 
     @Test

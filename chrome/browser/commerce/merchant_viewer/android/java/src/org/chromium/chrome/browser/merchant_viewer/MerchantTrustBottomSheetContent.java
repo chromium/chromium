@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import android.content.Context;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -101,8 +104,8 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.merchant_viewer_preview_sheet_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.merchant_viewer_preview_sheet_description);
     }
 
     @Override

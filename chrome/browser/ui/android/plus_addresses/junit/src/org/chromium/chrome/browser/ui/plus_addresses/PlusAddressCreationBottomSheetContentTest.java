@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_LOADING_VIEW_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 
+import android.content.Context;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.Button;
@@ -267,9 +268,10 @@ public class PlusAddressCreationBottomSheetContentTest {
         assertEquals(mView.getPeekHeight(), HeightMode.DISABLED);
         assertEquals(mView.getHalfHeightRatio(), HeightMode.DISABLED, 0.1);
         assertEquals(mView.getFullHeightRatio(), HeightMode.WRAP_CONTENT, 0.1);
+        Context context = mView.getContentView().getContext();
         assertEquals(
-                mView.getSheetContentDescriptionStringId(),
-                R.string.plus_address_bottom_sheet_content_description);
+                mView.getSheetContentDescription(context),
+                context.getString(R.string.plus_address_bottom_sheet_content_description));
         assertEquals(
                 mView.getSheetFullHeightAccessibilityStringId(),
                 R.string.plus_address_bottom_sheet_content_description);

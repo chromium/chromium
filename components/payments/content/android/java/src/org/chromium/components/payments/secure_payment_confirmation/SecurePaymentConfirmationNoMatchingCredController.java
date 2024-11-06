@@ -6,6 +6,7 @@ package org.chromium.components.payments.secure_payment_confirmation;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -98,9 +99,10 @@ public class SecurePaymentConfirmationNoMatchingCredController {
                 }
 
                 @Override
-                public int getSheetContentDescriptionStringId() {
-                    return R.string
-                            .secure_payment_confirmation_no_matching_credential_sheet_description;
+                public @NonNull String getSheetContentDescription(Context context) {
+                    return context.getString(
+                            R.string
+                                    .secure_payment_confirmation_no_matching_credential_sheet_description);
                 }
 
                 @Override

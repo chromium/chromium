@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.price_insights;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
@@ -71,8 +73,8 @@ public class PriceInsightsBottomSheetContent implements BottomSheetContent {
     public void destroy() {}
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.price_insights_bottom_sheet_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.price_insights_bottom_sheet_content_description);
     }
 
     @Override

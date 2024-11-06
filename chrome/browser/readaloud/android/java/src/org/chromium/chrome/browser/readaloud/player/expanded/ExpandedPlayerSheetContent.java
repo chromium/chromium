@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -338,10 +339,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public @NonNull String getSheetContentDescription(Context context) {
         // "'Listen to this page' player."
         // Automatically appended: "Swipe down to close."
-        return R.string.readaloud_player_name;
+        return context.getString(R.string.readaloud_player_name);
     }
 
     @Override

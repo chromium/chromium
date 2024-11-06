@@ -1037,9 +1037,7 @@ class BottomSheet extends FrameLayout
             setFocusable(true);
             setFocusableInTouchMode(true);
             String contentDescription =
-                    getResources()
-                            .getString(
-                                    getCurrentSheetContent().getSheetContentDescriptionStringId());
+                    getCurrentSheetContent().getSheetContentDescription(getContext());
 
             if (getCurrentSheetContent().swipeToDismissEnabled()) {
                 contentDescription +=

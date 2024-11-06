@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
@@ -223,8 +224,8 @@ public class TestBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return android.R.string.copy;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(android.R.string.copy);
     }
 
     @Override

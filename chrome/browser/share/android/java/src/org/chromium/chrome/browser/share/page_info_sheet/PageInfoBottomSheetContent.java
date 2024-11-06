@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.share.page_info_sheet;
 
+import android.content.Context;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -64,8 +67,8 @@ class PageInfoBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.share_with_summary_sheet_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.share_with_summary_sheet_description);
     }
 
     @Override

@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -97,8 +99,8 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.privacy_guide_explanation_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.privacy_guide_explanation_content_description);
     }
 
     @Override

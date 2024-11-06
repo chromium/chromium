@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.grouped_affiliations;
 
+import android.content.Context;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -114,9 +116,9 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public @NonNull String getSheetContentDescription(Context context) {
         // TODO(crbug.com/372635361): Append web site to the title.
-        return R.string.ack_grouped_cred_sheet_title;
+        return context.getString(R.string.ack_grouped_cred_sheet_title);
     }
 
     @Override

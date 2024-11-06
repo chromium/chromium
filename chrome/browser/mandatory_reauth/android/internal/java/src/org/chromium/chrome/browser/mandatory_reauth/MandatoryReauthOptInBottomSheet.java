@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.components.autofill.PaymentsUiClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -86,8 +88,8 @@ class MandatoryReauthOptInBottomSheet implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.autofill_mandatory_reauth_opt_in_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.autofill_mandatory_reauth_opt_in_content_description);
     }
 
     @Override

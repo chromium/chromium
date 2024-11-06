@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -54,9 +56,7 @@ class SpeedMenuSheetContent extends SingleMenuSheetContent {
 
     // BottomSheetContent
     @Override
-    public int getSheetContentDescriptionStringId() {
-        // "Speed menu"
-        // Automatically appended: "Swipe down to close."
-        return R.string.readaloud_speed_menu_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.readaloud_speed_menu_description);
     }
 }

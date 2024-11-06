@@ -89,8 +89,11 @@ public class AutofillSaveIbanBottomSheetContentTest {
     @Test
     public void testBottomSheetAccessibilityContentDescription() {
         assertThat(
-                mContent.getSheetContentDescriptionStringId(),
-                equalTo(R.string.autofill_save_iban_prompt_bottom_sheet_content_description));
+                mContent.getSheetContentDescription(mActivity),
+                equalTo(
+                        mActivity.getString(
+                                R.string
+                                        .autofill_save_iban_prompt_bottom_sheet_content_description)));
     }
 
     @Test

@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -292,9 +293,9 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public @NonNull String getSheetContentDescription(Context context) {
         // TODO(crbug.com/40276862): Replace with final version.
-        return R.string.plus_address_bottom_sheet_content_description;
+        return context.getString(R.string.plus_address_bottom_sheet_content_description);
     }
 
     @Override
