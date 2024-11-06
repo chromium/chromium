@@ -71,10 +71,12 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/grit/components_resources.h"
 #import "components/plus_addresses/features.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -85,6 +87,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "third_party/abseil-cpp/absl/types/variant.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/geometry/rect.h"
 #import "ui/gfx/image/image.h"
@@ -717,6 +720,22 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
 - (bool)isLastQueriedField:(FieldGlobalId)fieldID {
   return fieldID == _lastQueriedFieldID;
+}
+
+- (void)showPlusAddressEmailOverrideNotification:
+    (base::OnceClosure)emailOverrideUndoCallback {
+  CHECK(self.snackbarHandler);
+
+  [self.snackbarHandler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(
+              IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_IOS)
+                   buttonText:
+                       l10n_util::GetNSString(
+                           IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_ACTION_TEXT_IOS)
+                messageAction:base::CallbackToBlock(
+                                  std::move(emailOverrideUndoCallback))
+             completionAction:nil];
 }
 
 #pragma mark - CRWWebStateObserver

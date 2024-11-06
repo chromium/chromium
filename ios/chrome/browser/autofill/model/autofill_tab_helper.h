@@ -16,6 +16,7 @@
 @protocol AutofillCommands;
 @protocol FormSuggestionProvider;
 class ProfileIOS;
+@protocol SnackbarCommands;
 @class UIViewController;
 
 namespace autofill {
@@ -35,7 +36,8 @@ class AutofillTabHelper : public web::WebStateObserver,
   // Sets a weak reference to the view controller used to present UI.
   void SetBaseViewController(UIViewController* base_view_controller);
 
-  void SetCommandsHandler(id<AutofillCommands> commands_handler);
+  void SetAutofillHandler(id<AutofillCommands> autofill_handler);
+  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
   // Returns an object that can provide Autofill suggestions.
   id<FormSuggestionProvider> GetSuggestionProvider();

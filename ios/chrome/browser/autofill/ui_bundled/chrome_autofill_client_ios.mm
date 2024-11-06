@@ -316,8 +316,8 @@ ChromeAutofillClientIOS::ShowAutofillSuggestions(
 void ChromeAutofillClientIOS::ShowPlusAddressEmailOverrideNotification(
     const std::string& original_email,
     EmailOverrideUndoCallback email_override_undo_callback) {
-  // TODO(crbug.com/324557053): Implement.
-  NOTIMPLEMENTED();
+  [bridge_ showPlusAddressEmailOverrideNotification:
+               std::move(email_override_undo_callback)];
 }
 
 AutofillPlusAddressDelegate* ChromeAutofillClientIOS::GetPlusAddressDelegate() {

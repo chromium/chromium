@@ -337,6 +337,11 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   return [_autofillAgent isLastQueriedField:fieldId];
 }
 
+- (void)showPlusAddressEmailOverrideNotification:
+    (base::OnceClosure)emailOverrideUndoCallback {
+  NOTIMPLEMENTED();
+}
+
 - (void)
     confirmSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard
                legalMessageLines:(autofill::LegalMessageLines)legalMessageLines

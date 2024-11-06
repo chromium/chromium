@@ -436,6 +436,14 @@ if we want to translate this file.
         <message name="IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS" desc="The confirmation button displayed in the alert view that retries the previous failed action." translateable="false">
           Try again
         </message>
+
+        <!-- Snackbar strings -->
+        <message name="IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_IOS" desc="The text displayed on the snackbar at the bottom of the screen. The snackbar is shown when the user's plus address was filled instead of a regular email." translateable="false">
+          Chrome filled your plus address for this site
+        </message>
+        <message name="IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_ACTION_TEXT_IOS" desc="The text displayed on the snackbar at the bottom of the screen. The snackbar is shown when the user's plus address was filled instead of a regular email." translateable="false">
+          Undo
+        </message>
       </if>
 
       <!-- Desktop strings -->
