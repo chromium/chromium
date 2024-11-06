@@ -39,6 +39,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
     const std::string& metadata,
     const base::FilePath& path,
     uint64_t file_size,
+    bool is_obfuscated,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : base_url_(base_url),
@@ -46,6 +47,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
       data_source_(FILE),
       path_(path),
       data_size_(file_size),
+      is_obfuscated_(is_obfuscated),
       callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {

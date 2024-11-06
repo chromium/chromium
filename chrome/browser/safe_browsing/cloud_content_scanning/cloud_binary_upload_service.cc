@@ -477,10 +477,12 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
         enterprise_connectors::IsResumableUpload(*request)
             ? ResumableUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, result, data.path,
-                  data.size, std::move(traffic_annotation), std::move(callback))
+                  data.size, data.is_obfuscated, std::move(traffic_annotation),
+                  std::move(callback))
             : MultipartUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, data.path, data.size,
-                  std::move(traffic_annotation), std::move(callback));
+                  data.is_obfuscated, std::move(traffic_annotation),
+                  std::move(callback));
 
   } else if (data.page.IsValid()) {
     upload_request =

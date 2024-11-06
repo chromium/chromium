@@ -82,6 +82,7 @@ class MockMultipartUploadDataPipeRequest : public MultipartUploadRequest {
                                "metadata",
                                path,
                                123,
+                               false,
                                TRAFFIC_ANNOTATION_FOR_TESTS,
                                std::move(callback)) {}
 
@@ -369,7 +370,7 @@ TEST_F(MultipartUploadRequestTest, GeneratesCorrectHeaders_FileRequest) {
 
   auto connector_request = MultipartUploadRequest::CreateFileRequest(
       nullptr, GURL(), "metadata", CreateFile("my_file_name.foo", "file_data"),
-      9, TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+      9, false, TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
   auto* request = static_cast<MultipartUploadRequest*>(connector_request.get());
 
   request->SetRequestHeaders(&resource_request);

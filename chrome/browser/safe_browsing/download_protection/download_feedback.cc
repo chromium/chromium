@@ -167,7 +167,7 @@ void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
 
   uploader_ = MultipartUploadRequest::CreateFileRequest(
       url_loader_factory_, GURL(kSbFeedbackURL), metadata_string, file_path_,
-      file_size_, traffic_annotation,
+      file_size_, false, traffic_annotation,
       base::BindOnce(&DownloadFeedbackImpl::FinishedUpload,
                      base::Unretained(this), std::move(finish_callback)));
   uploader_->Start();

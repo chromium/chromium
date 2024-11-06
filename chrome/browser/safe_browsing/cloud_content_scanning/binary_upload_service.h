@@ -131,6 +131,9 @@ class BinaryUploadService : public KeyedService {
 
       // The page's content. Only populated for page requests.
       base::ReadOnlySharedMemoryRegion page;
+
+      // Whether the file has been obfuscated. Only populated for file requests.
+      bool is_obfuscated = false;
     };
 
     // Aynchronously returns the data required to make a MultipartUploadRequest.

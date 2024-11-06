@@ -43,6 +43,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const std::string& metadata,
       const base::FilePath& path,
       uint64_t file_size,
+      bool is_obfuscated,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -83,6 +84,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const std::string& metadata,
       const base::FilePath& file,
       uint64_t file_size,
+      bool is_obfuscated,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
@@ -156,6 +158,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
   base::Time start_time_;
 
   bool scan_complete_ = false;
+
+  bool is_obfuscated_ = false;
 
   base::WeakPtrFactory<MultipartUploadRequest> weak_factory_{this};
 };

@@ -132,6 +132,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       BinaryUploadService::Result get_data_result,
       const base::FilePath& path,
       uint64_t file_size,
+      bool is_obfuscated,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeConnectorUploadRequest>(
