@@ -52,8 +52,8 @@ wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
 
 # Flaky failure after enable swiftshader on headless shell
-crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-063-print.html [ Pass Failure ]
-crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-064-print.html [ Pass Failure ]
+crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-063-print.html [ Failure Pass ]
+crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-064-print.html [ Failure Pass ]
 
 # Times out
 http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]

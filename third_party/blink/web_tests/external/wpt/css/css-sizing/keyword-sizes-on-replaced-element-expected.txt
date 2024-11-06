@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] .test 59
+  assert_equals: \n<canvas width="100" height="100" class="test min-height stretch indefinite" data-expected-width="110" data-expected-height="110"></canvas>\nwidth expected 110 but got 10
+[FAIL] .test 60
+  assert_equals: \n<canvas width="100" height="100" class="test max-height stretch indefinite" data-expected-width="110" data-expected-height="110"></canvas>\nwidth expected 110 but got 510
+Harness: the test ran to completion.
+
