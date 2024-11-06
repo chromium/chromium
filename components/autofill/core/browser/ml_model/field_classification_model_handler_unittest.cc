@@ -39,8 +39,8 @@ using optimization_guide::proto::
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
 // and FieldType respectively.
 MATCHER(MlTypeEq, "") {
-  return std::get<0>(arg)->heuristic_type(HeuristicSource::kMachineLearning) ==
-         std::get<1>(arg);
+  return std::get<0>(arg)->heuristic_type(
+             HeuristicSource::kAutofillMachineLearning) == std::get<1>(arg);
 }
 
 class FieldClassificationModelHandlerTest : public testing::Test {

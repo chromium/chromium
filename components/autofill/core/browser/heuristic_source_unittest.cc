@@ -17,9 +17,9 @@ namespace autofill {
 //
 // Currently, the available heuristic sources are the ML model and regexes.
 // If the model predictions are disabled, then only regexes are used. If model
-// predictions are enabled, `kMachineLearning` is also considered. Depending on
-// `kAutofillModelPredictionsAreActive`, use  `kMachineLearning`
-// as the active heuristic source.
+// predictions are enabled, `kAutofillMachineLearning` is also considered.
+// Depending on `kAutofillModelPredictionsAreActive`, use
+// `kAutofillMachineLearning` as the active heuristic source.
 
 struct HeuristicSourceParams {
   std::optional<bool> model_predictions_feature;
@@ -72,17 +72,17 @@ INSTANTIATE_TEST_SUITE_P(
         HeuristicSourceParams{
             .expected_active_source = HeuristicSource::kLegacyRegexes},
 
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .expected_active_source = HeuristicSource::kMachineLearning},
+        HeuristicSourceParams{.model_predictions_feature = true,
+                              .expected_active_source =
+                                  HeuristicSource::kAutofillMachineLearning},
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
             .expected_active_source = HeuristicSource::kLegacyRegexes}
 #else
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .expected_active_source = HeuristicSource::kMachineLearning},
+        HeuristicSourceParams{.model_predictions_feature = true,
+                              .expected_active_source =
+                                  HeuristicSource::kAutofillMachineLearning},
 
         HeuristicSourceParams{
             .model_predictions_feature = false,

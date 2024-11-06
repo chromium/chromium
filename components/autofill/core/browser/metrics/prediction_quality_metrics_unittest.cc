@@ -72,7 +72,7 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
   for (size_t i = 0; i < heuristic_types.size(); ++i) {
     all_heuristic_types.push_back(
         {{GetActiveHeuristicSource(), heuristic_types[i]},
-         {HeuristicSource::kMachineLearning, ml_types[i]}});
+         {HeuristicSource::kAutofillMachineLearning, ml_types[i]}});
   }
 
   autofill_manager().AddSeenForm(test::WithoutValues(form), all_heuristic_types,
@@ -106,7 +106,7 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
   // Quality metrics for ".ML" are only recorded if the ML predictions are
   // computed but not the active heuristic source.
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
-      GetActiveHeuristicSource() != HeuristicSource::kMachineLearning) {
+      GetActiveHeuristicSource() != HeuristicSource::kAutofillMachineLearning) {
     sources.push_back("ML");
   }
 #endif

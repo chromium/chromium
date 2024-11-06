@@ -375,7 +375,8 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
           // UKM logging.
           break;
 #endif
-        case HeuristicSource::kMachineLearning:
+        case HeuristicSource::kAutofillMachineLearning:
+        case HeuristicSource::kPasswordManagerMachineLearning:
           NOTREACHED();
       }
 

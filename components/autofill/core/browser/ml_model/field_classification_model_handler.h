@@ -41,12 +41,11 @@ class FieldClassificationModelHandler
   ~FieldClassificationModelHandler() override;
 
   // This function asynchronously queries predictions for the `form_structure`
-  // from the model and sets the model predictions with the FormStructure
-  // using `HeuristicSource::kMachineLearning`. Once done, the `callback` is
-  // triggered on the UI sequence and returns the `form_structure`.
-  // If `form_structure` has more than `maximum_number_of_fields` (see model
-  // metadata) fields, it sets predictions for the first
-  // `maximum_number_of_fields` fields in the form.
+  // from the model and sets the model predictions in the FormStructure's fields
+  // as heurstic type values. Once done, the `callback` is triggered on the UI
+  // sequence and returns the `form_structure`. If `form_structure` has more
+  // than `maximum_number_of_fields` (see model metadata) fields, it sets
+  // predictions for the first `maximum_number_of_fields` fields in the form.
   void GetModelPredictionsForForm(
       std::unique_ptr<FormStructure> form_structure,
       base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback);

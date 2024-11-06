@@ -176,7 +176,8 @@ void LogPredictionMetrics(
     // as these would be redundant to the ".Heuristic" sub-metric of
     // `LogHeuristicPredictionQualityMetrics()`.
     if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
-        GetActiveHeuristicSource() != HeuristicSource::kMachineLearning) {
+        GetActiveHeuristicSource() !=
+            HeuristicSource::kAutofillMachineLearning) {
       LogMlPredictionQualityMetrics(form_interactions_ukm_logger, form, *field,
                                     metric_type);
     }

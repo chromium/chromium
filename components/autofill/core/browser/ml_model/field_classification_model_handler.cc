@@ -54,6 +54,20 @@ bool AllFieldsClassifiedWithConfidence(
   return true;
 }
 
+HeuristicSource GetHeuristicSource(
+    optimization_guide::proto::OptimizationTarget optimization_target) {
+  switch (optimization_target) {
+    case optimization_guide::proto::OptimizationTarget::
+        OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION:
+      return HeuristicSource::kAutofillMachineLearning;
+    case optimization_guide::proto::OptimizationTarget::
+        OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
+      return HeuristicSource::kPasswordManagerMachineLearning;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // anonymous namespace
 
 FieldClassificationModelHandler::FieldClassificationModelHandler(
@@ -151,8 +165,9 @@ void FieldClassificationModelHandler::AssignMostLikelyTypes(
   // The ML model can process at most
   // `FieldClassificationModelEncoder::kModelMaxNumberOfFields`.
   size_t relevant_fields = std::min(form.field_count(), output.size());
+  HeuristicSource heuristic_source = GetHeuristicSource(optimization_target_);
   for (size_t i = 0; i < relevant_fields; i++) {
-    form.field(i)->set_heuristic_type(HeuristicSource::kMachineLearning,
+    form.field(i)->set_heuristic_type(heuristic_source,
                                       GetMostLikelyType(output[i]));
   }
 }

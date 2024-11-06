@@ -716,7 +716,7 @@ void LogMlPredictionQualityMetrics(
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_ML_PREDICTIONS,
-      field.heuristic_type(HeuristicSource::kMachineLearning),
+      field.heuristic_type(HeuristicSource::kAutofillMachineLearning),
       form_interactions_ukm_logger, form, field, metric_type,
       /*log_rationalization_metrics=*/false);
 }

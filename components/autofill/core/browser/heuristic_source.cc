@@ -18,7 +18,7 @@ HeuristicSource GetActiveHeuristicSource() {
     static bool model_predictions_active =
         features::kAutofillModelPredictionsAreActive.Get();
     if (model_predictions_active) {
-      return HeuristicSource::kMachineLearning;
+      return HeuristicSource::kAutofillMachineLearning;
     }
   }
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
@@ -44,7 +44,8 @@ std::optional<PatternFile> HeuristicSourceToPatternFile(
     case HeuristicSource::kPredictionImprovementRegexes:
       return PatternFile::kPredictionImprovements;
 #endif
-    case autofill::HeuristicSource::kMachineLearning:
+    case autofill::HeuristicSource::kAutofillMachineLearning:
+    case HeuristicSource::kPasswordManagerMachineLearning:
       return std::nullopt;
   }
   NOTREACHED();
