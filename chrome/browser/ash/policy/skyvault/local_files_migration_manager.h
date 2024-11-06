@@ -185,6 +185,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Timer for delaying the start of migration and showing dialogs.
   std::unique_ptr<base::WallClockTimer> scheduling_timer_;
 
+  // Number of times the entire upload failed and was retried.
+  int current_retry_count_;
+
   base::WeakPtrFactory<LocalFilesMigrationManager> weak_factory_{this};
 };
 

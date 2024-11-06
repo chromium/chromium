@@ -3024,6 +3024,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SkyVault.Migration.Retry" units="count"
+    expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration of local files is retried after some
+    non-fatal errors.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SkyVault.Migration.WriteAccessError" enum="Boolean"
     expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>

@@ -24,6 +24,7 @@ void SkyVaultMigrationEnabledHistogram(CloudProvider provider, bool value);
 void SkyVaultMigrationMisconfiguredHistogram(CloudProvider provider,
                                              bool value);
 void SkyVaultMigrationResetHistogram(bool value);
+void SkyVaultMigrationRetryHistogram(int count);
 void SkyVaultMigrationStoppedHistogram(CloudProvider provider, bool value);
 void SkyVaultMigrationWrongStateHistogram(CloudProvider provider,
                                           StateErrorContext context,

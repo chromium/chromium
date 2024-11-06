@@ -19,6 +19,9 @@ constexpr base::TimeDelta kFinalMigrationTimeout = base::Hours(1);
 // unique identifier of the device to form the directory's full name.
 inline constexpr char kUploadRootPrefix[] = "ChromeOS device";
 
+// The maximum number of retries before failing the migration.
+inline constexpr int kMaxRetryCount = 5;
+
 }  // namespace policy::local_user_files
 
 #endif  // CHROME_BROWSER_POLICY_LOCAL_USER_FILES_LOCAL_FILES_MIGRATION_CONSTANTS_H_

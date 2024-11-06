@@ -28,7 +28,7 @@ MockMigrationCoordinator::MockMigrationCoordinator(Profile* profile)
                             MigrationDoneCallback callback) {
         is_running_ = true;
         if (run_cb_) {
-          std::move(run_cb_).Run();
+          run_cb_.Run();
           return;
         }
         // Simulate upload lasting a while.
@@ -61,7 +61,7 @@ void MockMigrationCoordinator::OnMigrationDone(
   }
 }
 
-void MockMigrationCoordinator::SetRunCallback(base::OnceClosure run_cb) {
+void MockMigrationCoordinator::SetRunCallback(base::RepeatingClosure run_cb) {
   CHECK(run_cb);
   run_cb_ = std::move(run_cb);
 }

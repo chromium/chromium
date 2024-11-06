@@ -80,12 +80,12 @@ class MockMigrationCoordinator : public MigrationCoordinator {
   MOCK_METHOD(void, Cancel, (), (override));
 
   // Sets a callback to be invoked when Run() is called.
-  void SetRunCallback(base::OnceClosure run_cb);
+  void SetRunCallback(base::RepeatingClosure run_cb);
 
  private:
   bool is_running_ = false;
   // If set, invoked when Run() is.
-  base::OnceClosure run_cb_;
+  base::RepeatingClosure run_cb_;
 
   base::WeakPtrFactory<MockMigrationCoordinator> weak_ptr_factory_{this};
 };

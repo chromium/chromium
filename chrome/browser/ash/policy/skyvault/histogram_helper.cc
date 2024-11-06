@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 
 namespace policy::local_user_files {
@@ -30,6 +31,7 @@ constexpr char kLocalStorageMisconfiguredSuffix[] =
 constexpr char kMigrationEnabledSuffix[] = "Enabled";
 constexpr char kMigrationMisconfiguredSuffix[] = "Misconfigured";
 constexpr char kMigrationResetSuffix[] = "Reset";
+constexpr char kMigrationRetrySuffix[] = "Retry";
 constexpr char kMigrationStoppedSuffix[] = "Stopped";
 constexpr char kMigrationStateErrorContextSuffix[] = "StateErrorContext";
 constexpr char kMigrationWrongStateSuffix[] = "WrongState";
@@ -133,6 +135,12 @@ void SkyVaultMigrationResetHistogram(bool value) {
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationResetSuffix, UploadTrigger::kMigration),
       value);
+}
+
+void SkyVaultMigrationRetryHistogram(int count) {
+  base::UmaHistogramCustomCounts(
+      GetHistogramName(kMigrationRetrySuffix, UploadTrigger::kMigration), count,
+      1, kMaxRetryCount, kMaxRetryCount);
 }
 
 void SkyVaultMigrationStoppedHistogram(CloudProvider provider, bool value) {

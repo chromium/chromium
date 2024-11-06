@@ -145,6 +145,26 @@ void LocalStorageHistograms(Profile* profile, bool local_user_files_allowed) {
   }
 }
 
+// Whether the migration process should end with an error: either the max
+// retries are reached, or there are non-retryable errors like running out of
+// space on the cloud.
+bool ShouldFail(const std::map<base::FilePath, MigrationUploadError> errors,
+                int current_retry_count) {
+  DCHECK(!errors.empty());
+
+  if (current_retry_count > kMaxRetryCount) {
+    return true;
+  }
+
+  // Check if there are non-retryable errors.
+  for (const auto& error : errors) {
+    if (error.second == MigrationUploadError::kCloudQuotaFull) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
@@ -172,16 +192,28 @@ void LocalFilesMigrationManager::Initialize() {
 
   VLOG(1) << "Loaded migration state: " << StateToString(state_);
 
+  current_retry_count_ =
+      pref_service->GetInteger(prefs::kSkyVaultMigrationRetryCount);
+  VLOG(1) << "Loaded retry count: " << current_retry_count_;
+  if (current_retry_count_ > kMaxRetryCount) {
+    // Loaded state should be kFailed, but set it explicitly just in case.
+    VLOG(1) << "Max retry count reached, setting state to failure";
+    SetState(State::kFailure);
+  }
+
   local_user_files_allowed_ = LocalUserFilesAllowed();
   cloud_provider_ = GetMigrationDestination();
 
   LocalStorageHistograms(profile, local_user_files_allowed_);
 
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
-    // Migration is now disabled, reset the state.
+    // Migration is now disabled, reset the state and failure count.
     if (state_ != State::kUninitialized) {
-      LOG(WARNING) << "Migration disabled - resetting the state";
+      LOG(WARNING) << "Migration disabled: resetting the state and retry count";
       SetState(State::kUninitialized);
+      current_retry_count_ = 0;
+      Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
+          prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
       SkyVaultMigrationResetHistogram(true);
     }
     return;
@@ -474,24 +506,35 @@ void LocalFilesMigrationManager::OnMigrationDone(
     return;
   }
 
-  SkyVaultMigrationFailedHistogram(cloud_provider_, !errors.empty());
+  if (errors.empty()) {
+    for (auto& observer : observers_) {
+      observer.OnMigrationSucceeded();
+    }
+    notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
+                                                              upload_root_path);
+    VLOG(1) << "Local files migration done";
+    SkyVaultMigrationFailedHistogram(cloud_provider_, false);
 
-  if (!errors.empty()) {
+    SetState(State::kCleanup);
+    CleanupLocalFiles();
+    return;
+  }
+
+  bool failed = ShouldFail(errors, ++current_retry_count_);
+  Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
+      prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
+
+  if (failed) {
+    SkyVaultMigrationFailedHistogram(cloud_provider_, true);
     SetState(State::kFailure);
     LOG(ERROR) << "Local files migration failed.";
     ProcessErrors(std::move(errors), error_log_path);
     return;
   }
-
-  for (auto& observer : observers_) {
-    observer.OnMigrationSucceeded();
-  }
-  notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
-                                                            upload_root_path);
-  VLOG(1) << "Local files migration done";
-
-  SetState(State::kCleanup);
-  CleanupLocalFiles();
+  // Retry
+  SkyVaultMigrationRetryHistogram(current_retry_count_);
+  SetState(State::kInProgress);
+  GetPathsToUpload();
 }
 
 void LocalFilesMigrationManager::ProcessErrors(
@@ -590,6 +633,9 @@ void LocalFilesMigrationManager::MaybeStopMigration(
     SkyVaultMigrationStoppedHistogram(previous_provider, true);
   }
   SetState(State::kUninitialized);
+  current_retry_count_ = 0;
+  Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
+      prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
 }
 
 void LocalFilesMigrationManager::SetState(State new_state) {

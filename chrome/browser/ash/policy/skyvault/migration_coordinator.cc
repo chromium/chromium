@@ -54,6 +54,11 @@ base::FilePath GetPathRelativeToMyFiles(Profile* profile,
   return rel_path;
 }
 
+bool ErrorCanBeIgnored(MigrationUploadError error) {
+  return error == MigrationUploadError::kDeleteFailed ||
+         error == MigrationUploadError::kFileNotFound;
+}
+
 std::string FormatErrorMessage(CloudProvider provider,
                                MigrationUploadError error) {
   switch (error) {
@@ -280,9 +285,7 @@ void OneDriveMigrationUploader::OnUploadDone(
     return;
   }
 
-  // If we only failed to delete the file, don't fail the entire migration
-  // because of it.
-  if (error != MigrationUploadError::kDeleteFailed) {
+  if (!ErrorCanBeIgnored(error.value())) {
     errors_.insert({file_path, error.value()});
   }
 
@@ -383,9 +386,7 @@ void GoogleDriveMigrationUploader::OnUploadDone(
     return;
   }
 
-  // If we only failed to delete the file, don't fail the entire migration
-  // because of it.
-  if (error != MigrationUploadError::kDeleteFailed) {
+  if (!ErrorCanBeIgnored(error.value())) {
     errors_.insert({file_path, error.value()});
   }
 
