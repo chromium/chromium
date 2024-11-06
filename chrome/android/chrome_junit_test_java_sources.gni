@@ -340,6 +340,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/searchwidget/SearchActivityTabDelegateFactoryUnitTest.java",
   "junit/src/org/chromium/chrome/browser/searchwidget/SearchActivityUnitTest.java",
   "junit/src/org/chromium/chrome/browser/searchwidget/SearchActivityUtilsUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/searchwidget/WidgetMetricsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/settings/SettingsActivityUnitTest.java",
   "junit/src/org/chromium/chrome/browser/share/LensUtilsTest.java",
   "junit/src/org/chromium/chrome/browser/share/ShareButtonControllerUnitTest.java",
