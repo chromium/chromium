@@ -20,6 +20,7 @@ using testing::_;
 using testing::AllOf;
 using testing::Eq;
 using testing::Field;
+using testing::IsNull;
 using testing::Optional;
 using testing::Pointee;
 using testing::SizeIs;
@@ -631,6 +632,36 @@ TEST(FocusModeTasksModelTest, NewTaskThenRequest) {
   // All tasks are requested.
   EXPECT_CALL(delegate, FetchTasks);
   model.RequestUpdate();
+}
+
+// Verify that pending selected tasks are removed from the model when it is
+// cleared to prevent having multiple pending tasks (crbug.com/368118881).
+TEST(FocusModeTasksModelTest, NewTaskThenClear) {
+  FocusModeTasksModel model;
+
+  FakeDelegate delegate;
+  model.SetDelegate(delegate.AsWeakPtr());
+
+  EXPECT_THAT(model.tasks(), SizeIs(0));
+
+  // Add the new task.
+  EXPECT_CALL(delegate, AddTask);
+  model.UpdateTask(
+      FocusModeTasksModel::TaskUpdate::NewTask("This is a new task"));
+
+  // The new task is added to the list immediately.
+  EXPECT_THAT(model.tasks(), SizeIs(1));
+
+  // Verify that the selected task is still pending.
+  EXPECT_THAT(model.selected_task()->task_id.pending, Eq(true));
+  EXPECT_TRUE(model.PendingTaskForTesting());
+
+  // Clear the selected task while it is still pending and verify that this
+  // removes the task from the model.
+  model.ClearSelectedTask();
+  EXPECT_THAT(model.selected_task(), IsNull());
+  EXPECT_THAT(model.PendingTaskForTesting(), IsNull());
+  EXPECT_THAT(model.tasks(), SizeIs(0));
 }
 
 }  // namespace

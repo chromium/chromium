@@ -184,6 +184,17 @@ void FocusModeTasksModel::ClearSelectedTask() {
     selected_task_ = nullptr;
     NotifySelectedTask(observers_, nullptr);
   }
+
+  // If there is still a pending task, we clear it and also remove it from
+  // `tasks_` in order to prevent potentially having multiple pending tasks.
+  if (pending_task_) {
+    auto iter = base::ranges::find(tasks_, pending_task_->task_id,
+                                   &FocusModeTask::task_id);
+    CHECK(iter != tasks_.end());
+    pending_task_ = nullptr;
+    tasks_.erase(iter);
+    NotifyTaskListChanged(observers_, tasks_);
+  }
 }
 
 void FocusModeTasksModel::Reset() {
@@ -329,6 +340,10 @@ const std::vector<FocusModeTask>& FocusModeTasksModel::tasks() const {
 
 const FocusModeTask* FocusModeTasksModel::selected_task() const {
   return selected_task_;
+}
+
+const FocusModeTask* FocusModeTasksModel::PendingTaskForTesting() const {
+  return pending_task_;
 }
 
 const TaskId& FocusModeTasksModel::PrefTaskIdForTesting() const {
