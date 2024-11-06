@@ -183,8 +183,8 @@ void CommonControllerBuilder::SetAutofillWebDataService(
     const scoped_refptr<autofill::AutofillWebDataService>&
         web_data_service_in_memory) {
   autofill_web_data_ui_thread_.Set(ui_thread);
-  autofill_web_data_service_on_disk_.Set(web_data_service_on_disk);
-  autofill_web_data_service_in_memory_.Set(web_data_service_in_memory);
+  profile_autofill_web_data_service_.Set(web_data_service_on_disk);
+  account_autofill_web_data_service_.Set(web_data_service_in_memory);
 }
 
 void CommonControllerBuilder::SetBookmarkModel(
@@ -357,17 +357,17 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
           device_info_sync_service_.value()->GetControllerDelegate().get())));
 
   // These features are enabled only if there's a web data service on disk.
-  if (autofill_web_data_service_on_disk_.value()) {
+  if (profile_autofill_web_data_service_.value()) {
     if (!disabled_types.Has(syncer::AUTOFILL)) {
       // Note: Transport mode is not and will not be supported.
       controllers.push_back(std::make_unique<DataTypeController>(
           syncer::AUTOFILL,
           std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-              autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
+              profile_autofill_web_data_service_.value()->GetDBTaskRunner(),
               base::BindRepeating(
                   &AutocompleteDelegateFromDataService,
                   base::RetainedRef(
-                      autofill_web_data_service_on_disk_.value()))),
+                      profile_autofill_web_data_service_.value()))),
           /*delegate_for_transport_mode=*/nullptr));
     }
 
@@ -377,11 +377,11 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
       controllers.push_back(std::make_unique<syncer::DataTypeController>(
           syncer::AUTOFILL_PROFILE,
           std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-              autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
+              profile_autofill_web_data_service_.value()->GetDBTaskRunner(),
               base::BindRepeating(
                   &AutofillProfileDelegateFromDataService,
                   base::RetainedRef(
-                      autofill_web_data_service_on_disk_.value()))),
+                      profile_autofill_web_data_service_.value()))),
           /*delegate_for_transport_mode=*/nullptr));
     }
 
@@ -391,18 +391,18 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
           std::make_unique<autofill::ContactInfoDataTypeController>(
               /*delegate_for_full_sync_mode=*/
               std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                  autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
+                  profile_autofill_web_data_service_.value()->GetDBTaskRunner(),
                   base::BindRepeating(
                       &ContactInfoDelegateFromDataService,
                       base::RetainedRef(
-                          autofill_web_data_service_on_disk_.value()))),
+                          profile_autofill_web_data_service_.value()))),
               /*delegate_for_transport_mode=*/
               std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                  autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
+                  profile_autofill_web_data_service_.value()->GetDBTaskRunner(),
                   base::BindRepeating(
                       &ContactInfoDelegateFromDataService,
                       base::RetainedRef(
-                          autofill_web_data_service_on_disk_.value()))),
+                          profile_autofill_web_data_service_.value()))),
               sync_service, identity_manager_.value(),
               std::make_unique<autofill::ContactInfoLocalDataBatchUploader>(
                   std::move(address_data_manager_getter_))));
@@ -845,18 +845,18 @@ CommonControllerBuilder::CreateWalletDataTypeController(
         type == syncer::AUTOFILL_WALLET_OFFER);
   auto delegate_for_full_sync_mode =
       std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-          autofill_web_data_service_on_disk_.value()->GetDBTaskRunner(),
+          profile_autofill_web_data_service_.value()->GetDBTaskRunner(),
           base::BindRepeating(
               delegate_from_web_data,
-              base::RetainedRef(autofill_web_data_service_on_disk_.value())));
+              base::RetainedRef(profile_autofill_web_data_service_.value())));
   auto delegate_for_transport_mode =
       with_transport_mode_support
           ? std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                autofill_web_data_service_in_memory_.value()->GetDBTaskRunner(),
+                account_autofill_web_data_service_.value()->GetDBTaskRunner(),
                 base::BindRepeating(
                     delegate_from_web_data,
                     base::RetainedRef(
-                        autofill_web_data_service_in_memory_.value())))
+                        account_autofill_web_data_service_.value())))
           : nullptr;
   return std::make_unique<AutofillWalletDataTypeController>(
       type, std::move(delegate_for_full_sync_mode),

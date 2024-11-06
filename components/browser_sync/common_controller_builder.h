@@ -274,9 +274,9 @@ class CommonControllerBuilder {
   SafeOptional<scoped_refptr<base::SequencedTaskRunner>>
       autofill_web_data_ui_thread_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
-      autofill_web_data_service_on_disk_;
+      profile_autofill_web_data_service_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
-      autofill_web_data_service_in_memory_;
+      account_autofill_web_data_service_;
   SafeOptional<scoped_refptr<password_manager::PasswordStoreInterface>>
       profile_password_store_;
   SafeOptional<scoped_refptr<password_manager::PasswordStoreInterface>>
