@@ -21,6 +21,8 @@ build_webui("build") {
     "constraint_list.html.ts",
   ]
 
+  css_files = [ "constraint_list.css" ]
+
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [

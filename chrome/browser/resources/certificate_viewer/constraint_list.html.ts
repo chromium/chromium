@@ -9,6 +9,8 @@ import type {ConstraintListElement} from './constraint_list.js';
 export function getHtml(this: ConstraintListElement) {
   return html`
   <div>
-  ${this.constraints.map(constraint => html`<div>${constraint}</div>`)}
+  ${
+      this.constraints.map(
+          constraint => html`<div class="constraint">${constraint}</div>`)}
   </div>`;
 }

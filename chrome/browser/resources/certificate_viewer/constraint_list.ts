@@ -4,12 +4,17 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './constraint_list.css.js';
 import {getHtml} from './constraint_list.html.js';
 
 
 export class ConstraintListElement extends CrLitElement {
   static get is() {
     return 'constraint-list';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {
