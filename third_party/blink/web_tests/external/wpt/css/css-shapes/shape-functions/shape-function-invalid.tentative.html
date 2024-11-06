@@ -15,6 +15,24 @@ test_invalid_value("clip-path", "shape(from 20px 40px line to 20px 30px)");
 test_invalid_value("clip-path", "shape(from 20px 40px line to 20px 30px,)");
 test_invalid_value("clip-path", "shape(from 20px, 40px, line to 20px, 30px)");
 
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, hline to top)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, hline to bottom)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, hline to y-start)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, hline to y-end)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, vline to left)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, vline to right)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, vline to x-start)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, vline to x-end)");
+
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, hline to top 20px)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, hline to right, vline to bottom left, close)");
+
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, hline by left)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, hline by right)");
+
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, vline by top)");
+test_invalid_value("clip-path", "shape(from 20px 40px, move to 20px 30px, vline by bottom)");
+
 // Control points start after "with"
 test_invalid_value("clip-path", "shape(from 20px 40px, curve to 20px 20px, using 10px 30px)");
 test_invalid_value("clip-path", "shape(from 20px 40px, curve to 20px 20px using 10px 30px, 12px 32px)");

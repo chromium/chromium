@@ -155836,6 +155836,19 @@
         {}
        ]
       ],
+      "clip-path-shape-hline-vline-keywords.tentative.html": [
+       "11c28021741385facdd127dd78f157a342d6e6ec",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-strokeBox-1a.html": [
        "487f5363b694304923538d0314d3c6d2a685da6b",
        [
@@ -346308,7 +346321,7 @@
        []
       ],
       "shape-function-valid.tentative-expected.txt": [
-       "895f2c4f3a44bdf08c98e6fc8ef5e53d819ae8fa",
+       "953940482e72568591740215eb8e5b59cc758e43",
        []
       ],
       "xywh-function-computed-expected.txt": [
@@ -388648,6 +388661,10 @@
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
         []
        ],
+       "dialog-closedby.tentative-expected.txt": [
+        "daa2657ae8c9fab92438c4cef7715d075a3f8540",
+        []
+       ],
        "dialog-open-expected.txt": [
         "309bf8c66d2f7a560fc346a251fc07bdec9bb0e6",
         []
@@ -400931,7 +400948,7 @@
     ],
     "compat": {
      "pointerevent_mouseevent_key_pressed-expected.txt": [
-      "bb775463520e6cac7e04d0d6659664efc9b51d71",
+      "74c68e81063fac572955ab5f9cf7ecb6af61247f",
       []
      ]
     },
@@ -400960,7 +400977,7 @@
      []
     ],
     "pointerevent_support.js": [
-     "f17a76e5f5e95d311d21e3c323008afc93a971c3",
+     "7dd60f5a54d905f78eaa9009b9a6d327186a5a6e",
      []
     ],
     "pointerlock": {
@@ -412140,7 +412157,7 @@
       "0043ac08bca55418e61e3b054a5d78f648adfc9d",
       []
      ],
-     "urlpattern-compare-tests.js": [
+     "urlpattern-compare-tests.tentative.js": [
       "b92b53ee45cd98933a3c2fbcf404478eb8f66a06",
       []
      ],
@@ -484476,14 +484493,14 @@
        ]
       ],
       "shape-function-invalid.tentative.html": [
-       "20fb5a7b98016b7535cb61a831d86110dec3d50d",
+       "9abe483c703119d87dda5a15535aad07e89d81f7",
        [
         null,
         {}
        ]
       ],
       "shape-function-valid.tentative.html": [
-       "bffa90727ee83b2264767bfb7b46bbeb2c497290",
+       "5eef0f0c3d4a6b8c6d884c7f497862830c8e874d",
        [
         null,
         {}
@@ -611185,6 +611202,15 @@
          {}
         ]
        ],
+       "dialog-closedby.tentative.html": [
+        "046ee324a8a26629160c85a70d1d4793d89511d0",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "dialog-enabled.html": [
         "87a130c6f0178de695a1f9ebd8c000dabf3e53c3",
         [
@@ -626409,6 +626435,13 @@
     ],
     "video-data-uri.html": [
      "01d9aa692578f2a3a3499233b65eb2ac9639be3a",
+     [
+      null,
+      {}
+     ]
+    ],
+    "video-play-after-poster.html": [
+     "1a0ee7dba54a5db2c7098bcb45b47ab1b1602ff5",
      [
       null,
       {}
@@ -642485,7 +642518,7 @@
       ]
      ],
      "pointerevent_mouseevent_key_pressed.html": [
-      "ea45adee8204c2b4a0563d95a4f54f2338572c9b",
+      "179135322c045d6b4345b29e7939f7e752113c11",
       [
        null,
        {
@@ -642705,7 +642738,7 @@
      ]
     ],
     "pointerevent_after_target_removed.html": [
-     "97a1a83fc874a780f63651d1d52589d2d0dbe22e",
+     "a79600295e4c337f8b5e58e281d79ffbc8ee3355",
      [
       "pointerevents/pointerevent_after_target_removed.html?mouse",
       {
@@ -643221,7 +643254,7 @@
      ]
     ],
     "pointerevent_pointer_boundary_events_after_removing_last_over_element.html": [
-     "bf2a405f727d899e92af92ea4ff38d1dcfb21289",
+     "869e65ee863482fa23db480913198152d5e92c38",
      [
       null,
       {
@@ -687871,10 +687904,10 @@
     ]
    },
    "urlpattern": {
-    "urlpattern-compare.any.js": [
-     "8db38adfd41d47dd5f9b5d588002bec0d5b2adfe",
+    "urlpattern-compare.tentative.any.js": [
+     "91e9f24f850b1303a0d241dd628f6e29143058ac",
      [
-      "urlpattern/urlpattern-compare.any.html",
+      "urlpattern/urlpattern-compare.tentative.any.html",
       {
        "script_metadata": [
         [
@@ -687883,13 +687916,13 @@
         ],
         [
          "script",
-         "resources/urlpattern-compare-tests.js"
+         "resources/urlpattern-compare-tests.tentative.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/urlpattern-compare.any.serviceworker.html",
+      "urlpattern/urlpattern-compare.tentative.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -687898,13 +687931,13 @@
         ],
         [
          "script",
-         "resources/urlpattern-compare-tests.js"
+         "resources/urlpattern-compare-tests.tentative.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/urlpattern-compare.any.sharedworker.html",
+      "urlpattern/urlpattern-compare.tentative.any.sharedworker.html",
       {
        "script_metadata": [
         [
@@ -687913,13 +687946,13 @@
         ],
         [
          "script",
-         "resources/urlpattern-compare-tests.js"
+         "resources/urlpattern-compare-tests.tentative.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/urlpattern-compare.any.worker.html",
+      "urlpattern/urlpattern-compare.tentative.any.worker.html",
       {
        "script_metadata": [
         [
@@ -687928,16 +687961,16 @@
         ],
         [
          "script",
-         "resources/urlpattern-compare-tests.js"
+         "resources/urlpattern-compare-tests.tentative.js"
         ]
        ]
       }
      ]
     ],
-    "urlpattern-compare.https.any.js": [
-     "8db38adfd41d47dd5f9b5d588002bec0d5b2adfe",
+    "urlpattern-compare.tentative.https.any.js": [
+     "91e9f24f850b1303a0d241dd628f6e29143058ac",
      [
-      "urlpattern/urlpattern-compare.https.any.html",
+      "urlpattern/urlpattern-compare.tentative.https.any.html",
       {
        "script_metadata": [
         [
@@ -687946,13 +687979,13 @@
         ],
         [
          "script",
-         "resources/urlpattern-compare-tests.js"
+         "resources/urlpattern-compare-tests.tentative.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/urlpattern-compare.https.any.serviceworker.html",
+      "urlpattern/urlpattern-compare.tentative.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -687961,13 +687994,13 @@
         ],
         [
          "script",
-         "resources/urlpattern-compare-tests.js"
+         "resources/urlpattern-compare-tests.tentative.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/urlpattern-compare.https.any.sharedworker.html",
+      "urlpattern/urlpattern-compare.tentative.https.any.sharedworker.html",
       {
        "script_metadata": [
         [
@@ -687976,13 +688009,13 @@
         ],
         [
          "script",
-         "resources/urlpattern-compare-tests.js"
+         "resources/urlpattern-compare-tests.tentative.js"
         ]
        ]
       }
      ],
      [
-      "urlpattern/urlpattern-compare.https.any.worker.html",
+      "urlpattern/urlpattern-compare.tentative.https.any.worker.html",
       {
        "script_metadata": [
         [
@@ -687991,7 +688024,7 @@
         ],
         [
          "script",
-         "resources/urlpattern-compare-tests.js"
+         "resources/urlpattern-compare-tests.tentative.js"
         ]
        ]
       }
