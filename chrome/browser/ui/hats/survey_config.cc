@@ -15,6 +15,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -486,7 +487,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut);
   survey_configs.emplace_back(
       &plus_addresses::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
-      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate);
+      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
 
   // Red Warning surveys.
   survey_configs.emplace_back(

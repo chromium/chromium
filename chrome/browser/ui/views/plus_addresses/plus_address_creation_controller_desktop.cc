@@ -26,6 +26,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -268,11 +269,14 @@ void PlusAddressCreationControllerDesktop::MaybeTriggerUserPerceptionSurvey() {
   if (!hats_service) {
     return;
   }
+
   hats_service->LaunchSurvey(
       kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
       /*success_callback=*/base::DoNothing(),
       /*failure_callback=*/base::DoNothing(),
-      /*product_specific_bits_data=*/{}, /*product_specific_string_data=*/{});
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/
+      hats::GetPlusAddressHatsData(profile->GetPrefs()));
 }
 
 bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {

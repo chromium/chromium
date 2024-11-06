@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HATS_UTILS_H_
+#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HATS_UTILS_H_
+
+#include <map>
+#include <string>
+
+class PrefService;
+
+namespace plus_addresses::hats {
+
+// Hats Bits data fields:
+inline constexpr char kFirstPlusAddressCreationTime[] =
+    "The time when the the user has created the first plus address on any "
+    "platform in Chrome, in seconds";
+inline constexpr char kLastPlusAddressFillingTime[] =
+    "The time the user has filled a plus address on any platform in Chrome, in "
+    "seconds";
+
+std::map<std::string, std::string> GetPlusAddressHatsData(
+    PrefService* pref_service);
+
+}  // namespace plus_addresses::hats
+
+#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HATS_UTILS_H_

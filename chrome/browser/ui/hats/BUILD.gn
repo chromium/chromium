@@ -75,6 +75,7 @@ source_set("impl") {
     "//components/permissions",
     "//components/permissions:permissions_common",
     "//components/plus_addresses:features",
+    "//components/plus_addresses:hats_utils",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/privacy_sandbox:features",

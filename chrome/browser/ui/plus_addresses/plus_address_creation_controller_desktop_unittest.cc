@@ -39,6 +39,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::IsEmpty;
+using ::testing::SizeIs;
 
 constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
 constexpr char kPlusAddressModalEventHistogramWithNotice[] =
@@ -155,7 +156,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   task_environment()->FastForwardBy(kDuration);
   EXPECT_CALL(hats_service(),
               LaunchSurvey(kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
-                           _, _, IsEmpty(), IsEmpty()));
+                           _, _, IsEmpty(), SizeIs(2)));
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(

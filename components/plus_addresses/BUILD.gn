@@ -55,6 +55,19 @@ source_set("prefs") {
   ]
 }
 
+source_set("hats_utils") {
+  sources = [
+    "plus_address_hats_utils.cc",
+    "plus_address_hats_utils.h",
+  ]
+  deps = [
+    ":prefs",
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}
+
 proto_library("plus_address_blocklist_proto") {
   sources = [ "blocked_facets.proto" ]
 }
@@ -80,6 +93,7 @@ source_set("plus_addresses") {
     "plus_address_allocator.h",
     "plus_address_cache.cc",
     "plus_address_cache.h",
+    "plus_address_hats_utils.h",
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
     "plus_address_http_client_impl.h",
@@ -139,6 +153,7 @@ source_set("unit_tests") {
     "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
     "plus_address_blocklist_data_unittest.cc",
+    "plus_address_hats_utils_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
@@ -150,6 +165,7 @@ source_set("unit_tests") {
   deps = [
     ":blocklist_data",
     ":features",
+    ":hats_utils",
     ":parsing",
     ":plus_addresses",
     ":prefs",
@@ -166,6 +182,7 @@ source_set("unit_tests") {
     "//components/plus_addresses/webdata",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
   ]
