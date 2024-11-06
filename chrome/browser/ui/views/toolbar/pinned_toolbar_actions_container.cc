@@ -747,5 +747,10 @@ size_t PinnedToolbarActionsContainer::WidthToIconCount(int x_offset) {
   return std::min(unclamped_count, pinned_buttons_.size());
 }
 
+const std::vector<actions::ActionId>&
+PinnedToolbarActionsContainer::PinnedActionIds() const {
+  return model_->PinnedActionIds();
+}
+
 BEGIN_METADATA(PinnedToolbarActionsContainer)
 END_METADATA
