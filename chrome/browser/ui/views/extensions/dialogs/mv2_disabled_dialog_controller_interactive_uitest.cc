@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -241,6 +242,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Stage 1: Install an MV2 extension.
 IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_PRE_OnRemoveSelected) {
+  extensions::ScopedTestMV2Enabler enable_mv2;
   scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
   // Extension is not affected by the MV2 deprecation, yet. Thus, dialog is not
@@ -288,6 +290,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
 // Stage 1: Install an MV2 extension.
 IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_PRE_OnManageSelected) {
+  extensions::ScopedTestMV2Enabler enable_mv2;
   scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
   // Extension is not affected by the MV2 deprecation, yet. Thus, dialog is not
@@ -336,6 +339,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
 // Stage 1: Install an MV2 extension.
 IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_PRE_NoUserAction) {
+  extensions::ScopedTestMV2Enabler enable_mv2;
   scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
   // Extension is not affected by the MV2 deprecation, yet. Thus, dialog is not
@@ -381,6 +385,8 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
 // in the dialog.
 IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PolicyInstalledExtensions) {
+  std::optional<extensions::ScopedTestMV2Enabler> enable_mv2;
+  enable_mv2.emplace();
   const ExtensionId internal_extension_id =
       AddMV2Extension("Internal Extension", mojom::ManifestLocation::kInternal)
           ->id();
@@ -412,7 +418,8 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // visibility of one of its elements.
       EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId),
       // Disable extensions affected by the MV2 deprecation.
-      Do([this]() {
+      Do([&]() {
+        enable_mv2.reset();
         experiment_manager()->DisableAffectedExtensionsForTesting();
       }),
       // Verify both extensions were disabled.
@@ -482,6 +489,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
 // Stage 1: Load an MV2 extension with an icon.
 IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_IconsLoaded) {
+  extensions::ScopedTestMV2Enabler enable_mv2;
   scoped_refptr<const Extension> extension_A =
       AddMV2ExtensionWithIcon("Extension A", "icon1.png");
   scoped_refptr<const Extension> extension_B =
@@ -544,6 +552,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
 // Stage 1: Load two MV2 extensions.
 IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_CorrectExtensionInfo) {
+  extensions::ScopedTestMV2Enabler enable_mv2;
   scoped_refptr<const Extension> extension_A =
       AddMV2ExtensionWithIcon("Extension A", "icon1.png");
   scoped_refptr<const Extension> extension_B = AddMV2Extension("Extension B");

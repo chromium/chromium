@@ -52,6 +52,8 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/installed_loader.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -1284,6 +1286,9 @@ void ExtensionService::CheckManagementPolicy() {
     PermissionsUpdater(profile()).ApplyPolicyHostRestrictions(*extension);
   }
 
+  ManifestV2ExperimentManager* mv2_experiment_manager =
+      ManifestV2ExperimentManager::Get(profile_);
+
   // Loop through the disabled extension list, find extensions to re-enable
   // automatically. These extensions are exclusive from the |to_disable| list
   // constructed above, since disabled_extensions() and enabled_extensions() are
@@ -1334,6 +1339,20 @@ void ExtensionService::CheckManagementPolicy() {
     if (!system_->management_policy()->MustRemainDisabled(extension.get(),
                                                           nullptr)) {
       disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
+    }
+
+    // Note: `mv2_experiment_manager` may be null for certain types of profiles
+    // (such as the sign-in profile). We can ignore this check in this case,
+    // since users can't install extensions in these profiles.
+    // TODO(https://crbug.com/362756477): As above, this is effectively
+    // fragmenting logic between the policy provider and here to ensure that
+    // the extension gets properly re-enabled when appropriate.
+    if (mv2_experiment_manager &&
+        mv2_experiment_manager->GetCurrentExperimentStage() ==
+            MV2ExperimentStage::kUnsupported &&
+        !mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
+      disable_reasons &=
+          (~disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
     }
 
     // If this profile is not supervised, then remove any supervised user

@@ -97,6 +97,9 @@ class ManifestV2ExperimentManager : public KeyedService,
       mojom::ManifestLocation manifest_location,
       const HashedExtensionId& hashed_id);
 
+  // Returns true if Chrome should disallow enabling the given `extension`.
+  bool ShouldBlockExtensionEnable(const Extension& extension);
+
   // Returns true if the notice for `extension_id` has been acknowledged by the
   // user during the current MV2 deprecation `experiment_stage_`.
   bool DidUserAcknowledgeNotice(const ExtensionId& extension_id);

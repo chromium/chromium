@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -205,6 +206,19 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     if (reason) {
       *reason = disable_reason::DISABLE_NOT_VERIFIED;
     }
+    return true;
+  }
+
+  // Note: `mv2_experiment_manager` may be null for certain types of profiles
+  // (such as the sign-in profile). We can ignore this check in this case, since
+  // users can't install extensions in these profiles.
+  auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile_);
+  if (mv2_experiment_manager &&
+      mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
+    if (reason) {
+      *reason = disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION;
+    }
+
     return true;
   }
 

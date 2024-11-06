@@ -203,6 +203,8 @@ bool ShouldDisableLegacyExtensions(MV2ExperimentStage stage) {
     return false;
   }
 
+  // TODO(https://crbug.com/367395349): This should only exempt unpacked
+  // extensions, not all extensions.
   if (base::FeatureList::IsEnabled(
           extensions_features::kAllowLegacyMV2Extensions)) {
     // The user explicitly set the flag to allow legacy MV2 extensions. It's
@@ -219,6 +221,39 @@ bool ShouldDisableLegacyExtensions(MV2ExperimentStage stage) {
     case MV2ExperimentStage::kWarning:
       return false;
     case MV2ExperimentStage::kDisableWithReEnable:
+    case MV2ExperimentStage::kUnsupported:
+      return true;
+  }
+}
+
+// Returns true if the given `stage` is one in which extension enablement should
+// potentially be blocked.
+bool ShouldBlockLegacyExtensionEnableForStage(MV2ExperimentStage stage) {
+  // The times in which we block extension enablement are a strict subset of
+  // those when we disable legacy extensions.
+  if (!ShouldDisableLegacyExtensions(stage)) {
+    return false;
+  }
+
+  // TODO(https://crbug.com/367395349): This should only exempt unpacked
+  // extensions, not all extensions.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kAllowLegacyMV2Extensions)) {
+    // The user explicitly set the flag to allow legacy MV2 extensions. It's
+    // important we retain this functionality so that developers of MV2
+    // extensions used by enterprises can continue developing (and testing)
+    // them for as long as the ExtensionManifestV2Availability enterprise policy
+    // is supported.
+    return false;
+  }
+
+  // We only block extension enablement in the `kUnsupported` phase.
+  // (We use a switch just to ensure compile errors if we ever add a new phase.)
+  switch (stage) {
+    case MV2ExperimentStage::kNone:
+    case MV2ExperimentStage::kWarning:
+    case MV2ExperimentStage::kDisableWithReEnable:
+      return false;
     case MV2ExperimentStage::kUnsupported:
       return true;
   }
@@ -324,6 +359,17 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
   return impact_checker_.IsExtensionAffected(extension_id, manifest_version,
                                              manifest_type, manifest_location,
                                              hashed_id);
+}
+
+bool ManifestV2ExperimentManager::ShouldBlockExtensionEnable(
+    const Extension& extension) {
+  if (!ShouldBlockLegacyExtensionEnableForStage(experiment_stage_)) {
+    return false;
+  }
+
+  return impact_checker_.IsExtensionAffected(
+      extension.id(), extension.manifest_version(), extension.GetType(),
+      extension.location(), extension.hashed_id());
 }
 
 bool ManifestV2ExperimentManager::DidUserAcknowledgeNotice(
