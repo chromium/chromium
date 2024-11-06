@@ -50,7 +50,8 @@ TEST(CSSVariableDataTest, Serialize) {
 }
 
 TEST(CSSVariableDataTest, SerializeSpecialCases) {
-  const String replacement_character_string(&kReplacementCharacter, 1u);
+  const String replacement_character_string(
+      base::span_from_ref(kReplacementCharacter));
   const std::pair<String, String> test_cases[] = {
       {"value\\", "value" + replacement_character_string},
       {"\"value\\", "\"value\""},

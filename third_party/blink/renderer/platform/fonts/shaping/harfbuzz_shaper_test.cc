@@ -355,7 +355,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsDevanagariCommon) {
   Font font(font_description);
 
   UChar devanagari_common_string[] = {0x915, 0x94d, 0x930, 0x28, 0x20, 0x29};
-  String devanagari_common_latin(devanagari_common_string, 6u);
+  String devanagari_common_latin{base::span(devanagari_common_string)};
   HarfBuzzShaper shaper(devanagari_common_latin);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -378,7 +378,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsDevanagariCommonLatinCommon) {
 
   UChar devanagari_common_latin_string[] = {0x915, 0x94d, 0x930, 0x20,
                                             0x61,  0x62,  0x2E};
-  HarfBuzzShaper shaper(String(devanagari_common_latin_string, 7u));
+  HarfBuzzShaper shaper{String(base::span(devanagari_common_latin_string))};
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
   // Ensure that there are only two scripts, Devanagari first, then Latin.
@@ -399,7 +399,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsArabicThaiHanLatin) {
   Font font(font_description);
 
   UChar mixed_string[] = {0x628, 0x64A, 0x629, 0xE20, 0x65E5, 0x62};
-  HarfBuzzShaper shaper(String(mixed_string, 6u));
+  HarfBuzzShaper shaper{String(base::span(mixed_string))};
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
   EXPECT_EQ(4u, TestInfo(result)->NumberOfRunsForTesting());
@@ -432,7 +432,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsArabicThaiHanLatinTwice) {
   Font font(font_description);
 
   UChar mixed_string[] = {0x628, 0x64A, 0x629, 0xE20, 0x65E5, 0x62};
-  HarfBuzzShaper shaper(String(mixed_string, 6u));
+  HarfBuzzShaper shaper{String(base::span(mixed_string))};
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
   EXPECT_EQ(4u, TestInfo(result)->NumberOfRunsForTesting());
 
@@ -446,7 +446,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsArabic) {
   Font font(font_description);
 
   UChar arabic_string[] = {0x628, 0x64A, 0x629};
-  HarfBuzzShaper shaper(String(arabic_string, 3u));
+  HarfBuzzShaper shaper{String(base::span(arabic_string))};
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kRtl);
 
   EXPECT_EQ(1u, TestInfo(result)->NumberOfRunsForTesting());
@@ -524,7 +524,7 @@ TEST_F(HarfBuzzShaperTest, MAYBE_ShapeArabicWithContext) {
   Font font(font_description);
 
   UChar arabic_string[] = {0x647, 0x64A};
-  HarfBuzzShaper shaper(String(arabic_string, 2u));
+  HarfBuzzShaper shaper{String(base::span(arabic_string))};
 
   const ShapeResult* combined = shaper.Shape(&font, TextDirection::kRtl);
 
@@ -787,11 +787,10 @@ TEST_P(ShapeParameterTest, ZeroWidthSpace) {
                     0x0648,
                     kZeroWidthSpaceCharacter,
                     kZeroWidthSpaceCharacter};
-  const unsigned length = std::size(string);
-  HarfBuzzShaper shaper(String(string, length));
+  HarfBuzzShaper shaper{String(base::span(string))};
   const ShapeResult* result = ShapeWithParameter(&shaper);
   EXPECT_EQ(0u, result->StartIndex());
-  EXPECT_EQ(length, result->EndIndex());
+  EXPECT_EQ(std::size(string), result->EndIndex());
 #if DCHECK_IS_ON()
   result->CheckConsistency();
 #endif
@@ -1168,7 +1167,7 @@ TEST_F(HarfBuzzShaperTest, PositionForOffsetArabic) {
   UChar arabic_string[] = {0x628, 0x64A, 0x629};
   TextDirection direction = TextDirection::kRtl;
 
-  HarfBuzzShaper shaper(String(arabic_string, 3u));
+  HarfBuzzShaper shaper{String(base::span(arabic_string))};
   const ShapeResult* result = shaper.Shape(&font, direction);
 
   EXPECT_EQ(0.0f, result->PositionForOffset(3));
@@ -1245,7 +1244,7 @@ TEST_P(IncludePartialGlyphsTest,
   Font font(font_description);
 
   UChar arabic_string[] = {0x628, 0x64A, 0x629};
-  String string(arabic_string, 3u);
+  String string{base::span(arabic_string)};
   TextDirection direction = TextDirection::kRtl;
 
   HarfBuzzShaper shaper(string);
@@ -1267,7 +1266,7 @@ TEST_P(IncludePartialGlyphsTest,
   Font font(font_description);
 
   UChar mixed_string[] = {0x628, 0x64A, 0x629, 0xE20, 0x65E5, 0x62};
-  String string(mixed_string, 6u);
+  String string{base::span(mixed_string)};
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -1319,7 +1318,7 @@ TEST_F(HarfBuzzShaperTest, CachedOffsetPositionMappingArabic) {
   UChar arabic_string[] = {0x628, 0x64A, 0x629};
   TextDirection direction = TextDirection::kRtl;
 
-  HarfBuzzShaper shaper(String(arabic_string, 3u));
+  HarfBuzzShaper shaper{String(base::span(arabic_string))};
   const ShapeResult* sr = shaper.Shape(&font, direction);
   sr->EnsurePositionData();
 
@@ -1333,7 +1332,7 @@ TEST_F(HarfBuzzShaperTest, CachedOffsetPositionMappingMixed) {
   Font font(font_description);
 
   UChar mixed_string[] = {0x628, 0x64A, 0x629, 0xE20, 0x65E5, 0x62};
-  HarfBuzzShaper shaper(String(mixed_string, 6u));
+  HarfBuzzShaper shaper{String(base::span(mixed_string))};
   const ShapeResult* sr = shaper.Shape(&font, TextDirection::kLtr);
   sr->EnsurePositionData();
 
@@ -1543,7 +1542,7 @@ TEST_F(HarfBuzzShaperTest, ShapeResultCopyRangeIntoArabicThaiHanLatin) {
   UChar mixed_string[] = {0x628, 0x20, 0x64A, 0x629, 0x20, 0xE20, 0x65E5, 0x62};
   TextDirection direction = TextDirection::kLtr;
 
-  HarfBuzzShaper shaper(String(mixed_string, 8u));
+  HarfBuzzShaper shaper{String(base::span(mixed_string))};
   const ShapeResult* result = shaper.Shape(&font, direction);
 
   ShapeResult* composite_result =

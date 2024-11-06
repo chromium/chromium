@@ -16,9 +16,7 @@ class TextBreakIteratorTest : public testing::Test {
     test_string_ = String::FromUTF8(test_string);
   }
 
-  void SetTestString16(Vector<UChar> input) {
-    test_string_ = String(input.data(), static_cast<unsigned>(input.size()));
-  }
+  void SetTestString16(Vector<UChar> input) { test_string_ = String(input); }
 
   // The expected break positions must be specified UTF-16 character boundaries.
   void MatchLineBreaks(

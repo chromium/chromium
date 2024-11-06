@@ -1700,12 +1700,13 @@ TEST_F(InlineNodeTest, FindSvgTextChunksCrash3) {
   auto* tspan = GetElementById("target");
   // A trail surrogate, then a lead surrogate.
   constexpr UChar kText[2] = {0xDE48, 0xD864};
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
+  const String text{base::span(kText)};
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
   UpdateAllLifecyclePhasesForTest();
   // Pass if no CHECK() failures in FindSvgTextChunks().
 }
