@@ -24,7 +24,6 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
@@ -481,15 +480,13 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         camera.setFlags(
                 Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         camera.putExtra(MediaStore.EXTRA_OUTPUT, mCameraOutputUri);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            // ClipData.newUri may access the disk (for reading mime types).
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                camera.setClipData(
-                        ClipData.newUri(
-                                ContextUtils.getApplicationContext().getContentResolver(),
-                                UiUtils.IMAGE_FILE_PATH,
-                                mCameraOutputUri));
-            }
+        // ClipData.newUri may access the disk (for reading mime types).
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            camera.setClipData(
+                    ClipData.newUri(
+                            ContextUtils.getApplicationContext().getContentResolver(),
+                            UiUtils.IMAGE_FILE_PATH,
+                            mCameraOutputUri));
         }
         return camera;
     }
@@ -581,7 +578,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
         Intent getContentIntent = new Intent(mIntentAction);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {
+        if (mAllowMultiple) {
             getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
 
@@ -636,7 +633,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             Intent camera, Intent camcorder, Intent soundRecorder) {
         Intent getContentIntent = new Intent(mIntentAction);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {
+        if (mAllowMultiple) {
             getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
 
@@ -920,12 +917,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     public static boolean isContentUriUnderAppDir(Uri uri, Context context) {
         assert !ThreadUtils.runningOnUiThread();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return false;
-        }
         try {
             ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
             int fd = pfd.getFd();
@@ -958,10 +951,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             return;
         }
 
-        if (results == null
-                || (results.getData() == null
-                        && (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2
-                                || results.getClipData() == null))) {
+        if (results == null || (results.getData() == null && (results.getClipData() == null))) {
             // If we have a successful return but no data, then assume this is the camera returning
             // the photo that we requested.
             // If the uri is a file, we need to convert it to the absolute path or otherwise
@@ -989,11 +979,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         }
 
         // Path for when EXTRA_ALLOW_MULTIPLE Intent extra has been defined. Each of the selected
-        // files will be shared as an entry on the Intent's ClipData. This functionality is only
-        // available in Android JellyBean MR2 and higher.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                && results.getData() == null
-                && results.getClipData() != null) {
+        // files will be shared as an entry on the Intent's ClipData.
+        if (results.getData() == null && results.getClipData() != null) {
             ClipData clipData = results.getClipData();
 
             int itemCount = clipData.getItemCount();
@@ -1422,13 +1409,11 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                     "Android.SelectFileDialogImgCount", filesSelected.length);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            new RecordUploadMetricsTask(
-                            ContextUtils.getApplicationContext().getContentResolver(),
-                            filesSelected,
-                            mMediaPickerWasUsed)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
+        new RecordUploadMetricsTask(
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        filesSelected,
+                        mMediaPickerWasUsed)
+                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     // This function returns the method used to upload, by looking it up from
@@ -1565,7 +1550,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     private static boolean photoPickerSupportsVideo() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         return shouldShowPhotoPicker();
     }
 
