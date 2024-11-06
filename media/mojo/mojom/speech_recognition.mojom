@@ -310,8 +310,7 @@ struct SpeechRecognitionOptions {
   // The BCP-47 localized language code to use (e.g. "en-US").
   // TODO(crbug.com/40162502): Language needs to be required when multiple
   // languages are supported by SODA, so that each SpeechRecognitionRecognizer
-  // can use its own language. Right now Language is only used by Projector
-  // and Dictation via OnDeviceSpeechRecognizer in Chrome OS.
+  // can use its own language.
   string? language;
 
   // Whether the recognition is happening on-device or remotely on a server.

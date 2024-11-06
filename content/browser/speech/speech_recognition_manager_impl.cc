@@ -314,7 +314,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
     std::unique_ptr<NetworkSpeechRecognitionEngineImpl> google_remote_engine =
         std::make_unique<NetworkSpeechRecognitionEngineImpl>(
-            config.shared_url_loader_factory, config.accept_language);
+            config.shared_url_loader_factory);
     google_remote_engine->SetConfig(remote_engine_config);
     speech_recognition_engine = std::move(google_remote_engine);
   }

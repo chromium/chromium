@@ -494,8 +494,7 @@ TEST_F(NetworkSpeechRecognitionEngineImplTest, SendPreamble) {
 void NetworkSpeechRecognitionEngineImplTest::SetUp() {
   engine_under_test_ = std::make_unique<NetworkSpeechRecognitionEngineImpl>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &url_loader_factory_),
-      "" /* accept_language */);
+          &url_loader_factory_));
   engine_under_test_->set_delegate(this);
 }
 

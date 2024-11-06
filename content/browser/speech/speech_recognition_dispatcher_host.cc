@@ -30,6 +30,26 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+std::string GetAcceptedLanguages(const std::string& language,
+                                 const std::string& accept_language) {
+  std::string langs = language;
+  if (langs.empty() && !accept_language.empty()) {
+    // If no language is provided then we use the first from the accepted
+    // language list. If this list is empty then it defaults to "en-US".
+    // Example of the contents of this list: "es,en-GB;q=0.8", ""
+    size_t separator = accept_language.find_first_of(",;");
+    if (separator != std::string::npos) {
+      langs = accept_language.substr(0, separator);
+    }
+  }
+  if (langs.empty()) {
+    langs = "en-US";
+  }
+  return langs;
+}
+}  // namespace
+
 namespace content {
 
 SpeechRecognitionDispatcherHost::SpeechRecognitionDispatcherHost(
@@ -170,8 +190,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
   context.embedder_render_frame_id = embedder_render_frame_id;
 
   SpeechRecognitionSessionConfig config;
-  config.language = params->language;
-  config.accept_language = accept_language;
+  config.language = GetAcceptedLanguages(params->language, accept_language);
   config.max_hypotheses = params->max_hypotheses;
   config.origin = origin;
   config.initial_context = context;
