@@ -5298,16 +5298,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.RTCVideoDecoderStream.Error.OnFrameReady"
-    enum="MediaStatusCode" expires_after="2021-08-15">
-  <owner>liberato@chromium.org</owner>
-  <owner>webrtc-video@google.com</owner>
-  <summary>
-    This records the media::StatusCode from the RTCVideoDecoderStreamAdapter. It
-    is emitted when the adapter encounters an error during decoding.
-  </summary>
-</histogram>
-
 <histogram name="Media.RTCVideoEncoder.Initialize" units="ms"
     expires_after="2024-09-30">
   <owner>hiroh@chromium.org</owner>
