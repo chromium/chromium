@@ -9,6 +9,8 @@ source_set("common") {
   sources = [
     "anchor_element_provider.cc",
     "anchor_element_provider.h",
+    "feature_promo/common_preconditions.cc",
+    "feature_promo/common_preconditions.h",
     "feature_promo/feature_promo_controller.cc",
     "feature_promo/feature_promo_controller.h",
     "feature_promo/feature_promo_handle.cc",
@@ -100,6 +102,7 @@ source_set("unit_tests") {
 
   sources = [
     "anchor_element_provider_unittest.cc",
+    "feature_promo/common_preconditions_unittest.cc",
     "feature_promo/feature_promo_controller_unittest.cc",
     "feature_promo/feature_promo_lifecycle_unittest.cc",
     "feature_promo/feature_promo_precondition_unittest.cc",
