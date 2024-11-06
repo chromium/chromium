@@ -637,6 +637,13 @@ TEST(TriggerRegistrationTest, ParseAggregatableNamedBudgetCandidate) {
                                             {{{"a", {"b"}}}})}))))),
       },
       {
+          "empty",
+          R"json({})json",
+          ValueIs(
+              Field(&TriggerRegistration::aggregatable_named_budget_candidates,
+                    IsEmpty())),
+      },
+      {
           "aggregatable_named_budgets_invalid",
           R"json({"named_budgets":[
             {
@@ -657,6 +664,11 @@ TEST(TriggerRegistrationTest, ParseAggregatableNamedBudgetCandidate) {
 
     auto trigger = TriggerRegistration::Parse(test_case.json);
     EXPECT_THAT(trigger, test_case.matches);
+    if (trigger.has_value()) {
+      histograms.ExpectUniqueSample(
+          "Conversions.NamedBudgetsPerTriggerRegistration",
+          trigger->aggregatable_named_budget_candidates.size(), 1);
+    }
   }
 }
 

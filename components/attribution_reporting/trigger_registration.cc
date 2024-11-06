@@ -100,6 +100,14 @@ void RecordTriggerRegistrationError(TriggerRegistrationError error) {
                                 error);
 }
 
+void RecordFeatureUsage(const TriggerRegistration& registration) {
+  base::UmaHistogramCounts100("Conversions.ScopesPerTriggerRegistration",
+                              registration.attribution_scopes.scopes().size());
+  base::UmaHistogramCounts100(
+      "Conversions.NamedBudgetsPerTriggerRegistration",
+      registration.aggregatable_named_budget_candidates.size());
+}
+
 namespace {
 
 base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
@@ -177,8 +185,7 @@ base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
             : TriggerRegistrationError::kAggregatableValuesValueInvalid);
   }
 
-  base::UmaHistogramCounts100("Conversions.ScopesPerTriggerRegistration",
-                              registration.attribution_scopes.scopes().size());
+  RecordFeatureUsage(registration);
 
   return registration;
 }

@@ -831,6 +831,14 @@ TEST(SourceRegistrationTest, ParseAggregatableNamedBudgetDefs) {
               *AggregatableNamedBudgetDefs::FromBudgetMap({{"a", 65536}}))),
       },
       {
+          "no_budgets",
+          R"json({
+            "destination":"https://d.example"
+          })json",
+          ValueIs(Field(&SourceRegistration::aggregatable_named_budget_defs,
+                        *AggregatableNamedBudgetDefs::FromBudgetMap({}))),
+      },
+      {
           "aggregatable_named_budget_defs_invalid",
           R"json({
             "named_budgets":{"a":65537},
@@ -851,6 +859,11 @@ TEST(SourceRegistrationTest, ParseAggregatableNamedBudgetDefs) {
     auto source =
         SourceRegistration::Parse(test_case.json, SourceType::kNavigation);
     EXPECT_THAT(source, test_case.matches);
+    if (source.has_value()) {
+      histograms.ExpectUniqueSample(
+          "Conversions.NamedBudgetsPerSourceRegistration",
+          source->aggregatable_named_budget_defs.budgets().size(), 1);
+    }
   }
 }
 

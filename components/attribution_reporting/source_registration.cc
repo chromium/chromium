@@ -51,6 +51,23 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
   }
 }
 
+void RecordFeatureUsage(const SourceRegistration& result) {
+  base::UmaHistogramExactLinear(
+      "Conversions.ScopesPerSourceRegistration",
+      result.attribution_scopes_data.has_value()
+          ? result.attribution_scopes_data->attribution_scopes_set()
+                .scopes()
+                .size()
+          : 0,
+      /*exclusive_max=*/attribution_reporting::kMaxScopesPerSource + 1);
+  base::UmaHistogramExactLinear(
+      "Conversions.NamedBudgetsPerSourceRegistration",
+      result.aggregatable_named_budget_defs.budgets().size(),
+      /*exclusive_max=*/25 + 1);
+  static_assert(attribution_reporting::kMaxAggregatableNamedBudgetsPerSource ==
+                25);
+}
+
 }  // namespace
 
 void RecordSourceRegistrationError(SourceRegistrationError error) {
@@ -182,14 +199,7 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
   CHECK(result.IsValid());
   CHECK(result.IsValidForSourceType(source_type));
 
-  base::UmaHistogramExactLinear(
-      "Conversions.ScopesPerSourceRegistration",
-      result.attribution_scopes_data.has_value()
-          ? result.attribution_scopes_data->attribution_scopes_set()
-                .scopes()
-                .size()
-          : 0,
-      /*exclusive_max=*/attribution_reporting::kMaxScopesPerSource + 1);
+  RecordFeatureUsage(result);
 
   return result;
 }
