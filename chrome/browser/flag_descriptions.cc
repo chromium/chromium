@@ -7583,12 +7583,6 @@ const char kLauncherLocalImageSearchIcaDescription[] =
     "Enables on-device Image Content-based Annotation for local image search "
     "in the launcher.";
 
-const char kLauncherFuzzyMatchForOmniboxName[] =
-    "Omnibox Results Fuzzy match experiment";
-const char kLauncherFuzzyMatchForOmniboxDescription[] =
-    "To evaluate the viability of a Fuzzy match on Omnibox results to "
-    "downweight search sugestions";
-
 const char kLauncherSearchControlName[] = "Enable launcher search control";
 const char kLauncherSearchControlDescription[] =
     "Enable search control in launcher so that users can custmize the result "

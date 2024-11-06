@@ -22,11 +22,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -234,7 +232,6 @@ class OmniboxResultTest : public testing::Test {
 
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
 
   testing::NiceMock<favicon::MockFaviconService> favicon_service_;
@@ -474,7 +471,6 @@ TEST_F(OmniboxResultTest, SearchResultText) {
 }
 
 TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchCutoff) {
-  scoped_feature_list_.InitAndEnableFeature(search_features::kLauncherFuzzyMatchForOmnibox);
   std::unique_ptr<OmniboxResult> result_high_fuzzy_relevance =
       CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
                           GURL(), kExampleDescription);

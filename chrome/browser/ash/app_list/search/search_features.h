@@ -15,10 +15,6 @@ BASE_DECLARE_FEATURE(kLauncherGameSearch);
 // Query key word extraction and scoring while search in the launcher.
 BASE_DECLARE_FEATURE(kLauncherKeywordExtractionScoring);
 
-// Enables a fuzzy match between the query and title in Omnibox result to
-// calculate the relevance.
-BASE_DECLARE_FEATURE(kLauncherFuzzyMatchForOmnibox);
-
 // Enables image search in the launcher.
 BASE_DECLARE_FEATURE(kLauncherImageSearch);
 
@@ -62,7 +58,6 @@ bool IsLauncherImageSearchIcaEnabled();
 bool IsLauncherImageSearchOcrEnabled();
 bool IsLauncherImageSearchIndexingLimitEnabled();
 bool IsLauncherImageSearchDebugEnabled();
-bool IsLauncherFuzzyMatchForOmniboxEnabled();
 bool IsLauncherSystemInfoAnswerCardsEnabled();
 bool IsLauncherSearchFileScanEnabled();
 bool IskLauncherKeyShortcutInBestMatchEnabled();

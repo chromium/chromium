@@ -5643,11 +5643,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "launcher-fuzzy-match-for-omnibox",
-    "owners": ["wrong@chromium.org", "laurencom@chromium.org"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "launcher-game-search",
     "owners": ["wrong@chromium.org", "napper@chromium.org", "tby@chromium.org"],
     "expiry_milestone": 115

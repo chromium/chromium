@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -128,11 +127,9 @@ void OmniboxResult::UpdateRelevance() {
   double normalized_autocomplete_relevance =
       search_result_->relevance / kMaxOmniboxScore;
 
-  if (search_features::IsLauncherFuzzyMatchForOmniboxEnabled()) {
-    double title_relevance = CalculateTitleRelevance();
-    if (title_relevance < kRelevanceThreshold) {
-      scoring().set_filtered(true);
-    }
+  double title_relevance = CalculateTitleRelevance();
+  if (title_relevance < kRelevanceThreshold) {
+    scoring().set_filtered(true);
   }
 
   // Derive relevance from autocomplete relevance and normalize it to [0, 1].

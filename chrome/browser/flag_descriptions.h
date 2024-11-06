@@ -4384,9 +4384,6 @@ extern const char kLauncherLocalImageSearchOcrDescription[];
 extern const char kLauncherLocalImageSearchIcaName[];
 extern const char kLauncherLocalImageSearchIcaDescription[];
 
-extern const char kLauncherFuzzyMatchForOmniboxName[];
-extern const char kLauncherFuzzyMatchForOmniboxDescription[];
-
 extern const char kLauncherSearchControlName[];
 extern const char kLauncherSearchControlDescription[];
 
