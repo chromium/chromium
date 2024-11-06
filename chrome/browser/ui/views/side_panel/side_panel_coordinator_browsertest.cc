@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   new_bounds.set_size(new_size);
   // Explicitly restore the browser window on ChromeOS, as it would otherwise
   // be maximized and the SetBounds call would be a no-op.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   browser()->GetBrowserView().Restore();
 #endif
   browser()->GetBrowserView().SetBounds(new_bounds);
@@ -1590,7 +1590,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelTitleUpdates) {
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        SidePanelPinButtonsHideInGuestMode) {
   // Check that pin button shows in normal window.
@@ -1616,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_FALSE(coordinator->GetHeaderPinButtonForTesting()->GetVisible());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Verifies that clicking the pin button on an extensions side panel, pins the
 // extension in ToolbarActionModel.

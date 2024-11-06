@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
