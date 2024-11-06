@@ -2952,6 +2952,7 @@ if (!is_android) {
       "../browser/renderer_context_menu/render_view_context_menu_browsertest.cc",
       "../browser/renderer_context_menu/spelling_bubble_model_browsertest.cc",
       "../browser/renderer_context_menu/spelling_menu_observer_browsertest.cc",
+      "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../browser/renderer_host/render_process_host_chrome_browsertest.cc",
       "../browser/repost_form_warning_browsertest.cc",
       "../browser/resource_coordinator/discard_before_unload_helper.cc",

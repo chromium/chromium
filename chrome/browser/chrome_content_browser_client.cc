@@ -857,6 +857,10 @@ BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
              "SkipPagehideInCommitForDSENavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDisableJavascriptOptimizerByDefault,
+             "DisableJavascriptOptimizerByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A small ChromeBrowserMainExtraParts that invokes a callback when threads are
 // ready. Used to initialize ChromeContentBrowserClient data that needs the UI
 // thread.
@@ -8033,6 +8037,17 @@ bool ChromeContentBrowserClient::IsJitDisabledForSite(
 bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
     content::BrowserContext* browser_context,
     const GURL& site_url) {
+  // Only disable optimizations for schemes that might atually load web content.
+  auto* policy = ChildProcessSecurityPolicy::GetInstance();
+  if (!site_url.is_empty() && !policy->IsWebSafeScheme(site_url.scheme())) {
+    return false;
+  }
+
+  if (base::FeatureList::GetInstance()->IsEnabled(
+          kDisableJavascriptOptimizerByDefault)) {
+    return true;
+  }
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
   // Special case to determine if any policy is set.
@@ -8040,12 +8055,6 @@ bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
     return map->GetDefaultContentSetting(
                ContentSettingsType::JAVASCRIPT_OPTIMIZER, nullptr) ==
            CONTENT_SETTING_BLOCK;
-  }
-
-  // Only disable optimizations for schemes that might atually load web content.
-  auto* policy = ChildProcessSecurityPolicy::GetInstance();
-  if (!policy->IsWebSafeScheme(site_url.scheme())) {
-    return false;
   }
 
   return (map &&
