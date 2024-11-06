@@ -10813,13 +10813,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kDeskProfiles)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"captive-portal-popup-window",
-     flag_descriptions::kCaptivePortalPopupWindowName,
-     flag_descriptions::kCaptivePortalPopupWindowDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCaptivePortalPopupWindow)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-display-performance-mode",
      flag_descriptions::kEnableDisplayPerformanceModeName,

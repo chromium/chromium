@@ -545,11 +545,6 @@ extern const char kCanvasHibernationDescription[];
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kCaptivePortalPopupWindowName[];
-extern const char kCaptivePortalPopupWindowDescription[];
-#endif
-
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
 

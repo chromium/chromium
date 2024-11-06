@@ -235,13 +235,11 @@ void OffTheRecordProfileImpl::Init() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
-    if (otr_profile_id_->IsCaptivePortal()) {
-      // Set a pref to indicate that the Profile's PrefService is associated
-      // with a captive portal signin window. We use a pref for this because
-      // proxy configuration is associated with the PrefService, not a Profile.
-      GetPrefs()->SetBoolean(chromeos::prefs::kCaptivePortalSignin, true);
-    }
+  if (otr_profile_id_->IsCaptivePortal()) {
+    // Set a pref to indicate that the Profile's PrefService is associated
+    // with a captive portal signin window. We use a pref for this because
+    // proxy configuration is associated with the PrefService, not a Profile.
+    GetPrefs()->SetBoolean(chromeos::prefs::kCaptivePortalSignin, true);
   }
 #endif
 }

@@ -11,7 +11,6 @@
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -245,17 +244,12 @@ class ProxyConfigServiceImplCaptivePortalPopupWindowTest
     : public ProxyConfigServiceImplTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kCaptivePortalPopupWindow);
     profile_prefs_.registry()->RegisterBooleanPref(
         chromeos::prefs::kCaptivePortalSignin, false);
     profile_prefs_.registry()->RegisterBooleanPref(
         chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy, true);
     ProxyConfigServiceImplTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ProxyConfigServiceImplCaptivePortalPopupWindowTest,

@@ -160,8 +160,7 @@ policy::DeveloperToolsPolicyHandler::Availability GetDevToolsAvailability(
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS disable dev tools for captive portal signin windows to prevent
   // them from being used for general navigation.
-  if (chromeos::features::IsCaptivePortalPopupWindowEnabled() &&
-      availability != Availability::kDisallowed) {
+  if (availability != Availability::kDisallowed) {
     const PrefService::Preference* const captive_portal_pref =
         profile->GetPrefs()->FindPreference(
             chromeos::prefs::kCaptivePortalSignin);

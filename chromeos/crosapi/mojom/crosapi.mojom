@@ -1575,6 +1575,7 @@ struct BrowserInitParams {
   [MinVersion=76]
   uint64 limited_entropy_synthetic_trial_seed@76;
 
+  // Deprecated.
   // If true, captive portal signin windows are opened as a popup window.
   [MinVersion=77]
   bool is_captive_portal_popup_window_enabled@77;

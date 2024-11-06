@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -540,17 +539,11 @@ class RendererStartupHelperTestCaptivePortalPopupWindow
   RendererStartupHelperTestCaptivePortalPopupWindow() = default;
   ~RendererStartupHelperTestCaptivePortalPopupWindow() override = default;
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kCaptivePortalPopupWindow);
-
     RendererStartupHelperTest::SetUp();
     static_cast<TestingPrefServiceSimple*>(pref_service())
         ->registry()
         ->RegisterBooleanPref(chromeos::prefs::kCaptivePortalSignin, false);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that only incognito-enabled extensions are loaded in an incognito

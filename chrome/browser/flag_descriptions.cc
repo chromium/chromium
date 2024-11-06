@@ -953,13 +953,6 @@ const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[] =
     "the user grants permission.";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kCaptivePortalPopupWindowName[] =
-    "Captive portal signin uses popup window.";
-const char kCaptivePortalPopupWindowDescription[] =
-    "Use a popup window with proxies disabled for captive portal signin.";
-#endif
-
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";
