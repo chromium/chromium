@@ -1118,6 +1118,16 @@ TEST_F(SunfishTest, ClosePanelOnLockScreen) {
   ASSERT_FALSE(controller->search_results_panel_widget());
 }
 
+// Tests no crash when tabbing.
+TEST_F(SunfishTest, NoCrashOnTabKeyEvent) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(), GetCloseButton());
+}
+
 class ScannerTest : public AshTestBase {
  public:
   ScannerTest() = default;

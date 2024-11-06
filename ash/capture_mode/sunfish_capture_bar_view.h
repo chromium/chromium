@@ -12,8 +12,6 @@
 
 namespace ash {
 
-// TODO(http://b/362311598): Fix how tabbing works when only the close button is
-// available.
 // A view that acts as the content view of the capture mode bar widget for a
 // sunfish capture session. It only contains the close button.
 class ASH_EXPORT SunfishCaptureBarView : public CaptureModeBarView {
