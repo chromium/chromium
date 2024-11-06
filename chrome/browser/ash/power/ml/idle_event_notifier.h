@@ -82,6 +82,8 @@ class IdleEventNotifier : public chromeos::PowerManagerClient::Observer,
     // Duration from when video ended. It is unset if video did not play
     // (|video_playing_time| = 0).
     std::optional<base::TimeDelta> time_since_video_ended;
+    // True if video is currently playing. False otherwise.
+    bool is_video_playing = false;
 
     int key_events_in_last_hour = 0;
     int mouse_events_in_last_hour = 0;

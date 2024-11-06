@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"
 #include "chrome/browser/ash/policy/reporting/user_added_removed/user_added_removed_reporter.h"
+#include "chrome/browser/ash/policy/reporting/user_session_activity/user_session_activity_reporter.h"
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
@@ -59,6 +60,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -73,6 +75,10 @@ namespace {
 constexpr base::TimeDelta kDeviceStatusUploadFrequency = base::Hours(3);
 
 }  // namespace
+
+BASE_FEATURE(kEnableUserSessionActivityReporting,
+             "EnableUserSessionActivityReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
     std::unique_ptr<DeviceCloudPolicyStoreAsh> device_store,
@@ -137,8 +143,9 @@ void DeviceCloudPolicyManagerAsh::RemoveDeviceCloudPolicyManagerObserver(
 // Keep clean up order as the reversed creation order.
 void DeviceCloudPolicyManagerAsh::Shutdown() {
   event_based_log_manager_.reset();
-  os_updates_reporter_.reset();
   metric_reporting_manager_.reset();
+  user_session_activity_reporter_.reset();
+  os_updates_reporter_.reset();
   lock_unlock_reporter_.reset();
   login_logout_reporter_.reset();
   user_added_removed_reporter_.reset();
@@ -371,7 +378,8 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
     return;
   }
 
-  if (auto* user_manager = user_manager::UserManager::Get()) {
+  auto* user_manager = user_manager::UserManager::Get();
+  if (user_manager) {
     user_manager->RemoveObserver(this);
   }
 
@@ -388,6 +396,13 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
 
   lock_unlock_reporter_ = ash::reporting::LockUnlockReporter::Create(
       managed_session_service_.get());
+
+  if (base::FeatureList::IsEnabled(kEnableUserSessionActivityReporting) &&
+      user_manager && managed_session_service_) {
+    user_session_activity_reporter_ =
+        reporting::UserSessionActivityReporter::Create(
+            managed_session_service_.get(), user_manager);
+  }
 }
 
 HeartbeatScheduler*
