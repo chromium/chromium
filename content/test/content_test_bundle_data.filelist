@@ -8112,6 +8112,8 @@ data/web_ui_dedicated_worker.js
 data/web_ui_managed_interface_test.html
 data/web_ui_managed_interface_test.test-mojom
 data/web_ui_managed_interface_test.ts
+data/web_ui_mojo_conformance_test.html
+data/web_ui_mojo_conformance_test.ts
 data/web_ui_mojo_native.html
 data/web_ui_mojo_native.js
 data/web_ui_mojo_test.html

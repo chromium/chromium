@@ -68,6 +68,21 @@ union UnionA {
   bool b;
 };
 
+// Used by WebUI ts test.
+struct TestCase {
+  string test_name;
+  // Bytes of a mojo message.
+  array<uint8> data;
+  // PASS for success. Every other string is the expected failure.
+  string? expectation;
+};
+
+// Used by WebUI ts test.
+interface PageHandlerFactory {
+  // Gets the conformance test cases.
+  GetTestCases() => (array<TestCase> test_cases);
+};
+
 // This interface is used for testing bounds-checking in the mojom
 // binding code. If you add a method please update the files
 // ./data/validation/boundscheck_*. If you add a response please update

@@ -1232,6 +1232,7 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
   in_folder = "./data"
   out_folder = "$target_gen_dir/data"
   in_files = [
+    "web_ui_mojo_conformance_test.ts",
     "web_ui_mojo_ts_test.ts",
     "web_ui_mojo_ts_test_converters.ts",
     "web_ui_mojo_ts_test_mapped_types.ts",
@@ -1240,10 +1241,21 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
   ]
 }
 
+preprocess_if_expr("preprocess_mojo_webui_test_deps") {
+  in_folder = "$root_gen_dir/mojo/public/interfaces/bindings/tests"
+  out_folder = "$target_gen_dir/data"
+  in_files = [ "validation_test_interfaces.mojom-webui.ts" ]
+  deps = [
+    "//mojo/public/interfaces/bindings/tests:test_interfaces_ts__generator",
+  ]
+}
+
 webui_ts_library("web_ui_mojo_test_build_ts") {
   root_dir = "$target_gen_dir/data"
   out_dir = "$target_gen_dir/data/tsc"
   in_files = [
+    "validation_test_interfaces.mojom-webui.ts",
+    "web_ui_mojo_conformance_test.ts",
     "web_ui_mojo_ts_test.ts",
     "web_ui_mojo_ts_test_converters.ts",
     "web_ui_mojo_ts_test_mapped_types.ts",
@@ -1259,6 +1271,7 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
   deps = [ "//ui/webui/resources/mojo:build_ts" ]
   extra_deps = [
     ":preprocess_mojo_webui_test",
+    ":preprocess_mojo_webui_test_deps",
     ":web_ui_managed_interface_tests_bindings_ts__generator",
     ":web_ui_ts_test_mojo_bindings_ts__generator",
     ":web_ui_ts_test_other_mojo_bindings_ts__generator",
@@ -1735,6 +1748,7 @@ test("content_browsertests") {
     "../browser/webui/web_ui_browsertest.cc",
     "../browser/webui/web_ui_managed_interface_browsertest.cc",
     "../browser/webui/web_ui_mojo_browsertest.cc",
+    "../browser/webui/web_ui_mojo_conformance_browsertest.cc",
     "../browser/webui/web_ui_navigation_browsertest.cc",
     "../browser/webui/web_ui_security_browsertest.cc",
     "../browser/worker_host/worker_browsertest.cc",
@@ -1866,8 +1880,11 @@ test("content_browsertests") {
     "//media:test_support",
     "//media/webrtc",
     "//mojo/core/embedder",
+    "//mojo/core/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
     "//mojo/public/cpp/test_support:test_utils",
+    "//mojo/public/interfaces/bindings/tests:test_interfaces",
     "//net:quic_test_tools",
     "//net:simple_quic_tools",
     "//net:test_support",
@@ -1950,6 +1967,7 @@ test("content_browsertests") {
   data = [
     "data/",
     "//media/test/data/",
+    "//mojo/public/interfaces/bindings/tests/data/validation/",
     "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
   ]
 
@@ -1962,6 +1980,7 @@ test("content_browsertests") {
       ":gpu_process_bundle",
       ":network_process_bundle",
       "//media/test:media_bundle_data",
+      "//mojo/public/interfaces/bindings/tests:validation_unittest_bundle_data",
       "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
   } else {
