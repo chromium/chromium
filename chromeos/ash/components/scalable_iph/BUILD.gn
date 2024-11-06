@@ -105,8 +105,13 @@ source_set("unit_tests") {
   sources = [ "scalable_iph_unittest.cc" ]
 
   deps = [
+    ":constants",
+    ":logger",
     ":scalable_iph",
     ":scalable_iph_delegate",
+    "//chrome/browser/ash/scalable_iph:test_support",
+    "//components/feature_engagement/public",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
