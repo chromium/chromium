@@ -1423,15 +1423,12 @@ ActionButtonView* CaptureModeSession::AddActionButton(
 
 void CaptureModeSession::OnTextDetected() {
   if (active_behavior_->CanShowSmartActionsButton()) {
-    // TODO(crbug.com/374356291): Use the correct icon for the smart actions
-    // button.
-    // TODO(crbug.com/374356291): Collapse the smart actions button.
     // TODO(crbug.com/375967525): Finalize and translate the smart actions
     // button accessible name.
     ActionButtonView* action_button = AddActionButton(
         base::BindOnce(&CaptureModeSession::OnSmartActionsButtonPressed,
                        weak_ptr_factory_.GetWeakPtr()),
-        u"Smart actions", &kAiWandIcon,
+        u"Smart actions", &kCaptureModeSmartActionsIcon,
         ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0});
     action_button->CollapseToIconButton();
   }
