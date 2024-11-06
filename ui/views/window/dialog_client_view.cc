@@ -185,7 +185,7 @@ void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
   input_protector_->VisibilityChanged(is_visible);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 void DialogClientView::UpdateWindowRoundedCorners(int corner_radius) {
   DCHECK(GetWidget());
@@ -199,7 +199,7 @@ void DialogClientView::UpdateWindowRoundedCorners(int corner_radius) {
   SetBackgroundRadii(radii);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ProposedLayout DialogClientView::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {

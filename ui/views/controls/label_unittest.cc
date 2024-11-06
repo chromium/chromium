@@ -18,7 +18,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -1710,18 +1709,9 @@ TEST_F(LabelSelectionTest, MouseDragWord) {
   EXPECT_EQ(u"drag word", GetSelectedText());
 }
 
-// TODO(crbug.com/40762193): LabelSelectionTest.SelectionClipboard is failing on
-// linux-lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SelectionClipboard DISABLED_SelectionClipboard
-#else
-#define MAYBE_SelectionClipboard SelectionClipboard
-#endif
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Verify selection clipboard behavior on text selection.
-TEST_F(LabelSelectionTest, MAYBE_SelectionClipboard) {
+TEST_F(LabelSelectionTest, SelectionClipboard) {
   label()->SetText(u"Label selection clipboard");
   label()->SizeToPreferredSize();
   ASSERT_TRUE(label()->SetSelectable(true));

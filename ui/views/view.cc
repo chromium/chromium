@@ -2630,7 +2630,6 @@ void View::Focus() {
 
   // Update tooltip after scrolling view to place tooltip according to the new
   // position.
-  // TODO(crbug.com/40285437) - Get this working on Lacros as well.
   UpdateTooltipForFocus();
 
   observers_.Notify(&ViewObserver::OnViewFocused, this);

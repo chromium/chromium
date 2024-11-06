@@ -29,7 +29,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/test/aura_test_helper.h"
 #endif
 
@@ -66,7 +66,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
 
  protected:
   Widget::Widgets GetAllWidgets() const override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On Ash, WidgetTest::GetAllWidgets() requires special test utils to be set
     // up that are incompatible with browser tests. If a test helper has been
     // set up, then use it, otherwise assume that the browser version will

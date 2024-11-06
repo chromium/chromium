@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/views/controls/views_text_services_context_menu.h"
 #include "ui/views/views_export.h"
 

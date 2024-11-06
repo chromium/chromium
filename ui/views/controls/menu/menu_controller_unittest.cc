@@ -21,7 +21,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -980,7 +979,7 @@ gfx::Insets MenuControllerTest::GetBorderAndShadowInsets(bool is_submenu) {
   const MenuConfig& menu_config = MenuConfig::instance();
   int elevation = menu_config.bubble_menu_shadow_elevation;
   BubbleBorder::Shadow shadow_type = BubbleBorder::STANDARD_SHADOW;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Increase the submenu shadow elevation and change the shadow style to
   // ChromeOS system UI shadow style when using Ash System UI layout.
   if (menu_controller_->use_ash_system_ui_layout()) {

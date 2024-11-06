@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/views/views_export.h"
 
 namespace aura {

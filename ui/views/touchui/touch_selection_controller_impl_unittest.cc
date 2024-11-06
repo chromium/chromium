@@ -673,7 +673,7 @@ TEST_F(TouchSelectionControllerImplTest,
 }
 
 // Touch selection menu is not supported on Cast.
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(TouchSelectionControllerImplTest,
        MenuAppearsAfterDraggingSelectionHandles) {
   CreateTextfield();

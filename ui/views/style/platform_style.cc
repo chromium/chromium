@@ -5,7 +5,6 @@
 #include "ui/views/style/platform_style.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/utf16_indexing.h"

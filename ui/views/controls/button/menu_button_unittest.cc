@@ -319,7 +319,7 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClick) {
 #else
 #define MAYBE_InkDropCenterSetFromClickWithPressedLock \
   InkDropCenterSetFromClickWithPressedLock
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(MenuButtonTest, MAYBE_InkDropCenterSetFromClickWithPressedLock) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
 
@@ -342,7 +342,7 @@ TEST_F(MenuButtonTest, MAYBE_InkDropCenterSetFromClickWithPressedLock) {
 #else
 #define MAYBE_ButtonStateForMenuButtonsWithPressedLocks \
   ButtonStateForMenuButtonsWithPressedLocks
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(MenuButtonTest, MAYBE_ButtonStateForMenuButtonsWithPressedLocks) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
   const gfx::Rect button_bounds = button()->GetBoundsInScreen();
@@ -412,7 +412,7 @@ TEST_F(MenuButtonTest, MAYBE_ButtonStateForMenuButtonsWithPressedLocks) {
 #else
 #define MAYBE_DraggableMenuButtonActivatesOnRelease \
   DraggableMenuButtonActivatesOnRelease
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(MenuButtonTest, MAYBE_DraggableMenuButtonActivatesOnRelease) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
   TestDragController drag_controller;
@@ -434,7 +434,7 @@ TEST_F(MenuButtonTest, MAYBE_DraggableMenuButtonActivatesOnRelease) {
 #else
 #define MAYBE_InkDropStateForMenuButtonActivationsWithoutCallback \
   InkDropStateForMenuButtonActivationsWithoutCallback
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(MenuButtonTest,
        MAYBE_InkDropStateForMenuButtonActivationsWithoutCallback) {
   ConfigureMenuButton(
@@ -452,7 +452,7 @@ TEST_F(MenuButtonTest,
 #else
 #define MAYBE_InkDropStateForMenuButtonActivationsWithCallbackThatDoesntAcquireALock \
   InkDropStateForMenuButtonActivationsWithCallbackThatDoesntAcquireALock
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(
     MenuButtonTest,
     MAYBE_InkDropStateForMenuButtonActivationsWithCallbackThatDoesntAcquireALock) {
@@ -487,7 +487,7 @@ TEST_F(MenuButtonTest,
 #else
 #define MAYBE_InkDropStateForMenuButtonsWithPressedLocks \
   InkDropStateForMenuButtonsWithPressedLocks
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(MenuButtonTest, MAYBE_InkDropStateForMenuButtonsWithPressedLocks) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
 
@@ -516,7 +516,7 @@ TEST_F(MenuButtonTest, MAYBE_InkDropStateForMenuButtonsWithPressedLocks) {
 #else
 #define MAYBE_OneInkDropAnimationForReentrantPressedLocks \
   OneInkDropAnimationForReentrantPressedLocks
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(MenuButtonTest, MAYBE_OneInkDropAnimationForReentrantPressedLocks) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
 
@@ -541,7 +541,7 @@ TEST_F(MenuButtonTest, MAYBE_OneInkDropAnimationForReentrantPressedLocks) {
 #else
 #define MAYBE_InkDropStateForMenuButtonWithPressedLockBeforeActivation \
   InkDropStateForMenuButtonWithPressedLockBeforeActivation
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(MenuButtonTest,
        MAYBE_InkDropStateForMenuButtonWithPressedLockBeforeActivation) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
@@ -563,7 +563,7 @@ TEST_F(MenuButtonTest,
 #else
 #define MAYBE_DraggableMenuButtonDoesNotActivateOnDrag \
   DraggableMenuButtonDoesNotActivateOnDrag
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 TEST_F(MenuButtonTest, MAYBE_DraggableMenuButtonDoesNotActivateOnDrag) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
   TestDragController drag_controller;

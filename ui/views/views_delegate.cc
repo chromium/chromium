@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/native_widget_private.h"
 
@@ -28,7 +27,7 @@ ViewsDelegate::ViewsDelegate() {
   DCHECK(!views_delegate);
   views_delegate = this;
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS)
   // TouchSelectionMenuRunnerViews is not supported on Mac or Cast.
   // It is also not used on Ash (the ChromeViewsDelegate() for Ash will
   // immediately replace this). But tests running without the Chrome layer
@@ -76,13 +75,6 @@ ViewsDelegate::ProcessAcceleratorWhileMenuShowing(
 bool ViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
   return true;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ViewsDelegate::ShouldWindowHaveRoundedCorners(
-    const gfx::NativeWindow window) const {
-  return false;
-}
-#endif
 
 #if BUILDFLAG(IS_WIN)
 HICON ViewsDelegate::GetDefaultWindowIcon() const {

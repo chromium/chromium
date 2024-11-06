@@ -202,8 +202,11 @@ class VIEWS_EXPORT TooltipController
   // Do NOT override this value except from TooltipControllerTestHelper.
   bool skip_show_delay_for_testing_ = false;
 
-  // The show delay before showing tooltip may differ for external app's tooltip
-  // such as Lacros. This map specifies the show delay for each target window.
+  // The show delay before showing tooltip may differ for external app's
+  // tooltip. This map specifies the show delay for each target window.
+  // TODO(crbug.com/c/374244480): consider removing this when removing lacros
+  // support code from //c/exo. This is only used by aura shell to show tooltips
+  // with delays for external apps.
   std::map<aura::Window*, base::TimeDelta> show_tooltip_delay_map_;
 
   // Web content tooltips should be shown indefinitely and those added on Views

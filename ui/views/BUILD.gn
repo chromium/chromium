@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
@@ -557,7 +556,6 @@ component("views") {
 
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//cc/paint",
     "//components/url_formatter",
     "//mojo/public/cpp/bindings",
@@ -617,36 +615,26 @@ component("views") {
     "//ui/views/window/vector_icons",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//ui/base/ime/ash",
-    ]
-  }
-
   if (is_chromeos) {
     public += [ "highlight_border.h" ]
     sources += [ "highlight_border.cc" ]
     deps += [
+      "//ash/constants",
       "//chromeos/constants",
+      "//ui/base/ime/ash",
       "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     ]
   }
 
   if (is_linux) {
     public_deps += [ "//ui/linux:linux_ui" ]
+    deps += [ "//ui/base/ime/linux" ]
+    sources += [ "controls/menu/menu_config_linux.cc" ]
   }
 
   if (is_linux || is_chromeos || is_fuchsia) {
     public += [ "color_chooser/color_chooser_view.h" ]
     sources += [ "color_chooser/color_chooser_view.cc" ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
-    deps += [ "//ui/base/ime/linux" ]
-    if (!is_chromeos_lacros) {
-      sources += [ "controls/menu/menu_config_linux.cc" ]
-    }
   }
 
   if (is_chromeos) {
@@ -831,7 +819,7 @@ component("views") {
       "widget/window_reorderer.cc",
       "windows_stationarity_monitor_aura.cc",
     ]
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       sources += [ "accessibility/widget_ax_tree_id_map.cc" ]
     }
     deps += [
@@ -843,7 +831,7 @@ component("views") {
       "//ui/wm",
       "//ui/wm/public",
     ]
-    if (enable_desktop_aura || is_chromeos_ash) {
+    if (enable_desktop_aura || is_chromeos) {
       public += [
         "touchui/touch_selection_menu_runner_views.h",
         "touchui/touch_selection_menu_views.h",
@@ -907,7 +895,7 @@ component("views") {
           "//ui/base:ozone_buildflags",
         ]
       }
-      if (is_linux || is_chromeos_lacros || is_fuchsia) {
+      if (is_linux || is_fuchsia) {
         public += [
           "widget/desktop_aura/desktop_window_tree_host_platform.h",
           "widget/desktop_aura/window_move_client_platform.h",
@@ -1110,7 +1098,6 @@ source_set("test_support") {
     ":views",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//gpu/ipc/service",
     "//ipc:test_support",
     "//mojo/core/embedder",
@@ -1170,12 +1157,10 @@ source_set("test_support") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
-
   if (use_aura) {
     sources += [
+      "corewm/test/tooltip_aura_test_api.cc",
+      "corewm/test/tooltip_aura_test_api.h",
       "corewm/tooltip_controller_test_helper.cc",
       "corewm/tooltip_controller_test_helper.h",
       "test/desktop_test_views_delegate_aura.cc",
@@ -1184,12 +1169,6 @@ source_set("test_support") {
       "test/views_test_helper_aura.h",
       "test/widget_test_aura.cc",
     ]
-    if (!is_chromeos_lacros) {
-      sources += [
-        "corewm/test/tooltip_aura_test_api.cc",
-        "corewm/test/tooltip_aura_test_api.h",
-      ]
-    }
     deps += [
       "//ui/aura",
       "//ui/aura:test_support",
@@ -1347,7 +1326,6 @@ test("views_unittests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/vector_icons",
@@ -1428,11 +1406,10 @@ test("views_unittests") {
   }
 
   if (is_linux) {
-    deps += [ "//ui/linux:test_support" ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
-    deps += [ "//ui/base/ime/linux" ]
+    deps += [
+      "//ui/base/ime/linux",
+      "//ui/linux:test_support",
+    ]
   }
 
   if (has_native_accessibility) {
@@ -1518,7 +1495,7 @@ test("views_unittests") {
           [ "widget/desktop_aura/desktop_window_tree_host_win_unittest.cc" ]
     }
 
-    if (enable_desktop_aura || is_chromeos_ash) {
+    if (enable_desktop_aura || is_chromeos) {
       sources += [ "touchui/touch_selection_menu_runner_views_unittest.cc" ]
     }
 
@@ -1547,7 +1524,7 @@ test("views_unittests") {
     }
   }
 
-  if ((is_linux || is_chromeos_lacros) && use_ozone) {
+  if (is_linux) {
     data_deps +=
         [ "//testing/buildbot/filters:linux_ozone_views_unittests_filters" ]
   }
@@ -1598,7 +1575,6 @@ source_set("views_interactive_ui_tests") {
     ":views",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
@@ -1640,7 +1616,7 @@ source_set("views_interactive_ui_tests") {
       "//ui/wm/public",
     ]
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       sources += [ "widget/desktop_aura/desktop_window_tree_host_platform_impl_interactive_uitest.cc" ]
     }
 
@@ -1657,7 +1633,7 @@ source_set("views_interactive_ui_tests") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources -= [ "corewm/desktop_capture_controller_unittest.cc" ]
   }
 }

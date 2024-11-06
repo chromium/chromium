@@ -20,7 +20,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -2254,17 +2253,6 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
                                       &resulting_direction, &anchor)
           : CalculateMenuBounds(item, preferred_open_direction,
                                 &resulting_direction, &anchor);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (bounds.size().IsEmpty()) {
-    LOG(WARNING) << "Menu size is unexpectedly zero. Bounds: "
-                 << bounds.ToString()
-                 << ", anchor: " << anchor.anchor_rect.ToString()
-                 << ", display_bounds: " << state_.monitor_bounds.ToString()
-                 << ", calculated as bubble: " << calculate_as_bubble_menu;
-    base::debug::DumpWithoutCrashing();
-  }
-#endif
 
   SetChildMenuOpenDirectionAtDepth(menu_depth, resulting_direction);
   bool do_capture = (!did_capture_ && !for_drop_ && !IsEditableCombobox());

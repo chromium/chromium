@@ -5,7 +5,6 @@
 #include "ui/views/test/test_views_delegate.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/views/buildflags.h"
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
@@ -27,7 +26,7 @@ HICON TestViewsDelegate::GetSmallWindowIcon() const {
 void TestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,
     internal::NativeWidgetDelegate* delegate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!params->parent && !params->context)
     params->context = context_;
 #endif

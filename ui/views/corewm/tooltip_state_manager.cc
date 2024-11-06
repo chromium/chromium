@@ -139,7 +139,7 @@ void TooltipStateManager::StartWillShowTooltipTimer(
     // This other path is needed for the unit tests to pass because Show is not
     // immediately called when we have a `show_delay` of zero.
     // TODO(bebeaudr): Fix this by ensuring that the unit tests wait for the
-    // timer to fire before continuing for non-Lacros platforms.
+    // timer to fire before continuing.
     ShowNow(trimmed_text, hide_delay);
   }
 }

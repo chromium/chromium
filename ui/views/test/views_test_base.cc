@@ -30,10 +30,6 @@
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 namespace views {
 
 void ViewsTestBase::WidgetCloser::operator()(Widget* widget) const {
@@ -42,16 +38,7 @@ void ViewsTestBase::WidgetCloser::operator()(Widget* widget) const {
 
 ViewsTestBase::ViewsTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : task_environment_(std::move(task_environment)) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // ViewsTestBase is also used by a number of Lacros interactive_ui_tests.
-  // Lacros interactive_ui_tests are expected to process the
-  // --lacros-mojo-socket-for-testing command line switch in order to set up
-  // crosapi. However, ViewsTestBase doesn't implement that as it's also used by
-  // other tests and doesn't need crosapi. Hence disable crosapi explicitly.
-  chromeos::BrowserParamsProxy::DisableCrosapiForTesting();
-#endif
-}
+    : task_environment_(std::move(task_environment)) {}
 
 ViewsTestBase::~ViewsTestBase() {
   CHECK(setup_called_)
