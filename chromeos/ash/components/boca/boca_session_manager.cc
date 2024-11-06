@@ -188,6 +188,10 @@ void BocaSessionManager::UpdateCurrentSession(
   return current_session_.get();
 }
 
+const ::boca::Session* BocaSessionManager::GetPreviousSession() {
+  return previous_session_.get();
+}
+
 void BocaSessionManager::UpdateTabActivity(std::u16string title) {
   if (!current_session_ ||
       current_session_->session_state() != ::boca::Session::ACTIVE) {

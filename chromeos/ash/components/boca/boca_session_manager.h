@@ -151,6 +151,7 @@ class BocaSessionManager
   virtual void UpdateCurrentSession(std::unique_ptr<::boca::Session> session,
                                     bool dispatch_event);
   virtual ::boca::Session* GetCurrentSession();
+  virtual const ::boca::Session* GetPreviousSession();
 
   virtual void UpdateTabActivity(std::u16string title);
 
