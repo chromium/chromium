@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 #include "ui/display/screen.h"
 #include "ui/ozone/public/platform_screen.h"

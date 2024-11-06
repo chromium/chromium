@@ -5,7 +5,6 @@
 #ifndef UI_AURA_CLIENT_DRAG_DROP_CLIENT_OBSERVER_H_
 #define UI_AURA_CLIENT_DRAG_DROP_CLIENT_OBSERVER_H_
 
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 
 namespace ui {

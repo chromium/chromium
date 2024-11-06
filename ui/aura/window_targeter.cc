@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/event_client.h"
 #include "ui/aura/client/focus_client.h"
