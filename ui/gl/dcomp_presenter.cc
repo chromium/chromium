@@ -19,10 +19,8 @@
 
 namespace gl {
 
-DCompPresenter::PendingFrame::PendingFrame(
-    Microsoft::WRL::ComPtr<ID3D11Query> query,
-    PresentationCallback callback)
-    : query(std::move(query)), callback(std::move(callback)) {}
+DCompPresenter::PendingFrame::PendingFrame(PresentationCallback callback)
+    : callback(std::move(callback)) {}
 DCompPresenter::PendingFrame::PendingFrame(PendingFrame&& other) = default;
 DCompPresenter::PendingFrame::~PendingFrame() = default;
 DCompPresenter::PendingFrame& DCompPresenter::PendingFrame::operator=(
@@ -112,9 +110,7 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
   TRACE_EVENT0("gpu", "DCompPresenter::Present");
 
   // Callback will be dequeued on next vsync.
-  EnqueuePendingFrame(std::move(presentation_callback),
-                      /*create_query=*/create_query_this_frame_);
-  create_query_this_frame_ = false;
+  EnqueuePendingFrame(std::move(presentation_callback));
 
   if (!layer_tree_->CommitAndClearPendingOverlays(
           std::move(pending_overlays_))) {
@@ -197,16 +193,6 @@ void DCompPresenter::CheckPendingFrames() {
   d3d11_device_->GetImmediateContext(&context);
   while (!pending_frames_.empty()) {
     auto& frame = pending_frames_.front();
-    // Query isn't created if there was no damage for previous frame.
-    if (frame.query) {
-      HRESULT hr = context->GetData(frame.query.Get(), nullptr, 0,
-                                    D3D11_ASYNC_GETDATA_DONOTFLUSH);
-      // When the GPU completes execution past the event query, GetData() will
-      // return S_OK, and S_FALSE otherwise.  Do not use SUCCEEDED() because
-      // S_FALSE is also a success code.
-      if (hr != S_OK)
-        break;
-    }
     std::move(frame.callback)
         .Run(
             gfx::PresentationFeedback(last_vsync_time_, last_vsync_interval_,
@@ -220,24 +206,8 @@ void DCompPresenter::CheckPendingFrames() {
   }
 }
 
-void DCompPresenter::EnqueuePendingFrame(PresentationCallback callback,
-                                         bool create_query) {
-  Microsoft::WRL::ComPtr<ID3D11Query> query;
-  if (create_query) {
-    D3D11_QUERY_DESC desc = {};
-    desc.Query = D3D11_QUERY_EVENT;
-    HRESULT hr = d3d11_device_->CreateQuery(&desc, &query);
-    if (SUCCEEDED(hr)) {
-      Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
-      d3d11_device_->GetImmediateContext(&context);
-      context->End(query.Get());
-      context->Flush();
-    } else {
-      DLOG(ERROR) << "CreateQuery failed with error 0x" << std::hex << hr;
-    }
-  }
-
-  pending_frames_.emplace_back(std::move(query), std::move(callback));
+void DCompPresenter::EnqueuePendingFrame(PresentationCallback callback) {
+  pending_frames_.emplace_back(std::move(callback));
 
   if (use_gpu_vsync_) {
     StartOrStopVSyncThread();
