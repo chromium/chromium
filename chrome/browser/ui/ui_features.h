@@ -300,6 +300,10 @@ BASE_DECLARE_FEATURE(kEnableManagementPromotionBanner);
 // the chrome://policy page.
 BASE_DECLARE_FEATURE(kEnablePolicyPromotionBanner);
 
+// Controls whether a performance improvement in browser feature support
+// checking is enabled.
+BASE_DECLARE_FEATURE(kInlineFullscreenPerfExperiment);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

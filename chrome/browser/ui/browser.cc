@@ -416,6 +416,32 @@ void UpdateTabGroupSessionMetadata(Browser* browser,
                                        visual_data);
 }
 
+bool ShouldHideUIForFullscreenWrapper(const Browser* browser) {
+  return browser->ShouldHideUIForFullscreen();
+}
+
+bool AlwaysReturnTrue(const Browser* browser) {
+  return true;
+}
+
+bool AlwaysReturnFalse(const Browser* browser) {
+  return false;
+}
+
+base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
+    const Browser* browser) {
+  // Returns a base::FunctionRef instead of a Base::RepeatingCallback to reduce
+  // allocation overhead, since this is a performance experiment.
+  if (base::FeatureList::IsEnabled(features::kInlineFullscreenPerfExperiment)) {
+    // In the experiment branch, lazy-eval ShouldHideUIForFullscreen.
+    return &ShouldHideUIForFullscreenWrapper;
+  }
+
+  // In the control branch, eagerly evaluate ShouldHideUIForFullscreen.
+  return browser->ShouldHideUIForFullscreen() ? &AlwaysReturnTrue
+                                              : &AlwaysReturnFalse;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3275,14 +3301,15 @@ void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
 
 bool Browser::NormalBrowserSupportsWindowFeature(WindowFeature feature,
                                                  bool check_can_support) const {
-  bool fullscreen = ShouldHideUIForFullscreen();
+  const base::FunctionRef<bool(const Browser*)> fullscreen =
+      MaybeLazyIsFullscreen(this);
   switch (feature) {
     case FEATURE_BOOKMARKBAR:
       return true;
     case FEATURE_TABSTRIP:
     case FEATURE_TOOLBAR:
     case FEATURE_LOCATIONBAR:
-      return check_can_support || !fullscreen;
+      return check_can_support || !fullscreen(this);
     case FEATURE_TITLEBAR:
     case FEATURE_NONE:
       return false;
@@ -3291,12 +3318,12 @@ bool Browser::NormalBrowserSupportsWindowFeature(WindowFeature feature,
 
 bool Browser::PopupBrowserSupportsWindowFeature(WindowFeature feature,
                                                 bool check_can_support) const {
-  bool fullscreen = ShouldHideUIForFullscreen();
-
+  const base::FunctionRef<bool(const Browser*)> fullscreen =
+      MaybeLazyIsFullscreen(this);
   switch (feature) {
     case FEATURE_TITLEBAR:
     case FEATURE_LOCATIONBAR:
-      return check_can_support || (!fullscreen && !is_trusted_source());
+      return check_can_support || (!fullscreen(this) && !is_trusted_source());
     case FEATURE_TABSTRIP:
     case FEATURE_TOOLBAR:
     case FEATURE_BOOKMARKBAR:
@@ -3308,12 +3335,13 @@ bool Browser::PopupBrowserSupportsWindowFeature(WindowFeature feature,
 bool Browser::AppPopupBrowserSupportsWindowFeature(
     WindowFeature feature,
     bool check_can_support) const {
-  bool fullscreen = ShouldHideUIForFullscreen();
+  const base::FunctionRef<bool(const Browser*)> fullscreen =
+      MaybeLazyIsFullscreen(this);
   switch (feature) {
     case FEATURE_TITLEBAR:
-      return check_can_support || !fullscreen;
+      return check_can_support || !fullscreen(this);
     case FEATURE_LOCATIONBAR:
-      return app_controller_ && (check_can_support || !fullscreen);
+      return app_controller_ && (check_can_support || !fullscreen(this));
     default:
       return PopupBrowserSupportsWindowFeature(feature, check_can_support);
   }
@@ -3322,7 +3350,8 @@ bool Browser::AppPopupBrowserSupportsWindowFeature(
 bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
                                               bool check_can_support) const {
   DCHECK(app_controller_);
-  bool fullscreen = ShouldHideUIForFullscreen();
+  const base::FunctionRef<bool(const Browser*)> fullscreen =
+      MaybeLazyIsFullscreen(this);
   switch (feature) {
     // Web apps should always support the toolbar, so the title/origin of the
     // current page can be shown when browsing a url that is not inside the app.
@@ -3336,13 +3365,13 @@ bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
     // TODO(crbug.com/40639933): Make this control the visibility of
     // CustomTabBarView.
     case FEATURE_LOCATIONBAR:
-      return check_can_support || !fullscreen;
+      return check_can_support || !fullscreen(this);
     case FEATURE_TABSTRIP:
       // Even when the app has a tab strip, it should be hidden in
       // fullscreen. This is consistent with the behavior of
       // NormalBrowserSupportsWindowFeature().
       return app_controller_->has_tab_strip() &&
-             (check_can_support || !fullscreen);
+             (check_can_support || !fullscreen(this));
     case FEATURE_BOOKMARKBAR:
     case FEATURE_NONE:
       return false;
