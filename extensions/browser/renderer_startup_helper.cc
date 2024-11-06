@@ -18,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
-#include "components/guest_view/buildflags/buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"

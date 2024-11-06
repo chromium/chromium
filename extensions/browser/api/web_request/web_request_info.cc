@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/websocket_handshake_request_info.h"
 #include "extensions/browser/api/web_request/upload_data_presenter.h"

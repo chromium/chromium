@@ -161,7 +161,6 @@ static_library("renderer") {
     "//components/feed/content/renderer:feed_renderer",
     "//components/fingerprinting_protection_filter/browser",
     "//components/google/core/common",
-    "//components/guest_view/buildflags",
     "//components/heap_profiling/in_process",
     "//components/history_clusters/core",
     "//components/language/core/common",

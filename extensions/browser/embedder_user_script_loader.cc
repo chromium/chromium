@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/url_fetcher.h"
 #include "extensions/browser/user_script_loader.h"

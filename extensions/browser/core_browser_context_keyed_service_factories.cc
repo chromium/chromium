@@ -4,7 +4,6 @@
 
 #include "extensions/browser/core_browser_context_keyed_service_factories.h"
 
-#include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_function.h"

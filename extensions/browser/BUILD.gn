@@ -4,15 +4,11 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(enable_extensions_core)
-
-# If enable_extensions is true then enable_guest_view must also be true.
-assert(!enable_extensions || enable_guest_view)
 
 # The overarching "build all the things" for the browser side of the
 # //extensions module. In particular, this includes:
@@ -71,7 +67,6 @@ source_set("core_keyed_service_factories") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//components/guest_view/buildflags",
     "//extensions/browser:browser_sources",
     "//extensions/browser/updater",
     "//extensions/buildflags",
@@ -515,7 +510,6 @@ source_set("browser_sources") {
     "//components/crash/core/common",
     "//components/crx_file",
     "//components/crx_file:crx_creator",
-    "//components/guest_view/buildflags",
     "//components/input",
     "//components/keyed_service/content",
     "//components/keyed_service/content:content",

@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 
-#include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/api/context_menus_custom_bindings.h"

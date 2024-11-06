@@ -12,7 +12,6 @@
 #include "chrome/renderer/extensions/chrome_resource_request_policy_delegate.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
 #include "chrome/renderer/process_state.h"
-#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
