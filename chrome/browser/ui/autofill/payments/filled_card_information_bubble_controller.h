@@ -72,8 +72,9 @@ class FilledCardInformationBubbleController {
   // Returns the educational label shown in the body of the bubble.
   virtual std::u16string GetEducationalBodyLabel() const = 0;
 
-  // Returns the descriptive label of the virtual card number field.
-  virtual std::u16string GetVirtualCardNumberFieldLabel() const = 0;
+  // Returns the descriptive label of the virtual card or server card number
+  // field.
+  virtual std::u16string GetCardNumberFieldLabel() const = 0;
 
   // Returns the descriptive label of the expiration date field.
   virtual std::u16string GetExpirationDateFieldLabel() const = 0;

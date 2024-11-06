@@ -122,8 +122,7 @@ FilledCardInformationBubbleControllerImpl::GetEducationalBodyLabel() const {
 }
 
 std::u16string
-FilledCardInformationBubbleControllerImpl::GetVirtualCardNumberFieldLabel()
-    const {
+FilledCardInformationBubbleControllerImpl::GetCardNumberFieldLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL_VIRTUAL_CARD);
 }

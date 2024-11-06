@@ -235,7 +235,7 @@ void FilledCardInformationBubbleViews::AddCardDetailButtons(
   auto* virtual_card_number_container =
       parent->AddChildView(CreateButtonContainer());
   virtual_card_number_container->AddChildView(
-      CreateRowItemLabel(controller_->GetVirtualCardNumberFieldLabel()));
+      CreateRowItemLabel(controller_->GetCardNumberFieldLabel()));
   virtual_card_number_container->AddChildView(CreateRowItemButtonForField(
       FilledCardInformationBubbleField::kCardNumber));
 
