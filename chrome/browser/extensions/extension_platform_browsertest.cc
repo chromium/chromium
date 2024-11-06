@@ -50,7 +50,12 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
 
   scoped_refptr<const Extension> extension =
       loader.LoadExtension(extension_path);
+  last_loaded_extension_id_ = extension->id();
   return extension.get();
+}
+
+Profile* ExtensionPlatformBrowserTest::profile() {
+  return chrome_test_utils::GetProfile(this);
 }
 
 }  // namespace extensions

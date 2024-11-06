@@ -7,6 +7,9 @@
 
 #include "base/files/file_path.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "extensions/common/extension_id.h"
+
+class Profile;
 
 namespace extensions {
 class Extension;
@@ -84,10 +87,20 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 
+  // Lower case to match the style of InProcessBrowserTest.
+  Profile* profile();
+
+  const ExtensionId& last_loaded_extension_id() {
+    return last_loaded_extension_id_;
+  }
+
   // Set to "chrome/test/data/extensions". Derived classes may override.
   base::FilePath test_data_dir_;
 
   const ContextType context_type_;
+
+ private:
+  ExtensionId last_loaded_extension_id_;
 };
 
 }  // namespace extensions
