@@ -9,17 +9,21 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --dropdown-button-size: 40px;
   position: relative;
 }
 
-cr-icon-button {
-  --cr-icon-button-size: 40px;
-  --cr-icon-button-fill-color: var(--viewer-icon-ink-fill-color);
+cr-button {
+  --iron-icon-fill-color: var(--viewer-icon-ink-fill-color);
+  border: none;
+  height: var(--dropdown-button-size);
+  width: var(--dropdown-button-size);
   margin: 4px;
+  min-width: auto;
 }
 
-cr-icon-button[data-selected="true"] {
-  --cr-icon-button-fill-color: var(--viewer-icon-ink-selected-fill-color);
+cr-button[data-selected="true"] {
+  --iron-icon-fill-color: var(--viewer-icon-ink-selected-fill-color);
   background-color: var(--viewer-icon-ink-selected-background-color);
 }
 

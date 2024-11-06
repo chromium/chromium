@@ -14,17 +14,21 @@ function createDropdown(): ViewerBottomToolbarDropdownElement {
   return dropdown;
 }
 
+function getMenu(dropdown: ViewerBottomToolbarDropdownElement) {
+  return dropdown.shadowRoot!.querySelector('slot[name="menu"]');
+}
+
 chrome.test.runTests([
   async function testButtonTogglesDropdown() {
     const dropdown = createDropdown();
 
-    chrome.test.assertTrue(!dropdown.shadowRoot!.querySelector('slot'));
+    chrome.test.assertTrue(!getMenu(dropdown));
 
     // Open the dropdown.
-    getRequiredElement(dropdown, 'cr-icon-button').click();
+    getRequiredElement(dropdown, 'cr-button').click();
     await microtasksFinished();
 
-    chrome.test.assertTrue(!!dropdown.shadowRoot!.querySelector('slot'));
+    chrome.test.assertTrue(!!getMenu(dropdown));
     chrome.test.succeed();
   },
 
@@ -32,16 +36,16 @@ chrome.test.runTests([
     const dropdown = createDropdown();
 
     // Open the dropdown.
-    getRequiredElement(dropdown, 'cr-icon-button').click();
+    getRequiredElement(dropdown, 'cr-button').click();
     await microtasksFinished();
 
-    chrome.test.assertTrue(!!dropdown.shadowRoot!.querySelector('slot'));
+    chrome.test.assertTrue(!!getMenu(dropdown));
 
     // Click a different element. The dropdown should not be visible.
     document.body.click();
     await microtasksFinished();
 
-    chrome.test.assertTrue(!dropdown.shadowRoot!.querySelector('slot'));
+    chrome.test.assertTrue(!getMenu(dropdown));
     chrome.test.succeed();
   },
 
@@ -49,17 +53,17 @@ chrome.test.runTests([
     const dropdown = createDropdown();
 
     // Open the dropdown.
-    getRequiredElement(dropdown, 'cr-icon-button').click();
+    getRequiredElement(dropdown, 'cr-button').click();
     await microtasksFinished();
 
-    chrome.test.assertTrue(!!dropdown.shadowRoot!.querySelector('slot'));
+    chrome.test.assertTrue(!!getMenu(dropdown));
 
     // Finish an ink stroke. The dropdown should not be visible.
     PluginController.getInstance().getEventTarget().dispatchEvent(
         new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
     await microtasksFinished();
 
-    chrome.test.assertTrue(!dropdown.shadowRoot!.querySelector('slot'));
+    chrome.test.assertTrue(!getMenu(dropdown));
     chrome.test.succeed();
   },
 ]);

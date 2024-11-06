@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -10,11 +10,12 @@ import type {ViewerBottomToolbarDropdownElement} from './viewer_bottom_toolbar_d
 
 export function getHtml(this: ViewerBottomToolbarDropdownElement) {
   return html`
-    <cr-icon-button iron-icon="${this.buttonIcon}"
-        @click="${this.toggleDropdown_}"
-        data-selected="${this.showDropdown_}"></cr-icon-button>
+    <cr-button @click="${this.toggleDropdown_}"
+        data-selected="${this.showDropdown_}">
+      <slot name="icon"></slot>
+    </cr-button>
     <div>
-      ${this.showDropdown_ ? html`<slot></slot>` : ''}
+      ${this.showDropdown_ ? html`<slot name="menu"></slot>` : ''}
     </div>
   `;
 }

@@ -34,15 +34,14 @@ async function clickColorButton(index: number) {
 
 async function clickDropdownButton(
     dropdown: ViewerBottomToolbarDropdownElement) {
-  const dropdownButton = getRequiredElement(dropdown, 'cr-icon-button');
+  const dropdownButton = getRequiredElement(dropdown, 'cr-button');
   dropdownButton.click();
   await microtasksFinished();
 }
 
-function assertDropdownButtonIcon(
-    dropdown: ViewerBottomToolbarDropdownElement, expected: string) {
+function assertDropdownSizeIcon(expected: string) {
   const actual =
-      getRequiredElement(dropdown, 'cr-icon-button').getAttribute('iron-icon');
+      getRequiredElement(bottomToolbar, '#size > cr-icon').getAttribute('icon');
   chrome.test.assertTrue(!!actual);
   chrome.test.assertEq(expected, actual);
 }
@@ -59,8 +58,7 @@ chrome.test.runTests([
         bottomToolbar, 'ink-size-selector');
     const sizeButtons = getSizeButtons(sizeSelector);
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
-    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:pen-size-3');
-
+    assertDropdownSizeIcon('pdf:pen-size-3');
     sizeButtons[0].click();
     await microtasksFinished();
 
@@ -69,7 +67,7 @@ chrome.test.runTests([
       color: {r: 0, g: 0, b: 0},
       size: 1,
     });
-    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:pen-size-1');
+    assertDropdownSizeIcon('pdf:pen-size-1');
 
     // Change the pen color to '#fdd663'.
     await clickColorButton(/*index=*/ 6);
@@ -94,7 +92,7 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 3,
     });
-    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:eraser-size-3');
+    assertDropdownSizeIcon('pdf:eraser-size-3');
 
     // Change the eraser size.
     await clickDropdownButton(bottomToolbar.$.size);
@@ -110,7 +108,7 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 2,
     });
-    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:eraser-size-2');
+    assertDropdownSizeIcon('pdf:eraser-size-2');
 
     // There shouldn't be color options.
     chrome.test.assertTrue(
@@ -132,7 +130,7 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 8,
     });
-    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:highlighter-size-3');
+    assertDropdownSizeIcon('pdf:highlighter-size-3');
 
     // Change the highlighter size.
     await clickDropdownButton(bottomToolbar.$.size);
@@ -150,7 +148,7 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 16,
     });
-    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:highlighter-size-5');
+    assertDropdownSizeIcon('pdf:highlighter-size-5');
 
     // Change the highlighter color to '#34a853'.
     await clickColorButton(/*index=*/ 2);
