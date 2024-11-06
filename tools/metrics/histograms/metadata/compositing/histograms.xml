@@ -729,17 +729,6 @@ chromium-metrics-reviews@google.com.
   <token key="DPI" variants="LCDTextDisallowedReasonDPI"/>
 </histogram>
 
-<histogram name="Compositing.Renderer.LCDTextDisallowedReasonLayers2.{DPI}"
-    enum="LCDTextDisallowedReason" expires_after="2024-11-03">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Records the number of layers containing text by LCD-text disallowed reasons.
-    Recorded along with Compositing.Renderer.LCDTextDisallowedReasonKPixels.
-  </summary>
-  <token key="DPI" variants="LCDTextDisallowedReasonDPI"/>
-</histogram>
-
 <histogram name="Compositing.Renderer.NumActiveLayers" units="layers"
     expires_after="2025-04-13">
   <owner>pdr@chromium.org</owner>
