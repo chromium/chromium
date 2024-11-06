@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -64,6 +65,7 @@ class SidePanelWebUIView : public views::WebView,
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+  base::CallbackListSubscription tab_will_discard_subscription_;
   base::WeakPtrFactory<SidePanelWebUIView> weak_factory_{this};
 };
 
