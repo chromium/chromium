@@ -41,35 +41,22 @@ PendingImportMap::PendingImportMap(
 // href="https://html.spec.whatwg.org/C#register-an-import-map"> This is
 // parallel to PendingScript::ExecuteScriptBlock().
 void PendingImportMap::RegisterImportMap() {
-  // <spec step="1">If element’s the script’s result is null, then fire an event
-  // named error at element, and return.</spec>
+  // TODO(crbug.com/364917757): I don't think this ever happens, so we can
+  // replace this with a CHECK.
   if (!import_map_) {
     element_->DispatchErrorEvent();
     return;
   }
 
-  // <spec step="2">Let import map parse result be element’s the script’s
-  // result.</spec>
+  // TODO(crbug.com/364917757): This step is no longer in the spec, and it's not
+  // clear when this can actually happen.
   //
-  // This is |this|.
-
-  // <spec step="3">Assert: element’s the script’s type is "importmap".</spec>
-  //
-  // <spec step="4">Assert: import map parse result is an import map parse
-  // result.</spec>
-  //
-  // These are ensured by C++ type.
-
-  // <spec step="5">Let settings object be import map parse result’s settings
-  // object.</spec>
-  //
-  // <spec step="6">If element’s node document’s relevant settings object is not
-  // equal to settings object, then return. ...</spec>
+  // <spec step="?">If element’s node document’s relevant settings
+  // object is not equal to settings object, then return. ...</spec>
   ExecutionContext* context = element_->GetExecutionContext();
   if (original_execution_context_ != context)
     return;
 
-  // Steps 7 and 8.
   Modulator* modulator = Modulator::From(
       ToScriptStateForMainWorld(To<LocalDOMWindow>(context)->GetFrame()));
   if (!modulator)
@@ -78,32 +65,20 @@ void PendingImportMap::RegisterImportMap() {
   ScriptState* script_state = modulator->GetScriptState();
   ScriptState::Scope scope(script_state);
 
-  // <spec step="7">If import map parse result’s error to rethrow is not null,
-  // then:</spec>
+  // <spec step="1">If result's error to rethrow is not null, then report an
+  // exception given by result's error to rethrow for global and return.</spec>
   if (error_to_rethrow_.has_value()) {
-    // <spec step="7.1">Report the exception given import map parse result’s
-    // error to rethrow. ...</spec>
     if (ExecutionContext::From(script_state)
             ->CanExecuteScripts(kAboutToExecuteScript)) {
       ModuleRecord::ReportException(script_state,
                                     error_to_rethrow_->ToV8(script_state));
     }
-
-    // <spec step="7.2">Return.</spec>
     return;
   }
 
-  // <spec step="8">Update element’s node document's import map with import map
-  // parse result’s import map.</spec>
-  //
-  // TODO(crbug.com/927119): Implement merging. Currently only one import map
-  // is allowed.
-  modulator->SetImportMap(import_map_);
-
-  // <spec step="9">If element is from an external file, then fire an event
-  // named load at element.</spec>
-  //
-  // TODO(hiroshige): Implement this when external import maps are implemented.
+  // <spec step="2">Merge existing and new import maps, given global and
+  // result's import map.</spec>
+  modulator->MergeExistingAndNewImportMaps(import_map_);
 }
 
 void PendingImportMap::Trace(Visitor* visitor) const {

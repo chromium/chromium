@@ -66,7 +66,16 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   std::optional<KURL> Resolve(const ParsedSpecifier&,
                               const KURL& base_url,
                               String* debug_message) const;
-  String GetIntegrity(const KURL& module_url) const;
+  String ResolveIntegrity(const KURL& module_url) const;
+
+  // https://html.spec.whatwg.org/C/#merge-existing-and-new-import-maps
+  // `new_import_map` is modified in place here, and should not be used after
+  // this call.
+  void MergeExistingAndNewImportMaps(
+      ImportMap* new_import_map,
+      const HashMap<String, HashSet<String>>& scoped_resolved_module_map,
+      const HashSet<String>& toplevel_resolved_module_set,
+      ConsoleLogger&);
 
   String ToStringForTesting() const;
 

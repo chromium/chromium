@@ -4030,6 +4030,15 @@
     "expires": "Jan 1, 2025"
   },
   {
+    "prefix": "single-import-map",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/import-maps",
+              "wpt_internal/import-maps"],
+    "args": ["--disable-blink-features=MultipleImportMaps"],
+    "owners": ["yoavweiss@chromium.org"],
+    "expires": "Jul 1, 2025"
+  },
+  {
     "prefix": "at-property-string-syntax",
     "platforms": ["Linux"],
     "bases": [

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Testing descendent resolution with scopes
+  assert_true: out of scope 1 expected true got false
+Harness: the test ran to completion.
+

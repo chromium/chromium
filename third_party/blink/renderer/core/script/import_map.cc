@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/parsed_specifier.h"
@@ -127,6 +128,33 @@ KURL NormalizeValue(const String& key,
 
       DCHECK(value.GetUrl().IsValid());
       return value.GetUrl();
+  }
+}
+
+// https://html.spec.whatwg.org/C#merge-module-specifier-maps
+void MergeModuleSpecifierMaps(ImportMap::SpecifierMap& old_map,
+                              const ImportMap::SpecifierMap& new_map,
+                              ConsoleLogger& logger) {
+  // Instead of copying the maps and returning the copy, we're modifying the
+  // maps in place.
+  // 2. For each specifier → url of newMap:
+  for (auto specifier : new_map.Keys()) {
+    // 2.1. If specifier exists in oldMap, then:
+    if (old_map.Contains(specifier)) {
+      // 2.1.1. The user agent may report the removed rule as a warning to the
+      // developer console.
+      auto* message = MakeGarbageCollected<ConsoleMessage>(
+          ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+          "An import map rule for specifier '" + specifier +
+              "' was removed, as it conflicted with an existing rule.");
+      logger.AddConsoleMessage(message,
+                               /*discard_duplicates=*/true);
+      // 2.1.2. Continue.
+      continue;
+    }
+    auto url = new_map.at(specifier);
+    // 2.2. Set mergedMap[specifier] to url.
+    old_map.insert(specifier, url);
   }
 }
 
@@ -660,9 +688,136 @@ String ImportMap::ToStringForTesting() const {
   return builder.ToString();
 }
 
-String ImportMap::GetIntegrity(const KURL& module_url) const {
+String ImportMap::ResolveIntegrity(const KURL& module_url) const {
   IntegrityMap::const_iterator it = integrity_.find(module_url);
   return it != integrity_.end() ? it->value : String();
+}
+
+// https://html.spec.whatwg.org/C/#merge-existing-and-new-import-maps
+void ImportMap::MergeExistingAndNewImportMaps(
+    ImportMap* new_import_map,
+    const HashMap<String, HashSet<String>>& scoped_resolved_module_map,
+    const HashSet<String>& toplevel_resolved_module_set,
+    ConsoleLogger& logger) {
+  // 1. Let newImportMapScopes be a deep copy of newImportMap's scopes.
+  // 2. Let newImportMapImports be a deep copy of newImportMap's imports.
+  //
+  // Instead of copying we have moved the new_import_map here and are performing
+  // the algorithm's mutations directly on them. That's fine because the move
+  // guarantees that no one will use this map for anything else.
+  ImportMap::ScopesMap& new_import_map_scopes = new_import_map->scopes_map_;
+  ImportMap::SpecifierMap& new_import_map_imports = new_import_map->imports_;
+  ImportMap::IntegrityMap& new_import_map_integrity =
+      new_import_map->integrity_;
+
+  // 3. For each scopePrefix → scopeImports of newImportMapScopes:
+  for (auto scope : new_import_map_scopes) {
+    ImportMap::SpecifierMap& scope_imports = scope.value;
+    // 3.1. For each pair of global's resolved module set:
+    //
+    // 3.1.1. If pair's referring script does not start with scopePrefix,
+    // continue.
+    //
+    // 3.1.2. For each specifier → url of scopeImports:
+    //
+    // 3.1.2.1. If pair's specifier starts with specifier, then:
+    //
+    //
+    // We are using a different algorithm here, where instead of a resolved
+    // module set, we have a scoped resolved module map. The map's keys are
+    // scope prefixes, and its values are a set of specifier prefixes that
+    // already exist in that scope. We grab the set of specifier prefixes using
+    // the current scope and then iterate over the scope's imports, removing any
+    // specifiers whose prefix is in the set.
+    const auto& current_set_it = scoped_resolved_module_map.find(scope.key);
+    if (current_set_it != scoped_resolved_module_map.end()) {
+      const auto current_resolved_set = current_set_it->value;
+      Vector<String> specifiers_to_remove;
+      for (auto specifier : scope_imports.Keys()) {
+        if (current_resolved_set.find(specifier) !=
+            current_resolved_set.end()) {
+          specifiers_to_remove.push_back(specifier);
+        }
+      }
+      for (auto specifier : specifiers_to_remove) {
+        // 3.1.2.1.1. The user agent may report the removed rule as a warning to
+        // the developer console.
+        auto* message = MakeGarbageCollected<ConsoleMessage>(
+            ConsoleMessage::Source::kJavaScript,
+            ConsoleMessage::Level::kWarning,
+            "An import map scope rule for specifier '" + specifier +
+                "' was removed, as it conflicted with already resolved module "
+                "specifiers.");
+        logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
+        // 3.1.2.1.2. Remove scopeImports[specifier].
+        scope_imports.erase(specifier);
+      }
+    }
+
+    // 3.2 If scopePrefix exists in oldImportMap's scopes, then set
+    // oldImportMap's scopes[scopePrefix] to the result of merging module
+    // specifier maps, given scopeImports and oldImportMap's
+    // scopes[scopePrefix].
+    const auto old_scope_specifier_map_it = scopes_map_.find(scope.key);
+    if (old_scope_specifier_map_it != scopes_map_.end()) {
+      ImportMap::SpecifierMap& old_scope_specifier_map =
+          old_scope_specifier_map_it->value;
+      MergeModuleSpecifierMaps(old_scope_specifier_map, scope_imports, logger);
+    } else {
+      // 3.3 Otherwise, set oldImportMap's scopes[scopePrefix] to
+      // scopeImports.
+      scopes_map_.insert(scope.key, scope_imports);
+      scopes_vector_.push_back(scope.key);
+    }
+  }
+
+  // 4. For each url → integrity of newImportMap's integrity:
+  for (auto url : new_import_map_integrity.Keys()) {
+    auto new_integrity_value = new_import_map_integrity.at(url);
+    // 4.1 If url exists in oldImportMap's integrity, then:
+    if (integrity_.Contains(url)) {
+      // 4.1.1. The user agent may report the removed rule as a warning to the
+      // developer console.
+      auto* message = MakeGarbageCollected<ConsoleMessage>(
+          ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+          "An import map integrity rule for url '" + url.GetString() +
+              "' was removed, as it conflicted with already defined integrity "
+              "rules.");
+      logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
+      // 4.1.2 Continue.
+      continue;
+    }
+    // 4.2 Set oldImportMap's integrity[url] to integrity.
+    integrity_.insert(url, new_integrity_value);
+  }
+  // 5. For each pair of global's resolved module set:
+
+  // 5.1. For each specifier → url of newImportMapImports:
+
+  // 5.1.1. If specifier starts with pair's specifier, then:
+
+  // We're using a different algorithm here where the resolved module set is
+  // replaced with a set of all the prefixes of specifier resolved. For each
+  // such prefix that exists in the new import map's imports section, we remove
+  // it from that section.
+  for (auto specifier : toplevel_resolved_module_set) {
+    if (!new_import_map_imports.Contains(specifier)) {
+      continue;
+    }
+    // 5.1. The user agent may report the removed rule as a warning to the
+    // developer console.
+    auto* message = MakeGarbageCollected<ConsoleMessage>(
+        ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+        "An import map rule for specifier '" + specifier +
+            "' was removed, as it conflicted with already resolved module "
+            "specifiers.");
+    logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
+    // 5.2. Remove newImportMapImports[specifier].
+    new_import_map_imports.erase(specifier);
+  }
+  // 6. Set oldImportMap's imports to the result of merge module specifier
+  // maps, given newImportMapImports and oldImportMap's imports.
+  MergeModuleSpecifierMaps(imports_, new_import_map_imports, logger);
 }
 
 // To be called when scopes_map_ is set/updated to make scopes_vector_ and
@@ -677,4 +832,5 @@ void ImportMap::InitializeScopesVector() {
               return CodeUnitCompareLessThan(b, a);
             });
 }
+
 }  // namespace blink
