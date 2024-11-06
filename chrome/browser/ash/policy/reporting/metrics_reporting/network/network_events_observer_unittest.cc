@@ -397,50 +397,13 @@ class NetworkEventsObserverConnectionStateTest
   }
 
   NetworkEventsObserverTestHelper network_events_observer_test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST_F(NetworkEventsObserverConnectionStateTest, VpnFeatureDisabled) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {},
-      /*disabled_features=*/
-      {kEnableVpnConnectionStateEventsReporting});
-
-  NetworkEventsObserver network_events_observer;
-  network_events_observer.SetReportingEnabled(true);
-  base::test::TestFuture<MetricData> test_future;
-  network_events_observer.SetOnEventObservedCallback(
-      test_future.GetRepeatingCallback());
-
-  service_client()->SetServiceProperty(kVpnServicePath, shill::kStateProperty,
-                                       base::Value(shill::kStateIdle));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_FALSE(test_future.IsReady());
-
-  service_client()->SetServiceProperty(kWifiServicePath, shill::kStateProperty,
-                                       base::Value(shill::kStateIdle));
-
-  MetricData metric_data = test_future.Take();
-  EXPECT_THAT(metric_data.event_data().type(),
-              Eq(MetricEventType::NETWORK_STATE_CHANGE));
-  EXPECT_THAT(metric_data.telemetry_data()
-                  .networks_telemetry()
-                  .network_connection_change_event_data()
-                  .connection_state(),
-              Eq(NetworkConnectionState::NOT_CONNECTED));
-  EXPECT_FALSE(test_future.IsReady());
-}
 
 TEST_F(NetworkEventsObserverConnectionStateTest, NewVpnConnection) {
   static constexpr char kNewVpnServicePath1[] = "new-vpn-path1";
   static constexpr char kNewVpnGuid1[] = "new-vpn-guid1";
   static constexpr char kNewVpnServicePath2[] = "new-vpn-path2";
   static constexpr char kNewVpnGuid2[] = "new-vpn-guid2";
-
-  scoped_feature_list_.InitAndEnableFeature(
-      kEnableVpnConnectionStateEventsReporting);
 
   NetworkEventsObserver network_events_observer;
   network_events_observer.SetReportingEnabled(true);
@@ -490,12 +453,6 @@ TEST_F(NetworkEventsObserverConnectionStateTest, NewVpnConnection) {
 }
 
 TEST_F(NetworkEventsObserverConnectionStateTest, TetherConnection) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {kEnableVpnConnectionStateEventsReporting},
-      /*disabled_features=*/
-      {});
-
   NetworkEventsObserver network_events_observer;
   network_events_observer.SetReportingEnabled(true);
   base::test::TestFuture<MetricData> test_future;
@@ -540,10 +497,6 @@ TEST_P(NetworkEventsObserverConnectionStateTest, Default) {
   const NetworkConnectionStateTestCase& test_case = GetParam();
   static constexpr char kNewWifiServicePath[] = "new-wifi-path";
   static constexpr char kNewWifiGuid[] = "new-wifi-guid";
-
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kEnableVpnConnectionStateEventsReporting},
-      /*disabled_features=*/{});
 
   service_client()->AddService(kNewWifiServicePath, kNewWifiGuid, "new-name",
                                shill::kTypeWifi, test_case.other_state,
