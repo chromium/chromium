@@ -56,6 +56,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
 #include "base/android/path_utils.h"
 #include "base/strings/escape.h"
 #include "base/test/android/content_uri_test_utils.h"
@@ -187,9 +188,14 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
                               : base::FilePath::FromUTF8Unsafe("test");
 #if BUILDFLAG(IS_ANDROID)
     if (use_content_uri) {
-      base::FilePath content_uri =
-          *base::test::android::GetContentUriFromCacheDirFilePath(
-              test_file_path);
+      base::FilePath parent =
+          *base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+              dir_.GetPath());
+      base::FilePath content_uri = base::ContentUriGetChildDocumentOrQuery(
+          parent, test_file_path.BaseName().value(), "text/plain",
+          /*is_directory=*/false,
+          /*create=*/true);
+      ASSERT_TRUE(base::ContentUriIsCreateChildDocumentQuery(content_uri));
       test_file_path = content_uri;
     }
 #endif
