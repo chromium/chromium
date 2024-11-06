@@ -143,6 +143,16 @@ try_.builder(
     gn_args = "ci/linux-cast-arm-rel",
     contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        location_filters = [
+            "chromecast/.+",
+            "components/cast/.+",
+            "components/cast_receiver/.+",
+            "components/cast_streaming/.+",
+            "third_party/cast_core/.+",
+            "third_party/openscreen/.+",
+        ],
+    ),
 )
 
 try_.builder(
