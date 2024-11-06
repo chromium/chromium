@@ -1615,9 +1615,6 @@ extern const char kOrcaKeyDescription[];
 extern const char kOsFeedbackDialogName[];
 extern const char kOsFeedbackDialogDescription[];
 
-extern const char kOsSettingsAppNotificationsPageName[];
-extern const char kOsSettingsAppNotificationsPageDescription[];
-
 extern const char kOverviewDeskNavigationName[];
 extern const char kOverviewDeskNavigationDescription[];
 

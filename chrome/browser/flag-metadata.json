@@ -6715,11 +6715,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "os-settings-app-notifications-page",
-    "owners": ["hsuregan@chromium.org"],
-    "expiry_milestone": 99
-  },
-  {
     "name": "os-settings-revamp-wayfinding",
     "owners": [ "wesokuhara@google.com", "cros-settings@google.com" ],
     "expiry_milestone": 134

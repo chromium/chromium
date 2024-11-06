@@ -646,9 +646,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("androidAppsVisible", is_arc_allowed_);
   html_source->AddBoolean("isPlayStoreAvailable", arc::IsPlayStoreAvailable());
 
-  html_source->AddBoolean(
-      "showOsSettingsAppNotificationsRow",
-      base::FeatureList::IsEnabled(features::kOsSettingsAppNotificationsPage));
   html_source->AddBoolean("isArcVmEnabled", arc::IsArcVmEnabled());
 
   html_source->AddBoolean("showManageIsolatedWebAppsRow",
@@ -951,10 +948,6 @@ void AppsSection::UpdateAndroidSearchTags() {
 }
 
 void AppsSection::OnQuietModeChanged(bool in_quiet_mode) {
-  if (!features::IsAppNotificationsPageEnabled()) {
-    return;
-  }
-
   const bool kIsRevampEnabled =
       ash::features::IsOsSettingsRevampWayfindingEnabled();
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();

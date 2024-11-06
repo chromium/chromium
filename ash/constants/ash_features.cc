@@ -2304,11 +2304,6 @@ BASE_FEATURE(kOrcaSupportDemoMode,
              "OrcaSupportDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, a new App Notifications subpage will appear in CrOS Apps section.
-BASE_FEATURE(kOsSettingsAppNotificationsPage,
-             "OsSettingsAppNotificationsPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, OsSyncConsent Revamp will be shown.
 // enabling this without enabling Lacros flag will have no effect
 BASE_FEATURE(kOsSyncConsentRevamp,
@@ -3450,10 +3445,6 @@ bool IsApnRevampEnabled() {
 
 bool IsApnRevampAndPoliciesEnabled() {
   return IsApnRevampEnabled() && chromeos::features::IsApnPoliciesEnabled();
-}
-
-bool IsAppNotificationsPageEnabled() {
-  return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
 }
 
 bool IsAutoNightLightEnabled() {

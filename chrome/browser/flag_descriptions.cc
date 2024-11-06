@@ -2832,12 +2832,6 @@ const char kOriginKeyedProcessesByDefaultDescription[] =
     "enabling this feature also enables 'Origin-keyed Agent Clusters by "
     "default'.";
 
-const char kOsSettingsAppNotificationsPageName[] =
-    "CrOS Settings App Notifications Page";
-const char kOsSettingsAppNotificationsPageDescription[] =
-    "If enabled, a new App Notifications subpage will appear in the "
-    "CrOS Settings Apps section.";
-
 const char kOverlayScrollbarsName[] = "Overlay Scrollbars";
 const char kOverlayScrollbarsDescription[] =
     "Enable the experimental overlay scrollbars implementation. You must also "
