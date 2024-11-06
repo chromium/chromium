@@ -6,10 +6,9 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -155,7 +154,7 @@ bool IsSelectiveUIAEnablementEnabled() {
 BASE_FEATURE(kUiaProvider, "UiaProvider", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsDictationOfflineAvailable() {
   return base::FeatureList::IsEnabled(
       ash::features::kOnDeviceSpeechRecognition);
@@ -260,7 +259,7 @@ bool IsAccessibilityShakeToLocateEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAccessibilitySnapshotStressTests,
@@ -309,11 +308,11 @@ bool IsMainNodeAnnotationsEnabled() {
 
 BASE_FEATURE(kReadAnythingReadAloud,
              "ReadAnythingReadAloud",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
 bool IsReadAnythingReadAloudEnabled() {

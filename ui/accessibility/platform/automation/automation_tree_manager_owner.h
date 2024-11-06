@@ -192,11 +192,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
                                          int32_t scroll_y) override;
   void DispatchActionResult(const AXActionData& data, bool result) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void DispatchGetTextLocationResult(
       const AXActionData& data,
       const std::optional<gfx::Rect>& rect) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Mojo receiver to the Automation interface, implemented by this class.
   // Listed as a protected member so that derived classes can reset its status

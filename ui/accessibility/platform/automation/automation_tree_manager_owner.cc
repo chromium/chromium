@@ -1158,12 +1158,12 @@ void AutomationTreeManagerOwner::DispatchActionResult(const AXActionData& data,
   GetAutomationV8Bindings()->SendActionResultEvent(data, result);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AutomationTreeManagerOwner::DispatchGetTextLocationResult(
     const AXActionData& data,
     const std::optional<gfx::Rect>& rect) {
   GetAutomationV8Bindings()->SendGetTextLocationResult(data, rect);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui
