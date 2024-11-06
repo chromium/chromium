@@ -935,9 +935,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CumulativeUseTime" units="seconds"
-    expires_after="2024-11-17">
+    expires_after="2025-11-17">
   <owner>jhorwich@google.com</owner>
-  <owner>fahdi@google.com</owner>
+  <owner>shobnah@google.com</owner>
   <summary>
     ARC use time. The use time is incremented in regular intervals while android
     container is active. Reported at most once a day, at which point accumulated
