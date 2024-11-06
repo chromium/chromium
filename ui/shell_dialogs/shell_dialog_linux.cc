@@ -7,7 +7,6 @@
 #include "base/environment.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/select_file_dialog_linux_kde.h"
