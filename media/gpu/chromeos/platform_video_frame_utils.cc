@@ -272,6 +272,58 @@ gfx::GpuMemoryBufferHandle AllocateGpuMemoryBufferHandle(
       *buffer_format, coded_size, buffer_usage);
 }
 
+UniqueTrackingTokenHelper::UniqueTrackingTokenHelper() {
+  // Insert an empty tracking token. This guarantees that all returned tokens
+  // will be non-empty.
+  tokens_.insert(base::UnguessableToken());
+}
+
+UniqueTrackingTokenHelper::~UniqueTrackingTokenHelper() = default;
+
+void UniqueTrackingTokenHelper::ClearToken(
+    const base::UnguessableToken& token) {
+  // Only non-empty tokens are stored.
+  CHECK(!token.is_empty());
+  auto iter = tokens_.find(token);
+  CHECK(iter != tokens_.end());
+  tokens_.erase(iter);
+}
+
+base::UnguessableToken UniqueTrackingTokenHelper::GenerateToken() {
+  CHECK(tokens_.size() < kMaxNumberOfTokens);
+
+  // Capping the number of insertion attempts is done to avoid an unbounded
+  // while loop. The expected collision frequency is very low since
+  // base::UnguessableToken is a 128-bit number. If we can't find a unique token
+  // in 1024 attempts, then something is likely wrong.
+  constexpr int kMaxAttempts = 1024;
+  for (int attempt_count = 0; attempt_count < kMaxAttempts; ++attempt_count) {
+    // Generate an UnguessableToken and attempt to insert it into |tokens_|.
+    auto res = tokens_.insert(base::UnguessableToken::Create());
+    if (res.second) {
+      // Success
+      return *res.first;
+    }
+  }
+  LOG(FATAL) << "Unable to generate a unique UnguessableToken. Aborting.";
+}
+
+void UniqueTrackingTokenHelper::SetUniqueTrackingToken(
+    VideoFrameMetadata& metadata) {
+  CHECK(tokens_.size() < kMaxNumberOfTokens);
+
+  if (metadata.tracking_token.has_value()) {
+    if (auto res = tokens_.insert(*metadata.tracking_token);
+        true == res.second) {
+      // We were able to insert the tracking token into |tokens_|. There is
+      // nothing left to do.
+      return;
+    }
+  }
+  // Otherwise, it needs to be generated.
+  metadata.tracking_token = GenerateToken();
+}
+
 gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
   static base::NoDestructor<base::Lock> id_lock;
   static int next_gpu_memory_buffer_id = 0;
