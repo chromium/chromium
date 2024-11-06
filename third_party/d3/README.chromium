@@ -15,5 +15,6 @@ Description:
 A JavaScript library for manipulating documents based on data.
 
 Local Modifications:
-Added externs.js to allow the closure compiler to compile code using d3.
-Added BUILD.gn to allow other build targets to depend on d3.
+ - Added a dummy src/d3.d.ts definition file to allow the TS compiler to resolve
+   side-effect 'd3.min.js' imports.
+ - Added BUILD.gn to allow other build targets to depend on d3.
