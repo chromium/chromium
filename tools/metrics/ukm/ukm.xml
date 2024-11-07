@@ -2836,25 +2836,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.Sectioning">
-  <owner>fleimgruber@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <summary>
-    Recorded after sectioning is performed when the server classification
-    arrived, and only when `AutofillUseParameterizedSectioning` is enabled.
-  </summary>
-  <metric name="FormSignature">
-    <summary>
-      A 10-bit hash of the form's signature.
-    </summary>
-  </metric>
-  <metric name="SectioningSignature">
-    <summary>
-      A 10-bit hash of the form's computed sections.
-    </summary>
-  </metric>
-</event>
-
 <event name="Autofill.SuggestionFilled">
   <owner>jsaul@google.com</owner>
   <summary>

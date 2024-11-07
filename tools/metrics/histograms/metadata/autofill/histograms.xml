@@ -5289,34 +5289,6 @@ AutofillSaveCreditCardPromptDestination.
   <summary>Usage of the &quot;Scan card&quot; control item.</summary>
 </histogram>
 
-<histogram name="Autofill.Sectioning.FieldsPerSection" units="Fields"
-    expires_after="2025-03-09">
-  <owner>fleimgruber@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The number of fields per section after sectioning a form using
-    kAutofillUseParameterizedSectioning. Only considers fields that may actually
-    be autofilled: fields that (a) are either focusable or a select field, and
-    (b) have a fillable type (e.g., UNKNOWN_TYPE and NUMERIC_QUANTITY are not
-    fillable). Emitted once per section every time sectioning is done.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.Sectioning.NumberOfSections" units="Sections"
-    expires_after="2025-03-09">
-  <owner>fleimgruber@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The number of sections after sectioning a form using
-    kAutofillUseParameterizedSectioning. Only considers fields that may actually
-    be autofilled: fields that (a) are either focusable or a select field, and
-    (b) have a fillable type (e.g., UNKNOWN_TYPE and NUMERIC_QUANTITY are not
-    fillable). Emitted every time sectioning is done.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ServerCardLinkClicked" enum="AutofillSyncState"
     expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>

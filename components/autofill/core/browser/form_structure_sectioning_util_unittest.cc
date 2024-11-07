@@ -10,7 +10,6 @@
 
 #include "autofill_test_utils.h"
 #include "base/check_op.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -19,21 +18,12 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
-
-using base::Bucket;
-using base::BucketsAre;
-
-constexpr char kNumberOfSectionsHistogram[] =
-    "Autofill.Sectioning.NumberOfSections";
-constexpr char kFieldsPerSectionHistogram[] =
-    "Autofill.Sectioning.FieldsPerSection";
 
 // The key information from which we build the `FormFieldData` objects for a
 // unittest.
@@ -77,16 +67,6 @@ std::vector<Section> GetSections(
 }
 
 class FormStructureSectioningTest : public testing::Test {
- public:
-  void AssignSectionsAndLogMetrics(
-      base::span<const std::unique_ptr<AutofillField>> fields) {
-    AssignSections(fields);
-    // Since only the UMA metrics are tested, the form signature and UKM logger
-    // are irrelevant.
-    LogSectioningMetrics(FormSignature(0UL), fields,
-                         /*form_interactions_ukm_logger=*/nullptr);
-  }
-
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
@@ -107,8 +87,7 @@ std::vector<std::unique_ptr<AutofillField>> CreateExampleFields() {
 
 TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
   auto fields = CreateExampleFields();
-  base::HistogramTester histogram_tester;
-  AssignSectionsAndLogMetrics(fields);
+  AssignSections(fields);
 
   // The evaluation order of the `Section::FromFieldIdentifier()` expressions
   // does not matter, as all `FormFieldData::host_frame` are identical.
@@ -125,11 +104,6 @@ TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  // The metrics ignore the section of field #5 because it's unfocusable.
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00102332"));
-  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 4, 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(1, 1), Bucket(2, 2), Bucket(3, 1)));
 }
 
 // Tests that an invisible <select> does not start a new section. Consider the
@@ -165,8 +139,7 @@ TEST_F(FormStructureSectioningTest,
                     {.field_type = ADDRESS_HOME_COUNTRY,
                      .form_control_type = FormControlType::kSelectOne}});
 
-  base::HistogramTester histogram_tester;
-  AssignSectionsAndLogMetrics(fields);
+  AssignSections(fields);
 
   // The evaluation order of the `Section::FromFieldIdentifier()` expressions
   // does not matter, as all `FormFieldData::host_frame` are identical.
@@ -178,10 +151,6 @@ TEST_F(FormStructureSectioningTest,
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("01111"));
-  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 2, 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(1, 1), Bucket(4, 1)));
 }
 
 // Tests that repeated sequences of state and country do not start a new
@@ -220,18 +189,13 @@ TEST_F(FormStructureSectioningTest,
                                .is_focusable = false},
                               {.field_type = PHONE_HOME_WHOLE_NUMBER}});
 
-  base::HistogramTester histogram_tester;
-  AssignSectionsAndLogMetrics(fields);
+  AssignSections(fields);
 
   // The evaluation order of the `Section::FromFieldIdentifier()` expressions
   // does not matter, as all `FormFieldData::host_frame` are identical.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   EXPECT_THAT(GetSections(fields), testing::Each(Section::FromFieldIdentifier(
                                        *fields[0], frame_token_ids)));
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00000000"));
-  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 1, 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(8, 1)));
 }
 
 }  // namespace

@@ -865,18 +865,6 @@ void AutofillMetrics::LogPopupInteraction(FillingProduct filling_product,
   }
 }
 
-void AutofillMetrics::LogSectioningMetrics(
-    const base::flat_map<Section, size_t>& fields_per_section) {
-  constexpr std::string_view kBaseHistogramName = "Autofill.Sectioning.";
-  UMA_HISTOGRAM_COUNTS_100(
-      base::StrCat({kBaseHistogramName, "NumberOfSections"}),
-      fields_per_section.size());
-  for (auto& [_, section_size] : fields_per_section) {
-    UMA_HISTOGRAM_COUNTS_100(
-        base::StrCat({kBaseHistogramName, "FieldsPerSection"}), section_size);
-  }
-}
-
 // static
 void AutofillMetrics::LogServerResponseHasDataForForm(bool has_data) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.ServerResponseHasDataForForm", has_data);

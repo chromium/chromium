@@ -836,11 +836,6 @@ void ProcessServerPredictionsQueryResponse(
     form->RationalizeFormStructure(form_interactions_ukm_logger, log_manager);
 
     AssignSections(form->fields());
-    // Metrics are intentionally only emitted after the sever response, not when
-    // determining heuristic types. This is done to reduce noise in the metrics,
-    // since generally only this sectioning result is used.
-    LogSectioningMetrics(form->form_signature(), form->fields(),
-                         form_interactions_ukm_logger);
 
     // Since this step requires the sections to be available, it is done after
     // the sectioning logic is ran. Note that since this step doesn't change the

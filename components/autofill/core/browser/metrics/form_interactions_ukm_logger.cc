@@ -887,15 +887,6 @@ void FormInteractionsUkmLogger::LogRepeatedServerTypePredictionRationalized(
       .Record(ukm_recorder_);
 }
 
-void FormInteractionsUkmLogger::LogSectioningHash(
-    FormSignature form_signature,
-    uint32_t sectioning_signature) {
-  ukm::builders::Autofill_Sectioning(GetSourceId())
-      .SetFormSignature(HashFormSignature(form_signature))
-      .SetSectioningSignature(sectioning_signature % 1024)
-      .Record(ukm_recorder_);
-}
-
 ukm::SourceId FormInteractionsUkmLogger::GetSourceId() {
   if (!source_id_.has_value()) {
     source_id_ = autofill_client_->GetUkmSourceId();

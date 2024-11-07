@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -733,10 +732,6 @@ class AutofillMetrics {
   // menu.
   static void OnAutocompleteSuggestionDeleted(
       SingleEntryRemovalMethod removal_method);
-
-  // Logs the number of sections and the number of fields/section.
-  static void LogSectioningMetrics(
-      const base::flat_map<Section, size_t>& fields_per_section);
 
   // This should be called each time a server response is parsed for a form.
   static void LogServerResponseHasDataForForm(bool has_data);

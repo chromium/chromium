@@ -11,13 +11,8 @@
 
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
-
-namespace autofill_metrics {
-class FormInteractionsUkmLogger;
-}
 
 // Sectioning is the process of splitting a form into logical groups (e.g.
 // shipping, billing, credit card section) which are filled separately.
@@ -118,19 +113,6 @@ class FormInteractionsUkmLogger;
 //   CC number: <input id=9>                               | field 5 based
 //   ------------------------------------------------------+-------------------
 void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields);
-
-// Logs UMA and UKM metrics about the `fields`' sections.
-// UKM metrics are only logged if `form_interactions_ukm_logger` is available.
-void LogSectioningMetrics(
-    FormSignature form_signature,
-    base::span<const std::unique_ptr<AutofillField>> fields,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
-
-// Computes a 32-bit signature of the `fields` sections.
-// This is useful for logging Ukm metrics to detect on which sites different
-// sectioning algorithms produce different results.
-uint32_t ComputeSectioningSignature(
-    base::span<const std::unique_ptr<AutofillField>> fields);
 
 }  // namespace autofill
 
