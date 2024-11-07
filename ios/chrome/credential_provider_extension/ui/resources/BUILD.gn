@@ -24,6 +24,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/info_icon.imageset/Contents.json",
     "Assets.xcassets/info_icon.imageset/info_icon@2x.png",
     "Assets.xcassets/info_icon.imageset/info_icon@3x.png",
+    "Assets.xcassets/multicolor_chrome.symbolset/Contents.json",
+    "Assets.xcassets/multicolor_chrome.symbolset/multicolor.chrome.cr.svg",
     "Assets.xcassets/multicolor_credential.symbolset/Contents.json",
     "Assets.xcassets/multicolor_credential.symbolset/multicolor.credential.cr.svg",
     "Assets.xcassets/passkey_bootstrapping_banner.imageset/Contents.json",

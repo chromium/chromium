@@ -35,6 +35,7 @@
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/saving_enterprise_disabled_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/signed_out_user_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 #import "ios/components/credential_provider_extension/password_util.h"
 
@@ -296,7 +297,7 @@ UIColor* BackgroundColor() {
   if ([gaia length] == 0) {
     // If we don't have a gaia, either the user is signed out of Chrome or has
     // never opened Chrome. Passkeys require the user to be signed in to Chrome.
-    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    [self showSignedOutUserAlert];
     return;
   }
 
@@ -773,6 +774,17 @@ UIColor* BackgroundColor() {
           [[SavingEnterpriseDisabledViewController alloc] init];
   savingEnterpriseDisabledViewController.actionHandler = self;
   [self presentViewController:savingEnterpriseDisabledViewController
+                     animated:YES
+                   completion:nil];
+}
+
+// Displays sheet with information that the user is signed out ans needs to sign
+// in to Chrome.
+- (void)showSignedOutUserAlert {
+  SignedOutUserViewController* signedOutUserViewController =
+      [[SignedOutUserViewController alloc] init];
+  signedOutUserViewController.actionHandler = self;
+  [self presentViewController:signedOutUserViewController
                      animated:YES
                    completion:nil];
 }
