@@ -3675,6 +3675,20 @@
     "expires": "May 1, 2025"
   },
   {
+    "prefix": "selection-shadow-delegates-focus-disabled",
+    "owners": ["dizhangg@google.com"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/shadow-dom/focus/text-selection-with-delegatesFocus-on-slotted-content.html",
+      "external/wpt/shadow-dom/focus/text-selection-with-delegatesFocus.html",
+      "shadow-dom/focus-slide-on-shadow-host.html"
+    ],
+    "args": [
+      "--disable-blink-features=SelectionOnShadowDOMWithDelegatesFocus"
+    ],
+    "expires": "May 1, 2025"
+  },
+  {
     "prefix": "shadow-realm-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

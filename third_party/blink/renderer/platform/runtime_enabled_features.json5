@@ -3823,6 +3823,13 @@
       status: "stable",
     },
     {
+      // Update HandleMousePressEvent to continue handling event, even after a
+      // focus slided from shadow host with delegatesFocus.
+      // See https://crbug.com/40622041
+      name: "SelectionOnShadowDOMWithDelegatesFocus",
+      status: "experimental",
+    },
+    {
       // Sets the minimum target size of <option> in <select> to 24x24 CSS
       // pixels to meet Accessibility standards.
       // https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html
