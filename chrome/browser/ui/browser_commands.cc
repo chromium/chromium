@@ -1742,10 +1742,10 @@ bool CanSavePage(const Browser* browser) {
           prefs::kAllowFileSelectionDialogs)) {
     return false;
   }
-  if (static_cast<DownloadPrefs::DownloadRestriction>(
+  if (static_cast<policy::DownloadRestriction>(
           browser->profile()->GetPrefs()->GetInteger(
-              prefs::kDownloadRestrictions)) ==
-      DownloadPrefs::DownloadRestriction::ALL_FILES) {
+              policy::policy_prefs::kDownloadRestrictions)) ==
+      policy::DownloadRestriction::ALL_FILES) {
     return false;
   }
   return !browser->is_type_devtools() &&

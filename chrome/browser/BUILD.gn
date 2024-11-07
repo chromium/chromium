@@ -2205,6 +2205,7 @@ static_library("browser") {
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/policy/content/",
     "//components/policy/core/browser",
+    "//components/policy/core/common:common_constants",
     "//components/policy/proto",
     "//components/power_bookmarks/core",
     "//components/power_bookmarks/core:features",

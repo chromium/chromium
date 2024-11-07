@@ -1045,7 +1045,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
 
-  profile()->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
+  profile()->GetPrefs()->SetInteger(policy::policy_prefs::kDownloadRestrictions,
                                     3 /*ALL_FILES*/);
 
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));

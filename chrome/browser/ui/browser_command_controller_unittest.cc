@@ -514,7 +514,7 @@ TEST_F(BrowserCommandControllerTest,
   const CommandUpdater* command_updater = &command_controller;
 
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
-  profile()->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
+  profile()->GetPrefs()->SetInteger(policy::policy_prefs::kDownloadRestrictions,
                                     3 /*ALL_FILES*/);
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
 }
