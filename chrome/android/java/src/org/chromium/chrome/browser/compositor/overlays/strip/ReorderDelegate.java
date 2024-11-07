@@ -53,6 +53,8 @@ public class ReorderDelegate {
     // Tab Strip State.
     private AnimationHost mAnimationHost;
     private ScrollDelegate mScrollDelegate;
+    private ActionConfirmationDelegate mActionConfirmationDelegate;
+    private ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
     private View mContainerView;
 
     // Internal State.
@@ -124,17 +126,26 @@ public class ReorderDelegate {
      * Passes the dependencies needed in this delegate. Passed here as they aren't ready on
      * instantiation.
      *
-     * @param tabGroupModelFilter The {@link TabGroupModelFilter} linked to this delegate.
-     * @param scrollDelegate The {@link ScrollDelegate} linked to this delegate.
+     * @param animationHost The {@link AnimationHost} for triggering animations.
+     * @param tabGroupModelFilter The {@link TabGroupModelFilter} for accessing tab state.
+     * @param scrollDelegate The {@link ScrollDelegate} for updating scroll offset.
+     * @param actionConfirmationDelegate The {@link ActionConfirmationDelegate} for confirming group
+     *     actions, such as delete and ungroup.
+     * @param groupIdToHideSupplier The {@link ObservableSupplierImpl} for the group ID to hide.
+     * @param containerView The tab strip container {@link View}.
      */
     void initialize(
             AnimationHost animationHost,
             TabGroupModelFilter tabGroupModelFilter,
             ScrollDelegate scrollDelegate,
+            ActionConfirmationDelegate actionConfirmationDelegate,
+            ObservableSupplierImpl<Integer> groupIdToHideSupplier,
             View containerView) {
         mAnimationHost = animationHost;
         mTabGroupModelFilter = tabGroupModelFilter;
         mScrollDelegate = scrollDelegate;
+        mActionConfirmationDelegate = actionConfirmationDelegate;
+        mGroupIdToHideSupplier = groupIdToHideSupplier;
         mContainerView = containerView;
 
         mModel = mTabGroupModelFilter.getTabModel();
@@ -402,10 +413,56 @@ public class ReorderDelegate {
     }
 
     /**
+     * Attempts to move the interacting tab out of its group. May prompt the user with a
+     * confirmation dialog if the tab removal will result in a group deletion. Animates accordingly.
+     *
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param rootId The interacting tab's group's root ID.
+     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     */
+    void moveInteractingTabOutOfGroup(
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            int rootId,
+            boolean towardEnd) {
+        final int tabId = mInteractingTab.getTabId();
+        // TODO(crbug.com/377750438): Skip creating the ActionConfirmationDelegate for Incognito as
+        //  it won't be used here.
+        if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId)
+                && mGroupIdToHideSupplier.get() == Tab.INVALID_TAB_ID
+                && !mTabGroupModelFilter.isIncognitoBranded()) {
+            // When dragging the last tab out of group, the tab group delete dialog will show and we
+            // will hide the indicators for the interacting tab group until the user confirms the
+            // next action. e.g delete tab group when user confirms the delete, or restore
+            // indicators back on strip when user cancel the delete.
+            mActionConfirmationDelegate.handleDeleteGroupAction(
+                    rootId,
+                    /* draggingLastTabOffStrip= */ false,
+                    /* tabClosing= */ false,
+                    () -> moveTabOutOfGroupInDirection(tabId, towardEnd));
+            // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
+            if (!mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
+                stopReorderMode(groupTitles, stripTabs);
+            }
+        } else {
+            moveTabOutOfGroupInDirection(tabId, towardEnd);
+        }
+
+        // Run indicator animations.
+        // TODO(crbug.com/372546700): Investigate deriving rootId from mInteractingTab instead of
+        //  passing in here.
+        animateGroupIndicatorForTabReorder(
+                StripLayoutUtils.findGroupTitle(groupTitles, rootId),
+                /* isMovingOutOfGroup= */ true,
+                towardEnd);
+    }
+
+    /**
      * Wrapper for {@link TabGroupModelFilter#moveTabOutOfGroupInDirection} that also records the
      * tab-strip specific User Action.
      */
-    void moveTabOutOfGroupInDirection(int tabId, boolean towardEnd) {
+    private void moveTabOutOfGroupInDirection(int tabId, boolean towardEnd) {
         mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
         RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
     }

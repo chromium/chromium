@@ -999,6 +999,8 @@ public class StripLayoutHelper
                 /* animationHost= */ this,
                 mTabGroupModelFilter,
                 mScrollDelegate,
+                mActionConfirmationDelegate,
+                mGroupIdToHideSupplier,
                 mToolbarContainerView);
         updateTitleCacheForInit();
         rebuildStripViews();
@@ -3753,45 +3755,6 @@ public class StripLayoutHelper
     }
 
     /**
-     * This method checks whether or not interacting tab has met the conditions to be moved out of
-     * its tab group. If so, it moves tab out of group and returns the new index for the interacting
-     * tab.
-     *
-     * @param rootId The interacting tab's group's root ID.
-     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
-     */
-    void moveInteractingTabOutOfGroup(int rootId, boolean towardEnd) {
-        final int tabId = mReorderDelegate.getInteractingTab().getTabId();
-        if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId)
-                && mGroupIdToHideSupplier.get() == Tab.INVALID_TAB_ID
-                && !mIncognito) {
-            // When dragging the last tab out of group, the tab group delete dialog will show and we
-            // will hide the indicators for the interacting tab group until the user confirms the
-            // next action. e.g delete tab group when user confirms the delete, or restore
-            // indicators back on strip when user cancel the delete.
-            mActionConfirmationDelegate.handleDeleteGroupAction(
-                    rootId,
-                    /* draggingLastTabOffStrip= */ false,
-                    /* tabClosing= */ false,
-                    () -> mReorderDelegate.moveTabOutOfGroupInDirection(tabId, towardEnd));
-            // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
-            if (!mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
-                mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
-            }
-        } else {
-            mReorderDelegate.moveTabOutOfGroupInDirection(tabId, towardEnd);
-        }
-
-        // The group title may have been removed if the group was deleted above. Check if it still
-        // exists and if so, run the indicator animations.
-        StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
-        if (groupTitle != null) {
-            mReorderDelegate.animateGroupIndicatorForTabReorder(
-                    groupTitle, /* isMovingOutOfGroup= */ true, towardEnd);
-        }
-    }
-
-    /**
      * This method checks whether or not interacting tab has met the conditions to be merged to an
      * adjacent tab group. If so, it merges the tab to the group and returns the new index for
      * interacting tab.
@@ -3927,7 +3890,11 @@ public class StripLayoutHelper
 
                 if (Math.abs(offset)
                         > mReorderDelegate.getDragOutThreshold(interactingGroupTitle, towardEnd)) {
-                    moveInteractingTabOutOfGroup(interactingGroupTitle.getRootId(), towardEnd);
+                    mReorderDelegate.moveInteractingTabOutOfGroup(
+                            mStripGroupTitles,
+                            mStripTabs,
+                            interactingGroupTitle.getRootId(),
+                            towardEnd);
                     // TODO(crbug.com/372546700): Currently, we return a destIndex equal to the
                     //  starting index to mark that a tab move out or merge was successful. This is
                     //  not immediately clear, so track this state more directly.
