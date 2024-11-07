@@ -64,8 +64,15 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Objects;
+
 /** ViewBinder for TabGridDialog. */
 class TabGridDialogViewBinder {
+    private static class LazyHolder {
+        static final PropertyModel EMPTY_MODEL =
+                new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS).build();
+    }
+
     /** ViewHolder class to get access to all {@link View}s inside the TabGridDialog. */
     public static class ViewHolder {
         public final TabGridDialogToolbarView toolbarView;
@@ -84,46 +91,38 @@ class TabGridDialogViewBinder {
 
     /**
      * Binds the given model to the given view, updating the payload in propertyKey.
-     * @param model The model to use.
+     *
+     * @param changedModel The model the property was changed on.
      * @param viewHolder The ViewHolder to use.
      * @param propertyKey The key for the property to update for.
      */
-    public static void bind(PropertyModel model, ViewHolder viewHolder, PropertyKey propertyKey) {
+    public static void bind(
+            PropertyModel changedModel, ViewHolder viewHolder, PropertyKey propertyKey) {
         // The TabGridDialogView is effectively a singleton in the UI with multiple Mediators and
         // PropertyModel's attempting to managed it. This BINDING_TOKEN system prevents collisions.
         //
         // Only one PropertyModel should be binding to the DialogView at a time. To enforce this
         // the {@link TabGridDialogMediator} currently using the view must provide its hashCode as
         // a BINDING_TOKEN.
-        final Integer bindingToken = model.get(BINDING_TOKEN);
-        final Integer oldBindingToken = viewHolder.dialogView.getBindingToken();
+        final Integer bindingToken = changedModel.get(BINDING_TOKEN);
+        final Integer viewBindingToken = viewHolder.dialogView.getBindingToken();
+        PropertyModel model = bindingToken == null ? LazyHolder.EMPTY_MODEL : changedModel;
         if (BINDING_TOKEN == propertyKey) {
-            if (oldBindingToken != null && oldBindingToken.equals(bindingToken)) {
-                return;
+            if (bindingToken != null ^ viewBindingToken != null) {
+                viewHolder.dialogView.setBindingToken(bindingToken);
+                rebindAll(model, viewHolder);
+            } else if (bindingToken != null && Objects.equals(bindingToken, viewBindingToken)) {
+                assert false : "Two conflicting binding tokens, should never happen";
             }
-
-            viewHolder.dialogView.setBindingToken(bindingToken);
-            if (bindingToken == null) return;
-
-            // Re-bind if the binding token ever changes.
-            for (PropertyKey key : TabGridDialogProperties.ALL_KEYS) {
-                if (BINDING_TOKEN == key) continue;
-
-                bind(model, viewHolder, key);
-            }
-        } else if (bindingToken == null || oldBindingToken == null) {
-            return;
-        } else if (!bindingToken.equals(oldBindingToken)) {
-            assert false
-                    : "Attempting to update a property of TabGridDialog without binding token.";
-            return;
+        } else if (!Objects.equals(bindingToken, viewBindingToken)) {
+            // Initial bind/attachment, new token hasn't been sent yet, ignore everything.
         }
 
         // The null checks in the following blocks are there for if
         // 1) The dialogView is not initialized.
         // 2) ALL_KEYS are being re-bound upon changing BINDING_TOKEN and a value is unset in the
         //    newly bound model.
-        if (COLLAPSE_CLICK_LISTENER == propertyKey) {
+        else if (COLLAPSE_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setBackButtonOnClickListener(model.get(COLLAPSE_CLICK_LISTENER));
         } else if (ADD_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setNewTabButtonOnClickListener(model.get(ADD_CLICK_LISTENER));
@@ -201,7 +200,7 @@ class TabGridDialogViewBinder {
             }
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
             if (model.get(INITIAL_SCROLL_INDEX) != null) {
-                int index = (Integer) model.get(INITIAL_SCROLL_INDEX);
+                int index = model.get(INITIAL_SCROLL_INDEX);
                 RecyclerView view = viewHolder.contentView;
                 if (view.getWidth() == 0 || view.getHeight() == 0) {
                     // If layout hasn't happened post the scroll index change until layout happens.
@@ -297,7 +296,7 @@ class TabGridDialogViewBinder {
             BrowserControlsStateProvider browserControlsStateProvider) {
         int width = view.getWidth();
         int height = view.getHeight();
-        int cardHeight = 0;
+        final int cardHeight;
         if (layoutManager instanceof GridLayoutManager) {
             int cardWidth = width / ((GridLayoutManager) layoutManager).getSpanCount();
             cardHeight =
@@ -310,5 +309,12 @@ class TabGridDialogViewBinder {
             cardHeight = view.computeVerticalScrollRange() / layoutManager.getItemCount();
         }
         return Math.max(0, height / 2 - cardHeight / 2);
+    }
+
+    private static void rebindAll(PropertyModel model, ViewHolder viewHolder) {
+        for (PropertyKey key : TabGridDialogProperties.ALL_KEYS) {
+            if (BINDING_TOKEN == key) continue;
+            bind(model, viewHolder, key);
+        }
     }
 }
