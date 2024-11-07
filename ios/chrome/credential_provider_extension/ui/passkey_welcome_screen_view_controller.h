@@ -23,9 +23,11 @@ enum class PasskeyWelcomeScreenPurpose {
 
 // Designated initializer. `purpose` indicates the purpose for which the passkey
 // welcome screen needs to be shown, which impacts the screen's content.
-// `primaryButtonAction` is the block to execute when the primary button
-// displayed in the view is tapped.
+// `navigationItemTitleView` is the view that should be used as the navigation
+// bar title view. `primaryButtonAction` is the block to execute when the
+// primary button displayed in the view is tapped.
 - (instancetype)initForPurpose:(PasskeyWelcomeScreenPurpose)purpose
+       navigationItemTitleView:(UIView*)navigationItemTitleView
            primaryButtonAction:(ProceduralBlock)primaryButtonAction
     NS_DESIGNATED_INITIALIZER;
 

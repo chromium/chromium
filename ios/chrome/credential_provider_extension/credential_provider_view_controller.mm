@@ -917,8 +917,10 @@ UIColor* BackgroundColor() {
   }
 
   PasskeyWelcomeScreenViewController* welcomeScreen =
-      [[PasskeyWelcomeScreenViewController alloc] initForPurpose:purpose
-                                             primaryButtonAction:action];
+      [[PasskeyWelcomeScreenViewController alloc]
+                   initForPurpose:purpose
+          navigationItemTitleView:self.passkeyNavigationItemTitleView
+              primaryButtonAction:action];
   [self.passkeyNavigationController pushViewController:welcomeScreen
                                               animated:NO];
   [self.presentingView presentViewController:self.passkeyNavigationController

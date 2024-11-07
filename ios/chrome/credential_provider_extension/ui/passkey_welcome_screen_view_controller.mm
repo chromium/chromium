@@ -92,15 +92,20 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   // UI elements.
   PasskeyWelcomeScreenPurpose _purpose;
 
+  // The view to be used as the navigation bar title view.
+  UIView* _navigationItemTitleView;
+
   // The block that should be executed when the primary button is tapped.
   ProceduralBlock _primaryButtonAction;
 }
 
 - (instancetype)initForPurpose:(PasskeyWelcomeScreenPurpose)purpose
+       navigationItemTitleView:(UIView*)navigationItemTitleView
            primaryButtonAction:(ProceduralBlock)primaryButtonAction {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _purpose = purpose;
+    _navigationItemTitleView = navigationItemTitleView;
     _primaryButtonAction = primaryButtonAction;
   }
   return self;
@@ -130,6 +135,7 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   [super viewDidLoad];
 
   self.view.backgroundColor = GetBackgroundColor();
+  self.navigationItem.titleView = _navigationItemTitleView;
 }
 
 #pragma mark - PromoStyleViewController

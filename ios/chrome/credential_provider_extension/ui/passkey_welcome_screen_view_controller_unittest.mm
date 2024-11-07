@@ -13,8 +13,10 @@ class PasskeyWelcomeScreenViewControllerTest : public PlatformTest {
   // Creates a PasskeyWelcomeScreenViewController for the provided purpose.
   PasskeyWelcomeScreenViewController* CreateController(
       PasskeyWelcomeScreenPurpose purpose) {
-    return [[PasskeyWelcomeScreenViewController alloc] initForPurpose:purpose
-                                                  primaryButtonAction:nil];
+    return [[PasskeyWelcomeScreenViewController alloc]
+                 initForPurpose:purpose
+        navigationItemTitleView:[[UIView alloc] init]
+            primaryButtonAction:nil];
   }
 };
 
@@ -25,11 +27,12 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
       CreateController(PasskeyWelcomeScreenPurpose::kEnroll);
   [controller viewDidLoad];
 
+  EXPECT_TRUE(controller.navigationItem.titleView);
   EXPECT_NSEQ(controller.bannerName, @"passkey_generic_banner");
   EXPECT_EQ(controller.bannerSize, BannerImageSizeType::kExtraShort);
   EXPECT_NSEQ(controller.titleText,
               @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_TITLE");
-  EXPECT_NSEQ(controller.subtitleText, nil);
+  EXPECT_FALSE(controller.subtitleText);
   EXPECT_NSEQ(controller.primaryActionString,
               @"IDS_IOS_CREDENTIAL_PROVIDER_GET_STARTED_BUTTON");
   EXPECT_NSEQ(controller.secondaryActionString,
@@ -46,6 +49,7 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
       CreateController(PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability);
   [controller viewDidLoad];
 
+  EXPECT_TRUE(controller.navigationItem.titleView);
   EXPECT_NSEQ(controller.bannerName, @"passkey_generic_banner");
   EXPECT_EQ(controller.bannerSize, BannerImageSizeType::kExtraShort);
   EXPECT_NSEQ(
@@ -70,6 +74,7 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
       CreateController(PasskeyWelcomeScreenPurpose::kReauthenticate);
   [controller viewDidLoad];
 
+  EXPECT_TRUE(controller.navigationItem.titleView);
   EXPECT_NSEQ(controller.bannerName, @"passkey_bootstrapping_banner");
   EXPECT_EQ(controller.bannerSize, BannerImageSizeType::kExtraShort);
   EXPECT_NSEQ(controller.titleText,
