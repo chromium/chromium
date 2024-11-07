@@ -63,7 +63,7 @@ TEST_F(SavePasswordsEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
   auto ephemeral_module =
       std::make_unique<SavePasswordsEphemeralModule>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = ephemeral_module->GetInputs();
-  EXPECT_EQ(inputs.size(), 2u);
+  EXPECT_EQ(inputs.size(), 3u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::kNoSavedPasswords),
             inputs.end());
@@ -71,6 +71,7 @@ TEST_F(SavePasswordsEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
       inputs.find(
           segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy),
       inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kIsNewUser), inputs.end());
 }
 
 // Verifies that `ComputeCardResult(…)` does not show the module when no signals
@@ -83,6 +84,7 @@ TEST_F(SavePasswordsEphemeralModuleTest,
   AllCardSignals signals = CreateAllCardSignals(
       ephemeral_module.get(),
       {
+          /* kIsNewUser */ 0,
           /* kNoSavedPasswords */ 0,
           /* kPasswordManagerAllowedByEnterprisePolicy */ 0,
       });
@@ -106,6 +108,7 @@ TEST_F(SavePasswordsEphemeralModuleTest,
   AllCardSignals signals = CreateAllCardSignals(
       ephemeral_module.get(),
       {
+          /* kIsNewUser */ 0,
           /* kNoSavedPasswords */ 0,
           /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
       });
@@ -129,6 +132,7 @@ TEST_F(SavePasswordsEphemeralModuleTest,
   AllCardSignals signals = CreateAllCardSignals(
       ephemeral_module.get(),
       {
+          /* kIsNewUser */ 0,
           /* kNoSavedPasswords */ 1,
           /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
       });
@@ -154,6 +158,7 @@ TEST_F(SavePasswordsEphemeralModuleTest,
   AllCardSignals signals = CreateAllCardSignals(
       ephemeral_module.get(),
       {
+          /* kIsNewUser */ 0,
           /* kNoSavedPasswords */ 1,
           /* kPasswordManagerAllowedByEnterprisePolicy */ 0,
       });
@@ -165,6 +170,31 @@ TEST_F(SavePasswordsEphemeralModuleTest,
       ephemeral_module->ComputeCardResult(selection_signals);
 
   EXPECT_EQ(result.position, EphemeralHomeModuleRank::kNotShown);
+}
+
+// Verifies that `ComputeCardResult(...)` does not show the module when the
+// disqualifying signal `kIsNewUser` is present, even if other required signals
+// are present.
+TEST_F(SavePasswordsEphemeralModuleTest,
+       ComputeCardResultDoesNotShowModuleWhenDisqualifyingSignalIsPresent) {
+  auto ephemeral_module =
+      std::make_unique<SavePasswordsEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals = CreateAllCardSignals(
+      ephemeral_module.get(),
+      {
+          /* kIsNewUser */ 1,  // Disqualifying signal
+          /* kNoSavedPasswords */ 1,
+          /* kPasswordManagerAllowedByEnterprisePolicy */ 1,
+      });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kSavePasswordsEphemeralModule);
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 // Validates that `IsEnabled(…)` returns true when under the impression limit

@@ -56,6 +56,19 @@ constexpr std::array<std::pair<TipIdentifier, const char*>, 3>
                            kUsedGoogleTranslation),
 };
 
+// Defines the signals where, for a given `TipIdentifier`, if any are present
+// and evaluate to true, will prevent the corresponding `LensEphemeralModule`
+// from being shown.
+constexpr std::array<std::pair<TipIdentifier, const char*>, 3>
+    kDisqualifyingSignals = {
+        std::make_pair(TipIdentifier::kLensSearch,
+                       segmentation_platform::kIsNewUser),
+        std::make_pair(TipIdentifier::kLensShop,
+                       segmentation_platform::kIsNewUser),
+        std::make_pair(TipIdentifier::kLensTranslate,
+                       segmentation_platform::kIsNewUser),
+};
+
 // Define the priority order for Lens tip variations.
 constexpr std::array<TipIdentifier, 3> kLensTipPriorityOrder = {
     TipIdentifier::kLensShop,
@@ -126,6 +139,9 @@ std::vector<std::string> LensEphemeralModule::OutputLabels() {
 // Defines the input signals required by this module.
 std::map<SignalKey, FeatureQuery> LensEphemeralModule::GetInputs() {
   return {
+      {segmentation_platform::kIsNewUser,
+       CreateFeatureQueryFromCustomInputName(
+           segmentation_platform::kIsNewUser)},
       {segmentation_platform::kLensNotUsedRecently,
        CreateFeatureQueryFromCustomInputName(
            segmentation_platform::kLensNotUsedRecently)},
@@ -188,7 +204,23 @@ CardSelectionInfo::ShowResult LensEphemeralModule::ComputeCardResult(
       }
     }
 
-    if (required_signals_met) {
+    // Check if any disqualifying signals for the current `tip` are present.
+    bool disqualifying_signal_present = false;
+
+    for (const auto& disqualifying_signal : kDisqualifyingSignals) {
+      if (disqualifying_signal.first == tip) {
+        std::optional<float> result =
+            signals.GetSignal(std::string(disqualifying_signal.second));
+
+        if (result.has_value() && result.value() > 0) {
+          // Fail fast if any disqualifying signal is present.
+          disqualifying_signal_present = true;
+          break;
+        }
+      }
+    }
+
+    if (required_signals_met && !disqualifying_signal_present) {
       satisfied_tips.push_back(tip);
     }
   }
