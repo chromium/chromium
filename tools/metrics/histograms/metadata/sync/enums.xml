@@ -199,6 +199,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/service/passphrase_type_metrics_provider.h:PassphraseTypeForMetrics) -->
 
+<!-- LINT.IfChange(PaymentsAccountStorageUponConfiguration) -->
+
+<enum name="PaymentsAccountStorageUponConfiguration">
+  <int value="0" label="Signed in implicitly with in-memory storage"/>
+  <int value="1" label="Signed in explicitly with on-disk storage"/>
+  <int value="2" label="Signed in explicitly with in-memory storage"/>
+  <int value="3"
+      label="(UNEXPECTED) Signed in implicitly with on-disk storage"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/common_controller_builder.cc:PaymentsAccountStorageUponConfiguration) -->
+
 <!-- LINT.IfChange(PendingInvalidationStatus) -->
 
 <enum name="PendingInvalidationStatus">

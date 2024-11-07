@@ -1393,6 +1393,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.PaymentsAccountStorageUponSyncConfiguration"
+    enum="PaymentsAccountStorageUponConfiguration" expires_after="2025-04-30">
+  <owner>mastiz@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    A combined value representing whether or not the user is signed in
+    implicitly vs explicitly and whether autofill wallet data is persisted on
+    disk vs in-memory only. Recorded when AUTOFILL_WALLET_DATA is being
+    configured (model loaded). Recorded on desktop platforms only.
+  </summary>
+</histogram>
+
 <histogram name="Sync.PendingInvalidationStatus"
     enum="PendingInvalidationStatus" expires_after="2025-03-30">
   <owner>shabdan@google.com</owner>

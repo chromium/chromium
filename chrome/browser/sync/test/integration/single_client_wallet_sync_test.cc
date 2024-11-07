@@ -245,9 +245,8 @@ class SingleClientWalletWithImprovedSigninUISyncTest
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                                 switches::kImprovedSigninUIOnDesktop});
+          /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
+          /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop});
     }
 
     EXPECT_EQ(GetParam(), switches::IsImprovedSigninUIOnDesktopEnabled());
@@ -296,16 +295,24 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
   // of the test setup: SyncTest creates a new profile for single-client tests,
   // disregarding the existing profile that browser tests already have.
   if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-    EXPECT_FALSE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+    EXPECT_FALSE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForMetrics());
     histogram_tester_.ExpectUniqueSample("WebDatabase.AutofillAccountStorage",
                                          /*sample=*/2,  // kOnDisk_SignedOut.
                                          /*expected_bucket_count=*/2);
+    histogram_tester_.ExpectUniqueSample(
+        "Sync.PaymentsAccountStorageUponSyncConfiguration",
+        /*sample=*/1,  // kSignedInExplicitlyWithOnDiskStorage.
+        /*expected_bucket_count=*/1);
   } else {
-    EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+    EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForMetrics());
     histogram_tester_.ExpectUniqueSample(
         "WebDatabase.AutofillAccountStorage",
         /*sample=*/0,  // kInMemory_FlagDisabled.
         /*expected_bucket_count=*/2);
+    histogram_tester_.ExpectUniqueSample(
+        "Sync.PaymentsAccountStorageUponSyncConfiguration",
+        /*sample=*/2,  // kSignedInExplicitlyWithInMemoryStorage.
+        /*expected_bucket_count=*/1);
   }
 
   ASSERT_NE(nullptr, pdm);
@@ -377,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
   // artifact of the test setup: SyncTest creates a new profile for
   // single-client tests, disregarding the existing profile that browser tests
   // already have.
-  EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+  EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForMetrics());
   if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
     histogram_tester_.ExpectBucketCount(
         "WebDatabase.AutofillAccountStorage",
@@ -389,6 +396,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
         /*sample=*/0,  // kInMemory_FlagDisabled.
         /*expected_bucket_count=*/2);
   }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Sync.PaymentsAccountStorageUponSyncConfiguration",
+      /*sample=*/0,  // kSignedInImplicitlyWithInMemoryStorage.
+      /*expected_bucket_count=*/1);
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
@@ -485,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EnabledByDefault) {
   // exists.
   ASSERT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_METADATA));
-  EXPECT_FALSE(GetProfileWebDataService(0)->UsesInMemoryDatabaseForTest());
+  EXPECT_FALSE(GetProfileWebDataService(0)->UsesInMemoryDatabaseForMetrics());
 }
 
 // ChromeOS does not sign out, so the test below does not apply.

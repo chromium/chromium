@@ -25,7 +25,10 @@ class AutofillWalletDataTypeController : public syncer::DataTypeController,
                                           public syncer::SyncServiceObserver {
  public:
   // The delegates and |sync_client| must not be null. Furthermore,
-  // |sync_client| must outlive this object.
+  // `sync_client` must outlive this object. Callback
+  // `on_load_models_with_transport_only_cb` is invoked every time
+  // `LoadModels()` is triggered with SyncMode::kTransportOnly, and the boolean
+  // parameter determines whether or not the user is explicitly signed in.
   AutofillWalletDataTypeController(
       syncer::DataType type,
       std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -33,7 +36,9 @@ class AutofillWalletDataTypeController : public syncer::DataTypeController,
       std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_transport_mode,
       PrefService* pref_service,
-      syncer::SyncService* sync_service);
+      syncer::SyncService* sync_service,
+      base::RepeatingCallback<void(bool)>
+          on_load_models_with_transport_only_cb);
 
   AutofillWalletDataTypeController(const AutofillWalletDataTypeController&) =
       delete;
@@ -43,6 +48,8 @@ class AutofillWalletDataTypeController : public syncer::DataTypeController,
   ~AutofillWalletDataTypeController() override;
 
   // DataTypeController overrides.
+  void LoadModels(const syncer::ConfigureContext& configure_context,
+                  const ModelLoadCallback& model_load_callback) override;
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
   PreconditionState GetPreconditionState() const override;
 
@@ -58,6 +65,8 @@ class AutofillWalletDataTypeController : public syncer::DataTypeController,
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<syncer::SyncService> sync_service_;
+  const base::RepeatingCallback<void(bool)>
+      on_load_models_with_transport_only_cb_;
 
   PrefChangeRegistrar pref_registrar_;
 };
