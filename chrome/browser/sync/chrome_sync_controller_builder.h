@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "components/prefs/pref_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -127,6 +128,7 @@ class ChromeSyncControllerBuilder {
       ash::floating_sso::FloatingSsoService* floating_sso_service);
   void SetOsPrefServiceSyncable(
       sync_preferences::PrefServiceSyncable* os_pref_service_syncable);
+  void SetPrefService(PrefService* pref_service);
   void SetSyncedPrintersManager(
       ash::SyncedPrintersManager* synced_printer_manager);
   void SetWifiConfigurationSyncService(
@@ -202,6 +204,7 @@ class ChromeSyncControllerBuilder {
       floating_sso_service_;
   SafeOptional<raw_ptr<sync_preferences::PrefServiceSyncable>>
       os_pref_service_syncable_;
+  SafeOptional<raw_ptr<PrefService>> pref_service_;
   SafeOptional<raw_ptr<ash::SyncedPrintersManager>> synced_printer_manager_;
   SafeOptional<raw_ptr<ash::sync_wifi::WifiConfigurationSyncService>>
       wifi_configuration_sync_service_;

@@ -87,12 +87,16 @@ class SingleClientCookiesSyncTest : public SyncTest {
         /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
+    SetFloatingSsoEnabledPolicy(true);
+    SyncTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetFloatingSsoEnabledPolicy(bool policy_value) {
     policy::PolicyMap policy;
     policy.Set(policy::key::kFloatingSsoEnabled, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(true), nullptr);
+               base::Value(policy_value), nullptr);
     policy_provider_.UpdateChromePolicy(policy);
-    SyncTest::SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
@@ -146,6 +150,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadAndDelete) {
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 1).Wait());
 
   ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 
   // Check that the client downloaded `remote_cookie`.
   EXPECT_TRUE(CookiePresenceChecker(GetSyncService(0), GetFloatingSsoBridge(),
@@ -163,6 +168,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest,
   // Enable Sync in the browser under test - this allows the next test to check
   // the behavior of a client which already used Sync in the past.
   ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 }
 
 // Test that the client which used Sync in the past receives an update.
@@ -182,6 +188,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadOnExistingClient) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, Upload) {
   ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 
   // Make sure that the server has no cookies initially.
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 0).Wait());
@@ -194,6 +201,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, Upload) {
 
   // Check that the server receives the cookie.
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 1).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, FloatingSsoPolicyDisabled) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
+
+  SetFloatingSsoEnabledPolicy(false);
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 }
 
 }  // namespace

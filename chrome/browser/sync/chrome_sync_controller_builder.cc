@@ -21,7 +21,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "components/desks_storage/core/desk_sync_service.h"
-#include "components/prefs/pref_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -54,6 +53,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/floating_sso/cookie_sync_data_type_controller.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
@@ -146,6 +146,10 @@ void ChromeSyncControllerBuilder::SetFloatingSsoService(
 void ChromeSyncControllerBuilder::SetOsPrefServiceSyncable(
     sync_preferences::PrefServiceSyncable* os_pref_service_syncable) {
   os_pref_service_syncable_.Set(os_pref_service_syncable);
+}
+
+void ChromeSyncControllerBuilder::SetPrefService(PrefService* pref_service) {
+  pref_service_.Set(pref_service);
 }
 
 void ChromeSyncControllerBuilder::SetSyncedPrintersManager(
@@ -371,12 +375,12 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
   }
 
   if (floating_sso_service_.value()) {
-    controllers.push_back(std::make_unique<syncer::DataTypeController>(
-        syncer::COOKIES,
-        /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            floating_sso_service_.value()->GetControllerDelegate().get()),
-        /*delegate_for_transport_mode=*/nullptr));
+    controllers.push_back(
+        std::make_unique<ash::floating_sso::CookieSyncDataTypeController>(
+            /*delegate_for_full_sync_mode=*/
+            std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                floating_sso_service_.value()->GetControllerDelegate().get()),
+            sync_service, pref_service_.value()));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

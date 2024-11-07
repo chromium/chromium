@@ -324,6 +324,7 @@ syncer::DataTypeController::TypeVector CreateChromeControllers(
           ? ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile)
           : nullptr);
   builder.SetOsPrefServiceSyncable(PrefServiceSyncableFromProfile(profile));
+  builder.SetPrefService(profile->GetPrefs());
   builder.SetSyncedPrintersManager(
       ash::SyncedPrintersManagerFactory::GetForBrowserContext(profile));
   builder.SetWifiConfigurationSyncService(

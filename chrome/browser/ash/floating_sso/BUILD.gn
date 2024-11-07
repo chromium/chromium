@@ -10,6 +10,8 @@ static_library("floating_sso") {
   sources = [
     "cookie_sync_conversions.cc",
     "cookie_sync_conversions.h",
+    "cookie_sync_data_type_controller.cc",
+    "cookie_sync_data_type_controller.h",
     "floating_sso_service.cc",
     "floating_sso_service.h",
     "floating_sso_service_factory.cc",
