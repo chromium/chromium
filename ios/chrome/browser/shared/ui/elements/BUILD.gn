@@ -17,8 +17,6 @@ source_set("elements") {
     "gray_highlight_button.mm",
     "home_waiting_view.h",
     "home_waiting_view.mm",
-    "instruction_view.h",
-    "instruction_view.mm",
     "new_feature_badge_view.h",
     "new_feature_badge_view.mm",
     "self_sizing_table_view.h",
@@ -35,7 +33,6 @@ source_set("elements") {
     "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/elements:constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/omnibox:features",
@@ -128,8 +125,8 @@ source_set("eg_test_support+eg2") {
     "activity_overlay_egtest_util.mm",
   ]
   deps = [
+    ":constants",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/ui/elements:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
+#import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/instruction_view/constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -100,8 +99,7 @@ UIView* CreateIconView(UIImage* icon) {
     }
     self.layer.cornerRadius = kCornerRadius;
     if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits =
-          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+      NSArray<UITrait>* traits = @[ UITraitUserInterfaceStyle.class ];
       [self registerForTraitChanges:traits
                          withAction:@selector(updateColorOnTraitChange)];
     }
