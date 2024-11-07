@@ -76,12 +76,7 @@
       // SceneController uses this stage to create the normal UI if needed.
       // There is no specific agent (other than SceneController) handling
       // this stage.
-      // TODO(crbug.com/353683675): once AppInitStage and ProfileInitStage
-      // are fully decoupled, remove the check that current ProfileStage is
-      // the main ProfileStage.
-      if (profileState.appState.mainProfile == profileState) {
-        [profileState queueTransitionToNextInitStage];
-      }
+      [profileState queueTransitionToNextInitStage];
       break;
 
     case ProfileInitStage::kFirstRun:
