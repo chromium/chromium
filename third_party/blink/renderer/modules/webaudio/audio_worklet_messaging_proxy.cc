@@ -99,7 +99,8 @@ AudioWorkletMessagingProxy::CreateObjectProxy(
   return std::make_unique<AudioWorkletObjectProxy>(
       static_cast<AudioWorkletMessagingProxy*>(messaging_proxy),
       parent_execution_context_task_runners,
-      worklet_->GetBaseAudioContext()->sampleRate());
+      worklet_->GetBaseAudioContext()->sampleRate(),
+      worklet_->GetBaseAudioContext()->CurrentSampleFrame());
 }
 
 std::unique_ptr<WorkerThread> AudioWorkletMessagingProxy::CreateWorkerThread() {
