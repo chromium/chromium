@@ -4,10 +4,11 @@
 
 #include "media/base/video_frame_layout.h"
 
-#include <string.h>
 #include <numeric>
 #include <sstream>
+#include <string>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 
@@ -34,6 +35,8 @@ std::vector<ColorPlaneLayout> PlanesFromStrides(
     const std::vector<int32_t>& strides) {
   std::vector<ColorPlaneLayout> planes(strides.size());
   for (size_t i = 0; i < strides.size(); i++) {
+    // TODO(crbug.com/338570700): Make strides unsigned and remove the CHECK().
+    CHECK_GE(strides[i], 0) << " plane: " << i;
     planes[i].stride = strides[i];
   }
   return planes;
