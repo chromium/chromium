@@ -282,11 +282,12 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificate) {
 
   base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       delete_future;
-  source.DeleteCertificate(base::ToLowerASCII(base::HexEncode(
+  source.DeleteCertificate("",
+                           base::ToLowerASCII(base::HexEncode(
                                net::X509Certificate::CalculateFingerprint256(
                                    test_cert_1->cert_buffer())
                                    .data)),
-                           "", delete_future.GetCallback());
+                           delete_future.GetCallback());
   certificate_manager_v2::mojom::ActionResultPtr delete_result =
       delete_future.Take();
   ASSERT_TRUE(delete_result);
@@ -328,11 +329,12 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificateConfirmationRejected) {
 
   base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       delete_future;
-  source.DeleteCertificate(base::ToLowerASCII(base::HexEncode(
+  source.DeleteCertificate("",
+                           base::ToLowerASCII(base::HexEncode(
                                net::X509Certificate::CalculateFingerprint256(
                                    test_cert_1->cert_buffer())
                                    .data)),
-                           "", delete_future.GetCallback());
+                           delete_future.GetCallback());
   certificate_manager_v2::mojom::ActionResultPtr delete_result =
       delete_future.Take();
   EXPECT_TRUE(delete_result.is_null());

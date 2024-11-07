@@ -37,8 +37,8 @@ class UserCertSource : public CertificateManagerPageHandler::CertSource,
       base::WeakPtr<content::WebContents> web_contents) override;
 
   void DeleteCertificate(
-      const std::string& sha256hash_hex,
       const std::string& display_name,
+      const std::string& sha256hash_hex,
       CertificateManagerPageHandler::DeleteCertificateCallback callback)
       override;
 

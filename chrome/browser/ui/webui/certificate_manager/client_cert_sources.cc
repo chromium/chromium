@@ -613,8 +613,8 @@ class WritableClientCertSource
   }
 
   void DeleteCertificate(
-      const std::string& sha256hash_hex,
       const std::string& display_name,
+      const std::string& sha256hash_hex,
       CertificateManagerPageHandler::DeleteCertificateCallback callback)
       override {
     (*remote_client_)

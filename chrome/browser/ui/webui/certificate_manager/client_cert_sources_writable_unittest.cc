@@ -389,7 +389,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate(kTestClientCertHashHex, "",
+    cert_source_->DeleteCertificate("", kTestClientCertHashHex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -427,7 +427,7 @@ TEST_P(ClientCertSourceWritableUnitTest, DISABLED_PolicyAllAllowsDeletion) {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate(kTestClientCertHashHex, "",
+    cert_source_->DeleteCertificate("", kTestClientCertHashHex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -441,7 +441,7 @@ TEST_P(ClientCertSourceWritableUnitTest, DISABLED_PolicyAllAllowsDeletion) {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate(kTestEcClientCertHashHex, "",
+    cert_source_->DeleteCertificate("", kTestEcClientCertHashHex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -488,7 +488,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate(kTestClientCertHashHex, "",
+    cert_source_->DeleteCertificate("", kTestClientCertHashHex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -502,7 +502,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate(kTestEcClientCertHashHex, "",
+    cert_source_->DeleteCertificate("", kTestEcClientCertHashHex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -541,7 +541,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate(kTestClientCertHashHex, "",
+    cert_source_->DeleteCertificate("", kTestClientCertHashHex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -558,7 +558,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate(kTestEcClientCertHashHex, "",
+    cert_source_->DeleteCertificate("", kTestEcClientCertHashHex,
                                     delete_waiter.GetCallback());
 
     certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -725,7 +725,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
   fake_page_->set_mocked_confirmation_result(false);
   base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       delete_waiter;
-  cert_source_->DeleteCertificate(kTestClientCertHashHex, "",
+  cert_source_->DeleteCertificate("", kTestClientCertHashHex,
                                   delete_waiter.GetCallback());
 
   certificate_manager_v2::mojom::ActionResultPtr delete_result =
@@ -740,7 +740,7 @@ TEST_P(ClientCertSourceWritableUnitTest, DeleteCertificateNotFound) {
   base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       delete_waiter;
   cert_source_->DeleteCertificate(
-      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "",
+      "", "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       delete_waiter.GetCallback());
 
   certificate_manager_v2::mojom::ActionResultPtr delete_result =
