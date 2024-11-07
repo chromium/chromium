@@ -358,7 +358,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       compositor->frame_sink_id(), frame_sink_manager_, data->display(),
       SharedMainThreadRasterContextProvider(),
       shared_worker_context_provider_wrapper_, compositor->task_runner(),
-      &gpu_memory_buffer_manager_);
+      &gpu_memory_buffer_manager_, compositor->widget());
   compositor->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink),
                                     std::move(display_private));
 

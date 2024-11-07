@@ -204,6 +204,8 @@ TestGpuServiceHolder::TestGpuServiceHolder(
   gpu_thread_options.message_pump_type = ui::OzonePlatform::GetInstance()
                                              ->GetPlatformProperties()
                                              .message_pump_type_for_gpu;
+#elif BUILDFLAG(IS_MAC)
+  gpu_thread_options.message_pump_type = base::MessagePumpType::UI;
 #endif
 
     CHECK(gpu_main_thread_.StartWithOptions(std::move(gpu_thread_options)));
