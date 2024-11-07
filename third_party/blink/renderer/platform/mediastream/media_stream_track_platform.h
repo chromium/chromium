@@ -54,7 +54,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     std::optional<bool> auto_gain_control;
     std::optional<bool> noise_supression;
     std::optional<bool> voice_isolation;
-    String echo_cancellation_type;
     int32_t sample_rate = -1;
     int32_t sample_size = -1;
     int32_t channel_count = -1;

@@ -261,32 +261,15 @@ void MediaStreamSource::GetSettings(
   settings.group_id = GroupId();
 
   if (echo_cancellation_mode_) {
-    switch (*echo_cancellation_mode_) {
-      case EchoCancellationMode::kDisabled:
-        settings.echo_cancellation = false;
-        settings.echo_cancellation_type = String();
-        break;
-      case EchoCancellationMode::kBrowser:
-        settings.echo_cancellation = true;
-        settings.echo_cancellation_type =
-            String::FromUTF8(blink::kEchoCancellationTypeBrowser);
-        break;
-      case EchoCancellationMode::kAec3:
-        settings.echo_cancellation = true;
-        settings.echo_cancellation_type =
-            String::FromUTF8(blink::kEchoCancellationTypeAec3);
-        break;
-      case EchoCancellationMode::kSystem:
-        settings.echo_cancellation = true;
-        settings.echo_cancellation_type =
-            String::FromUTF8(blink::kEchoCancellationTypeSystem);
-        break;
-    }
+    settings.echo_cancellation =
+        *echo_cancellation_mode_ != EchoCancellationMode::kDisabled;
   }
-  if (auto_gain_control_)
+  if (auto_gain_control_) {
     settings.auto_gain_control = *auto_gain_control_;
-  if (noise_supression_)
+  }
+  if (noise_supression_) {
     settings.noise_supression = *noise_supression_;
+  }
   if (voice_isolation_) {
     settings.voice_isolation = *voice_isolation_;
   }
