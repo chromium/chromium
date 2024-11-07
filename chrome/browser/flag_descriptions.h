@@ -672,6 +672,9 @@ extern const char kEnterpriseProfileBadgingForMenuDescription[];
 extern const char kEnterpriseUpdatedProfileCreationScreenName[];
 extern const char kEnterpriseUpdatedProfileCreationScreenDescription[];
 
+extern const char kManagedProfileRequiredInterstitialName[];
+extern const char kManagedProfileRequiredInterstitialDescription[];
+
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 

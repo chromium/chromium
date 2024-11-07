@@ -2975,6 +2975,11 @@
     "expiry_milestone": 133
   },
   {
+    "name": "enable-enterprise-profile-required-interstitial",
+    "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-enterprise-updated-profile-creation-screen",
     "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
     "expiry_milestone": 135

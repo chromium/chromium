@@ -1200,6 +1200,12 @@ const char kEnterpriseUpdatedProfileCreationScreenDescription[] =
     "Enable enterprise updated profile creation screens in the profile picker "
     "and forced profile creation.";
 
+const char kManagedProfileRequiredInterstitialName[] =
+    "Enable the managed profile required interstitial";
+const char kManagedProfileRequiredInterstitialDescription[] =
+    "Enable the interstitial shown when a managed profile creation is "
+    "required.";
+
 const char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";
 const char kEnableExperimentalCookieFeaturesDescription[] =

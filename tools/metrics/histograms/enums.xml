@@ -19550,6 +19550,7 @@ from previous Chrome versions.
   <int value="-277144896" label="enable-viewport-meta"/>
   <int value="-276946251" label="AppServiceShelf:disabled"/>
   <int value="-276907217" label="EventPath:enabled"/>
+  <int value="-276462146" label="ManagedProfileRequiredInterstitial:enabled"/>
   <int value="-276260362" label="GamepadVibration:enabled"/>
   <int value="-276196379" label="ShimlessRMASkuDescription:enabled"/>
   <int value="-276042128" label="ShortcutsNotApps:disabled"/>
@@ -23542,6 +23543,7 @@ from previous Chrome versions.
   <int value="1343248854" label="ExcludeDisplayInMirrorMode:disabled"/>
   <int value="1343516821" label="ignore-previews-blocklist"/>
   <int value="1343713259" label="ArcPrintSpoolerExperiment:disabled"/>
+  <int value="1344785753" label="ManagedProfileRequiredInterstitial:disabled"/>
   <int value="1344833841" label="ImeThread:enabled"/>
   <int value="1344947763" label="SunfishFeature:enabled"/>
   <int value="1345192233" label="VaapiVideoDecoder:enabled"/>
