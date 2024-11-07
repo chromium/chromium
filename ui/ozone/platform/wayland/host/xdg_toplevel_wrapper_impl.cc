@@ -122,12 +122,6 @@ bool XDGToplevelWrapperImpl::Initialize() {
         ZAURA_SHELL_GET_AURA_TOPLEVEL_FOR_XDG_TOPLEVEL_SINCE_VERSION) {
       aura_toplevel_.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
           connection_->zaura_shell()->wl_object(), xdg_toplevel_.get()));
-      if (ui::IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
-          version >=
-              ZAURA_TOPLEVEL_SURFACE_SUBMISSION_IN_PIXEL_COORDINATES_SINCE_VERSION) {
-        zaura_toplevel_surface_submission_in_pixel_coordinates(
-            aura_toplevel_.get());
-      }
     }
   }
 

@@ -83,11 +83,10 @@ void WaylandTouch::OnTouchDown(void* data,
     return;
   }
 
-  gfx::PointF location = self->connection_->MaybeConvertLocation(
-      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
-  self->delegate_->OnTouchPressEvent(window, location,
-                                     wl::EventMillisecondsToTimeTicks(time), id,
-                                     EventDispatchPolicyForPlatform());
+  self->delegate_->OnTouchPressEvent(
+      window, gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)),
+      wl::EventMillisecondsToTimeTicks(time), id,
+      EventDispatchPolicyForPlatform());
 }
 
 // static
@@ -119,12 +118,11 @@ void WaylandTouch::OnTouchMotion(void* data,
     LOG(WARNING) << "Touch event fired with wrong id";
     return;
   }
-  gfx::PointF location = self->connection_->MaybeConvertLocation(
-      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
-  self->delegate_->OnTouchMotionEvent(location,
-                                      wl::EventMillisecondsToTimeTicks(time),
-                                      id, EventDispatchPolicyForPlatform(),
-                                      /*is_synthesized=*/false);
+  self->delegate_->OnTouchMotionEvent(
+      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)),
+      wl::EventMillisecondsToTimeTicks(time), id,
+      EventDispatchPolicyForPlatform(),
+      /*is_synthesized=*/false);
 }
 
 // static

@@ -413,10 +413,6 @@ action("generate_test_support_constructor_list") {
 }
 
 test("ozone_unittests") {
-  if (is_chromeos_lacros && is_chromeos_device) {
-    configs += [ "//build/lacros:optional_shared_libgcc" ]
-  }
-
   deps = [
     ":test_support",
     "//mojo/core/test:run_all_unittests",

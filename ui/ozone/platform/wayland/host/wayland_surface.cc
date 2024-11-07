@@ -104,10 +104,8 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
     : connection_(connection),
       root_window_(root_window),
       surface_(connection->CreateSurface()),
-      surface_submission_in_pixel_coordinates_(
-          connection->surface_submission_in_pixel_coordinates()),
       use_viewporter_surface_scaling_(
-          connection->UseViewporterSurfaceScaling()) {
+          connection->supports_viewporter_surface_scaling()) {
   // Inherit per-surface preferred scale when owned by non-toplevel windows.
   // See https://wayland.app/protocols/fractional-scale-v1.
   if (root_window_ && root_window_->parent_window()) {
@@ -353,12 +351,10 @@ void WaylandSurface::set_surface_buffer_scale(float scale) {
 
   if (apply_state_immediately_) {
     state_.buffer_scale_float = pending_state_.buffer_scale_float;
-    if (!(surface_submission_in_pixel_coordinates_ ||
-          use_viewporter_surface_scaling_)) {
+    if (!use_viewporter_surface_scaling_) {
       // It's safe to cast the result of GetWaylandScale to an integer here
-      // because the buffer scale should always be integer when both surface
-      // submission in pixel coordinates and viewporter surface scaling is
-      // disabled.
+      // because the buffer scale should always be integer when viewporter
+      // surface scaling is disabled.
       wl_surface_set_buffer_scale(
           surface_.get(), static_cast<int32_t>(GetWaylandScale(state_)));
     }
@@ -413,9 +409,6 @@ void WaylandSurface::set_input_region(
 }
 
 float WaylandSurface::GetWaylandScale(const State& state) {
-  if (surface_submission_in_pixel_coordinates_) {
-    return 1;
-  }
   return wl::ClampScale(use_viewporter_surface_scaling_
                             ? state.buffer_scale_float
                             : std::ceil(state.buffer_scale_float));
@@ -446,8 +439,6 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
     const std::vector<gfx::Rect>& region_px,
     float buffer_scale) {
   DCHECK(root_window_);
-  DCHECK(!surface_submission_in_pixel_coordinates_ || buffer_scale == 1.f);
-
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
 
@@ -820,13 +811,11 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   gfx::RectF crop = pending_state_.crop;
   gfx::SizeF viewport_px = pending_state_.viewport_px;
 
-  // If this is the root surface, no viewport scaling is requested, surface
-  // submission in pixel coordinates is disabled and fractional_scale_v1 is in
-  // use, then crop the buffer in accordance with the protocol specification to
-  // ensure that a pixel on the window will correspond to a pixel on the
-  // physical display.
-  if (!surface_submission_in_pixel_coordinates_ &&
-      connection_->fractional_scale_manager_v1() && root_window_ &&
+  // If this is the root surface, no viewport scaling is requested, and
+  // fractional_scale_v1 is in use, then crop the buffer in accordance with the
+  // protocol specification to ensure that a pixel on the window will correspond
+  // to a pixel on the physical display.
+  if (connection_->fractional_scale_manager_v1() && root_window_ &&
       root_window_->root_surface() == this &&
       !IsViewportScaled(pending_state_)) {
     gfx::Size old_size_px =
@@ -867,8 +856,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     applying_surface_scale = GetWaylandScale(pending_state_);
     bounds = gfx::ScaleSize(bounds, 1.f / GetWaylandScale(pending_state_));
   }
-  if (!(surface_submission_in_pixel_coordinates_ ||
-        use_viewporter_surface_scaling_) &&
+  if (!use_viewporter_surface_scaling_ &&
       surface_scale_set_ != applying_surface_scale) {
     wl_surface_set_buffer_scale(surface_.get(), applying_surface_scale);
     surface_scale_set_ = applying_surface_scale;

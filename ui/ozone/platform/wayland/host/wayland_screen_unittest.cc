@@ -1163,15 +1163,7 @@ TEST_P(WaylandScreenTest, OutputStateIsConsistentWhenNotifyingObservers) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
-class WaylandAuraShellScreenTest : public WaylandScreenTest {
- public:
-  void SetUp() override {
-    WaylandScreenTest::SetUp();
-    // Submit surfaces in pixel coordinates when aura_shell is used.
-    // TODO(oshima): Do this in all tests with ash_shell.
-    connection_->set_surface_submission_in_pixel_coordinates(true);
-  }
-};
+using WaylandAuraShellScreenTest = WaylandScreenTest;
 
 TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   TestDisplayObserver observer;

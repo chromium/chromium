@@ -859,8 +859,6 @@ void WaylandEventSource::SetRelativePointerMotionEnabled(bool enabled) {
 void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta,
                                                  base::TimeTicks timestamp) {
   DCHECK(relative_pointer_location_.has_value());
-  // TODO(oshima): Investigate if we need to scale the delta
-  // when surface_submission_in_pixel_coordinates is on.
   relative_pointer_location_ = *relative_pointer_location_ + delta;
   OnPointerMotionEvent(*relative_pointer_location_, timestamp,
                        wl::EventDispatchPolicy::kImmediate,
@@ -938,10 +936,6 @@ void WaylandEventSource::OnPointerStylusTiltChanged(
   }
 
   last_pointer_stylus_data_->tilt = tilt;
-}
-
-const WaylandWindow* WaylandEventSource::GetPointerTarget() const {
-  return window_manager_->GetCurrentPointerFocusedWindow();
 }
 
 void WaylandEventSource::OnDispatcherListChanged() {

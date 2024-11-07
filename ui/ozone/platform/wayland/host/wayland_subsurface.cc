@@ -139,10 +139,8 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
   // Chromium positions quads in display::Display coordinates in physical
   // pixels, but Wayland requires them to be in local surface coordinates a.k.a
   // relative to parent window.
-  auto bounds_dip_in_parent_surface = AdjustSubsurfaceBounds(
-      bounds_px, parent_bounds_px,
-      connection_->surface_submission_in_pixel_coordinates() ? 1.f
-                                                             : buffer_scale);
+  auto bounds_dip_in_parent_surface =
+      AdjustSubsurfaceBounds(bounds_px, parent_bounds_px, buffer_scale);
   if (bounds_dip_in_parent_surface.origin() != position_dip_) {
     position_dip_ = bounds_dip_in_parent_surface.origin();
     if (augmented_subsurface_) {

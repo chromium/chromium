@@ -360,7 +360,8 @@ void WaylandDataDragController::DrawIconInternal() {
                       pending_icon_offset_.x() - current_icon_offset_.x(),
                       pending_icon_offset_.y() - current_icon_offset_.y());
   }
-  if (connection_->UseViewporterSurfaceScaling() && icon_surface_->viewport()) {
+  if (connection_->supports_viewporter_surface_scaling() &&
+      icon_surface_->viewport()) {
     wp_viewport_set_destination(icon_surface_->viewport(), size_dip.width(),
                                 size_dip.height());
   }
@@ -547,10 +548,6 @@ void WaylandDataDragController::OnDataSourceDropPerformed(
           << " nested_dispatcher=" << !!nested_dispatcher_;
 
   HandleDragEnd(DragResult::kCompleted, timestamp);
-}
-
-const WaylandWindow* WaylandDataDragController::GetDragTarget() const {
-  return window_;
 }
 
 void WaylandDataDragController::OnDataSourceSend(WaylandDataSource* source,

@@ -492,16 +492,6 @@ base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
   return now + base::Microseconds(delta_us);
 }
 
-const gfx::PointF WaylandConnection::MaybeConvertLocation(
-    const gfx::PointF& location,
-    const WaylandWindow* window) const {
-  if (!surface_submission_in_pixel_coordinates_ || !window)
-    return location;
-  gfx::PointF converted(location);
-  converted.InvScale(window->applied_state().window_scale);
-  return converted;
-}
-
 void WaylandConnection::DumpState(std::ostream& out) const {
   out << "available globals:";
   for (const auto& pair : available_globals_) {

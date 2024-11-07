@@ -1310,8 +1310,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   auto test = [](WaylandWindowDragControllerTest* self, WaylandScreen* screen,
                  const WaylandOutputManager::OutputList* outputs,
                  wl::TestWaylandServerThread* server, WaylandWindow* window,
-                 WmMoveLoopHandler* move_loop_handler,
-                 bool in_pixel_coordinates) {
+                 WmMoveLoopHandler* move_loop_handler) {
     ASSERT_TRUE(outputs);
     for (const auto& output : *outputs) {
       SCOPED_TRACE(
@@ -1319,11 +1318,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
       gfx::Point p0{10, 10};
       // Compute the expected point first as drag operation will move the
       // window.
-      gfx::Point expected_point =
-          in_pixel_coordinates
-              ? gfx::ScaleToRoundedPoint(
-                    p0, 1.0f / window->applied_state().window_scale)
-              : p0;
+      gfx::Point expected_point = p0;
       expected_point += window->GetBoundsInDIP().origin().OffsetFromOrigin();
       EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
 
@@ -1347,11 +1342,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
                 window->applied_state().window_scale);
 
       gfx::Point p1{20, 20};
-      expected_point =
-          (in_pixel_coordinates
-               ? gfx::ScaleToRoundedPoint(
-                     p1, 1.0f / window->applied_state().window_scale)
-               : p1);
+      expected_point = p1;
       expected_point += window->GetBoundsInDIP().origin().OffsetFromOrigin();
 
       self->SendDndMotionForWindowDrag(p1);
@@ -1377,8 +1368,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   ScheduleTestTask(base::BindOnce(
       test, base::Unretained(this), base::Unretained(screen_.get()),
       base::Unretained(outputs), base::Unretained(&server_),
-      base::Unretained(window_.get()), base::Unretained(move_loop_handler),
-      connection_->surface_submission_in_pixel_coordinates()));
+      base::Unretained(window_.get()), base::Unretained(move_loop_handler)));
   move_loop_handler->RunMoveLoop({});
 }
 

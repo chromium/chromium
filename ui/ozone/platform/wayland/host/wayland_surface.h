@@ -444,13 +444,9 @@ class WaylandSurface {
       linux_buffer_releases_legacy_;
   ExplicitReleaseCallback next_explicit_release_request_;
 
-  // A cached copy of connection->SurfaceSubmissionInPixelCoordinates(). While
+  // A cached copy of connection->supports_viewporter_surface_scaling(). While
   // it is technically possible to handle this value as mutable, in practice
   // it's constant.
-  const bool surface_submission_in_pixel_coordinates_;
-
-  // Same as above except it caches
-  // connection->UseViewporterSurfaceScaling().
   const bool use_viewporter_surface_scaling_;
 
   // For top level window, stores outputs that the window is currently rendered

@@ -54,8 +54,6 @@ WaylandTestBase::WaylandTestBase(wl::ServerConfig config)
 WaylandTestBase::~WaylandTestBase() = default;
 
 void WaylandTestBase::SetUp() {
-  disabled_features_.push_back(ui::kWaylandSurfaceSubmissionInPixelCoordinates);
-
   feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
 
   if (DeviceDataManager::HasInstance()) {

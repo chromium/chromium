@@ -118,7 +118,6 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
                     base::TimeTicks timestamp) override;
   void OnDragLeave(base::TimeTicks timestamp) override;
   void OnDragDrop(base::TimeTicks timestamp) override;
-  const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate
   void OnDataSourceDropPerformed(WaylandDataSource* source,

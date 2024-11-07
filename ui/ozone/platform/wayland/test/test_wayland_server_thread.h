@@ -78,7 +78,6 @@ struct ServerConfig {
       ShouldUseLinuxDrmSyncobjProtocol::kNone;
   EnableAuraShellProtocol enable_aura_shell =
       EnableAuraShellProtocol::kDisabled;
-  bool surface_submission_in_pixel_coordinates = true;
   bool supports_viewporter_surface_scaling = false;
 };
 

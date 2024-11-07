@@ -75,7 +75,6 @@ TEST_F(WaylandOutputTest, ScaleFactorCalculation) {
   ASSERT_TRUE(wl_output);
   EXPECT_FALSE(wl_output->xdg_output_);
 
-  ASSERT_FALSE(connection_->surface_submission_in_pixel_coordinates());
   connection_->set_supports_viewporter_surface_scaling(true);
   ASSERT_TRUE(connection_->supports_viewporter_surface_scaling());
 
@@ -152,7 +151,6 @@ TEST_F(WaylandOutputTest, ScaleFactorCalculationNoop) {
   ASSERT_TRUE(wl_output);
   EXPECT_FALSE(wl_output->xdg_output_);
 
-  ASSERT_FALSE(connection_->surface_submission_in_pixel_coordinates());
   connection_->set_supports_viewporter_surface_scaling(true);
   ASSERT_TRUE(connection_->supports_viewporter_surface_scaling());
 

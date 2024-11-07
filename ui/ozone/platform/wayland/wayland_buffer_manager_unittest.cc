@@ -112,11 +112,9 @@ class WaylandBufferManagerTest : public WaylandTest {
   ~WaylandBufferManagerTest() override = default;
 
   void SetUp() override {
-    // Surface submission in pixel coordinates is only checked once on surface
-    // creation and persisted, so we must make sure the configuration is done
-    // before we create the surface.
-    connection_->set_surface_submission_in_pixel_coordinates(
-        GetParam().surface_submission_in_pixel_coordinates);
+    // Viewport surface scaling is only checked once on surface  creation and
+    // persisted, so we must make sure the configuration is done before we
+    // create the surface.
     connection_->set_supports_viewporter_surface_scaling(
         GetParam().supports_viewporter_surface_scaling);
 
@@ -2929,6 +2927,7 @@ TEST_P(WaylandBufferManagerTest, HasSurfaceAugmenter) {
   EXPECT_TRUE(connection_->surface_augmenter());
 }
 
+// TODO(crbug.com/374244479): this is not applicable to Linux.
 TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
   if (!connection_->ShouldUseOverlayDelegation()) {
     GTEST_SKIP();
@@ -2969,13 +2968,9 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
   // from px to dip.
   std::vector<float> scale_factors = {1, 1.2, 1.5, 2};
 
-  // Exo may allow to submit values in px.
-  std::vector<bool> in_pixels = {true, false};
-
   uint32_t frame_id = 0u;
   for (auto scale_factor : scale_factors) {
-    if (scale_factor != std::ceil(scale_factor) &&
-        !GetParam().surface_submission_in_pixel_coordinates) {
+    if (scale_factor != std::ceil(scale_factor)) {
       // Fractional scales not supported when surface submission in pixel
       // coordinates is disabled.
       continue;
@@ -2997,12 +2992,8 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
 
       for (auto& subsurface : window_->wayland_subsurfaces_) {
         gfx::RRectF rounded_clip_bounds_dip = rounded_corners;
-        // If submission in px is allowed, there is no need to convert px to
-        // dip.
-        if (!GetParam().surface_submission_in_pixel_coordinates) {
-          // Ozone/Wayland applies ceiled scale factor if it's fractional.
-          rounded_clip_bounds_dip.Scale(1.f / std::ceil(scale_factor));
-        }
+        // Ozone/Wayland applies ceiled scale factor if it's fractional.
+        rounded_clip_bounds_dip.Scale(1.f / std::ceil(scale_factor));
         PostToServerAndWait(
             [subsurface_id = subsurface->wayland_surface()->get_surface_id(),
              &rounded_clip_bounds_dip](wl::TestWaylandServerThread* server) {
@@ -3352,13 +3343,12 @@ INSTANTIATE_TEST_SUITE_P(
             wl::ShouldUseExplicitSynchronizationProtocol::kUse}));
 
 INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithSurfaceSubmissionInPixelCoordinatesDisabled,
+    XdgVersionStableTestWithViewporterSurfaceScalingDisabled,
     WaylandBufferManagerTest,
-    Values(wl::ServerConfig{.surface_submission_in_pixel_coordinates = false}));
+    Values(wl::ServerConfig{.supports_viewporter_surface_scaling = false}));
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithViewporterSurfaceScalingEnabled,
     WaylandBufferManagerTest,
-    Values(wl::ServerConfig{.surface_submission_in_pixel_coordinates = false,
-                            .supports_viewporter_surface_scaling = true}));
+    Values(wl::ServerConfig{.supports_viewporter_surface_scaling = true}));
 
 }  // namespace ui

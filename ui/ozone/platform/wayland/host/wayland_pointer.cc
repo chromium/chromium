@@ -83,10 +83,10 @@ void WaylandPointer::OnEnter(void* data,
   if (!window) {
     return;
   }
-  gfx::PointF location{static_cast<float>(wl_fixed_to_double(surface_x)),
-                       static_cast<float>(wl_fixed_to_double(surface_y))};
   self->delegate_->OnPointerFocusChanged(
-      window, self->connection_->MaybeConvertLocation(location, window),
+      window,
+      gfx::PointF(static_cast<float>(wl_fixed_to_double(surface_x)),
+                  static_cast<float>(wl_fixed_to_double(surface_y))),
       timestamp, EventDispatchPolicyForPlatform());
 }
 
@@ -113,12 +113,8 @@ void WaylandPointer::OnMotion(void* data,
                               wl_fixed_t surface_y) {
   auto* self = static_cast<WaylandPointer*>(data);
 
-  gfx::PointF location(wl_fixed_to_double(surface_x),
-                       wl_fixed_to_double(surface_y));
-  const WaylandWindow* target = self->delegate_->GetPointerTarget();
-
   self->delegate_->OnPointerMotionEvent(
-      self->connection_->MaybeConvertLocation(location, target),
+      gfx::PointF(wl_fixed_to_double(surface_x), wl_fixed_to_double(surface_y)),
       wl::EventMillisecondsToTimeTicks(time), EventDispatchPolicyForPlatform(),
       /*is_synthesized=*/false);
 }

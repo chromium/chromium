@@ -1289,8 +1289,7 @@ bool WaylandWindow::CommitOverlays(
 
 void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
   DCHECK(cursor);
-  CHECK(connection_->surface_submission_in_pixel_coordinates() ||
-        cursor->type() == CursorType::kNone ||
+  CHECK(cursor->type() == CursorType::kNone ||
         base::IsValueInRangeForNumericType<int>(
             cursor->cursor_image_scale_factor()));
 

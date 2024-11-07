@@ -84,12 +84,6 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
       .all_bug_fixes_sent = &OnAllBugFixesSent,
       .window_corners_radii = &OnSetWindowCornersRadii};
   zaura_shell_add_listener(obj_.get(), &kZAuraShellListener, this);
-
-  if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
-      zaura_shell_get_version(wl_object()) >=
-          ZAURA_TOPLEVEL_SURFACE_SUBMISSION_IN_PIXEL_COORDINATES_SINCE_VERSION) {
-    connection->set_surface_submission_in_pixel_coordinates(true);
-  }
 }
 
 WaylandZAuraShell::~WaylandZAuraShell() = default;

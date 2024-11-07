@@ -463,10 +463,6 @@ void WaylandWindowDragController::OnDragDrop(base::TimeTicks timestamp) {
   drag_target_window_ = nullptr;
 }
 
-const WaylandWindow* WaylandWindowDragController::GetDragTarget() const {
-  return drag_target_window_;
-}
-
 void WaylandWindowDragController::OnDataSourceDropPerformed(
     WaylandDataSource* source,
     base::TimeTicks timestamp) {

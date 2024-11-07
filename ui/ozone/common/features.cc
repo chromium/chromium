@@ -18,19 +18,6 @@ BASE_FEATURE(kWaylandOverlayDelegation,
 #endif
 );
 
-// This feature flag enables a mode where the wayland client would submit
-// buffers at a scale of 1 and the server applies the respective scale transform
-// to properly composite the buffers. This mode is used to support fractional
-// scale factor.
-BASE_FEATURE(kWaylandSurfaceSubmissionInPixelCoordinates,
-             "WaylandSurfaceSubmissionInPixelCoordinates",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // Controls whether support for the fractional_scale_v1 protocol should be
 // enabled.
 BASE_FEATURE(kWaylandFractionalScaleV1,
@@ -65,11 +52,6 @@ BASE_FEATURE(kPrettyPrintDrmModesetConfigLogs,
 BASE_FEATURE(kUseDynamicCursorSize,
              "UseDynamicCursorSize",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
-  return base::FeatureList::IsEnabled(
-      kWaylandSurfaceSubmissionInPixelCoordinates);
-}
 
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);

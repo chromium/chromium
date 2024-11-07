@@ -191,19 +191,11 @@ void WaylandBubble::AddToParentAsSubsurface() {
 }
 
 void WaylandBubble::SetSubsurfacePosition() {
-  if (connection()->surface_submission_in_pixel_coordinates()) {
-    const auto bounds_px_in_parent = wl::TranslateBoundsToParentCoordinates(
-        GetBoundsInPixels(), parent_window()->GetBoundsInPixels());
-    wl_subsurface_set_position(subsurface_.get(), bounds_px_in_parent.x(),
-                               bounds_px_in_parent.y());
-  } else {
-    // TODO(crbug.com/369213517): Handle ui scale before enabling this on Linux.
-    const auto bounds_dip_in_parent =
-        wl::TranslateWindowBoundsToParentDIP(this, parent_window());
-    wl_subsurface_set_position(subsurface_.get(), bounds_dip_in_parent.x(),
-                               bounds_dip_in_parent.y());
-  }
-
+  // TODO(crbug.com/369213517): Handle ui scale before enabling this on Linux.
+  const auto bounds_dip_in_parent =
+      wl::TranslateWindowBoundsToParentDIP(this, parent_window());
+  wl_subsurface_set_position(subsurface_.get(), bounds_dip_in_parent.x(),
+                             bounds_dip_in_parent.y());
   parent_window()->root_surface()->Commit();
 }
 
