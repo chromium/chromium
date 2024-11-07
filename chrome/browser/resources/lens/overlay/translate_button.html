@@ -233,12 +233,6 @@
     min-width: 250px;
   }
 
-  :host([should-hide-language-picker]) #languagePicker {
-    animation: fadeInOut 400ms cubic-bezier(0.2, 0.0, 0, 1.0) 0s reverse;
-    opacity: 0;
-    pointer-events: none;
-  }
-
   #languagePickerMenuStarsIcon {
     background-color: var(--color-scrim);
     display: block;
@@ -311,7 +305,7 @@
 
   #translateDisableButton {
     background-color: var(--color-surface-container-highest-dark);
-    gap: 0;
+    gap: 0px;
     height: 38px;
     min-width: 0px;
     opacity: 0;

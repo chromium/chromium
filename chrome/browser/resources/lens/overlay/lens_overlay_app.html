@@ -242,8 +242,7 @@
 
   :host(:not([is-lens-overlay-contextual-searchbox-visible])) #searchboxContainer,
   :host([search-box-hidden]) #searchboxContainer {
-    opacity: 0;
-    pointer-events: none;
+    display: none;
   }
 
   cr-searchbox-ghost-loader {

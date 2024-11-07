@@ -67,8 +67,8 @@ suite('OverlayTranslateButton', function() {
 
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
-    // guarantee that any singleton instances don't change while any UI is
-    // still attached to the DOM.
+    // guarantee that any singleton instances don't change while any UI is still
+    // attached to the DOM.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestLensOverlayBrowserProxy();
@@ -188,8 +188,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The source language button should be visible but the language picker
-    // menu should not be visible.
+    // The source language button should be visible but the language picker menu
+    // should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
@@ -212,8 +212,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The target language button should be visible but the language picker
-    // menu should not be visible.
+    // The target language button should be visible but the language picker menu
+    // should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
@@ -236,8 +236,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The source language button should be visible but the language picker
-    // menu should not be visible.
+    // The source language button should be visible but the language picker menu
+    // should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
@@ -328,8 +328,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The target language button should be visible but the language picker
-    // menu should not be visible.
+    // The target language button should be visible but the language picker menu
+    // should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
@@ -440,8 +440,7 @@ suite('OverlayTranslateButton', function() {
     assertTrue(
         isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
 
-    // Language buttons should have languages set according to
-    // setTranslateMode.
+    // Language buttons should have languages set according to setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         loadTimeData.getString('detectLanguage'));
@@ -470,8 +469,7 @@ suite('OverlayTranslateButton', function() {
         secondSourceLanguage, secondTargetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
 
-    // Language buttons should have languages set according to
-    // setTranslateMode.
+    // Language buttons should have languages set according to setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         'Swahili');
@@ -532,8 +530,7 @@ suite('OverlayTranslateButton', function() {
     assertTrue(
         isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
 
-    // Language buttons should have languages set according to
-    // setTranslateMode.
+    // Language buttons should have languages set according to setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         'English');
@@ -607,8 +604,7 @@ suite('OverlayTranslateButton', function() {
     assertTrue(
         isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
 
-    // Language buttons should have languages set according to
-    // setTranslateMode.
+    // Language buttons should have languages set according to setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         loadTimeData.getString('detectLanguage'));
@@ -624,8 +620,7 @@ suite('OverlayTranslateButton', function() {
     callbackRouterRemote.setTranslateMode(sourceLanguage, targetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
 
-    // Language buttons should have languages set according to
-    // setTranslateMode.
+    // Language buttons should have languages set according to setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         loadTimeData.getString('detectLanguage'));
@@ -697,8 +692,8 @@ suite('OverlayTranslateButton', function() {
         overlayTranslateButtonElement.shadowRoot!.activeElement,
         overlayTranslateButtonElement.$.sourceLanguagePickerBackButton);
 
-    // Clicking the back button should close the picker menu and return focus
-    // to the source language button.
+    // Clicking the back button should close the picker menu and return focus to
+    // the source language button.
     overlayTranslateButtonElement.$.sourceLanguagePickerBackButton.click();
     await waitAfterNextRender(overlayTranslateButtonElement);
     assertEquals(
@@ -734,8 +729,8 @@ suite('OverlayTranslateButton', function() {
         overlayTranslateButtonElement.shadowRoot!.activeElement,
         overlayTranslateButtonElement.$.targetLanguagePickerBackButton);
 
-    // Clicking the back button should close the picker menu and return focus
-    // to the target language button.
+    // Clicking the back button should close the picker menu and return focus to
+    // the target language button.
     overlayTranslateButtonElement.$.targetLanguagePickerBackButton.click();
     await waitAfterNextRender(overlayTranslateButtonElement);
     assertEquals(
@@ -785,8 +780,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The source language button should be visible but the language picker
-    // menu should not be visible.
+    // The source language button should be visible but the language picker menu
+    // should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
@@ -832,8 +827,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The target language button should be visible but the language picker
-    // menu should not be visible.
+    // The target language button should be visible but the language picker menu
+    // should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
@@ -869,121 +864,6 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         swahiliMenuItem,
         overlayTranslateButtonElement.shadowRoot!.activeElement);
-  });
-});
-
-suite('OverlayTranslateButtonContextualSearchbox', function() {
-  let overlayTranslateButtonElement: TranslateButtonElement;
-  let testBrowserProxy: TestLensOverlayBrowserProxy;
-  let testLanguageBrowserProxy: TestLanguageBrowserProxy;
-
-  setup(async () => {
-    // Resetting the HTML needs to be the first thing we do in setup to
-    // guarantee that any singleton instances don't change while any UI is
-    // still attached to the DOM.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    testBrowserProxy = new TestLensOverlayBrowserProxy();
-    BrowserProxyImpl.setInstance(testBrowserProxy);
-
-    // Set a test browser proxy so we can mock out the language setting calls.
-    testLanguageBrowserProxy = new TestLanguageBrowserProxy();
-    LanguageBrowserProxyImpl.setInstance(testLanguageBrowserProxy);
-
-    overlayTranslateButtonElement = document.createElement('translate-button');
-    overlayTranslateButtonElement.setContextualSearchboxEnabledForTesting(true);
-    document.body.appendChild(overlayTranslateButtonElement);
-    disableCssTransitions(overlayTranslateButtonElement);
-    await flushTasks();
-    await waitAfterNextRender(overlayTranslateButtonElement);
-  });
-
-  test('LanguagePickerHidesAndShowsHover', async () => {
-    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
-
-    let translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
-    // Click the translate button to show the language picker.
-    overlayTranslateButtonElement.$.translateEnableButton.click();
-    let translateModeStateChangeEvent = await translateModeStateChangePromise;
-    await waitAfterNextRender(overlayTranslateButtonElement);
-
-    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
-    // Translate mode state change event should have been fired.
-    assertTrue(translateModeStateChangeEvent.detail.shouldHideSearchbox);
-    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
-    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
-
-    const translateContainer =
-        overlayTranslateButtonElement.$.translateContainer;
-    translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
-    translateContainer.dispatchEvent(new CustomEvent('mouseleave'));
-    translateModeStateChangeEvent = await translateModeStateChangePromise;
-    await waitAfterNextRender(overlayTranslateButtonElement);
-
-    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
-    assertFalse(translateModeStateChangeEvent.detail.shouldHideSearchbox);
-    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
-    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
-
-    const disableButton =
-        overlayTranslateButtonElement.$.translateDisableButton;
-    translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
-    disableButton.dispatchEvent(new CustomEvent('mouseover'));
-    translateModeStateChangeEvent = await translateModeStateChangePromise;
-    await waitAfterNextRender(overlayTranslateButtonElement);
-
-    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
-    // Translate mode state change event should have been fired.
-    assertTrue(translateModeStateChangeEvent.detail.shouldHideSearchbox);
-    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
-    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
-  });
-
-  test('LanguagePickerHidesAndShowsFocus', async () => {
-    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
-
-    let translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
-    // Click the translate button to show the language picker.
-    overlayTranslateButtonElement.$.translateEnableButton.click();
-    let translateModeStateChangeEvent = await translateModeStateChangePromise;
-    await waitAfterNextRender(overlayTranslateButtonElement);
-
-    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
-    // Translate mode state change event should have been fired.
-    assertTrue(translateModeStateChangeEvent.detail.shouldHideSearchbox);
-    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
-    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
-
-    const translateContainer =
-        overlayTranslateButtonElement.$.translateContainer;
-    translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
-    translateContainer.dispatchEvent(new CustomEvent('mouseleave'));
-    translateModeStateChangeEvent = await translateModeStateChangePromise;
-    await waitAfterNextRender(overlayTranslateButtonElement);
-
-    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
-    assertFalse(translateModeStateChangeEvent.detail.shouldHideSearchbox);
-    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
-    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
-
-    const disableButton =
-        overlayTranslateButtonElement.$.translateDisableButton;
-    translateModeStateChangePromise =
-        eventToPromise('translate-mode-state-changed', document.body);
-    disableButton.focus();
-    translateModeStateChangeEvent = await translateModeStateChangePromise;
-    await waitAfterNextRender(overlayTranslateButtonElement);
-
-    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
-    // Translate mode state change event should have been fired.
-    assertTrue(translateModeStateChangeEvent.detail.shouldHideSearchbox);
-    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
-    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
   });
 });
 
