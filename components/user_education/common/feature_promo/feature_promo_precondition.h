@@ -142,8 +142,36 @@ class ForwardingFeaturePromoPrecondition : public FeaturePromoPrecondition {
 class FeaturePromoPreconditionList {
  public:
   using ListType = std::vector<std::unique_ptr<FeaturePromoPrecondition>>;
-  using CheckResult =
-      std::tuple<FeaturePromoResult, FeaturePromoPrecondition::Identifier>;
+
+  // Represents the result of checking the precondition list.
+  class CheckResult {
+   public:
+    CheckResult() = default;
+    CheckResult(FeaturePromoResult result,
+                FeaturePromoPrecondition::Identifier failed_precondition)
+        : result_(result), failed_precondition_(failed_precondition) {}
+    CheckResult(const CheckResult&) = default;
+    CheckResult& operator=(const CheckResult&) = default;
+    ~CheckResult() = default;
+
+    FeaturePromoResult result() const { return result_; }
+    std::optional<FeaturePromoResult::Failure> failure() const {
+      return result_.failure();
+    }
+    FeaturePromoPrecondition::Identifier failed_precondition() const {
+      return failed_precondition_;
+    }
+    explicit operator bool() const { return result_; }
+    bool operator!() const { return !result_; }
+    bool operator==(const CheckResult&) const = default;
+    bool operator!=(const CheckResult&) const = default;
+
+   private:
+    // The result of checking the list; success if no preconditions failed.
+    FeaturePromoResult result_;
+    // The identifier of the precondition that failed, or a null if none did.
+    FeaturePromoPrecondition::Identifier failed_precondition_;
+  };
 
   template <typename... Args>
   explicit FeaturePromoPreconditionList(Args... preconditions) {
@@ -155,14 +183,18 @@ class FeaturePromoPreconditionList {
       FeaturePromoPreconditionList&&) noexcept;
   ~FeaturePromoPreconditionList();
 
+  // Adds `precondition` to this list.
+  void AddPrecondition(std::unique_ptr<FeaturePromoPrecondition> precondition);
+
+  // Appends all of the preconditions from `other` to this list.
+  void AppendAll(FeaturePromoPreconditionList other);
+
   // Checks that all preconditions in the list are met, in order, and returns
   // either the `failure()` and `identifier()` of the first that does not pass,
   // or `FeaturePromoResult::Success()` if all preconditions pass.
   CheckResult CheckPreconditions() const;
 
  private:
-  void AddPrecondition(std::unique_ptr<FeaturePromoPrecondition> precondition);
-
   ListType preconditions_;
 };
 
