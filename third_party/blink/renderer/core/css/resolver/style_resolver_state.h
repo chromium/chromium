@@ -260,6 +260,13 @@ class CORE_EXPORT StyleResolverState {
   void SetHasTreeScopedReference() { has_tree_scoped_reference_ = true; }
   bool HasTreeScopedReference() const { return has_tree_scoped_reference_; }
 
+  void SetHasUnsupportedGuaranteedInvalid() {
+    has_unsupported_guaranteed_invalid_ = true;
+  }
+  bool HasUnsupportedGuaranteedInvalid() const {
+    return has_unsupported_guaranteed_invalid_;
+  }
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
 
@@ -347,6 +354,10 @@ class CORE_EXPORT StyleResolverState {
 
   // True if the resolved ComputedStyle depends on tree-scoped references.
   bool has_tree_scoped_reference_ = false;
+
+  // Tried to apply a guaranteed-invalid value to a custom property that doesn't
+  // support it.
+  bool has_unsupported_guaranteed_invalid_ = false;
 };
 
 }  // namespace blink

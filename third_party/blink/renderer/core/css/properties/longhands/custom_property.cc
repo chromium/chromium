@@ -97,6 +97,10 @@ void CustomProperty::ApplyInitial(StyleResolverState& state) const {
 }
 
 void CustomProperty::ApplyInherit(StyleResolverState& state) const {
+  if (!state.ParentStyle()) {
+    ApplyInitial(state);
+    return;
+  }
   ComputedStyleBuilder& builder = state.StyleBuilder();
   bool is_inherited_property = IsInherited();
 
@@ -128,6 +132,7 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
 
   if (value.IsInvalidVariableValue()) {
     if (!SupportsGuaranteedInvalid()) {
+      state.SetHasUnsupportedGuaranteedInvalid();
       ApplyUnset(state);
       return;
     }
@@ -189,6 +194,7 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   }
 
   if (!registered_value) {
+    state.SetHasUnsupportedGuaranteedInvalid();
     if (is_inherited_property) {
       ApplyInherit(state);
     } else {

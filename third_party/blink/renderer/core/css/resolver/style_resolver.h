@@ -208,6 +208,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   static bool CanReuseBaseComputedStyle(const StyleResolverState& state);
 
+  // Return a computed value for the passed-in property:value pair in the
+  // context of the current ComputedStyle of the 'element'.
+  // Returns nullptr for custom property values that are IACVT.
   static const CSSValue* ComputeValue(Element* element,
                                       const CSSPropertyName&,
                                       const CSSValue&);

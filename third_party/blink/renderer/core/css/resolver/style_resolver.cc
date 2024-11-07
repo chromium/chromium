@@ -2718,6 +2718,9 @@ const CSSValue* StyleResolver::ComputeValue(
       set, {.origin = CascadeOrigin::kAuthor});
   cascade.Apply();
 
+  if (state.HasUnsupportedGuaranteedInvalid()) {
+    return nullptr;
+  }
   CSSPropertyRef property_ref(property_name, element->GetDocument());
   const ComputedStyle* style = state.TakeStyle();
   return ComputedStyleUtils::ComputedPropertyValue(property_ref.GetProperty(),
