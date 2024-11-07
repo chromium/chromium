@@ -374,6 +374,26 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
   });
 }
 
+TEST_P(WaylandDataDragControllerTest, StartDragWithEmptyMimeTypeList) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  OSExchangeData os_exchange_data;
+  bool started = drag_controller()->StartSession(
+      os_exchange_data, DragDropTypes::DRAG_MOVE, DragEventSource::kMouse);
+  ASSERT_TRUE(started);
+
+  PostToServerAndWait([kExpectedMimeType = "chromium/x-empty-drag-data"](
+                          wl::TestWaylandServerThread* server) {
+    auto* server_data_source = server->data_device_manager()->data_source();
+    ASSERT_TRUE(server_data_source);
+
+    EXPECT_EQ(server_data_source->mime_types().size(), 1u);
+    EXPECT_EQ(server_data_source->mime_types().back(), kExpectedMimeType);
+
+    server_data_source->OnCancelled();
+  });
+}
+
 // Cancels a DnD session that we initiated while the cursor is over our window.
 TEST_P(WaylandDataDragControllerTest, CancelOutgoingDrag) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
