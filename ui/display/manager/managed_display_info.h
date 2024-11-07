@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"

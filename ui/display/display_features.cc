@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace display {
 namespace features {
@@ -18,7 +17,7 @@ BASE_FEATURE(kSkipEmptyDisplayHotplugEvent,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Enables the rounded corners for the internal display.
 BASE_FEATURE(kRoundedDisplay,
@@ -44,9 +43,7 @@ BASE_FEATURE(kUseHDRTransferFunction,
 BASE_FEATURE(kEnableExternalDisplayHDR10Mode,
              "EnableExternalDisplayHDR10Mode",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Feature to control if the CTM is dynamically set to the primary transform
 // from plane color space to output color space.
 BASE_FEATURE(kCtmColorManagement,

@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"

@@ -86,14 +86,14 @@ void Screen::SetDisplayForNewWindows(int64_t display_id) {
   display_id_for_new_windows_ = display_id;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 Screen::ScreenSaverSuspender::~ScreenSaverSuspender() = default;
 
 std::unique_ptr<Screen::ScreenSaverSuspender> Screen::SuspendScreenSaver() {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 bool Screen::IsScreenSaverActive() const {
   NOTIMPLEMENTED_LOG_ONCE();

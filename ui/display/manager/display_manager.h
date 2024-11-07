@@ -25,7 +25,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_observer.h"

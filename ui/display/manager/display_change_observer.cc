@@ -24,7 +24,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/display/display.h"

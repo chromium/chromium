@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 
 namespace display {
 namespace features {
@@ -17,7 +16,7 @@ COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kSkipEmptyDisplayHotplugEvent);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kRoundedDisplay);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsRoundedDisplayEnabled();
@@ -27,9 +26,7 @@ BASE_DECLARE_FEATURE(kUseHDRTransferFunction);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kEnableExternalDisplayHDR10Mode);
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kCtmColorManagement);
 #endif

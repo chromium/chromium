@@ -16,7 +16,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
