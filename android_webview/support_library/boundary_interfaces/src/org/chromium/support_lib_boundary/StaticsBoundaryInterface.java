@@ -24,4 +24,8 @@ public interface StaticsBoundaryInterface {
     boolean isMultiProcessEnabled();
 
     String getVariationsHeader();
+
+    void setDefaultTrafficStatsTag(int tag);
+
+    void setDefaultTrafficStatsUid(int uid);
 }

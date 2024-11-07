@@ -522,6 +522,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/TestAwServiceWorkerClient.java",
     "../javatests/src/org/chromium/android_webview/test/TestPageLoadedNotifier.java",
     "../javatests/src/org/chromium/android_webview/test/TestWebMessageListener.java",
+    "../javatests/src/org/chromium/android_webview/test/TrafficStatsTest.java",
     "../javatests/src/org/chromium/android_webview/test/UserAgentTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsHeadersTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsSeedHolderTest.java",
@@ -687,6 +688,7 @@ android_library("webview_instrumentation_test_utils_java") {
     "../javatests/src/org/chromium/android_webview/test/util/EmbeddedComponentLoaderFactory.java",
     "../javatests/src/org/chromium/android_webview/test/util/ManifestMetadataMockApplicationContext.java",
     "../javatests/src/org/chromium/android_webview/test/util/RendererProcessMetricsProviderUtils.java",
+    "../javatests/src/org/chromium/android_webview/test/util/TrafficStatsTestUtil.java",
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
     "shell/src/org/chromium/android_webview/test/util/MemoryMetricsLoggerUtils.java",
   ]
@@ -710,6 +712,7 @@ generate_jni("webview_instrumentation_test_native_jni") {
     "../javatests/src/org/chromium/android_webview/test/util/DisableOriginTrialsSafeModeTestUtils.java",
     "../javatests/src/org/chromium/android_webview/test/util/EmbeddedComponentLoaderFactory.java",
     "../javatests/src/org/chromium/android_webview/test/util/RendererProcessMetricsProviderUtils.java",
+    "../javatests/src/org/chromium/android_webview/test/util/TrafficStatsTestUtil.java",
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
     "shell/src/org/chromium/android_webview/test/util/MemoryMetricsLoggerUtils.java",
   ]
@@ -720,6 +723,7 @@ source_set("webview_instrumentation_test_native_jni_impl") {
     "browser/disable_origin_trials_safemode_test_utils.cc",
     "browser/embedded_component_loader_test_helper.cc",
     "browser/renderer_process_metrics_provider_utils.cc",
+    "browser/trafficstats_test_util.cc",
     "browser/variations_test_utils.cc",
     "shell/memory_metrics_logger_utils.cc",
   ]
@@ -737,6 +741,7 @@ source_set("webview_instrumentation_test_native_jni_impl") {
     "//components/embedder_support/android/metrics",
     "//components/embedder_support/origin_trials",
     "//content/public/common",
+    "//net:test_support",
     "//third_party/protobuf:protobuf_lite",
   ]
 }

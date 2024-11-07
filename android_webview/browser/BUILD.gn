@@ -60,6 +60,7 @@ source_set("browser") {
     "aw_contents_origin_matcher.cc",
     "aw_contents_origin_matcher.h",
     "aw_contents_statics.cc",
+    "aw_contents_statics.h",
     "aw_context_menu_helper.cc",
     "aw_context_menu_helper.h",
     "aw_context_permissions_delegate.h",

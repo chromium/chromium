@@ -580,6 +580,8 @@ chromium-metrics-reviews@google.com.
   <int value="109" label="Profile.prefetchUrlWithParams"/>
   <int value="110" label="Profile.clearPrefetch"/>
   <int value="111" label="Profile.cancelPrefetch"/>
+  <int value="112" label="WebViewCompat.setDefaultTrafficStatsTag"/>
+  <int value="113" label="WebViewCompat.setDefaultTrafficStatsUid"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -2009,6 +2011,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="WebView.isMultiProcessEnabled"/>
   <int value="10" label="WebView.getVariationsHeader"/>
   <int value="11" label="GeoLocationPermissions.getInstance"/>
+  <int value="12" label="WebView.setDefaultTrafficStatsTag"/>
+  <int value="13" label="WebView.setDefaultTrafficStatsUid"/>
 <!-- LINT.ThenChange(/android_webview/glue/java/src/com/android/webview/chromium/SharedStatics.java:ApiCall) -->
 
 </enum>

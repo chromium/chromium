@@ -16,6 +16,7 @@
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
+#include "android_webview/browser/aw_contents_statics.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/cookie_manager.h"
@@ -382,6 +383,9 @@ InterceptedRequest::InterceptedRequest(
       &InterceptedRequest::OnURLLoaderClientError, base::Unretained(this)));
   proxied_loader_receiver_.set_disconnect_with_reason_handler(base::BindOnce(
       &InterceptedRequest::OnURLLoaderError, base::Unretained(this)));
+
+  // Update the resource request with the socketTag
+  request_.socket_tag = GetDefaultSocketTag();
 }
 
 InterceptedRequest::~InterceptedRequest() {

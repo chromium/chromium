@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "android_webview/browser/aw_contents_statics.h"
+
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents.h"
@@ -60,6 +62,13 @@ void SafeBrowsingAllowlistAssigned(const JavaRef<jobject>& callback,
 }
 
 }  // namespace
+
+net::SocketTag GetDefaultSocketTag() {
+  JNIEnv* env = AttachCurrentThread();
+  uid_t uid = Java_AwContentsStatics_getDefaultTrafficStatsUid(env);
+  int32_t tag = Java_AwContentsStatics_getDefaultTrafficStatsTag(env);
+  return net::SocketTag(uid, tag);
+}
 
 // static
 ScopedJavaLocalRef<jstring>
