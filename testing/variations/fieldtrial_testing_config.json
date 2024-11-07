@@ -11321,9 +11321,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_WithScans_5",
                     "enable_features": [
-                        "AutofillAcrossIframesIos"
+                        "AutofillAcrossIframesIos",
+                        "AutofillAcrossIframesIosTriggerFormExtraction"
                     ]
                 }
             ]
