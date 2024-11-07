@@ -242,15 +242,19 @@ class BrowserAutofillManager : public AutofillManager {
   // `safe_fields` are the fields that were deemed safe to fill by the router
   // according to the iframe security policy.
   // `safe_filled_fields` is the intersection of `filled_fields` and
-  // `safe_fields`.
+  // `safe_fields`. `skip_reasons` tells us for each field (mapped by their
+  // IDs), whether the field was skipped for filling or not and why.
   void OnDidFillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
-      const FormStructure& form_structure,
-      const AutofillField& trigger_autofill_field,
+      const FormData& form,
+      FormStructure& form_structure,
+      AutofillField& trigger_autofill_field,
       base::span<const FormFieldData*> safe_filled_fields,
       base::span<const AutofillField*> safe_filled_autofill_fields,
-      const base::flat_set<FieldGlobalId>& filled_fields,
-      const base::flat_set<FieldGlobalId>& safe_fields,
+      const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const base::flat_set<FieldGlobalId>& safe_field_ids,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+          skip_reasons,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
       const AutofillTriggerDetails& trigger_details,

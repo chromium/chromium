@@ -80,6 +80,7 @@
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
 #include "components/autofill/core/browser/field_filling_payments_util.h"
+#include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -2709,16 +2710,75 @@ void BrowserAutofillManager::UpdateLoggersReadinessData() {
 
 void BrowserAutofillManager::OnDidFillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
-    const FormStructure& form_structure,
-    const AutofillField& trigger_autofill_field,
+    const FormData& form,
+    FormStructure& form_structure,
+    AutofillField& trigger_autofill_field,
     base::span<const FormFieldData*> safe_filled_fields,
     base::span<const AutofillField*> safe_filled_autofill_fields,
-    const base::flat_set<FieldGlobalId>& filled_fields,
-    const base::flat_set<FieldGlobalId>& safe_fields,
+    const base::flat_set<FieldGlobalId>& filled_field_ids,
+    const base::flat_set<FieldGlobalId>& safe_field_ids,
+    base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+        skip_reasons,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     const AutofillTriggerDetails& trigger_details,
     bool is_refill) {
+  std::optional<FillEventId> fill_event_id;
+  if (action_persistence == mojom::ActionPersistence::kFill) {
+    std::string country_code;
+    if (const AutofillProfile** address =
+            absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
+      country_code =
+          base::UTF16ToUTF8((*address)->GetRawInfo(ADDRESS_HOME_COUNTRY));
+    }
+    TriggerFillFieldLogEvent trigger_fill_field_log_event =
+        TriggerFillFieldLogEvent{
+            .data_type = absl::holds_alternative<const CreditCard*>(
+                             profile_or_credit_card)
+                             ? FillDataType::kCreditCard
+                             : FillDataType::kAutofillProfile,
+            .associated_country_code = country_code,
+            .timestamp = base::Time::Now()};
+    trigger_autofill_field.AppendLogEventIfNotRepeated(
+        trigger_fill_field_log_event);
+    fill_event_id = trigger_fill_field_log_event.fill_event_id;
+  }
+
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
+    AutofillField& field = CHECK_DEREF(form_structure.field(i));
+    const FieldGlobalId field_id = field.global_id();
+    const bool has_value_before = !form.fields()[i].value().empty();
+    const FieldFillingSkipReason skip_reason =
+        skip_reasons[field_id].empty() ? FieldFillingSkipReason::kNotSkipped
+                                       : *skip_reasons[field_id].begin();
+    if (fill_event_id && !IsCheckable(field.check_status())) {
+      if (skip_reason == FieldFillingSkipReason::kNotSkipped) {
+        field.AppendLogEventIfNotRepeated(FillFieldLogEvent{
+            .fill_event_id = *fill_event_id,
+            .had_value_before_filling = ToOptionalBoolean(has_value_before),
+            .autofill_skipped_status = skip_reason,
+            .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
+            .had_value_after_filling =
+                ToOptionalBoolean(safe_field_ids.contains(field_id)),
+            .filling_method = GetFillingMethodFromTargetedFields(
+                trigger_details.field_types_to_fill),
+            .filling_prevented_by_iframe_security_policy =
+                safe_field_ids.contains(field_id) ? OptionalBoolean::kFalse
+                                                  : OptionalBoolean::kTrue,
+        });
+      } else {
+        field.AppendLogEventIfNotRepeated(FillFieldLogEvent{
+            .fill_event_id = *fill_event_id,
+            .had_value_before_filling = ToOptionalBoolean(has_value_before),
+            .autofill_skipped_status = skip_reason,
+            .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
+            .had_value_after_filling = ToOptionalBoolean(has_value_before),
+            .filling_method = FillingMethod::kNone,
+        });
+      }
+    }
+  }
+
   client().DidFillOrPreviewForm(action_persistence,
                                 trigger_details.trigger_source, is_refill);
   NotifyObservers(&Observer::OnFillOrPreviewDataModelForm,
@@ -2744,7 +2804,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       // suggestion.
       metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
           metrics_->last_selected_card, form_structure, trigger_autofill_field,
-          filled_fields, safe_fields, metrics_->signin_state_for_metrics,
+          filled_field_ids, safe_field_ids, metrics_->signin_state_for_metrics,
           trigger_details.trigger_source);
 
       client()

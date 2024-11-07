@@ -90,10 +90,6 @@ std::string_view GetSkipFieldFillLogMessage(
   }
 }
 
-std::string FetchCountryCodeFromProfile(const AutofillProfile* profile) {
-  return base::UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_COUNTRY));
-}
-
 // Returns how many fields with type |field_type| may be filled in a form at
 // maximum.
 size_t TypeValueFormFillingLimit(FieldType field_type) {
@@ -662,28 +658,6 @@ void FormFiller::FillOrPreviewForm(
   bool could_attempt_refill = filling_context != nullptr &&
                               !filling_context->attempted_refill && !is_refill;
 
-  // Log events on the field which triggers the Autofill suggestion.
-  std::optional<FillEventId> fill_event_id;
-  if (action_persistence == mojom::ActionPersistence::kFill) {
-    std::string country_code;
-    if (const AutofillProfile** address =
-            absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
-      country_code = FetchCountryCodeFromProfile(*address);
-    }
-
-    TriggerFillFieldLogEvent trigger_fill_field_log_event =
-        TriggerFillFieldLogEvent{
-            .data_type = filling_product == FillingProduct::kCreditCard
-                             ? FillDataType::kCreditCard
-                             : FillDataType::kAutofillProfile,
-            .associated_country_code = country_code,
-            .timestamp = AutofillClock::Now()};
-
-    autofill_trigger_field->AppendLogEventIfNotRepeated(
-        trigger_fill_field_log_event);
-    fill_event_id = trigger_fill_field_log_event.fill_event_id;
-  }
-
   std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure->field_count());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
@@ -724,24 +698,11 @@ void FormFiller::FillOrPreviewForm(
               *form_structure, *autofill_field,
               !autofill_field->IsSelectElement());
     }
-    const bool has_value_before = !result_fields[i].value().empty();
-    // Log when the suggestion is selected and log on non-checkable fields that
-    // skip filling.
     if (!skip_reasons[autofill_field->global_id()].empty()) {
       const FieldFillingSkipReason skip_reason =
           *skip_reasons[autofill_field->global_id()].begin();
       LOG_AF(buffer) << Tr{} << base::StringPrintf("Field %zu", i)
                      << GetSkipFieldFillLogMessage(skip_reason);
-      if (fill_event_id && !IsCheckable(autofill_field->check_status())) {
-        autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
-            .fill_event_id = *fill_event_id,
-            .had_value_before_filling = ToOptionalBoolean(has_value_before),
-            .autofill_skipped_status = skip_reason,
-            .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
-            .had_value_after_filling = ToOptionalBoolean(has_value_before),
-            .filling_method = FillingMethod::kNone,
-        });
-      }
       continue;
     }
 
@@ -785,29 +746,10 @@ void FormFiller::FillOrPreviewForm(
           FieldFillingSkipReason::kNoValueToFill);
     }
 
+    const bool has_value_before = !result_fields[i].value().empty();
     const bool has_value_after = !result_fields[i].value().empty();
     const bool is_autofilled_before = form.fields()[i].is_autofilled();
     const bool is_autofilled_after = result_fields[i].is_autofilled();
-
-    // Log when the suggestion is selected and log on non-checkable fields that
-    // have been filled.
-    if (fill_event_id && !IsCheckable(autofill_field->check_status())) {
-      autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
-          .fill_event_id = *fill_event_id,
-          .had_value_before_filling = ToOptionalBoolean(has_value_before),
-          .autofill_skipped_status =
-              skip_reasons[autofill_field->global_id()].empty()
-                  ? FieldFillingSkipReason::kNotSkipped
-                  : *skip_reasons[autofill_field->global_id()].begin(),
-          .was_autofilled_before_security_policy =
-              ToOptionalBoolean(is_autofilled_after),
-          .had_value_after_filling = ToOptionalBoolean(has_value_after),
-          .filling_method = skip_reasons[autofill_field->global_id()].empty()
-                                ? GetFillingMethodFromTargetedFields(
-                                      trigger_details.field_types_to_fill)
-                                : FillingMethod::kNone,
-      });
-    }
     LOG_AF(buffer)
         << Tr{}
         << base::StringPrintf(
@@ -848,23 +790,6 @@ void FormFiller::FillOrPreviewForm(
 
   for (const FormFieldData& field : result_fields) {
     const FieldGlobalId field_id = field.global_id();
-    AutofillField& cached_field =
-        CHECK_DEREF(form_structure->GetFieldById(field_id));
-
-    if (fill_event_id && !IsCheckable(cached_field.check_status())) {
-      // The field's last field log event should be a type of
-      // FillFieldLogEvent. Record in this object whether this field was
-      // actually filled after checking the iframe security policy.
-      base::optional_ref<AutofillField::FieldLogEventType>
-          last_field_log_event = cached_field.last_field_log_event();
-      CHECK(last_field_log_event.has_value());
-      CHECK(absl::holds_alternative<FillFieldLogEvent>(*last_field_log_event));
-      absl::get<FillFieldLogEvent>(*last_field_log_event)
-          .filling_prevented_by_iframe_security_policy =
-          safe_filled_field_ids.contains(field_id) ? OptionalBoolean::kFalse
-                                                   : OptionalBoolean::kTrue;
-    }
-
     if (safe_filled_field_ids.contains(field_id)) {
       // A safe field was filled. Both functions will not return a nullptr
       // because they passed the `FieldFillingSkipReason::kFormChanged`
@@ -876,7 +801,8 @@ void FormFiller::FillOrPreviewForm(
                                             &FormFieldData::global_id);
         return fields_it != result_fields.end() ? &*fields_it : nullptr;
       }());
-      safe_filled_fields.cached.push_back(&cached_field);
+      safe_filled_fields.cached.push_back(
+          form_structure->GetFieldById(field_id));
     } else {
       auto it = base::ranges::find(form.fields(), field_id,
                                    &FormFieldData::global_id);
@@ -907,12 +833,12 @@ void FormFiller::FillOrPreviewForm(
   }
 
   manager_->OnDidFillOrPreviewForm(
-      action_persistence, *form_structure, *autofill_trigger_field,
+      action_persistence, form, *form_structure, *autofill_trigger_field,
       safe_filled_fields.new_values, safe_filled_fields.cached,
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
-      safe_filled_field_ids, profile_or_credit_card, trigger_details,
-      is_refill);
+      safe_filled_field_ids, skip_reasons, profile_or_credit_card,
+      trigger_details, is_refill);
 }
 
 bool FormFiller::ShouldTriggerRefill(
