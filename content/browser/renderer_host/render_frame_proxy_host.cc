@@ -16,6 +16,7 @@
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
 #include "content/browser/bad_message.h"
@@ -539,6 +540,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
     const url::Origin& source_origin,
     const std::u16string& target_origin,
     blink::TransferableMessage message) {
+  base::ElapsedTimer timer;
   RenderFrameHostImpl* target_rfh = frame_tree_node()->current_frame_host();
   if (!target_rfh->IsRenderFrameLive()) {
     // Check if there is an inner delegate involved; if so target its main
@@ -746,6 +748,9 @@ void RenderFrameProxyHost::RouteMessageEvent(
 
   target_rfh->PostMessageEvent(translated_source_token, source_origin_string,
                                target_origin, std::move(message));
+
+  base::UmaHistogramMicrosecondsTimes(
+      "SiteIsolation.CrossProcessPostMessageTime", timer.Elapsed());
 }
 
 void RenderFrameProxyHost::PrintCrossProcessSubframe(const gfx::Rect& rect,

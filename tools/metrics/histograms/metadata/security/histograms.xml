@@ -844,6 +844,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.CreateOpenerProxiesTime" units="microseconds"
+    expires_after="2025-11-07">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    Time spent in RenderFrameHostmanager::CreateOpenerProxies(), which is a core
+    site isolation function for creating all necessary proxies when navigating
+    cross-site, sending postMessages, etc.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.CrossProcessPostMessageTime"
+    units="microseconds" expires_after="2025-11-07">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    Time spent in RenderFrameProxyHost::RouteMessageMessage(), which is used for
+    dispatching cross-process postMessage events in the browser process.
+    Collected once per successfully delivered message; cases that result in
+    blocking the message are excluded.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
     expires_after="2025-04-13">
   <owner>wjmaclean@chromium.org</owner>

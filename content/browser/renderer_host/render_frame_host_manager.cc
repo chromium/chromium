@@ -5366,6 +5366,8 @@ void RenderFrameHostManager::CreateOpenerProxies(
     SiteInstanceGroup* group,
     FrameTreeNode* skip_this_node,
     const scoped_refptr<BrowsingContextState>& browsing_context_state) {
+  base::ElapsedTimer timer;
+
   // TODO(crbug.com/40205442): Add a DCHECK verifying that |instance
   // is a related site instance to the site instance in |render_frame_host_|. At
   // the moment, this DCHECK fails due to a bug in choosing SiteInstance in
@@ -5417,6 +5419,9 @@ void RenderFrameHostManager::CreateOpenerProxies(
     DCHECK(opener_frame_token);
     proxy->GetAssociatedRemoteFrame()->UpdateOpener(opener_frame_token);
   }
+
+  base::UmaHistogramMicrosecondsTimes("SiteIsolation.CreateOpenerProxiesTime",
+                                      timer.Elapsed());
 }
 
 void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
