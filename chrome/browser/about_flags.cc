@@ -868,11 +868,11 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
 const FeatureEntry::FeatureParam kCctSignInPromptRateLimited[] = {
     {"cadence_day", "14"},
     {"show_limit", "2"},
-    {"dismiss_count", "2"}};
+    {"user_act_count", "2"}};
 const FeatureEntry::FeatureParam kCctSignInPromptAlways[] = {
     {"cadence_day", "0"},
     {"show_limit", "10000"},
-    {"dismiss_count", "10000"}};
+    {"user_act_count", "10000"}};
 
 const FeatureEntry::FeatureVariation kCctSignInPromptVariations[] = {
     {"rate-limited", kCctSignInPromptRateLimited,

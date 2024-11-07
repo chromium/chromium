@@ -97,8 +97,9 @@ public class MismatchNotificationChecker {
                                     var appData = res.getAppData(accountId, appId);
                                     appData.showCount++;
                                     appData.closeType = closeType;
-                                    if (closeType == CloseType.DISMISSED.getNumber()) {
-                                        appData.dismissCount++;
+                                    if (closeType == CloseType.DISMISSED.getNumber()
+                                            || closeType == CloseType.ACCEPTED.getNumber()) {
+                                        appData.userActCount++;
                                     }
                                     res.setAppData(accountId, appId, appData);
                                     closeCallback.onResult(res);

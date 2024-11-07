@@ -28,14 +28,14 @@ public class MismatchNotificationData {
         public int closeType;
 
         /** How many times the UI was actively dismissed. */
-        public int dismissCount;
+        public int userActCount;
 
         @Override
         public boolean equals(Object o) {
             if (o instanceof AppUiData data) {
                 return data.showCount == showCount
                         && data.closeType == closeType
-                        && data.dismissCount == dismissCount;
+                        && data.userActCount == userActCount;
             }
             return false;
         }
@@ -43,7 +43,7 @@ public class MismatchNotificationData {
         public boolean isEmpty() {
             return showCount == 0
                     && closeType == CloseType.UNKNOWN.getNumber()
-                    && dismissCount == 0;
+                    && userActCount == 0;
         }
     }
 
@@ -99,7 +99,7 @@ public class MismatchNotificationData {
                                 .setId(appId)
                                 .setShowCount(aud.showCount)
                                 .setCloseType(CloseType.forNumber(aud.closeType))
-                                .setDismissCount(aud.dismissCount)
+                                .setUserActCount(aud.userActCount)
                                 .build();
                 accountDataBuilder.addAppData(appData);
             }
@@ -124,7 +124,7 @@ public class MismatchNotificationData {
                 var appData = new AppUiData();
                 appData.showCount = app.getShowCount();
                 appData.closeType = app.getCloseType().getNumber();
-                appData.dismissCount = app.getDismissCount();
+                appData.userActCount = app.getUserActCount();
                 if (mimData == null) mimData = new MismatchNotificationData();
                 mimData.setAppData(accountId, appId, appData);
             }
