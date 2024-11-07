@@ -17,11 +17,7 @@
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
-#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -68,38 +64,15 @@ class ViewTransitionStyleTracker
   struct ContainerProperties {
     bool operator==(const ContainerProperties& other) const = default;
 
-    // The rect used to compute the reference rect, which is what's eventually
-    // used fo the projecting the content to the coordinate space of the
-    // pseudo-element. It is in layer space, as the contents are captured in
-    // layer space.
-    PhysicalRect border_box_rect_in_enclosing_layer_css_space;
+    PhysicalRect border_box_rect_in_css_space;
 
     // Transforms a point from local space into the snapshot viewport. For
     // details of the snapshot viewport, see README.md.
     gfx::Transform snapshot_matrix;
 
-    // Box geometry is present in layered capture mode. It is necessary for
-    // positioning the layer's content and nested descendants correctly given
-    // that the padding, borders and box sizing are captured as style.
-    struct BoxGeometry {
-      PhysicalRect content_box;
-      PhysicalRect padding_box;
-      EBoxSizing box_sizing;
-      bool operator==(const BoxGeometry& other) const = default;
-    };
-
-    std::optional<BoxGeometry> box_geometry;
-
-    PhysicalSize GroupSize() const {
-      return box_geometry && box_geometry->box_sizing == EBoxSizing::kContentBox
-                 ? box_geometry->content_box.size
-                 : border_box_rect_in_enclosing_layer_css_space.size;
-    }
-
-    gfx::Vector2dF BorderOffset() const {
-      return box_geometry ? gfx::Vector2dF(box_geometry->padding_box.offset)
-                          : gfx::Vector2dF();
-    }
+    // This is needed to correctly position nested groups, to ensure the border
+    // is not computed twice when determining their relative transform.
+    gfx::Vector2dF border_offset;
   };
 
   explicit ViewTransitionStyleTracker(
@@ -263,10 +236,7 @@ class ViewTransitionStyleTracker
     // Returns the intrinsic size for the element's snapshot.
     gfx::RectF GetInkOverflowRect(bool use_cached_data) const;
     gfx::RectF GetCapturedSubrect(bool use_cached_data) const;
-
-    // This is the geometry of the snapshot, in layer coordinate space, that is
-    // going to be mapped to the old/new pseudo-element's content rect.
-    gfx::RectF GetReferenceRect(bool use_cached_data,
+    gfx::RectF GetBorderBoxRect(bool use_cached_data,
                                 float device_scale_factor) const;
 
     bool ShouldPropagateVisualOverflowRectAsMaxExtentsRect() const;

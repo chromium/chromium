@@ -20,32 +20,28 @@ LayoutViewTransitionContent::LayoutViewTransitionContent(
           element->resource_id(),
           element->is_live_content_element())),
       captured_rect_(element->captured_rect()),
-      reference_rect_in_enclosing_layer_space_(
-          element->reference_rect_in_enclosing_layer_space()),
+      border_box_rect_(element->border_box_rect()),
       propagate_max_extent_rect_(element->propagate_max_extent_rect()) {
-  SetIntrinsicSize(PhysicalSize(
-      LayoutUnit(reference_rect_in_enclosing_layer_space_.width()),
-      LayoutUnit(reference_rect_in_enclosing_layer_space_.height())));
+  SetIntrinsicSize(PhysicalSize(LayoutUnit(border_box_rect_.width()),
+                                LayoutUnit(border_box_rect_.height())));
 }
 
 LayoutViewTransitionContent::~LayoutViewTransitionContent() = default;
 
 void LayoutViewTransitionContent::OnIntrinsicSizeUpdated(
     const gfx::RectF& captured_rect,
-    const gfx::RectF& reference_rect_in_enclosing_layer_space,
+    const gfx::RectF& border_box_rect,
     bool propagate_max_extent_rect) {
   NOT_DESTROYED();
-  SetIntrinsicSize(PhysicalSize(
-      LayoutUnit(reference_rect_in_enclosing_layer_space.width()),
-      LayoutUnit(reference_rect_in_enclosing_layer_space.height())));
+  SetIntrinsicSize(PhysicalSize(LayoutUnit(border_box_rect.width()),
+                                LayoutUnit(border_box_rect.height())));
   if (captured_rect_ != captured_rect) {
     SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason::kImage);
   }
 
   captured_rect_ = captured_rect;
-  reference_rect_in_enclosing_layer_space_ =
-      reference_rect_in_enclosing_layer_space;
+  border_box_rect_ = border_box_rect;
   propagate_max_extent_rect_ = propagate_max_extent_rect;
 
   SetIntrinsicLogicalWidthsDirty();
@@ -60,8 +56,8 @@ PaintLayerType LayoutViewTransitionContent::LayerTypeRequired() const {
 PhysicalRect
 LayoutViewTransitionContent::ReplacedContentRectForCapturedContent() const {
   gfx::RectF paint_rect = gfx::RectF(ReplacedContentRect());
-  gfx::RectF clipped_paint_rect = gfx::MapRect(
-      captured_rect_, reference_rect_in_enclosing_layer_space_, paint_rect);
+  gfx::RectF clipped_paint_rect =
+      gfx::MapRect(captured_rect_, border_box_rect_, paint_rect);
   return PhysicalRect::EnclosingRect(clipped_paint_rect);
 }
 

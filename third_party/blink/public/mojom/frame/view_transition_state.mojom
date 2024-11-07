@@ -4,10 +4,10 @@
 
 module blink.mojom;
 
-import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
-import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
+import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 enum ViewTransitionPropertyId {
   kBackdropFilter,
@@ -18,26 +18,12 @@ enum ViewTransitionPropertyId {
   kOpacity,
   kClipPath,
   kFilter,
-  kMask,
-};
-
-enum ViewTransitionElementBoxSizing {
-  kBorderBox,
-  kContentBox,
-};
-
-struct ViewTransitionElementLayeredBoxProperties {
-  // These rects are relative to the originating element's border box.
-  gfx.mojom.RectF content_box;
-  gfx.mojom.RectF padding_box;
-  ViewTransitionElementBoxSizing box_sizing;
+  kMask
 };
 
 // This represents the necessary information for a shared element to
 // participate in a view transition. See comment above ViewTransitionState for
 // more information.
-// Note: all this information is passed between same-origin documents, and
-// should never be available cross-origin/cross-site.
 struct ViewTransitionElement {
   // The view-transition-name associated with the shared element.
   string tag_name;
@@ -60,18 +46,16 @@ struct ViewTransitionElement {
   map<ViewTransitionPropertyId, string> captured_css_properties;
 
   // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
-  // The class-list needs to be serialized between documents, because exit
-  // transitions would use the class list from the old document.
+  // The class-list needs to be serialized between documents, because exit transitions
+  // would use the class list from the old document.
   array<string> class_list;
 
   // The old containing group name is used for nested exit animations.
   // See https://github.com/w3c/csswg-drafts/pull/10629
   string containing_group_name;
 
-  // Box properties required when the element is using layered capture mode.
-  // When that mode is active, the padding/content box are used to correctly
-  // position the pseudo elements.
-  ViewTransitionElementLayeredBoxProperties? layered_box_properties;
+  // The border top/left width. This is required in order to adjust the transform for nested groups.
+  gfx.mojom.Vector2dF border_offset;
 };
 
 // This represents a document state necessary to initiate a view transition for

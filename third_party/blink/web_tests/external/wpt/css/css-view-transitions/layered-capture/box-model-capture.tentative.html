@@ -3,15 +3,13 @@
 <title>Box model is copied to group style</title>
 <meta name=fuzzy content="maxDifference=0-10; totalPixels=0-200000">
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
-<link rel="match" href="box-model-capture-ref.sub.html">
-<meta name="variant" content="?sizing=border-box">
-<meta name="variant" content="?sizing=content-box">
+<link rel="match" href="box-model-capture-ref.html">
 <script src="/common/reftest-wait.js"></script>
 <style>
     * {
-        box-sizing:  {{GET[sizing]}};
+        /* Will add tests for different sizing once the spec is resolved. */
+        box-sizing:  border-box;
     }
-
     html {
         view-transition-name: none;
     }
