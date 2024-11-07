@@ -1221,9 +1221,9 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     if (profile.record_type() == AutofillProfile::RecordType::kAccount &&
         profile.initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
-      suggestion.feature_for_iph =
+      suggestion.iph_metadata = Suggestion::IPHMetadata(
           &feature_engagement::
-              kIPHAutofillExternalAccountProfileSuggestionFeature;
+              kIPHAutofillExternalAccountProfileSuggestionFeature);
     }
     const bool should_offer_manual_fallback_on_unclassified_fields =
         !IsAddressType(trigger_field_type) &&

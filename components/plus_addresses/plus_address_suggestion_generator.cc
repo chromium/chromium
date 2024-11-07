@@ -310,8 +310,8 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
       setting_service_->GetHasAcceptedNotice());
   suggestion.icon = Suggestion::Icon::kPlusAddress;
   suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
-  suggestion.feature_for_iph =
-      &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+  suggestion.iph_metadata = Suggestion::IPHMetadata(
+      &feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
 #if BUILDFLAG(IS_ANDROID)
   suggestion.iph_description_text =
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID);
@@ -346,8 +346,8 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
     // Otherwise, they will be showing only during the loading stage and then be
     // hidden automatically.
     suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
-    suggestion.feature_for_iph =
-        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+    suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
     suggestion.voice_over = l10n_util::GetStringFUTF16(
         IDS_PLUS_ADDRESS_CREATE_INLINE_SUGGESTION_A11Y_VOICE_OVER,
         base::UTF8ToUTF16(*profile->plus_address));

@@ -58,8 +58,8 @@ FakePlusAddressService::GetSuggestionsFromPlusAddresses(
     suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
         IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
     suggestion.icon = Suggestion::Icon::kPlusAddress;
-    suggestion.feature_for_iph =
-        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+    suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
     return {suggestion};
   }
 

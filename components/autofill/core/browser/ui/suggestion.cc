@@ -239,6 +239,22 @@ Suggestion::PaymentsPayload& Suggestion::PaymentsPayload::operator=(
 
 Suggestion::PaymentsPayload::~PaymentsPayload() = default;
 
+Suggestion::IPHMetadata::IPHMetadata() = default;
+
+Suggestion::IPHMetadata::IPHMetadata(const base::Feature* feature,
+                                     std::vector<std::u16string> iph_params)
+    : feature(feature), iph_params(std::move(iph_params)) {}
+
+Suggestion::IPHMetadata::IPHMetadata(const IPHMetadata& other) = default;
+Suggestion::IPHMetadata::IPHMetadata(IPHMetadata&& other) = default;
+
+Suggestion::IPHMetadata& Suggestion::IPHMetadata::operator=(
+    const IPHMetadata& other) = default;
+Suggestion::IPHMetadata& Suggestion::IPHMetadata::operator=(
+    IPHMetadata&& other) = default;
+
+Suggestion::IPHMetadata::~IPHMetadata() = default;
+
 Suggestion::Text::Text() = default;
 
 Suggestion::Text::Text(std::u16string value,

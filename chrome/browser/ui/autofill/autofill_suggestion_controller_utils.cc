@@ -165,7 +165,7 @@ bool IsPointerLocked(content::WebContents* web_contents) {
 void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
                                                 const Suggestion& suggestion) {
 #if BUILDFLAG(IS_ANDROID)
-  if (suggestion.feature_for_iph) {
+  if (suggestion.iph_metadata.feature) {
     using IphEventPair = std::pair<const base::Feature*, const char*>;
     static const auto kIphFeatures = std::to_array<IphEventPair>(
         {IphEventPair{&feature_engagement::kIPHAutofillCreditCardBenefitFeature,
@@ -182,8 +182,9 @@ void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
          IphEventPair{
              &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature,
              "autofill_virtual_card_cvc_suggestion_accepted"}});
-    if (auto it = base::ranges::find(kIphFeatures, suggestion.feature_for_iph,
-                                     &IphEventPair::first);
+    if (auto it =
+            base::ranges::find(kIphFeatures, suggestion.iph_metadata.feature,
+                               &IphEventPair::first);
         it != kIphFeatures.end()) {
       feature_engagement::TrackerFactory::GetForBrowserContext(
           contents->GetBrowserContext())
@@ -191,17 +192,17 @@ void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
     }
   }
 #else
-  if (suggestion.feature_for_iph) {
+  if (suggestion.iph_metadata.feature) {
     if (auto* interface =
             BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
                 contents)) {
       interface->NotifyFeaturePromoFeatureUsed(
-          *suggestion.feature_for_iph,
+          *suggestion.iph_metadata.feature,
           FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
     }
   }
   if (suggestion.feature_for_new_badge &&
-      suggestion.feature_for_new_badge != suggestion.feature_for_iph) {
+      suggestion.feature_for_new_badge != suggestion.iph_metadata.feature) {
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         contents->GetBrowserContext(), *suggestion.feature_for_new_badge);
   }

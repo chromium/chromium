@@ -177,6 +177,32 @@ struct Suggestion {
                            const FaviconDetails&) = default;
   };
 
+  // This struct is used to provide the In-Product-Help bubble. It contains both
+  // the feature and possibly params. Feature is for showing the suggestion and
+  // params is needed for runtime texts.
+  struct IPHMetadata {
+    IPHMetadata();
+    explicit IPHMetadata(const base::Feature* feature,
+                         std::vector<std::u16string> iph_params = {});
+    IPHMetadata(const IPHMetadata& iph_metadata);
+    IPHMetadata(IPHMetadata&& iph_metadata);
+    IPHMetadata& operator=(const IPHMetadata& iph_metadata);
+    IPHMetadata& operator=(IPHMetadata&& iph_metadata);
+    ~IPHMetadata();
+
+    bool operator==(const IPHMetadata& b) const = default;
+    auto operator<=>(const IPHMetadata& b) const = default;
+
+    // The In-Product-Help feature that should be shown for the suggestion.
+    // Present when a suggestion that will display an IPH bubble is created.
+    raw_ptr<const base::Feature> feature = nullptr;
+
+    // IPH params needed for runtime text replacements in the suggestion's IPH
+    // bubble. Present when runtime texts need to be modified. It is empty when
+    // the IPH strings has no placeholders.
+    std::vector<std::u16string> iph_params;
+  };
+
   // This type is used to specify custom icons by providing a URL to the icon.
   // Used on Android only where `gfx::Image` (`custom_icon` alternative) is
   // not supported.
@@ -430,8 +456,9 @@ struct Suggestion {
   // Whether suggestion was interacted with and is now in a loading state.
   IsLoading is_loading = IsLoading(false);
 
-  // The In-Product-Help feature that should be shown for the suggestion.
-  raw_ptr<const base::Feature> feature_for_iph = nullptr;
+  // The metadata needed for showing the In-Product-Help bubble.
+  // TODO(crbug.com/369472865): Make this an std::optional<>.
+  IPHMetadata iph_metadata;
 
   // The feature for the new badge if one is supposed to be shown. Currently
   // available only on Desktop.

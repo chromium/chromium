@@ -496,8 +496,8 @@ void SetSuggestionLabelsForCard(
         labels.push_back({*benefit_label});
         if (base::FeatureList::IsEnabled(
                 features::kAutofillEnableCardBenefitsIph)) {
-          suggestion.feature_for_iph =
-              &feature_engagement::kIPHAutofillCreditCardBenefitFeature;
+          suggestion.iph_metadata = Suggestion::IPHMetadata(
+              &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
         }
       }
     }
@@ -583,13 +583,13 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
     suggestion.acceptability =
         Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
   }
-  suggestion.feature_for_iph =
+  suggestion.iph_metadata = Suggestion::IPHMetadata(
       suggestion.HasDeactivatedStyle() &&
               base::FeatureList::IsEnabled(
                   features::kAutofillEnableVcnGrayOutForMerchantOptOut)
           ? &feature_engagement::
                 kIPHAutofillDisabledVirtualCardSuggestionFeature
-          : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
+          : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
 
   // If ShouldFormatForLargeKeyboardAccessory() is true, `suggestion` has been
   // properly formatted by `SetSuggestionLabelsForCard` and does not need
@@ -956,12 +956,12 @@ Suggestion CreateCreditCardSuggestion(
                                        trigger_field_type);
   } else if (card_linked_offer_available) {
 #if BUILDFLAG(IS_ANDROID)
-    // For Keyboard Accessory, set Suggestion::feature_for_iph and change the
+    // For Keyboard Accessory, set Suggestion::iph_metadata and change the
     // suggestion icon only if card linked offers are also enabled.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableOffersInClankKeyboardAccessory)) {
-      suggestion.feature_for_iph =
-          &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature;
+      suggestion.iph_metadata = Suggestion::IPHMetadata(
+          &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature);
       suggestion.icon = Suggestion::Icon::kOfferTag;
     } else {
 #else   // Add the offer label on Desktop unconditionally.
@@ -1201,8 +1201,8 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
     suggestion.icon = credit_card.CardIconForAutofillSuggestion();
     suggestion.type = SuggestionType::kVirtualCreditCardEntry;
     suggestion.payload = Suggestion::Guid(credit_card.guid());
-    suggestion.feature_for_iph =
-        &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature;
+    suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature);
     SetCardArtURL(suggestion, credit_card,
                   client.GetPersonalDataManager()->payments_data_manager(),
                   /*virtual_card_option=*/true);

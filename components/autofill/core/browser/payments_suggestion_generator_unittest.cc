@@ -429,7 +429,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
-// Checks that feature_for_iph is set to display the credit card benefit IPH for
+// Checks that feature is set to display the credit card benefit IPH for
 // FPAN suggestions with benefits labels.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_Fpan) {
@@ -437,11 +437,11 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                 card(), *autofill_client(), CREDIT_CARD_NUMBER,
                 /*virtual_card_option=*/false,
                 /*card_linked_offer_available=*/false)
-                .feature_for_iph,
+                .iph_metadata.feature,
             &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
 }
 
-// Checks that feature_for_iph is set to display the virtual card IPH for
+// Checks that feature is set to display the virtual card IPH for
 // virtual card suggestions with benefits labels.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_VirtualCard) {
@@ -449,11 +449,11 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                 card(), *autofill_client(), CREDIT_CARD_NUMBER,
                 /*virtual_card_option=*/true,
                 /*card_linked_offer_available=*/false)
-                .feature_for_iph,
+                .iph_metadata.feature,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
 }
 
-// Checks that `feature_for_iph` is set to null when the flag is off.
+// Checks that `feature` is set to null when the flag is off.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_IsNullWhenFlagIsDisabled) {
   base::test::ScopedFeatureList disable_benefits_iph;
@@ -464,11 +464,11 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                 card(), *autofill_client(), CREDIT_CARD_NUMBER,
                 /*virtual_card_option=*/false,
                 /*card_linked_offer_available=*/false)
-                .feature_for_iph,
+                .iph_metadata.feature,
             nullptr);
 }
 
-// Checks that `feature_for_iph` is set to null when the card is not eligible
+// Checks that `feature` is set to null when the card is not eligible
 // for the benefits.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_IsNullWhenCardNotEligibleForBenefits) {
@@ -481,7 +481,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                 card(), *autofill_client(), CREDIT_CARD_NUMBER,
                 /*virtual_card_option=*/false,
                 /*card_linked_offer_available=*/false)
-                .feature_for_iph,
+                .iph_metadata.feature,
             nullptr);
 }
 
@@ -1693,7 +1693,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   }
 #endif
   EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(), true);
-  EXPECT_EQ(virtual_card_name_field_suggestion.feature_for_iph,
+  EXPECT_EQ(virtual_card_name_field_suggestion.iph_metadata.feature,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   if (!keyboard_accessory_enabled()) {
     // The virtual card text should be populated in the labels to be shown in a
@@ -1743,7 +1743,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   }
 #endif
   EXPECT_EQ(virtual_card_number_field_suggestion.IsAcceptable(), true);
-  EXPECT_EQ(virtual_card_number_field_suggestion.feature_for_iph,
+  EXPECT_EQ(virtual_card_number_field_suggestion.iph_metadata.feature,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, there is no label.
@@ -2349,7 +2349,7 @@ TEST_P(
   EXPECT_EQ(virtual_card_name_field_suggestion.HasDeactivatedStyle(),
             is_merchant_opted_out());
   EXPECT_EQ(
-      virtual_card_name_field_suggestion.feature_for_iph,
+      virtual_card_name_field_suggestion.iph_metadata.feature,
       virtual_card_name_field_suggestion.HasDeactivatedStyle()
           ? &feature_engagement::
                 kIPHAutofillDisabledVirtualCardSuggestionFeature
@@ -2393,7 +2393,7 @@ TEST_P(
   EXPECT_EQ(virtual_card_number_field_suggestion.HasDeactivatedStyle(),
             is_merchant_opted_out());
   EXPECT_EQ(
-      virtual_card_number_field_suggestion.feature_for_iph,
+      virtual_card_number_field_suggestion.iph_metadata.feature,
       virtual_card_number_field_suggestion.HasDeactivatedStyle()
           ? &feature_engagement::
                 kIPHAutofillDisabledVirtualCardSuggestionFeature
@@ -2730,7 +2730,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
   if (keyboard_accessory_offer_enabled()) {
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(real_card_suggestion.labels.size(), 1U);
-    EXPECT_EQ(real_card_suggestion.feature_for_iph,
+    EXPECT_EQ(real_card_suggestion.iph_metadata.feature,
               &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature);
 #endif
   } else {
@@ -2788,7 +2788,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
   if (keyboard_accessory_offer_enabled()) {
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(real_card_suggestion.labels.size(), 1U);
-    EXPECT_EQ(real_card_suggestion.feature_for_iph,
+    EXPECT_EQ(real_card_suggestion.iph_metadata.feature,
               &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature);
 #endif
   } else {

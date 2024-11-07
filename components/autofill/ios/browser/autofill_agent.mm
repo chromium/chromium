@@ -685,12 +685,12 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                  acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
     suggestion.featureForIPH = SuggestionFeatureForIPH::kUnknown;
-    if (popup_suggestion.feature_for_iph ==
+    if (popup_suggestion.iph_metadata.feature ==
         &feature_engagement::
             kIPHAutofillExternalAccountProfileSuggestionFeature) {
       suggestion.featureForIPH =
           SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
-    } else if (popup_suggestion.feature_for_iph ==
+    } else if (popup_suggestion.iph_metadata.feature ==
                &feature_engagement::kIPHPlusAddressCreateSuggestionFeature) {
       suggestion.featureForIPH = SuggestionFeatureForIPH::kPlusAddressCreation;
     }
