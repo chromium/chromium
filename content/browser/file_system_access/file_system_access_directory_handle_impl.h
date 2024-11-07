@@ -106,6 +106,9 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
                  GetFileCallback callback,
                  FileSystemAccessPermissionContext::SensitiveEntryResult
                      sensitive_entry_result);
+#if BUILDFLAG(IS_ANDROID)
+  void DidGetFileQueryUri(GetFileCallback callback, base::FilePath child_path);
+#endif
   void DidGetFile(storage::FileSystemURL child_url,
                   GetFileCallback callback,
                   base::File::Error result);
@@ -125,6 +128,10 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   // is the implementation for passing create=true to GetDirectory.
   void GetDirectoryWithWritePermission(const storage::FileSystemURL& child_url,
                                        GetDirectoryCallback callback);
+#if BUILDFLAG(IS_ANDROID)
+  void DidGetDirectoryQueryUri(GetDirectoryCallback callback,
+                               base::FilePath child_path);
+#endif
   void DidGetDirectory(storage::FileSystemURL child_url,
                        GetDirectoryCallback callback,
                        base::File::Error result);

@@ -605,6 +605,20 @@ void FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission(
       /*exclusive=*/false);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void FileSystemAccessDirectoryHandleImpl::DidGetFileQueryUri(
+    GetFileCallback callback,
+    base::FilePath child_path) {
+  if (child_path.empty()) {
+    DidGetFile(storage::FileSystemURL(), std::move(callback),
+               base::File::FILE_ERROR_NOT_FOUND);
+  } else {
+    DidGetFile(CreateChildURL(child_path), std::move(callback),
+               base::File::FILE_OK);
+  }
+}
+#endif
+
 void FileSystemAccessDirectoryHandleImpl::DidGetFile(
     storage::FileSystemURL child_url,
     GetFileCallback callback,
@@ -619,13 +633,13 @@ void FileSystemAccessDirectoryHandleImpl::DidGetFile(
   base::FilePath child_path = child_url.path();
   if (result == base::File::FILE_OK &&
       base::ContentUriIsCreateChildDocumentQuery(child_path)) {
-    child_path =
-        base::ContentUriGetDocumentFromQuery(child_path, /*create=*/false);
-    if (child_path.empty()) {
-      result = base::File::FILE_ERROR_NOT_FOUND;
-    } else {
-      child_url = CreateChildURL(child_path);
-    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&base::ContentUriGetDocumentFromQuery, child_path,
+                       /*create=*/false),
+        base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetFileQueryUri,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
   }
 #endif
 
@@ -656,6 +670,20 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryWithWritePermission(
       /*exclusive=*/false, /*recursive=*/false);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void FileSystemAccessDirectoryHandleImpl::DidGetDirectoryQueryUri(
+    GetDirectoryCallback callback,
+    base::FilePath child_path) {
+  if (child_path.empty()) {
+    DidGetDirectory(storage::FileSystemURL(), std::move(callback),
+                    base::File::FILE_ERROR_NOT_FOUND);
+  } else {
+    DidGetDirectory(CreateChildURL(child_path), std::move(callback),
+                    base::File::FILE_OK);
+  }
+}
+#endif
+
 void FileSystemAccessDirectoryHandleImpl::DidGetDirectory(
     storage::FileSystemURL child_url,
     GetDirectoryCallback callback,
@@ -670,13 +698,14 @@ void FileSystemAccessDirectoryHandleImpl::DidGetDirectory(
   base::FilePath child_path = child_url.path();
   if (result == base::File::FILE_OK &&
       base::ContentUriIsCreateChildDocumentQuery(child_path)) {
-    child_path =
-        base::ContentUriGetDocumentFromQuery(child_path, /*create=*/false);
-    if (child_path.empty()) {
-      result = base::File::FILE_ERROR_NOT_FOUND;
-    } else {
-      child_url = CreateChildURL(child_path);
-    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&base::ContentUriGetDocumentFromQuery, child_path,
+                       /*create=*/false),
+        base::BindOnce(
+            &FileSystemAccessDirectoryHandleImpl::DidGetDirectoryQueryUri,
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
   }
 #endif
 
