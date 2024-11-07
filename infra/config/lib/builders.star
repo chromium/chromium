@@ -395,6 +395,9 @@ defaults = args.defaults(
     notifies = None,
     triggered_by = args.COMPUTE,
     contact_team_email = None,
+
+    # Custom Metrics
+    custom_metrics = None,
 )
 
 # This node won't actually be accessed, but creating it for builders that have
@@ -996,6 +999,9 @@ def builder(
         kwargs["triggered_by"] = triggered_by
 
     contact_team_email = defaults.get_value("contact_team_email", contact_team_email)
+
+    kwargs["custom_metrics"] = defaults.get_value_from_kwargs("custom_metrics", kwargs)
+
     builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
