@@ -221,7 +221,6 @@ public abstract class ChromeFeatureList {
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
     public static final String BACK_FORWARD_TRANSITIONS = "BackForwardTransitions";
-    public static final String BCIV_PHONE_ONLY = "AndroidBcivPhoneOnly";
     public static final String BCIV_WITH_SUPPRESSION = "AndroidBcivWithSuppression";
     public static final String BCIV_ZERO_BROWSER_FRAMES = "AndroidBcivZeroBrowserFrames";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
@@ -843,8 +842,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH, true);
     public static final MutableFlagWithSafeDefault sBottomBrowserControlsRefactor =
             newMutableFlagWithSafeDefault(BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
-    public static final MutableFlagWithSafeDefault sBcivPhoneOnly =
-            newMutableFlagWithSafeDefault(BCIV_PHONE_ONLY, false);
     public static final MutableFlagWithSafeDefault sBcivWithSuppression =
             newMutableFlagWithSafeDefault(BCIV_WITH_SUPPRESSION, false);
     public static final MutableFlagWithSafeDefault sBcivZeroBrowserFrames =

@@ -162,7 +162,7 @@ public class TopToolbarOverlayMediator {
                             int bottomControlsMinHeightOffset,
                             boolean needsAnimate,
                             boolean isVisibilityForced) {
-                        if (!ToolbarFeatures.isBrowserControlsInVizEnabled(isTablet())
+                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                                 || needsAnimate
                                 || isVisibilityForced) {
                             updateContentOffset();
@@ -189,7 +189,7 @@ public class TopToolbarOverlayMediator {
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
-                        if (ToolbarFeatures.isBrowserControlsInVizEnabled(isTablet())) {
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
                             if (ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
                                 mModel.set(
                                         TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
@@ -238,7 +238,7 @@ public class TopToolbarOverlayMediator {
      * android view is not shown.
      */
     private void updateShadowState() {
-        if (ToolbarFeatures.isBrowserControlsInVizEnabled(isTablet())
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                 && ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
             // With BCIV enabled, we show the hairline on the composited toolbar by default,
             // and we don't want to update its visibility from the browser, because that incurs a

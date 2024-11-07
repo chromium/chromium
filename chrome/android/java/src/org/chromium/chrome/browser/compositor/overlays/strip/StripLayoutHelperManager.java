@@ -91,7 +91,6 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -745,8 +744,7 @@ public class StripLayoutHelperManager
                     getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
 
             yOffset = 0;
-        } else if (ToolbarFeatures.isBrowserControlsInVizEnabled(
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))
+        } else if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                 && mIsVerticalScrollInProgress) {
             // With bciv, we don't want anything else controlling the offset while scrolling.
             // Tabstrip currently has no min height, so setting to 0 is ok.
@@ -1353,8 +1351,7 @@ public class StripLayoutHelperManager
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
-                        if (ToolbarFeatures.isBrowserControlsInVizEnabled(
-                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))) {
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
                             // Use the content OffsetTag here, because the tab strip and content
                             // are part of the same subtree and move together with the same offset.
                             mTabStripTreeProvider.updateOffsetTag(

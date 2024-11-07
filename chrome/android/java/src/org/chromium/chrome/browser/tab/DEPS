@@ -88,9 +88,6 @@ specific_include_rules = {
   'RequestDesktopUtils\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
   ],
-  'TabBrowserControlsConstraintsHelper\.java': [
-    "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ToolbarFeatures.java",
-  ],
   'TabContextMenuItemDelegate\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupFeatureUtils.java",
   ],

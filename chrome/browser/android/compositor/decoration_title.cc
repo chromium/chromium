@@ -239,7 +239,7 @@ void DecorationTitle::setBounds(const gfx::Size& bounds) {
     // TODO(b/361804880) With BCIV, offsets aren't applied correctly to layers
     // with clipped regions. Remove the fade effect from the title for now, so
     // we can still run the experiment for large screens.
-    if (!features::IsBrowserControlsInVizEnabled()) {
+    if (!base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
       layer_fade_->SetGradientMask(gradient);
     }
   } else {

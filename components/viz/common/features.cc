@@ -19,7 +19,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/media_buildflags.h"
-#include "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -34,13 +33,6 @@ namespace features {
 BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// TODO(b/361804880) Bug is a blocker for experimenting on stable. This flag
-// exists only to allow experiments for BCIV to run on stable. Remove when
-// bug is fixed.
-BASE_FEATURE(kAndroidBcivPhoneOnly,
-             "AndroidBcivPhoneOnly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidBcivWithSimpleScheduler,
              "AndroidBcivWithSimpleScheduler",
@@ -654,9 +646,7 @@ bool ShouldUseDCompSurfacesForDelegatedInk() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsBrowserControlsInVizEnabled() {
-  return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz) &&
-         (!base::FeatureList::IsEnabled(features::kAndroidBcivPhoneOnly) ||
-          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE);
+  return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

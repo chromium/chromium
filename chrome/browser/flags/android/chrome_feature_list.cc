@@ -125,7 +125,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kDownloadsMigrateToJobsAPI,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
-    &features::kAndroidBcivPhoneOnly,
     &features::kAndroidBcivWithSuppression,
     &features::kAndroidBcivZeroBrowserFrames,
     &features::kAndroidBrowserControlsInViz,
