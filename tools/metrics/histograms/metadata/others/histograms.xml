@@ -8750,32 +8750,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Skia.SubmitRenderPasses" units="renderpasses"
-    expires_after="2023-07-16">
-  <owner>egdaniel@google.com</owner>
-  <owner>bsalomon@google.com</owner>
-  <summary>
-    The number of Skia render passes sent to the GPU during a GrContext::submit
-    call. The max value that is sent here is 100 so anything in the 100 bucket
-    actually includes render pass counts of 100+. Though we don't expect to be
-    reaching 100 render passes often. This is collected each time we submit to
-    the GPU in Skia.
-  </summary>
-</histogram>
-
-<histogram name="Skia.VulkanMemoryAllocator.AmountAllocated" units="KB"
-    expires_after="2024-09-01">
-  <owner>egdaniel@google.com</owner>
-  <owner>bsalomon@google.com</owner>
-  <summary>
-    The total amount of memory that the VulkanMemoryAllocator used by Skia's
-    Vulkan backend has allocated. This is GPU memory for VkImages and VkBuffers.
-    Note that the allocator may be shared with other users outside of Skia and
-    this amount includes their uses as well. This is collected each time we
-    request an allocation from Skia.
-  </summary>
-</histogram>
-
 <histogram name="Snackbar.Shown" enum="SnackbarIdentifier"
     expires_after="never">
 <!-- expires-never: Required as long as snackbars exist. -->

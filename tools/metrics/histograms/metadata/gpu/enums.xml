@@ -1343,6 +1343,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="GraphiteDawnD3D12"/>
 </enum>
 
+<enum name="SkiaPipelineCreationRace">
+  <int value="0" label="Normal compilation won a race with Normal compilation"/>
+  <int value="1" label="Normal compilation won a race with Precompilation"/>
+  <int value="2" label="Precompilation won a race with Normal compilation"/>
+  <int value="3" label="Precompilation won a race with Precompilation"/>
+</enum>
+
 <enum name="UnderlayDamageRect">
   <int value="0" label="Zero Damage Rect"/>
   <int value="1" label="Non-Occluding Damage Only"/>

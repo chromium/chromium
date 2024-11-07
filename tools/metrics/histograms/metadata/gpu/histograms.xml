@@ -1746,6 +1746,62 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Skia.Graphite.PipelineCreationRace"
+    enum="SkiaPipelineCreationRace" expires_after="2025-11-06">
+  <owner>robertphillips@google.com</owner>
+  <owner>michaelludwig@google.com</owner>
+  <owner>skia-gpu-team@google.com</owner>
+  <summary>
+    Records the number of Pipeline creation races in Skia broken down by the
+    origin (Normal compilation vs Pre-compilation) and which instances won
+    (i.e., made it into the cache before the other one).
+  </summary>
+</histogram>
+
+<histogram name="Skia.Graphite.PipelineCreationTimes.{CompilationType}"
+    units="microseconds" expires_after="2025-11-06">
+  <owner>robertphillips@google.com</owner>
+  <owner>michaelludwig@google.com</owner>
+  <owner>skia-gpu-team@google.com</owner>
+  <summary>
+    Measures the time taken to create a Pipeline in Skia's Dawn backend for each
+    of the three conditions.
+
+    This is only recorded on clients with high-resolution clocks.
+  </summary>
+  <token key="CompilationType">
+    <variant name="Asynchronous" summary="Asynchronous Normal compilations"/>
+    <variant name="Precompile" summary="Synchronous Pre-compilations"/>
+    <variant name="Synchronous" summary="Synchronous Normal compilations"/>
+  </token>
+</histogram>
+
+<histogram name="Skia.SubmitRenderPasses" units="renderpasses"
+    expires_after="2023-07-16">
+  <owner>egdaniel@google.com</owner>
+  <owner>bsalomon@google.com</owner>
+  <summary>
+    The number of Skia render passes sent to the GPU during a GrContext::submit
+    call. The max value that is sent here is 100 so anything in the 100 bucket
+    actually includes render pass counts of 100+. Though we don't expect to be
+    reaching 100 render passes often. This is collected each time we submit to
+    the GPU in Skia.
+  </summary>
+</histogram>
+
+<histogram name="Skia.VulkanMemoryAllocator.AmountAllocated" units="KB"
+    expires_after="2024-09-01">
+  <owner>egdaniel@google.com</owner>
+  <owner>bsalomon@google.com</owner>
+  <summary>
+    The total amount of memory that the VulkanMemoryAllocator used by Skia's
+    Vulkan backend has allocated. This is GPU memory for VkImages and VkBuffers.
+    Note that the allocator may be shared with other users outside of Skia and
+    this amount includes their uses as well. This is collected each time we
+    request an allocation from Skia.
+  </summary>
+</histogram>
+
 <histogram name="Viz.BeginFrameSource.Accuracy.AverageDelta2"
     units="microseconds" expires_after="2025-04-20">
   <owner>magchen@chromium.org</owner>
