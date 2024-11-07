@@ -690,23 +690,41 @@ void RenderFrameProxyHost::RouteMessageEvent(
         // A RenderFrameProxyHost was already created when the guest was
         // attached.
       } else {
-        // Ensure that we have a swapped-out RVH and proxy for the source frame
-        // in the target SiteInstance. If it doesn't exist, create it on demand
-        // and also create its opener chain, since that will also be accessible
-        // to the target page.
-        // TODO(crbug.com/40261772): Using the main frame here disregards
-        // the possibility of postMessaging an iframe. This is broken, and
-        // sometimes leads to null event.source.
-        // This also looks wrong if the source posted a message as it entered
-        // bfcache, such as in a pagehide handler. Could this be related to
-        // https://crbug.com/354382462 ?
-        source_rfh->frame_tree_node()->render_manager()->CreateOpenerProxies(
-            target_rfh->GetOutermostMainFrame()
-                ->frame_tree_node()
-                ->current_frame_host()
-                ->GetSiteInstance()
-                ->group(),
-            nullptr, source_rfh->browsing_context_state());
+        // Ensure that we have a proxy for the source frame in the target
+        // SiteInstance. If it doesn't exist, create it on demand and also
+        // create its opener chain, since that will also be accessible to the
+        // target page. This may be needed in rare cases such as a popup sending
+        // a postMessage to a subframe of its opener, where the subframe has no
+        // prior references to the popup.
+        //
+        // Subtle: postMessages may be sent between frames after their page has
+        // entered the back-forward cache (e.g., when dispatched from pagehide
+        // events) - see BackForwardCacheBrowserTest.PostMessageDelivered.
+        // (These messages are subsequently deferred by the target renderer
+        // until the cached page is re-activated.) In that case, it's neither
+        // correct nor possible to create proxies, as that requires going
+        // through FrameTreeNode and RenderFrameHostManager, where the current
+        // RenderFrameHost is no longer `source_rfh` but rather some other RFH
+        // in an unrelated SiteInstance. Fortunately, back-forward cache
+        // restricts GetRelatedActiveContentsCount to 1, and new on-demand
+        // proxies shouldn't ever be needed within a single FrameTree, where all
+        // frames already have references to one another. So, this case can
+        // simply be skipped. The same constraint would also apply to pending
+        // deletion RenderFrameHosts where messages could be sent from unload
+        // handlers, where it's also incorrect to create proxies in a
+        // FrameTreeNode that has moved on to some other unrelated RFH.
+        if (!source_rfh->IsInBackForwardCache() &&
+            !source_rfh->IsPendingDeletion()) {
+          // After skipping back-forward cache and pending deletion cases, we
+          // should only get here when source_rfh is the current RFH in its
+          // FrameTreeNode, since we shouldn't receive messages from
+          // speculative or pending-commit RenderFrameHosts.
+          CHECK_EQ(source_rfh,
+                   source_rfh->frame_tree_node()->current_frame_host());
+          source_rfh->frame_tree_node()->render_manager()->CreateOpenerProxies(
+              target_rfh->GetSiteInstance()->group(), nullptr,
+              source_rfh->browsing_context_state());
+        }
       }
 
       // If the message source is a cross-process subframe, its proxy will only

@@ -3284,6 +3284,94 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(1, GetReceivedMessages(popup2_root));
 }
 
+// Check that in certain situations, postMessage has to create proxies on demand
+// so that event.source may be used to reply. In particular, this test starts on
+// A(B) and opens C(D) from A. At this point, D can reach B (via
+// parent.opener.frames[0], but B cannot see D. However, if D sends a
+// postMessage to B, B now gains a reference to D through event.source, and
+// therefore the message should create a proxy for D in B's process. See
+// https://crbug.com/40261772.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       PostMessageCreatesProxyOnDemand) {
+  // Start on A(B).
+  GURL opener_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), opener_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // From A, open a popup with a C(D) page.
+  GURL popup_url(embedded_test_server()->GetURL(
+      "c.com", "/cross_site_iframe_factory.html?c(d)"));
+  Shell* new_shell = OpenPopup(root, popup_url, "");
+  EXPECT_TRUE(new_shell);
+  FrameTreeNode* popup_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  EXPECT_EQ(root, popup_root->opener());
+
+  // Verify proxy setup. Both A and B should be visible to all four frames:
+  // - C can reach A via opener
+  // - C can reach B via opener.frames[0]
+  // - D can reach A via parent.opener
+  // - D can reach B via parent.opener.frames[0]
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C D\n"
+      "   +--Site B ------- proxies for A C D\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(root));
+  // C and D are only visible to each other and to A, via A's window.open
+  // reference. B doesn't have a way to reach them.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A D\n"
+      "   +--Site D ------- proxies for A C\n"
+      "Where A = http://a.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(popup_root));
+
+  // Install a postMessage handler in B that echoes back event.data with
+  // "-reply" appended to it. This requires having a valid event.source.
+  EXPECT_TRUE(ExecJs(root->child_at(0)->current_frame_host(),
+                     "window.addEventListener('message', function(event) {\n"
+                     "  event.source.postMessage(event.data + '-reply', '*');\n"
+                     "});"));
+
+  // Send a message from D to B and wait for a response. While processing the
+  // message, the browser process should create a proxy for D in B, which B will
+  // use when replying.
+  EXPECT_TRUE(
+      ExecJs(popup_root->child_at(0), WaitForMessageScript("event.data")));
+  EXPECT_TRUE(ExecJs(popup_root->child_at(0),
+                     "parent.opener.frames[0].postMessage('popup-ping', '*')"));
+  EXPECT_EQ("popup-ping-reply",
+            EvalJs(popup_root->child_at(0), "onMessagePromise"));
+
+  // Verify the final proxies. The proxies for the opener window shouldn't have
+  // changed (A and B are still visible to all other frames).
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C D\n"
+      "   +--Site B ------- proxies for A C D\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(root));
+  // Frames C and D should now have proxies in site B, since frame B can now
+  // reach both of them (D via event.source, and C via event.source.top).
+  EXPECT_EQ(
+      " Site C ------------ proxies for A B D\n"
+      "   +--Site D ------- proxies for A B C\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(popup_root));
+}
+
 // Check that parent.frames[num] references correct sibling frames when the
 // parent is remote.  See https://crbug.com/478792.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, IndexedFrameAccess) {

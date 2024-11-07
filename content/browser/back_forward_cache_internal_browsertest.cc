@@ -700,7 +700,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     FROM_HERE);
 }
 
-// Navigate from A(B)->C. Send postMessage from A to B upon pagehide, and
+// Navigate from A(B)->C. Send postMessage from A to B upon pagehide, and make
+// sure that the message is deferred. Then go back and make sure the message
+// gets delivered when the cached page is restored.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PostMessageDelivered) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
@@ -735,7 +737,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PostMessageDelivered) {
   // evicted.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // 4) Go back to A(B). Make sure that JavaSc
+  // 4) Go back to A(B). Make sure that the message is delivered when the page
+  // is restored.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
   EXPECT_EQ("dispatched",
