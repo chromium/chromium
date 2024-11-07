@@ -11,6 +11,8 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_EXPORT, ash::WindowState*)
 
 namespace ash {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kDisableResizeShadow, false)
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideDuringWindowDragging, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kOverrideWindowIconResourceIdKey, -1)

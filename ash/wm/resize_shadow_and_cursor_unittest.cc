@@ -13,6 +13,7 @@
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/functional/bind.h"
@@ -386,6 +387,26 @@ TEST_F(ResizeShadowAndCursorTest, Minimize) {
   VerifyResizeShadow(false);
 
   WindowState::Get(window())->Restore();
+  VerifyResizeShadow(false);
+}
+
+// Verifies that the shadow hides when it is disabled.
+TEST_F(ResizeShadowAndCursorTest, ResizeShadowDisabled) {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(WindowState::Get(window())->IsNormalStateType());
+
+  generator.MoveMouseTo(200, 50);
+  VerifyResizeShadow(true);
+
+  // Move the cursor off of the shadow.
+  generator.MoveMouseTo(50, 50);
+  VerifyResizeShadow(false);
+
+  // Disable the shadow.
+  window()->SetProperty(kDisableResizeShadow, true);
+
+  // Move the cursor back on and confirm it's disabled.
+  generator.MoveMouseTo(200, 50);
   VerifyResizeShadow(false);
 }
 
