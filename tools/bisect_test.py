@@ -1454,6 +1454,11 @@ class MethodTest(BisectTestCase):
           mock_stderr.getvalue(), r'To bisect for mac64, please choose from '
           r'release(-r), snapshot(-s)')
 
+  @patch('bisect-builds._DetectArchive', return_value='linux64')
+  def test_ParseCommandLine_DetectArchive(self, mock_detect_archive):
+    opts = bisect_builds.ParseCommandLine(['-o', '-g', '1'])
+    self.assertEqual(opts.archive, 'linux64')
+
   @patch('urllib.request.urlopen')
   @patch('builtins.open')
   @patch('sys.stdout', new_callable=io.StringIO)

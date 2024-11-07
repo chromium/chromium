@@ -71,6 +71,7 @@ IOS_ARCHIVE_BASE_URL = 'gs://bling-archive'
 GOOGLE_APIS_URL = 'commondatastorage.googleapis.com'
 
 # URL template for viewing changelogs between revisions.
+SHORT_CHANGELOG_URL = 'https://crrev.com/%s..%s'
 CHANGELOG_URL = ('https://chromium.googlesource.com/chromium/src/+log/%s..%s')
 
 # URL to convert SVN revision to git hash.
@@ -78,7 +79,10 @@ CRREV_URL = ('https://cr-rev.appspot.com/_ah/api/crrev/v1/redirect/')
 
 # URL template for viewing changelogs between release versions.
 RELEASE_CHANGELOG_URL = ('https://chromium.googlesource.com/chromium/'
-                         'src/+log/%s..%s?pretty=fuller&n=10000')
+                         'src/+log/%s..%s?n=10000')
+
+# show change logs during bisecting for last 5 steps
+STEPS_TO_SHOW_CHANGELOG_URL = 5
 
 # DEPS file URL.
 DEPS_FILE_OLD = ('http://src.chromium.org/viewvc/chrome/trunk/src/'
@@ -1748,6 +1752,10 @@ def Bisect(archive_build,
   # Ensure rev_list[0] is good and rev_list[-1] is bad for easier process.
   if archive_build.good_revision > archive_build.bad_revision:
     rev_list = rev_list[::-1]
+  if IsVersionNumber(rev_list[0]):
+    change_log_url_fn = GetReleaseChangeLogURL
+  else:
+    change_log_url_fn = GetShortChangeLogURL
 
   if verify_range:
     good_rev_fetch = archive_build.get_download_job(rev_list[0],
@@ -1783,8 +1791,11 @@ def Bisect(archive_build,
       # count towards the steps when calculating the number the steps.
       print('You have %d revisions with about %d steps left.' %
             (len(rev_list), ((len(rev_list) - 2).bit_length())))
-      print('Bisecting range [%s (bad), %s (good)].' %
-            (rev_list[-1], rev_list[0]))
+      change_log_url = ""
+      if (len(rev_list) - 2).bit_length() <= STEPS_TO_SHOW_CHANGELOG_URL:
+        change_log_url = f"({change_log_url_fn(rev_list[-1], rev_list[0])})"
+      print('Bisecting range [%s (bad), %s (good)]%s.' % (
+          rev_list[-1], rev_list[0], change_log_url))
       # clean prefetch to keep only the valid fetches
       for key in list(prefetch.keys()):
         if key not in rev_list:
@@ -1882,14 +1893,28 @@ def GetGitHashFromSVNRevision(svn_revision):
     return data['git_sha']
   return None
 
-def PrintChangeLog(min_chromium_rev, max_chromium_rev):
+def GetShortChangeLogURL(rev1, rev2):
+  min_rev, max_rev = sorted([rev1, rev2])
+  return SHORT_CHANGELOG_URL % (min_rev, max_rev)
+
+def GetChangeLogURL(rev1, rev2):
   """Prints the changelog URL."""
-  print(('  ' + CHANGELOG_URL % (GetGitHashFromSVNRevision(min_chromium_rev),
-                                 GetGitHashFromSVNRevision(max_chromium_rev))))
+  min_rev, max_rev = sorted([rev1, rev2])
+  return CHANGELOG_URL % (GetGitHashFromSVNRevision(min_rev),
+                          GetGitHashFromSVNRevision(max_rev))
+
+def GetReleaseChangeLogURL(version1, version2):
+  """Prints the changelog URL."""
+  min_ver, max_ver= sorted([version1, version2])
+  return RELEASE_CHANGELOG_URL % (min_ver, max_ver)
 
 
 def IsVersionNumber(revision):
   """Checks if provided revision is version_number"""
+  if isinstance(revision, LooseVersion):
+    return True
+  if not isinstance(revision, str):
+    return False
   return re.match(r'^\d+\.\d+\.\d+\.\d+$', revision) is not None
 
 
@@ -2106,7 +2131,6 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       '--archive',
       choices=choices,
       metavar='ARCHIVE',
-      required=True,
       help='The buildbot platform to bisect {%s}.' % ','.join(choices),
   )
 
@@ -2513,13 +2537,13 @@ def main():
 
   print('CHANGELOG URL:')
   if opts.build_type == 'release':
-    print(RELEASE_CHANGELOG_URL % (min_chromium_rev, max_chromium_rev))
+    print(GetReleaseChangeLogURL(min_chromium_rev, max_chromium_rev))
     MaybeSwitchBuildType(opts, good=good_rev, bad=bad_rev)
   else:
+    print(GetChangeLogURL(min_chromium_rev, max_chromium_rev))
     if opts.build_type == 'official':
       print('The script might not always return single CL as suspect '
             'as some perf builds might get missing due to failure.')
-    PrintChangeLog(min_chromium_rev, max_chromium_rev)
 
 if __name__ == '__main__':
   sys.exit(main())
