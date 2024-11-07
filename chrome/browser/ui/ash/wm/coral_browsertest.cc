@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   aura::Window* files_window =
       GetNativeWindowForSwa(SystemWebAppType::FILE_MANAGER);
   ASSERT_TRUE(files_window);
-  EXPECT_EQ(gfx::Rect(600, 600), files_window->GetBoundsInScreen());
+  EXPECT_EQ(files_window->GetBoundsInScreen(), gfx::Rect(600, 600));
 
   aura::Window* settings_window =
       GetNativeWindowForSwa(SystemWebAppType::SETTINGS);
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
 // data.
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, DISABLED_OpenNewDesk) {
   DesksController* desks_controller = DesksController::Get();
-  EXPECT_EQ(1u, desks_controller->desks().size());
+  EXPECT_EQ(desks_controller->desks().size(), 1u);
 
   // Set up a callback for a birch data fetch.
   base::RunLoop birch_data_fetch_waiter;
@@ -242,10 +242,11 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, DISABLED_OpenNewDesk) {
 
   // After clicking the coral chip, we have two desks and the new active desk
   // has the coral title.
-  EXPECT_EQ(2u, desks_controller->desks().size());
-  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-  EXPECT_EQ(u"Coral desk", desks_controller->GetDeskName(
-                               desks_controller->GetActiveDeskIndex()));
+  EXPECT_EQ(desks_controller->desks().size(), 2u);
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+  EXPECT_EQ(
+      desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()),
+      u"Coral desk");
 }
 
 // Tests that the Coral Delegate could create a new browser on the new desk by
@@ -276,10 +277,11 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveTabsToNewDesk) {
 
   // We should have two desks and the new active desk has the coral title.
   DesksController* desks_controller = DesksController::Get();
-  EXPECT_EQ(2u, desks_controller->desks().size());
-  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-  EXPECT_EQ(u"Coral desk", desks_controller->GetDeskName(
-                               desks_controller->GetActiveDeskIndex()));
+  EXPECT_EQ(desks_controller->desks().size(), 2u);
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+  EXPECT_EQ(
+      desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()),
+      u"Coral desk");
 
   // The active desk should have a browser window which has the two tabs in the
   // fake group.
@@ -336,10 +338,11 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveAppsToNewDesk) {
 
   // We should have two desks and the new active desk has the coral title.
   DesksController* desks_controller = DesksController::Get();
-  EXPECT_EQ(2u, desks_controller->desks().size());
-  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-  EXPECT_EQ(u"Coral desk", desks_controller->GetDeskName(
-                               desks_controller->GetActiveDeskIndex()));
+  EXPECT_EQ(desks_controller->desks().size(), 2u);
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+  EXPECT_EQ(
+      desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()),
+      u"Coral desk");
 
   // The active desk should have the four apps in the group.
   std::vector<std::string> app_ids_on_active_desk = CollectAppIDsFromWindows(
@@ -469,34 +472,34 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseTabAppUpdateChip) {
 
   const auto& group = BirchCoralProvider::Get()->GetGroupById(base::Token());
 
-  EXPECT_EQ(4u, group->entities.size());
+  EXPECT_EQ(group->entities.size(), 4u);
 
   // Closing the first browser with the duplicated tab (https://youtube.com)
   // will not change the group.
   SelectFirstBrowser();
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(4u, group->entities.size());
+  EXPECT_EQ(group->entities.size(), 4u);
 
   // Closing the next browser will decrease the items in the group.
   SelectFirstBrowser();
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(2u, group->entities.size());
+  EXPECT_EQ(group->entities.size(), 2u);
 
   // Closing a duplicated window (file manager) will not change the group.
   SelectFirstBrowser();
-  EXPECT_EQ(u"Files", browser()->window()->GetNativeWindow()->GetTitle());
+  EXPECT_EQ(browser()->window()->GetNativeWindow()->GetTitle(), u"Files");
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(2u, group->entities.size());
+  EXPECT_EQ(group->entities.size(), 2u);
 
   // Closing a non-duplicated window will decrease the items in the group.
   SelectFirstBrowser();
-  EXPECT_EQ(u"Files", browser()->window()->GetNativeWindow()->GetTitle());
+  EXPECT_EQ(browser()->window()->GetNativeWindow()->GetTitle(), u"Files");
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(1u, group->entities.size());
+  EXPECT_EQ(group->entities.size(), 1u);
 
   // Closing the last app window in group will remove the chip.
   SelectFirstBrowser();
-  EXPECT_EQ(u"YouTube", browser()->window()->GetNativeWindow()->GetTitle());
+  EXPECT_EQ(browser()->window()->GetNativeWindow()->GetTitle(), u"YouTube");
   CloseBrowserSynchronously(browser());
 
   EXPECT_FALSE(GetBirchChipButton());
