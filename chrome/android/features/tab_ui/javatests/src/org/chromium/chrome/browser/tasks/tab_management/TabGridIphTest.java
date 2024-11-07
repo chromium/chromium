@@ -71,6 +71,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -90,7 +91,7 @@ import java.io.IOException;
 // Remove the ANDROID_HUB_FLOATING_ACTION_BUTTON restriction and regenerate goldens when launching.
 @DisableFeatures({
     ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON,
-    ChromeFeatureList.ANDROID_HUB_SEARCH
+    OmniboxFeatureList.ANDROID_HUB_SEARCH
 })
 @DoNotBatch(reason = "Batching can cause message state to leak between tests.")
 public class TabGridIphTest {

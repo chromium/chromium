@@ -116,6 +116,7 @@ android_library("incognito_java_tests") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:test_support_java",
     "//components/browser_ui/widget/android:java",
+    "//components/omnibox/common:features_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",

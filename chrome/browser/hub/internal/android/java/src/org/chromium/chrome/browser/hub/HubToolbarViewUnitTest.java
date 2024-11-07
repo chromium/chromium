@@ -54,9 +54,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -276,7 +276,7 @@ public class HubToolbarViewUnitTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testUpdateIncognitoElements() {
         mPropertyModel.set(IS_INCOGNITO, true);
         assertEquals(
@@ -289,7 +289,7 @@ public class HubToolbarViewUnitTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testUpdateSearchBoxColorScheme() {
         mPropertyModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
         assertEquals(

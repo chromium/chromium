@@ -26,8 +26,8 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.List;
 
@@ -119,7 +119,7 @@ public class HubToolbarView extends LinearLayout {
                 HubColors.getSelectableIconList(selectedIconColor, iconColor.getDefaultColor()));
         mPaneSwitcher.setSelectedTabIndicatorColor(selectedIconColor);
 
-        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             @ColorInt int hintTextColor = HubColors.getSearchBoxHintTextColor(context, colorScheme);
             mSearchBoxTextView.setHintTextColor(hintTextColor);
             GradientDrawable backgroundDrawable =
@@ -152,7 +152,7 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void updateIncognitoElements(boolean isIncognito) {
-        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             updateSearchBoxElements(isIncognito);
         }
     }
