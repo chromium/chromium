@@ -180,7 +180,7 @@ void FilledCardInformationBubbleViews::AddCardDescriptionView(
   |----------------------------------------------------------------|
   |             |  masked_card_name | masked_card_number_last_four |
   | card_image  |                                                  |
-  |             |  virtual_card_indicator                          |
+  |             |  card_indicator                                  |
   |----------------------------------------------------------------|
   */
   // Construct the container view as above.
@@ -221,7 +221,7 @@ void FilledCardInformationBubbleViews::AddCardDescriptionView(
       options.masked_card_number_last_four,
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
 
-  // Second line of the text content, the "Virtual card" indicator label.
+  // Second line of the text content, the "Card" indicator label.
   card_text_view->AddChildView(std::make_unique<views::Label>(
       controller_->GetVirtualCardIndicatorLabel(),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
@@ -231,12 +231,11 @@ void FilledCardInformationBubbleViews::AddCardDetailButtons(
     views::View* parent) {
   auto* const layout_provider = ChromeLayoutProvider::Get();
 
-  // Virtual card number.
-  auto* virtual_card_number_container =
-      parent->AddChildView(CreateButtonContainer());
-  virtual_card_number_container->AddChildView(
+  // Card number.
+  auto* card_number_container = parent->AddChildView(CreateButtonContainer());
+  card_number_container->AddChildView(
       CreateRowItemLabel(controller_->GetCardNumberFieldLabel()));
-  virtual_card_number_container->AddChildView(CreateRowItemButtonForField(
+  card_number_container->AddChildView(CreateRowItemButtonForField(
       FilledCardInformationBubbleField::kCardNumber));
 
   // Expiration date.

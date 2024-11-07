@@ -110,19 +110,18 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
 
   void ShowBubble() {
     CreditCard card = test::GetVirtualCard();
-    ShowBubble(&card, /*virtual_card_cvc=*/u"123");
+    ShowBubble(&card, /*cvc=*/u"123");
   }
 
-  void ShowBubble(const CreditCard* virtual_card,
-                  const std::u16string& virtual_card_cvc) {
+  void ShowBubble(const CreditCard* filled_card, const std::u16string& cvc) {
     ResetEventWaiterForSequence({BubbleEvent::BUBBLE_SHOWN});
     FilledCardInformationBubbleOptions options;
     options.masked_card_name =
-        CreditCard::NetworkForDisplay(virtual_card->network());
+        CreditCard::NetworkForDisplay(filled_card->network());
     options.masked_card_number_last_four =
-        virtual_card->ObfuscatedNumberWithVisibleLastFourDigits();
-    options.virtual_card = *virtual_card;
-    options.virtual_card_cvc = virtual_card_cvc;
+        filled_card->ObfuscatedNumberWithVisibleLastFourDigits();
+    options.filled_card = *filled_card;
+    options.cvc = cvc;
     options.card_image = gfx::test::CreateImage(32, 20);
     GetController()->ShowBubble(options);
     ASSERT_TRUE(event_waiter_->Wait());

@@ -2924,10 +2924,10 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     options.masked_card_name = credit_card.CardNameForAutofillDisplay();
     options.masked_card_number_last_four =
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
-    options.virtual_card = credit_card;
+    options.filled_card = credit_card;
     // TODO(crbug.com/40927041): Remove CVC from
     // FilledCardInformationBubbleOptions.
-    options.virtual_card_cvc = credit_card.cvc();
+    options.cvc = credit_card.cvc();
     options.card_image = GetCardImage(credit_card);
     client().GetPaymentsAutofillClient()->OnCardDataAvailable(options);
   }

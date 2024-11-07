@@ -19,8 +19,8 @@ class BubbleShowOptionsTest : public testing::Test {
     FilledCardInformationBubbleOptions options;
     options.masked_card_name = u"Visa";
     options.masked_card_number_last_four = u"**** 1234";
-    options.virtual_card = test::GetVirtualCard();
-    options.virtual_card_cvc = u"123";
+    options.filled_card = test::GetVirtualCard();
+    options.cvc = u"123";
     options.card_image = gfx::test::CreateImage(40, 24);
     return options;
   }
@@ -47,35 +47,35 @@ TEST_F(BubbleShowOptionsTest, FilledCardInformationBubbleOptionsIsValid) {
   // Missing virtual card number.
   {
     auto options = CreateFilledCardInformationBubbleOptions();
-    options.virtual_card.SetNumber(u"");
+    options.filled_card.SetNumber(u"");
     EXPECT_FALSE(options.IsValid());
   }
 
   // Missing virtual card cardholder name.
   {
     auto options = CreateFilledCardInformationBubbleOptions();
-    options.virtual_card.SetRawInfo(CREDIT_CARD_NAME_FULL, /*value=*/u"");
+    options.filled_card.SetRawInfo(CREDIT_CARD_NAME_FULL, /*value=*/u"");
     EXPECT_FALSE(options.IsValid());
   }
 
   // Missing valid virtual card expiration month.
   {
     auto options = CreateFilledCardInformationBubbleOptions();
-    options.virtual_card.SetExpirationMonth(0);
+    options.filled_card.SetExpirationMonth(0);
     EXPECT_FALSE(options.IsValid());
   }
 
   // Missing valid virtual card expiration year.
   {
     auto options = CreateFilledCardInformationBubbleOptions();
-    options.virtual_card.SetExpirationYear(0);
+    options.filled_card.SetExpirationYear(0);
     EXPECT_FALSE(options.IsValid());
   }
 
   // Missing virtual card CVC.
   {
     auto options = CreateFilledCardInformationBubbleOptions();
-    options.virtual_card_cvc = u"";
+    options.cvc = u"";
     EXPECT_FALSE(options.IsValid());
   }
 

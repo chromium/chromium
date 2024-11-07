@@ -149,15 +149,15 @@ std::u16string FilledCardInformationBubbleControllerImpl::GetValueForField(
     FilledCardInformationBubbleField field) const {
   switch (field) {
     case FilledCardInformationBubbleField::kCardNumber:
-      return options_.virtual_card.FullDigitsForDisplay();
+      return options_.filled_card.FullDigitsForDisplay();
     case FilledCardInformationBubbleField::kExpirationMonth:
-      return options_.virtual_card.Expiration2DigitMonthAsString();
+      return options_.filled_card.Expiration2DigitMonthAsString();
     case FilledCardInformationBubbleField::kExpirationYear:
-      return options_.virtual_card.Expiration4DigitYearAsString();
+      return options_.filled_card.Expiration4DigitYearAsString();
     case FilledCardInformationBubbleField::kCardholderName:
-      return options_.virtual_card.GetRawInfo(CREDIT_CARD_NAME_FULL);
+      return options_.filled_card.GetRawInfo(CREDIT_CARD_NAME_FULL);
     case FilledCardInformationBubbleField::kCvc:
-      return options_.virtual_card_cvc;
+      return options_.cvc;
   }
 }
 

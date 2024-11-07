@@ -3594,21 +3594,21 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_VirtualCreditCard) {
-  const CreditCard virtual_card = test::WithCvc(test::GetVirtualCard());
+  const CreditCard filled_card = test::WithCvc(test::GetVirtualCard());
   using Options = FilledCardInformationBubbleOptions;
   EXPECT_CALL(
       payments_client(),
       OnCardDataAvailable(
           AllOf(Field(&Options::masked_card_name,
-                      virtual_card.CardNameForAutofillDisplay()),
+                      filled_card.CardNameForAutofillDisplay()),
                 Field(&Options::masked_card_number_last_four,
-                      virtual_card.ObfuscatedNumberWithVisibleLastFourDigits()),
-                Field(&Options::virtual_card_cvc, virtual_card.cvc()),
-                Field(&Options::virtual_card, virtual_card))));
+                      filled_card.ObfuscatedNumberWithVisibleLastFourDigits()),
+                Field(&Options::cvc, filled_card.cvc()),
+                Field(&Options::filled_card, filled_card))));
 
-  browser_autofill_manager_->OnCreditCardFetchedSuccessfully(virtual_card);
+  browser_autofill_manager_->OnCreditCardFetchedSuccessfully(filled_card);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
-              testing::Optional(virtual_card.instrument_id()));
+              testing::Optional(filled_card.instrument_id()));
 }
 
 // Test that the importing logic is called on form submit.
