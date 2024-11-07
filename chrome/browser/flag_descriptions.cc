@@ -3856,6 +3856,12 @@ const char kVcRelightingInferenceBackendDescription[] =
     "Select relighting backend to be used for running model inference during "
     "video conferencing, which may offload work from GPU.";
 
+const char kVcRetouchInferenceBackendName[] =
+    "Select retouch backend for video conferencing";
+const char kVcRetouchInferenceBackendDescription[] =
+    "Select retouch backend to be used for running model inference during "
+    "video conferencing, which may offload work from GPU.";
+
 const char kVcSegmentationInferenceBackendName[] =
     "Select segmentation backend for video conferencing";
 const char kVcSegmentationInferenceBackendDescription[] =

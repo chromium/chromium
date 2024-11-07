@@ -3391,6 +3391,13 @@ const FeatureEntry::FeatureVariation kVcRelightingInferenceBackendVariations[] =
      {"NPU", kVcInferenceBackendNpu, std::size(kVcInferenceBackendNpu),
       nullptr}};
 
+const FeatureEntry::FeatureVariation kVcRetouchInferenceBackendVariations[] = {
+    {"AUTO", kVcInferenceBackendAuto, std::size(kVcInferenceBackendAuto),
+     nullptr},
+    {"GPU", kVcInferenceBackendGpu, std::size(kVcInferenceBackendGpu), nullptr},
+    {"NPU", kVcInferenceBackendNpu, std::size(kVcInferenceBackendNpu),
+     nullptr}};
+
 const FeatureEntry::FeatureVariation
     kVcSegmentationInferenceBackendVariations[] = {
         {"AUTO", kVcInferenceBackendAuto, std::size(kVcInferenceBackendAuto),
@@ -9469,6 +9476,12 @@ const FeatureEntry kFeatureEntries[] = {
          ash::features::kVcRelightingInferenceBackend,
          kVcRelightingInferenceBackendVariations,
          "VcRelightingInferenceBackend")},
+    {"vc-retouch-inference-backend",
+     flag_descriptions::kVcRetouchInferenceBackendName,
+     flag_descriptions::kVcRetouchInferenceBackendDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVcRetouchInferenceBackend,
+                                    kVcRetouchInferenceBackendVariations,
+                                    "VcRetouchInferenceBackend")},
     {"vc-segmentation-model", flag_descriptions::kVcSegmentationModelName,
      flag_descriptions::kVcSegmentationModelDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVcSegmentationModel,

@@ -3141,6 +3141,12 @@ BASE_FEATURE(kVcSegmentationModel,
              "VCSegmentationModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables alternative inference backends for running ChromeOS video
+// conferencing face retouch models.
+BASE_FEATURE(kVcRetouchInferenceBackend,
+             "VcRetouchInferenceBackend",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Studio Look and VC settings for ChromeOS video
 // conferencing.
 BASE_FEATURE(kVcStudioLook, "VcStudioLook", base::FEATURE_ENABLED_BY_DEFAULT);

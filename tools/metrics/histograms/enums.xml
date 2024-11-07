@@ -18059,6 +18059,7 @@ from previous Chrome versions.
   <int value="-883608641" label="enable-cros-action-recorder"/>
   <int value="-882434910" label="EnableAggregatedMlSearchRanking:enabled"/>
   <int value="-881903516" label="DeskButton:disabled"/>
+  <int value="-881569502" label="VcRetouchInferenceBackend:disabled"/>
   <int value="-881477103" label="PageInfoAboutThisSiteNonEn:enabled"/>
   <int value="-881447505" label="ash-disable-shelf-model-synchronization"/>
   <int value="-881054479" label="WebAssemblyStreaming:disabled"/>
@@ -24712,6 +24713,7 @@ from previous Chrome versions.
   <int value="1804170680" label="PdfCr23:enabled"/>
   <int value="1804190628"
       label="AuthenticateUsingUserConsentVerifierInteropApi:disabled"/>
+  <int value="1805582881" label="VcRetouchInferenceBackend:enabled"/>
   <int value="1805706414" label="PerformanceInterventionUI:disabled"/>
   <int value="1805859042"
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:enabled"/>

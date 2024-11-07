@@ -9161,6 +9161,17 @@
     "expiry_milestone": 133
   },
   {
+    "name": "vc-retouch-inference-backend",
+    "owners": [
+      "shik@chromium.org",
+      "chingkang@chromium.org",
+      "jcliang@chromium.org",
+      "ototot@google.com",
+      "cros-odml-foundations-eng@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "vc-segmentation-inference-backend",
     "owners": [
       "shik@chromium.org",

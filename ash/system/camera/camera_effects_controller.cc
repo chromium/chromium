@@ -936,6 +936,8 @@ void CameraEffectsController::SetCameraEffects(
       GetInferenceBackend(ash::features::kVcSegmentationInferenceBackend);
   config->relighting_inference_backend =
       GetInferenceBackend(ash::features::kVcRelightingInferenceBackend);
+  config->retouch_inference_backend =
+      GetInferenceBackend(ash::features::kVcRetouchInferenceBackend);
 
   if (config->replace_enabled &&
       config->background_filepath != current_effects_->background_filepath) {
