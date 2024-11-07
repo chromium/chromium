@@ -26100,10 +26100,7 @@
                     "params": {
                         "max_post_decode_queue_size": "10",
                         "reduce_steady_state_queue_size_threshold": "20"
-                    },
-                    "enable_features": [
-                        "LowLatencyVideoRendererAlgorithm"
-                    ]
+                    }
                 }
             ]
         }

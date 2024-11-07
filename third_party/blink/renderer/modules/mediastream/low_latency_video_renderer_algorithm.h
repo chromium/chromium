@@ -117,15 +117,6 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
   Stats stats_;
   std::optional<base::TimeTicks> last_deadline_min_stats_recorded_;
   void RecordAndResetStats();
-  // Maximum post decode queue size which should trigger a max queue size
-  // reduction.
-  uint16_t max_post_decode_queue_size_;
-  // Maximum number of frames to drop when there is a max queue size reduction.
-  // A size of 0 indicates dropping all the frames in the queue.
-  uint16_t max_consecutive_frames_to_drop_;
-  // Count of consecutive rendered frames with a newer frame in the queue which
-  // should force a steady state reduction of one frame.
-  uint16_t reduce_steady_state_queue_size_threshold_;
 };
 
 }  // namespace blink
