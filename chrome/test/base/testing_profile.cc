@@ -1239,12 +1239,12 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
   DCHECK(original_profile);
   build_called_ = true;
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (original_profile->IsGuestSession()) {
-    // ChromeOS Guest Session has only one primary OTR.
+    // Guest Session has only one primary OTR. If your test hits this check, and
+    // you think your case is valid use case, please let us know by updating
+    // crbug.com/374351946.
     CHECK_EQ(otr_profile_id, OTRProfileID::PrimaryID());
   }
-#endif
 
   // Note: Owned by |original_profile|.
   return new TestingProfile(
