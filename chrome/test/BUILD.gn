@@ -3274,6 +3274,10 @@ if (!is_android) {
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
+    if (enable_lens_desktop_google_branded_features) {
+      sources += [ "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_browsertest.cc" ]
+    }
+
     public_deps = [ "//chrome/browser/ui/tabs:tab_strip" ]
 
     if (is_android) {

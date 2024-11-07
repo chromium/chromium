@@ -44,6 +44,11 @@ class LensSidePanelCoordinator
 
   bool IsLaunchButtonEnabledForTesting();
 
+  base::WeakPtr<lens::LensUnifiedSidePanelView>
+  GetLensUnifiedSidePanelViewForTesting() {
+    return lens_side_panel_view_;
+  }
+
  private:
   friend class BrowserUserData<LensSidePanelCoordinator>;
 

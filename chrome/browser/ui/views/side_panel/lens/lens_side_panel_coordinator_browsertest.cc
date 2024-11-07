@@ -239,6 +239,37 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
+                       LensUnifiedSidePanelViewAccessibleProperties) {
+  SetupUnifiedSidePanel();
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
+
+  auto lens_unified_side_panel_view =
+      GetLensSidePanelCoordinator()->GetLensUnifiedSidePanelViewForTesting();
+
+  ui::AXNodeData data;
+  lens_unified_side_panel_view->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWebView);
+  EXPECT_EQ(data.role, lens_unified_side_panel_view->GetWebView()
+                           ->GetViewAccessibility()
+                           .GetCachedRole());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+
+  // This check verifies that the callback for updating the child tree ID is
+  // called since initially the child tree ID is unknown, and the only way
+  // through which the value of child tree id can change is when the callback
+  // ran.
+  EXPECT_NE(
+      lens_unified_side_panel_view->GetViewAccessibility().GetChildTreeID(),
+      ui::AXTreeIDUnknown());
+  EXPECT_EQ(
+      lens_unified_side_panel_view->GetViewAccessibility().GetChildTreeID(),
+      lens_unified_side_panel_view->GetWebView()
+          ->GetViewAccessibility()
+          .GetChildTreeID());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
                        ImageSearchWithValidImageOpensUnifiedSidePanelFor3PDse) {
   SetupImageSearchEngine();
   SetupUnifiedSidePanel(/**for_google*/ false);

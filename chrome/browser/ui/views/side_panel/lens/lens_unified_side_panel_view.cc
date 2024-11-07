@@ -38,10 +38,12 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/separator.h"
@@ -123,6 +125,31 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(
   // Register a modal dialog manager to show permissions dialog like those
   // requested from the feedback UI.
   RegisterModalDialogManager(browser_view->browser());
+
+  GetViewAccessibility().SetRole(
+      web_view_->GetViewAccessibility().GetCachedRole());
+  UpdateAccessibleName(
+      base::UTF16ToUTF8(web_view_->GetViewAccessibility().GetCachedName()));
+  GetViewAccessibility().SetChildTreeID(
+      web_view_->GetViewAccessibility().GetChildTreeID());
+
+  // We add callbacks so that whenever the a11y attributes of `web_view_`
+  // change, we update the a11y attributes for `this`.
+  role_changed_subscription_ =
+      web_view_->GetViewAccessibility().AddRoleChangedCallback(
+          base::BindRepeating(
+              &LensUnifiedSidePanelView::OnAccessibleRoleChanged,
+              weak_factory_.GetWeakPtr()));
+  name_changed_subscription_ =
+      web_view_->GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&LensUnifiedSidePanelView::OnAXNameChanged,
+                              weak_factory_.GetWeakPtr()));
+  child_tree_id_changed_subscription_ =
+      web_view_->GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kChildTreeId,
+          base::BindRepeating(&LensUnifiedSidePanelView::OnAXChildTreeIdChanged,
+                              weak_factory_.GetWeakPtr()));
 }
 
 content::WebContents* LensUnifiedSidePanelView::GetWebContents() {
@@ -273,11 +300,6 @@ void LensUnifiedSidePanelView::MaybeSetContentAndNewTabButtonVisible(
   }
 }
 
-void LensUnifiedSidePanelView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  return web_view_->GetAccessibleNodeData(node_data);
-}
-
 bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {
   return !update_new_tab_button_callback_.is_null();
 }
@@ -326,6 +348,32 @@ void LensUnifiedSidePanelView::DidOpenRequestedURL(
   browser_view_->browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   base::RecordAction(
       base::UserMetricsAction("LensUnifiedSidePanel.ResultLinkClick"));
+}
+
+void LensUnifiedSidePanelView::OnAccessibleRoleChanged(ax::mojom::Role role) {
+  GetViewAccessibility().SetRole(role);
+}
+
+void LensUnifiedSidePanelView::OnAXNameChanged(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  UpdateAccessibleName(name.value_or(std::string()));
+}
+
+void LensUnifiedSidePanelView::UpdateAccessibleName(const std::string& name) {
+  if (name.empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(name);
+  }
+}
+
+void LensUnifiedSidePanelView::OnAXChildTreeIdChanged(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& child_tree_id) {
+  GetViewAccessibility().SetChildTreeID(
+      ui::AXTreeID::FromString(child_tree_id.value_or(std::string())));
 }
 
 void LensUnifiedSidePanelView::MaybeLoadURLWithParams() {
