@@ -1357,7 +1357,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       frame,
       /*track_user_edited_fields=*/true);
 
-  driver->ScanForms();
+  driver->ScanForms(/*immediately=*/base::FeatureList::IsEnabled(
+      kAutofillThrottleDocumentFormScanForceFirstScanIos));
 }
 
 // Records if the renderer was able to fill the Autofill-provided values in a

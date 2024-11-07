@@ -303,7 +303,7 @@ void AutofillDriverIOS::TriggerFormExtractionInDriverFrame(
   }
 }
 
-void AutofillDriverIOS::ScanForms() {
+void AutofillDriverIOS::ScanForms(bool immediately) {
   if (!web_frame()) {
     return;
   }
@@ -318,8 +318,10 @@ void AutofillDriverIOS::ScanForms() {
       };
 
   if (base::FeatureList::IsEnabled(kAutofillThrottleDocumentFormScanIos)) {
-    document_scan_batcher_.PushRequest(
-        base::BindOnce(callback, bridge_, web_frame()->AsWeakPtr()));
+    immediately ? document_scan_batcher_.PushRequestAndRun(base::BindOnce(
+                      callback, bridge_, web_frame()->AsWeakPtr()))
+                : document_scan_batcher_.PushRequest(base::BindOnce(
+                      callback, bridge_, web_frame()->AsWeakPtr()));
   } else {
     [bridge_ fetchFormsFiltered:NO
                        withName:std::u16string()

@@ -39,6 +39,13 @@ class FormFetchBatcher {
       FormFetchCompletion&& fetch_request,
       std::optional<std::u16string> form_name_filter = std::nullopt);
 
+  // Pushes a request into the current batch, runs immediately the current
+  // batch, and cancels the scheduled task if there is one. Otherwise, works the
+  // same way as PushRequest().
+  void PushRequestAndRun(
+      FormFetchCompletion&& fetch_request,
+      std::optional<std::u16string> form_name_filter = std::nullopt);
+
  private:
   // Runs an extraction of forms in the frame's document to complete the current
   // batch of requests. The batch isn't completed yet when calling this as there

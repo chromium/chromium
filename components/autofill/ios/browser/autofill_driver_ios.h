@@ -176,8 +176,10 @@ class AutofillDriverIOS final : public AutofillDriver,
   // as soon as the extraction request is started regardless of the results.
   void OnDidTriggerFormFetch();
 
-  // Scans to find all eligible forms in the frame's document.
-  void ScanForms();
+  // Scans to find all eligible forms in the frame's document. If batching is
+  // enabled and `immediately` is true, runs this scan and the batch
+  // immediately altogether.
+  void ScanForms(bool immediately = false);
 
   // Fetches forms filtered by `form_name` and calls `caller_completion` with
   // the form fetch results upon completion of the fetch.

@@ -45,6 +45,21 @@ FormFetchBatcher::FormFetchBatcher(id<AutofillDriverIOSBridge> bridge,
 
 FormFetchBatcher::~FormFetchBatcher() = default;
 
+void FormFetchBatcher::PushRequestAndRun(
+    FormFetchCompletion&& completion,
+    std::optional<std::u16string> form_name_filter) {
+  fetch_requests_.emplace_back(
+      base::BindOnce(&ApplyFormFilterIfNeeded, std::move(form_name_filter))
+          .Then(std::move(completion)));
+
+  // Cancel the current task by invalidating the weak pointer of the scheduled
+  // callback.
+  weak_factory_.InvalidateWeakPtrs();
+
+  // Run the batch immediately.
+  Run();
+}
+
 void FormFetchBatcher::PushRequest(
     FormFetchCompletion&& completion,
     std::optional<std::u16string> form_name_filter) {

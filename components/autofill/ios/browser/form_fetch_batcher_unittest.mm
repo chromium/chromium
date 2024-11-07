@@ -237,6 +237,48 @@ TEST_F(FormFetchBatcherTest, Batch_OnlyWhenNeeded) {
       /*exprected_count=*/0);
 }
 
+// Tests that the pending batch task is canceled and the batch is run
+// immediately when PushRequestAndRun() is used.
+TEST_F(FormFetchBatcherTest, Batch_PushAndRun) {
+  // Completion trackers, true when the request is completed.
+  bool r1_completed = false;
+  bool r2_completed = false;
+
+  // Verify that there is not any scheduled batch at this point, not until the
+  // first request push.
+  ASSERT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Push request #1 (r1).
+  {
+    batcher_.PushRequest(
+        base::BindOnce(&FormFetchCompletionCallback, &r1_completed));
+  }
+
+  // Verify that the batch was scheduled by the first push.
+  ASSERT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
+
+  ASSERT_FALSE(r1_completed);
+  ASSERT_FALSE(r2_completed);
+
+  // Push request #2 (r2) and run it immediately.
+  {
+    batcher_.PushRequestAndRun(
+        base::BindOnce(&FormFetchCompletionCallback, &r2_completed));
+  }
+
+  // Verify that the scheduled batch was canceled.
+  ASSERT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Verify that the batch of requests was completed by the batcher.
+  EXPECT_TRUE(r1_completed);
+  EXPECT_TRUE(r2_completed);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.iOS.FormExtraction.ForScan.BatchSize",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
+}
+
 // Tests fetch filtered requests.
 TEST_F(FormFetchBatcherTest, Filtered) {
   // Hold the fetched forms for each request.
