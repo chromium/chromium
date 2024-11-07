@@ -322,10 +322,8 @@ bool IsExtensionScreenSharingFunctionCall(const MediaStreamConstraints* options,
 #endif
 
 MediaStreamConstraints* ToMediaStreamConstraints(
-    const UserMediaStreamConstraints* source,
-    ExceptionState& exception_state) {
+    const UserMediaStreamConstraints* source) {
   DCHECK(source);
-  DCHECK(!exception_state.HadException());
 
   MediaStreamConstraints* const constraints = MediaStreamConstraints::Create();
 
@@ -336,26 +334,6 @@ MediaStreamConstraints* ToMediaStreamConstraints(
   if (source->hasVideo()) {
     constraints->setVideo(source->video());
   }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (source->hasController()) {
-    const bool is_screen_sharing =
-        IsExtensionScreenSharingFunctionCall(constraints, exception_state);
-
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
-
-    if (!is_screen_sharing) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "CaptureController supplied for a non-screen-capture call.");
-      return nullptr;
-    }
-
-    constraints->setController(source->controller());
-  }
-#endif
 
   return constraints;
 }
@@ -491,8 +469,7 @@ ScriptPromise<MediaStream> MediaDevices::getUserMedia(
   DCHECK(options);  // Guaranteed by the default value in the IDL.
   DCHECK(!exception_state.HadException());
 
-  MediaStreamConstraints* const constraints =
-      ToMediaStreamConstraints(options, exception_state);
+  MediaStreamConstraints* const constraints = ToMediaStreamConstraints(options);
   if (!constraints) {
     DCHECK(exception_state.HadException());
     resolver->RecordAndDetach(UserMediaRequestResult::kInvalidConstraints);
