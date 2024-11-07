@@ -15949,6 +15949,17 @@
                         "OverrideDefaultOzonePlatformHintToAuto",
                         "WaylandTextInputV3"
                     ]
+                },
+                {
+                    "name": "Enabled_IME_UiScale_Video_Dogfood",
+                    "enable_features": [
+                        "AcceleratedVideoDecodeLinuxGL",
+                        "AcceleratedVideoDecodeLinuxZeroCopyGL",
+                        "AllowWindowDragUsingSystemDragDrop",
+                        "OverrideDefaultOzonePlatformHintToAuto",
+                        "WaylandTextInputV3",
+                        "WaylandUiScale"
+                    ]
                 }
             ]
         }
