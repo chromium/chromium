@@ -91,6 +91,12 @@ bool IsValidTab(TabClusterUIItem* tab) {
   if (!coral_util::CanMoveToNewDesk(browser_window)) {
     return false;
   }
+
+  // Filter out the unloaded tab.
+  if (tab->current_info().is_loading) {
+    return false;
+  }
+
   return true;
 }
 

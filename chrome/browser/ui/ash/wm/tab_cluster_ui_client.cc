@@ -23,6 +23,7 @@ ash::TabClusterUIItem::Info GenerateTabItemInfo(
   info.source = web_contents->GetVisibleURL().possibly_invalid_spec();
   info.browser_window =
       chrome::FindBrowserWithTab(web_contents)->window()->GetNativeWindow();
+  info.is_loading = web_contents->IsLoading();
   return info;
 }
 
@@ -80,21 +81,31 @@ void TabClusterUIClient::OnTabStripModelChanged(
       break;
   }
   if (selection.active_tab_changed() && !tab_strip_model->empty()) {
-    controller_->ChangeActiveCandidate(
-        contents_item_map_[selection.old_contents],
-        contents_item_map_[selection.new_contents]);
+    auto* old_active_item =
+        base::Contains(contents_item_map_, selection.old_contents)
+            ? contents_item_map_[selection.old_contents].get()
+            : nullptr;
+    auto* new_active_item = contents_item_map_[selection.new_contents].get();
+    controller_->ChangeActiveCandidate(old_active_item, new_active_item);
   }
 }
 
 void TabClusterUIClient::TabChangedAt(content::WebContents* contents,
                                       int index,
                                       TabChangeType change_type) {
-  if (change_type == TabChangeType::kLoadingOnly) {
+  // Some tests may manually add tabs to browser such that the newly added tabs
+  // may start loading before being inserted into the tab strip.
+  if (!base::Contains(contents_item_map_, contents)) {
     return;
   }
-
-  DCHECK(base::Contains(contents_item_map_, contents));
   auto* item = contents_item_map_[contents].get();
+
+  // If there is only loading progress change, we only update item when the
+  // state changes between loading and loaded.
+  if (change_type == TabChangeType::kLoadingOnly &&
+      item->current_info().is_loading == contents->IsLoading()) {
+    return;
+  }
   item->Init(GenerateTabItemInfo(contents));
   controller_->UpdateTabItem(item);
 }
