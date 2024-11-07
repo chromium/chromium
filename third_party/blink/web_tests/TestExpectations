@@ -8141,6 +8141,7 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-p
 crbug.com/352831220 virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/common-to-both-axes-supercedes-first-in-tree-order.html [ Failure Pass ]
 
 # Temporarily disable to land front-end change
+crbug.com/368238837 http/tests/devtools/a11y-axe-core/settings/locations-a11y-test.js [ Failure Pass ]
 crbug.com/368238837 http/tests/devtools/a11y-axe-core/settings/ignorelist-a11y-test.js [ Failure Pass ]
 crbug.com/368238837 http/tests/devtools/workspace-view-file-system-header.js [ Failure Pass ]
 
