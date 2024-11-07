@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -1451,30 +1452,32 @@ class AutocompleteMediator
         // Note: onPause and onUserLeaveHint happen much too late.
         if (!OmniboxFeatures.isJumpStartOmniboxEnabled()) return;
 
+        // Abort early if Autocomplete has not initialized yet.
+        if (mAutocomplete.isEmpty()) return;
+
+        // Default page context to prefetch suggestions for.
+        GURL pageUrl = UrlConstants.ntpGurl();
+        int pageClass = PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE;
+
         // Preserve current page context for Jump-start Omnibox feature.
         if (OmniboxFeatures.sJumpStartOmniboxCoverRecentlyVisitedPage.getValue()) {
+            pageUrl = mDataProvider.getCurrentGurl();
+            pageClass = mDataProvider.getPageClassification(false);
+
             var currentContext = CachedZeroSuggestionsManager.readJumpStartContext();
-            if (currentContext.pageClass == mDataProvider.getPageClassification(false)
-                    && currentContext.url.equals(mDataProvider.getCurrentGurl())) {
+            if (currentContext.pageClass == pageClass && currentContext.url.equals(pageUrl)) {
                 return;
             }
 
+            // The context has changed. Avoid showing stale suggestions.
             CachedZeroSuggestionsManager.saveJumpStartContext(
-                    new CachedZeroSuggestionsManager.JumpStartContext(
-                            mDataProvider.getCurrentGurl(),
-                            mDataProvider.getPageClassification(false)));
+                    new CachedZeroSuggestionsManager.JumpStartContext(pageUrl, pageClass));
+            CachedZeroSuggestionsManager.eraseCachedSuggestionsByPageClass(pageClass);
         }
 
         // Retrieve suggestions related to the most recently visited page.
         // This is a best-effort action and may not always work (e.g. if Chrome gets killed or
         // swiped away before we manage to retrieve and persist the information).
-        mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
-        mAutocomplete.ifPresent(
-                a ->
-                        a.startZeroSuggest(
-                                "",
-                                mDataProvider.getCurrentGurl(),
-                                mDataProvider.getPageClassification(false),
-                                mDataProvider.getTitle()));
+        mAutocomplete.get().startZeroSuggest("", pageUrl, pageClass, mDataProvider.getTitle());
     }
 }

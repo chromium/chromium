@@ -130,11 +130,20 @@ public class CachedZeroSuggestionsManager {
             } catch (InvalidProtocolBufferException e) {
                 // Bad protobuf.
             }
-            // This is a best-effort cleanup which is okay if it doesn't complete before Chrome
-            // dies.
-            prefs.edit().remove(key).apply();
+            eraseCachedSuggestionsByPageClass(pageClass);
         }
         return AutocompleteResult.fromCache(null, null);
+    }
+
+    /**
+     * Erase previously stored AutocompleteResult for a given page class from cache.
+     *
+     * @param pageClass the PageClassification to clear cache for
+     */
+    static void eraseCachedSuggestionsByPageClass(int pageClass) {
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        String key = getCacheKey(pageClass);
+        prefs.edit().remove(key).apply();
     }
 
     /** Save the context of the most recently visited page. */
