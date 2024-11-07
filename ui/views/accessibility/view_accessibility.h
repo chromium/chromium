@@ -326,6 +326,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetIsVertical(bool vertical);
 
   void SetIsDefault(bool is_default);
+  bool GetIsDefault() const;
 
   // Sets/gets whether or not this view should be marked as "enabled" for the
   // purpose exposing this state in the accessibility tree. As a general rule,
@@ -362,6 +363,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void AddAction(ax::mojom::Action action);
 
   void SetCheckedState(ax::mojom::CheckedState checked_state);
+  ax::mojom::CheckedState GetCheckedState() const;
   void RemoveCheckedState();
 
   void SetKeyShortcuts(const std::string& key_shortcuts);
@@ -408,6 +410,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetDefaultActionVerb(
       const ax::mojom::DefaultActionVerb default_action_verb);
+  ax::mojom::DefaultActionVerb GetDefaultActionVerb() const;
   void RemoveDefaultActionVerb();
 
   void SetAutoComplete(const std::string& autocomplete);

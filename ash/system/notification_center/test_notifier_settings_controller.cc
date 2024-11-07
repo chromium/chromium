@@ -17,18 +17,7 @@ TestNotifierSettingsController::TestNotifierSettingsController() = default;
 TestNotifierSettingsController::~TestNotifierSettingsController() = default;
 
 void TestNotifierSettingsController::GetNotifiers() {
-  std::vector<NotifierMetadata> notifiers;
-  if (!no_notifiers_) {
-    notifiers.emplace_back(message_center::NotifierId(
-                               message_center::NotifierType::APPLICATION, "id"),
-                           u"title", true /* enabled */, false /* enforced */,
-                           gfx::ImageSkia());
-    notifiers.emplace_back(
-        message_center::NotifierId(message_center::NotifierType::APPLICATION,
-                                   "id2"),
-        u"other title", false /* enabled */, false /* enforced */,
-        gfx::ImageSkia());
-  }
+  std::vector<NotifierMetadata> notifiers = GetTestNotifiersMetadata();
 
   for (auto& observer : observers_)
     observer.OnNotifiersUpdated(notifiers);
@@ -46,6 +35,24 @@ void TestNotifierSettingsController::AddNotifierSettingsObserver(
 void TestNotifierSettingsController::RemoveNotifierSettingsObserver(
     NotifierSettingsObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+std::vector<NotifierMetadata>
+TestNotifierSettingsController::GetTestNotifiersMetadata() const {
+  std::vector<NotifierMetadata> notifiers;
+  if (!no_notifiers_) {
+    notifiers.emplace_back(message_center::NotifierId(
+                               message_center::NotifierType::APPLICATION, "id"),
+                           u"title", /* enabled= */ true, /* enforced= */ false,
+                           gfx::ImageSkia());
+    notifiers.emplace_back(
+        message_center::NotifierId(message_center::NotifierType::APPLICATION,
+                                   "id2"),
+        u"other title", /* enabled= */ false, /* enforced= */ false,
+        gfx::ImageSkia());
+  }
+
+  return notifiers;
 }
 
 }  // namespace ash

@@ -65,6 +65,8 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
  private:
   FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest, TestLearnMoreButton);
   FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest, TestEmptyNotifierView);
+  FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest,
+                           NotifierButtonsAccessibleProperties);
 
   class ASH_EXPORT NotifierButton : public views::Button {
     METADATA_HEADER(NotifierButton, views::Button)
@@ -85,8 +87,8 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
     }
 
    private:
-    // views::Button:
-    void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+    FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest,
+                             NotifierButtonsAccessibleProperties);
 
     // Helper function to reset the layout when the view has substantially
     // changed.
@@ -96,6 +98,35 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
     raw_ptr<views::ImageView> icon_view_ = nullptr;
     raw_ptr<views::Label> name_view_ = nullptr;
     raw_ptr<views::Checkbox> checkbox_ = nullptr;
+
+    // Callback functions to update the a11y cache when `checkbox_`'s a11y cache
+    // gets updated. This view's accessibility attributes must mirror all
+    // attributes of `checkbox_`.
+    void OnAccessibleRoleChangedCallback(ax::mojom::Role role);
+    void OnAccessibleNameChangedCallback(
+        ax::mojom::StringAttribute attribute,
+        const std::optional<std::string>& name);
+    void OnAccessibleCheckedStateChangedCallback(
+        ax::mojom::IntAttribute attribute,
+        std::optional<int> value);
+    void OnAccessibleIsDefaultChangedCallback(ax::mojom::State state,
+                                              bool is_default);
+    void OnAccessibleIsEnabledChangedCallback(ax::mojom::IntAttribute attribute,
+                                              std::optional<int> value);
+    void OnAccessibleHoveredChangedCallback(ax::mojom::State state, bool value);
+    void OnAccessibleDefaultActionVerbChangedCallback(
+        ax::mojom::IntAttribute attribute,
+        std::optional<int> value);
+
+    void SubscribeCallbacksForAccessibility();
+
+    base::CallbackListSubscription role_changed_subscription_;
+    base::CallbackListSubscription name_changed_subscription_;
+    base::CallbackListSubscription checked_state_changed_subscription_;
+    base::CallbackListSubscription is_default_changed_subscription_;
+    base::CallbackListSubscription is_enabled_changed_subscription_;
+    base::CallbackListSubscription hovered_changed_subscription_;
+    base::CallbackListSubscription default_action_verb_changed_subscription_;
   };
 
   // Overridden from views::View:

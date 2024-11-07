@@ -672,6 +672,10 @@ void ViewAccessibility::SetIsDefault(bool is_default) {
   SetState(ax::mojom::State::kDefault, is_default);
 }
 
+bool ViewAccessibility::GetIsDefault() const {
+  return data_.HasState(ax::mojom::State::kDefault);
+}
+
 void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   RETURN_IF_UNAVAILABLE();
   if (is_enabled == GetIsEnabled()) {
@@ -814,6 +818,10 @@ void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
                         static_cast<int>(checked_state));
 
   NotifyEvent(ax::mojom::Event::kCheckedStateChanged, true);
+}
+
+ax::mojom::CheckedState ViewAccessibility::GetCheckedState() const {
+  return data_.GetCheckedState();
 }
 
 void ViewAccessibility::RemoveCheckedState() {
@@ -981,6 +989,10 @@ std::u16string ViewAccessibility::GetValue() const {
 void ViewAccessibility::SetDefaultActionVerb(
     const ax::mojom::DefaultActionVerb default_action_verb) {
   data_.SetDefaultActionVerb(default_action_verb);
+}
+
+ax::mojom::DefaultActionVerb ViewAccessibility::GetDefaultActionVerb() const {
+  return data_.GetDefaultActionVerb();
 }
 
 void ViewAccessibility::RemoveDefaultActionVerb() {
