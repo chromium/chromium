@@ -749,7 +749,13 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   content::WebContents* preexisting_web_contents =
       client_mode_and_browser.browser->tab_strip_model()->GetWebContentsAt(
           *client_mode_and_browser.tab_index);
-  CHECK(preexisting_web_contents != contents);
+
+  // When we are reparenting from a browser tab and no app window is open, the
+  // current browser tab (which is in a browser window) is chosen. Return early
+  // as this means 'navigate-new' behavior needs to occur.
+  if (preexisting_web_contents == contents) {
+    return false;
+  }
 
   // We've found a browser in the background. We need to focus it and enqueue
   // launch params. But first we ensure that the contents (for which the Intent
@@ -812,6 +818,9 @@ Browser* ReparentWebContentsIntoAppBrowser(
 
     PrunePreScopeNavigationHistory(*app_scope, contents);
   }
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
+  // This function assumes `contents` is from a browser tab.
+  CHECK(!tab_helper->is_in_app_window());
 
   auto launch_url = contents->GetLastCommittedURL();
   UpdateLaunchStats(contents, app_id, launch_url);
