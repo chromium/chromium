@@ -762,8 +762,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   if (self.appState.initStage < AppInitStage::kBrowserObjectsForUI) {
     LaunchScreenViewController* launchScreen =
         [[LaunchScreenViewController alloc] init];
-    [sceneState.window setRootViewController:launchScreen];
-    [sceneState.window makeKeyAndVisible];
+    [sceneState setRootViewController:launchScreen makeKeyAndVisible:YES];
   }
 
   if (self.appState.initStage >= AppInitStage::kNormalUI) {
@@ -1730,7 +1729,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
       sceneState.connectionOptions;
 
   // Get the SceneDelegate from the SceneState.
-  UIWindow* window = sceneState.window;
   UIWindowScene* scene = sceneState.scene;
   SceneDelegate* sceneDelegate =
       base::apple::ObjCCast<SceneDelegate>(scene.delegate);
@@ -1744,8 +1742,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // a temporary view controller to perform an animation).
   LaunchScreenViewController* launchScreen =
       [[LaunchScreenViewController alloc] init];
-  [window setRootViewController:launchScreen];
-  [window makeKeyAndVisible];
+  [sceneState setRootViewController:launchScreen makeKeyAndVisible:YES];
 
   [sceneDelegate sceneDidDisconnect:scene];  // destroy the old SceneState
   sceneState = sceneDelegate.sceneState;     // recreate a new SceneState
