@@ -14,6 +14,7 @@ export function getHtml(this: InkSizeSelectorElement) {
     <div role="listbox" @keydown="${this.onSizeKeydown_}">
       ${this.getCurrentBrushSizes_().map((item, index) => html`
         <cr-icon-button iron-icon="pdf:${item.icon}" role="option"
+            tabindex="${this.getTabIndexForSize_(item.size)}"
             data-index="${index}" data-size="${item.size}"
             data-selected="${this.isCurrentSize_(item.size)}"
             aria-selected="${this.isCurrentSize_(item.size)}"

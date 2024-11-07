@@ -71,6 +71,10 @@ export class InkSizeSelectorElement extends CrLitElement {
     return this.currentSize === size;
   }
 
+  protected getTabIndexForSize_(size: number): number {
+    return this.isCurrentSize_(size) ? 0 : -1;
+  }
+
   protected onSizeClick_(e: Event) {
     this.setBrushSize_(e.currentTarget as HTMLElement);
   }

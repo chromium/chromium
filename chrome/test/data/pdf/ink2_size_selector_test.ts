@@ -31,6 +31,23 @@ async function testSizeKeyboardEvent(
   await microtasksFinished();
 
   assertSelectedSize(sizeButtons, /*buttonIndex=*/ expectedButtonIndex);
+  assertTabIndices(sizeButtons, /*buttonIndex=*/ expectedButtonIndex);
+}
+
+/**
+ * Tests that the ink size options have correct tab indices. The size button
+ * with index `buttonIndex` should have a tabindex of 0. The remaining buttons
+ * should have a tabindex of -1.
+ * @sizeButtons A list of ink size buttons.
+ * @param buttonIndex The expected size button with a tabindex of 0.
+ */
+function assertTabIndices(
+    sizeButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
+  for (let i = 0; i < sizeButtons.length; ++i) {
+    const actualTabIndex = sizeButtons[i].getAttribute('tabindex');
+    chrome.test.assertTrue(actualTabIndex !== null);
+    chrome.test.assertEq(i === buttonIndex ? '0' : '-1', actualTabIndex);
+  }
 }
 
 chrome.test.runTests([
@@ -43,11 +60,13 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 0);
+    assertTabIndices(sizeButtons, /*buttonIndex=*/ 0);
 
     sizeButtons[1].click();
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 1);
+    assertTabIndices(sizeButtons, /*buttonIndex=*/ 1);
     chrome.test.succeed();
   },
 
@@ -61,6 +80,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 4);
+    assertTabIndices(sizeButtons, /*buttonIndex=*/ 4);
 
     // Press arrow keys on the root element. This should not change the size.
     await testSizeKeyboardEvent(
@@ -92,6 +112,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 4);
+    assertTabIndices(sizeButtons, /*buttonIndex=*/ 4);
 
     // Pressing 'ArrowLeft' or 'ArrowUp' should select the previous size button.
     await testSizeKeyboardEvent(
@@ -122,6 +143,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 4);
+    assertTabIndices(sizeButtons, /*buttonIndex=*/ 4);
 
     await testSizeKeyboardEvent(
         sizeButtons, sizeButtons[4], 'ArrowRight', /*expectedButtonIndex=*/ 0);
