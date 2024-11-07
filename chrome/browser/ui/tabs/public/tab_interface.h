@@ -14,6 +14,11 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class WidgetDelegate;
+class Widget;
+}  // namespace views
+
 class BrowserWindowInterface;
 
 namespace tabs {
@@ -151,6 +156,9 @@ class TabInterface {
   //   (3) It is not possible to perform dependency injection for legacy code
   //   that is conceptually a TabFeature and needs access to other TabFeatures.
   virtual tabs::TabFeatures* GetTabFeatures() = 0;
+
+  virtual std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
+      views::WidgetDelegate* delegate) = 0;
 
   // An identifier that is guaranteed to be unique.
   virtual uint32_t GetTabHandle() = 0;

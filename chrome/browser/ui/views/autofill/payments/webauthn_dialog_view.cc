@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
@@ -18,7 +19,6 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/layout/fill_layout.h"
 
 namespace autofill {
 
@@ -26,7 +26,7 @@ WebauthnDialogView::WebauthnDialogView(WebauthnDialogController* controller,
                                        WebauthnDialogState dialog_state)
     : controller_(controller) {
   SetShowTitle(false);
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
   std::unique_ptr<WebauthnDialogModel> model =
       std::make_unique<WebauthnDialogModel>(dialog_state);
   model_ = model.get();
@@ -61,10 +61,11 @@ WebauthnDialogView::~WebauthnDialogView() {
 WebauthnDialog* WebauthnDialog::CreateAndShow(
     WebauthnDialogController* controller,
     WebauthnDialogState dialog_state) {
-  WebauthnDialogView* dialog = new WebauthnDialogView(controller, dialog_state);
-  constrained_window::ShowWebModalDialogViews(dialog,
-                                              controller->GetWebContents());
-  return dialog;
+  auto* dialog_delegate = new WebauthnDialogView(controller, dialog_state);
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(controller->GetWebContents());
+  tab_interface->CreateAndShowTabScopedWidget(dialog_delegate).release();
+  return dialog_delegate;
 }
 
 WebauthnDialogModel* WebauthnDialogView::GetDialogModel() const {

@@ -19,6 +19,11 @@
 
 class TabStripModel;
 
+namespace views {
+class WidgetDelegate;
+class Widget;
+}  // namespace views
+
 namespace tabs {
 
 class TabCollection;
@@ -144,6 +149,8 @@ class TabModel final : public SupportsHandles<TabModel>,
   bool IsInNormalWindow() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
+  std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
+      views::WidgetDelegate* delegate) override;
   uint32_t GetTabHandle() override;
   void Close() override;
 

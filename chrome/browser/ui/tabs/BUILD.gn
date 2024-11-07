@@ -127,6 +127,7 @@ if (!is_android) {
       ":tabs",
       ":tabs_public",
       "//base",
+      "//components/constrained_window",
       "//components/favicon/core",
       "//components/sessions",
       "//components/sync_sessions",

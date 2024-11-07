@@ -15,8 +15,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/views/widget/widget.h"
 
 namespace tabs {
 
@@ -209,6 +211,13 @@ BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
 
 tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
+}
+
+std::unique_ptr<views::Widget> TabModel::CreateAndShowTabScopedWidget(
+    views::WidgetDelegate* delegate) {
+  // TODO(kylixrd): Remove the use of constrained window API.
+  return base::WrapUnique(
+      constrained_window::ShowWebModalDialogViews(delegate, GetContents()));
 }
 
 uint32_t TabModel::GetTabHandle() {

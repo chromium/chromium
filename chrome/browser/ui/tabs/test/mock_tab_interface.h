@@ -7,6 +7,8 @@
 
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace tabs {
 
@@ -46,6 +48,10 @@ class MockTabInterface : public TabInterface {
               (),
               (override));
   MOCK_METHOD(TabFeatures*, GetTabFeatures, (), (override));
+  MOCK_METHOD(std::unique_ptr<views::Widget>,
+              CreateAndShowTabScopedWidget,
+              (views::WidgetDelegate*),
+              (override));
   MOCK_METHOD(uint32_t, GetTabHandle, (), (override));
 };
 
