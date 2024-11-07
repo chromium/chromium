@@ -40,6 +40,8 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::HasSubstr;
+
 namespace controlled_frame {
 
 namespace {
@@ -1251,30 +1253,8 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityTest, Verify) {
 
 class ControlledFrameRequestHeaderTest : public ControlledFrameTestBase {
  public:
-  [[nodiscard]] bool CreateControlledFrameWithUserAgent(
-      content::RenderFrameHost* frame,
-      const GURL& src,
-      std::string user_agent) {
-    const std::string kCreateControlledFrame = R"(
-new Promise((resolve, reject) => {
-  const controlledframe = document.createElement('controlledframe');
-  if (!('src' in controlledframe)) {
-    // Tag is undefined or generates a malformed response.
-    reject('FAIL');
-    return;
-  }
-  controlledframe.setAttribute('src', $1);
-  controlledframe.setUserAgentOverride($2);
-  controlledframe.addEventListener('loadstop', resolve);
-  controlledframe.addEventListener('loadabort', reject);
-  document.body.appendChild(controlledframe);
-});
-    )";
-    return ExecJs(frame,
-                  content::JsReplace(kCreateControlledFrame, src, user_agent));
-  }
-
-  bool RemoveUserAgentAndReload(content::RenderFrameHost* frame) {
+  [[nodiscard]] bool SetUserAgentAndAwaitReload(content::RenderFrameHost* frame,
+                                                const std::string& user_agent) {
     const std::string kRemoveUserAgentAndReload = R"(
 new Promise((resolve, reject) => {
   const controlledframe = document.getElementsByTagName('controlledframe')[0];
@@ -1285,32 +1265,39 @@ new Promise((resolve, reject) => {
   controlledframe.addEventListener('loadstop', resolve);
   controlledframe.addEventListener('loadabort', reject);
   // |setUserAgentOverride| should automatically reload
-  controlledframe.setUserAgentOverride('');
+  controlledframe.setUserAgentOverride($1);
 });
     )";
-    return ExecJs(frame, kRemoveUserAgentAndReload);
+    return ExecJs(frame,
+                  content::JsReplace(kRemoveUserAgentAndReload, user_agent));
   }
 
-  void VerifyRequest(const net::test_server::HttpRequest& request) {
+  void MonitorRequest(const net::test_server::HttpRequest& request) {
     if (request.relative_url != "/index.html") {
       return;
     }
     last_seen_ua_ = request.headers.at("User-Agent");
-    EXPECT_THAT(request.headers.at("Sec-CH-UA"),
-                testing::HasSubstr("ControlledFrame"));
+    last_seen_sec_ch_ua_ = request.headers.at("Sec-CH-UA");
   }
 
   const std::string& last_seen_ua() const { return last_seen_ua_; }
+  const std::string& last_seen_sec_ch_ua() const {
+    return last_seen_sec_ch_ua_;
+  }
 
  private:
   std::string last_seen_ua_;
+  std::string last_seen_sec_ch_ua_;
 };
 
+// Verifies that `setUserAgentOverride` works as expected, and that default
+// Sec-CH-UA includes "ControlledFrame" brand.
 IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
-                       HasDefaultClientHintsUABrandWithoutOverride) {
+                       HasDefaultCHUABrandWithUAOverride) {
   embedded_https_test_server().RegisterRequestMonitor(
-      base::BindRepeating(&ControlledFrameRequestHeaderTest::VerifyRequest,
+      base::BindRepeating(&ControlledFrameRequestHeaderTest::MonitorRequest,
                           base::Unretained(this)));
+
   StartContentServer("web_apps/simple_isolated_app");
 
   web_app::IsolatedWebAppUrlInfo url_info =
@@ -1320,29 +1307,16 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
   ASSERT_TRUE(CreateControlledFrame(
       app_frame, embedded_https_test_server().GetURL("/index.html")));
   EXPECT_EQ(last_seen_ua(), embedder_support::GetUserAgent());
-}
+  EXPECT_THAT(last_seen_sec_ch_ua(), HasSubstr("ControlledFrame"));
 
-// First sets the "User-Agent" override to a custom value, verifies that the
-// custom value is received in the request header. Then sets override to an
-// empty string, and verifies the default UA is used.
-IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
-                       HasDefaultClientHintsUABrandWithOverride) {
-  embedded_https_test_server().RegisterRequestMonitor(
-      base::BindRepeating(&ControlledFrameRequestHeaderTest::VerifyRequest,
-                          base::Unretained(this)));
-
-  StartContentServer("web_apps/simple_isolated_app");
-
-  web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  ASSERT_TRUE(CreateControlledFrameWithUserAgent(
-      app_frame, embedded_https_test_server().GetURL("/index.html"), "foobar"));
+  ASSERT_TRUE(SetUserAgentAndAwaitReload(app_frame, "foobar"));
   EXPECT_EQ(last_seen_ua(), "foobar");
+  EXPECT_THAT(last_seen_sec_ch_ua(), HasSubstr("ControlledFrame"));
 
-  ASSERT_TRUE(RemoveUserAgentAndReload(app_frame));
+  // Passing an empty string should reset the UA value.
+  ASSERT_TRUE(SetUserAgentAndAwaitReload(app_frame, ""));
   EXPECT_EQ(last_seen_ua(), embedder_support::GetUserAgent());
+  EXPECT_THAT(last_seen_sec_ch_ua(), HasSubstr("ControlledFrame"));
 }
 
 }  // namespace controlled_frame
