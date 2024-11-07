@@ -381,8 +381,6 @@ class CC_EXPORT CompositorFrameReporter {
     tick_clock_ = tick_clock;
   }
 
-  SmoothThread get_smooth_thread() { return smooth_thread_; }
-
   void set_checkerboarded_needs_raster(bool checkerboarded_needs_raster) {
     checkerboarded_needs_raster_ = checkerboarded_needs_raster;
   }
