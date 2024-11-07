@@ -10,6 +10,9 @@
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_value_map.h"
+#include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/enterprise/search_engine_fields_validators.h"
 #include "components/strings/grit/components_strings.h"
 #include "url/gurl.h"
@@ -42,6 +45,57 @@ bool UrlIsNotHttps(const std::string& policy_name,
   return true;
 }
 
+// Converts a search aggregator policy value `policy_dict` into a dictionary to
+// be saved to prefs, with fields corresponding to `TemplateURLData`.
+base::Value SearchAggregatorDictFromPolicyValue(
+    const base::Value::Dict& policy_dict,
+    bool featured) {
+  base::Value::Dict dict;
+
+  const std::string* name =
+      policy_dict.FindString(SearchAggregatorPolicyHandler::kName);
+  CHECK(name);
+  dict.Set(DefaultSearchManager::kShortName, *name);
+
+  const std::string* shortcut =
+      policy_dict.FindString(SearchAggregatorPolicyHandler::kShortcut);
+  CHECK(shortcut);
+  dict.Set(DefaultSearchManager::kKeyword,
+           featured ? "@" + *shortcut : *shortcut);
+
+  const std::string* search_url =
+      policy_dict.FindString(SearchAggregatorPolicyHandler::kSearchUrl);
+  CHECK(search_url);
+  dict.Set(DefaultSearchManager::kURL, *search_url);
+
+  const std::string* suggest_url =
+      policy_dict.FindString(SearchAggregatorPolicyHandler::kSuggestUrl);
+  CHECK(suggest_url);
+  dict.Set(DefaultSearchManager::kSuggestionsURL, *suggest_url);
+
+  const std::string* icon_url =
+      policy_dict.FindString(SearchAggregatorPolicyHandler::kIconUrl);
+  if (icon_url) {
+    dict.Set(DefaultSearchManager::kFaviconURL, *icon_url);
+  }
+
+  dict.Set(
+      DefaultSearchManager::kCreatedByPolicy,
+      static_cast<int>(TemplateURLData::CreatedByPolicy::kSearchAggregator));
+  dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
+  dict.Set(DefaultSearchManager::kFeaturedByPolicy, featured);
+  dict.Set(DefaultSearchManager::kIsActive,
+           static_cast<int>(TemplateURLData::ActiveStatus::kTrue));
+  dict.Set(DefaultSearchManager::kSafeForAutoReplace, false);
+
+  double timestamp = static_cast<double>(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  dict.Set(DefaultSearchManager::kDateCreated, timestamp);
+  dict.Set(DefaultSearchManager::kLastModified, timestamp);
+
+  return base::Value(std::move(dict));
+}
+
 }  // namespace
 
 const char SearchAggregatorPolicyHandler::kIconUrl[] = "icon_url";
@@ -54,7 +108,7 @@ const char SearchAggregatorPolicyHandler::kSuggestUrl[] = "suggest_url";
 SearchAggregatorPolicyHandler::SearchAggregatorPolicyHandler(Schema schema)
     : SimpleSchemaValidatingPolicyHandler(
           key::kEnterpriseSearchAggregatorSettings,
-          /*pref_path=*/"",
+          EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
           schema,
           policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
           SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
@@ -129,7 +183,29 @@ bool SearchAggregatorPolicyHandler::CheckPolicySettings(
 void SearchAggregatorPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  // TODO(375240486): Save policy value to a preference.
+  if (!IsPolicyEnabled()) {
+    return;
+  }
+
+  const base::Value* policy_value =
+      policies.GetValue(policy_name(), base::Value::Type::DICT);
+  if (!policy_value) {
+    // Reset search aggregator if policy was reset.
+    prefs->SetValue(
+        EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+        base::Value(base::Value::List()));
+    return;
+  }
+
+  base::Value::List providers;
+  providers.Append(SearchAggregatorDictFromPolicyValue(policy_value->GetDict(),
+                                                       /*featured=*/false));
+  providers.Append(SearchAggregatorDictFromPolicyValue(policy_value->GetDict(),
+                                                       /*featured=*/true));
+
+  prefs->SetValue(
+      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+      base::Value(std::move(providers)));
 }
 
 }  // namespace policy

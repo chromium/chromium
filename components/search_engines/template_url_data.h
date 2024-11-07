@@ -25,6 +25,7 @@ struct TemplateURLData {
     kNoPolicy = 0,
     kDefaultSearchProvider = 1,
     kSiteSearch = 2,
+    kSearchAggregator = 3,
   };
 
   using RegulatoryExtension = TemplateURLPrepopulateData::RegulatoryExtension;

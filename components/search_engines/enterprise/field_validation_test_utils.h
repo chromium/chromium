@@ -15,6 +15,15 @@
 
 namespace policy {
 
+// Accepts a dictionary that doesn't have field `field_name` set.
+MATCHER_P(FieldNotSet,
+          field_name,
+          base::StringPrintf("field `%s` is %s",
+                             negation ? "set" : "not set",
+                             field_name)) {
+  return (arg).GetDict().Find(field_name) == nullptr;
+}
+
 // Accepts a dictionary that has a string field `field_name` with value
 // `expected_value`.
 MATCHER_P2(HasStringField,

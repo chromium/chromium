@@ -21,7 +21,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/enterprise/field_validation_test_utils.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/strings/grit/components_strings.h"
@@ -305,7 +305,7 @@ TEST(SiteSearchPolicyHandlerTest, PolicyNotSet) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_TRUE(providers->GetList().empty());
@@ -333,7 +333,7 @@ TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(
@@ -465,7 +465,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutNotUnique) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(), ElementsAre(IsNonFeaturedSiteSearchEntry(
@@ -551,7 +551,7 @@ TEST(SiteSearchPolicyHandlerTest, UnknownField) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(
@@ -615,7 +615,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
@@ -679,7 +679,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabledNotSet) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
@@ -719,7 +719,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
@@ -763,7 +763,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
@@ -796,7 +796,7 @@ TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(
@@ -845,7 +845,7 @@ TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(

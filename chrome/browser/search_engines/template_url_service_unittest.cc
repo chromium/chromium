@@ -2616,13 +2616,13 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyBeforeLoading) {
   constexpr char kKeyword1[] = "site_search_1";
   constexpr char kKeyword2[] = "site_search_2";
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/false);
 
   // Set a managed preference that establishes site search providers before
   // the keywords table is loaded.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
 
@@ -2665,13 +2665,13 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyAfterLoading) {
   constexpr char kKeyword1[] = "site_search_1";
   constexpr char kKeyword2[] = "site_search_2";
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   // Set a managed preference that establishes site search providers after
   // the keywords table loading is completed.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
 
@@ -2698,13 +2698,13 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
   constexpr char16_t kKeyword3U16[] = u"site_search_3";
   constexpr char16_t kKeyword4U16[] = u"site_search_4";
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
   // Set a managed preference that establishes site search providers.
   // In the first stage, add keywords `kKeyword1`, `kKeyword2`, and `kKeyword3`.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector
+  EnterpriseSearchManager::OwnedTemplateURLDataVector
       initial_site_search_engines;
   initial_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
   initial_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
@@ -2723,7 +2723,7 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
 
   // Update the policy including one addition (`kKeyword4`), one deletion
   // (`kKeyword3`), one update (`kKeyword2`).
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector
+  EnterpriseSearchManager::OwnedTemplateURLDataVector
       updated_site_search_engines;
   updated_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
   std::unique_ptr<TemplateURLData> updated_engine_2 =
@@ -2748,7 +2748,7 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
 
   // Delete all the entries, and ensure they can no longer be accessed.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword1U16));
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword2U16));
@@ -2763,7 +2763,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::HistogramTester histogram_tester;
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
@@ -2779,7 +2779,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Set a managed preference that establishes site search providers conflicting
   // with pre-existing search engines.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
 
@@ -2812,7 +2812,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // Once the policy no longer applies, the user should be able to continue
@@ -2834,7 +2834,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::HistogramTester histogram_tester;
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
@@ -2857,7 +2857,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Set a managed preference that establishes site search providers
   // conflicting with pre-existing search engines.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
   site_search_engines.push_back(
       CreateTestSiteSearchEntry(kKeywordWithAt1, /*featured_by_policy=*/true));
@@ -2895,7 +2895,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // Once the policy no longer applies, the user should be able to continue
@@ -2911,7 +2911,7 @@ TEST_P(TemplateURLServiceTest,
 TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
   base::HistogramTester histogram_tester;
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
@@ -2923,7 +2923,7 @@ TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
   // Set a managed preference that establishes a site search provider
   // conflicting with pre-defined default search engine not customized by the
   // user.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(
       CreateTestSiteSearchEntry(base::UTF16ToUTF8(dse->keyword())));
 
@@ -2945,7 +2945,7 @@ TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // No changes to the DSE once the policy is no longer applied.
@@ -2960,7 +2960,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::HistogramTester histogram_tester;
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
@@ -2974,7 +2974,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Set a managed preference that establishes a site search provider
   // conflicting with user-defined default search engine.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword));
 
   SetManagedSiteSearchSettingsPreference(site_search_engines,
@@ -2995,7 +2995,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // No changes to the DSE once the policy is no longer applied.
@@ -3010,7 +3010,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::HistogramTester histogram_tester;
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
@@ -3021,7 +3021,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Set a managed preference that establishes a site search provider
   // conflicting with default search engine set by extension.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword));
 
   SetManagedSiteSearchSettingsPreference(site_search_engines,
@@ -3042,7 +3042,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // No changes to the DSE once the policy is no longer applied.
@@ -3057,7 +3057,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::HistogramTester histogram_tester;
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
@@ -3071,7 +3071,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Set a managed preference that establishes a site search provider
   // conflicting with user-defined default search engine.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(
       CreateTestSiteSearchEntry(kKeyword, /*featured_by_policy=*/true));
 
@@ -3093,7 +3093,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // No changes to the DSE once the policy is no longer applied.
@@ -3108,7 +3108,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::HistogramTester histogram_tester;
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
@@ -3119,7 +3119,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Set a managed preference that establishes a site search provider
   // conflicting with default search engine set by extension.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(
       CreateTestSiteSearchEntry(kKeyword, /*featured_by_policy=*/true));
 
@@ -3141,7 +3141,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // No changes to the DSE once the policy is no longer applied.
@@ -3156,7 +3156,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::HistogramTester histogram_tester;
 
-  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
@@ -3167,7 +3167,7 @@ TEST_P(TemplateURLServiceTest,
   // Set a managed preference that establishes a site search provider
   // conflicting with pre-defined default search engine not customized by the
   // user.
-  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
   site_search_engines.push_back(CreateTestSiteSearchEntry(
       kBookmarksKeyword, /*featured_by_policy=*/true));
 
@@ -3189,7 +3189,7 @@ TEST_P(TemplateURLServiceTest,
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // Go back to the original bookmarks search once the policy is no longer

@@ -14,7 +14,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -40,7 +40,7 @@ void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
 
 // Sets the managed preferences for site search providers.
 void SetManagedSiteSearchSettingsPreference(
-    const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&
+    const EnterpriseSearchManager::OwnedTemplateURLDataVector&
         site_search_engines,
     TestingProfile* profile);
 

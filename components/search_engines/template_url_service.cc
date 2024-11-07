@@ -46,7 +46,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/choice_made_location.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -391,7 +391,7 @@ TemplateURLService::TemplateURLService(
           for_lacros_main_profile
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
           ),
-      enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(&prefs)) {
+      enterprise_site_search_manager_(GetEnterpriseSearchManager(&prefs)) {
   DCHECK(search_terms_data_);
   Init();
 }
@@ -520,7 +520,8 @@ bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
     case TemplateURLData::CreatedByPolicy::kDefaultSearchProvider:
       return false;
 
-    case TemplateURLData::CreatedByPolicy::kSiteSearch: {
+    case TemplateURLData::CreatedByPolicy::kSiteSearch:
+    case TemplateURLData::CreatedByPolicy::kSearchAggregator: {
       // Always show featured Enterprise site search engines.
       if (t_url->featured_by_policy()) {
         return false;
@@ -542,8 +543,10 @@ bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
       const TemplateURL* t_url_with_at =
           GetTemplateURLForKeyword(u"@" + t_url->keyword());
       return t_url_with_at &&
-             t_url_with_at->created_by_policy() ==
-                 TemplateURLData::CreatedByPolicy::kSiteSearch &&
+             (t_url_with_at->created_by_policy() ==
+                  TemplateURLData::CreatedByPolicy::kSiteSearch ||
+              t_url_with_at->created_by_policy() ==
+                  TemplateURLData::CreatedByPolicy::kSearchAggregator) &&
              t_url_with_at->featured_by_policy();
     }
   }
@@ -3041,11 +3044,11 @@ bool TemplateURLService::MatchesDefaultSearchProvider(TemplateURL* turl) const {
   return turl->sync_guid() == default_provider->sync_guid();
 }
 
-std::unique_ptr<EnterpriseSiteSearchManager>
-TemplateURLService::GetEnterpriseSiteSearchManager(PrefService* prefs) {
+std::unique_ptr<EnterpriseSearchManager>
+TemplateURLService::GetEnterpriseSearchManager(PrefService* prefs) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  return std::make_unique<EnterpriseSiteSearchManager>(
+  return std::make_unique<EnterpriseSearchManager>(
       prefs,
       base::BindRepeating(&TemplateURLService::EnterpriseSiteSearchChanged,
                           base::Unretained(this)));

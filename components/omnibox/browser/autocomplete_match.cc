@@ -1144,6 +1144,13 @@ void AutocompleteMatch::LogSearchEngineUsed(
             search_engine_type, SEARCH_ENGINE_MAX);
         break;
 
+      case TemplateURLData::CreatedByPolicy::kSearchAggregator:
+        UMA_HISTOGRAM_ENUMERATION(
+            "Omnibox.SearchEngineType.SetByEnterprisePolicy."
+            "EnterpriseSearchAggregatorSettings",
+            search_engine_type, SEARCH_ENGINE_MAX);
+        break;
+
       default:
         NOTREACHED_IN_MIGRATION();
     }

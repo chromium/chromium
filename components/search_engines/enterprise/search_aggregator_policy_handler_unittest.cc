@@ -17,11 +17,17 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/enterprise/field_validation_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+using testing::AllOf;
+using testing::Conditional;
+using testing::ElementsAre;
 
 namespace policy {
 
@@ -42,6 +48,14 @@ struct TestSearchAggregator {
 
 // Used for tests that require a valid search aggregator.
 TestSearchAggregator kValidTestSearchAggregator = {
+    .name = "work name",
+    .shortcut = "work",
+    .search_url = "https://work.com/{searchTerms}",
+    .suggest_url = "https://work.com/suggest",
+    .icon_url = "https://work.com/favicon.ico",
+};
+
+TestSearchAggregator kValidTestSearchAggregatorNoIcon = {
     .name = "work name",
     .shortcut = "work",
     .search_url = "https://work.com/{searchTerms}",
@@ -196,6 +210,49 @@ base::Value::Dict GeneratePolicyEntry(TestSearchAggregator test_case) {
   return entry;
 }
 
+// Returns a matcher that accepts entries for the pref corresponding to the
+// search aggregator policy. Field values are obtained from |test_case|.
+testing::Matcher<const base::Value&> IsSearchAggregatorEntry(
+    TestSearchAggregator test_case,
+    bool featured) {
+  std::string expected_keyword =
+      base::StringPrintf("%s%s", (featured ? "@" : ""), test_case.shortcut);
+  return AllOf(
+      HasStringField(DefaultSearchManager::kShortName,
+                     std::string(test_case.name)),
+      HasStringField(DefaultSearchManager::kKeyword, expected_keyword),
+      HasStringField(DefaultSearchManager::kURL,
+                     std::string(test_case.search_url)),
+      HasStringField(DefaultSearchManager::kSuggestionsURL,
+                     std::string(test_case.suggest_url)),
+      Conditional(
+          test_case.icon_url,
+          HasStringField(DefaultSearchManager::kFaviconURL,
+                         test_case.icon_url ? std::string(test_case.icon_url)
+                                            : std::string()),
+          FieldNotSet(DefaultSearchManager::kFaviconURL)),
+      HasIntegerField(DefaultSearchManager::kCreatedByPolicy,
+                      static_cast<int>(
+                          TemplateURLData::CreatedByPolicy::kSearchAggregator)),
+      HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
+      HasBooleanField(DefaultSearchManager::kFeaturedByPolicy, featured),
+      HasIntegerField(DefaultSearchManager::kIsActive,
+                      static_cast<int>(TemplateURLData::ActiveStatus::kTrue)),
+      HasBooleanField(DefaultSearchManager::kSafeForAutoReplace, false),
+      HasDoubleField(DefaultSearchManager::kDateCreated),
+      HasDoubleField(DefaultSearchManager::kLastModified));
+}
+
+testing::Matcher<const base::Value&> IsNonFeaturedSearchAggregatorEntry(
+    TestSearchAggregator test_case) {
+  return IsSearchAggregatorEntry(test_case, /*featured=*/false);
+}
+
+testing::Matcher<const base::Value&> IsFeaturedSearchAggregatorEntry(
+    TestSearchAggregator test_case) {
+  return IsSearchAggregatorEntry(test_case, /*featured=*/true);
+}
+
 MATCHER_P(HasValidationError,
           expected_str,
           base::StringPrintf(
@@ -236,9 +293,20 @@ TEST(SearchAggregatorPolicyHandlerTest, PolicyNotSet) {
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
+  policy::PolicyMap policies;
   PolicyErrorMap errors;
-  ASSERT_TRUE(handler.CheckPolicySettings(policy::PolicyMap(), &errors));
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_TRUE(errors.empty());
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+      &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_TRUE(providers->GetList().empty());
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, Valid) {
@@ -260,6 +328,55 @@ TEST(SearchAggregatorPolicyHandlerTest, Valid) {
   PolicyErrorMap errors;
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_TRUE(errors.empty());
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+      &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(
+          IsNonFeaturedSearchAggregatorEntry(kValidTestSearchAggregator),
+          IsFeaturedSearchAggregatorEntry(kValidTestSearchAggregator)));
+}
+
+TEST(SearchAggregatorPolicyHandlerTest, Valid_NoIcon) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
+  SearchAggregatorPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  base::Value::Dict policy_value =
+      GeneratePolicyEntry(kValidTestSearchAggregatorNoIcon);
+  policies.Set(key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  PolicyErrorMap errors;
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_TRUE(errors.empty());
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+      &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(
+          IsNonFeaturedSearchAggregatorEntry(kValidTestSearchAggregatorNoIcon),
+          IsFeaturedSearchAggregatorEntry(kValidTestSearchAggregatorNoIcon)));
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, InvalidFormat) {

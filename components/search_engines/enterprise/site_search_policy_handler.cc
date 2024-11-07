@@ -17,7 +17,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/enterprise/search_engine_fields_validators.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -118,7 +118,7 @@ const int SiteSearchPolicyHandler::kMaxFeaturedProviders = 3;
 SiteSearchPolicyHandler::SiteSearchPolicyHandler(Schema schema)
     : SimpleSchemaValidatingPolicyHandler(
           key::kSiteSearchSettings,
-          EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName,
+          EnterpriseSearchManager::kSiteSearchSettingsPrefName,
           schema,
           policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
           SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
@@ -213,7 +213,8 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
   if (!policy_value) {
     // Reset site search engines if policy was reset.
-    EnterpriseSiteSearchManager::AddPrefValueToMap(base::Value::List(), prefs);
+    prefs->SetValue(EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+                    base::Value(base::Value::List()));
     return;
   }
 
@@ -233,7 +234,8 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       }
   }
 
-  EnterpriseSiteSearchManager::AddPrefValueToMap(std::move(providers), prefs);
+  prefs->SetValue(EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+                  base::Value(std::move(providers)));
 }
 
 }  // namespace policy

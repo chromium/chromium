@@ -85,7 +85,7 @@ void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
 }
 
 void SetManagedSiteSearchSettingsPreference(
-    const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&
+    const EnterpriseSearchManager::OwnedTemplateURLDataVector&
         site_search_engines,
     TestingProfile* profile) {
   base::Value::List pref_value;
@@ -95,7 +95,7 @@ void SetManagedSiteSearchSettingsPreference(
   }
 
   profile->GetTestingPrefService()->SetManagedPref(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName,
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
       std::move(pref_value));
 }
 

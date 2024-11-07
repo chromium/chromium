@@ -29,7 +29,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
@@ -96,7 +96,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   using OwnedTemplateURLVector = TemplateURL::OwnedTemplateURLVector;
   using SyncDataMap = std::map<std::string, syncer::SyncData>;
   using OwnedTemplateURLDataVector =
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector;
+      EnterpriseSearchManager::OwnedTemplateURLDataVector;
 
   static constexpr char kSiteSearchPolicyConflictCountHistogramName[] =
       "Search.SiteSearchPolicyConflict";
@@ -878,8 +878,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void EmitTemplateURLActiveOnStartupHistogram(
       OwnedTemplateURLVector* template_urls);
 
-  // Returns an instance of |EnterpriseSiteSearchManager|.
-  std::unique_ptr<EnterpriseSiteSearchManager> GetEnterpriseSiteSearchManager(
+  // Returns an instance of |EnterpriseSearchManager|.
+  std::unique_ptr<EnterpriseSearchManager> GetEnterpriseSearchManager(
       PrefService* prefs);
 
   // Logs a histogram to track keyword conflicts between search engines created
@@ -1007,7 +1007,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   DefaultSearchManager default_search_manager_;
 
   // Site search engines defined by enterprise policy.
-  std::unique_ptr<EnterpriseSiteSearchManager> enterprise_site_search_manager_;
+  std::unique_ptr<EnterpriseSearchManager> enterprise_site_search_manager_;
 
   // This tracks how many Scoper handles exist. When the number of handles drops
   // to zero, a notification is made to observers if

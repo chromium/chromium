@@ -1558,6 +1558,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
     <variant name=".SetByEnterprisePolicy.DefaultSearchProvider"
         summary="Reported for users with search engine set by the
                  DefaultSearchProvider* Enterprise policies."/>
+    <variant name=".SetByEnterprisePolicy.EnterpriseSearchAggregatorSettings"
+        summary="Reported for users with search engine set by the
+                 EnterpriseSearchAggregatorSettings policy."/>
     <variant name=".SetByEnterprisePolicy.SiteSearchSettings"
         summary="Reported for users with search engine set by the
                  SiteSearchSettings Enterprise policy."/>
