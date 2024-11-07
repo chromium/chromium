@@ -41,3 +41,8 @@
 
 # crbug.com/362792693
 -org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
+
+# crbug.com/377939398
+-org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.testMouseClicksConsumedByAccessoryBar
+-org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.testPressingBackButtonHidesAccessoryWithAutofillSuggestions
+
