@@ -294,12 +294,12 @@ const CGFloat kMenuSymbolSize = 18;
              name:UIApplicationDidReceiveMemoryWarningNotification
            object:nil];
 
+  _associatedTabHelper = [self activeTabHelper];
+  CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
+
   _metricsRecorder = [[LensOverlayMetricsRecorder alloc]
       initWithEntrypoint:entrypoint
                 sourceID:self.associatedTabSourceId];
-
-  _associatedTabHelper = [self activeTabHelper];
-  CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
 
   // The instance that creates the Lens UI designates itself as the command
   // handler for the associated tab.
