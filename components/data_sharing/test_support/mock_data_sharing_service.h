@@ -35,6 +35,9 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD0(IsGroupDataModelLoaded, bool());
   MOCK_METHOD1(ReadGroup, std::optional<GroupData>(const GroupId&));
   MOCK_METHOD0(ReadAllGroups, std::set<GroupData>());
+  MOCK_METHOD2(GetPossiblyRemovedGroupMember,
+               std::optional<GroupMemberPartialData>(const GroupId&,
+                                                     const std::string&));
   MOCK_METHOD1(
       ReadAllGroups,
       void(base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>));

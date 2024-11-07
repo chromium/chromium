@@ -163,6 +163,17 @@ std::set<GroupData> DataSharingServiceImpl::ReadAllGroups() {
   return group_data_model_->GetAllGroups();
 }
 
+std::optional<GroupMemberPartialData>
+DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
+    const GroupId& group_id,
+    const std::string& member_gaia_id) {
+  if (!group_data_model_) {
+    return std::nullopt;
+  }
+  return group_data_model_->GetPossiblyRemovedGroupMember(group_id,
+                                                          member_gaia_id);
+}
+
 void DataSharingServiceImpl::ReadAllGroups(
     base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {
   // TODO(crbug.com/370897286): this method should be deleted.

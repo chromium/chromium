@@ -39,6 +39,27 @@ struct GroupMember {
   std::string given_name;
 };
 
+// Subset of GroupMember fields that could be temporarily stored after member is
+// removed from the group.
+struct GroupMemberPartialData {
+  static GroupMemberPartialData FromGroupMember(const GroupMember& member);
+
+  GroupMemberPartialData();
+
+  GroupMemberPartialData(const GroupMemberPartialData&);
+  GroupMemberPartialData& operator=(const GroupMemberPartialData&);
+
+  GroupMemberPartialData(GroupMemberPartialData&&);
+  GroupMemberPartialData& operator=(GroupMemberPartialData&&);
+
+  ~GroupMemberPartialData();
+
+  std::string gaia_id;
+  std::string display_name;
+  std::string email;
+  GURL avatar_url;
+};
+
 struct GroupToken {
   GroupToken();
 

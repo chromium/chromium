@@ -19,6 +19,31 @@ GroupMember& GroupMember::operator=(GroupMember&&) = default;
 
 GroupMember::~GroupMember() = default;
 
+// static
+GroupMemberPartialData GroupMemberPartialData::FromGroupMember(
+    const GroupMember& member) {
+  GroupMemberPartialData result;
+  result.gaia_id = member.gaia_id;
+  result.display_name = member.display_name;
+  result.email = member.email;
+  result.avatar_url = member.avatar_url;
+  return result;
+}
+
+GroupMemberPartialData::GroupMemberPartialData() = default;
+
+GroupMemberPartialData::GroupMemberPartialData(const GroupMemberPartialData&) =
+    default;
+GroupMemberPartialData& GroupMemberPartialData::operator=(
+    const GroupMemberPartialData&) = default;
+
+GroupMemberPartialData::GroupMemberPartialData(GroupMemberPartialData&&) =
+    default;
+GroupMemberPartialData& GroupMemberPartialData::operator=(
+    GroupMemberPartialData&&) = default;
+
+GroupMemberPartialData::~GroupMemberPartialData() = default;
+
 GroupToken::GroupToken() = default;
 
 GroupToken::GroupToken(GroupId group_id, std::string access_token)

@@ -83,6 +83,29 @@ std::set<GroupData> GroupDataModel::GetAllGroups() const {
   return result;
 }
 
+std::optional<GroupMemberPartialData>
+GroupDataModel::GetPossiblyRemovedGroupMember(
+    const GroupId& group_id,
+    const std::string& member_gaia_id) const {
+  if (!IsModelLoaded()) {
+    return std::nullopt;
+  }
+
+  const auto group_data_opt = group_data_store_.GetGroupData(group_id);
+  if (!group_data_opt.has_value()) {
+    return std::nullopt;
+  }
+  for (const auto& member : group_data_opt->members) {
+    if (member.gaia_id == member_gaia_id) {
+      return GroupMemberPartialData::FromGroupMember(member);
+    }
+  }
+
+  // TODO(crbug.com/373628741): attempt to read the data from the database with
+  // removed members once it is implemented.
+  return std::nullopt;
+}
+
 bool GroupDataModel::IsModelLoaded() const {
   return is_group_data_store_loaded_ && is_collaboration_group_bridge_loaded_;
 }

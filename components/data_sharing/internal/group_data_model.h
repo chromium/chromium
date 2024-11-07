@@ -74,6 +74,10 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   std::optional<GroupData> GetGroup(const GroupId& group_id) const;
   // Groups are ordered by id.
   std::set<GroupData> GetAllGroups() const;
+  // Returns nullopt if no data about the member is found.
+  std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
+      const GroupId& group_id,
+      const std::string& member_gaia_id) const;
 
   // CollaborationGroupSyncBridge::Observer implementation.
   void OnGroupsUpdated(const std::vector<GroupId>& added_group_ids,

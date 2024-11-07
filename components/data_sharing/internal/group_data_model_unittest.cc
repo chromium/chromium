@@ -428,5 +428,37 @@ TEST_F(GroupDataModelTest, ShouldHandleDeletionsAfterRestart) {
   EXPECT_FALSE(model().GetGroup(group_id).has_value());
 }
 
+TEST_F(GroupDataModelTest, ShouldGetPossiblyRemovedGroupMember) {
+  WaitForModelLoaded();
+
+  const GroupId group_id = MimicGroupAddedServerSide("group");
+  WaitForGroupAdded(group_id);
+
+  const std::string member_gaia_id = "gaia_id";
+  MimicMemberAddedServerSide(group_id, member_gaia_id);
+  WaitForGroupUpdated(group_id);
+
+  // Existing member should be returned.
+  const auto member_data_opt =
+      model().GetPossiblyRemovedGroupMember(group_id, member_gaia_id);
+  ASSERT_TRUE(member_data_opt.has_value());
+  EXPECT_EQ(member_data_opt->gaia_id, member_gaia_id);
+
+  // Group never existed, nullopt should be returned.
+  EXPECT_FALSE(model()
+                   .GetPossiblyRemovedGroupMember(GroupId("non-existing-group"),
+                                                  member_gaia_id)
+                   .has_value());
+
+  // Member never existed, nullopt should be returned.
+  EXPECT_FALSE(
+      model()
+          .GetPossiblyRemovedGroupMember(group_id, "non-existing-member")
+          .has_value());
+  // TODO(crbug.com/373628741): add coverage for the scenario when member was
+  // removed from the group once it is properly supported (i.e. removed members
+  // data is temporarily stored).
+}
+
 }  // namespace
 }  // namespace data_sharing

@@ -44,6 +44,13 @@ std::set<GroupData> EmptyDataSharingService::ReadAllGroups() {
   return std::set<GroupData>();
 }
 
+std::optional<GroupMemberPartialData>
+EmptyDataSharingService::GetPossiblyRemovedGroupMember(
+    const GroupId& group_id,
+    const std::string& member_gaia_id) {
+  return std::nullopt;
+}
+
 void EmptyDataSharingService::ReadAllGroups(
     base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {}
 

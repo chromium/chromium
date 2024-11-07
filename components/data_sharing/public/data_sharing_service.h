@@ -135,10 +135,18 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // group doesn't exist, it has not been fetched from the server yet, or the
   // model is not loaded yet.
   virtual std::optional<GroupData> ReadGroup(const GroupId& group_id) = 0;
+
   // Synchronously reads all groups from the local storage. Returns empty set
   // if the groups haven't been fetched from the server yet, or the model is not
   // loaded yet.
   virtual std::set<GroupData> ReadAllGroups() = 0;
+
+  // Synchronously reads partial group member data either from the group store
+  // or from the special database that stores partial data of removed members.
+  // Returns nullopt if no data is found.
+  virtual std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
+      const GroupId& group_id,
+      const std::string& member_gaia_id) = 0;
 
   // Refreshes data if necessary. On success passes to the `callback` a set of
   // all groups known to the client (ordered by id).

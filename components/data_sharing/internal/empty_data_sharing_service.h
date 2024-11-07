@@ -31,6 +31,9 @@ class EmptyDataSharingService : public DataSharingService {
   bool IsGroupDataModelLoaded() override;
   std::optional<GroupData> ReadGroup(const GroupId& group_id) override;
   std::set<GroupData> ReadAllGroups() override;
+  std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
+      const GroupId& group_id,
+      const std::string& member_gaia_id) override;
   void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
       override;
