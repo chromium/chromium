@@ -34,8 +34,6 @@ class OnDeviceModelAdaptationController {
       const on_device_model::AdaptationAssetPaths& adaptation_assets);
 
  private:
-  void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);
-
   ModelBasedCapabilityKey feature_;
 
   base::WeakPtr<OnDeviceModelServiceController> controller_;

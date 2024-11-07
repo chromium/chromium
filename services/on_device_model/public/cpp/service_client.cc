@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/public/cpp/service_client.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -19,10 +21,28 @@ ServiceClient::~ServiceClient() = default;
 ServiceClient::Remote& ServiceClient::Get() {
   if (!remote_) {
     launch_fn_.Run(remote_.BindNewPipeAndPassReceiver());
-    remote_.reset_on_disconnect();
+    remote_.set_disconnect_with_reason_handler(
+        base::BindOnce(&ServiceClient::OnDisconnect, base::Unretained(this))
+            .Then(on_disconnect_fn_));
     remote_.reset_on_idle_timeout(base::TimeDelta());
   }
   return remote_;
+}
+
+ServiceDisconnectReason ServiceClient::OnDisconnect(
+    uint32_t custom_reason,
+    const std::string& description) {
+  remote_.reset();
+  LOG(ERROR) << "Unexpected on_device_model service disconnect: "
+             << description;
+  switch (custom_reason) {
+    case static_cast<uint32_t>(ServiceDisconnectReason::kGpuBlocked):
+      return ServiceDisconnectReason::kGpuBlocked;
+    case static_cast<uint32_t>(ServiceDisconnectReason::kFailedToLoadLibrary):
+      return ServiceDisconnectReason::kFailedToLoadLibrary;
+    default:
+      return ServiceDisconnectReason::kUnspecified;
+  }
 }
 
 void ServiceClient::AddPendingUsage() {

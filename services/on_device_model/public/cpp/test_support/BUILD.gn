@@ -15,6 +15,7 @@ source_set("test_support") {
     "//base",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
+    "//services/on_device_model/public/cpp",
     "//services/on_device_model/public/mojom",
   ]
 }
