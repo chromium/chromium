@@ -74,7 +74,7 @@ void ViewTransitionStyleBuilder::AddAnimations(
                "animation-name: -ua-view-transition-fade-in, "
                "-ua-mix-blend-mode-plus-lighter");
 
-      AddRules(kImagePairTagName, tag, "isolation: isolate");
+      AddRules(kImagePairTagName, tag, "isolation: isolate;\n");
 
       const String& animation_name =
           AddKeyframes(tag, source_properties, animated_css_properties,
@@ -88,6 +88,36 @@ void ViewTransitionStyleBuilder::AddAnimations(
       rule_builder.Append("animation-iteration-count: 1;\n");
       rule_builder.Append("animation-direction: normal;\n");
       AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
+      if (!source_properties.box_geometry) {
+        break;
+      }
+
+      StringBuilder keyframe_name_builder;
+      keyframe_name_builder.Append("-ua-view-transition-content-geometry-");
+      keyframe_name_builder.Append(tag);
+      String image_pair_animation_name = keyframe_name_builder.ReleaseString();
+      StringBuilder image_pair_animation_properties_builder;
+      image_pair_animation_properties_builder.Append("animation-name: ");
+      image_pair_animation_properties_builder.Append(image_pair_animation_name);
+      image_pair_animation_properties_builder.Append(";\n");
+      image_pair_animation_properties_builder.Append(
+          "animation-delay: inherit;\n"
+          "animation-direction: inherit;\n"
+          "animation-iteration-count: inherit;\n"
+          "animation-timing-function: inherit;\n");
+      AddRules(kImagePairTagName, tag,
+               image_pair_animation_properties_builder.ReleaseString());
+      builder_.Append("@keyframes ");
+      builder_.Append(image_pair_animation_name);
+      builder_.AppendFormat(
+          R"CSS({
+        from {
+          width: %.3fpx;
+          height: %.3fpx;
+        } }
+      )CSS",
+          source_properties.box_geometry->content_box.Width().ToFloat(),
+          source_properties.box_geometry->content_box.Height().ToFloat());
       break;
   }
 }
@@ -126,8 +156,8 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           height: %3fpx;
       )CSS",
       GetTransformString(source_properties, parent_inverse_transform).c_str(),
-      source_properties.border_box_rect_in_css_space.Width().ToFloat(),
-      source_properties.border_box_rect_in_css_space.Height().ToFloat());
+      source_properties.GroupSize().width.ToFloat(),
+      source_properties.GroupSize().height.ToFloat());
 
   for (const auto& [id, value] : animated_css_properties) {
     builder_.AppendFormat(
@@ -144,24 +174,36 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
     const ContainerProperties& properties,
     const CapturedCssProperties& captured_css_properties,
     const gfx::Transform& parent_inverse_transform) {
-  StringBuilder rule_builder;
-  rule_builder.AppendFormat(
+  StringBuilder group_rule_builder;
+  group_rule_builder.AppendFormat(
       R"CSS(
         width: %.3fpx;
         height: %.3fpx;
         transform: %s;
       )CSS",
-      properties.border_box_rect_in_css_space.Width().ToFloat(),
-      properties.border_box_rect_in_css_space.Height().ToFloat(),
+      properties.GroupSize().width.ToFloat(),
+      properties.GroupSize().height.ToFloat(),
       GetTransformString(properties, parent_inverse_transform).c_str());
   for (const auto& [id, value] : captured_css_properties) {
-    rule_builder.AppendFormat(
+    group_rule_builder.AppendFormat(
         "%s: %s;\n",
         CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),
         value.Utf8().c_str());
   }
 
-  AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
+  if (properties.box_geometry) {
+    StringBuilder image_pair_rule_builder;
+    image_pair_rule_builder.AppendFormat(
+        "width: %.3fpx;\n"
+        "height: %.3fpx;\n"
+        "position: relative;\n"
+        "display: block;\n"
+        "inset: unset;\n",
+        properties.box_geometry->content_box.Width().ToFloat(),
+        properties.box_geometry->content_box.Height().ToFloat());
+    AddRules(kImagePairTagName, tag, image_pair_rule_builder.ReleaseString());
+  }
+  AddRules(kGroupTagName, tag, group_rule_builder.ReleaseString());
 }
 
 }  // namespace blink

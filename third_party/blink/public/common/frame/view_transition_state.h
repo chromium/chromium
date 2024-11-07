@@ -23,6 +23,12 @@ namespace blink {
 // third_party/blink/public/mojom/frame/view_transition_state.mojom for more
 // comments.
 struct BLINK_COMMON_EXPORT ViewTransitionElement {
+  struct LayeredBoxProperties {
+    gfx::RectF content_box;
+    gfx::RectF padding_box;
+    mojom::ViewTransitionElementBoxSizing box_sizing;
+  };
+
  private:
   // IMPORTANT:
   // This is private + friends, because it is not meant to be used anywhere
@@ -46,7 +52,8 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
 
   std::vector<std::string> class_list;
   std::string containing_group_name;
-  gfx::Vector2dF border_offset;
+
+  std::optional<LayeredBoxProperties> layered_box_properties;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

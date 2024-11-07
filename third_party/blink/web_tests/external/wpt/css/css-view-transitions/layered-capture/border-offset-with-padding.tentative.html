@@ -7,7 +7,7 @@
 <script src="resources/compute-test.js"></script>
 <style>
     * {
-        box-sizing: border-box;
+        box-sizing: content-box;
     }
     html {
         view-transition-name: none;
@@ -17,8 +17,6 @@
     }
 
     div {
-        width: 100px;
-        height: 100px;
         position: absolute;
     }
 
@@ -26,13 +24,14 @@
         view-transition-name: parent;
         border: 10px solid black;
         background: green;
+        padding: 20px;
+        width: 40px;
+        height: 40px;
     }
 
     .child {
-        top: 20px;
-        left: 20px;
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         background: yellow;
         border: 2px dashed blue;
     }
