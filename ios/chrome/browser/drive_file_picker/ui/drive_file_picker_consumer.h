@@ -93,8 +93,9 @@
 
 // Shows an alert to indicate that the selected file could not be downloaded,
 // asking whether to try again or not.
-- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock
-                                   cancelBlock:(ProceduralBlock)cancelBlock;
+- (void)showDownloadFailureAlertForFileName:(NSString*)fileName
+                                 retryBlock:(ProceduralBlock)retryBlock
+                                cancelBlock:(ProceduralBlock)cancelBlock;
 
 // Sets whether the file picker should let the user select multiple files.
 - (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection;

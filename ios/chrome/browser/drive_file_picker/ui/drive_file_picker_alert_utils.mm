@@ -4,17 +4,20 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-UIAlertController* FailAlertController(ProceduralBlock retry_block,
+UIAlertController* FailAlertController(NSString* file_name,
+                                       ProceduralBlock retry_block,
                                        ProceduralBlock cancel_block) {
   UIAlertController* alert = [UIAlertController
       alertControllerWithTitle:
-          l10n_util::GetNSString(
-              IDS_IOS_DRIVE_FILE_PICKER_ALERT_THIS_FILE_COUND_NOT_BE_OPENED)
+          l10n_util::GetNSStringF(
+              IDS_IOS_DRIVE_FILE_PICKER_ALERT_THIS_FILE_COUND_NOT_BE_OPENED,
+              base::SysNSStringToUTF16(file_name))
                        message:nil
                 preferredStyle:UIAlertControllerStyleAlert];
 

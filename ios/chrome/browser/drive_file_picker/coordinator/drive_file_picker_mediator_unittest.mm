@@ -214,8 +214,9 @@ constexpr char kFakeIconURL[] = "http://www.example.com/image";
                   forItems:(NSSet<NSString*>*)itemIdentifiers {
 }
 
-- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock
-                                   cancelBlock:(ProceduralBlock)cancelBlock {
+- (void)showDownloadFailureAlertForFileName:(NSString*)fileName
+                                 retryBlock:(ProceduralBlock)retryBlock
+                                cancelBlock:(ProceduralBlock)cancelBlock {
 }
 
 - (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection {

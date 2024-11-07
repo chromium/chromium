@@ -1092,10 +1092,11 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 }
 
-- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock
-                                   cancelBlock:(ProceduralBlock)cancelBlock {
+- (void)showDownloadFailureAlertForFileName:(NSString*)fileName
+                                 retryBlock:(ProceduralBlock)retryBlock
+                                cancelBlock:(ProceduralBlock)cancelBlock {
   UIAlertController* failureAlert =
-      FailAlertController(retryBlock, cancelBlock);
+      FailAlertController(fileName, retryBlock, cancelBlock);
   [self presentViewController:failureAlert animated:YES completion:nil];
 }
 

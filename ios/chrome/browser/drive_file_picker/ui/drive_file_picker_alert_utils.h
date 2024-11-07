@@ -10,7 +10,8 @@
 #import "base/ios/block_types.h"
 
 // Returns an alert informing the user of a failed download.
-UIAlertController* FailAlertController(ProceduralBlock retry_block,
+UIAlertController* FailAlertController(NSString* file_name,
+                                       ProceduralBlock retry_block,
                                        ProceduralBlock cancel_block);
 
 // Returns an alert asking the user to confirm whether to discard the selection.

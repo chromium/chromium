@@ -958,10 +958,11 @@ NSString* kDriveIconRepositoryPrefix =
         weakSelf, _downloadingQueue.front());
     // Then present an alert to ask the user whether to try again.
     [self.consumer
-        showDownloadFailureAlertWithRetryBlock:base::CallbackToBlock(
-                                                   std::move(retryCallback))
-                                   cancelBlock:base::CallbackToBlock(
-                                                   std::move(cancelCallback))];
+        showDownloadFailureAlertForFileName:_downloadingQueue.front().name
+                                 retryBlock:base::CallbackToBlock(
+                                                std::move(retryCallback))
+                                cancelBlock:base::CallbackToBlock(
+                                                std::move(cancelCallback))];
     return;
   }
   // If the download was successful, add it to the set of files ready for
