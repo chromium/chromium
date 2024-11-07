@@ -48,7 +48,7 @@ const auto PrintHr = logging::SystemErrorCodeToString;
   do {                                                                  \
     HRESULT hresult = (expr);                                           \
     if (FAILED(hresult)) {                                              \
-      DLOG(ERROR) << __func__ << ": failed with \"" << PrintHr(hresult) \
+      LOG(ERROR) << __func__ << ": failed with \"" << PrintHr(hresult) \
                   << "\"";                                              \
       return hresult;                                                   \
     }                                                                   \
@@ -57,7 +57,7 @@ const auto PrintHr = logging::SystemErrorCodeToString;
 #define RETURN_ON_FAILURE(success, log, ret) \
   do {                                       \
     if (!(success)) {                        \
-      DLOG(ERROR) << log;                    \
+      LOG(ERROR) << log;                    \
       return ret;                            \
     }                                        \
   } while (0)
