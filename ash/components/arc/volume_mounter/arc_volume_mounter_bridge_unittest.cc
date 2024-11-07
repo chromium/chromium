@@ -541,9 +541,9 @@ TEST_F(ArcVolumeMounterBridgeTest,
       [](const std::string& job_name, const std::vector<std::string>& env) {
         if (job_name == kArcVmMediaSharingServicesJobName) {
           return ash::FakeUpstartClient::StartJobResult(
-              false /* success */, ash::UpstartClient::kAlreadyStartedError);
+              /*success=*/false, ash::UpstartClient::kAlreadyStartedError);
         }
-        return ash::FakeUpstartClient::StartJobResult(false /* success */);
+        return ash::FakeUpstartClient::StartJobResult(/*success=*/false);
       }));
 
   // SetUpExternalStorageMountPoints still succeeds.
@@ -568,10 +568,10 @@ TEST_F(ArcVolumeMounterBridgeTest,
   // When called with invalid MediaProvider UID, SetUpExternalStorageMountPoints
   // returns false in the callback.
   base::test::TestFuture<bool> future1, future2;
-  bridge()->SetUpExternalStorageMountPoints(20000 /* media_provider_uid */,
+  bridge()->SetUpExternalStorageMountPoints(/*media_provider_uid=*/20000,
                                             future1.GetCallback());
   EXPECT_FALSE(future1.Get());
-  bridge()->SetUpExternalStorageMountPoints(9999 /* media_provider_uid */,
+  bridge()->SetUpExternalStorageMountPoints(/*media_provider_uid=*/9999,
                                             future2.GetCallback());
   EXPECT_FALSE(future2.Get());
 
@@ -621,7 +621,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Sequential) {
   EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
 
   // ARC finishes the first request successfully.
-  volume_mounter_instance()->RunCallback(true /* success */);
+  volume_mounter_instance()->RunCallback(/*success=*/true);
 
   // The callback has run with true and the timer is stopped.
   EXPECT_TRUE(future1.Get());
@@ -634,7 +634,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Sequential) {
   EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
 
   // ARC finishes the second request unsuccessfully.
-  volume_mounter_instance()->RunCallback(false /* success */);
+  volume_mounter_instance()->RunCallback(/*success=*/false);
 
   // The callback has run with false and the timer is stopped.
   EXPECT_FALSE(future2.Get());
@@ -659,7 +659,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Concurrent) {
   EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
 
   // ARC finishes the first request successfully.
-  volume_mounter_instance()->RunCallback(true /* success */);
+  volume_mounter_instance()->RunCallback(/*success=*/true);
 
   // The first callback has run with true, but the second one hasn't run yet.
   EXPECT_TRUE(future1.Get());
@@ -667,7 +667,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Concurrent) {
   EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
 
   // ARC finishes the second request unsuccessfully.
-  volume_mounter_instance()->RunCallback(false /* success */);
+  volume_mounter_instance()->RunCallback(/*success=*/false);
 
   // The second callback has run with false.
   EXPECT_FALSE(future2.Get());
@@ -685,7 +685,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Timeout) {
 
   // The timer is fired before ARC replies.
   bridge()->GetUnmountTimerForTesting()->FireNow();
-  volume_mounter_instance()->RunCallback(true /* success */);
+  volume_mounter_instance()->RunCallback(/*success=*/true);
 
   // The callback has run with false due to timeout.
   EXPECT_FALSE(future.Get());

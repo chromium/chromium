@@ -392,7 +392,7 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
 
   unmount_mojo_callback_.Reset(base::BindOnce(
       &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
-      weak_ptr_factory_.GetWeakPtr(), mount_path, false /* is_timeout */));
+      weak_ptr_factory_.GetWeakPtr(), mount_path, /*is_timeout=*/false));
 
   unmount_mojo_start_time_ = base::TimeTicks::Now();
 
@@ -403,8 +403,8 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
       FROM_HERE, unmount_timeout_,
       base::BindOnce(
           &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
-          weak_ptr_factory_.GetWeakPtr(), mount_path, true /* is_timeout */,
-          false /* success */));
+          weak_ptr_factory_.GetWeakPtr(), mount_path, /*is_timeout=*/true,
+          /*success=*/false));
 }
 
 void ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount(
