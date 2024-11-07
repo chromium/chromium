@@ -841,12 +841,6 @@ using web_apps::ChromeContentBrowserClientIsolatedWebAppsPart;
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPrivateNetworkAccessRestrictionsForAutomotive,
-             "PrivateNetworkAccessRestrictionsForAutomotive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
              "SkipPagehideInCommitForDSENavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -7996,9 +7990,7 @@ ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          kPrivateNetworkAccessRestrictionsForAutomotive) &&
-      base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
         kBlockInsteadOfWarn;
   }
