@@ -39,7 +39,6 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
-#include "components/translate/content/browser/content_translate_driver.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/page_navigator.h"
@@ -148,7 +147,6 @@ class Browser : public TabStripModelObserver,
                 public BookmarkTabHelperObserver,
                 public zoom::ZoomObserver,
                 public ThemeServiceObserver,
-                public translate::ContentTranslateDriver::TranslationObserver,
                 public ui::SelectFileDialog::Listener,
                 public BrowserWindowInterface {
  public:
@@ -1108,9 +1106,6 @@ class Browser : public TabStripModelObserver,
   // Overridden from ThemeServiceObserver:
   void OnThemeChanged() override;
 
-  // Overridden from translate::ContentTranslateDriver::TranslationObserver:
-  void OnIsPageTranslatedChanged(content::WebContents* source) override;
-  void OnTranslateEnabledChanged(content::WebContents* source) override;
 
   // Command and state updating ///////////////////////////////////////////////
 

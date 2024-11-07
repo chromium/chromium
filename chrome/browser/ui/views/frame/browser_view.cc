@@ -1741,10 +1741,6 @@ void BrowserView::SetStarredState(bool is_starred) {
     star_icon->SetActive(is_starred);
 }
 
-void BrowserView::SetTranslateIconToggled(bool is_lit) {
-  // Translate icon is never active on Views.
-}
-
 void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
                                      content::WebContents* new_contents,
                                      int index,

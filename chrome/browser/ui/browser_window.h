@@ -257,9 +257,6 @@ class BrowserWindow : public ui::BaseWindow,
   // Sets the starred state for the current tab.
   virtual void SetStarredState(bool is_starred) = 0;
 
-  // Sets whether the translate icon is lit for the current tab.
-  virtual void SetTranslateIconToggled(bool is_lit) = 0;
-
   // Called when the active tab changes.  Subclasses which implement
   // TabStripModelObserver should implement this instead of ActiveTabChanged();
   // the Browser will call this method while processing that one.

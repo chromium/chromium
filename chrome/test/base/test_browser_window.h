@@ -95,7 +95,6 @@ class TestBrowserWindow : public BrowserWindow {
   void UpdateDevTools() override {}
   void UpdateLoadingAnimations(bool is_visible) override {}
   void SetStarredState(bool is_starred) override {}
-  void SetTranslateIconToggled(bool is_lit) override {}
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents,
                           int index,
