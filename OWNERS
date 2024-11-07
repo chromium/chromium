@@ -167,6 +167,7 @@ per-file third_party/libwebm/source=*
 per-file third_party/libwebp/src=*
 per-file third_party/libyuv=*
 per-file third_party/lighttpd=*
+per-file third_party/llvm-libc/src=*
 per-file third_party/lss=*
 per-file third_party/material_color_utilities/src=*
 per-file third_party/material_design_icons/src=*
