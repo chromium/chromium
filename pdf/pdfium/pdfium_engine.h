@@ -1023,6 +1023,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // The timeout to use for the current progressive paint.
   base::TimeDelta progressive_paint_timeout_;
 
+  // When this class was created.
+  const base::TimeTicks engine_creation_time_;
+
+  // Keeps track of sending `PDF.FirstPaintTime` metric.
+  bool first_paint_metric_reported_ = false;
+
   // Shadow matrix for generating the page shadow bitmap.
   std::unique_ptr<draw_utils::ShadowMatrix> page_shadow_;
 

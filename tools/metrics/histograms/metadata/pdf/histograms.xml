@@ -36,6 +36,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.EngineLifetime" units="ms" expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the time between creating the PDF engine to load the PDF, until when
+    it is destructed. This metric does not consider PDF being actively focused
+    and interacted or not, and is not recorded for print preview.
+  </summary>
+</histogram>
+
+<histogram name="PDF.FirstPaintTime" units="ms" expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the time that it takes from creating the PDF engine to load the PDF
+    until starting the render of the first set of visible pages. This metric is
+    affected by PDF load time and network speed, therefore it's best to be used
+    in comparisons to cancel out unrelated events and not as a standalone
+    performance metrics. This metric is not stored for print preview.
+  </summary>
+</histogram>
+
 <histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2025-04-28">
   <owner>dhoss@chromium.org</owner>
   <owner>kmoon@chromium.org</owner>

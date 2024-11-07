@@ -557,6 +557,7 @@ PDFiumEngine::PDFiumEngine(PDFiumEngineClient* client,
       form_filler_(this, script_option),
       mouse_down_state_(PDFiumPage::NONSELECTABLE_AREA,
                         PDFiumPage::LinkTarget()),
+      engine_creation_time_(base::TimeTicks::Now()),
       print_(this) {
 #if defined(PDF_ENABLE_V8)
   if (script_option != PDFiumFormFiller::ScriptOption::kNoJavaScript)
@@ -569,6 +570,11 @@ PDFiumEngine::PDFiumEngine(PDFiumEngineClient* client,
 }
 
 PDFiumEngine::~PDFiumEngine() {
+  if (!client_->IsPrintPreview()) {
+    base::UmaHistogramLongTimes("PDF.EngineLifetime",
+                                base::TimeTicks::Now() - engine_creation_time_);
+  }
+
   // Clear all the containers that can prevent unloading.
   find_results_.clear();
   selection_.clear();
@@ -662,6 +668,12 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
   // Set a timer here to check how long it takes to finish rendering and
   // painting the visible pages.
   base::TimeTicks begin_time = base::TimeTicks::Now();
+
+  if (!first_paint_metric_reported_ && !client_->IsPrintPreview()) {
+    first_paint_metric_reported_ = true;
+    base::UmaHistogramMediumTimes("PDF.FirstPaintTime",
+                                  begin_time - engine_creation_time_);
+  }
 
   for (size_t i = 0; i < visible_pages_.size(); ++i) {
     int index = visible_pages_[i];
