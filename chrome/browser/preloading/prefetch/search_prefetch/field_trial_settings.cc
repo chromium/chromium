@@ -18,14 +18,6 @@ BASE_FEATURE(kSearchPrefetchServicePrefetching,
              "SearchPrefetchServicePrefetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
-             "SearchPrefetchBlockBeforeHeaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
-  return base::FeatureList::IsEnabled(kSearchPrefetchBlockBeforeHeaders);
-}
-
 bool SearchPrefetchServicePrefetchingIsEnabled() {
   if (!base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching)) {
     return false;
@@ -63,11 +55,6 @@ size_t SearchPrefetchMaxCacheEntries() {
 
 void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_size) {
   g_cache_size_for_testing = cache_size;
-}
-
-base::TimeDelta SearchPrefetchBlockHeadStart() {
-  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-      kSearchPrefetchBlockBeforeHeaders, "block_head_start_ms", 0));
 }
 
 BASE_FEATURE(kSearchNavigationPrefetch,

@@ -282,19 +282,7 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
       network_traffic_annotation_(network_traffic_annotation),
       navigation_prefetch_(navigation_prefetch) {
   DCHECK(streaming_prefetch_request_);
-  if (navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled()) {
-    if (!navigation_prefetch_ &&
-        SearchPrefetchBlockHeadStart() > base::TimeDelta()) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              &StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable,
-              weak_factory_.GetWeakPtr()),
-          SearchPrefetchBlockHeadStart());
-    } else {
-      MarkPrefetchAsServable();
-    }
-  }
+  MarkPrefetchAsServable();
   prefetch_url_ = resource_request->url;
 
   // Maybe proxies the prefetch URL loader via the Extension Web Request API, so
@@ -529,14 +517,6 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   // whether we still have a parent pointer.
   if (!can_be_served) {
     if (!streaming_prefetch_request_) {
-      // That `streaming_prefetch_request_` is nullptr means this loader is
-      // serving to network stack. And we can serve a loader that has not
-      // received response yet to the network stack iff the loader was created
-      // by a navigation prefetch or we are experimenting with
-      // kSearchPrefetchBlockBeforeHeaders enabled.
-      DCHECK(navigation_prefetch_ ||
-             SearchPrefetchBlockBeforeHeadersIsEnabled());
-
       // SetUpForwardingClient() needs to be called before fallback.
       if (is_activated_) {
         Fallback();
@@ -901,8 +881,6 @@ void StreamingSearchPrefetchURLLoader::PostTaskToReleaseOwnership() {
 }
 
 void StreamingSearchPrefetchURLLoader::Fallback() {
-  CHECK(navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled());
-
   is_scheduled_to_fallback_ = false;
 
   CHECK(!is_in_fallback_);
