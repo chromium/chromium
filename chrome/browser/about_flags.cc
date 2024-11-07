@@ -10976,6 +10976,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableStandardBoundSessionCredentialsName,
      flag_descriptions::kEnableStandardBoundSessionCredentialsDescription,
      kOsWin, FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessions)},
+    {"enable-standard-device-bound-session-persistence",
+     flag_descriptions::kEnableStandardBoundSessionPersistenceName,
+     flag_descriptions::kEnableStandardBoundSessionPersistenceDescription,
+     kOsWin, FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

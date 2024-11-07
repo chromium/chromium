@@ -20484,6 +20484,7 @@ from previous Chrome versions.
   <int value="106840653" label="mus"/>
   <int value="107358678" label="GalleryAppPdfEditNotification:enabled"/>
   <int value="107900612" label="ChromeHomePersistentIph:disabled"/>
+  <int value="108328828" label="PersistDeviceBoundSessions:enabled"/>
   <int value="108874121" label="InstanceSwitcher:disabled"/>
   <int value="109577361" label="ForbidSyncXHRInPageDismissal:enabled"/>
   <int value="110888614" label="ReduceDisplayNotifications:enabled"/>
@@ -25336,6 +25337,7 @@ from previous Chrome versions.
   <int value="2051403297" label="ShowBluetoothDeviceBattery:disabled"/>
   <int value="2051886966" label="PwaInstallUseBottomSheet:enabled"/>
   <int value="2053269084" label="EcheLauncher:disabled"/>
+  <int value="2053479012" label="PersistDeviceBoundSessions:disabled"/>
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
   <int value="2057112994" label="TabOrganization:enabled"/>

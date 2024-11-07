@@ -8303,6 +8303,11 @@ const char kEnableStandardBoundSessionCredentialsName[] =
 const char kEnableStandardBoundSessionCredentialsDescription[] =
     "Enables the official version of Device Bound Session Credentials. For "
     "more information see https://github.com/WICG/dbsc.";
+const char kEnableStandardBoundSessionPersistenceName[] =
+    "Device Bound Session Credentials (Standard) Persistence";
+const char kEnableStandardBoundSessionPersistenceDescription[] =
+    "Enables session persistence for the official version of "
+    "Device Bound Session Credentials.";
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

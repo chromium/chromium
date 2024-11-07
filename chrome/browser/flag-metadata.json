@@ -3914,8 +3914,13 @@
   },
   {
     "name": "enable-standard-device-bound-session-credentials",
-    "owners": [ "chlily@chromium.org",  "kristianm@chromium.org"],
-    "expiry_milestone": 132
+    "owners": [ "drubery@chromium.org",  "kristianm@chromium.org"],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "enable-standard-device-bound-session-persistence",
+    "owners": [ "anunoy@chromium.org", "drubery@chromium.org",  "kristianm@chromium.org"],
+    "expiry_milestone": 135
   },
   {
     "name": "enable-start-surface-return-time",

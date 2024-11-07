@@ -4841,6 +4841,8 @@ extern const char
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 extern const char kEnableStandardBoundSessionCredentialsName[];
 extern const char kEnableStandardBoundSessionCredentialsDescription[];
+extern const char kEnableStandardBoundSessionPersistenceName[];
+extern const char kEnableStandardBoundSessionPersistenceDescription[];
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
