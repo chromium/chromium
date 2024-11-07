@@ -8,6 +8,8 @@
 #include "base/time/time.h"
 
 namespace ash::boca {
+inline constexpr char kBocaActionOfStudentJoinedSession[] =
+    "Ash.Boca.StudentJoinedSession";
 inline constexpr char kBocaOnTaskLockedSessionDurationPercentage[] =
     "Ash.Boca.OnTask.LockedSessionDurationPercentage";
 inline constexpr char kBocaOnTaskUnlockedSessionDurationPercentage[] =
@@ -34,6 +36,9 @@ void RecordOnTaskNumOfTabsWhenSessionEnded(int num_of_tabs);
 
 // Records the max number of tabs sent by the provider in a session.
 void RecordOnTaskMaxNumOfTabsDuringSession(int max_num_of_tabs);
+
+// Records the action of a student joined a session.
+void RecordStudentJoinedSession();
 
 }  // namespace ash::boca
 

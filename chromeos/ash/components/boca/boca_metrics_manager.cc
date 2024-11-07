@@ -17,6 +17,9 @@ BocaMetricsManager::~BocaMetricsManager() = default;
 void BocaMetricsManager::OnSessionStarted(
     const std::string& session_id,
     const ::boca::UserIdentity& producer) {
+  if (!is_producer_) {
+    RecordStudentJoinedSession();
+  }
   // Set the times for when session started along with the initial set time
   // for the content locked state.
   last_switch_locked_mode_timestamp_ = base::TimeTicks::Now();

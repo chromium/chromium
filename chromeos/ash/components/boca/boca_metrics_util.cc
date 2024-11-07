@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 
 namespace ash::boca {
 
@@ -37,6 +38,11 @@ void RecordOnTaskNumOfTabsWhenSessionEnded(int num_of_tabs) {
 void RecordOnTaskMaxNumOfTabsDuringSession(int max_num_of_tabs) {
   UMA_HISTOGRAM_COUNTS_100(kBocaOnTaskMaxNumOfTabsDuringSession,
                            max_num_of_tabs);
+}
+
+void RecordStudentJoinedSession() {
+  base::RecordAction(
+      base::UserMetricsAction(kBocaActionOfStudentJoinedSession));
 }
 
 }  // namespace ash::boca

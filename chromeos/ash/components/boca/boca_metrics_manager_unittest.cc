@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
@@ -137,6 +138,16 @@ TEST_F(BocaMetricsManagerProducerTest,
                                expected_max_num_of_tabs, 1);
 }
 
+TEST_F(BocaMetricsManagerProducerTest,
+       DoNotRecordStudentJoinedSessionActionMetricsForProducer) {
+  base::UserActionTester actions;
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_.OnSessionEnded("test_session_id");
+
+  EXPECT_EQ(actions.GetActionCount(kBocaActionOfStudentJoinedSession), 0);
+}
+
 class BocaMetricsManagerConsumerTest : public BocaMetricsManagerTest {
  protected:
   BocaMetricsManager metrics_manager_{/*is_producer*/ false};
@@ -200,5 +211,19 @@ TEST_F(BocaMetricsManagerConsumerTest,
   metrics_manager_.OnSessionEnded("test_session_id");
 
   histograms.ExpectTotalCount(kBocaOnTaskMaxNumOfTabsDuringSession, 0);
+}
+
+TEST_F(BocaMetricsManagerConsumerTest,
+       RecordStudentJoinedSessionActionMetricsForConsumerCorrectly) {
+  base::UserActionTester actions;
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_.OnSessionEnded("test_session_id");
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  metrics_manager_.OnSessionEnded("test_session_id");
+
+  const int expected_number_of_students = 2;
+  EXPECT_EQ(actions.GetActionCount(kBocaActionOfStudentJoinedSession),
+            expected_number_of_students);
 }
 }  // namespace ash::boca

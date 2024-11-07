@@ -4178,6 +4178,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Ash.Boca.StudentJoinedSession">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>A student joined a School Tools session.</description>
+</action>
+
 <action name="Ash_Clipboard_CopiedItem">
   <owner>newcomer@chromium.org</owner>
   <owner>multipaste@google.com</owner>
