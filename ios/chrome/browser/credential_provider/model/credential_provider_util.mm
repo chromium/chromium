@@ -306,8 +306,9 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
   }];
 }
 
-void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
-                                     bool fallback_to_google_server) {
+void UpdateFaviconsStorageForBrowserState(
+    base::WeakPtr<ProfileIOS> weak_profile,
+    bool fallback_to_google_server) {
   ProfileIOS* profile = weak_profile.get();
   if (!profile) {
     return;
