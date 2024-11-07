@@ -87,6 +87,7 @@ buildflag_header("buildflags") {
     "HAS_PLATFORM_ACCESSIBILITY_SUPPORT=$has_platform_accessibility_support",
     "USE_GTK=$use_gtk",
     "USE_QT=$use_qt",
+    "ENABLE_PSEUDOLOCALES=$enable_pseudolocales",
   ]
 }
 
@@ -463,10 +464,6 @@ component("base") {
   ]
 
   defines = [ "IS_UI_BASE_IMPL" ]
-
-  if (enable_pseudolocales) {
-    defines += [ "ENABLE_PSEUDOLOCALES" ]
-  }
 
   public_deps = [
     ":buildflags",
