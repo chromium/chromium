@@ -502,7 +502,8 @@ void PasswordAccessoryControllerImpl::RegisterPlusProfilesProvider(
 }
 
 void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
-    FocusedFieldType focused_field_type) {
+    FocusedFieldType focused_field_type,
+    bool is_field_eligible_for_manual_generation) {
   // Discard all frame data. This ensures that the data is never used for an
   // incorrect frame.
   last_focus_info_ = std::nullopt;
@@ -531,7 +532,8 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
           driver);
 
   last_focus_info_.emplace(origin, focused_field_type,
-                           is_generation_allowed_in_frame);
+                           is_generation_allowed_in_frame,
+                           is_field_eligible_for_manual_generation);
 
   RefreshSuggestions();
 }
@@ -572,10 +574,13 @@ PasswordAccessoryControllerImpl::AsWeakPtr() {
 PasswordAccessoryControllerImpl::LastFocusInfo::LastFocusInfo(
     url::Origin focused_origin,
     FocusedFieldType focused_field,
-    bool generation_allowed_in_frame)
+    bool generation_allowed_in_frame,
+    bool field_eligible_for_manual_generation)
     : origin(focused_origin),
       focused_field_type(focused_field),
-      is_generation_allowed_in_frame(generation_allowed_in_frame) {}
+      is_generation_allowed_in_frame(generation_allowed_in_frame),
+      is_field_eligible_for_manual_generation(
+          field_eligible_for_manual_generation) {}
 
 PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
     content::WebContents* web_contents,
@@ -633,9 +638,8 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
         autofill::AccessoryAction::USE_OTHER_PASSWORD);
   }
 
-  const bool is_password_field = last_focus_info_->focused_field_type ==
-                                 FocusedFieldType::kFillablePasswordField;
-  if (is_password_field && last_focus_info_->is_generation_allowed_in_frame) {
+  if (last_focus_info_->is_field_eligible_for_manual_generation &&
+      last_focus_info_->is_generation_allowed_in_frame) {
     std::u16string generate_password_title = l10n_util::GetStringUTF16(
         IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE);
     footer_commands_to_add.emplace_back(
@@ -929,7 +933,8 @@ void PasswordAccessoryControllerImpl::RefreshSuggestions() {
   if (!all_passwords_helper_.available_credentials().has_value()) {
     all_passwords_helper_.SetUpdateCallback(base::BindOnce(
         &PasswordAccessoryControllerImpl::RefreshSuggestionsForField,
-        base::Unretained(this), last_focus_info_->focused_field_type));
+        base::Unretained(this), last_focus_info_->focused_field_type,
+        last_focus_info_->is_field_eligible_for_manual_generation));
   } else {
     sheet_provides_value |=
         all_passwords_helper_.available_credentials().value() > 0;

@@ -508,7 +508,8 @@ TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
@@ -529,7 +530,8 @@ TEST_F(PasswordAccessoryControllerTest, HintsToEmptyUserNames) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -558,7 +560,8 @@ TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
@@ -595,7 +598,8 @@ TEST_F(PasswordAccessoryControllerTest, RepeatsSuggestionsForSameFrame) {
 
   // Pretend that any input in the same frame was focused.
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
@@ -614,7 +618,8 @@ TEST_F(PasswordAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -636,7 +641,8 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
   // Pretend a username field was focused. This should result in non-interactive
   // suggestion.
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
@@ -657,7 +663,8 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
   // |is_password_field| set to true, all suggestions other than the empty
   // username should become interactive.
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
@@ -685,7 +692,8 @@ TEST_F(PasswordAccessoryControllerTest, CacheChangesReplacePasswords) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
@@ -703,7 +711,8 @@ TEST_F(PasswordAccessoryControllerTest, CacheChangesReplacePasswords) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
                 .AddUserInfo(kExampleSite)
@@ -728,7 +737,8 @@ TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
@@ -760,7 +770,8 @@ TEST_F(PasswordAccessoryControllerTest, UnfillableFieldClearsSuggestions) {
   // Pretend a username field was focused. This should result in non-emtpy
   // suggestions.
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
@@ -774,7 +785,8 @@ TEST_F(PasswordAccessoryControllerTest, UnfillableFieldClearsSuggestions) {
   // Pretend that the focus was lost or moved to an unfillable field. Now, only
   // the empty state message should be sent.
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kUnfillableElement);
+      FocusedFieldType::kUnfillableElement,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -793,7 +805,8 @@ TEST_F(PasswordAccessoryControllerTest, NavigatingMainFrameClearsSuggestions) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(controller()->GetSheetData(),
             PasswordAccessorySheetDataBuilderEmptyTitle()
@@ -808,7 +821,8 @@ TEST_F(PasswordAccessoryControllerTest, NavigatingMainFrameClearsSuggestions) {
   NavigateAndCommit(GURL("https://random.other-site.org/"));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kUnfillableElement);
+      FocusedFieldType::kUnfillableElement,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   // Now, only the empty state message should be sent.
   EXPECT_EQ(controller()->GetSheetData(),
@@ -841,7 +855,38 @@ TEST_F(PasswordAccessoryControllerTest, AddsGenerationCommandWhenAvailable) {
   ON_CALL(frame_helper(), IsGenerationEnabled).WillByDefault(Return(true));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                  passwords_empty_str(kExampleDomain),
+                                  /*plus_address_title=*/std::u16string())
+          .AppendFooterCommand(
+              generate_password_str(),
+              autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL)
+          .AppendFooterCommand(manage_passwords_str(),
+                               autofill::AccessoryAction::MANAGE_PASSWORDS)
+          .Build());
+}
+
+// Tests that `is_field_eligible_for_manual_generation` forces to show manual
+// password generation option.
+TEST_F(PasswordAccessoryControllerTest,
+       AddsGenerationCommandWhenAvailableOnTextField) {
+  CreateSheetController();
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  ON_CALL(password_manager(), HaveFormManagersReceivedData)
+      .WillByDefault(Return(true));
+  ON_CALL(frame_helper(), IsGenerationEnabled).WillByDefault(Return(true));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableNonSearchField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -868,7 +913,8 @@ TEST_F(PasswordAccessoryControllerTest,
   ON_CALL(frame_helper(), IsGenerationEnabled).WillByDefault(Return(true));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -887,7 +933,8 @@ TEST_F(PasswordAccessoryControllerTest, NoGenerationCommandIfNoFormsReceived) {
   ON_CALL(frame_helper(), IsGenerationEnabled).WillByDefault(Return(false));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -919,7 +966,8 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlocklisted) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -946,7 +994,8 @@ TEST_F(PasswordAccessoryControllerTest,
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(false)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -969,7 +1018,8 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -991,7 +1041,8 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableNonSearchField);
+      FocusedFieldType::kFillableNonSearchField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -1018,7 +1069,8 @@ TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
       .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableNonSearchField);
+      FocusedFieldType::kFillableNonSearchField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -1056,7 +1108,8 @@ TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
       .WillRepeatedly(Return(base::make_span(profiles)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableNonSearchField);
+      FocusedFieldType::kFillableNonSearchField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -1100,7 +1153,8 @@ TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
       .WillRepeatedly(Return(base::make_span(profiles)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableNonSearchField);
+      FocusedFieldType::kFillableNonSearchField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -1127,7 +1181,8 @@ TEST_F(PasswordAccessoryControllerTest,
   CreateSheetController();
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -1140,7 +1195,8 @@ TEST_F(PasswordAccessoryControllerTest,
   CreateSheetController();
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   // Although the plus address filling is enabled, the user doesn't have any
   // saved plus addresses. The "Select plus address" should not be displayed.
@@ -1157,7 +1213,8 @@ TEST_F(PasswordAccessoryControllerTest,
   CreateSheetController();
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   plus_address_service().add_plus_profile(
       plus_addresses::test::CreatePlusProfile());
@@ -1184,7 +1241,8 @@ TEST_F(PasswordAccessoryControllerTest,
       .WillRepeatedly(Return(base::span<const PlusProfile, 0>()));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   // Plus address creation can't be supported while plus address filling is
   // disabled.
@@ -1213,7 +1271,8 @@ TEST_F(PasswordAccessoryControllerTest,
       .WillRepeatedly(Return(base::span(profiles)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   // Plus address creation can't be supported while plus address filling is
   // disabled.
@@ -1250,7 +1309,8 @@ TEST_F(PasswordAccessoryControllerTest,
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   histogram_tester.ExpectUniqueSample(
       "KeyboardAccessory.DisabledSavingAccessoryImpressions", true, 1);
@@ -1273,7 +1333,8 @@ TEST_F(PasswordAccessoryControllerTest, NoAccessoryImpressionsIfUnblocklisted) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   histogram_tester.ExpectTotalCount(
       "KeyboardAccessory.DisabledSavingAccessoryImpressions", 0);
@@ -1356,7 +1417,8 @@ TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1384,7 +1446,8 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1421,7 +1484,8 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1463,7 +1527,8 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1502,7 +1567,8 @@ TEST_F(PasswordAccessoryControllerTest,
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1535,7 +1601,8 @@ TEST_F(PasswordAccessoryControllerTest,
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1562,7 +1629,8 @@ TEST_F(PasswordAccessoryControllerTest,
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1602,7 +1670,8 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1635,7 +1704,8 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
 TEST_F(PasswordAccessoryControllerTest, FillsPlusAddressSuggestion) {
   CreateSheetController();
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(
@@ -1737,7 +1807,8 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectCredManReentryOption) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
@@ -1768,7 +1839,8 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
   EXPECT_EQ(
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
@@ -1792,7 +1864,8 @@ TEST_F(PasswordAccessoryControllerTest,
        TriggersPlusAddressCreationBottomSheet) {
   CreateSheetController();
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   const std::string plus_address = "example@gmail.com";
   EXPECT_CALL(autofill_client(), OfferPlusAddressCreation)
@@ -1830,7 +1903,8 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -1860,7 +1934,8 @@ TEST_F(PasswordAccessoryControllerTest,
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -1899,7 +1974,8 @@ TEST_F(PasswordAccessoryControllerTest,
       matches, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
           .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
@@ -1940,7 +2016,8 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -1980,7 +2057,8 @@ TEST_F(PasswordAccessoryControllerTest,
       matches, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
           .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
@@ -2028,7 +2106,8 @@ TEST_F(PasswordAccessoryControllerTest,
       url::Origin::Create(GURL(kExampleSite)));
 
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   AccessorySheetField selected_field =
       AccessorySheetField::Builder()
@@ -2096,7 +2175,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
 
@@ -2124,7 +2204,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField);
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
 
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
 
@@ -2155,7 +2236,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
 
   // Trigger suggestion refresh(es).
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
   EXPECT_EQ(
       controller()->GetSheetData(),
@@ -2179,7 +2261,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
   EXPECT_EQ(
@@ -2198,7 +2281,8 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
 
   // Trigger suggestion refresh(es).
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField);
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
 
   task_environment()->RunUntilIdle();  // Wait for store to trigger update.
   EXPECT_EQ(

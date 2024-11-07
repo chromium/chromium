@@ -328,7 +328,7 @@ class MockPasswordAccessoryControllerImpl
 
   MOCK_METHOD(void,
               RefreshSuggestionsForField,
-              (autofill::mojom::FocusedFieldType),
+              (autofill::mojom::FocusedFieldType, bool),
               (override));
   MOCK_METHOD(void,
               UpdateCredManReentryUi,
@@ -1390,7 +1390,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   PasswordGenerationController* pwd_generation_controller =
       PasswordGenerationController::GetOrCreate(web_contents());
   pwd_generation_controller->FocusedInputChanged(
-      FocusedFieldType::kFillablePasswordField, driver->AsWeakPtrImpl());
+      /*is_field_eligible_for_generation=*/true, driver->AsWeakPtrImpl());
 
   ChromePasswordManagerClient* client = GetClient();
 
@@ -1459,9 +1459,10 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
       SetUpMockPwdAccessoryForClientUse(driver.get());
 
-  EXPECT_CALL(
-      *weak_mock_pwd_controller,
-      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField));
+  EXPECT_CALL(*weak_mock_pwd_controller,
+              RefreshSuggestionsForField(
+                  FocusedFieldType::kFillablePasswordField,
+                  /*is_field_eligible_for_manual_generation=*/true));
   GetClient()->FocusedInputChanged(driver.get(),
                                    observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
@@ -1509,9 +1510,10 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
       SetUpMockPwdAccessoryForClientUse(driver.get());
-  EXPECT_CALL(
-      *weak_mock_pwd_controller,
-      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField));
+  EXPECT_CALL(*weak_mock_pwd_controller,
+              RefreshSuggestionsForField(
+                  FocusedFieldType::kFillablePasswordField,
+                  /*is_field_eligible_for_manual_generation=*/true));
   GetClient()->FocusedInputChanged(driver.get(),
                                    observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
@@ -1549,9 +1551,10 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
       SetUpMockPwdAccessoryForClientUse(driver.get());
-  EXPECT_CALL(
-      *weak_mock_pwd_controller,
-      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField));
+  EXPECT_CALL(*weak_mock_pwd_controller,
+              RefreshSuggestionsForField(
+                  FocusedFieldType::kFillablePasswordField,
+                  /*is_field_eligible_for_manual_generation=*/true));
   GetClient()->FocusedInputChanged(driver.get(),
                                    observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);

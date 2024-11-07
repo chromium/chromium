@@ -89,6 +89,11 @@ class PasswordGenerationFrameHelper {
       autofill::FieldSignature field_signature,
       uint64_t max_length);
 
+  const base::flat_set<autofill::FieldRendererId>&
+  GenerationEnabledFieldsForTests() const {
+    return generation_enabled_fields_;
+  }
+
  private:
   friend class PasswordGenerationFrameHelperTest;
 

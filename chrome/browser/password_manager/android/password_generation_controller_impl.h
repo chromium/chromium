@@ -50,7 +50,7 @@ class PasswordGenerationControllerImpl
   base::WeakPtr<password_manager::ContentPasswordManagerDriver>
   GetActiveFrameDriver() const override;
   void FocusedInputChanged(
-      autofill::mojom::FocusedFieldType focused_field_type,
+      bool is_field_eligible_for_generation,
       base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver)
       override;
   void OnAutomaticGenerationAvailable(
@@ -79,6 +79,9 @@ class PasswordGenerationControllerImpl
       std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
       base::WeakPtr<ManualFillingController> manual_filling_controller)
       override;
+  TouchToFillPasswordGenerationController*
+  GetTouchToFillGenerationControllerForTesting() override;
+
   gfx::NativeWindow top_level_native_window() override;
   content::WebContents* web_contents() override;
   autofill::FieldSignature get_field_signature_for_testing() override;

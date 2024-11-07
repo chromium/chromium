@@ -79,7 +79,8 @@ class PasswordAccessoryControllerImpl
   void RegisterPlusProfilesProvider(
       base::WeakPtr<AffiliatedPlusProfilesProvider> provider) override;
   void RefreshSuggestionsForField(
-      autofill::mojom::FocusedFieldType focused_field_type) override;
+      autofill::mojom::FocusedFieldType focused_field_type,
+      bool is_field_eligible_for_manual_generation) override;
   void OnGenerationRequested(
       autofill::password_generation::PasswordGenerationType type) override;
   void UpdateCredManReentryUi(
@@ -143,7 +144,8 @@ class PasswordAccessoryControllerImpl
   struct LastFocusInfo {
     LastFocusInfo(url::Origin focused_origin,
                   autofill::mojom::FocusedFieldType focused_field,
-                  bool generation_allowed_in_frame);
+                  bool generation_allowed_in_frame,
+                  bool field_eligible_for_manual_generation);
 
     // Records the origin at the time of focusing the field to double-check that
     // the frame origin hasn't changed.
@@ -156,6 +158,17 @@ class PasswordAccessoryControllerImpl
 
     // If true, password generation is available in the frame.
     bool is_generation_allowed_in_frame = false;
+
+    // True in one of the following cases:
+    // 1) The field has type="password".
+    // 2) The field was type="password" field at some point of time.
+    // 3) The field has a variation of the word "password" in name/id
+    // attributes.
+    // 4) The server predicts the field as new password field.
+    // If true, manual password generation is allowed on the field.
+    // This, however, does not affect manual filling on the field.
+    // If false, no manual password generation should be offered on the field.
+    bool is_field_eligible_for_manual_generation = false;
   };
 
   // WebContentsObserver:
