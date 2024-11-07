@@ -80,12 +80,16 @@ class CWVAutofillControllerTest : public web::WebTest {
 
     frame_id_ = base::SysUTF8ToNSString(web::kMainFakeFrameId);
 
-    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    web_frames_manager_ = frames_manager.get();
-    web::ContentWorld content_world =
-        autofill::AutofillJavaScriptFeature::GetInstance()
-            ->GetSupportedContentWorld();
-    web_state_.SetWebFramesManager(content_world, std::move(frames_manager));
+    for (auto content_world : {web::ContentWorld::kIsolatedWorld,
+                               web::ContentWorld::kPageContentWorld}) {
+      auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+      web_state_.SetWebFramesManager(content_world, std::move(frames_manager));
+    }
+
+    web_frames_manager_ =
+        static_cast<web::FakeWebFramesManager*>(web_state_.GetWebFramesManager(
+            autofill::AutofillJavaScriptFeature::GetInstance()
+                ->GetSupportedContentWorld()));
 
     autofill_agent_ =
         [[FakeAutofillAgent alloc] initWithPrefService:&pref_service_
