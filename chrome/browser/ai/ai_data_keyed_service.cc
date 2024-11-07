@@ -183,7 +183,7 @@ void GetTabDataForModelPrototyping(
   // Fill the Tabs part of the proto.
   AiDataKeyedService::AiData data =
       std::make_optional<AiDataKeyedService::BrowserData>();
-  static constexpr int inner_text_limit = 5;
+  static constexpr int inner_text_limit = 10;
   auto* tab_strip_model = browser->GetTabStripModel();
   for (int index = 0; index < tab_strip_model->count(); index++) {
     content::WebContents* tab_web_contents =

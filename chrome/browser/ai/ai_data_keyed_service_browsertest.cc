@@ -177,20 +177,19 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerText) {
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerTextLimit) {
-  chrome::AddTabAt(browser(), GURL("foo.com"), -1, true);
-  chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
-  chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
+  for (int i = 1; i < 10; i++) {
+    chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
+  }
+  LoadSimplePageAndData();
+  EXPECT_EQ(ai_data()->active_tab_id(), 9);
   chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
   LoadSimplePageAndData();
-  EXPECT_EQ(ai_data()->active_tab_id(), 4);
-  chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
-  LoadSimplePageAndData();
-  EXPECT_EQ(ai_data()->active_tab_id(), 5);
+  EXPECT_EQ(ai_data()->active_tab_id(), 10);
   for (auto& tab : ai_data()->tabs()) {
-    if (tab.tab_id() == 4) {
+    if (tab.tab_id() == 9) {
       EXPECT_EQ(tab.page_context().inner_text(), "Non empty simple page");
     }
-    if (tab.tab_id() == 5) {
+    if (tab.tab_id() == 10) {
       EXPECT_EQ(tab.page_context().inner_text(), "");
     }
   }
