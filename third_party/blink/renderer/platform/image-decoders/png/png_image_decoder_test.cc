@@ -1654,17 +1654,13 @@ TEST_P(PNGTests, VerifyFrameCompleteBehavior) {
     decoder->SetData(SharedBuffer::Create(full_data), true);
 
     // With full data, parsing the size still does not mark a frame as complete
-    // for animated images.
+    // for animated images.  Except that SkiaImageDecoderBase knows that
+    // IsAllDataReceived means that all frames have been received.
     EXPECT_TRUE(decoder->IsSizeAvailable());
-    // TODO(https://crbug.com/377555843): Enable this test assertion for
-    // Rust-based decoder, once `SkiaImageDecoderBase` takes
-    // `IsAllDataReceived` into account.
-    if (!skia::IsRustyPngEnabled()) {
-      if (rec.expected_frame_count > 1) {
-        EXPECT_FALSE(decoder->FrameIsReceivedAtIndex(0));
-      } else {
-        EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
-      }
+    if ((rec.expected_frame_count > 1) && !skia::IsRustyPngEnabled()) {
+      EXPECT_FALSE(decoder->FrameIsReceivedAtIndex(0));
+    } else {
+      EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
     }
 
     if (skia::IsRustyPngEnabled()) {
@@ -1683,12 +1679,7 @@ TEST_P(PNGTests, VerifyFrameCompleteBehavior) {
 
     // After parsing (the full file), all frames are complete.
     for (size_t i = 0; i < frame_count; ++i) {
-      // TODO(https://crbug.com/377555843): Enable this test assertion for
-      // Rust-based decoder, once `SkiaImageDecoderBase` takes
-      // `IsAllDataReceived` into account.
-      if (!skia::IsRustyPngEnabled()) {
-        EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(i));
-      }
+      EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(i));
     }
 
     frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -1801,6 +1792,58 @@ TEST_P(AnimatedPNGTests, TrnsMeansAlpha) {
   auto decoder = CreatePNGDecoderWithPngData(png_file);
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame->HasAlpha());
+}
+
+// This test is based on the test suite shared at
+// https://philip.html5.org/tests/apng/tests.html#apng-dispose-op-none-basic
+//
+// To some extent this test duplicates `Codec_apng_dispose_op_none_basic` from
+// Skia, but it also covers some additional aspects:
+//
+// * It covers `blink::PNGImageDecoder`
+// * It covers additional `SkPngRustCodec` / `SkiaImageDecoderBase` aspects:
+//     - `FrameIsReceivedAtIndex(2)` depends on recognizing `IsAllDataReceived`
+//       at Blink layer, in `SkiaImageDecoderBase`
+//     - Managing frame buffers, dispose ops, etc is also handled at Blink
+//       layer (although this test provides only cursory coverage of this
+//       aspect, because the test image uses only simple dispose ops and blend
+//       ops).
+TEST_P(AnimatedPNGTests, ApngTestSuiteDisposeOpNoneBasic) {
+  const char* png_file =
+      "/images/resources/"
+      "apng-test-suite-dispose-op-none-basic.png";
+  auto decoder = CreatePNGDecoderWithPngData(png_file);
+
+  // At this point the decoder should have metadata for all 3 frames and should
+  // realize that the input is complete (and therefore the data for all frames
+  // is available).
+  wtf_size_t frame_count = decoder->FrameCount();
+  EXPECT_EQ(3u, decoder->FrameCount());
+  EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
+  EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(1));
+  EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(2));
+
+  // Decode the frames to see if the final result is green.
+  for (wtf_size_t i = 0; i < frame_count; i++) {
+    SCOPED_TRACE(testing::Message()
+                 << "Testing DecodeFrameBufferAtIndex(" << i << ")");
+    auto* frame = decoder->DecodeFrameBufferAtIndex(i);
+    ASSERT_TRUE(frame);
+    ASSERT_FALSE(decoder->Failed());
+    SkColor actualColor = frame->Bitmap().getColor(0, 0);
+    if (i == 0) {
+      EXPECT_EQ(SkColorGetA(actualColor), 0xFFu);
+      EXPECT_GE(SkColorGetR(actualColor), 0xFEu);
+      EXPECT_EQ(SkColorGetG(actualColor), 0x00u);
+      EXPECT_EQ(SkColorGetB(actualColor), 0x00u);
+    } else if ((i == 1) || (i == 2)) {
+      EXPECT_EQ(SkColorGetA(actualColor), 0xFFu);
+      EXPECT_EQ(SkColorGetR(actualColor), 0x00u);
+      EXPECT_GE(SkColorGetG(actualColor), 0xFEu);
+      EXPECT_EQ(SkColorGetB(actualColor), 0x00u);
+    }
+  }
+  EXPECT_FALSE(decoder->Failed());
 }
 
 TEST_P(PNGTests, CriticalPrivateChunkBeforeIHDR) {

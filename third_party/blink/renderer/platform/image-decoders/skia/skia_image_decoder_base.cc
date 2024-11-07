@@ -148,6 +148,14 @@ int SkiaImageDecoderBase::RepetitionCount() const {
 }
 
 bool SkiaImageDecoderBase::FrameIsReceivedAtIndex(wtf_size_t index) const {
+  // When all input data has been received, then (by definition) it means that
+  // all data for all individual frames has also been received.  (Note that the
+  // default `ImageDecoder::FrameIsReceivedAtIndex` implementation just returns
+  // `IsAllDataReceived()`.)
+  if (IsAllDataReceived()) {
+    return true;
+  }
+
   SkCodec::FrameInfo frame_info;
   if (!codec_ || !codec_->getFrameInfo(index, &frame_info)) {
     return false;
@@ -344,7 +352,7 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
       }
       case SkCodec::kIncompleteInput:
         frame.SetPixelsChanged(true);
-        if (FrameIsReceivedAtIndex(current_frame_index) || IsAllDataReceived()) {
+        if (FrameIsReceivedAtIndex(current_frame_index)) {
           SetFailedFrameIndex(current_frame_index);
         }
         break;
