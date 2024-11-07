@@ -233,12 +233,6 @@ BASE_FEATURE(kNtpFeedModule,
              "NtpFeedModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Google Lens image search will call Lens v3 direct upload
-// endpoint instead of uploading to Scotty.
-BASE_FEATURE(kNtpLensDirectUpload,
-             "NtpLensDirectUpload",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, SafeBrowsing module will be shown to a target user.
 BASE_FEATURE(kNtpSafeBrowsingModule,
              "NtpSafeBrowsingModule",

@@ -469,9 +469,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("searchboxLensSearch", enable_lens_search);
   source->AddString("searchboxLensVariations", GetBase64UrlVariations(profile));
   source->AddBoolean(
-      "searchboxLensDirectUpload",
-      base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
-  source->AddBoolean(
       "searchboxCr23Theming",
       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
   source->AddBoolean("searchboxCr23SteadyStateShadow",
