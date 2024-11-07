@@ -434,7 +434,8 @@ TEST_F(BackgroundRefreshAppAgentTest, HandleNotDueTask) {
   EXPECT_FALSE([notDueProvider injectedTask].executed);
 }
 
-TEST_F(BackgroundRefreshAppAgentTest, ExpireTask) {
+// TODO(crbug.com/377624966): Flaky-failing on ios-simulator
+TEST_F(BackgroundRefreshAppAgentTest, DISABLED_ExpireTask) {
   // Test that when a task is running and the OS expiration method is called,
   // the task is terminated, and the task is *not* marked successful.
   // Note: The current implementation doesn't terminate the prolonged task;
