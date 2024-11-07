@@ -162,7 +162,7 @@ void DistillerPageIOS::AttachWebState(
   }
   web_state_ = std::move(web_state);
   if (web_state_) {
-    web_state_->AddObserver(this);
+    web_state_observation_.Observe(web_state_.get());
     media_blocker_ =
         std::make_unique<DistillerPageMediaBlocker>(web_state_.get());
   }
@@ -171,7 +171,7 @@ void DistillerPageIOS::AttachWebState(
 std::unique_ptr<web::WebState> DistillerPageIOS::DetachWebState() {
   if (web_state_) {
     media_blocker_.reset();
-    web_state_->RemoveObserver(this);
+    web_state_observation_.Reset();
   }
   return std::move(web_state_);
 }
