@@ -140,7 +140,7 @@ export class TranslateButtonElement extends PolymerElement {
   // auto detect the language.
   private sourceLanguage: Language|null = null;
   // The currently selected target language to translate to.
-  private targetLanguage: Language;
+  private targetLanguage: Language|null = null;
   // Whether the source language menu picker is visible.
   private sourceLanguageMenuVisible: boolean = false;
   // Whether the target language menu picker is visible.
@@ -292,6 +292,11 @@ export class TranslateButtonElement extends PolymerElement {
         languages.targetLanguages.filter((language) => {
           return this.supportedTargetLanguages.has(language.languageCode);
         });
+
+    // Since we always want to use the server languages over the client
+    // languages, we set a variable to always override any existing language if
+    // the initial languages were already set.
+    this.maybeSetInitialLanguagesInPicker(/*overrideExisting=*/ true);
   }
 
   private onClientLanguageListRetrieved(languageList: Language[]) {
@@ -310,9 +315,43 @@ export class TranslateButtonElement extends PolymerElement {
       return supportedTargetTranslateLanguages.has(language.languageCode);
     });
 
-    // After receiving the language list, get the default translate target
-    // language. This needs to happen after fetching the language list so we can
-    //  use the list to fetch the language's display name.
+    this.maybeSetInitialLanguagesInPicker();
+  }
+
+  private maybeSetInitialLanguagesInPicker(overrideExisting = false) {
+    // If the target language was already set and we do not want to override
+    // anyway, then we should return early.
+    if (this.targetLanguage && !overrideExisting) {
+      return;
+    }
+
+    // Last used source and target languages are stored in local storage if
+    // feature enabled.
+    if (loadTimeData.getBoolean('shouldFetchSupportedLanguages')) {
+      const sourceLanguageCode =
+          this.languageBrowserProxy.getLastUsedSourceLanguage();
+      const targetLanguageCode =
+          this.languageBrowserProxy.getLastUsedTargetLanguage();
+      const initialSourceLanguage = this.getSourceLanguageList().find(
+          language => language.languageCode === sourceLanguageCode);
+      const initialTargetLanguage = this.getTargetLanguageList().find(
+          language => language.languageCode === targetLanguageCode);
+
+      this.sourceLanguage =
+          initialSourceLanguage ? initialSourceLanguage : null;
+      this.targetLanguage =
+          initialTargetLanguage ? initialTargetLanguage : null;
+      // If target language was still not set, then we still need to get the
+      // translate target language from the language browser proxy. Otherwise,
+      // return.
+      if (this.targetLanguage) {
+        return;
+      }
+    }
+
+    // Get the default translate target language. This needs to happen after
+    // fetching the language list so we can use the list to fetch the language's
+    // display name.
     this.languageBrowserProxy.getTranslateTargetLanguage().then(
         this.onTargetLanguageRetrieved.bind(this));
   }
@@ -334,6 +373,7 @@ export class TranslateButtonElement extends PolymerElement {
 
   private onAutoDetectMenuItemClick() {
     this.sourceLanguage = null;
+    this.languageBrowserProxy.storeLastUsedSourceLanguage(null);
     this.hideLanguagePickerMenus();
     this.maybeIssueTranslateRequest();
     recordLensOverlayInteraction(
@@ -365,6 +405,8 @@ export class TranslateButtonElement extends PolymerElement {
     const newSourceLanguage =
         this.$.sourceLanguagePickerContainer.itemForElement(event.target);
     this.sourceLanguage = newSourceLanguage;
+    this.languageBrowserProxy.storeLastUsedSourceLanguage(
+        newSourceLanguage ? newSourceLanguage.languageCode : null);
     this.hideLanguagePickerMenus();
     this.maybeIssueTranslateRequest();
     recordLensOverlayInteraction(
@@ -376,6 +418,8 @@ export class TranslateButtonElement extends PolymerElement {
     const newTargetLanguage =
         this.$.targetLanguagePickerContainer.itemForElement(event.target);
     this.targetLanguage = newTargetLanguage;
+    this.languageBrowserProxy.storeLastUsedTargetLanguage(
+        newTargetLanguage ? newTargetLanguage.languageCode : null);
     this.hideLanguagePickerMenus();
     this.maybeIssueTranslateRequest();
     recordLensOverlayInteraction(
@@ -600,7 +644,7 @@ export class TranslateButtonElement extends PolymerElement {
       composed: true,
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.languageCode,
+        targetLanguage: this.targetLanguage!.languageCode,
         shouldHideSearchbox:
             this.isTranslateModeEnabled && !this.shouldHideLanguagePicker,
         shouldUnselectWords: shouldUnselectWords,

@@ -14,18 +14,24 @@ let instance: LanguageBrowserProxy|null = null;
 
 const LAST_FETCH_SUPPORTED_LANGUAGES_TIME_KEY =
     'lastFetchSupportedLanguagesTime';
+const LAST_USED_SOURCE_LANGUAGE_KEY = 'lastUsedSourceLanguage';
+const LAST_USED_TARGET_LANGUAGE_KEY = 'lastUsedTargetLanguage';
 const SUPPORTED_LANGUAGES_LOCALE_KEY = 'supportedLanguagesLocale';
 const SUPPORTED_SOURCE_LANGUAGES_KEY = 'supportedSourceLanguages';
 const SUPPORTED_TARGET_LANGUAGES_KEY = 'supportedTargetLanguages';
 
 export interface LanguageBrowserProxy {
   getClientLanguageList(): Promise<Language[]>;
+  getLastUsedSourceLanguage(): string|null;
+  getLastUsedTargetLanguage(): string|null;
   getTranslateTargetLanguage(): Promise<string>;
   getStoredServerLanguages(browserProxy: BrowserProxy):
       Promise<{sourceLanguages: Language[], targetLanguages: Language[]}>;
   storeLanguages(
       locale: string, sourceLanguages: Language[],
       targetLanguages: Language[]): void;
+  storeLastUsedSourceLanguage(sourceLanguageCode: string|null): void;
+  storeLastUsedTargetLanguage(targetLanguageCode: string|null): void;
 }
 
 export class LanguageBrowserProxyImpl implements LanguageBrowserProxy {
@@ -45,6 +51,14 @@ export class LanguageBrowserProxyImpl implements LanguageBrowserProxy {
                                           name: lang.displayName,
                                         }));
         });
+  }
+
+  getLastUsedSourceLanguage(): string|null {
+    return window.localStorage.getItem(LAST_USED_SOURCE_LANGUAGE_KEY);
+  }
+
+  getLastUsedTargetLanguage(): string|null {
+    return window.localStorage.getItem(LAST_USED_TARGET_LANGUAGE_KEY);
   }
 
   getTranslateTargetLanguage(): Promise<string> {
@@ -81,6 +95,27 @@ export class LanguageBrowserProxyImpl implements LanguageBrowserProxy {
         SUPPORTED_TARGET_LANGUAGES_KEY, JSON.stringify(targetLanguages));
     window.localStorage.setItem(
         LAST_FETCH_SUPPORTED_LANGUAGES_TIME_KEY, Date.now().toString());
+  }
+
+  storeLastUsedSourceLanguage(sourceLanguageCode: string|null) {
+    // If source language code is null, then it is likely set to 'auto'. We do
+    // not need to store this value since it is default already.
+    if (!sourceLanguageCode) {
+      window.localStorage.removeItem(LAST_USED_SOURCE_LANGUAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(
+        LAST_USED_SOURCE_LANGUAGE_KEY, sourceLanguageCode);
+  }
+
+  storeLastUsedTargetLanguage(targetLanguageCode: string|null) {
+    if (!targetLanguageCode) {
+      return;
+    }
+
+    window.localStorage.setItem(
+        LAST_USED_TARGET_LANGUAGE_KEY, targetLanguageCode);
   }
 
   private onServerLanguageListFetched(response: {

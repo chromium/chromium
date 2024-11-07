@@ -1249,4 +1249,95 @@ suite('OverlayTranslateButtonLanguages', function() {
     assertEquals(
         1, testBrowserProxy.handler.getCallCount('fetchSupportedLanguages'));
   });
+
+  test('StoreLastUsedSourceLanguage', async () => {
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+
+    // The source language button should be visible but the language picker
+    // menu should not be visible.
+    assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+
+    // Clicking the source language button should open the picker menu.
+    overlayTranslateButtonElement.$.sourceLanguageButton.click();
+
+    // The source language picker menu is visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+    assertTrue(testLanguageBrowserProxy.getLastUsedSourceLanguage() === null);
+
+    // Get a menu item button from the source language picker menu to click.
+    const sourceLanguageMenuItem =
+        overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+            .querySelector<CrButtonElement>(
+                'cr-button:not(#sourceAutoDetectButton)');
+    assertTrue(sourceLanguageMenuItem !== null);
+    sourceLanguageMenuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The source language button should be updated with the text of the new
+    // source language.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        sourceLanguageMenuItem.innerText.trim());
+    assertEquals(testLanguageBrowserProxy.getLastUsedSourceLanguage(), 'es');
+
+    overlayTranslateButtonElement.$.sourceAutoDetectButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        loadTimeData.getString('detectLanguage'));
+    assertTrue(testLanguageBrowserProxy.getLastUsedSourceLanguage() === null);
+  });
+
+  test('StoreLastUsedTargetLanguage', async () => {
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+
+    // The target language button should be visible but the language picker
+    // menu should not be visible.
+    assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+
+    // Clicking the target language button should open the picker menu.
+    overlayTranslateButtonElement.$.targetLanguageButton.click();
+
+    // The target language picker menu is visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+    assertTrue(testLanguageBrowserProxy.getLastUsedTargetLanguage() === null);
+
+    // Get a menu item button from the target language picker menu to click.
+    const targetLanguageMenuItem =
+        overlayTranslateButtonElement.$.targetLanguagePickerMenu
+            .querySelector<CrButtonElement>('cr-button');
+    assertTrue(targetLanguageMenuItem !== null);
+    targetLanguageMenuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The target language button should be updated with the text of the new
+    // target language.
+    assertEquals(
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText,
+        targetLanguageMenuItem.innerText.trim());
+    assertEquals(testLanguageBrowserProxy.getLastUsedTargetLanguage(), 'es');
+  });
 });
