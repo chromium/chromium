@@ -17762,6 +17762,39 @@
                     "enable_features": [
                         "PriceTrackingPromo",
                         "SegmentationPlatformEphemeralCardRanker"
+                    ],
+                    "disable_features": [
+                        "SegmentationPlatformTipsEphemeralCard"
+                    ]
+                },
+                {
+                    "name": "Tips_Enabled",
+                    "params": {
+                        "TipsEphemeralCardExperimentTrainParam": "lens_ephemeral_module_search_variation,save_passwords_ephemeral_module,enhanced_safe_browsing_ephemeral_module,address_bar_position_ephemeral_module",
+                        "TipsEphemeralCardModuleMaxImpressionCount": "3",
+                        "TipsLensShopExperimentType": "0",
+                        "TipsSafeBrowsingExperimentType": "0"
+                    },
+                    "enable_features": [
+                        "SegmentationPlatformEphemeralCardRanker",
+                        "SegmentationPlatformTipsEphemeralCard"
+                    ],
+                    "disable_features": [
+                        "PriceTrackingPromo"
+                    ]
+                },
+                {
+                    "name": "Tips_And_Price_Tracking_Enabled",
+                    "params": {
+                        "TipsEphemeralCardExperimentTrainParam": "lens_ephemeral_module_search_variation,save_passwords_ephemeral_module,enhanced_safe_browsing_ephemeral_module,address_bar_position_ephemeral_module",
+                        "TipsEphemeralCardModuleMaxImpressionCount": "3",
+                        "TipsLensShopExperimentType": "0",
+                        "TipsSafeBrowsingExperimentType": "0"
+                    },
+                    "enable_features": [
+                        "PriceTrackingPromo",
+                        "SegmentationPlatformEphemeralCardRanker",
+                        "SegmentationPlatformTipsEphemeralCard"
                     ]
                 }
             ]
@@ -21432,27 +21465,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SegmentationCompactionFix"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SegmentationPlatformTipsEphemeralCard": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "TipsEphemeralCardExperimentTrainParam": "lens_ephemeral_module_search_variation,save_passwords_ephemeral_module,enhanced_safe_browsing_ephemeral_module,address_bar_position_ephemeral_module",
-                        "TipsEphemeralCardModuleMaxImpressionCount": "3",
-                        "TipsLensShopExperimentType": "0",
-                        "TipsSafeBrowsingExperimentType": "0"
-                    },
-                    "enable_features": [
-                        "SegmentationPlatformTipsEphemeralCard"
                     ]
                 }
             ]
