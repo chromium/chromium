@@ -283,16 +283,16 @@ TEST_F(AXViewTransitionTest, TransitionPseudoNotRelevant) {
     <div id=target class=shared></div>
   )HTML");
 
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  auto* script_state = ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
   auto* view_transition_callback =
       V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
-      script_state, GetDocument(), view_transition_callback, exception_state);
+      script_state, GetDocument(), view_transition_callback,
+      ASSERT_NO_EXCEPTION);
 
   ScriptPromiseTester finish_tester(script_state,
                                     transition->finished(script_state));
