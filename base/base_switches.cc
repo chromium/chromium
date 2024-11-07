@@ -154,9 +154,6 @@ const char kDefaultCountryCodeAtInstall[] = "default-country-code";
 // Adds additional thread idle time information into the trace event output.
 const char kEnableIdleTracing[] = "enable-idle-tracing";
 
-// The field trial parameters and their values when testing changes locally.
-const char kForceFieldTrialParams[] = "force-fieldtrial-params";
-
 // When we retrieve the package name within the SDK Runtime, we need to use
 // a bit of a hack to do this by taking advantage of the fact that the pid
 // is the same pid as the application's pid + 10000.
