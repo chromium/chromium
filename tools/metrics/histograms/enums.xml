@@ -33791,14 +33791,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="132" label="ContainInlineSize"/>
   <int value="133" label="CheckVisibility"/>
   <int value="134" label="Overlay"/>
-  <int value="135" label="CanvasElement"/>
-  <int value="136" label="CanvasFillText"/>
-  <int value="137" label="CanvasMeasureText"/>
-  <int value="138" label="Canvas2D"/>
-  <int value="139" label="CanvasAlpha"/>
-  <int value="140" label="CanvasColorManagement"/>
-  <int value="141" label="CanvasDesynchronized"/>
-  <int value="142" label="WillReadFrequently"/>
+  <int value="135" label="OBSOLETE_CanvasElement"/>
+  <int value="136" label="OBSOLETE_CanvasFillText"/>
+  <int value="137" label="OBSOLETE_CanvasMeasureText"/>
+  <int value="138" label="OBSOLETE_Canvas2D"/>
+  <int value="139" label="OBSOLETE_CanvasAlpha"/>
+  <int value="140" label="OBSOLETE_CanvasColorManagement"/>
+  <int value="141" label="OBSOLETE_CanvasDesynchronized"/>
+  <int value="142" label="OBSOLETE_WillReadFrequently"/>
   <int value="143" label="StartingStyle"/>
   <int value="144" label="DocumentCaretpositionfrompoint"/>
   <int value="145" label="MediaQueryRangeSyntax"/>
@@ -33856,6 +33856,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="197" label="Marker"/>
   <int value="198" label="DynamicRange"/>
   <int value="199" label="DisplayMode"/>
+  <int value="200" label="Canvas"/>
+  <int value="201" label="Canvas2d"/>
+  <int value="202" label="Canvas2dAlpha"/>
+  <int value="203" label="Canvas2dColorManagement"/>
+  <int value="204" label="Canvas2dDesynchronized"/>
+  <int value="205" label="Canvas2dWillreadfrequently"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

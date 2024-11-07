@@ -124,9 +124,9 @@ interface CanvasRenderingContext2D {
     [HighEntropy] boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
 
     // text (see also the CanvasDrawingStyles interface)
-    [HighEntropy, MeasureAs="WebDXFeature::kCanvasFillText"] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
-    [HighEntropy, MeasureAs="WebDXFeature::kCanvasFillText"] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
-    [HighEntropy, MeasureAs="WebDXFeature::kCanvasMeasureText"] TextMetrics measureText(DOMString text);
+    [HighEntropy] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+    [HighEntropy] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+    [HighEntropy] TextMetrics measureText(DOMString text);
     [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y);
 
     // drawing images
