@@ -222,7 +222,7 @@ reviewer.
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.Latency"
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
@@ -230,29 +230,14 @@ reviewer.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the call to check whether the FacilitatedPayments API client is
-    available or not. The API client's availability is checked to determine
-    whether Chrome can offer to facilitate the payment using Google Pay.
-    [Frequency] Logged at most once per page load. [Trigger] Page is loaded and
-    the main frame contains a valid payment code for {FacilitatedPaymentsType}.
+    available or not. The result is {Result}. The API client's availability is
+    checked to determine whether Chrome can offer to facilitate the payment
+    using Google Pay. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} payflow. [Trigger] Page is loaded and the main
+    frame contains a valid payment code for {FacilitatedPaymentsType}.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
-</histogram>
-
-<histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.Result"
-    enum="Boolean" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Result of whether the FacilitatedPayments API client is available or not.
-    The API client's availability is checked to determine whether Chrome can
-    offer to facilitate the payment using Google Pay. [Frequency] Logged at most
-    once per page load. [Trigger] Page is loaded and the main frame contains a
-    valid payment code for {FacilitatedPaymentsType}.
-  </summary>
-  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram

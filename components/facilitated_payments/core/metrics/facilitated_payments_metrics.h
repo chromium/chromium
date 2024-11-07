@@ -20,12 +20,19 @@ namespace payments::facilitated {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PayflowExitedReason {
+  // The code validator encountered an error.
   kCodeValidatorFailed = 0,
+  // The code for the payflow is not valid.
   kInvalidCode = 1,
+  // The user has opted out of the payflow.
   kUserOptedOut = 2,
+  // The user has no linked accounts available for the payflow.
   kNoLinkedAccount = 3,
+  // The device is in landscape orientation when payflow was to be triggered.
   kLandscapeScreenOrientation = 4,
-  kMaxValue = kLandscapeScreenOrientation
+  // The API Client is not available when the payflow was to be triggered.
+  kApiClientNotAvailable = 5,
+  kMaxValue = kApiClientNotAvailable
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
@@ -68,8 +75,10 @@ void LogPaymentCodeValidationResultAndLatency(
     base::expected<bool, std::string> result,
     base::TimeDelta duration);
 
-// Log the result of whether the facilitated payments is available or not.
-void LogIsApiAvailableResult(bool result, base::TimeDelta duration);
+// Log the result of whether the facilitated payments is available or not and
+// the check's latency.
+void LogApiAvailabilityCheckResultAndLatency(bool result,
+                                             base::TimeDelta duration);
 
 // Logs the result and latency for fetching the risk data. If the risk data was
 // fetched successfully, `was_successful` is true. The call took `duration` to

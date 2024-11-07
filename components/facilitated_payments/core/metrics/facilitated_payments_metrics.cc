@@ -34,13 +34,14 @@ void LogPaymentCodeValidationResultAndLatency(
       duration);
 }
 
-void LogIsApiAvailableResult(bool result, base::TimeDelta duration) {
+void LogApiAvailabilityCheckResultAndLatency(bool result,
+                                             base::TimeDelta duration) {
   // TODO(b/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
-  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.IsApiAvailable.Result",
-                        result);
-  base::UmaHistogramLongTimes("FacilitatedPayments.Pix.IsApiAvailable.Latency",
-                              duration);
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.Pix.IsApiAvailable.",
+                    result ? "Success" : "Failure", ".Latency"}),
+      duration);
 }
 
 void LogLoadRiskDataResultAndLatency(bool was_successful,

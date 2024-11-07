@@ -161,11 +161,11 @@ FacilitatedPaymentsApiClient* FacilitatedPaymentsManager::GetApiClient() {
 
 void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     bool is_api_available) {
-  LogIsApiAvailableResult(
+  LogApiAvailabilityCheckResultAndLatency(
       is_api_available,
       (base::TimeTicks::Now() - api_availability_check_start_time_));
   if (!is_api_available) {
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kApiNotAvailable);
+    LogPayflowExitedReason(PayflowExitedReason::kApiClientNotAvailable);
     return;
   }
 

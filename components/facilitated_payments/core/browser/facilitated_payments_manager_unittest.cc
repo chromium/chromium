@@ -761,7 +761,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // The `IsAvailable` async call is made after a valid Pix code has been
 // detected. This test verifies that the result and latency are logged after the
 // async call is completed.
-TEST_F(FacilitatedPaymentsManagerTest, ApiAvailabilityHistogram) {
+TEST_F(FacilitatedPaymentsManagerTest,
+       LogApiAvailabilityCheckResultAndLatency) {
   base::HistogramTester histogram_tester;
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
@@ -774,27 +775,23 @@ TEST_F(FacilitatedPaymentsManagerTest, ApiAvailabilityHistogram) {
   manager_->OnApiAvailabilityReceived(true);
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.IsApiAvailable.Result",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.IsApiAvailable.Latency",
+      "FacilitatedPayments.Pix.IsApiAvailable.Success.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
 }
 
 // The `IsAvailable` async call is made after a valid Pix code has been
 // detected. This test verifies that if the api available result is false, the
-// PaymentNotOfferedReason histogram is logged.
+// PayflowExitedReason histogram is logged.
 TEST_F(FacilitatedPaymentsManagerTest,
-       PaymentNotOfferedReason_ApiNotAvailable) {
+       PayflowExitedReason_ApiClientNotAvailable) {
   base::HistogramTester histogram_tester;
 
   manager_->OnApiAvailabilityReceived(false);
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
-      /*sample=*/PaymentNotOfferedReason::kApiNotAvailable,
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kApiClientNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
