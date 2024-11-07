@@ -8,6 +8,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
@@ -18,6 +19,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -72,6 +74,35 @@ TEST_F(CoralControllerTest, ClickChipWithMaxDesks) {
   LeftClickOn(coral_button->addon_view());
   EXPECT_TRUE(
       Shell::Get()->toast_manager()->IsToastShown("coral_max_desks_toast"));
+}
+
+// Tests that a window that launches onto a coral desk maintains its visible on
+// all desks property.
+TEST_F(CoralControllerTest, VisibleOnAllDesks) {
+  auto app_window = CreateAppWindow();
+  // This is the property of one of the apps in the group
+  // `CreateDefaultTestGroup()`, which is used in the test setup harness.
+  app_window->SetProperty(kAppIDKey,
+                          std::string("odknhmnlageboeamepcngndbggdpaobj"));
+  app_window->SetProperty(aura::client::kWindowWorkspaceKey,
+                          aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+
+  // Click the coral button and verify we have created and activated the new
+  // desk.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  DeskSwitchAnimationWaiter waiter;
+  BirchChipButton* coral_button = GetFirstCoralButton();
+  LeftClickOn(coral_button);
+  waiter.Wait();
+  auto* desks_controller = DesksController::Get();
+  EXPECT_EQ(desks_controller->desks().size(), 2u);
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+
+  // Test that the window is moved onto the new desk and still is visible on all
+  // desks.
+  EXPECT_TRUE(desks_controller->BelongsToActiveDesk(app_window.get()));
+  EXPECT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(app_window.get()));
 }
 
 }  // namespace ash

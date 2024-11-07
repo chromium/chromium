@@ -16,6 +16,7 @@
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/public/cpp/tab_strip_delegate.h"
+#include "ash/public/cpp/test/test_coral_delegate.h"
 #include "ash/public/cpp/test/test_desk_profiles_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
@@ -55,7 +56,7 @@ TestShellDelegate::CreateClipboardHistoryControllerDelegate() const {
 }
 
 std::unique_ptr<CoralDelegate> TestShellDelegate::CreateCoralDelegate() const {
-  return nullptr;
+  return std::make_unique<TestCoralDelegate>();
 }
 
 std::unique_ptr<GameDashboardDelegate>

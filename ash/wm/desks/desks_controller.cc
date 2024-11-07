@@ -929,7 +929,11 @@ bool DesksController::MoveWindowFromActiveDeskTo(
       // moving them manually in overview.
       return false;
     } else if (source !=
-               DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks) {
+                   DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks &&
+               source != DesksMoveWindowFromActiveDeskSource::kCoral) {
+      // When moving windows, remove visible on all desks property unless it was
+      // already visible on all desks, and the desk was activated, or it was
+      // moved as a result of launching a coral group.
       window->SetProperty(aura::client::kWindowWorkspaceKey,
                           aura::client::kWindowWorkspaceUnassignedWorkspace);
     }
