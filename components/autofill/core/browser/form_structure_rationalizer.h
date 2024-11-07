@@ -118,9 +118,9 @@ class FormStructureRationalizer {
   // accordingly.
   void RationalizePhoneNumberTrunkTypes(LogManager* log_manager);
 
-  // Filters out fields that don't meet the relationship ruleset for their type
-  // defined in |type_relationships_rules_|.
-  void RationalizeTypeRelationships(LogManager* log_manager);
+  // Rationalizes all PHONE_HOME_COUNTRY_CODE fields to UNKNOWN_TYPE if no other
+  // phone number fields exist among the `fields_`.
+  void RationalizePhoneCountryCode(LogManager* log_manager);
 
   // Executes a set of declarative rationalization rules. See
   // ApplyRationalizationEngineRules in

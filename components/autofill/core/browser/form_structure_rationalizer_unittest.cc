@@ -989,73 +989,34 @@ TEST_P(RationalizeAutocompleteTest, RationalizeAutocompleteAttribute) {
   EXPECT_THAT(GetTypes(*form_structure), GetParam().final_types);
 }
 
-struct RationalizationTypeRelationshipsTestParams {
-  FieldType server_type;
-  FieldType required_type;
-};
-class RationalizationFieldTypeFilterTest
-    : public testing::Test,
-      public testing::WithParamInterface<FieldType> {
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
-};
-class RationalizationFieldTypeRelationshipsTest
-    : public testing::Test,
-      public testing::WithParamInterface<
-          RationalizationTypeRelationshipsTestParams> {
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
-};
-
-INSTANTIATE_TEST_SUITE_P(FormStructureRationalizerTest,
-                         RationalizationFieldTypeFilterTest,
-                         testing::Values(PHONE_HOME_COUNTRY_CODE));
-
-INSTANTIATE_TEST_SUITE_P(FormStructureRationalizerTest,
-                         RationalizationFieldTypeRelationshipsTest,
-                         testing::Values(
-                             RationalizationTypeRelationshipsTestParams{
-                                 PHONE_HOME_COUNTRY_CODE, PHONE_HOME_NUMBER},
-                             RationalizationTypeRelationshipsTestParams{
-                                 PHONE_HOME_COUNTRY_CODE,
-                                 PHONE_HOME_CITY_AND_NUMBER}));
-
-// Tests that the rationalization logic will filter out fields of type |param|
-// when there is no other required type.
-TEST_P(RationalizationFieldTypeFilterTest, Rationalization_Rules_Filter_Out) {
-  FieldType filtered_off_field = GetParam();
-
-  // Just adding >=3 random fields to trigger rationalization.
+// Tests that PHONE_HOME_COUNTRY_CODE fields are rationalized to UNKNOWN_TYPE
+// if no other phone number fields are present.
+TEST_F(FormStructureRationalizerTest,
+       RationalizePhoneCountryCode_NoPhoneFields) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {{"First Name", "firstName", NAME_FIRST},
        {"Last Name", "lastName", NAME_LAST},
        {"Address", "address", ADDRESS_HOME_LINE1},
-       {"Something under test", "tested-thing", filtered_off_field}},
+       {"misclassified field", "name", PHONE_HOME_COUNTRY_CODE}},
       /*run_heuristics=*/true);
   EXPECT_THAT(
       GetTypes(*form_structure),
-      ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
-                  // Last field's type should have been overwritten to expected.
-                  UNKNOWN_TYPE));
+      ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1, UNKNOWN_TYPE));
 }
 
-// Tests that the rationalization logic will not filter out fields of type
-// |param| when there is another field with a required type.
-TEST_P(RationalizationFieldTypeRelationshipsTest,
-       Rationalization_Rules_Relationships) {
-  RationalizationTypeRelationshipsTestParams test_params = GetParam();
-
-  // Just adding >=3 random fields to trigger rationalization.
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {{"First Name", "firstName", NAME_FIRST},
-       {"Last Name", "lastName", NAME_LAST},
-       {"Some field with required type", "some-name",
-        test_params.required_type},
-       {"Something under test", "tested-thing", test_params.server_type}},
-      /*run_heuristics=*/true);
-  EXPECT_THAT(
-      GetTypes(*form_structure),
-      ElementsAre(NAME_FIRST, NAME_LAST, test_params.required_type,
-                  // Last field's type should have been overwritten to expected.
-                  test_params.server_type));
+// Tests that PHONE_HOME_COUNTRY_CODE fields are not rationalized to
+// UNKNOWN_TYPE when other phone number fields are present.
+TEST_F(FormStructureRationalizerTest, RationalizePhoneCountryCode_PhoneFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{"First Name", "firstName", NAME_FIRST},
+                          {"Last Name", "lastName", NAME_LAST},
+                          {"Phone", "tel-country", PHONE_HOME_COUNTRY_CODE},
+                          {"Phone", "tel-national",
+                           PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
+                         /*run_heuristics=*/true);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FIRST, NAME_LAST, PHONE_HOME_COUNTRY_CODE,
+                          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX));
 }
 
 class RationalizePhoneNumberFieldsTest : public testing::Test {

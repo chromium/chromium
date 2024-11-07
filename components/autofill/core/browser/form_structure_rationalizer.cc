@@ -23,21 +23,6 @@ namespace autofill {
 
 namespace {
 
-// Defines necessary types for the rationalization logic, meaning that fields of
-// `type` are only filled if at least one field of some `GetNecessaryTypesFor()`
-// is present.
-FieldTypeSet GetNecessaryTypesFor(FieldType type) {
-  switch (type) {
-    case PHONE_HOME_COUNTRY_CODE: {
-      return FieldTypeSet{PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX,
-                          PHONE_HOME_CITY_AND_NUMBER,
-                          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
-    }
-    default:
-      return {};
-  }
-}
-
 void RationalizePhoneNumberFields(std::vector<AutofillField*>& fields) {
   // A whole phone number can be structured in the following ways:
   // - whole number
@@ -803,7 +788,7 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
     }
   }
 
-  constexpr std::array<FieldType, 3> kAddressLineTypes = {
+  constexpr static std::array<FieldType, 3> kAddressLineTypes = {
       ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
   // Rationalise the street address fields in every section.
   for (auto& [section, fields] : street_address_fields) {
@@ -836,30 +821,28 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizePhoneNumberTrunkTypes(log_manager);
   for (const auto& field : *fields_)
     field->SetTypeTo(field->Type());
-  RationalizeTypeRelationships(log_manager);
+  RationalizePhoneCountryCode(log_manager);
   RationalizeByRationalizationEngine(client_country, language_code,
                                      log_manager);
 }
 
-void FormStructureRationalizer::RationalizeTypeRelationships(
+void FormStructureRationalizer::RationalizePhoneCountryCode(
     LogManager* log_manager) {
-  // Create a local set of all the types for faster lookup.
-  FieldTypeSet types;
-  for (const auto& field : *fields_) {
-    types.insert(field->Type().GetStorableType());
+  constexpr static FieldTypeSet kRelevantPhoneTypes{
+      PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX, PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
+  if (std::ranges::any_of(*fields_, [&](const auto& field) {
+        return kRelevantPhoneTypes.contains(field->Type().GetStorableType());
+      })) {
+    return;
   }
-
-  for (const auto& field : *fields_) {
-    FieldType field_type = field->Type().GetStorableType();
-    FieldTypeSet necessary_types = GetNecessaryTypesFor(field_type);
-    if (!necessary_types.empty() && !types.contains_any(necessary_types)) {
-      // We have relationship rules for this type, but no `necessary_type` was
-      // found. Disabling Autofill for this field.
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    if (field->Type().GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
       LOG_AF(log_manager)
           << "RationalizeTypeRelationships: Fields of type "
-          << FieldTypeToStringView(field_type)
-          << " can only exist if other fields of specific types exist.";
+             "PHONE_HOME_COUNTRY_CODE can only coexist with other"
+             "phone number types.";
     }
   }
 }
