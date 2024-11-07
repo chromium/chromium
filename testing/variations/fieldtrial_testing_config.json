@@ -12518,6 +12518,45 @@
             ]
         }
     ],
+    "InvalidationsWithDirectMessagesPerPlatform": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeviceCertProvisioningInvalidationWithDirectMessagesEnabled",
+                        "DeviceLocalAccountPolicyInvalidationWithDirectMessagesEnabled",
+                        "DevicePolicyInvalidationWithDirectMessagesEnabled",
+                        "DeviceRemoteCommandsInvalidationWithDirectMessagesEnabled",
+                        "UserCertProvisioningInvalidationWithDirectMessagesEnabled",
+                        "UserPolicyInvalidationWithDirectMessagesEnabled",
+                        "UserRemoteCommandsInvalidationWithDirectMessagesEnabled"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "BrowserPolicyUserRemoteCommands",
+                    "enable_features": [
+                        "CbcmPolicyInvalidationWithDirectMessagesEnabled",
+                        "CbcmRemoteCommandsInvalidationWithDirectMessagesEnabled",
+                        "UserPolicyInvalidationWithDirectMessagesEnabled",
+                        "UserRemoteCommandsInvalidationWithDirectMessagesEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IsolatedWebApps": [
         {
             "platforms": [
