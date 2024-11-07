@@ -163,6 +163,32 @@ ExtensionApiFrameIdMap::GetRenderFrameHostByDocumentId(
   return &iter->second->render_frame_host();
 }
 
+content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostByFrameId(
+    int frame_id) {
+  // Frame_id values of 0 are not guaranteed to be unique. Values less than 0
+  // are invalid.
+  CHECK_GE(frame_id, 1);
+
+  content::RenderFrameHost* render_frame_host = nullptr;
+  for (auto iter : document_id_map_) {
+    if (frame_id ==
+        ExtensionApiFrameIdMap::GetFrameId(&iter.second->render_frame_host())) {
+      render_frame_host = &iter.second->render_frame_host();
+      break;
+    }
+  }
+
+  // Fail if the frame is not active or in prerendering (e.g. in the
+  // back/forward cache).
+  if (!render_frame_host ||
+      (!render_frame_host->IsActive() &&
+       !render_frame_host->IsInLifecycleState(
+           content::RenderFrameHost::LifecycleState::kPrerendering))) {
+    return nullptr;
+  }
+  return render_frame_host;
+}
+
 ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::DocumentIdFromString(
     const std::string& document_id) {
   if (document_id.length() != 32) {

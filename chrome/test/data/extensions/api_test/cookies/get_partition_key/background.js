@@ -90,6 +90,21 @@ chrome.test.runTests([
             noHostPermissionsFrame.url + '".')
     chrome.test.succeed();
   },
+  async function testFameIdOnlyInput() {
+    await chrome.test.assertPromiseRejects(
+        chrome.cookies.getPartitionKey({frameId: 0}),
+        'Error: `frameId` may not be 0 if no `tabId` is present.')
+
+    const expectedCrossSiteKey = {
+      'partitionKey':
+          {'topLevelSite': 'http://a.com', 'hasCrossSiteAncestor': true}
+    };
+
+    let actualPartitionKey =
+        await chrome.cookies.getPartitionKey({frameId: crossSiteFrame.frameId});
+    chrome.test.assertEq(expectedCrossSiteKey, actualPartitionKey);
+    chrome.test.succeed();
+  },
   async function testTopLevelFrame() {
     const topLevelDocId = topLevelFrame.documentId;
     chrome.test.assertNe(topLevelDocId.length, 0);
@@ -146,5 +161,5 @@ chrome.test.runTests([
     chrome.test.assertEq(expectedCrossSiteKey, actualPartitionKey);
 
     chrome.test.succeed();
-  }
+  },
 ]);

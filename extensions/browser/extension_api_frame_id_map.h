@@ -153,6 +153,10 @@ class ExtensionApiFrameIdMap {
       content::WebContents* web_contents,
       int frame_id);
 
+  // Find the current RenderFrameHost for given an extension frame ID.
+  // Returns nullptr if not found.
+  content::RenderFrameHost* GetRenderFrameHostByFrameId(int frame_id);
+
   // Find the current RenderFrameHost for a given extension documentID.
   // Returns nullptr if not found.
   content::RenderFrameHost* GetRenderFrameHostByDocumentId(
