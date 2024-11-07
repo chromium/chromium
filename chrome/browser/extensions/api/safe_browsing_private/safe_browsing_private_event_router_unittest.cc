@@ -399,6 +399,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Warned) {
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
       *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_TRUE(
+      event->FindBool(SafeBrowsingPrivateEventRouter::kKeyIsPhishingUrl));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Allowed) {
@@ -437,6 +439,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Allowed) {
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
       *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_TRUE(
+      event->FindBool(SafeBrowsingPrivateEventRouter::kKeyIsPhishingUrl));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordChanged) {

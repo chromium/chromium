@@ -39,6 +39,25 @@ using ::testing::_;
 
 namespace enterprise_connectors::test {
 
+namespace {
+
+std::string ActionFromVerdictType(
+    safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
+  switch (verdict_type) {
+    case safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS:
+      return "BLOCK";
+    case safe_browsing::RTLookupResponse::ThreatInfo::WARN:
+      return "WARN";
+    case safe_browsing::RTLookupResponse::ThreatInfo::SAFE:
+      return "REPORT_ONLY";
+    case safe_browsing::RTLookupResponse::ThreatInfo::SUSPICIOUS:
+    case safe_browsing::RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED:
+      return "ACTION_UNKNOWN";
+  }
+}
+
+}  // namespace
+
 EventReportValidator::EventReportValidator(
     policy::MockCloudPolicyClient* client)
     : client_(client) {}
@@ -708,6 +727,8 @@ void EventReportValidator::ValidateThreatInfo(
   ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyUrlCategory,
                 expected_threat_info.matched_url_navigation_rule()
                     .matched_url_category());
+  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyAction,
+                ActionFromVerdictType(expected_threat_info.verdict_type()));
 
   if (expected_threat_info.matched_url_navigation_rule()
           .has_watermark_message()) {
