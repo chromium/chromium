@@ -262,6 +262,13 @@ Chromium:
    the language server uses the same JDK as the Chromium build system (as
    opposed to some random JDK from your host system).
 
+   Also increase the resources available to the Java Language Server, for
+   example:
+
+   ```
+   "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx64G -Xms100m -Xlog:disable"
+   ```
+
 2. **Install the
    [*Language Support for Java™ by Red Hat*](https://marketplace.visualstudio.com/items?itemName=redhat.java)
    extension.**
