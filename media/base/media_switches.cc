@@ -1138,12 +1138,6 @@ BASE_FEATURE(kUseAudioLatencyFromHAL,
              "UseAudioLatencyFromHAL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable pooling of AndroidVideoImageBacking objects for use by MCVD, to save a
-// hop to the GPU main thread during VideoFrame construction.
-BASE_FEATURE(kUsePooledSharedImageVideoProvider,
-             "UsePooledSharedImageVideoProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allow the media pipeline to prioritize the software decoder provided by
 // MediaCodec, instead of the built-in software decoders. This is only enabled
 // for platforms which shows worse performance when using the built-in software
