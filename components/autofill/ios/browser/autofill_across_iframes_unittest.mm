@@ -30,6 +30,7 @@
 #import "components/autofill/ios/browser/mock_password_autofill_agent_delegate.h"
 #import "components/autofill/ios/browser/new_frame_catcher.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -1748,9 +1749,14 @@ TEST_F(AutofillAcrossIframesTest, FeatureDisabled) {
 
   const FormData& form = main_frame_manager().seen_forms()[0];
   EXPECT_EQ(form.child_frames().size(), 0u);
-
-  EXPECT_FALSE(
-      autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state()));
+  {
+    // Disable isolated autofill which uses the registrar as well.
+    base::test::ScopedFeatureList disable_isolated_autofill;
+    disable_isolated_autofill.InitAndDisableFeature(
+        kAutofillIsolatedWorldForJavascriptIos);
+    EXPECT_FALSE(
+        autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state()));
+  }
 }
 
 // Suite of tests that focuses on testing the security of xframe filling.
