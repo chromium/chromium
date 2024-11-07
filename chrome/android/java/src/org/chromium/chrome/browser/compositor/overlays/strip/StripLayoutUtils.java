@@ -79,17 +79,14 @@ public class StripLayoutUtils {
     }
 
     /**
-     * @param stripViews A list of {@link StripLayoutView}.
+     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
      * @param rootId The root ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.
      */
-    static StripLayoutGroupTitle findGroupTitle(StripLayoutView[] stripViews, int rootId) {
-        for (int i = 0; i < stripViews.length; i++) {
-            final StripLayoutView stripView = stripViews[i];
-            if (stripView instanceof StripLayoutGroupTitle groupTitle
-                    && groupTitle.getRootId() == rootId) {
-                return groupTitle;
-            }
+    static StripLayoutGroupTitle findGroupTitle(StripLayoutGroupTitle[] groupTitles, int rootId) {
+        for (int i = 0; i < groupTitles.length; i++) {
+            final StripLayoutGroupTitle groupTitle = groupTitles[i];
+            if (groupTitle.getRootId() == rootId) return groupTitle;
         }
         return null;
     }

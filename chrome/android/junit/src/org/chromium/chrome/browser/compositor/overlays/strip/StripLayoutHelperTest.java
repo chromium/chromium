@@ -200,7 +200,6 @@ public class StripLayoutHelperTest {
     @After
     public void tearDown() {
         if (mStripLayoutHelper != null) {
-            mStripLayoutHelper.stopReorderMode();
             mStripLayoutHelper.setTabAtPositionForTesting(null);
             mStripLayoutHelper.setRunningAnimatorForTesting(null);
         }

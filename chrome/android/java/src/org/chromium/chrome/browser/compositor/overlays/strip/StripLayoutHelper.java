@@ -2331,11 +2331,9 @@ public class StripLayoutHelper
      */
     public void onUpOrCancel(long time) {
         // 1. Stop any reordering that is happening.
-        stopReorderMode();
+        if (mReorderDelegate.getInReorderMode()) stopReorderMode();
 
         // 2. Reset state
-        mReorderDelegate.setInteractingTab(null);
-        mReorderDelegate.clearReorderScrollState();
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
             if (!mModel.isIncognito()) mModel.commitAllTabClosures();
             mTabCreator.launchNtp();
@@ -3711,54 +3709,8 @@ public class StripLayoutHelper
 
     @VisibleForTesting
     void stopReorderMode() {
-        if (!mReorderDelegate.getInReorderMode()) return;
-        ArrayList<Animator> animationList = null;
-        if (!mAnimationsDisabledForTesting) animationList = new ArrayList<>();
-
-        // 1. Reset the state variables.
-        mReorderDelegate.clearReorderScrollState();
-        mReorderDelegate.setInReorderMode(false);
-
-        // 2. Clear any drag offset.
-        finishAnimationsAndPushTabUpdates();
-        StripLayoutTab interactingTab = mReorderDelegate.getInteractingTab();
-        if (interactingTab != null) {
-            if (animationList != null) {
-                animationList.add(
-                        CompositorAnimator.ofFloatProperty(
-                                mUpdateHost.getAnimationHandler(),
-                                interactingTab,
-                                StripLayoutView.X_OFFSET,
-                                interactingTab.getOffsetX(),
-                                0f,
-                                ANIM_TAB_MOVE_MS));
-            } else {
-                interactingTab.setOffsetX(0f);
-            }
-        }
-
-        // 3. Fade-in the new tab & model selector buttons.
         setCompositorButtonsVisible(true);
-
-        // 4. Clear any tab group margins.
-        resetReorderMargins(animationList);
-
-        // 5. Reattach the folio container to the toolbar.
-        if (interactingTab != null) {
-            // Skip reattachment for tab drop to avoid exposing bottom indicator underneath the tab
-            // container.
-            if (!mReorderDelegate.getReorderingForTabDrop() || !interactingTab.getFolioAttached()) {
-                mReorderDelegate.updateTabAttachState(interactingTab, true, animationList);
-            }
-        }
-
-        // 6. Reset the tab drop state. Must occur after the rest of the state is reset, since some
-        // logic depends on these values.
-        mReorderDelegate.setReorderingForTabDrop(false);
-
-        // 7. Request an update.
-        startAnimations(animationList);
-        mUpdateHost.requestUpdate();
+        mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
     }
 
     /** See {@link ReorderDelegate#setTrailingMarginForTab} */
@@ -3769,16 +3721,6 @@ public class StripLayoutHelper
         StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
         return mReorderDelegate.setTrailingMarginForTab(
                 tab, groupTitle, shouldHaveTrailingMargin, animationList);
-    }
-
-    private void resetReorderMargins(@Nullable ArrayList<Animator> animationList) {
-        assert !mReorderDelegate.getInReorderMode();
-
-        for (int i = 0; i < mStripTabs.length; i++) {
-            final StripLayoutTab stripTab = mStripTabs[i];
-            setTrailingMarginForTab(stripTab, /* shouldHaveTrailingMargin= */ false, animationList);
-        }
-        mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f);
     }
 
     private void setCompositorButtonsVisible(boolean visible) {

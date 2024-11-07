@@ -20,6 +20,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -155,7 +156,7 @@ public class ReorderDelegate {
             float effectiveTabWidth,
             float x) {
         RecordUserAction.record("MobileToolbarStartReorderTab");
-        mInteractingTab = interactingTab;
+        setInteractingTab(interactingTab);
 
         // 1. Set reorder mode to true before selecting this tab to prevent unnecessary triggering
         // of #bringSelectedTabToVisibleArea for edge tabs when the tab strip is full.
@@ -182,6 +183,60 @@ public class ReorderDelegate {
         mAnimationHost.requestUpdate();
     }
 
+    /**
+     * Stop reorder mode and clear any relevant state. Don't call if not in reorder mode.
+     *
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     */
+    void stopReorderMode(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
+        assert mInReorderMode : "Tried to stop reorder mode, without first starting reorder mode.";
+        ArrayList<Animator> animationList = null;
+        // TODO(crbug.com/372546700): Clean-up when mAnimationsDisabledForTesting is removed.
+        if (!mAnimationsDisabledForTesting) animationList = new ArrayList<>();
+
+        // 1. Reset the state variables.
+        mReorderScrollState = REORDER_SCROLL_NONE;
+        mInReorderMode = false;
+
+        // 2. Reset the interacting view (clear any offset and reattach the container).
+        mAnimationHost.finishAnimationsAndPushTabUpdates();
+        if (mInteractingTab != null) {
+            // TODO(crbug.com/372546700): mInteractingTab may be null if reordering for tab drop.
+            if (animationList != null) {
+                animationList.add(
+                        CompositorAnimator.ofFloatProperty(
+                                mAnimationHost.getAnimationHandler(),
+                                mInteractingTab,
+                                StripLayoutView.X_OFFSET,
+                                mInteractingTab.getOffsetX(),
+                                0f,
+                                ANIM_TAB_MOVE_MS));
+            } else {
+                mInteractingTab.setOffsetX(0f);
+            }
+
+            // Skip reattachment for tab drop to avoid exposing bottom indicator underneath the tab
+            // container.
+            if (!mReorderingForTabDrop || !mInteractingTab.getFolioAttached()) {
+                updateTabAttachState(mInteractingTab, true, animationList);
+            }
+        }
+
+        // 3. Clear any tab group margins.
+        resetTabGroupMargins(groupTitles, stripTabs, animationList);
+
+        // 4. Clear the interacting view.
+        setInteractingTab(null);
+
+        // 5. Reset the tab drop state. Must occur after the rest of the state is reset, since some
+        // logic depends on these values.
+        mReorderingForTabDrop = false;
+
+        // 6. Start animations.
+        mAnimationHost.startAnimations(animationList, /* listener= */ null);
+    }
+
     // ============================================================================================
     // Auto-scroll state
     // ============================================================================================
@@ -200,10 +255,6 @@ public class ReorderDelegate {
 
     boolean canReorderScrollRight() {
         return (mReorderScrollState & REORDER_SCROLL_RIGHT) != 0;
-    }
-
-    void clearReorderScrollState() {
-        mReorderScrollState = REORDER_SCROLL_NONE;
     }
 
     void allowReorderScrollLeft() {
@@ -299,6 +350,27 @@ public class ReorderDelegate {
         }
 
         return true;
+    }
+
+    private void resetTabGroupMargins(
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            @Nullable ArrayList<Animator> animationList) {
+        assert !mInReorderMode;
+
+        // TODO(crbug.com/372546700): Investigate only resetting first and last margin, as we now
+        //  don't use trailing margins to demarcate tab group bounds.
+        for (int i = 0; i < stripTabs.length; i++) {
+            final StripLayoutTab stripTab = stripTabs[i];
+            final Tab tab = mModel.getTabById(stripTab.getTabId());
+            if (tab == null) continue;
+            final StripLayoutGroupTitle groupTitle =
+                    StripLayoutUtils.findGroupTitle(groupTitles, tab.getRootId());
+
+            setTrailingMarginForTab(
+                    stripTab, groupTitle, /* shouldHaveTrailingMargin= */ false, animationList);
+        }
+        mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f);
     }
 
     // ============================================================================================
