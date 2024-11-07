@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -103,14 +104,12 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
     compile_hints_producer = &page->GetV8CrowdsourcedCompileHintsProducer();
     compile_hints_consumer = &page->GetV8CrowdsourcedCompileHintsConsumer();
   }
-  const bool v8_compile_hints_magic_comment_runtime_enabled =
-      RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-          element_document.GetExecutionContext());
 
   ScriptResource::Fetch(params, element_document.Fetcher(), pending_script,
                         context->GetIsolate(), ScriptResource::kAllowStreaming,
                         compile_hints_producer, compile_hints_consumer,
-                        v8_compile_hints_magic_comment_runtime_enabled);
+                        v8_compile_hints::GetMagicCommentMode(
+                            element_document.GetExecutionContext()));
   pending_script->CheckState();
   return pending_script;
 }

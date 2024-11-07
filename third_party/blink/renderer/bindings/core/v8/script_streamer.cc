@@ -684,8 +684,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
           script_resource_->GetV8CrowdsourcedCompileHintsProducer(),
           script_resource_->GetV8CrowdsourcedCompileHintsConsumer(),
           script_resource_->Url(),
-          script_resource_
-              ->GetV8CompileHintsMagicCommentRuntimeFeatureEnabled())
+          script_resource_->GetV8CompileHintsMagicCommentMode())
           .Build((V8CodeCache::HasCompileHints(
                       script_resource_->CacheHandler(),
                       CachedMetadataHandler::kAllowUnchecked) &&
@@ -1308,8 +1307,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessorFactory final
                 script_resource->GetV8CrowdsourcedCompileHintsProducer(),
                 script_resource->GetV8CrowdsourcedCompileHintsConsumer(),
                 script_resource->Url(),
-                script_resource
-                    ->GetV8CompileHintsMagicCommentRuntimeFeatureEnabled())),
+                script_resource->GetV8CompileHintsMagicCommentMode())),
         streamer_handle_(std::move(streamer_handle)) {}
   BackgroundProcessorFactory(const BackgroundProcessorFactory&) = delete;
   BackgroundProcessorFactory& operator=(const BackgroundProcessorFactory&) =

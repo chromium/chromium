@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_options.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
@@ -959,15 +960,13 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
 
       params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
       params.SetRequestDestination(network::mojom::RequestDestination::kScript);
-      const bool v8_compile_hints_magic_comment_runtime_enabled =
-          RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-              document.GetExecutionContext());
 
       resource = ScriptResource::Fetch(
           params, resource_fetcher, nullptr, document.GetAgent().isolate(),
           ScriptResource::kAllowStreaming, v8_compile_hints_producer,
           v8_compile_hints_consumer,
-          v8_compile_hints_magic_comment_runtime_enabled);
+          v8_compile_hints::GetMagicCommentMode(
+              document.GetExecutionContext()));
       break;
     }
     case ResourceType::kCSSStyleSheet:

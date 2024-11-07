@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "v8/include/v8.h"
@@ -37,7 +38,7 @@ class CORE_EXPORT CompileHintsForStreaming {
         V8CrowdsourcedCompileHintsProducer* crowdsourced_compile_hints_producer,
         V8CrowdsourcedCompileHintsConsumer* crowdsourced_compile_hints_consumer,
         const KURL& resource_url,
-        bool v8_compile_hints_magic_comment_runtime_enabled);
+        v8_compile_hints::MagicCommentMode magic_comment_mode);
     Builder(const Builder&) = delete;
     Builder& operator=(const Builder&) = delete;
     ~Builder() = default;
@@ -52,7 +53,7 @@ class CORE_EXPORT CompileHintsForStreaming {
     const bool might_generate_crowdsourced_compile_hints_;
     std::unique_ptr<V8CrowdsourcedCompileHintsConsumer::DataAndScriptNameHash>
         crowdsourced_compile_hint_callback_data_;
-    const bool v8_compile_hints_magic_comment_runtime_enabled_;
+    const v8_compile_hints::MagicCommentMode magic_comment_mode_;
   };
 
   // For producing compile hints or just transmitting the compiler options.

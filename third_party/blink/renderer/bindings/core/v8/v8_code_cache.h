@@ -9,6 +9,7 @@
 
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
@@ -83,7 +84,8 @@ class CORE_EXPORT V8CodeCache final {
       const ClassicScript&,
       bool might_generate_crowdsourced_compile_hints = false,
       bool can_use_crowdsourced_compile_hints = false,
-      bool v8_compile_hints_magic_comment_runtime_enabled = false);
+      v8_compile_hints::MagicCommentMode v8_compile_hints_magic_comment_mode =
+          v8_compile_hints::MagicCommentMode::kNever);
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
@@ -95,7 +97,8 @@ class CORE_EXPORT V8CodeCache final {
       const KURL& url,
       bool might_generate_crowdsourced_compile_hints = false,
       bool can_use_crowdsourced_compile_hints = false,
-      bool v8_compile_hints_magic_comment_runtime_enabled = false);
+      v8_compile_hints::MagicCommentMode v8_compile_hints_magic_comment_mode =
+          v8_compile_hints::MagicCommentMode::kNever);
 
   static bool IsFull(const CachedMetadata* metadata);
 
@@ -163,6 +166,18 @@ class CORE_EXPORT V8CodeCache final {
   static void RecordCacheGetStatistics(GetMetadataType metadata_type);
 
   static void RecordCacheSetStatistics(SetMetadataType metadata_type);
+
+ private:
+  static std::tuple<v8::ScriptCompiler::CompileOptions,
+                    ProduceCacheOptions,
+                    v8::ScriptCompiler::NoCacheReason>
+  GetCompileOptionsInternal(mojom::blink::V8CacheOptions cache_options,
+                            const CachedMetadataHandler*,
+                            size_t source_text_length,
+                            ScriptSourceLocationType,
+                            const KURL& url,
+                            bool might_generate_crowdsourced_compile_hints,
+                            bool can_use_crowdsourced_compile_hints);
 };
 
 }  // namespace blink

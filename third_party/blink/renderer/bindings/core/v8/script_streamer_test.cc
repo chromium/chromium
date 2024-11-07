@@ -214,11 +214,10 @@ class ScriptStreamingTest : public testing::Test {
         kNoCompileHintsProducer = nullptr;
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         kNoCompileHintsConsumer = nullptr;
-    constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabled = false;
     resource_ = ScriptResource::Fetch(
         params, fetcher, resource_client_, isolate,
         ScriptResource::kAllowStreaming, kNoCompileHintsProducer,
-        kNoCompileHintsConsumer, kNoV8CompileHintsMagicCommentRuntimeEnabled);
+        kNoCompileHintsConsumer, v8_compile_hints::MagicCommentMode::kNever);
     resource_->AddClient(resource_client_, task_runner.get());
 
     ResourceResponse response(url_);
@@ -1026,11 +1025,10 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
     }
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
         kNoCompileHintsProducer = nullptr;
-    constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabled = false;
     resource_ = ScriptResource::Fetch(
         params, fetcher, resource_client_, isolate,
         ScriptResource::kAllowStreaming, kNoCompileHintsProducer,
-        v8_compile_hints_consumer, kNoV8CompileHintsMagicCommentRuntimeEnabled);
+        v8_compile_hints_consumer, v8_compile_hints::MagicCommentMode::kNever);
     resource_->AddClient(resource_client_, main_thread_task_runner.get());
 
     CHECK(dummy_loader_factory->load_started());

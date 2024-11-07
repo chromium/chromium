@@ -25,7 +25,7 @@ CompileHintsForStreaming::Builder::Builder(
     V8CrowdsourcedCompileHintsProducer* crowdsourced_compile_hints_producer,
     V8CrowdsourcedCompileHintsConsumer* crowdsourced_compile_hints_consumer,
     const KURL& resource_url,
-    bool v8_compile_hints_magic_comment_runtime_enabled)
+    v8_compile_hints::MagicCommentMode magic_comment_mode)
     : might_generate_crowdsourced_compile_hints_(
           crowdsourced_compile_hints_producer &&
           crowdsourced_compile_hints_producer->MightGenerateData()),
@@ -36,8 +36,7 @@ CompileHintsForStreaming::Builder::Builder(
               ? crowdsourced_compile_hints_consumer->GetDataWithScriptNameHash(
                     ScriptNameHash(resource_url))
               : nullptr),
-      v8_compile_hints_magic_comment_runtime_enabled_(
-          v8_compile_hints_magic_comment_runtime_enabled) {}
+      magic_comment_mode_(magic_comment_mode) {}
 
 std::unique_ptr<CompileHintsForStreaming>
 CompileHintsForStreaming::Builder::Build(
@@ -47,7 +46,10 @@ CompileHintsForStreaming::Builder::Build(
   // has_hot_timestamp.
   CHECK(!hot_cached_metadata_for_local_compile_hints || has_hot_timestamp);
   v8::ScriptCompiler::CompileOptions additional_compile_options =
-      (v8_compile_hints_magic_comment_runtime_enabled_ && has_hot_timestamp)
+      magic_comment_mode_ == v8_compile_hints::MagicCommentMode::kAlways ||
+              (magic_comment_mode_ == v8_compile_hints::MagicCommentMode::
+                                          kWhenProducingCodeCache &&
+               has_hot_timestamp)
           ? v8::ScriptCompiler::kFollowCompileHintsMagicComment
           : v8::ScriptCompiler::kNoCompileOptions;
 

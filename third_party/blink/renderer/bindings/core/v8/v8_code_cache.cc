@@ -262,6 +262,53 @@ scoped_refptr<CachedMetadata> V8CodeCache::GetCachedMetadataForCompileHints(
   return cached_metadata;
 }
 
+namespace {
+
+bool CanAddCompileHintsMagicToCompileOption(
+    v8::ScriptCompiler::CompileOptions compile_options) {
+  // Adding compile hints to kConsumeCodeCache or kEagerCompile doesn't make
+  // sense. kProduceCompileHints and kConsumeCompileHints can be combined with
+  // kFollowCompileHintsMagicComment, since they still affect scripts which
+  // don't have the magic comment.
+
+  // This fails if new compile options are added.
+  DCHECK((compile_options &
+          ~(v8::ScriptCompiler::CompileOptions::kConsumeCodeCache |
+            v8::ScriptCompiler::CompileOptions::kEagerCompile |
+            v8::ScriptCompiler::CompileOptions::kProduceCompileHints |
+            v8::ScriptCompiler::CompileOptions::kConsumeCompileHints)) == 0);
+
+  return (compile_options &
+          (v8::ScriptCompiler::CompileOptions::kConsumeCodeCache |
+           v8::ScriptCompiler::CompileOptions::kEagerCompile)) == 0;
+}
+
+std::tuple<v8::ScriptCompiler::CompileOptions,
+           V8CodeCache::ProduceCacheOptions,
+           v8::ScriptCompiler::NoCacheReason>
+MaybeAddCompileHintsMagic(
+    std::tuple<v8::ScriptCompiler::CompileOptions,
+               V8CodeCache::ProduceCacheOptions,
+               v8::ScriptCompiler::NoCacheReason> input,
+    v8_compile_hints::MagicCommentMode magic_comment_mode) {
+  auto [compile_options, produce_cache_options, no_cache_reason] = input;
+  if (CanAddCompileHintsMagicToCompileOption(compile_options) &&
+      (magic_comment_mode == v8_compile_hints::MagicCommentMode::kAlways ||
+       (magic_comment_mode ==
+            v8_compile_hints::MagicCommentMode::kWhenProducingCodeCache &&
+        produce_cache_options ==
+            V8CodeCache::ProduceCacheOptions::kProduceCodeCache))) {
+    return std::make_tuple(
+        v8::ScriptCompiler::CompileOptions(
+            compile_options |
+            v8::ScriptCompiler::kFollowCompileHintsMagicComment),
+        produce_cache_options, no_cache_reason);
+  }
+  return input;
+}
+
+}  // namespace
+
 std::tuple<v8::ScriptCompiler::CompileOptions,
            V8CodeCache::ProduceCacheOptions,
            v8::ScriptCompiler::NoCacheReason>
@@ -270,27 +317,16 @@ V8CodeCache::GetCompileOptions(
     const ClassicScript& classic_script,
     bool might_generate_crowdsourced_compile_hints,
     bool can_use_crowdsourced_compile_hints,
-    bool v8_compile_hints_magic_comment_runtime_enabled) {
-  return GetCompileOptions(
-      cache_options, classic_script.CacheHandler(),
-      classic_script.SourceText().length(), classic_script.SourceLocationType(),
-      classic_script.SourceUrl(), might_generate_crowdsourced_compile_hints,
-      can_use_crowdsourced_compile_hints,
-      v8_compile_hints_magic_comment_runtime_enabled);
+    v8_compile_hints::MagicCommentMode magic_comment_mode) {
+  return MaybeAddCompileHintsMagic(
+      GetCompileOptionsInternal(cache_options, classic_script.CacheHandler(),
+                                classic_script.SourceText().length(),
+                                classic_script.SourceLocationType(),
+                                classic_script.SourceUrl(),
+                                might_generate_crowdsourced_compile_hints,
+                                can_use_crowdsourced_compile_hints),
+      magic_comment_mode);
 }
-
-namespace {
-v8::ScriptCompiler::CompileOptions MaybeAddCompileHintsMagic(
-    v8::ScriptCompiler::CompileOptions compile_options,
-    bool v8_compile_hints_magic_comment_runtime_enabled) {
-  if (v8_compile_hints_magic_comment_runtime_enabled) {
-    return v8::ScriptCompiler::CompileOptions(
-        compile_options | v8::ScriptCompiler::kFollowCompileHintsMagicComment);
-  }
-  return compile_options;
-}
-
-}  // namespace
 
 std::tuple<v8::ScriptCompiler::CompileOptions,
            V8CodeCache::ProduceCacheOptions,
@@ -303,7 +339,26 @@ V8CodeCache::GetCompileOptions(
     const KURL& url,
     bool might_generate_crowdsourced_compile_hints,
     bool can_use_crowdsourced_compile_hints,
-    bool v8_compile_hints_magic_comment_runtime_enabled) {
+    v8_compile_hints::MagicCommentMode magic_comment_mode) {
+  return MaybeAddCompileHintsMagic(
+      GetCompileOptionsInternal(cache_options, cache_handler,
+                                source_text_length, source_location_type, url,
+                                might_generate_crowdsourced_compile_hints,
+                                can_use_crowdsourced_compile_hints),
+      magic_comment_mode);
+}
+
+std::tuple<v8::ScriptCompiler::CompileOptions,
+           V8CodeCache::ProduceCacheOptions,
+           v8::ScriptCompiler::NoCacheReason>
+V8CodeCache::GetCompileOptionsInternal(
+    mojom::blink::V8CacheOptions cache_options,
+    const CachedMetadataHandler* cache_handler,
+    size_t source_text_length,
+    ScriptSourceLocationType source_location_type,
+    const KURL& url,
+    bool might_generate_crowdsourced_compile_hints,
+    bool can_use_crowdsourced_compile_hints) {
   static const int kMinimalCodeLength = 1024;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
 
@@ -417,35 +472,24 @@ V8CodeCache::GetCompileOptions(
               ProduceCacheOptions::kSetTimeStamp,
               v8::ScriptCompiler::kNoCacheBecauseCacheTooCold);
         }
-        return std::make_tuple(
-            MaybeAddCompileHintsMagic(
-                no_code_cache_compile_options,
-                v8_compile_hints_magic_comment_runtime_enabled),
-            ProduceCacheOptions::kSetTimeStamp,
-            v8::ScriptCompiler::kNoCacheBecauseCacheTooCold);
+        return std::make_tuple(no_code_cache_compile_options,
+                               ProduceCacheOptions::kSetTimeStamp,
+                               v8::ScriptCompiler::kNoCacheBecauseCacheTooCold);
       }
       if (local_compile_hints_enabled && HasCompileHints(cache_handler)) {
         // In this branch, the timestamp in the compile hints is hot.
         return std::make_tuple(
-            MaybeAddCompileHintsMagic(
-                v8::ScriptCompiler::kConsumeCompileHints,
-                v8_compile_hints_magic_comment_runtime_enabled),
+            v8::ScriptCompiler::kConsumeCompileHints,
             ProduceCacheOptions::kProduceCodeCache,
             v8::ScriptCompiler::kNoCacheBecauseDeferredProduceCodeCache);
       }
       return std::make_tuple(
-          MaybeAddCompileHintsMagic(
-              no_code_cache_compile_options,
-              v8_compile_hints_magic_comment_runtime_enabled),
-          ProduceCacheOptions::kProduceCodeCache,
+          no_code_cache_compile_options, ProduceCacheOptions::kProduceCodeCache,
           v8::ScriptCompiler::kNoCacheBecauseDeferredProduceCodeCache);
     }
     case mojom::blink::V8CacheOptions::kCodeWithoutHeatCheck:
       return std::make_tuple(
-          MaybeAddCompileHintsMagic(
-              no_code_cache_compile_options,
-              v8_compile_hints_magic_comment_runtime_enabled),
-          ProduceCacheOptions::kProduceCodeCache,
+          no_code_cache_compile_options, ProduceCacheOptions::kProduceCodeCache,
           v8::ScriptCompiler::kNoCacheBecauseDeferredProduceCodeCache);
     case mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck:
       return std::make_tuple(

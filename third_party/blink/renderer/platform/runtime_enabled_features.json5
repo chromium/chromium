@@ -2465,6 +2465,11 @@
       status: "stable",
     },
     {
+      name: "JavaScriptCompileHintsMagicAlwaysRuntime",
+      status: "experimental",
+      origin_trial_feature_name: "JavaScriptCompileHintsMagicAlways",
+    },
+    {
       name: "JavaScriptCompileHintsMagicRuntime",
       status: "experimental",
       origin_trial_feature_name: "JavaScriptCompileHintsMagic",

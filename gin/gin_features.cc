@@ -282,11 +282,6 @@ BASE_FEATURE(kV8IntelJCCErratumMitigation,
 
 // JavaScript language features.
 
-// Enables the experiment with compile hints as magic comments.
-BASE_FEATURE(kJavaScriptCompileHintsMagic,
-             ("JavaScriptCompileHintsMagic"),
-             kFeatureDefaultStateControlledByV8);
-
 // Enables the iterator helpers proposal.
 BASE_FEATURE(kJavaScriptIteratorHelpers,
              ("kJavaScriptIteratorHelpers"),

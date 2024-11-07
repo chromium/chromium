@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
@@ -46,14 +47,11 @@ void DocumentModuleScriptFetcher::Fetch(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
-  const bool v8_compile_hints_magic_comment_runtime_enabled =
-      RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-          GetExecutionContext());
-  ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
-                        this, GetExecutionContext()->GetIsolate(),
-                        streaming_allowed, kNoCompileHintsProducer,
-                        kNoCompileHintsConsumer,
-                        v8_compile_hints_magic_comment_runtime_enabled);
+  ScriptResource::Fetch(
+      fetch_params, fetch_client_settings_object_fetcher, this,
+      GetExecutionContext()->GetIsolate(), streaming_allowed,
+      kNoCompileHintsProducer, kNoCompileHintsConsumer,
+      v8_compile_hints::GetMagicCommentMode(GetExecutionContext()));
 }
 
 void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
