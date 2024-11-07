@@ -561,6 +561,7 @@ AuctionRunner::AuctionRunner(
       callback_(std::move(callback)),
       promise_fields_in_auction_config_(owned_auction_config_->NumPromises()),
       auction_(kanon_mode_,
+               main_frame_origin,
                owned_auction_config_.get(),
                /*parent=*/nullptr,
                auction_metrics_recorder,

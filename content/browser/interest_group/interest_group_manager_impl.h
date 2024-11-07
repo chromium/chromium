@@ -412,6 +412,14 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     auction_process_manager_ = std::move(auction_process_manager);
   }
 
+  // Allows the AuctionProcessManager to be overridden in unit tests, to mock
+  // out its behavior. Note that the automatically created built-in
+  // AuctionProcessManager may have raw pointers to the old cache,
+  // set_auction_process_manager_for_testing() should typically be called before
+  // this method.
+  void set_trusted_signals_cache_for_testing(
+      std::unique_ptr<TrustedSignalsCacheImpl> trusted_signals_cache);
+
   // For testing *only*; changes the maximum number of active report requests
   // at a time.
   void set_max_active_report_requests_for_testing(
@@ -709,7 +717,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // are enabled. Rather than check for those features, consumers should check
   // if this has been populated. Must be declared before
   // `auction_process_manager_`, which depends on this.
-  const std::unique_ptr<TrustedSignalsCacheImpl> trusted_signals_cache_;
+  std::unique_ptr<TrustedSignalsCacheImpl> trusted_signals_cache_;
 
   // Stored as pointer so that tests can override it.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;

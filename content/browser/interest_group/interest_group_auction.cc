@@ -48,6 +48,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -70,6 +71,7 @@
 #include "content/browser/interest_group/interest_group_priority_util.h"
 #include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/browser/interest_group/trusted_signals_cache_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/auction_result.h"
 #include "content/public/browser/browser_context.h"
@@ -1057,6 +1059,47 @@ bool ValidateBidderPrivateAggregationRequests(
   }
 
   return true;
+}
+
+// Creates a key/value pair for the slot size param that should be included in
+// trusted bidding signals fetches based on the specified
+// TrustedBiddingSignalsSlotSizeMode. First value is a std::string_view since
+// it's always a hard-coded value. Returns a nullopt if no such param should be
+// included, based on the auction/InterestGroup configuration.
+std::optional<std::pair<std::string_view, std::string>>
+CreateTrustedBiddingSignalsSlotSizeParams(
+    const blink::AuctionConfig& config,
+    blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
+        trusted_bidding_signals_slot_size_mode) {
+  switch (trusted_bidding_signals_slot_size_mode) {
+    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone:
+      return std::nullopt;
+
+    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize:
+      if (!config.non_shared_params.requested_size) {
+        return std::nullopt;
+      }
+      return {{"slotSize", blink::ConvertAdSizeToString(
+                               *config.non_shared_params.requested_size)}};
+
+    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+        kAllSlotsRequestedSizes: {
+      if (!config.non_shared_params.all_slots_requested_sizes ||
+          config.non_shared_params.all_slots_requested_sizes->empty()) {
+        return std::nullopt;
+      }
+
+      std::string all_ad_sizes;
+      for (const blink::AdSize& ad_size :
+           *config.non_shared_params.all_slots_requested_sizes) {
+        if (!all_ad_sizes.empty()) {
+          all_ad_sizes += ",";
+        }
+        all_ad_sizes += blink::ConvertAdSizeToString(ad_size);
+      }
+      return {{"allSlotsRequestedSizes", std::move(all_ad_sizes)}};
+    }
+  }
 }
 
 }  // namespace
@@ -2062,9 +2105,7 @@ class InterestGroupAuction::BuyerHelper
             interest_group.user_bidding_signals, interest_group.ads,
             interest_group.ad_components,
             KAnonKeysToMojom(bid_state->kanon_keys)),
-        // TODO(crbug.com/333445540): Start cache request and calculate cache
-        // key.
-        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), kanon_mode,
+        MaybeRequestBiddingSignalsFromCache(*bid_state), kanon_mode,
         bid_state->bidder->joining_origin,
         GetDirectFromSellerPerBuyerSignals(url_builder, owner_),
         GetDirectFromSellerAuctionSignals(url_builder),
@@ -2086,6 +2127,52 @@ class InterestGroupAuction::BuyerHelper
     }
 
     FinishGenerateBidIfReady(bid_state);
+  }
+
+  // Requests trusted bidding signals from the browser-side cache if needed.
+  auction_worklet::mojom::TrustedSignalsCacheKeyPtr
+  MaybeRequestBiddingSignalsFromCache(BidState& bid_state) {
+    const blink::InterestGroup& interest_group =
+        bid_state.bidder->interest_group;
+    // If the interest group is not using KVv2 bidding signals, or the
+    // TrustedSignalsCache is not enabled, return nullptr.
+    if (!interest_group.trusted_bidding_signals_coordinator ||
+        !interest_group.trusted_bidding_signals_url ||
+        !auction_->interest_group_manager_->trusted_signals_cache()) {
+      return nullptr;
+    }
+
+    // Create additional params.
+    base::Value::Dict additional_params;
+    std::optional<int16_t> experiment_id =
+        InterestGroupAuction::GetBuyerExperimentId(*auction_->config_,
+                                                   interest_group.owner);
+    if (experiment_id) {
+      additional_params.Set("experimentGroupId",
+                            base::NumberToString(*experiment_id));
+    }
+    auto optional_pair = CreateTrustedBiddingSignalsSlotSizeParams(
+        *auction_->config_,
+        interest_group.trusted_bidding_signals_slot_size_mode);
+    if (optional_pair) {
+      additional_params.Set(optional_pair->first,
+                            std::move(optional_pair->second));
+    }
+
+    int partition_id;
+    bid_state.bidding_signals_handle =
+        auction_->interest_group_manager_->trusted_signals_cache()
+            ->RequestTrustedBiddingSignals(
+                auction_->main_frame_origin_, interest_group.owner,
+                interest_group.name, interest_group.execution_mode,
+                bid_state.bidder->joining_origin,
+                *interest_group.trusted_bidding_signals_url,
+                *interest_group.trusted_bidding_signals_coordinator,
+                interest_group.trusted_bidding_signals_keys,
+                std::move(additional_params), partition_id);
+    return auction_worklet::mojom::TrustedSignalsCacheKey::New(
+        bid_state.bidding_signals_handle->compression_group_token(),
+        partition_id);
   }
 
   void FinishGenerateBidIfReady(BidState* bid_state) {
@@ -2694,6 +2781,10 @@ class InterestGroupAuction::BuyerHelper
       state.generate_bid_client_receiver_id.reset();
       state.bid_finalizer.reset();
     }
+    // Not actually a Mojo pipe, but it's no longer needed once all pipes have
+    // been closed, and deleting it frees the associated entry in the
+    // TrustedSignalsCacheImpl.
+    state.bidding_signals_handle.reset();
   }
 
   size_t size_limit_;
@@ -2762,6 +2853,7 @@ class InterestGroupAuction::BuyerHelper
 
 InterestGroupAuction::InterestGroupAuction(
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
+    const url::Origin& main_frame_origin,
     const blink::AuctionConfig* config,
     const InterestGroupAuction* parent,
     AuctionMetricsRecorder* auction_metrics_recorder,
@@ -2777,6 +2869,7 @@ InterestGroupAuction::InterestGroupAuction(
     : devtools_auction_id_(base::Token::CreateRandom().ToString()),
       trace_id_(base::trace_event::GetNextGlobalTraceId()),
       kanon_mode_(kanon_mode),
+      main_frame_origin_(main_frame_origin),
       auction_metrics_recorder_(auction_metrics_recorder),
       auction_worklet_manager_(auction_worklet_manager),
       auction_nonce_manager_(auction_nonce_manager),
@@ -2822,13 +2915,14 @@ InterestGroupAuction::InterestGroupAuction(
     // Top-level server auctions are not supported.
     DCHECK(!is_server_auction_);
     component_auctions_.emplace(
-        child_pos, std::make_unique<InterestGroupAuction>(
-                       kanon_mode_, &component_auction_config, /*parent=*/this,
-                       auction_metrics_recorder_, auction_worklet_manager,
-                       auction_nonce_manager, interest_group_manager,
-                       get_data_decoder_callback_, auction_start_time_,
-                       is_interest_group_api_allowed_callback_,
-                       maybe_log_private_aggregation_web_features_callback_));
+        child_pos,
+        std::make_unique<InterestGroupAuction>(
+            kanon_mode_, main_frame_origin, &component_auction_config,
+            /*parent=*/this, auction_metrics_recorder_, auction_worklet_manager,
+            auction_nonce_manager, interest_group_manager,
+            get_data_decoder_callback_, auction_start_time_,
+            is_interest_group_api_allowed_callback_,
+            maybe_log_private_aggregation_web_features_callback_));
     ++child_pos;
   }
 
@@ -4461,35 +4555,13 @@ std::string InterestGroupAuction::CreateTrustedBiddingSignalsSlotSizeParam(
     const blink::AuctionConfig& config,
     blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
         trusted_bidding_signals_slot_size_mode) {
-  switch (trusted_bidding_signals_slot_size_mode) {
-    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone:
-      return std::string();
-
-    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize:
-      if (!config.non_shared_params.requested_size) {
-        return std::string();
-      }
-      return "slotSize=" + blink::ConvertAdSizeToString(
-                               *config.non_shared_params.requested_size);
-
-    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
-        kAllSlotsRequestedSizes: {
-      if (!config.non_shared_params.all_slots_requested_sizes ||
-          config.non_shared_params.all_slots_requested_sizes->empty()) {
-        return std::string();
-      }
-
-      std::string all_ad_sizes;
-      for (const blink::AdSize& ad_size :
-           *config.non_shared_params.all_slots_requested_sizes) {
-        if (!all_ad_sizes.empty()) {
-          all_ad_sizes += ",";
-        }
-        all_ad_sizes += blink::ConvertAdSizeToString(ad_size);
-      }
-      return std::string("allSlotsRequestedSizes=" + all_ad_sizes);
-    }
+  auto optional_pair = CreateTrustedBiddingSignalsSlotSizeParams(
+      config, trusted_bidding_signals_slot_size_mode);
+  if (!optional_pair) {
+    return std::string();
   }
+  return base::StringPrintf("%s=%s", optional_pair->first,
+                            optional_pair->second.c_str());
 }
 
 std::optional<std::string> InterestGroupAuction::GetPerBuyerSignals(

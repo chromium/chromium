@@ -16,12 +16,15 @@ class AuctionWorkletServiceImpl;
 
 namespace content {
 
+class TrustedSignalsCacheImpl;
+
 // AuctionProcessManager that allows running auctions in-process, using real
 // worklets.
 class TestSameProcessAuctionProcessManager
     : public DedicatedAuctionProcessManager {
  public:
-  TestSameProcessAuctionProcessManager();
+  explicit TestSameProcessAuctionProcessManager(
+      TrustedSignalsCacheImpl* trusted_signals_cache = nullptr);
   TestSameProcessAuctionProcessManager(
       const TestSameProcessAuctionProcessManager&) = delete;
   TestSameProcessAuctionProcessManager& operator=(

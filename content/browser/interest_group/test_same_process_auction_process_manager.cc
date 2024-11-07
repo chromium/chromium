@@ -15,8 +15,9 @@
 
 namespace content {
 
-TestSameProcessAuctionProcessManager::TestSameProcessAuctionProcessManager()
-    : DedicatedAuctionProcessManager(/*trusted_signals_cache=*/nullptr) {}
+TestSameProcessAuctionProcessManager::TestSameProcessAuctionProcessManager(
+    TrustedSignalsCacheImpl* trusted_signals_cache)
+    : DedicatedAuctionProcessManager(trusted_signals_cache) {}
 TestSameProcessAuctionProcessManager::~TestSameProcessAuctionProcessManager() =
     default;
 

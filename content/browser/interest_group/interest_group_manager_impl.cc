@@ -724,6 +724,11 @@ void InterestGroupManagerImpl::ClearPermissionsCache() {
   permissions_checker_.ClearCache();
 }
 
+void InterestGroupManagerImpl::set_trusted_signals_cache_for_testing(
+    std::unique_ptr<TrustedSignalsCacheImpl> trusted_signals_cache) {
+  trusted_signals_cache_ = std::move(trusted_signals_cache);
+}
+
 void InterestGroupManagerImpl::QueueKAnonymityUpdateForInterestGroup(
     const blink::InterestGroupKey& group_key,
     const std::optional<InterestGroupKanonUpdateParameter> update_parameter) {

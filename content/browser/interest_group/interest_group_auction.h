@@ -35,6 +35,7 @@
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
+#include "content/browser/interest_group/trusted_signals_cache_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/auction_result.h"
 #include "content/public/browser/content_browser_client.h"
@@ -234,6 +235,9 @@ class CONTENT_EXPORT InterestGroupAuction
     // ReceiverId for use as a GenerateBidClient. Only populated while
     // generateBid() is running.
     std::optional<mojo::ReceiverId> generate_bid_client_receiver_id;
+
+    // Trusted signals cache handle for the bidder signals.
+    scoped_refptr<TrustedSignalsCacheImpl::Handle> bidding_signals_handle;
 
     // Mojo pipe to use to fill in potentially promise-provided arguments.
     // Only populated in between BeginGenerateBid and FinishGenerateBid().
@@ -480,6 +484,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // additionalBids are permitted to participate.
   InterestGroupAuction(
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
+      const url::Origin& main_frame_origin,
       const blink::AuctionConfig* config,
       const InterestGroupAuction* parent,
       AuctionMetricsRecorder* auction_metrics_recorder,
@@ -1275,6 +1280,8 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Whether k-anonymity enforcement or simulation (or none) are performed.
   const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
+
+  const url::Origin main_frame_origin_;
 
   const raw_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;

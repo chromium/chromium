@@ -27247,17 +27247,31 @@ IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2DisabledTest,
   EXPECT_EQ(false, EvalJs(shell(), kQueryTrustedSignalsKVv2Support));
 }
 
+// The test parameter indicates whether the browser process's
+// TrustedSignalsCache should be enabled.
 class InterestGroupTrustedSignalsKVv2BrowserTest
-    : public InterestGroupBrowserTest {
+    : public InterestGroupBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   InterestGroupTrustedSignalsKVv2BrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFledgeBiddingAndAuctionServer,
-          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
-         {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
-         {blink::features::kFledgePermitCrossOriginTrustedSignals, {}}},
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {blink::features::kFledgeBiddingAndAuctionServer,
+         {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
+        {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
+        {blink::features::kFledgePermitCrossOriginTrustedSignals, {}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (EnableSignalsCache()) {
+      enabled_features.emplace_back(features::kFledgeUseKVv2SignalsCache,
+                                    base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(features::kFledgeUseKVv2SignalsCache);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
+
+  bool EnableSignalsCache() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
@@ -27769,7 +27783,11 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
   }
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         InterestGroupTrustedSignalsKVv2BrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2BiddingSignals) {
   const char kPublisher[] = "a.test";
   const char kBidder[] = "b.test";
@@ -27860,7 +27878,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
   EXPECT_EQ(ad_url, RunAuctionAndWaitForUrl(auction_config));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2ScoringSignals) {
   const char kPublisher[] = "a.test";
   const char kBidder[] = "b.test";
@@ -27962,28 +27980,28 @@ IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
   EXPECT_EQ(ad_url, RunAuctionAndWaitForUrl(auction_config));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2BiddingSignalsCrossOriginSuccess) {
   TestTrustedKVv2BiddingSignalsCrossOrigin(/*expect_success=*/true,
                                            /*add_cors_header=*/true,
                                            /*attest_signals_origin=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2BiddingSignalsCrossOriginNoCors) {
   TestTrustedKVv2BiddingSignalsCrossOrigin(/*expect_success=*/false,
                                            /*add_cors_header=*/false,
                                            /*attest_signals_origin=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2BiddingSignalsCrossOriginNoAttestation) {
   TestTrustedKVv2BiddingSignalsCrossOrigin(/*expect_success=*/false,
                                            /*add_cors_header=*/true,
                                            /*attest_signals_origin=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2ScoringSignalsCrossOriginSuccess) {
   TestTrustedKVv2ScoringSignalsCrossOrigin(/*expect_success=*/true,
                                            /*add_cors_header=*/true,
@@ -27991,7 +28009,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
                                            /*attest_signals_origin=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2ScoringSignalsCrossOriginNoCors) {
   TestTrustedKVv2ScoringSignalsCrossOrigin(/*expect_success=*/false,
                                            /*add_cors_header=*/false,
@@ -27999,7 +28017,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
                                            /*attest_signals_origin=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2ScoringSignalsCrossOriginNoscriptHeader) {
   TestTrustedKVv2ScoringSignalsCrossOrigin(/*expect_success=*/false,
                                            /*add_cors_header=*/true,
@@ -28007,7 +28025,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
                                            /*attest_signals_origin=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2BrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
                        TrustedKVv2ScoringSignalsCrossOriginNoAttestation) {
   TestTrustedKVv2ScoringSignalsCrossOrigin(/*expect_success=*/false,
                                            /*add_cors_header=*/true,
