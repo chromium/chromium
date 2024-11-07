@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/uuid.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_consumer.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_producer.h"
@@ -34,7 +35,6 @@ namespace ash::boca {
 
 // static
 std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsProducer(
-    std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     captions::LiveCaptionController* live_caption_controller,
@@ -51,14 +51,16 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsProducer(
 
 // static
 std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsConsumer(
-    std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<babelorca::CaptionController> caption_controller,
-    const std::string& gaia_id) {
+    const std::string& gaia_id,
+    std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
+    PrefService* pref_service) {
   ControllerFactory controller_factory =
       base::BindOnce(babelorca::BabelOrcaConsumer::Create, url_loader_factory,
-                     identity_manager, gaia_id, std::move(caption_controller));
+                     identity_manager, gaia_id, std::move(caption_controller),
+                     std::move(translator), pref_service);
   return std::make_unique<BabelOrcaManager>(
       identity_manager, url_loader_factory, std::move(controller_factory));
 }
@@ -109,7 +111,7 @@ void BabelOrcaManager::OnSessionCaptionConfigUpdated(
     return;
   }
   babel_orca_controller_->OnSessionCaptionConfigUpdated(
-      config.captions_enabled());
+      config.captions_enabled(), config.translations_enabled());
 }
 
 void BabelOrcaManager::OnLocalCaptionConfigUpdated(

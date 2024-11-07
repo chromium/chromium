@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
+#include "chrome/browser/ash/boca/babelorca/babel_orca_translation_dispatcher_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "chromeos/ash/components/boca/boca_metrics_manager.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
@@ -43,24 +45,26 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     Profile* profile,
     const std::string& application_locale,
     bool is_consumer) {
-  auto translation_dispatcher =
-      std::make_unique<::captions::TranslationDispatcher>(
-          google_apis::GetBocaAPIKey(), profile);
   // Passing `DoNothing` since we do not currently show settings for BabelOrca.
   auto caption_bubble_context =
       std::make_unique<captions::CaptionBubbleContextAsh>(base::DoNothing());
   if (is_consumer) {
+    auto babel_orca_translator =
+        std::make_unique<babelorca::BabelOrcaCaptionTranslator>(
+            std::make_unique<BabelOrcaTranslationDispatcherImpl>(
+                std::make_unique<::captions::TranslationDispatcher>(
+                    google_apis::GetBocaAPIKey(), profile)));
     const AccountId& account_id = ash::BrowserContextHelper::Get()
                                       ->GetUserByBrowserContext(profile)
                                       ->GetAccountId();
     return boca::BabelOrcaManager::CreateAsConsumer(
-        std::move(translation_dispatcher),
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetURLLoaderFactory(),
         std::make_unique<babelorca::CaptionController>(
             std::move(caption_bubble_context), profile->GetPrefs(),
             application_locale),
-        account_id.GetGaiaId());
+        account_id.GetGaiaId(), std::move(babel_orca_translator),
+        profile->GetPrefs());
   }
   // Producer
   if (!base::FeatureList::IsEnabled(
@@ -70,7 +74,6 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
   auto speech_recognizer =
       std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(profile);
   return boca::BabelOrcaManager::CreateAsProducer(
-      std::move(translation_dispatcher),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(),
       ::captions::LiveCaptionControllerFactory::GetForProfile(profile),

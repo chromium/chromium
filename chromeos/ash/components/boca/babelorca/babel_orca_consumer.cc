@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "chromeos/ash/components/boca/babelorca/oauth_token_fetcher.h"
@@ -27,6 +28,9 @@
 #include "chromeos/ash/components/boca/babelorca/transcript_receiver.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
+#include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
@@ -94,6 +98,8 @@ std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
     signin::IdentityManager* identity_manager,
     std::string gaia_id,
     std::unique_ptr<CaptionController> caption_controller,
+    std::unique_ptr<BabelOrcaCaptionTranslator> translator,
+    PrefService* pref_service,
     TokenManager* tachyon_oauth_token_manager,
     TachyonRequestDataProvider* tachyon_request_data_provider) {
   auto streaming_client_getter =
@@ -101,7 +107,8 @@ std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
   return std::make_unique<BabelOrcaConsumer>(
       url_loader_factory, identity_manager, gaia_id,
       std::move(caption_controller), tachyon_oauth_token_manager,
-      tachyon_request_data_provider, std::move(streaming_client_getter));
+      tachyon_request_data_provider, std::move(streaming_client_getter),
+      std::move(translator), pref_service);
 }
 
 BabelOrcaConsumer::BabelOrcaConsumer(
@@ -111,14 +118,27 @@ BabelOrcaConsumer::BabelOrcaConsumer(
     std::unique_ptr<CaptionController> caption_controller,
     TokenManager* tachyon_oauth_token_manager,
     TachyonRequestDataProvider* tachyon_request_data_provider,
-    TranscriptReceiver::StreamingClientGetter streaming_client_getter)
+    TranscriptReceiver::StreamingClientGetter streaming_client_getter,
+    std::unique_ptr<BabelOrcaCaptionTranslator> translator,
+    PrefService* pref_service)
     : url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       gaia_id_(gaia_id),
       caption_controller_(std::move(caption_controller)),
       tachyon_oauth_token_manager_(tachyon_oauth_token_manager),
       tachyon_request_data_provider_(tachyon_request_data_provider),
-      streaming_client_getter_(std::move(streaming_client_getter)) {}
+      streaming_client_getter_(std::move(streaming_client_getter)),
+      pref_service_(pref_service),
+      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
+      translator_(std::move(translator)) {
+  pref_change_registrar_->Init(pref_service_);
+  current_language_ =
+      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode);
+  pref_change_registrar_->Add(
+      prefs::kLiveTranslateTargetLanguageCode,
+      base::BindRepeating(&BabelOrcaConsumer::OnTranslationPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 BabelOrcaConsumer::~BabelOrcaConsumer() {
   StopReceiving();
@@ -134,15 +154,28 @@ void BabelOrcaConsumer::OnSessionEnded() {
 }
 
 void BabelOrcaConsumer::OnSessionCaptionConfigUpdated(
-    bool session_captions_enabled) {
+    bool session_captions_enabled,
+    bool translations_enabled) {
   if (!in_session_) {
     LOG(ERROR) << "Session caption config event called out of session.";
     return;
   }
   session_captions_enabled_ = session_captions_enabled;
+  session_translations_enabled_ = translations_enabled;
   if (!session_captions_enabled_) {
     StopReceiving();
     return;
+  }
+  if (session_translations_enabled_) {
+    // TODO(377696975) re-factor translator.
+    translator_->InitTranslationAndSetCallback(
+        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
+                            weak_ptr_factory_.GetWeakPtr()),
+        current_language_,
+        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
+  } else {
+    // TODO(377544063) Handle in flight transcriptions rather than drop them.
+    translator_->UnsetOnTranslationCallback();
   }
   signed_in_ = tachyon_request_data_provider_->tachyon_token().has_value();
   StartReceiving();
@@ -160,6 +193,50 @@ void BabelOrcaConsumer::OnLocalCaptionConfigUpdated(
     return;
   }
   StartReceiving();
+}
+
+void BabelOrcaConsumer::OnTranslationPrefChanged() {
+  if (session_translations_enabled_) {
+    translator_->InitTranslationAndSetCallback(
+        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
+                            weak_ptr_factory_.GetWeakPtr()),
+        current_language_,
+        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
+  }
+}
+
+void BabelOrcaConsumer::DispatchTranscription(
+    const media::SpeechRecognitionResult& result) {
+  bool dispatch_success = caption_controller_->DispatchTranscription(result);
+  // TODO(crbug.com/373692250): add dispatch attempts error limit and report
+  // failure.
+  VLOG_IF(1, !dispatch_success)
+      << "Caption bubble transcription dispatch failed";
+}
+
+// TODO(377544551): Enforce ordering of results passed back to us.
+void BabelOrcaConsumer::OnTranslationCallback(
+    const std::optional<media::SpeechRecognitionResult>& result) {
+  if (result) {
+    DispatchTranscription(result.value());
+  } else {
+    VLOG(1) << "Translation dispatch failed";
+  }
+}
+
+void BabelOrcaConsumer::HandleLanguageAndDispatch(
+    const media::SpeechRecognitionResult& transcript,
+    const std::string& language) {
+  if (language != current_language_) {
+    current_language_ = language;
+    translator_->InitTranslationAndSetCallback(
+        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
+                            weak_ptr_factory_.GetWeakPtr()),
+        current_language_,
+        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
+  }
+
+  translator_->Translate(transcript);
 }
 
 void BabelOrcaConsumer::StartReceiving() {
@@ -180,7 +257,7 @@ void BabelOrcaConsumer::StartReceiving() {
       url_loader_factory_, tachyon_request_data_provider_,
       streaming_client_getter_);
   transcript_receiver_->StartReceiving(
-      base::BindRepeating(&BabelOrcaConsumer::OnTrasncriptReceived,
+      base::BindRepeating(&BabelOrcaConsumer::OnTranscriptReceived,
                           base::Unretained(this)),
       base::BindOnce(&BabelOrcaConsumer::OnReceivingFailed,
                      base::Unretained(this)));
@@ -235,15 +312,15 @@ void BabelOrcaConsumer::OnJoinGroupResponse(TachyonResponse response) {
   StartReceiving();
 }
 
-void BabelOrcaConsumer::OnTrasncriptReceived(
+void BabelOrcaConsumer::OnTranscriptReceived(
     media::SpeechRecognitionResult transcript,
     std::string language) {
-  bool dispatch_success =
-      caption_controller_->DispatchTranscription(transcript);
-  // TODO(crbug.com/373692250): add dispatch attempts error limit and report
-  // failure.
-  VLOG_IF(1, !dispatch_success)
-      << "Caption bubble transcription dispatch failed";
+  if (session_translations_enabled_) {
+    HandleLanguageAndDispatch(transcript, language);
+    return;
+  }
+
+  DispatchTranscription(transcript);
 }
 
 void BabelOrcaConsumer::OnReceivingFailed() {

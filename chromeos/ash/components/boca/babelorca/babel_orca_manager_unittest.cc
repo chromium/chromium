@@ -43,7 +43,7 @@ class MockBabelOrcaController : public babelorca::BabelOrcaController {
   ~MockBabelOrcaController() override = default;
   MOCK_METHOD(void, OnSessionStarted, (), (override));
   MOCK_METHOD(void, OnSessionEnded, (), (override));
-  MOCK_METHOD(void, OnSessionCaptionConfigUpdated, (bool), (override));
+  MOCK_METHOD(void, OnSessionCaptionConfigUpdated, (bool, bool), (override));
   MOCK_METHOD(void, OnLocalCaptionConfigUpdated, (bool), (override));
 };
 
@@ -208,7 +208,8 @@ TEST_F(BabelOrcaManagerTest, OnSessionCaptionConfigUpdated) {
                            std::move(controller_factory));
   ::boca::CaptionsConfig captions_config;
   captions_config.set_captions_enabled(true);
-  EXPECT_CALL(*controller_ptr, OnSessionCaptionConfigUpdated(true)).Times(1);
+  EXPECT_CALL(*controller_ptr, OnSessionCaptionConfigUpdated(true, false))
+      .Times(1);
   manager.OnSessionCaptionConfigUpdated("boca group", captions_config,
                                         kGroupId);
 
@@ -216,7 +217,8 @@ TEST_F(BabelOrcaManagerTest, OnSessionCaptionConfigUpdated) {
   EXPECT_EQ(manager.group_id().value(), kGroupId);
 
   captions_config.set_captions_enabled(false);
-  EXPECT_CALL(*controller_ptr, OnSessionCaptionConfigUpdated(false)).Times(1);
+  EXPECT_CALL(*controller_ptr, OnSessionCaptionConfigUpdated(false, false))
+      .Times(1);
   manager.OnSessionCaptionConfigUpdated("boca group", captions_config,
                                         kGroupId);
 }
