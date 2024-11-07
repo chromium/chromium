@@ -253,6 +253,7 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
         browser->window()->MaybeShowFeaturePromo(
             feature_engagement::kIPHPlusAddressFirstSaveFeature);
       }
+      MaybeTriggerUserPerceptionSurvey();
     }
 
     RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalConfirmed,
@@ -266,11 +267,6 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   // metric is recorded.
   if (dialog_delegate_) {
     dialog_delegate_->ShowConfirmResult(maybe_plus_profile);
-  }
-
-  if (was_notice_shown) {
-    // The survey is shown only during the first time creation flow.
-    MaybeTriggerUserPerceptionSurvey();
   }
 }
 

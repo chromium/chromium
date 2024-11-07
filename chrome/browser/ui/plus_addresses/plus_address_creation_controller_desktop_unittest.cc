@@ -133,8 +133,9 @@ class PlusAddressCreationControllerDesktopEnabledTest
   base::HistogramTester histogram_tester_;
 };
 
+// Tests the scenario when the user successfully creates the first plus address.
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
-       ConfirmedFirstTimeUsage) {
+       ConfirmedFirstTimePlusAddressCreation) {
   setting_service().set_has_accepted_notice(false);
 
   std::unique_ptr<content::WebContents> web_contents =
@@ -173,6 +174,60 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time::Now());
+}
+
+// Tests the scenario when the user confirms the first plus address creation
+// flow, but the `PlusAddressService` fails to confirm the plus address.
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
+       FirstTimePlusAddressCreationFailed) {
+  setting_service().set_has_accepted_notice(false);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::test::TestFuture<const std::string&> future;
+
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  plus_address_service().set_should_fail_to_confirm(true);
+
+  task_environment()->FastForwardBy(kDuration);
+  // Feature perception surveys shown after the first plus address creation
+  // flow should not be triggered if the plus address wasn't confirmed.
+  EXPECT_CALL(hats_service(), LaunchSurvey).Times(0);
+
+  controller->OnConfirmed();
+
+  EXPECT_FALSE(future.IsReady());
+
+  // When `ConfirmPlusAddress` fails, `OnCanceled` may be called after
+  // `OnConfirmed`.
+  controller->OnCanceled();
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          kPlusAddressModalEventHistogramWithNotice),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalCanceled, 1)));
+  histogram_tester().ExpectUniqueTimeSample(
+      FormatModalWithNoticeDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError),
+      kDuration, 1);
+  // The pref is not set of the first plus address creation flow failed.
+  EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
+                prefs::kFirstPlusAddressCreationTime),
+            base::Time());
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
