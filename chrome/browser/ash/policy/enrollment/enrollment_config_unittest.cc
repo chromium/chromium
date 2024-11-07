@@ -90,6 +90,32 @@ TEST_F(
             EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
 }
 
+TEST_F(
+    EnrollmentConfigTest,
+    TokenEnrollmentModeWithRemoteDeploymentSourceYieldsRemoteDeploymentMode) {
+  const char kRemoteDeploymentFlexOobeConfig[] = R"({
+    "enrollmentToken": "test-enrollment-token",
+    "source": "REMOTE_DEPLOYMENT"
+  })";
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig(
+      kRemoteDeploymentFlexOobeConfig);
+  auto state_dict = base::Value::Dict().Set(
+      kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+
+  const EnrollmentConfig config = GetPrescribedConfig();
+
+  EXPECT_EQ(config.mode,
+            EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED);
+  EXPECT_TRUE(config.should_enroll());
+  EXPECT_TRUE(config.is_forced());
+  EXPECT_TRUE(config.is_mode_with_manual_fallback());
+  EXPECT_TRUE(config.is_automatic_enrollment());
+  EXPECT_EQ(config.GetManualFallbackConfig().mode,
+            EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK);
+}
+
 struct EnrollmentConfigOOBEConfigSourceTestCase {
   const char* json_source;
   OOBEConfigSource expected_oobe_config_source;
