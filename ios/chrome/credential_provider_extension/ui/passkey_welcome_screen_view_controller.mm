@@ -6,8 +6,14 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/instruction_view/instruction_view.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
+
+// Vertical spacing between the UI elements contained in the
+// `specificContentView`.
+constexpr CGFloat kSpecificContentVerticalSpacing = 24;
 
 // Leading, trailing and top margin to use for the screen's title.
 constexpr CGFloat kTitleHorizontalAndTopMargin = 24;
@@ -129,7 +135,7 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   self.titleHorizontalMargin = kTitleHorizontalAndTopMargin;
 
   if (_purpose == PasskeyWelcomeScreenPurpose::kEnroll) {
-    // TODO(crbug.com/355042392): Set up `self.specificContentView`.
+    self.specificContentView = [self createSpecificContentView];
   } else {
     self.subtitleText = GetSubtitleString(_purpose);
   }
@@ -152,6 +158,78 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
+
+// Creates and configures the screen-specific view that's placed between the
+// titles and buttons.
+- (UIView*)createSpecificContentView {
+  UIView* specificContentView = [[UIView alloc] init];
+  specificContentView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  InstructionView* instructionView = [self createInstructionView];
+  [specificContentView addSubview:instructionView];
+  AddSameConstraintsToSides(
+      instructionView, specificContentView,
+      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+
+  UILabel* footerMessage = [self createFooterMessage];
+  [specificContentView addSubview:footerMessage];
+  AddSameConstraintsToSides(
+      footerMessage, specificContentView,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [footerMessage.topAnchor
+        constraintGreaterThanOrEqualToAnchor:instructionView.bottomAnchor
+                                    constant:kSpecificContentVerticalSpacing],
+  ]];
+
+  return specificContentView;
+}
+
+// Creates and configures the instruction view for the enrollment welcome
+// screen.
+- (InstructionView*)createInstructionView {
+  NSArray<NSString*>* steps = @[
+    NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_1",
+        @"First step of the passkey enrollment instructions"),
+    NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_2",
+        @"First step of the passkey enrollment instructions"),
+    NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_3",
+        @"First step of the passkey enrollment instructions"),
+  ];
+
+  InstructionView* instructionView =
+      [[InstructionView alloc] initWithList:steps];
+  instructionView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  return instructionView;
+}
+
+// Creates and configures the footer message for the enrollment welcome screen.
+- (UILabel*)createFooterMessage {
+  UILabel* footerMessage = [[UILabel alloc] init];
+  footerMessage.translatesAutoresizingMaskIntoConstraints = NO;
+  footerMessage.textAlignment = NSTextAlignmentCenter;
+  footerMessage.adjustsFontForContentSizeCategory = YES;
+  footerMessage.textColor = [UIColor colorNamed:kGrey600Color];
+  footerMessage.numberOfLines = 0;
+
+  UIFont* font = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
+  footerMessage.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
+
+  NSString* stringWithPlaceholder = NSLocalizedString(
+      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_FOOTER_MESSAGE",
+      @"Footer messsage shown at the bottom of the screen-specific view.");
+  // TODO(crbug.com/355042392): Replace hard-coded email.
+  footerMessage.text = [stringWithPlaceholder
+      stringByReplacingOccurrencesOfString:@"$1"
+                                withString:@"peter.parker@gmail.com"];
+
+  return footerMessage;
+}
 
 - (void)didTapPrimaryActionButton {
   ProceduralBlock primaryButtonAction = _primaryButtonAction;

@@ -34,6 +34,7 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
   EXPECT_NSEQ(controller.titleText,
               @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_TITLE");
   EXPECT_FALSE(controller.subtitleText);
+  EXPECT_EQ(controller.specificContentView.subviews.count, 2u);
   EXPECT_NSEQ(controller.primaryActionString,
               @"IDS_IOS_CREDENTIAL_PROVIDER_GET_STARTED_BUTTON");
   EXPECT_NSEQ(controller.secondaryActionString,
@@ -59,6 +60,7 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
   EXPECT_NSEQ(
       controller.subtitleText,
       @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_SUBTITLE");
+  EXPECT_EQ(controller.specificContentView.subviews.count, 0u);
   EXPECT_NSEQ(controller.primaryActionString,
               @"IDS_IOS_CREDENTIAL_PROVIDER_GET_STARTED_BUTTON");
   EXPECT_NSEQ(controller.secondaryActionString,
@@ -82,6 +84,7 @@ TEST_F(PasskeyWelcomeScreenViewControllerTest,
               @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_TITLE");
   EXPECT_NSEQ(controller.subtitleText,
               @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_SUBTITLE");
+  EXPECT_EQ(controller.specificContentView.subviews.count, 0u);
   EXPECT_NSEQ(controller.primaryActionString,
               @"IDS_IOS_CREDENTIAL_PROVIDER_NEXT_BUTTON");
   EXPECT_NSEQ(controller.secondaryActionString,
