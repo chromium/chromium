@@ -8423,3 +8423,4 @@ crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentati
 # Gardener 2024-11-07
 crbug.com/377172757 [ Linux ] external/wpt/event-timing/selection-autoscroll.html [ Timeout Pass ]
 crbug.com/377777852 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/shared-storage-filtering-id-sends-report.https.window.html [ Timeout Pass ]
+crbug.com/377909956 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/interrupt-hidden-smooth-scroll.html [ Failure Pass ]
