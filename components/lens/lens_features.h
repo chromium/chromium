@@ -372,6 +372,15 @@ extern bool UsePdfVitParam();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseWebpageVitParam();
 
+// Returns whether to use the PDF_QUERY interaction type for PDF queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UsePdfInteractionType();
+
+// Returns whether to use the WEBPAGE_QUERY interaction type for webpage
+// queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseWebpageInteractionType();
+
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.
 COMPONENT_EXPORT(LENS_FEATURES)

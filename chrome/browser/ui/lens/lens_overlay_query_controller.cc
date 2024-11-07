@@ -219,6 +219,26 @@ std::string ContentTypeToString(PageContentMimeType content_type) {
   }
 }
 
+lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
+    PageContentMimeType content_type) {
+  switch (content_type) {
+    case PageContentMimeType::kPdf:
+      if (lens::features::UsePdfInteractionType()) {
+        return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
+      }
+      break;
+    case PageContentMimeType::kHtml:
+    case PageContentMimeType::kPlainText:
+      if (lens::features::UseWebpageInteractionType()) {
+        return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
+      }
+      break;
+    case PageContentMimeType::kNone:
+      break;
+  }
+  return lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY;
+}
+
 lens::LensOverlayClientLogs::LensOverlayEntryPoint
 LenOverlayEntryPointFromInvocationSource(
     lens::LensOverlayInvocationSource invocation_source) {
@@ -1389,10 +1409,8 @@ LensOverlayQueryController::CreateInteractionRequest(
         ->set_object_id(*object_id);
   } else if (query_text.has_value()) {
     // If there is only `query_text`, this is a contextual flow.
-    // TOOD(b/362816047): Send correct LensOverlayInteractionRequestMetadata,
-    // once the server is ready for it.
     interaction_request_metadata.set_type(
-        lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+        ContentTypeToInteractionType(underlying_content_type_));
     interaction_request_metadata.mutable_query_metadata()
         ->mutable_text_query()
         ->set_query(*query_text);

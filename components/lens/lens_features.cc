@@ -287,6 +287,12 @@ constexpr base::FeatureParam<bool> kUsePdfVitParam{
 constexpr base::FeatureParam<bool> kUseWebpageVitParam{
     &kLensOverlayContextualSearchbox, "use-webpage-vit-param", false};
 
+constexpr base::FeatureParam<bool> kUsePdfInteractionType{
+    &kLensOverlayContextualSearchbox, "use-pdf-interaction-type", false};
+
+constexpr base::FeatureParam<bool> kUseWebpageInteractionType{
+    &kLensOverlayContextualSearchbox, "use-webpage-interaction-type", false};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -541,6 +547,14 @@ bool UsePdfVitParam() {
 
 bool UseWebpageVitParam() {
   return kUseWebpageVitParam.Get();
+}
+
+bool UsePdfInteractionType() {
+  return kUsePdfInteractionType.Get();
+}
+
+bool UseWebpageInteractionType() {
+  return kUseWebpageInteractionType.Get();
 }
 
 bool UsePdfsAsContext() {
