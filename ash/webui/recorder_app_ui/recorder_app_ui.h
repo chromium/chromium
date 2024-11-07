@@ -200,6 +200,8 @@ class RecorderAppUI
 
   base::flat_set<speech::LanguageCode> gen_ai_supported_languages_;
 
+  base::flat_set<speech::LanguageCode> speaker_label_supported_languages_;
+
   std::map<base::Uuid, mojo::RemoteSet<recorder_app::mojom::ModelStateMonitor>>
       model_monitors_;
 

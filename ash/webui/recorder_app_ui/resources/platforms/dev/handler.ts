@@ -383,6 +383,7 @@ export class PlatformHandler extends PlatformHandlerBase {
       languageCode: LanguageCode.EN_US,
       displayName: 'English',
       isGenAiSupported: true,
+      isSpeakerLabelSupported: true,
     });
   }
 

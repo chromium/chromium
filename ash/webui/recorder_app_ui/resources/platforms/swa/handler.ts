@@ -112,6 +112,7 @@ export class PlatformHandler extends PlatformHandlerBase {
       languageCode: languageCode,
       displayName: mojoString16ToString(langPack.displayName),
       isGenAiSupported: langPack.isGenAiSupported,
+      isSpeakerLabelSupported: langPack.isSpeakerLabelSupported,
     };
   }
 

@@ -75,6 +75,9 @@ struct LangPackInfo {
   mojo_base.mojom.String16 display_name;
   // Whether the language is supported by summarization and title suggestion.
   bool is_gen_ai_supported;
+  // Whether the language is supported by speaker labeling. False if large SODA
+  // model, which supports speaker label, is unavailable on the device.
+  bool is_speaker_label_supported;
 };
 
 // Primary interface for the chrome://recorder-app WebUI.

@@ -154,6 +154,11 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
     available_languages_.insert(kDefaultLanguageCode);
     // TODO(hsuanling): Set up feature flag to add ja-JP;
     gen_ai_supported_languages_.insert(kDefaultLanguageCode);
+    if (base::FeatureList::IsEnabled(
+            speech::kFeatureManagementCrosSodaConchLanguages)) {
+      // Currently only en-US is supported.
+      speaker_label_supported_languages_.insert(kDefaultLanguageCode);
+    }
   }
 
   // Add salt translator
@@ -451,6 +456,8 @@ void RecorderAppUI::GetAvailableLangPacks(
     lang_pack->display_name = delegate_->GetLanguageDisplayName(language_code);
     lang_pack->is_gen_ai_supported =
         gen_ai_supported_languages_.contains(language_code);
+    lang_pack->is_speaker_label_supported =
+        speaker_label_supported_languages_.contains(language_code);
     lang_packs.push_back(std::move(lang_pack));
   }
   std::move(callback).Run(std::move(lang_packs));

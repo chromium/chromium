@@ -25,4 +25,9 @@ export interface LangPackInfo {
    * Whether summarization and title suggestion support this language.
    */
   isGenAiSupported: boolean;
+
+  /**
+   * Whether speaker label supports this language.
+   */
+  isSpeakerLabelSupported: boolean;
 }
