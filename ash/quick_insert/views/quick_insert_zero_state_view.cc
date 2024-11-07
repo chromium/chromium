@@ -333,8 +333,11 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           break;
       }
     } else if (std::holds_alternative<QuickInsertLobsterResult>(result)) {
-      AddResultToSection(
-          result, GetOrCreateSectionView(QuickInsertCategoryType::kLobster));
+      primary_section_view_->AddResult(
+          result, preview_controller_,
+          QuickInsertSectionView::LocalFileResultStyle::kList,
+          base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                              weak_ptr_factory_.GetWeakPtr(), result));
     } else if (std::holds_alternative<QuickInsertCaseTransformResult>(result)) {
       if (case_transform_submenu == nullptr) {
         case_transform_submenu =

@@ -108,7 +108,13 @@ std::u16string GetSectionTitleForQuickInsertCategoryType(
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case QuickInsertCategoryType::kLobster:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EDITOR_WRITE_CATEGORY_TYPE_SECTION_TITLE);
+#else
       return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
     case QuickInsertCategoryType::kGeneral:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE);
