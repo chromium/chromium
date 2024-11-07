@@ -70,7 +70,7 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
 
   ~AutocompletePopupWidget() override {}
 
-  void InitOmniboxPopup(views::Widget* parent_widget) {
+  void InitOmniboxPopup(const views::Widget* parent_widget) {
     views::Widget::InitParams params(
         views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_POPUP);
@@ -112,7 +112,7 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
     GetLayer()->SetOpacity(0.0);
     ShowInactive();
 
-    auto scoped_settings = GetScopedAnimationSettings();
+    const auto scoped_settings = GetScopedAnimationSettings();
     GetLayer()->SetOpacity(1.0);
   }
 
@@ -350,10 +350,10 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
             ? autocomplete_controller->result().GetHeaderForSuggestionGroup(
                   match.suggestion_group_id.value())
             : u"";
-    bool row_hidden = controller()->IsSuggestionHidden(match);
-    bool group_hidden = match.suggestion_group_id.has_value() &&
-                        controller()->IsSuggestionGroupHidden(
-                            match.suggestion_group_id.value());
+    const bool row_hidden = controller()->IsSuggestionHidden(match);
+    const bool group_hidden = match.suggestion_group_id.has_value() &&
+                              controller()->IsSuggestionGroupHidden(
+                                  match.suggestion_group_id.value());
     // Show the header if it's distinct from the previous match's header.
     if (!current_row_header.empty() &&
         current_row_header != previous_row_header) {
@@ -450,13 +450,12 @@ std::u16string OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
     return static_cast<views::LabelButton*>(
                result_view->GetActiveAuxiliaryButtonForAccessibility())
         ->GetText();
-  } else {
-    return u"";
   }
+  return u"";
 }
 
 bool OmniboxPopupViewViews::OnMouseDragged(const ui::MouseEvent& event) {
-  size_t index = GetIndexForPoint(event.location());
+  const size_t index = GetIndexForPoint(event.location());
 
   // If the drag event is over the bounds of one of the result views, pass
   // control to that view.
@@ -634,7 +633,7 @@ const AutocompleteMatch& OmniboxPopupViewViews::GetMatchAtIndex(
   return controller()->autocomplete_controller()->result().match_at(index);
 }
 
-size_t OmniboxPopupViewViews::GetIndexForPoint(const gfx::Point& point) {
+size_t OmniboxPopupViewViews::GetIndexForPoint(const gfx::Point& point) const {
   if (!HitTestPoint(point)) {
     return OmniboxPopupSelection::kNoMatch;
   }
