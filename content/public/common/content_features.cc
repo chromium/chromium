@@ -54,6 +54,12 @@ const base::FeatureParam<int> kAndroidSpareRendererTimeoutSeconds{
     &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_timeout_seconds",
     60};
 
+// The lower memory limit to create a spare renderer after each navigation on
+// Android.
+const base::FeatureParam<int> kAndroidSpareRendererMemoryThreshold{
+    &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_memory_threshold",
+    1077};
+
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",
