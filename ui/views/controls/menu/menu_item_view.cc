@@ -366,14 +366,6 @@ MenuItemView* MenuItemView::AddMenuItemAt(
   }
   if (GetDelegate() && !GetDelegate()->IsCommandVisible(item_id))
     item->SetVisible(false);
-
-  // Some of the lines above can change the focus behavior of the item. This is
-  // because `MenuItemView` is a special case where the focus behavior can be
-  // dictated inside `MenuItemView::GetFocusBehavior` without actually calling
-  // `SetFocusBehavior`. This is why we must special case this call and update
-  // the a11y ignored state of the item, since it depends on the focus behavior.
-  item->GetViewAccessibility().SetHasFocusableAncestorRecursive(
-      item->GetFocusBehavior() != FocusBehavior::NEVER);
   return submenu_->AddChildViewAt(item, index);
 }
 

@@ -69,6 +69,26 @@ bool g_is_queueing_events = false;
 // https://crbug.com/358404368
 bool g_is_flushing = false;
 
+bool IsAccessibilityFocusableWhenEnabled(View* view) {
+  return view->GetFocusBehavior() != View::FocusBehavior::NEVER &&
+         view->IsDrawn();
+}
+
+// Used to determine if a View should be ignored by accessibility clients by
+// being a non-keyboard-focusable child of a keyboard-focusable ancestor. E.g.,
+// LabelButtons contain Labels, but a11y should just show that there's a button.
+bool IsViewUnfocusableDescendantOfFocusableAncestor(View* view) {
+  if (IsAccessibilityFocusableWhenEnabled(view))
+    return false;
+
+  while (view->parent()) {
+    view = view->parent();
+    if (IsAccessibilityFocusableWhenEnabled(view))
+      return true;
+  }
+  return false;
+}
+
 ui::AXPlatformNode* FromNativeWindow(gfx::NativeWindow native_window) {
   Widget* widget = Widget::GetWidgetForNativeWindow(native_window);
   if (!widget)
@@ -325,6 +345,25 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
 
   GetAccessibleNodeData(&data_);
 
+  // View::IsDrawn is true if a View is visible and all of its ancestors are
+  // visible too, since invisibility inherits.
+  //
+  // (We could try to move this logic to ViewAccessibility, but
+  // that would require ensuring that Chrome OS invalidates the whole
+  // subtree when a View changes its visibility state.)
+  if (!view()->IsDrawn())
+    data_.AddState(ax::mojom::State::kInvisible);
+
+  // Make sure this element is excluded from the a11y tree if there's a
+  // focusable parent. All keyboard focusable elements should be leaf nodes.
+  // Exceptions to this rule will themselves be accessibility focusable.
+  //
+  // Note: this code was added to support MacViews accessibility,
+  // because we needed a way to mark a View as a leaf node in the
+  // accessibility tree. We need to replace this with a cross-platform
+  // solution that works for ChromeVox, too, and move it to ViewAccessibility.
+  if (IsViewUnfocusableDescendantOfFocusableAncestor(view()))
+    data_.AddState(ax::mojom::State::kIgnored);
 
 #if BUILDFLAG(IS_WIN)
   if (view()->GetViewAccessibility().needs_ax_tree_manager()) {
