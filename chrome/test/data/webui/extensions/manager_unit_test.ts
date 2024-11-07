@@ -11,9 +11,7 @@
 import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
@@ -63,7 +61,7 @@ suite('ExtensionManagerUnitTest', function() {
   }
 
   // Test that newly added items are inserted in the correct order.
-  test('ItemOrder', function() {
+  test('ItemOrder', async () => {
     assertEquals(0, getExtensions().length);
 
     const alphaFromStore = createExtensionInfo({
@@ -72,6 +70,7 @@ suite('ExtensionManagerUnitTest', function() {
       id: 'a'.repeat(32),
     });
     simulateExtensionInstall(alphaFromStore);
+    await microtasksFinished();
     assertEquals(1, getExtensions().length);
     assertEquals(alphaFromStore.id, getExtension(0).id);
 
@@ -82,6 +81,7 @@ suite('ExtensionManagerUnitTest', function() {
       id: 'b'.repeat(32),
     });
     simulateExtensionInstall(betaUnpacked);
+    await microtasksFinished();
     assertEquals(2, getExtensions().length);
     assertEquals(betaUnpacked.id, getExtension(0).id);
     assertEquals(alphaFromStore.id, getExtension(1).id);
@@ -93,6 +93,7 @@ suite('ExtensionManagerUnitTest', function() {
       id: 'c'.repeat(32),
     });
     simulateExtensionInstall(gammaUnpacked);
+    await microtasksFinished();
     assertEquals(3, getExtensions().length);
     assertEquals(betaUnpacked.id, getExtension(0).id);
     assertEquals(gammaUnpacked.id, getExtension(1).id);
@@ -106,18 +107,21 @@ suite('ExtensionManagerUnitTest', function() {
       id: 'd'.repeat(32),
     });
     simulateExtensionInstall(aaFromStore);
+    await microtasksFinished();
     const AaFromStore = createExtensionInfo({
       location: chrome.developerPrivate.Location.FROM_STORE,
       name: 'Aa',
       id: 'e'.repeat(32),
     });
     simulateExtensionInstall(AaFromStore);
+    await microtasksFinished();
     const aAFromStore = createExtensionInfo({
       location: chrome.developerPrivate.Location.FROM_STORE,
       name: 'aA',
       id: 'f'.repeat(32),
     });
     simulateExtensionInstall(aAFromStore);
+    await microtasksFinished();
 
     assertEquals(6, getExtensions().length);
     assertEquals(betaUnpacked.id, getExtension(0).id);
@@ -128,15 +132,17 @@ suite('ExtensionManagerUnitTest', function() {
     assertEquals(alphaFromStore.id, getExtension(5).id);
   });
 
-  test('SetItemData', function() {
+  test('SetItemData', async () => {
     const description = 'description';
 
     const extension = createExtensionInfo({description: description});
     simulateExtensionInstall(extension);
+    await microtasksFinished();
 
     // The detail view is not present until navigation.
     assertFalse(!!manager.shadowRoot!.querySelector('extensions-detail-view'));
     navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
+    await microtasksFinished();
     const detailsView =
         manager.shadowRoot!.querySelector('extensions-detail-view');
     assertTrue(!!detailsView);  // View should now be present.
@@ -172,6 +178,7 @@ suite('ExtensionManagerUnitTest', function() {
           event_type: chrome.developerPrivate.EventType.PREFS_CHANGED,
           extensionInfo: extensionCopy,
         });
+        await microtasksFinished();
 
         // Updating a different extension shouldn't have any impact.
         const secondExtensionCopy = Object.assign({}, secondExtension);
@@ -180,6 +187,7 @@ suite('ExtensionManagerUnitTest', function() {
           event_type: chrome.developerPrivate.EventType.PREFS_CHANGED,
           extensionInfo: secondExtensionCopy,
         });
+        await microtasksFinished();
         assertEquals(extension.id, detailsView.data.id);
         assertEquals(newDescription, detailsView.data.description);
 
@@ -206,7 +214,7 @@ suite('ExtensionManagerUnitTest', function() {
     assertFalse(manager.canLoadUnpacked);
   });
 
-  test('Uninstall', function() {
+  test('Uninstall', async () => {
     assertEquals(0, getExtensions().length);
 
     const extension = createExtensionInfo({
@@ -215,6 +223,7 @@ suite('ExtensionManagerUnitTest', function() {
       id: 'a'.repeat(32),
     });
     simulateExtensionInstall(extension);
+    await microtasksFinished();
     assertEquals(1, getExtensions().length);
 
     service.itemStateChangedTarget.callListeners({
@@ -224,6 +233,7 @@ suite('ExtensionManagerUnitTest', function() {
       item_id: extension.id,
     });
 
+    await microtasksFinished();
     assertEquals(0, getExtensions().length);
   });
 
@@ -254,6 +264,7 @@ suite('ExtensionManagerUnitTest', function() {
     simulateExtensionInstall(extension1);
     simulateExtensionInstall(extension2);
     simulateExtensionInstall(extension3);
+    await microtasksFinished();
     assertEquals(3, getExtensions().length);
 
     const itemList = manager.$['items-list']!;
@@ -265,9 +276,11 @@ suite('ExtensionManagerUnitTest', function() {
 
     // After removing `extension1`, focus should go to the remove button of
     // `extension2` which is now the first extension shown.
-    await flushTasks();
     await microtasksFinished();
     assertEquals(2, getExtensions().length);
+    let button = itemList.getRemoveButton(extension2.id);
+    assertTrue(!!button);
+    await eventToPromise('focus', button);
     assertEquals(
         getDeepActiveElement(), itemList.getRemoveButton(extension2.id)!);
 
@@ -278,9 +291,11 @@ suite('ExtensionManagerUnitTest', function() {
 
     // Since `extension3` cannot be uninstalled, focus should go to its details
     // button.
-    await flushTasks();
     await microtasksFinished();
     assertEquals(1, getExtensions().length);
+    button = itemList.getDetailsButton(extension3.id);
+    assertTrue(!!button);
+    await eventToPromise('focus', button);
     assertEquals(
         getDeepActiveElement(), itemList.getDetailsButton(extension3.id)!);
 
@@ -310,7 +325,7 @@ suite('ExtensionManagerUnitTest', function() {
   }
 
   test(
-      'UninstallFromDetails', function(done) {
+      'UninstallFromDetails', async () => {
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
           name: 'Alpha',
@@ -319,13 +334,10 @@ suite('ExtensionManagerUnitTest', function() {
         simulateExtensionInstall(extension);
 
         navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
-        flush();
+        await microtasksFinished();
         assertViewActive('extensions-detail-view');
 
-        window.addEventListener('popstate', () => {
-          assertViewActive('extensions-item-list');
-          done();
-        });
+        const whenPopstate = eventToPromise('popstate', window);
 
         service.itemStateChangedTarget.callListeners({
           event_type: chrome.developerPrivate.EventType.UNINSTALLED,
@@ -333,10 +345,12 @@ suite('ExtensionManagerUnitTest', function() {
           // C++.
           item_id: extension.id,
         });
+        await whenPopstate;
+        assertViewActive('extensions-item-list');
       });
 
   test(
-      'ToggleIncognito', function() {
+      'ToggleIncognito', async () => {
         assertEquals(0, getExtensions().length);
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
@@ -344,6 +358,7 @@ suite('ExtensionManagerUnitTest', function() {
           id: 'a'.repeat(32),
         });
         simulateExtensionInstall(extension);
+        await microtasksFinished();
         assertEquals(1, getExtensions().length);
 
         assertEquals(extension, getExtension(0));
@@ -358,6 +373,7 @@ suite('ExtensionManagerUnitTest', function() {
           extensionInfo: extensionCopy1,
         });
 
+        await microtasksFinished();
         assertTrue(getExtension(0).incognitoAccess.isActive);
 
         // Simulate revoking incognito permission.
@@ -367,11 +383,12 @@ suite('ExtensionManagerUnitTest', function() {
           event_type: chrome.developerPrivate.EventType.LOADED,
           extensionInfo: extensionCopy2,
         });
+        await microtasksFinished();
         assertFalse(getExtension(0).incognitoAccess.isActive);
       });
 
   test(
-      'EnableAndDisable', function() {
+      'EnableAndDisable', async () => {
         const ExtensionState = chrome.developerPrivate.ExtensionState;
         assertEquals(0, getExtensions().length);
         const extension = createExtensionInfo({
@@ -380,6 +397,7 @@ suite('ExtensionManagerUnitTest', function() {
           id: 'a'.repeat(32),
         });
         simulateExtensionInstall(extension);
+        await microtasksFinished();
         assertEquals(1, getExtensions().length);
 
         assertEquals(extension, getExtension(0));
@@ -393,6 +411,7 @@ suite('ExtensionManagerUnitTest', function() {
           event_type: chrome.developerPrivate.EventType.LOADED,
           extensionInfo: extensionCopy1,
         });
+        await microtasksFinished();
         assertEquals(ExtensionState.DISABLED, getExtension(0).state);
 
         // Simulate re-enabling an extension.
@@ -403,6 +422,7 @@ suite('ExtensionManagerUnitTest', function() {
           event_type: chrome.developerPrivate.EventType.LOADED,
           extensionInfo: extensionCopy2,
         });
+        await microtasksFinished();
         assertEquals(ExtensionState.ENABLED, getExtension(0).state);
       });
 });

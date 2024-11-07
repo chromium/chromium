@@ -36,6 +36,9 @@ export interface ServiceInterface extends ActivityLogDelegate,
   getExtensionSize(id: string): Promise<string>;
   dismissSafetyHubExtensionsMenuNotification(): void;
   dismissMv2DeprecationNotice(): void;
+  shouldIgnoreUpdate(
+      extensionId: string,
+      eventType: chrome.developerPrivate.EventType): boolean;
 }
 
 export class Service implements ServiceInterface {

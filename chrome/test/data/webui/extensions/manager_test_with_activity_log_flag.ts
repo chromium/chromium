@@ -6,9 +6,8 @@ import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ExtensionManagerTest', function() {
   let manager: ExtensionsManagerElement;
@@ -33,7 +32,7 @@ suite('ExtensionManagerTest', function() {
         eventToPromise('view-enter-start', manager);
   });
 
-  test('UrlNavigationToActivityLogSuccess', function() {
+  test('UrlNavigationToActivityLogSuccess', async () => {
     assertTrue(manager.showActivityLog);
 
     // Try to open activity log with a valid ID.
@@ -41,7 +40,7 @@ suite('ExtensionManagerTest', function() {
       page: Page.ACTIVITY_LOG,
       extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf',
     });
-    flush();
+    await microtasksFinished();
 
     // Should be on activity log page.
     assertViewActive('extensions-activity-log');
@@ -49,7 +48,7 @@ suite('ExtensionManagerTest', function() {
     // Try to open activity log with an invalid ID.
     navigation.navigateTo(
         {page: Page.ACTIVITY_LOG, extensionId: 'z'.repeat(32)});
-    flush();
+    await microtasksFinished();
     // Should also be on activity log page. See |changePage_| in manager.js
     // for the use case.
     assertViewActive('extensions-activity-log');
