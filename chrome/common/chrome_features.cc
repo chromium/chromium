@@ -141,12 +141,6 @@ BASE_FEATURE(kEnableCertManagementUIV2Write,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables or disables "usm" service in the list of user services returned by
-// userInfo Gaia message.
-BASE_FEATURE(kCrOSEnableUSMUserService,
-             "CrOSEnableUSMUserService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable project Crostini, Linux VMs on Chrome OS.
 BASE_FEATURE(kCrostini, "Crostini", base::FEATURE_DISABLED_BY_DEFAULT);
 
