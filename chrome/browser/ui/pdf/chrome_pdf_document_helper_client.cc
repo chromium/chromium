@@ -15,6 +15,7 @@
 #include "pdf/pdf_features.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -107,7 +108,10 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
 void ChromePDFDocumentHelperClient::OnSearchifyStateChange(
     bool busy,
     content::WebContents* contents) {
-  if (busy) {
+  // Show the promo only when ScreenAI component is available and OCR can be
+  // done.
+  if (busy &&
+      screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
     MaybeShowFeaturePromo(contents);
   }
 
