@@ -190,7 +190,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/reporting/metrics_reporting/usb:unit_tests",
     "//chrome/browser/ash/policy/reporting/os_updates:unit_tests",
     "//chrome/browser/ash/policy/reporting/user_added_removed:unit_tests",
-    "//chrome/browser/ash/policy/reporting/user_session_activity:unit_tests",
     "//chrome/browser/ash/policy/rsu:unit_tests",
     "//chrome/browser/ash/policy/scheduled_task_handler/test:unit_tests",
     "//chrome/browser/ash/policy/server_backed_state:unit_tests",

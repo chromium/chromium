@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/power/ml/recent_events_counter.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -56,7 +55,6 @@ IdleEventNotifier::ActivityData::ActivityData(const ActivityData& input_data) {
   key_events_in_last_hour = input_data.key_events_in_last_hour;
   mouse_events_in_last_hour = input_data.mouse_events_in_last_hour;
   touch_events_in_last_hour = input_data.touch_events_in_last_hour;
-  is_video_playing = input_data.is_video_playing;
 }
 
 IdleEventNotifier::IdleEventNotifier(
@@ -217,7 +215,6 @@ IdleEventNotifier::ActivityData IdleEventNotifier::ConvertActivityData(
         time_since_boot - internal_data_->video_end_time.value();
   }
 
-  data.is_video_playing = video_playing_;
   data.key_events_in_last_hour = key_counter_->GetTotal(time_since_boot);
   data.mouse_events_in_last_hour = mouse_counter_->GetTotal(time_since_boot);
   data.touch_events_in_last_hour = touch_counter_->GetTotal(time_since_boot);
