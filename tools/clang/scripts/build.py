@@ -1309,6 +1309,8 @@ def main():
             'DARWIN_ios_ARCHS=arm64',
             'DARWIN_iossim_ARCHS=arm64;x86_64',
             'DARWIN_osx_ARCHS=arm64;x86_64',
+            'DARWIN_watchos_BUILTIN_ARCHS=arm64',
+            'DARWIN_watchossim_BUILTIN_ARCHS=arm64;x86_64',
         ],
         "sanitizers":
         True,
