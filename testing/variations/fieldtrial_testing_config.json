@@ -6787,21 +6787,6 @@
             ]
         }
     ],
-    "CrOSLateBootSetRtForDisplayThreads": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootSetRtForDisplayThreads"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSLateBootSlowAdaptiveCharging": [
         {
             "platforms": [
@@ -21045,11 +21030,71 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_M131_20241107",
                     "enable_features": [
                         "SchedQoSOnResourcedForChrome"
                     ],
-                    "min_os_version": "15849.0.0"
+                    "min_os_version": "16060.0.0"
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_M132_20241107",
+                    "enable_features": [
+                        "SchedQoSOnResourcedForChrome"
+                    ],
+                    "min_os_version": "16088.0.0"
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_M132_20241107",
+                    "enable_features": [
+                        "SchedQoSOnResourcedForChrome"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootInitDLServer",
+                        "CrOSLateBootSetRtForDisplayThreads",
+                        "SetRtForDisplayThreads",
+                        "SetThreadBgForBgProcess"
+                    ],
+                    "min_os_version": "16088.0.0"
+                },
+                {
+                    "name": "EnabledRTForDisplay_M132_20241107",
+                    "enable_features": [
+                        "CrOSLateBootInitDLServer",
+                        "SetRtForDisplayThreads",
+                        "SetThreadBgForBgProcess"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootSetRtForDisplayThreads",
+                        "SchedQoSOnResourcedForChrome"
+                    ],
+                    "min_os_version": "16088.0.0"
+                },
+                {
+                    "name": "EnabledRTForDisplayQoS_M132_20241107",
+                    "enable_features": [
+                        "CrOSLateBootInitDLServer",
+                        "CrOSLateBootSetRtForDisplayThreads",
+                        "SchedQoSOnResourcedForChrome"
+                    ],
+                    "disable_features": [
+                        "SetRtForDisplayThreads",
+                        "SetThreadBgForBgProcess"
+                    ],
+                    "min_os_version": "16088.0.0"
                 }
             ]
         }
