@@ -184,7 +184,7 @@ TEST_F(AndroidWebViewStateSerializerTest,
 // is able to safely restore entries that were serialized with an empty
 // PageState.
 TEST_F(AndroidWebViewStateSerializerTest,
-       TestDeserialization_20151204_EmptyPageState) {
+       TestDeserialization20151204EmptyPageState) {
   // Test data.
   GURL url("data:text/html,main_url");
   GURL virtual_url("https://example.com/virtual_url");
