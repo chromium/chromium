@@ -130,7 +130,13 @@ bool LightweightQuarantineBranch::QuarantineInternal(
     return false;
   }
 
-  {
+  if constexpr (lock_required == LockRequired::kNotRequired) {
+    // Although there is no need to actually acquire the lock as
+    // LockRequired::kNotRequired is specified,
+    // a CompileTimeConditionalScopedGuard is necessary in order to touch
+    // `slots_` as `slots_` is annotated with `PA_GUARDED_BY(lock_)`.
+    // CompileTimeConditionalScopedGuard's ctor and dtor behave as
+    // PA_EXCLUSIVE_LOCK_FUNCTION and PA_UNLOCK_FUNCTION.
     CompileTimeConditionalScopedGuard<lock_required> guard(lock_);
 
     // Dequarantine some entries as required.
@@ -144,6 +150,30 @@ bool LightweightQuarantineBranch::QuarantineInternal(
     // This is not uniformly random, but sufficiently random.
     const size_t random_index = random_.RandUint32() % slots_.size();
     std::swap(slots_[random_index], slots_.back());
+  } else {
+    ToBeFreedArray to_be_freed;
+    size_t num_of_slots = 0;
+
+    {
+      CompileTimeConditionalScopedGuard<lock_required> guard(lock_);
+
+      // Dequarantine some entries as required. Save the objects to be
+      // deallocated into `to_be_freed`.
+      PurgeInternalWithDefferedFree(capacity_in_bytes - usable_size,
+                                    to_be_freed, num_of_slots);
+
+      // Put the entry onto the list.
+      branch_size_in_bytes_ += usable_size;
+      slots_.push_back({slot_start, usable_size});
+
+      // Swap randomly so that the quarantine list remain shuffled.
+      // This is not uniformly random, but sufficiently random.
+      const size_t random_index = random_.RandUint32() % slots_.size();
+      std::swap(slots_[random_index], slots_.back());
+    }
+
+    // Actually deallocate the dequarantined objects.
+    BatchFree(to_be_freed, num_of_slots);
   }
 
   // Update stats (not locked).
@@ -203,6 +233,55 @@ PA_ALWAYS_INLINE void LightweightQuarantineBranch::PurgeInternal(
   root_.size_in_bytes_.fetch_sub(freed_size_in_bytes,
                                  std::memory_order_relaxed);
   root_.count_.fetch_sub(freed_count, std::memory_order_relaxed);
+}
+
+PA_ALWAYS_INLINE void
+LightweightQuarantineBranch::PurgeInternalWithDefferedFree(
+    size_t target_size_in_bytes,
+    ToBeFreedArray& to_be_freed,
+    size_t& num_of_slots) {
+  num_of_slots = 0;
+
+  int64_t freed_size_in_bytes = 0;
+
+  // Dequarantine some entries as required.
+  while (target_size_in_bytes < branch_size_in_bytes_) {
+    PA_DCHECK(!slots_.empty());
+
+    // As quarantined entries are shuffled, picking last entry is equivalent to
+    // picking random entry.
+    const QuarantineSlot& to_free = slots_.back();
+    const size_t to_free_size = to_free.usable_size;
+
+    to_be_freed[num_of_slots++] = to_free.slot_start;
+    slots_.pop_back();
+
+    freed_size_in_bytes += to_free_size;
+    branch_size_in_bytes_ -= to_free_size;
+
+    if (num_of_slots >= kMaxFreeTimesPerPurge) {
+      break;
+    }
+  }
+
+  root_.size_in_bytes_.fetch_sub(freed_size_in_bytes,
+                                 std::memory_order_relaxed);
+  root_.count_.fetch_sub(num_of_slots, std::memory_order_relaxed);
+}
+
+PA_ALWAYS_INLINE void LightweightQuarantineBranch::BatchFree(
+    const ToBeFreedArray& to_be_freed,
+    size_t num_of_slots) {
+  for (size_t i = 0; i < num_of_slots; ++i) {
+    const uintptr_t slot_start = to_be_freed[i];
+    PA_DCHECK(slot_start);
+    auto* slot_span =
+        SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(slot_start);
+    void* object = root_.allocator_root_.SlotStartToObject(slot_start);
+    PA_DCHECK(slot_span ==
+              SlotSpanMetadata<MetadataKind::kReadOnly>::FromObject(object));
+    root_.allocator_root_.FreeNoHooksImmediate(object, slot_span, slot_start);
+  }
 }
 
 }  // namespace partition_alloc::internal

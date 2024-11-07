@@ -159,6 +159,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   template <LockRequired lock_required>
   class PA_SCOPED_LOCKABLE CompileTimeConditionalScopedGuard;
   class PA_SCOPED_LOCKABLE RuntimeConditionalScopedGuard;
+  // `ToBeFreedArray` is used in `PurgeInternalInTwoPhases1of2` and
+  // `PurgeInternalInTwoPhases2of2`. See the function comment about the purpose.
+  // In order to avoid reentrancy issues, we must not deallocate any object in
+  // `Quarantine`. So, std::vector is not an option. std::array doesn't
+  // deallocate, plus, std::array has perf advantages.
+  static constexpr size_t kMaxFreeTimesPerPurge = 1024;
+  using ToBeFreedArray = std::array<uintptr_t, kMaxFreeTimesPerPurge>;
 
   LightweightQuarantineBranch(Root& root,
                               const LightweightQuarantineBranchConfig& config);
@@ -176,6 +183,19 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   // constraint, call `Purge()` for each branch in sequence, synchronously.
   PA_ALWAYS_INLINE void PurgeInternal(size_t target_size_in_bytes)
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // In order to reduce thread contention, dequarantines entries in two phases:
+  //   Phase 1) With the lock acquired, saves `slot_start`s of the quarantined
+  //     objects in an array, and shrinks `slots_`. Then, releases the lock so
+  //     that another thread can quarantine an object.
+  //   Phase 2) Without the lock acquired, deallocates objects saved in the
+  //     array in Phase 1. This may take some time, but doesn't block other
+  //     threads.
+  PA_ALWAYS_INLINE void PurgeInternalWithDefferedFree(
+      size_t target_size_in_bytes,
+      ToBeFreedArray& to_be_freed,
+      size_t& num_of_slots) PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  PA_ALWAYS_INLINE void BatchFree(const ToBeFreedArray& to_be_freed,
+                                  size_t num_of_slots);
 
   Root& root_;
 
