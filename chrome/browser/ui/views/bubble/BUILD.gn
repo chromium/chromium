@@ -33,6 +33,7 @@ source_set("bubble") {
   ]
   deps = [
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/input",
   ]

@@ -1608,8 +1608,6 @@ static_library("ui") {
       "webui/web_app_internals/web_app_internals_handler.h",
       "webui/web_app_internals/web_app_internals_ui.cc",
       "webui/web_app_internals/web_app_internals_ui.h",
-      "webui/webui_embedding_context.cc",
-      "webui/webui_embedding_context.h",
       "webui/webui_gallery/webui_gallery_ui.cc",
       "webui/webui_gallery/webui_gallery_ui.h",
       "webui/webui_util_desktop.cc",
