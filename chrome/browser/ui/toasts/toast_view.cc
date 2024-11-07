@@ -331,8 +331,12 @@ void ToastView::AnimateIn() {
 }
 
 void ToastView::Close(ToastCloseReason reason) {
-  // TODO(crbug.com/358618479): Only close if menu is not showing - otherwise,
-  // delay the close.
+  // Do not close if the menu is open - instead, remember the call to close it.
+  if (menu_runner_) {
+    pending_close_reason_ = reason;
+    return;
+  }
+
   // TODO(crbug.com/358610872): Log toast close reason metric.
   views::Widget::ClosedReason widget_closed_reason =
       views::Widget::ClosedReason::kUnspecified;
@@ -450,6 +454,9 @@ void ToastView::OnMenuClosed() {
   menu_runner_.reset();
   menu_button_highlight_.reset();
   menu_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
+  if (pending_close_reason_) {
+    Close(pending_close_reason_.value());
+  }
 }
 
 BEGIN_METADATA(ToastView)

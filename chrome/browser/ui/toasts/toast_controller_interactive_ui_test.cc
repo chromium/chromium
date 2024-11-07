@@ -342,6 +342,25 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 }
 #endif
 
+// Tests that attempting to close the `ToastView` does not succeed while the
+// menu is open. If that happens, the `ToastView` is closed once the menu
+// closes.
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       ToastDoesNotCloseWhileMenuIsOpen) {
+  ToastParams params(ToastId::kPlusAddressOverride);
+  params.menu_model = std::make_unique<TestMenuModel>(base::DoNothing());
+  RunTestSequence(ShowToast(std::move(params)),
+                  WaitForShow(toasts::ToastView::kToastViewId),
+                  EnsurePresent(toasts::ToastView::kToastMenuButton),
+                  PressButton(toasts::ToastView::kToastMenuButton),
+                  WaitForShow(kSampleMenuItem),
+                  EnsurePresent(toasts::ToastView::kToastViewId),
+                  FireToastCloseTimer(),
+                  EnsurePresent(toasts::ToastView::kToastViewId),
+                  PressButton(toasts::ToastView::kToastMenuButton),
+                  WaitForHide(toasts::ToastView::kToastViewId));
+}
+
 // Tests that clicking the menu button twice closes the menu, but not the toast.
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, TwoClicksOnMenuButton) {
   ToastParams params(ToastId::kPlusAddressOverride);

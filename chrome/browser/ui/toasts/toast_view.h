@@ -144,6 +144,11 @@ class ToastView : public views::BubbleDialogDelegateView,
 
   raw_ptr<views::ImageButton> menu_button_ = nullptr;
   std::optional<views::Button::ScopedAnchorHighlight> menu_button_highlight_;
+
+  // If there was an attempt to close `this` while a menu was showing,
+  // `pending_close_reason_` contains the reason for closing the view and it
+  // is used to close the view once the menu stops showing.
+  std::optional<ToastCloseReason> pending_close_reason_;
 };
 
 }  // namespace toasts
