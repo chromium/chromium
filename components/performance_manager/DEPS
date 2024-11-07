@@ -1,6 +1,8 @@
 include_rules = [
   "+chromeos/dbus",
   "+components/content_settings/core/common",
+  "+components/guest_view/buildflags",
+  "+components/guest_view/browser/guest_view_base.h",
   "+components/memory_pressure",
   "+components/metrics",
   "+components/pref_registry",

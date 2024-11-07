@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("site_data_proto") {
@@ -279,6 +280,7 @@ static_library("performance_manager") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
+    "//components/guest_view/buildflags",
     "//components/metrics",
     "//components/pref_registry:pref_registry",
     "//components/prefs:prefs",
@@ -298,6 +300,10 @@ static_library("performance_manager") {
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
 
   if (!is_android) {
     sources += [

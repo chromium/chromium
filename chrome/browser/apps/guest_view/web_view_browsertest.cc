@@ -77,6 +77,9 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
+#include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
@@ -8076,4 +8079,34 @@ IN_PROC_BROWSER_TEST_P(WebViewFileSystemAccessTest,
 
   // Have the embedder create a webview and attempt to use file picker.
   TestHelper("testFileSystemAccessAvailable", "web_view/shim", NO_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_P(WebViewTest, PerformanceManager) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  LoadAppWithGuest("web_view/simple");
+
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  content::WebContents* owner_web_contents = GetEmbedderWebContents();
+
+  auto main_frame_node =
+      performance_manager::PerformanceManager::GetFrameNodeForRenderFrameHost(
+          owner_web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(main_frame_node);
+
+  auto inner_root_frame_node =
+      performance_manager::PerformanceManager::GetFrameNodeForRenderFrameHost(
+          guest->GetGuestMainFrame());
+  ASSERT_TRUE(inner_root_frame_node);
+
+  // Jump into the graph and make sure guest view does not have a
+  // parent frame node.
+  performance_manager::RunInGraph([main_frame_node, inner_root_frame_node]() {
+    // <webviews> have an outer document instead of a parent frame node.
+    EXPECT_EQ(inner_root_frame_node->GetParentFrameNode(), nullptr);
+
+    // The outer document of the guest view is available.
+    EXPECT_EQ(inner_root_frame_node->GetParentOrOuterDocumentOrEmbedder(),
+              main_frame_node.get());
+  });
 }
