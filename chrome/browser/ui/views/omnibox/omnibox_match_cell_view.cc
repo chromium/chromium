@@ -68,6 +68,15 @@ static constexpr int kWeatherImageSize = 24;
 // Size of the weather's round square background.
 static constexpr int kWeatherBackgroundSize = 28;
 
+// The vertical gap between the contents and descriptions for multiline answers.
+static constexpr int kHistoryEmbeddingAnswerGap = 3;
+
+// The vertical padding above and below the contents and description for
+// multiline answers. Chosen so that the vertical distance between the bottom of
+// the answer text and the bottom of the hover fill is the same as for other,
+// 1-line matches.
+static constexpr int kHistoryEmbeddingAnswerPadding = 8;
+
 ////////////////////////////////////////////////////////////////////////////////
 // PlaceholderImageSource:
 
@@ -442,15 +451,30 @@ void OmniboxMatchCellView::Layout(PassKey) {
   const int text_width = child_area.width() - text_indent;
 
   if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
-    // Equally divide the vertical padding.
-    int needed_height = content_view_->GetHeightForWidth(text_width) +
-                        description_view_->GetLineHeight();
-    int leftover_height = row_height - needed_height;
-    content_view_->SetBounds(x, y + leftover_height / 2, text_width,
-                             content_view_->GetHeightForWidth(text_width));
-    description_view_->SetBounds(x, content_view_->bounds().bottom(),
-                                 text_width,
-                                 description_view_->GetLineHeight());
+    if (description_view_->GetText().empty()) {
+      content_view_->SetBounds(x, y, text_width,
+                               content_view_->GetHeightForWidth(text_width));
+      return;
+    }
+
+    // Position contents above description. Leave `kHistoryEmbeddingAnswerGap`
+    // between them; and `kHistoryEmbeddingAnswerPadding` between the bottom of
+    // description and the bottom of this `OmniboxMatchCellView`.
+    int needed_content_height =
+        content_view_->GetText().empty()
+            ? 0
+            : content_view_->GetHeightForWidth(text_width);
+    int needed_description_height = description_view_->GetText().empty()
+                                        ? 0
+                                        : description_view_->GetLineHeight();
+    int top_padding = row_height - needed_content_height -
+                      needed_description_height - kHistoryEmbeddingAnswerGap -
+                      kHistoryEmbeddingAnswerPadding;
+    content_view_->SetBounds(x, y + top_padding, text_width,
+                             needed_content_height);
+    description_view_->SetBounds(
+        x, content_view_->bounds().bottom() + kHistoryEmbeddingAnswerGap,
+        text_width, needed_description_height);
     return;
   }
 
@@ -489,16 +513,29 @@ void OmniboxMatchCellView::Layout(PassKey) {
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  // Initialize height to fit 1 line of text.
-  int height = kRowHeight;
+  int height;
   if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
-    // Answers have a multiline contents with a 1-ine description. The already
-    // allocated `height` is sufficient for the description; add the height
-    // needed for the multiline contents.
-    height += content_view_->GetHeightForWidth(width() - GetTextIndent());
+    if (content_view_->GetText().empty() &&
+        description_view_->GetText().empty()) {
+      // Answers can hide `OmniboxMatchCellView`, only displaying their
+      // `OmniboxLocalAnswerHeaderView`.
+      height = 0;
+    } else if (description_view_->GetText().empty()) {
+      // In the error cases, answers can display only contents.
+      height = 28;
+    } else {
+      // Enough room to display the contents, description, a gap between them,
+      // and padding above and below them.
+      height = content_view_->GetHeightForWidth(width() - GetTextIndent()) +
+               description_view_->GetLineHeight() + kHistoryEmbeddingAnswerGap +
+               kHistoryEmbeddingAnswerPadding * 2;
+    }
   } else if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
     // IPH suggestions have extra height.
-    height += 4;
+    height = kRowHeight + 4;
+  } else {
+    // The height for traditional 1-line matches.
+    height = kRowHeight;
   }
 
   int width = GetInsets().width() + GetTextIndent() +
