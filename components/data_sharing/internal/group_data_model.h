@@ -86,6 +86,8 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   void OnCollaborationGroupSyncDataLoaded() override;
 
   GroupDataStore& GetGroupDataStoreForTesting();
+  void SetGroupDataStoreLoadedCallbackForTesting(
+      base::OnceClosure db_loaded_callback);
 
  private:
   void OnGroupDataStoreLoaded(GroupDataStore::DBInitStatus status);
@@ -116,6 +118,10 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
 
   raw_ptr<CollaborationGroupSyncBridge> collaboration_group_sync_bridge_;
   raw_ptr<DataSharingSDKDelegate> sdk_delegate_;
+
+  // Used only for tests to notify that GroupDataStore has been loaded (either
+  // successfully or unsuccessfully).
+  base::OnceClosure db_loaded_callback_;
 
   base::ObserverList<Observer> observers_;
 

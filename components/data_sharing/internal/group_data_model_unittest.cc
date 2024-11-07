@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
@@ -458,6 +460,45 @@ TEST_F(GroupDataModelTest, ShouldGetPossiblyRemovedGroupMember) {
   // TODO(crbug.com/373628741): add coverage for the scenario when member was
   // removed from the group once it is properly supported (i.e. removed members
   // data is temporarily stored).
+}
+
+TEST(GroupDataModelTestNoFixture, ShouldRecordDBInitFailure) {
+  base::test::TaskEnvironment task_environment;
+
+  // Boilerplate to create a bridge / SDK delegate (required to create a model,
+  // but otherwise not relevant for this test)
+  std::unique_ptr<syncer::DataTypeStore> data_type_store(
+      syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest());
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor;
+  auto collaboration_group_bridge =
+      std::make_unique<CollaborationGroupSyncBridge>(
+          mock_processor.CreateForwardingProcessor(),
+          syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
+              data_type_store.get()));
+  FakeDataSharingSDKDelegate sdk_delegate;
+
+  // Model expects a directory, not a file and this will cause DB init failure.
+  base::ScopedTempFile temp_file;
+  ASSERT_TRUE(temp_file.Create());
+
+  GroupDataModel model(temp_file.path(), collaboration_group_bridge.get(),
+                       &sdk_delegate);
+
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  model.SetGroupDataStoreLoadedCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample("DataSharing.GroupDBInitSuccess", false,
+                                      1);
+}
+
+TEST_F(GroupDataModelTest, ShouldRecordDBInitSuccess) {
+  base::HistogramTester histogram_tester;
+  WaitForModelLoaded();
+  histogram_tester.ExpectUniqueSample("DataSharing.GroupDBInitSuccess", true,
+                                      1);
 }
 
 }  // namespace

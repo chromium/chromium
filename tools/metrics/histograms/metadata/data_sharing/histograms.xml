@@ -66,6 +66,16 @@ chromium-metrics-reviews@google.com.
   <token key="FlowStep" variants="FlowStep"/>
 </histogram>
 
+<histogram name="DataSharing.GroupDBInitSuccess" enum="BooleanSuccess"
+    expires_after="2025-11-06">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Recorded upon initialization of the GroupDB. Records whether the database
+    was successfully initialized or not.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
