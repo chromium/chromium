@@ -59,7 +59,7 @@
 
 /*A module width of 768px with 18px gaps on each side. */
 @media (min-width: 804px) {
-  :host([wide-modules-enabled_]) {
+  :host {
     --ntp-module-layout-width: 768px;
     --ntp-module-width: 768px;
   }

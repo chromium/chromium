@@ -434,9 +434,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddBoolean("wideModulesEnabled", base::FeatureList::IsEnabled(
-                                               ntp_features::kNtpWideModules));
-
   source->AddBoolean(
       "modulesHeaderIconEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesHeaderIcon));

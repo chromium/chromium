@@ -214,12 +214,6 @@ export class AppElement extends AppElementBase {
       singleRowShortcutsEnabled_: {type: Boolean},
       middleSlotPromoEnabled_: {type: Boolean},
       modulesEnabled_: {type: Boolean},
-
-      wideModulesEnabled_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       middleSlotPromoLoaded_: {type: Boolean},
       modulesLoaded_: {type: Boolean},
 
@@ -297,7 +291,6 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('middleSlotPromoEnabled');
   protected modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
-  protected wideModulesEnabled_ = loadTimeData.getBoolean('wideModulesEnabled');
   private middleSlotPromoLoaded_: boolean = false;
   private modulesLoaded_: boolean = false;
   protected modulesShownToUser: boolean;
