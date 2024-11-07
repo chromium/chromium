@@ -52,11 +52,9 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
       profile, chrome::kChromeUIComponentsHost);
 
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate parse-html-subset;");
+      "trusted-types lit-html-desktop;");
+  source->EnableReplaceI18nInJS();
 
   static constexpr webui::LocalizedString kStrings[] = {
     {"componentsTitle", IDS_COMPONENTS_TITLE},

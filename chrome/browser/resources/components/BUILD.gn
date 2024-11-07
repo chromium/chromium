@@ -10,11 +10,14 @@ build_webui("build") {
     "components.html",
     "components.css",
   ]
-  non_web_component_files = [ "components.ts" ]
+  non_web_component_files = [
+    "components.ts",
+    "component.html.ts",
+  ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
-    "//third_party/jstemplate:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
   webui_context_type = "trusted"
