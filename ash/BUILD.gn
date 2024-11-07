@@ -5482,6 +5482,7 @@ static_library("test_support") {
     "//components/user_manager:user_manager",
     "//components/viz/test:test_support",
     "//device/bluetooth",
+    "//device/bluetooth:mocks",
     "//google_apis/common:test_support",
     "//services/device/public/cpp:test_support",
     "//services/device/public/mojom",
