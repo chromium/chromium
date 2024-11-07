@@ -3675,6 +3675,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN" desc="Label of the button that allows to change the PIN for Google Password Manager in password settings. [iOS Only]">
         Change PIN
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN_SET_UP_PASSCODE_CONTENT" desc="Message informing the user that in order to change their password manager PIN, a passcode or screen lock needs to be set up on the device. [iOS only]">
+        To change your PIN, first set up a passcode on your device.
+      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_DESCRIPTION" desc="Help text explaining the functionality of a PIN for Google Password Manager. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS Only]">
         Helps you access saved passkeys on any device
       </message>

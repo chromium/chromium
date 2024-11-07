@@ -449,6 +449,15 @@ void CheckSavePasswordsInAccountSectionHidden() {
               kPasswordSettingsBulkMovePasswordsToAccountButtonTableViewId)];
 }
 
+// Checks that the section for udpating GPM PIN is visible.
+void CheckChangePinVisibleInSettings() {
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kPasswordSettingsChangePinDescriptionId)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kPasswordSettingsChangePinButtonId)];
+}
+
 // Verifies reauthentication UI histogram was recorded.
 void CheckReauthenticationUIEventMetric(ReauthenticationEvent event) {
   NSString* histogram = base::SysUTF8ToNSString(
@@ -1766,12 +1775,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 - (void)testUpdateGPMPinErrorAlert {
   OpenPasswordManager();
   OpenSettingsSubmenu();
-
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_accessibilityID(kPasswordSettingsChangePinDescriptionId)];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      grey_accessibilityID(kPasswordSettingsChangePinButtonId)];
+  CheckChangePinVisibleInSettings();
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordSettingsChangePinButtonId)]
@@ -1787,6 +1791,23 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                      IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_BUTTON)]
       performAction:grey_tap()];
   CheckVisibilityOfElement(pinErrorTitleMatcher, /*is_visible=*/false);
+}
+
+// Tests that attempting to change GPM PIN with no passcode does not show the
+// dialog and displays an alert prompting the user to set a passcode.
+- (void)testUpdateGPMPinWithoutPasscodeSet {
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+  CheckChangePinVisibleInSettings();
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordSettingsChangePinButtonId)]
+      performAction:grey_tap()];
+  CheckVisibilityOfElement(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN_SET_UP_PASSCODE_CONTENT)),
+      /*is_visible=*/true);
 }
 
 // Test export flow

@@ -359,18 +359,31 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   [_dispatcher closePresentedViewsAndOpenURL:command];
 }
 
-// TODO(crbug.com/358342483): Add EG tests.
 - (void)showChangeGPMPinDialog {
+  if (![_reauthModule canAttemptReauth]) {
+    [self
+        showSetPasscodeDialogWithContent:
+            l10n_util::GetNSString(
+                IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN_SET_UP_PASSCODE_CONTENT)];
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
-  TrustedVaultClientBackendFactory::GetForProfile(self.browser->GetProfile())
-      ->UpdateGPMPinForAccount(
-          _identity, trusted_vault::SecurityDomainId::kPasskeys,
-          _settingsNavigationController,
-          password_manager::CreatePasswordManagerTitleView(
-              l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER)),
-          base::BindOnce(^(NSError* error) {
-            [weakSelf updateGPMPinFinishedWithError:error];
-          }));
+  void (^onReauthFinished)(ReauthenticationResult) =
+      ^(ReauthenticationResult result) {
+        // Reauth can't be skipped for this flow.
+        CHECK(result != ReauthenticationResult::kSkipped);
+
+        if (result == ReauthenticationResult::kSuccess) {
+          [weakSelf updateGPMPinForAccount];
+        }
+      };
+
+  [_reauthModule
+      attemptReauthWithLocalizedReason:l10n_util::GetNSString(
+                                           IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN)
+                  canReusePreviousAuth:NO
+                               handler:onReauthFinished];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
@@ -767,6 +780,20 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   } else {
     [self dismissUpdateGPMPinViewController];
   }
+}
+
+// Starts the update GPM Pin flow. This should happen after succesful reauth.
+- (void)updateGPMPinForAccount {
+  __weak __typeof(self) weakSelf = self;
+  TrustedVaultClientBackendFactory::GetForProfile(self.browser->GetProfile())
+      ->UpdateGPMPinForAccount(
+          _identity, trusted_vault::SecurityDomainId::kPasskeys,
+          _settingsNavigationController,
+          password_manager::CreatePasswordManagerTitleView(
+              l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER)),
+          base::BindOnce(^(NSError* error) {
+            [weakSelf updateGPMPinFinishedWithError:error];
+          }));
 }
 
 @end
