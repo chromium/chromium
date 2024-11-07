@@ -415,8 +415,10 @@ public interface TabObserver {
     /**
      * Called when the animation state for the back forward session history navigation has changed.
      * Retrieve the current animation state using the Tab's WebContents.
+     *
+     * @param tab The {@link Tab} whose back forward transition animation state is updated.
      */
-    default void didBackForwardTransitionAnimationChange() {}
+    default void didBackForwardTransitionAnimationChange(Tab tab) {}
 
     /** Called when the content sensitivity of the tab changes. */
     default void onTabContentSensitivityChanged(Tab tab, boolean contentIsSensitive) {}

@@ -1159,7 +1159,7 @@ public class ToolbarManager
                     }
 
                     @Override
-                    public void didBackForwardTransitionAnimationChange() {
+                    public void didBackForwardTransitionAnimationChange(Tab tab) {
                         onBackForwardTransitionAnimationChange();
                     }
                 };

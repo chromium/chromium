@@ -338,10 +338,8 @@ public class StaticLayout extends Layout {
                     }
 
                     @Override
-                    public void didBackForwardTransitionAnimationChange() {
-                        updateStaticTab(
-                                tabModelSelector.getCurrentTab(),
-                                /* skipUpdateVisibleIds= */ false);
+                    public void didBackForwardTransitionAnimationChange(Tab tab) {
+                        updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
                     }
                 };
     }
