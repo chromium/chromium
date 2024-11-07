@@ -643,7 +643,7 @@ TEST(ProcessMitigationsTest, CheckDepWin8PolicySuccess) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_DEP);
+  test_command += base::NumberToWString(TESTPOLICY_DEP);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -681,7 +681,7 @@ TEST(ProcessMitigationsTest, CheckDepWin8PolicySuccess) {
 
 TEST(ProcessMitigationsTest, CheckWin8AslrPolicySuccess) {
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_ASLR);
+  test_command += base::NumberToWString(TESTPOLICY_ASLR);
 
 //---------------------------------------------
 // Only test in release for now.
@@ -706,7 +706,7 @@ TEST(ProcessMitigationsTest, CheckWin8AslrPolicySuccess) {
 
 TEST(ProcessMitigationsTest, CheckWin8StrictHandlePolicySuccess) {
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_STRICTHANDLE);
+  test_command += base::NumberToWString(TESTPOLICY_STRICTHANDLE);
 
   //---------------------------------
   // 1) Test setting post-startup.
@@ -730,7 +730,7 @@ TEST(ProcessMitigationsTest, CheckWin8StrictHandlePolicySuccess) {
 // mitigation enables the setting on a process.
 TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownPolicySuccess) {
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_NONSYSFONT);
+  test_command += base::NumberToWString(TESTPOLICY_NONSYSFONT);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -781,7 +781,7 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccessDelayed) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_MSSIGNED);
+  test_command += base::NumberToWString(TESTPOLICY_MSSIGNED);
 
 //---------------------------------
 // 1) Test setting post-startup.
@@ -811,7 +811,7 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccess) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_MSSIGNED);
+  test_command += base::NumberToWString(TESTPOLICY_MSSIGNED);
 
   //---------------------------------
   // 1) Test setting post-startup.
@@ -1014,7 +1014,7 @@ TEST(ProcessMitigationsTest, CheckChildProcessAbnormalExit) {
   std::wstring test_command = L"TestChildProcess \"";
   test_command += cmd.value().c_str();
   test_command += L"\" false ";
-  test_command += std::to_wstring(STATUS_ACCESS_VIOLATION);
+  test_command += base::NumberToWString(STATUS_ACCESS_VIOLATION);
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 }
@@ -1034,7 +1034,8 @@ TEST(ProcessMitigationsTest,
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_RESTRICTINDIRECTBRANCHPREDICTION);
+  test_command +=
+      base::NumberToWString(TESTPOLICY_RESTRICTINDIRECTBRANCHPREDICTION);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -1080,7 +1081,7 @@ TEST(ProcessMitigationsTest, CetDisablePolicy) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_CETDISABLED);
+  test_command += base::NumberToWString(TESTPOLICY_CETDISABLED);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -1120,7 +1121,7 @@ TEST(ProcessMitigationsTest, CetAllowDynamicApis) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_CETDYNAMICAPIS);
+  test_command += base::NumberToWString(TESTPOLICY_CETDYNAMICAPIS);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -1158,7 +1159,7 @@ TEST(ProcessMitigationsTest, CetStrictMode) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_CETSTRICT);
+  test_command += base::NumberToWString(TESTPOLICY_CETSTRICT);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -1184,7 +1185,7 @@ TEST(ProcessMitigationsTest, CheckWin10KernelTransactionManagerMitigation) {
     return;
 
   std::wstring test_policy_command = L"CheckPolicy ";
-  test_policy_command += std::to_wstring(TESTPOLICY_KTMCOMPONENTFILTER);
+  test_policy_command += base::NumberToWString(TESTPOLICY_KTMCOMPONENTFILTER);
   TestRunner runner;
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_KTM_COMPONENT),
@@ -1197,7 +1198,7 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadNoRemotePolicySuccess) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_LOADNOREMOTE);
+  test_command += base::NumberToWString(TESTPOLICY_LOADNOREMOTE);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -1229,7 +1230,7 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadNoLowLabelPolicySuccess) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_LOADNOLOW);
+  test_command += base::NumberToWString(TESTPOLICY_LOADNOLOW);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -1260,7 +1261,7 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadPreferSys32PolicySuccess) {
     return;
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_LOADPREFERSYS32);
+  test_command += base::NumberToWString(TESTPOLICY_LOADPREFERSYS32);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -1371,7 +1372,7 @@ TEST(ProcessMitigationsTest, FsctlDisabled) {
   }
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_FSCTLDISABLED);
+  test_command += base::NumberToWString(TESTPOLICY_FSCTLDISABLED);
 
   //---------------------------------
   // 1) Test setting pre-startup.
@@ -1399,7 +1400,7 @@ TEST(ProcessMitigationsTest, RestrictCoreSharing) {
   }
 
   std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(TESTPOLICY_RESTRICTCORESHARING);
+  test_command += base::NumberToWString(TESTPOLICY_RESTRICTCORESHARING);
 
   TestRunner runner;
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
