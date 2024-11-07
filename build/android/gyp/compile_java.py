@@ -694,9 +694,6 @@ def main(argv):
   options, java_files, kt_files = _ParseOptions(argv)
 
   javac_cmd = [build_utils.JAVAC_PATH]
-  # TODO(crbug.com/363263205): Make Kythe work with jdk21.
-  if options.enable_kythe_annotations:
-    javac_cmd[0] = javac_cmd[0].replace('jdk', 'jdk17')
 
   javac_args = [
       '-g',

@@ -1977,18 +1977,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  # Deprecated - used by code search until it gains jdk21 support. https://crbug.com/363263205
-  'src/third_party/jdk17/current': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/jdk',
-              'version': 'BXZwbslDFpYhPRuG8hBh2z7ApP36ZG-ZfkBWrkpnPl4C',
-          },
-      ],
-      'condition': 'checkout_android_prebuilts_build_tools',
-      'dep_type': 'cipd',
-  },
-
   # Deprecated - only use for tools which are broken our real JDK.
   'src/third_party/jdk11': {
       'packages': [
@@ -2810,7 +2798,7 @@ deps = {
   },
 
   'src/third_party/android_prebuilts/build_tools': {
-      'url': Var('android_git') + '/platform/prebuilts/build-tools.git' + '@' + '673c20b524a83b662d8c1057fd3eec8fd0f93f9d',
+      'url': Var('android_git') + '/platform/prebuilts/build-tools.git' + '@' + '3fbcdf38727f967badc13f9537bda0b4392c1f74',
       'condition': 'checkout_android_prebuilts_build_tools',
   },
 
