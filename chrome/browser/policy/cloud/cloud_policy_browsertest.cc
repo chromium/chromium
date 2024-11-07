@@ -31,7 +31,6 @@
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/invalidation_factory.h"
-#include "components/invalidation/invalidation_features.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -112,8 +111,7 @@ std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
 CreateInvalidationServiceForSenderId(std::string project_number,
                                      std::string /*log_prefix*/) {
-  if (base::FeatureList::IsEnabled(
-          invalidation::kInvalidationsWithDirectMessages)) {
+  if (invalidation::IsInvalidationListenerSupported(project_number)) {
     return std::make_unique<invalidation::FakeInvalidationListener>(
         std::move(project_number));
   }
@@ -375,7 +373,8 @@ class CloudPolicyTest : public PlatformBrowserTest,
         invalidation::ProfileInvalidationProviderFactory::GetInstance()
             ->GetForProfile(profile())
             ->GetInvalidationServiceOrListener(
-                std::string(GetPolicyInvalidationProjectNumber())));
+                std::string(GetPolicyInvalidationProjectNumber(
+                    PolicyInvalidationScope::kUser))));
   }
 
   void SetServerPolicy(const em::CloudPolicySettings& settings,
@@ -598,13 +597,14 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CloudPolicyTest,
-    testing::Values(
-        FeaturesTestParam{},
-        FeaturesTestParam{.enabled_features =
-                              {invalidation::kInvalidationsWithDirectMessages}},
-        FeaturesTestParam{.enabled_features = {policy::kPolicyFetchWithSha256}},
-        FeaturesTestParam{
-            .disabled_features = {policy::kPolicyFetchWithSha256}}));
+    testing::Values(FeaturesTestParam{},
+                    FeaturesTestParam{
+                        .enabled_features =
+                            {kUserPolicyInvalidationWithDirectMessagesEnabled}},
+                    FeaturesTestParam{
+                        .enabled_features = {policy::kPolicyFetchWithSha256}},
+                    FeaturesTestParam{.disabled_features = {
+                                          policy::kPolicyFetchWithSha256}}));
 
 TEST(CloudPolicyProtoTest, VerifyProtobufEquivalence) {
   // There are 2 protobufs that can be used for user cloud policy:

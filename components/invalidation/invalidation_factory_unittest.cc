@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -15,7 +14,7 @@
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
-#include "components/invalidation/invalidation_features.h"
+#include "components/invalidation/invalidation_constants.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -107,15 +106,7 @@ class InvalidationFactoryTestBase : public testing::Test {
 };
 
 class InvalidationFactoryWithDirectMessagesDisabledTest
-    : public InvalidationFactoryTestBase {
- protected:
-  InvalidationFactoryWithDirectMessagesDisabledTest() {
-    scoped_features_.InitAndDisableFeature(kInvalidationsWithDirectMessages);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
+    : public InvalidationFactoryTestBase {};
 
 TEST_F(InvalidationFactoryWithDirectMessagesDisabledTest,
        CreatesInvalidationService) {
@@ -144,22 +135,18 @@ TEST_F(InvalidationFactoryWithDirectMessagesDisabledTest,
 }
 
 class InvalidationFactoryWithDirectMessagesEnabledTest
-    : public InvalidationFactoryTestBase {
+    : public InvalidationFactoryTestBase,
+      public testing::WithParamInterface<std::string> {
  protected:
-  InvalidationFactoryWithDirectMessagesEnabledTest() {
-    scoped_features_.InitAndEnableFeature(kInvalidationsWithDirectMessages);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
+  const auto& GetProjectNumber() const { return GetParam(); }
 };
 
-TEST_F(InvalidationFactoryWithDirectMessagesEnabledTest,
+TEST_P(InvalidationFactoryWithDirectMessagesEnabledTest,
        CreatesInvalidationListener) {
   auto service_or_listener = CreateInvalidationServiceOrListener(
       &identity_provider_, &fake_gcm_driver_, &mock_instance_id_driver_,
       test_url_loader_factory_.GetSafeWeakWrapper(), &pref_service_,
-      kFakeProjectId, kLogPrefix);
+      GetProjectNumber(), kLogPrefix);
 
   ASSERT_TRUE(std::holds_alternative<std::unique_ptr<InvalidationListener>>(
       service_or_listener));
@@ -167,21 +154,11 @@ TEST_F(InvalidationFactoryWithDirectMessagesEnabledTest,
       std::get<std::unique_ptr<InvalidationListener>>(service_or_listener));
 }
 
-TEST_F(InvalidationFactoryWithDirectMessagesEnabledTest,
-       CreatesInvalidationServiceForDrive) {
-  base::test::ScopedFeatureList scoped_features(
-      kInvalidationsWithDirectMessages);
-
-  auto service_or_listener = CreateInvalidationServiceOrListener(
-      &identity_provider_, &fake_gcm_driver_, &mock_instance_id_driver_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), &pref_service_,
-      kDriveFcmSenderId, kLogPrefix);
-
-  ASSERT_TRUE(std::holds_alternative<std::unique_ptr<InvalidationService>>(
-      service_or_listener));
-  EXPECT_TRUE(
-      std::get<std::unique_ptr<InvalidationService>>(service_or_listener));
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InvalidationFactoryWithDirectMessagesEnabledTest,
+    testing::Values(kCriticalInvalidationsProjectNumber,
+                    kNonCriticalInvalidationsProjectNumber));
 
 }  // namespace
 }  // namespace invalidation

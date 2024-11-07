@@ -12,6 +12,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -32,7 +33,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/invalidation/invalidation_constants.h"
-#include "components/invalidation/invalidation_features.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
@@ -44,7 +44,15 @@ BASE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting,
              "CertProvisioningUseOnlyInvalidationsForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceCertProvisioningInvalidationWithDirectMessagesEnabled,
+             "DeviceCertProvisioningInvalidationWithDirectMessagesEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserCertProvisioningInvalidationWithDirectMessagesEnabled,
+             "UserCertProvisioningInvalidationWithDirectMessagesEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
 // GCP number to be used for certificates invalidations. Certificates are
 // considered critical to receive invalidation.
 constexpr std::string_view kCertProvisioningInvalidationProjectNumber =
@@ -99,6 +107,17 @@ void DeleteVaKeysWithMatchBehavior(
 
 bool IsValidKeyType(const std::string& key_type) {
   return key_type == "rsa" || key_type == "ec";
+}
+
+bool IsDirectInvalidationEnabledForScope(CertScope scope) {
+  switch (scope) {
+    case CertScope::kUser:
+      return base::FeatureList::IsEnabled(
+          kUserCertProvisioningInvalidationWithDirectMessagesEnabled);
+    case CertScope::kDevice:
+      return base::FeatureList::IsEnabled(
+          kDeviceCertProvisioningInvalidationWithDirectMessagesEnabled);
+  }
 }
 
 }  // namespace
@@ -397,8 +416,8 @@ bool ShouldOnlyUseInvalidations() {
       kCertProvisioningUseOnlyInvalidationsForTesting);
 }
 
-std::string_view GetCertProvisioningInvalidationProjectNumber() {
-  if (invalidation::IsInvalidationsWithDirectMessagesEnabled()) {
+std::string_view GetCertProvisioningInvalidationProjectNumber(CertScope scope) {
+  if (IsDirectInvalidationEnabledForScope(scope)) {
     return kCertProvisioningInvalidationProjectNumber;
   }
   return policy::kPolicyFCMInvalidationSenderID;

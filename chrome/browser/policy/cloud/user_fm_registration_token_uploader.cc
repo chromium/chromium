@@ -29,11 +29,15 @@ namespace {
 std::set<std::string> GetAllInvalidationProjectNumbers() {
   // Cannot be a static constant because project number is decided by feature,
   // which is not available during static initialization.
-  return {std::string(policy::GetPolicyInvalidationProjectNumber()),
-          std::string(policy::GetRemoteCommandsInvalidationProjectNumber()),
+  return {
+      std::string(policy::GetPolicyInvalidationProjectNumber(
+          policy::PolicyInvalidationScope::kUser)),
+      std::string(policy::GetRemoteCommandsInvalidationProjectNumber(
+          policy::PolicyInvalidationScope::kUser)),
 #if BUILDFLAG(IS_CHROMEOS)
-          std::string(ash::cert_provisioning::
-                          GetCertProvisioningInvalidationProjectNumber())
+      std::string(
+          ash::cert_provisioning::GetCertProvisioningInvalidationProjectNumber(
+              ash::cert_provisioning::CertScope::kUser))
 #endif
   };
 }

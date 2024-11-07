@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
@@ -42,6 +43,11 @@ namespace cert_provisioning {
 // TODO(b/336989561): Remove this after the migration to new invalidations is
 // done.
 BASE_DECLARE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting);
+
+BASE_DECLARE_FEATURE(
+    kDeviceCertProvisioningInvalidationWithDirectMessagesEnabled);
+BASE_DECLARE_FEATURE(
+    kUserCertProvisioningInvalidationWithDirectMessagesEnabled);
 
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix
 using DeleteVaKeyCallback = base::OnceCallback<void(bool)>;
@@ -302,8 +308,8 @@ std::string MakeInvalidationListenerType(
 // invalidation (not on timeout).
 bool ShouldOnlyUseInvalidations();
 
-// Returns GCP number for cert provisioning invalidations.
-std::string_view GetCertProvisioningInvalidationProjectNumber();
+// Returns GCP number for cert provisioning invalidations of given `scope`.
+std::string_view GetCertProvisioningInvalidationProjectNumber(CertScope scope);
 
 }  // namespace cert_provisioning
 }  // namespace ash

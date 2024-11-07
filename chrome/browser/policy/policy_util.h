@@ -7,10 +7,20 @@
 
 #include <string_view>
 
+#include "base/feature_list.h"
+
 class GURL;
 class PrefService;
 
 namespace policy {
+
+enum class PolicyInvalidationScope;
+
+BASE_DECLARE_FEATURE(kDevicePolicyInvalidationWithDirectMessagesEnabled);
+BASE_DECLARE_FEATURE(
+    kDeviceLocalAccountPolicyInvalidationWithDirectMessagesEnabled);
+BASE_DECLARE_FEATURE(kCbcmPolicyInvalidationWithDirectMessagesEnabled);
+BASE_DECLARE_FEATURE(kUserPolicyInvalidationWithDirectMessagesEnabled);
 
 // Check if the origin provided by `url` is in the allowlist for a given
 // policy-controlled feature by its `allowlist_pref_name`. The optional
@@ -21,8 +31,9 @@ bool IsOriginInAllowlist(const GURL& url,
                          const char* allowlist_pref_name,
                          const char* always_allow_pref_name = nullptr);
 
-// Returns GCP number for policy invalidations.
-std::string_view GetPolicyInvalidationProjectNumber();
+// Returns GCP number for policy invalidations of given `scope`.
+std::string_view GetPolicyInvalidationProjectNumber(
+    PolicyInvalidationScope scope);
 
 }  // namespace policy
 

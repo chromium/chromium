@@ -6,19 +6,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-component("features") {
-  output_name = "invalidation_features"
-
-  defines = [ "IS_INVALIDATION_FEATURES_IMPL" ]
-
-  sources = [
-    "invalidation_features.cc",
-    "invalidation_features.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
 static_library("invalidation") {
   sources = [
     "invalidation_constants.h",
@@ -32,10 +19,7 @@ static_library("invalidation") {
     "profile_invalidation_provider.h",
   ]
 
-  public_deps = [
-    ":features",
-    "//components/invalidation/public",
-  ]
+  public_deps = [ "//components/invalidation/public" ]
 
   deps = [
     "//base",

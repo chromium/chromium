@@ -44,7 +44,8 @@ void UserRemoteCommandsServiceBase::
       core_, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kUser);
   invalidator_->Initialize(
       invalidation_provider->GetInvalidationServiceOrListener(
-          std::string(GetRemoteCommandsInvalidationProjectNumber())));
+          std::string(GetRemoteCommandsInvalidationProjectNumber(
+              PolicyInvalidationScope::kUser))));
 }
 
 void UserRemoteCommandsServiceBase::OnPolicyRefreshed(bool success) {}

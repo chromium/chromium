@@ -87,8 +87,10 @@ constexpr char kInvalidationListenerLogPrefix[] =
 std::set<std::string> GetAllInvalidationProjectNumbers() {
   // Cannot be a static constant because project number is decided by feature,
   // which is not available during static initialization.
-  return {std::string(policy::GetPolicyInvalidationProjectNumber()),
-          std::string(policy::GetRemoteCommandsInvalidationProjectNumber())};
+  return {std::string(policy::GetPolicyInvalidationProjectNumber(
+              PolicyInvalidationScope::kCBCM)),
+          std::string(policy::GetRemoteCommandsInvalidationProjectNumber(
+              PolicyInvalidationScope::kCBCM))};
 }
 }  // namespace
 
@@ -320,11 +322,11 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
                    ->machine_level_user_cloud_policy_manager()
                    ->core();
 
-  const std::string policy_project_number =
-      std::string(GetPolicyInvalidationProjectNumber());
+  const std::string policy_project_number(
+      GetPolicyInvalidationProjectNumber(PolicyInvalidationScope::kCBCM));
   CHECK(base::Contains(invalidation_service_or_listener_per_project_,
                        policy_project_number))
-      << "Missing: " << policy_project_number;
+      << "Missing invalidation for project: " << policy_project_number;
   policy_invalidator_ = std::make_unique<CloudPolicyInvalidator>(
       PolicyInvalidationScope::kCBCM, core,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -338,10 +340,13 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
       PolicyInvalidationScope::kCBCM);
 
   const std::string remote_commands_project_number(
-      GetRemoteCommandsInvalidationProjectNumber());
+      GetRemoteCommandsInvalidationProjectNumber(
+          PolicyInvalidationScope::kCBCM));
   CHECK(base::Contains(invalidation_service_or_listener_per_project_,
                        remote_commands_project_number))
-      << "Missing: " << remote_commands_project_number;
+      << "Missing invalidation for project: "
+      << GetRemoteCommandsInvalidationProjectNumber(
+             PolicyInvalidationScope::kCBCM);
   commands_invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
       core, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
   commands_invalidator_->Initialize(invalidation::UniquePointerVariantToPointer(

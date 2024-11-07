@@ -814,7 +814,8 @@ void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
 
   invalidator_->Initialize(
       invalidation_provider->GetInvalidationServiceOrListener(
-          std::string(GetRemoteCommandsInvalidationProjectNumber())));
+          std::string(GetRemoteCommandsInvalidationProjectNumber(
+              PolicyInvalidationScope::kUser))));
 
   shutdown_subscription_ =
       UserCloudPolicyManagerAshNotifierFactory::GetInstance()

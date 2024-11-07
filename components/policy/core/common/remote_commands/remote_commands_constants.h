@@ -7,12 +7,23 @@
 
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
 
-// Returns GCP number for remote commands invalidations.
-POLICY_EXPORT std::string_view GetRemoteCommandsInvalidationProjectNumber();
+enum class PolicyInvalidationScope;
+
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kDeviceRemoteCommandsInvalidationWithDirectMessagesEnabled);
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kUserRemoteCommandsInvalidationWithDirectMessagesEnabled);
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kCbcmRemoteCommandsInvalidationWithDirectMessagesEnabled);
+
+// Returns GCP number for remote commands invalidations of given `scope`.
+POLICY_EXPORT std::string_view GetRemoteCommandsInvalidationProjectNumber(
+    PolicyInvalidationScope scope);
 
 }  // namespace policy
 

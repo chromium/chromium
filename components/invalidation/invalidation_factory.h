@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include "base/memory/scoped_refptr.h"
@@ -30,6 +31,8 @@ class SharedURLLoaderFactory;
 namespace invalidation {
 
 class IdentityProvider;
+
+bool IsInvalidationListenerSupported(std::string_view project_number);
 
 std::variant<std::unique_ptr<InvalidationService>,
              std::unique_ptr<InvalidationListener>>

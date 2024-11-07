@@ -24,7 +24,6 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/invalidation_factory.h"
-#include "components/invalidation/invalidation_features.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/test_support/fake_invalidation_listener.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
@@ -34,6 +33,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -71,11 +71,11 @@ std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
 CreateInvalidationServiceForSenderId(std::string project_number,
                                      std::string /*log_prefix*/) {
-  if (base::FeatureList::IsEnabled(
-          invalidation::kInvalidationsWithDirectMessages)) {
+  if (invalidation::IsInvalidationListenerSupported(project_number)) {
     return std::make_unique<invalidation::FakeInvalidationListener>(
         std::move(project_number));
   }
+
   return std::make_unique<invalidation::FakeInvalidationService>();
 }
 
@@ -291,9 +291,11 @@ IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UserRemoteCommandsServiceTest,
-    testing::Values(FeaturesTestParam{},
-                    FeaturesTestParam{
-                        .enabled_features = {
-                            invalidation::kInvalidationsWithDirectMessages}}));
+    testing::Values(
+        FeaturesTestParam{},
+        FeaturesTestParam{
+            .enabled_features = {
+                policy::
+                    kUserRemoteCommandsInvalidationWithDirectMessagesEnabled}}));
 
 }  // namespace enterprise_commands
