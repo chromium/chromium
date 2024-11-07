@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # WIP attempt to replace `libpng` with Rust `png` crate.
+  #
+  # TODO(https://crbug.com/360375227): Default to true when ready to start A/B
+  # experiments.
+  enable_rust_png = false
+}

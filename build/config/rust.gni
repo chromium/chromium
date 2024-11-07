@@ -36,6 +36,8 @@ declare_args() {
   # The CXX tool is in //third_party/rust which is not shared with downstream
   # projects yet. So they need to copy the required dependencies and GN files
   # into their project to enable CXX there.
+  #
+  # We do not support disabling this flag in Chromium code.
   enable_rust_cxx = build_with_chromium
 
   # The chromium prelude crate provides the `chromium::import!` macro which
@@ -48,13 +50,9 @@ declare_args() {
   # specify a globally unique `crate_name` in their rust library GN rules
   # instead. Note that using a `crate_name` is strongly discouraged inside
   # Chromium, and is also discouraged for downstream projects when possible.
+  #
+  # We do not support disabling this flag in Chromium code.
   enable_chromium_prelude = build_with_chromium
-
-  # As we incrementally enable Rust on mainstream builders, we want to enable
-  # the toolchain (by switching 'enable_rust' to true) while still disabling
-  # almost all Rust features). Yet we still want to have some builders with
-  # all Rust features enabled.
-  enable_all_rust_features = false
 
   # Chromium provides a Rust toolchain in //third_party/rust-toolchain.
   #
@@ -104,34 +102,6 @@ declare_args() {
   # a platform. Mostly applicable to Windows, where new versions can handle ANSI
   # escape sequences but it's not reliable in general.
   force_rustc_color_output = false
-}
-
-# Use a separate declare_args so these variables' defaults can depend on the
-# ones above.
-declare_args() {
-  # Individual Rust components.
-
-  # Conversions between Rust types and C++ types.
-  enable_rust_base_conversions = enable_rust
-
-  # The base::JSONReader implementation. Requires base conversions.
-  enable_rust_json = enable_rust
-
-  # Support for chrome://crash-rust to check crash dump collection works.
-  enable_rust_crash = enable_rust
-
-  # Support for Rust mojo bindings.
-  enable_rust_mojo = enable_rust && enable_all_rust_features
-
-  # Rust gtest interop.
-  enable_rust_gtest_interop = enable_rust
-
-  # WIP attempt to replace `libpng` with Rust `png` crate.
-  #
-  # TODO(https://crbug.com/360375227): Remove the `enable_all_rust_features`
-  # condition below (only true on Rust bots) once/if ready to start A/B
-  # experiments.
-  enable_rust_png = enable_rust && enable_all_rust_features
 }
 
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust

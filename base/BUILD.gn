@@ -105,30 +105,6 @@ if (is_fuchsia) {
   import("//third_party/fuchsia-gn-sdk/src/fidl_library.gni")
 }
 
-# The Rust implementation of base::JSONReader. NaCl depends on base and doesn't
-# have a Rust toolchain, so we need a fallback to C++ for it until it removes
-# its dependency on //base.
-#
-# TODO(crbug.com/40811643): Drop toolchain_has_rust and move the C++ parser into
-# components/nacl to just run in-process there. Don't compile base::JSONReader
-# on NaCL at all.
-build_rust_json_reader = toolchain_has_rust && enable_rust_json
-
-# Rust to C++ type conversions. Also can not be enabled while NaCl depends on
-# //base.
-build_rust_base_conversions = toolchain_has_rust && enable_rust_base_conversions
-
-assert(build_rust_base_conversions || !build_rust_json_reader,
-       "Cannot enable Rust JSON decoder without also base conversions")
-
-buildflag_header("rust_buildflags") {
-  header = "rust_buildflags.h"
-  flags = [
-    "BUILD_RUST_JSON_READER=$build_rust_json_reader",
-    "BUILD_RUST_BASE_CONVERSIONS=$build_rust_base_conversions",
-  ]
-}
-
 if (is_win) {
   # This is in a separate config so the flags can be applied to dependents.
   # ldflags in GN aren't automatically inherited.
@@ -1046,17 +1022,16 @@ component("base") {
     deps += [ "//third_party/zlib" ]
 
     # NaCl does not support Rust.
-    deps += [ ":rust_logger" ]
+    deps += [
+      ":rust_logger",
+      "//third_party/rust/serde_json_lenient/v0_2/wrapper",
+    ]
   }
 
   # `raw_ptr` cannot be made a component due to CRT symbol issues.
   # Its gateway to being a component is through `//base`, so we have
   # to provide the appropriate `#define` here.
   defines += [ "IS_RAW_PTR_IMPL" ]
-
-  if (build_rust_json_reader) {
-    deps += [ "//third_party/rust/serde_json_lenient/v0_2/wrapper" ]
-  }
 
   # native_unwinder_android is intended for use solely via a dynamic feature
   # module, to avoid increasing Chrome's executable size.
@@ -1076,7 +1051,6 @@ component("base") {
     ":power_monitor_buildflags",
     ":profiler_buildflags",
     ":protected_memory_buildflags",
-    ":rust_buildflags",
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
@@ -1089,7 +1063,7 @@ component("base") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  if (build_rust_base_conversions) {
+  if (!is_nacl) {
     sources += [
       "containers/span_rust.h",
       "strings/string_view_rust.h",
@@ -3580,7 +3554,7 @@ test("base_unittests") {
     sources += [ "location_unittest.cc" ]
   }
 
-  if (build_rust_base_conversions) {
+  if (!is_nacl) {
     sources += [
       "containers/span_rust_unittest.cc",
       "strings/string_piece_rust_unittest.cc",
@@ -3633,6 +3607,10 @@ test("base_unittests") {
     deps += [ "allocator/partition_allocator/src/partition_alloc:unittests" ]
   }
 
+  if (!is_nacl) {
+    deps += [ "//build/rust:cxx_cppdeps" ]
+  }
+
   data_deps = [
     "//base/test:immediate_crash_test_helper",
     "//base/test:test_child_process",
@@ -3652,10 +3630,6 @@ test("base_unittests") {
   configs += [
     "//base/allocator/partition_allocator/src/partition_alloc:memory_tagging",
   ]
-
-  if (build_rust_base_conversions) {
-    deps += [ "//build/rust:cxx_cppdeps" ]
-  }
 
   if (is_apple) {
     public_deps = [

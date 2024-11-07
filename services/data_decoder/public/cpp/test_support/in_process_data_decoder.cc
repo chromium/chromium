@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/features.h"
-#include "base/rust_buildflags.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -29,10 +28,8 @@ InProcessDataDecoder::CreateCustomImageDecoder() {
 }
 
 void InProcessDataDecoder::SimulateJsonParserCrash(bool drop) {
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
   CHECK(!base::FeatureList::IsEnabled(base::features::kUseRustJsonParser))
       << "Rust JSON parser is in-process and cannot crash.";
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
   drop_json_parsers_ = drop;
 }
 

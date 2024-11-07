@@ -341,6 +341,7 @@ source_set("common") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom:mojom",
     "//services/network/public/cpp:cpp",
+    "//third_party/blink/common/rust_crash",
     "//third_party/blink/public/common:buildflags",
     "//third_party/re2",
     "//ui/base:base",
@@ -352,10 +353,6 @@ source_set("common") {
     "//ui/events/mojom:event_latency_metadata_mojom",
     "//ui/latency/mojom:shared_mojom_traits",
   ]
-
-  if (enable_rust_crash) {
-    deps += [ "//third_party/blink/common/rust_crash" ]
-  }
 
   # If use_blink is used then it needs to depend on //media
   if (use_blink) {

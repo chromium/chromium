@@ -20,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/rust_buildflags.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -74,15 +73,11 @@ TEST_P(JSONReaderTest, InvalidString) {
 }
 
 TEST_P(JSONReaderTest, SimpleBool) {
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
   base::HistogramTester histograms;
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
   std::optional<Value> root = JSONReader::Read("true  ");
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_bool());
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
   histograms.ExpectTotalCount("Security.JSONParser.ParsingTime", 1);
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
 }
 
 TEST_P(JSONReaderTest, EmbeddedComments) {
@@ -1195,11 +1190,7 @@ TEST_P(JSONReaderTest, UsingRust) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          JSONReaderTest,
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
                          testing::Bool(),
-#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
-                         testing::Values(false),
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Rust" : "Cpp";
                          });

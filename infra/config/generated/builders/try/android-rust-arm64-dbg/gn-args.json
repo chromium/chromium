@@ -1,7 +1,9 @@
 {
   "gn_args": {
     "debuggable_apks": false,
-    "enable_all_rust_features": true,
+    "enable_rust_mojo": true,
+    "enable_rust_mojom_bindings": true,
+    "enable_rust_png": true,
     "ffmpeg_branding": "Chrome",
     "is_component_build": true,
     "is_debug": true,

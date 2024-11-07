@@ -536,9 +536,23 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "enable_all_rust_features",
+    name = "enable_rust_mojo",
     args = {
-        "enable_all_rust_features": True,
+        "enable_rust_mojo": True,
+    },
+)
+
+gn_args.config(
+    name = "enable_rust_mojom_bindings",
+    args = {
+        "enable_rust_mojom_bindings": True,
+    },
+)
+
+gn_args.config(
+    name = "enable_rust_png",
+    args = {
+        "enable_rust_png": True,
     },
 )
 

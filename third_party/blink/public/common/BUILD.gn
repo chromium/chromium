@@ -87,7 +87,6 @@ buildflag_header("buildflags") {
   flags = [
     "RTC_USE_H264=$rtc_use_h264",
     "RTC_USE_H265=$rtc_use_h265",
-    "ENABLE_RUST_CRASH=$enable_rust_crash",
   ]
 }
 

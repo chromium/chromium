@@ -259,12 +259,10 @@ base::span<const base::cstring_view> ChromeDebugURLs() {
        blink::kChromeUIBrowserCrashURL,
        blink::kChromeUIBrowserDcheckURL,
        blink::kChromeUICrashURL,
-#if BUILDFLAG(ENABLE_RUST_CRASH)
        blink::kChromeUICrashRustURL,
 #if defined(ADDRESS_SANITIZER)
        blink::kChromeUICrashRustOverflowURL,
 #endif
-#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
        blink::kChromeUIDumpURL,
        blink::kChromeUIKillURL,
        blink::kChromeUIHangURL,

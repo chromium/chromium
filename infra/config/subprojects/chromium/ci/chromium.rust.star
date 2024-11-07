@@ -38,6 +38,15 @@ consoles.console_view(
     name = "chromium.rust",
 )
 
+def rust_fyi_configs(*args):
+    # Enables off-by-default GN configs to build extra experimental Rust
+    # components.
+    return list(args) + [
+        "enable_rust_mojo",
+        "enable_rust_mojom_bindings",
+        "enable_rust_png",
+    ]
+
 ci.builder(
     name = "android-rust-arm32-rel",
     builder_spec = builder_config.builder_spec(
@@ -58,14 +67,13 @@ ci.builder(
         android_config = builder_config.android_config(config = "base_config"),
     ),
     gn_args = gn_args.config(
-        configs = [
+        configs = rust_fyi_configs(
             "release_try_builder",
             "minimal_symbols",
             "remoteexec",
-            "enable_all_rust_features",
             "android_builder",
             "arm",
-        ],
+        ),
     ),
     targets = targets.bundle(
         targets = [
@@ -108,13 +116,12 @@ ci.builder(
         android_config = builder_config.android_config(config = "base_config"),
     ),
     gn_args = gn_args.config(
-        configs = [
+        configs = rust_fyi_configs(
             "debug_builder",
             "remoteexec",
-            "enable_all_rust_features",
             "android_builder",
             "arm64",
-        ],
+        ),
     ),
     targets = targets.bundle(
         targets = [
@@ -157,14 +164,13 @@ ci.builder(
         android_config = builder_config.android_config(config = "base_config"),
     ),
     gn_args = gn_args.config(
-        configs = [
+        configs = rust_fyi_configs(
             "release_try_builder",
             "minimal_symbols",
             "remoteexec",
-            "enable_all_rust_features",
             "android_builder",
             "arm64",
-        ],
+        ),
     ),
     targets = targets.bundle(
         targets = [
@@ -202,13 +208,12 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = [
+        configs = rust_fyi_configs(
             "debug_builder",
             "remoteexec",
-            "enable_all_rust_features",
             "linux",
             "x64",
-        ],
+        ),
     ),
     targets = targets.bundle(
         targets = [
@@ -248,14 +253,13 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = [
+        configs = rust_fyi_configs(
             "release_try_builder",
             "minimal_symbols",
             "remoteexec",
-            "enable_all_rust_features",
             "linux",
             "x64",
-        ],
+        ),
     ),
     targets = targets.bundle(
         targets = [
@@ -293,13 +297,12 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = [
+        configs = rust_fyi_configs(
             "debug_builder",
             "remoteexec",
-            "enable_all_rust_features",
             "mac",
             "x64",
-        ],
+        ),
     ),
     targets = targets.bundle(
         targets = [
@@ -339,13 +342,12 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = [
+        configs = rust_fyi_configs(
             "debug_builder",
             "remoteexec",
-            "enable_all_rust_features",
             "win",
             "x64",
-        ],
+        ),
     ),
     targets = targets.bundle(
         targets = [
@@ -385,14 +387,13 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = [
+        configs = rust_fyi_configs(
             "release_try_builder",
             "minimal_symbols",
             "remoteexec",
-            "enable_all_rust_features",
             "win",
             "x64",
-        ],
+        ),
     ),
     targets = targets.bundle(
         targets = [

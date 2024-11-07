@@ -19,7 +19,6 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
-import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/toolchain/kythe.gni")
@@ -51,7 +50,12 @@ declare_args() {
 
   # Output Rust mojom bindings when `generate_rust` is `true` for a target. The
   # option has no effect if this flag is disabled.
-  enable_rust_mojom_bindings = enable_all_rust_features
+  #
+  # This is currently behind a build flag since it's not being actively worked
+  # on, but to maintain some coverage of the code on the Rust FYI bots. When we
+  # want to actively develop support for Mojo use with Rust again, we should do
+  # it without any build flags.
+  enable_rust_mojom_bindings = false
 
   # Enables Closure compilation of generated JS lite bindings. In environments
   # where compilation is supported, any mojom target "foo" will also have a

@@ -9,7 +9,6 @@
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/rust_buildflags.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -207,8 +206,6 @@ TEST_F(DataDecoderTest, SeparateDecoderInstancesMakeSeparateConnectionsForPix) {
   EXPECT_EQ(2u, service().receivers().size());
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_READER)
-
 class DataDecoderMultiThreadTest : public testing::Test {
  protected:
   void TestJSONDecode() {
@@ -269,7 +266,5 @@ TEST_F(DataDecoderMultiThreadTest, JSONDecodeRustCurrentSequence) {
       {{"UseRustJsonParserInCurrentSequence", "true"}});
   TestJSONDecode();
 }
-
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_READER)
 
 }  // namespace data_decoder
