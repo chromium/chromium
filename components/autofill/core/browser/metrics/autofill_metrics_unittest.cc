@@ -5480,8 +5480,6 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   // Bitmask metrics.
   EXPECT_THAT(SamplesOf({kFillable, kBefore, kAll, kBitmask}),
               BucketsAre(Bucket(kName | kNumber | kExp | kCvc, 2)));
-  EXPECT_THAT(SamplesOf({kFillable, kAfter, kAll, kBitmask}),
-              BucketsAre(Bucket(kName | kExp, 1), Bucket(kNumber, 1)));
   EXPECT_THAT(
       SamplesOf({kFills, kBefore, kAll, kBitmask}),
       BucketsAre(Bucket(kName | kNumber | kExp, 1), Bucket(kNumber, 1)));
@@ -5492,8 +5490,6 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   // Bitmask metrics restricted to visible fields.
   EXPECT_THAT(SamplesOf({kFillable, kBefore, kVisible, kBitmask}),
               BucketsAre(Bucket(kName | kNumber | kExp, 2)));
-  EXPECT_THAT(SamplesOf({kFillable, kAfter, kVisible, kBitmask}),
-              BucketsAre(Bucket(kName | kExp, 1), Bucket(kNumber, 1)));
   EXPECT_THAT(
       SamplesOf({kFills, kBefore, kVisible, kBitmask}),
       BucketsAre(Bucket(kName | kNumber | kExp, 1), Bucket(kNumber, 1)));
@@ -5503,8 +5499,6 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   // Qualitative metrics.
   EXPECT_THAT(SamplesOf({kFillable, kBefore, kAll, kQualitative}),
               BucketsAre(Bucket(Metric::kFullFill, 2)));
-  EXPECT_THAT(SamplesOf({kFillable, kAfter, kAll, kQualitative}),
-              BucketsAre(Bucket(Metric::kPartialFill, 2)));
   EXPECT_THAT(SamplesOf({kFills, kBefore, kAll, kQualitative}),
               BucketsAre(Bucket(Metric::kOptionalCvcMissing, 1),
                          Bucket(Metric::kPartialFill, 1)));
@@ -5515,8 +5509,6 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   // Qualitative metrics restricted to visible fields.
   EXPECT_THAT(SamplesOf({kFillable, kBefore, kVisible, kQualitative}),
               BucketsAre(Bucket(Metric::kOptionalCvcMissing, 2)));
-  EXPECT_THAT(SamplesOf({kFillable, kAfter, kVisible, kQualitative}),
-              BucketsAre(Bucket(Metric::kPartialFill, 2)));
   EXPECT_THAT(SamplesOf({kFills, kBefore, kVisible, kQualitative}),
               BucketsAre(Bucket(Metric::kOptionalCvcMissing, 1),
                          Bucket(Metric::kPartialFill, 1)));
@@ -5527,22 +5519,18 @@ TEST_F(AutofillMetricsSeamlessnessTest,
       &test_ukm_recorder(), form_, UkmBuilder::kEntryName,
       {{
            {UkmBuilder::kFillable_BeforeSecurity_QualitativeName, kFullFill},
-           {UkmBuilder::kFillable_AfterSecurity_QualitativeName, kPartialFill},
            {UkmBuilder::kFilled_BeforeSecurity_QualitativeName,
             kOptionalCvcMissing},
            {UkmBuilder::kFilled_AfterSecurity_QualitativeName, kPartialFill},
 
            {UkmBuilder::kFillable_BeforeSecurity_BitmaskName,
             kName | kNumber | kExp | kCvc},
-           {UkmBuilder::kFillable_AfterSecurity_BitmaskName, kName | kExp},
            {UkmBuilder::kFilled_BeforeSecurity_BitmaskName,
             kName | kNumber | kExp},
            {UkmBuilder::kFilled_AfterSecurity_BitmaskName, kName | kExp},
 
            {UkmBuilder::kFillable_BeforeSecurity_Visible_QualitativeName,
             kOptionalCvcMissing},
-           {UkmBuilder::kFillable_AfterSecurity_Visible_QualitativeName,
-            kPartialFill},
            {UkmBuilder::kFilled_BeforeSecurity_Visible_QualitativeName,
             kOptionalCvcMissing},
            {UkmBuilder::kFilled_AfterSecurity_Visible_QualitativeName,
@@ -5550,8 +5538,6 @@ TEST_F(AutofillMetricsSeamlessnessTest,
 
            {UkmBuilder::kFillable_BeforeSecurity_Visible_BitmaskName,
             kName | kNumber | kExp},
-           {UkmBuilder::kFillable_AfterSecurity_Visible_BitmaskName,
-            kName | kExp},
            {UkmBuilder::kFilled_BeforeSecurity_Visible_BitmaskName,
             kName | kNumber | kExp},
            {UkmBuilder::kFilled_AfterSecurity_Visible_BitmaskName,
@@ -5564,20 +5550,16 @@ TEST_F(AutofillMetricsSeamlessnessTest,
        },
        {
            {UkmBuilder::kFillable_BeforeSecurity_QualitativeName, kFullFill},
-           {UkmBuilder::kFillable_AfterSecurity_QualitativeName, kPartialFill},
            {UkmBuilder::kFilled_BeforeSecurity_QualitativeName, kPartialFill},
            {UkmBuilder::kFilled_AfterSecurity_QualitativeName, kPartialFill},
 
            {UkmBuilder::kFillable_BeforeSecurity_BitmaskName,
             kName | kNumber | kExp | kCvc},
-           {UkmBuilder::kFillable_AfterSecurity_BitmaskName, kNumber},
            {UkmBuilder::kFilled_BeforeSecurity_BitmaskName, kNumber},
            {UkmBuilder::kFilled_AfterSecurity_BitmaskName, kNumber},
 
            {UkmBuilder::kFillable_BeforeSecurity_Visible_QualitativeName,
             kOptionalCvcMissing},
-           {UkmBuilder::kFillable_AfterSecurity_Visible_QualitativeName,
-            kPartialFill},
            {UkmBuilder::kFilled_BeforeSecurity_Visible_QualitativeName,
             kPartialFill},
            {UkmBuilder::kFilled_AfterSecurity_Visible_QualitativeName,
@@ -5585,7 +5567,6 @@ TEST_F(AutofillMetricsSeamlessnessTest,
 
            {UkmBuilder::kFillable_BeforeSecurity_Visible_BitmaskName,
             kName | kNumber | kExp},
-           {UkmBuilder::kFillable_AfterSecurity_Visible_BitmaskName, kNumber},
            {UkmBuilder::kFilled_BeforeSecurity_Visible_BitmaskName, kNumber},
            {UkmBuilder::kFilled_AfterSecurity_Visible_BitmaskName, kNumber},
 

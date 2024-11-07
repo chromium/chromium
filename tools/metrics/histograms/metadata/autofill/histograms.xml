@@ -1518,6 +1518,10 @@ AutofillSaveCreditCardPromptDestination.
 
     Any form that contains at least one credit card field counts as credit card
     form.
+
+    Note that the Fillable.AtFillTimeAfterSecurityPolicy variant is not recorded
+    because at the time of recording the available information are not enough to
+    infer this metric.
   </summary>
   <token key="AutofillSeamlessnessFillability"
       variants="AutofillSeamlessnessFillability"/>
@@ -1547,6 +1551,10 @@ AutofillSaveCreditCardPromptDestination.
     Bit #2 is true iff an expiraton date was filled.
 
     Bit #1 is true iff a CVC name was filled.
+
+    Note that the Fillable.AtFillTimeAfterSecurityPolicy variant is not recorded
+    because at the time of recording the available information are not enough to
+    infer this metric.
   </summary>
   <token key="AutofillSeamlessnessFillability"
       variants="AutofillSeamlessnessFillability"/>

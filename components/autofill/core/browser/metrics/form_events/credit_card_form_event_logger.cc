@@ -309,7 +309,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     const FormStructure& form,
     const AutofillField& field,
     const base::flat_set<FieldGlobalId>& newly_filled_fields,
-    const base::flat_set<FieldGlobalId>& safe_fields,
+    const base::flat_set<FieldGlobalId>& safe_filled_fields,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const AutofillTriggerSource trigger_source) {
   CreditCard::RecordType record_type = credit_card.record_type();
@@ -325,7 +325,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
        .form = raw_ref(form),
        .field = raw_ref(field),
        .newly_filled_fields = raw_ref(newly_filled_fields),
-       .safe_fields = raw_ref(safe_fields),
+       .safe_fields = raw_ref(safe_filled_fields),
        .builder = raw_ref(builder)});
 
   latest_filled_card_was_masked_server_card_ = false;

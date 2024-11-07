@@ -2288,34 +2288,6 @@ be describing additional metrics about the same event.
   <summary>
     Recorded when a credit card form is autofilled.
   </summary>
-  <metric name="Fillable.AfterSecurity.Bitmask"
-      enum="AutofillCreditCardSeamlessnessBitmask">
-    <summary>
-      Logs the field types which Autofill would have filled if the credit card
-      on file was complete.
-    </summary>
-  </metric>
-  <metric name="Fillable.AfterSecurity.Qualitative"
-      enum="CreditCardSeamlessFill">
-    <summary>
-      Logs a qualitative summary of the field types which Autofill would have
-      filled if the credit card on file was complete.
-    </summary>
-  </metric>
-  <metric name="Fillable.AfterSecurity.Visible.Bitmask"
-      enum="AutofillCreditCardSeamlessnessBitmask">
-    <summary>
-      Logs the field types which Autofill would have filled into visible fields
-      if the credit card on file was complete.
-    </summary>
-  </metric>
-  <metric name="Fillable.AfterSecurity.Visible.Qualitative"
-      enum="CreditCardSeamlessFill">
-    <summary>
-      Logs a qualitative summary of the field types which Autofill would have
-      filled into visible fields if the credit card on file was complete.
-    </summary>
-  </metric>
   <metric name="Fillable.BeforeSecurity.Bitmask"
       enum="AutofillCreditCardSeamlessnessBitmask">
     <summary>

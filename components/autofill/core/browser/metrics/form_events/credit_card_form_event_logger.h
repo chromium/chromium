@@ -104,17 +104,15 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // filled by BrowserAutofillManager. They are still subject to the security
   // policy for cross-frame filling.
   //
-  // The `safe_fields` are all fields of `form` that adhere to the security
-  // policy for cross-frame filling.
-  //
-  // Therefore, the intersection of `newly_filled_fields` and `safe_fields`
-  // contains the actually filled fields.
+  // The `safe_filled_fields` are all fields of `newly_filled_fields` that
+  // adhere to the security policy for cross-frame filling, and therefore, the
+  // actually filled fields.
   void OnDidFillFormFillingSuggestion(
       const CreditCard& credit_card,
       const FormStructure& form,
       const AutofillField& field,
       const base::flat_set<FieldGlobalId>& newly_filled_fields,
-      const base::flat_set<FieldGlobalId>& safe_fields,
+      const base::flat_set<FieldGlobalId>& safe_filled_fields,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const AutofillTriggerSource trigger_source);
 

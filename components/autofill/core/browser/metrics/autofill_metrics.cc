@@ -999,18 +999,18 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
                                   s.BitmaskExclusiveMax());
   };
 
+  // Note that `GetSeamlessness(false, true, *)` are not called because the
+  // Fillable.AtFillingAfterSecurityPolicy variants are not recorded, since the
+  // available information are not enough to infer these metrics.
+  // This is because we do not know which fields could have been filled after
+  // the security policy, because the security policy is only checked against
+  // the fields that were actually filled).
   if (auto s = GetSeamlessness(false, false, false)) {
     RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy", s);
     p.builder->SetFillable_BeforeSecurity_Bitmask(s.BitmaskMetric());
     p.builder->SetFillable_BeforeSecurity_Qualitative(
         s.QualitativeMetricAsInt());
     p.event_logger->Log(s.QualitativeFillableFormEvent(), *p.form);
-  }
-  if (auto s = GetSeamlessness(false, true, false)) {
-    RecordUma("Fillable.AtFillTimeAfterSecurityPolicy", s);
-    p.builder->SetFillable_AfterSecurity_Bitmask(s.BitmaskMetric());
-    p.builder->SetFillable_AfterSecurity_Qualitative(
-        s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, false, false)) {
     RecordUma("Fills.AtFillTimeBeforeSecurityPolicy", s);
@@ -1027,12 +1027,6 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy.Visible", s);
     p.builder->SetFillable_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
     p.builder->SetFillable_BeforeSecurity_Visible_Qualitative(
-        s.QualitativeMetricAsInt());
-  }
-  if (auto s = GetSeamlessness(false, true, true)) {
-    RecordUma("Fillable.AtFillTimeAfterSecurityPolicy.Visible", s);
-    p.builder->SetFillable_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
-    p.builder->SetFillable_AfterSecurity_Visible_Qualitative(
         s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, false, true)) {
