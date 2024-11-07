@@ -3016,9 +3016,13 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR:
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
-    case IDC_CONTENT_CONTEXT_GOTOURL:
       return navigation_allowed &&
              IsOpenLinkAllowedByDlp(selection_navigation_url_);
+
+    case IDC_CONTENT_CONTEXT_GOTOURL:
+      return navigation_allowed &&
+             IsOpenLinkAllowedByDlp(selection_navigation_url_) &&
+             IsAllowedByUntrustedNetworkStatus();
 
     case IDC_SPELLPANEL_TOGGLE:
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:

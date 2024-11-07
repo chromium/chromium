@@ -1877,3 +1877,24 @@ TEST_F(FencedFrameRenderViewContextMenuTest,
   EXPECT_FALSE(
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
 }
+
+// Verifies that GoToURL field is disabled when fenced frame disables untrusted
+// network access.
+TEST_F(FencedFrameRenderViewContextMenuTest,
+       DisableGoToURLWhenFencedFrameNetworkRevoked) {
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+
+  // Append a fenced frame to the primary main frame.
+  content::RenderFrameHostTester* main_frame =
+      content::RenderFrameHostTester::For(
+          web_contents()->GetPrimaryMainFrame());
+  main_frame->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateAndNavigateFencedFrame(main_frame);
+  auto menu =
+      std::make_unique<TestRenderViewContextMenu>(*fenced_frame_rfh, params);
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_GOTOURL));
+
+  content::test::RevokeFencedFrameUntrustedNetwork(fenced_frame_rfh);
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_GOTOURL));
+}
