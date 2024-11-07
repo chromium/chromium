@@ -279,6 +279,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilityDisclosedRows" : NSAccessibilityDisclosedRowsAttribute,
       @"accessibilityDisclosureLevel" : NSAccessibilityDisclosureLevelAttribute,
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
+      @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
       @"isAccessibilityDisclosed" : NSAccessibilityDisclosingAttribute,
       @"isAccessibilityFocused" : NSAccessibilityFocusedAttribute,
     };
@@ -2606,6 +2607,42 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // browser_accessibility_cocoa.mm eventually that function definition should
   // be moved here.
   return nil;
+}
+
+- (NSAccessibilitySortDirection)accessibilitySortDirection {
+  // Keep logic consistent with `-[BrowserAccessibilityCocoa sortDirection]`
+  if (![self instanceActive]) {
+    return NSAccessibilitySortDirectionUnknown;
+  }
+
+  // If this object should not support `accessibilitySortDirection`, treat
+  // the sort direction as unknown regardless of what's in the `AXNodeData`.
+  if ([self internalRole] != ax::mojom::Role::kRowHeader &&
+      [self internalRole] != ax::mojom::Role::kColumnHeader) {
+    return NSAccessibilitySortDirectionUnknown;
+  }
+
+  // The Core-AAM states that `aria-sort=none` is "not mapped".
+  int sortDirection;
+  if (!_node->GetIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                              &sortDirection) ||
+      static_cast<ax::mojom::SortDirection>(sortDirection) ==
+          ax::mojom::SortDirection::kUnsorted) {
+    return NSAccessibilitySortDirectionUnknown;
+  }
+
+  switch (static_cast<ax::mojom::SortDirection>(sortDirection)) {
+    case ax::mojom::SortDirection::kAscending:
+      return NSAccessibilitySortDirectionAscending;
+    case ax::mojom::SortDirection::kDescending:
+      return NSAccessibilitySortDirectionDescending;
+    case ax::mojom::SortDirection::kOther:
+      return NSAccessibilitySortDirectionUnknown;
+    default:
+      NOTREACHED_IN_MIGRATION();
+  }
+
+  return NSAccessibilitySortDirectionUnknown;
 }
 
 // NSAccessibility: Setting the Focus.

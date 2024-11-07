@@ -1,11 +1,20 @@
 <!--
-@MAC-ALLOW:AXSortDirection
-@WIN-ALLOW:sort:*
-@AURALINUX-ALLOW:sort:*
+@SCRIPT:
+  colheader-unsorted-implicit.accessibilitySortDirection
+  colheader-unsorted-explicit.accessibilitySortDirection
+  colheader-ascending.accessibilitySortDirection
+  colheader-descending.accessibilitySortDirection
+  colheader-other.accessibilitySortDirection
+  rowheader-unsorted-implicit.accessibilitySortDirection
+  rowheader-unsorted-explicit.accessibilitySortDirection
+  rowheader-ascending.accessibilitySortDirection
+  rowheader-descending.accessibilitySortDirection
+  rowheader-other.accessibilitySortDirection
 -->
 
-<!-- Keep this in alignment with content/test/data/accessibility/mac/methods/accessibility-sort-direction.html -->
+<!-- Keep this in alignment with content/test/data/accessibility/aria/aria-sort-aria-grid.html -->
 
+<!DOCTYPE html>
 <html>
 <body>
 <!-- ARIA grid with a column header. -->
@@ -13,7 +22,7 @@
 <!-- No sorting (implicit). -->
 <div role="grid">
   <div role="row">
-    <span role="columnheader">Alphabet</span>
+    <span id="colheader-unsorted-implicit" role="columnheader">Alphabet</span>
   </div>
   <div role="row">
     <span role="gridcell">A</span>
@@ -26,7 +35,7 @@
 <!-- No sorting (explicit). -->
 <div role="grid">
   <div role="row">
-    <span role="columnheader" aria-sort="none">Alphabet</span>
+    <span id="colheader-unsorted-explicit" role="columnheader" aria-sort="none">Alphabet</span>
   </div>
   <div role="row">
     <span role="gridcell">A</span>
@@ -39,7 +48,7 @@
 <!-- Ascending. -->
 <div role="grid">
   <div role="row">
-    <span role="columnheader" aria-sort="ascending">Alphabet</span>
+    <span id="colheader-ascending" role="columnheader" aria-sort="ascending">Alphabet</span>
   </div>
   <div role="row">
     <span role="gridcell">A</span>
@@ -52,7 +61,7 @@
 <!-- Descending. -->
 <div role="grid">
   <div role="row">
-    <span role="columnheader" aria-sort="descending">Alphabet</span>
+    <span id="colheader-descending" role="columnheader" aria-sort="descending">Alphabet</span>
   </div>
   <div role="row">
     <span role="gridcell">B</span>
@@ -65,7 +74,7 @@
 <!-- Unspecified. -->
 <div role="grid">
   <div role="row">
-    <span role="columnheader" aria-sort="other">Alphabet</span>
+    <span id="colheader-other" role="columnheader" aria-sort="other">Alphabet</span>
   </div>
   <div role="row">
     <span role="gridcell">A</span>
@@ -81,7 +90,7 @@
 <!-- No sorting (implicit). -->
 <div role="grid">
   <div role="row">
-    <span role="rowheader">Alphabet</span>
+    <span id="rowheader-unsorted-implicit" role="rowheader">Alphabet</span>
     <span role="gridcell">A</span>
     <span role="gridcell">B</span>
   </div>
@@ -90,7 +99,7 @@
 <!-- No sorting (explicit). -->
 <div role="grid">
   <div role="row">
-    <span role="rowheader" aria-sort="none">Alphabet</span>
+    <span id="rowheader-unsorted-explicit" role="rowheader" aria-sort="none">Alphabet</span>
     <span role="gridcell">A</span>
     <span role="gridcell">B</span>
   </div>
@@ -99,7 +108,7 @@
 <!-- Ascending. -->
 <div role="grid">
   <div role="row">
-    <span role="rowheader" aria-sort="ascending">Alphabet</span>
+    <span id="rowheader-ascending" role="rowheader" aria-sort="ascending">Alphabet</span>
     <span role="gridcell">A</span>
     <span role="gridcell">B</span>
   </div>
@@ -108,7 +117,7 @@
 <!-- Descending. -->
 <div role="grid">
   <div role="row">
-    <span role="rowheader" aria-sort="descending">Alphabet</span>
+    <span id="rowheader-descending" role="rowheader" aria-sort="descending">Alphabet</span>
     <span role="gridcell">B</span>
     <span role="gridcell">A</span>
   </div>
@@ -117,7 +126,7 @@
 <!-- Unspecified. -->
 <div role="grid">
   <div role="row">
-    <span role="rowheader" aria-sort="other">Alphabet</span>
+    <span id="rowheader-other" role="rowheader" aria-sort="other">Alphabet</span>
     <span role="gridcell">A</span>
     <span role="gridcell">A</span>
   </div>

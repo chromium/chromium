@@ -1342,6 +1342,8 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSString*)sortDirection {
+  // Keep logic consistent with
+  // `-[AXPlatformNodeCocoa accessibilitySortDirection]`
   if (![self instanceActive])
     return nil;
 

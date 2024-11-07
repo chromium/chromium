@@ -618,6 +618,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   Migration_RunTypedTest<kMacMethods>("accessibility-row-index-range.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilitySortDirection) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-sort-direction.html");
+}
+
 // Parameterized attributes
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
