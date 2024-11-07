@@ -227,6 +227,23 @@ BASE_FEATURE(kBoca, "Boca", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables Boca consumer user experience on ChromeOS.
 BASE_FEATURE(kBocaConsumer, "BocaConsumer", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Boca custom polling interval on ChromeOS.
+BASE_FEATURE(kBocaCustomPolling,
+             "kBocaCustomPolling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Time interval to do indefinite session polling.
+constexpr base::FeatureParam<base::TimeDelta>
+    kBocaIndefinitePeriodicJobIntervalInSeconds{
+        &kBocaCustomPolling, "IndefinitePollingIntervalInSeconds",
+        base::Seconds(60)};
+
+// Time interval to do session polling within session
+constexpr base::FeatureParam<base::TimeDelta>
+    kBocaInSessionPeriodicJobIntervalInSeconds{
+        &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
+        base::Seconds(60)};
+
 // Enables or disables Boca extension consumer experience on ChromeOS.
 BASE_FEATURE(kBocaExtensionConsumer,
              "BocaExtensionConsumer",
@@ -3495,6 +3512,10 @@ bool IsBocaConsumerEnabled() {
 
 bool IsBocaExtensionConsumerEnabled() {
   return base::FeatureList::IsEnabled(kBocaExtensionConsumer);
+}
+
+bool IsBocaCustomPollingEnabled() {
+  return base::FeatureList::IsEnabled(kBocaCustomPolling);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

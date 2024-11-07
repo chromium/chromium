@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -35,6 +36,15 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
     : is_producer_(is_producer),
       account_id_(std::move(account_id)),
       session_client_impl_(std::move(session_client_impl)) {
+  in_session_polling_interval_ =
+      features::IsBocaCustomPollingEnabled()
+          ? ash::features::kBocaInSessionPeriodicJobIntervalInSeconds.Get()
+          : base::Seconds(kDefaultPollingIntervalInSeconds);
+  indefinite_polling_interval_ =
+      features::IsBocaCustomPollingEnabled()
+          ? ash::features::kBocaIndefinitePeriodicJobIntervalInSeconds.Get()
+          : base::Seconds(kDefaultPollingIntervalInSeconds);
+
   GetNetworkConfigService(cros_network_config_.BindNewPipeAndPassReceiver());
   cros_network_config_->AddObserver(
       cros_network_config_observer_.BindNewPipeAndPassRemote());
@@ -115,19 +125,25 @@ void BocaSessionManager::RemoveObserver(Observer* observer) {
 
 void BocaSessionManager::StartSessionPolling(bool in_session) {
   if (in_session) {
+    if (in_session_polling_interval_ == base::Seconds(0)) {
+      return;
+    }
     if (indefinite_timer_.IsRunning()) {
       indefinite_timer_.Stop();
     }
     if (!in_session_timer_.IsRunning()) {
-      in_session_timer_.Start(FROM_HERE, kInSessionPollingInterval, this,
+      in_session_timer_.Start(FROM_HERE, in_session_polling_interval_, this,
                               &BocaSessionManager::MaybeLoadCurrentSession);
     }
   } else {
+    if (indefinite_polling_interval_ == base::Seconds(0)) {
+      return;
+    }
     if (in_session_timer_.IsRunning()) {
       in_session_timer_.Stop();
     }
     if (!indefinite_timer_.IsRunning()) {
-      indefinite_timer_.Start(FROM_HERE, kIndefinitePollingInterval, this,
+      indefinite_timer_.Start(FROM_HERE, indefinite_polling_interval_, this,
                               &BocaSessionManager::MaybeLoadCurrentSession);
     }
   }
@@ -136,7 +152,8 @@ void BocaSessionManager::StartSessionPolling(bool in_session) {
 void BocaSessionManager::MaybeLoadCurrentSession() {
   // Only skip session load for scheduled polling if there is any load since
   // last schedule, we should never skip it for invalidation.
-  if (base::TimeTicks::Now() - last_session_load_ < kInSessionPollingInterval) {
+  if (base::TimeTicks::Now() - last_session_load_ <
+      in_session_polling_interval_) {
     return;
   }
   LoadCurrentSession();

@@ -42,14 +42,11 @@ class BocaSessionManager
       public signin::IdentityManager::Observer,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
-  // TODO(crbug.com/376912269): Replace intervals with finch config.
-  inline static constexpr base::TimeDelta kInSessionPollingInterval =
-      base::Minutes(1);
-  inline static constexpr base::TimeDelta kIndefinitePollingInterval =
-      base::Minutes(1);
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
 
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
+
+  inline static constexpr int kDefaultPollingIntervalInSeconds = 60;
 
   enum class BocaAction {
     kDefault = 0,
@@ -185,6 +182,8 @@ class BocaSessionManager
 
   const bool is_producer_;
   bool is_app_opened_ = false;
+  base::TimeDelta in_session_polling_interval_;
+  base::TimeDelta indefinite_polling_interval_;
   base::ObserverList<Observer> observers_;
   // Timer used for periodic session polling within session.
   base::RepeatingTimer in_session_timer_;
