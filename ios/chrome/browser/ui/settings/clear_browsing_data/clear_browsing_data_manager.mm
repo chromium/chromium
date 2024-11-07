@@ -113,7 +113,7 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
 // task to start.
 BOOL UIIsBlocking(Browser* browser) {
   SceneState* sceneState = browser->GetSceneState();
-  return [sceneState.uiBlockerManager currentUIBlocker];
+  return sceneState.isUIBlocked;
 }
 
 }  // namespace

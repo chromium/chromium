@@ -162,6 +162,17 @@
   return _appState.startupInformation;
 }
 
+- (void)setUiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget {
+  _uiBlockerTarget = uiBlockerTarget;
+  for (SceneState* scene in _connectedSceneStates) {
+    // When there's a scene with blocking UI, all other scenes should show the
+    // overlay.
+    BOOL shouldPresentOverlay =
+        (uiBlockerTarget != nil) && (scene != uiBlockerTarget);
+    scene.presentingModalOverlay = shouldPresentOverlay;
+  }
+}
+
 #pragma mark - Public
 
 - (void)addAgent:(id<ProfileStateAgent>)agent {

@@ -90,7 +90,8 @@
   [self.safeModeCoordinator start];
 
   if (base::ios::IsMultipleScenesSupported()) {
-    _safeModeBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+    _safeModeBlocker = std::make_unique<ScopedUIBlocker>(
+        sceneState, UIBlockerExtent::kApplication);
   }
 }
 

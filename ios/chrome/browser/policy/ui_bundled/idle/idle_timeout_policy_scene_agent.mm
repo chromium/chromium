@@ -311,7 +311,8 @@
   // Set the pending snackbar flag for the agent that will show the dialog then
   // show then dismiss any modals and display the dialog.
   _pendingDisplayingSnackbar = YES;
-  _UIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
+  _UIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState,
+                                                 UIBlockerExtent::kApplication);
   __weak __typeof(self) weakSelf = self;
   [_applicationHandler dismissModalDialogsWithCompletion:^{
     [weakSelf showIdleTimeoutConfirmation];

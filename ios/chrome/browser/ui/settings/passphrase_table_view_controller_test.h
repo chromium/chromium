@@ -21,6 +21,7 @@ class MockSyncService;
 
 @class AppState;
 class Browser;
+@class ProfileState;
 @class SceneState;
 @class SettingsNavigationController;
 class TestProfileIOS;
@@ -67,6 +68,8 @@ class PassphraseTableViewControllerTest
   SceneState* scene_state_;
   // Dummy app state.
   AppState* app_state_;
+  // Dummy profile state.
+  ProfileState* profile_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
