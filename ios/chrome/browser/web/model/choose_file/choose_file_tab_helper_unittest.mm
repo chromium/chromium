@@ -56,6 +56,7 @@ TEST_F(ChooseFileTabHelperTest, StopChoosingFiles) {
   tab_helper_->StartChoosingFiles(std::move(controller));
   EXPECT_FALSE(selection_submitted);
   EXPECT_TRUE(tab_helper_->IsChoosingFiles());
+  tab_helper_->AddFileUrlReadyForSelection(file_url, [NSDate date]);
   tab_helper_->StopChoosingFiles(file_urls, display_string, icon_image);
   EXPECT_TRUE(selection_submitted);
   EXPECT_FALSE(tab_helper_->IsChoosingFiles());
