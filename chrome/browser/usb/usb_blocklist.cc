@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace {
@@ -144,8 +145,10 @@ UsbBlocklist::UsbBlocklist() {
 }
 
 void UsbBlocklist::PopulateWithServerProvidedValues() {
-  std::string blocklist_string =
-      base::GetFieldTrialParamValue("WebUSBBlocklist", "blocklist_additions");
+  std::string blocklist_string = base::GetFieldTrialParamByFeatureAsString(
+      /*feature=*/features::kWebUsbBlocklist,
+      /*param_name=*/"blocklist_additions",
+      /*default_value=*/"");
 
   for (const auto& entry :
        base::SplitStringPiece(blocklist_string, ",", base::TRIM_WHITESPACE,
