@@ -615,9 +615,6 @@ void HangWatcher::Wait() {
     const bool wait_was_normal =
         wait_time <= (monitoring_period_ + kWaitDriftTolerance);
 
-    UMA_HISTOGRAM_TIMES("HangWatcher.SleepDrift.BrowserProcess",
-                        wait_time - monitoring_period_);
-
     if (!wait_was_normal) {
       // If the time spent waiting was too high it might indicate the machine is
       // very slow or that that it went to sleep. In any case we can't trust the
