@@ -10728,6 +10728,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMahiDebuggingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kMahiDebugging)},
 
+    {"mahi-panel-resizable", flag_descriptions::kMahiPanelResizableName,
+     flag_descriptions::kMahiPanelResizableDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kMahiPanelResizable)},
+
     {"notification-width-increase",
      flag_descriptions::kNotificationWidthIncreaseName,
      flag_descriptions::kNotificationWidthIncreaseDescription, kOsCrOS,

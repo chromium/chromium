@@ -7092,6 +7092,9 @@ const char kMahiDescription[] = "Enable Mahi feature on ChromeOS.";
 const char kMahiDebuggingName[] = "Mahi Debugging";
 const char kMahiDebuggingDescription[] = "Enable debugging for mahi.";
 
+const char kMahiPanelResizableName[] = "Mahi panel resizing";
+const char kMahiPanelResizableDescription[] = "Enable Mahi panel resizing on ChromeOS.";
+
 const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";

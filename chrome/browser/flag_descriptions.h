@@ -4088,6 +4088,9 @@ extern const char kLockScreenNotificationDescription[];
 extern const char kMahiName[];
 extern const char kMahiDescription[];
 
+extern const char kMahiPanelResizableName[];
+extern const char kMahiPanelResizableDescription[];
+
 extern const char kMahiDebuggingName[];
 extern const char kMahiDebuggingDescription[];
 

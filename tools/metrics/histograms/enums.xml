@@ -17630,6 +17630,7 @@ from previous Chrome versions.
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
   <int value="-1056368985" label="NtpRealboxCr23All:enabled"/>
   <int value="-1056310158" label="disable-memory-pressure-chromeos"/>
+  <int value="-1055998734" label="MahiPanelResizable:disabled"/>
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
   <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
   <int value="-1053496936" label="WebViewSendVariationsHeaders:disabled"/>
@@ -20530,6 +20531,7 @@ from previous Chrome versions.
   <int value="121858954" label="enable-supervised-user-safesites"/>
   <int value="121911155" label="DesktopPWAsElidedExtensionsMenu:enabled"/>
   <int value="121994167" label="kOmniboxCR23SteadyStateIcons:disabled"/>
+  <int value="122370554" label="MahiPanelResizable:enabled"/>
   <int value="122502620"
       label="AutofillForUnclassifiedFieldsAvailable:enabled"/>
   <int value="122959683" label="WebViewJavaJsBridgeMojo:enabled"/>
