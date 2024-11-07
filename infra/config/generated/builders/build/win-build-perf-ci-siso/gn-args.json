@@ -2,6 +2,7 @@
   "phases": {
     "builtin": {
       "gn_args": {
+        "concurrent_links": 5,
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
