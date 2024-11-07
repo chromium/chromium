@@ -20,10 +20,8 @@ class InlineItem;
 class LineInfo;
 class LogicalLineContainer;
 class LogicalLineItems;
-class ShapeResultView;
 struct InlineItemResult;
 struct LogicalRubyColumn;
-struct PhysicalRect;
 
 struct RubyItemIndexes {
   // Points a kOpenRubyColumn item.
@@ -40,13 +38,6 @@ struct RubyItemIndexes {
 // `start_item_index` must point to kOpenRubyColumn item.
 RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
                                        wtf_size_t start_item_index);
-
-// Adjust the specified |rect| of a text fragment for 'em' height.
-// This is called on computing scrollable overflow with kEmHeight.
-PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
-                                       const ComputedStyle& style,
-                                       const ShapeResultView* shape_view,
-                                       WritingMode writing_mode);
 
 struct AnnotationOverhang {
   LayoutUnit start;

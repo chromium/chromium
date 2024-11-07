@@ -158,33 +158,6 @@ RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
   NOTREACHED();
 }
 
-PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
-                                       const ComputedStyle& style,
-                                       const ShapeResultView* shape_view,
-                                       WritingMode writing_mode) {
-  if (!shape_view)
-    return rect;
-  const LayoutUnit line_height = IsHorizontalWritingMode(writing_mode)
-                                     ? rect.size.height
-                                     : rect.size.width;
-  auto [over, under] = AdjustTextOverUnderOffsetsForEmHeight(
-      LayoutUnit(), line_height, style, *shape_view);
-  const LayoutUnit over_diff = over;
-  const LayoutUnit under_diff = line_height - under;
-  const LayoutUnit new_line_height = under - over;
-
-  if (IsHorizontalWritingMode(writing_mode)) {
-    return {{rect.offset.left, rect.offset.top + over_diff},
-            PhysicalSize(rect.size.width, new_line_height)};
-  }
-  if (IsFlippedLinesWritingMode(writing_mode)) {
-    return {{rect.offset.left + under_diff, rect.offset.top},
-            PhysicalSize(new_line_height, rect.size.height)};
-  }
-  return {{rect.offset.left + over_diff, rect.offset.top},
-          PhysicalSize(new_line_height, rect.size.height)};
-}
-
 AnnotationOverhang GetOverhang(
     LayoutUnit ruby_size,
     const LineInfo& base_line,
