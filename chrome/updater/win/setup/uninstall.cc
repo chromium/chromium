@@ -99,15 +99,22 @@ void DeleteComInterfaces(UpdaterScope scope, bool uninstall_all) {
 }
 
 void DeleteClientStateKey(UpdaterScope scope) {
-  base::win::RegKey client_state;
-  if (client_state.Open(UpdaterScopeToHKeyRoot(scope), CLIENT_STATE_KEY,
-                        Wow6432(KEY_QUERY_VALUE)) == ERROR_SUCCESS) {
-    // Delete the entire `ClientState` key only if all the apps are uninstalled
-    // already, as evidenced by the `--uninstall-if-unused` switch.
-    client_state.DeleteKey(base::CommandLine::ForCurrentProcess()->HasSwitch(
-                               kUninstallIfUnusedSwitch)
-                               ? L""
-                               : base::UTF8ToWide(kUpdaterAppId).c_str());
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+  const bool has_switch_uninstall_if_unused =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kUninstallIfUnusedSwitch);
+  const std::wstring updater_app_id = base::UTF8ToWide(kUpdaterAppId);
+
+  for (const auto& access_mask : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    base::win::RegKey client_state;
+    if (client_state.Open(root, CLIENT_STATE_KEY,
+                          KEY_QUERY_VALUE | access_mask) == ERROR_SUCCESS) {
+      // Delete the entire `ClientState` key only if all the apps are
+      // uninstalled already, as evidenced by the `--uninstall-if-unused`
+      // switch.
+      client_state.DeleteKey(
+          has_switch_uninstall_if_unused ? L"" : updater_app_id.c_str());
+    }
   }
 }
 

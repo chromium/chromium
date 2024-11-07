@@ -723,6 +723,7 @@ void Clean(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
   for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
     EXPECT_TRUE(DeleteRegKey(root, key));
+    EXPECT_TRUE(DeleteRegKey64(root, key));
   }
 
   if (::IsUserAnAdmin()) {
@@ -1738,6 +1739,8 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
   base::win::RegKey key;
+
+  // Legacy updater, should not be migrated.
   ASSERT_EQ(key.Create(root,
                        base::StrCat(
                            {UPDATER_KEY L"Clients\\", kLegacyGoogleUpdateAppID})
@@ -1749,6 +1752,7 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
   key.Close();
 
+  // Chrome app with registration in the 32-bit hive, should be migrated.
   ASSERT_EQ(
       key.Create(
           root,
@@ -1784,6 +1788,7 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
             ERROR_SUCCESS);
   key.Close();
 
+  // App without 'pv', should not be migrated.
   ASSERT_EQ(
       key.Create(
           root,
@@ -1794,6 +1799,26 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueDateOfLastActivity, L"5900"),
             ERROR_SUCCESS);
+  key.Close();
+
+  // App registered in the 64-bit hive, should be migrated.
+  ASSERT_EQ(
+      key.Create(
+          root,
+          UPDATER_KEY L"\\Clients\\{D7FB8805-0780-4A48-BEA8-7C1919185D3B}",
+          KEY_WRITE | KEY_WOW64_64KEY),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValuePV, L"7.1.0.0"), ERROR_SUCCESS);
+  key.Close();
+
+  ASSERT_EQ(
+      key.Create(
+          root,
+          UPDATER_KEY L"\\ClientState\\{D7FB8805-0780-4A48-BEA8-7C1919185D3B}",
+          KEY_WRITE | KEY_WOW64_64KEY),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"FFLS"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueAP, L"TAP"), ERROR_SUCCESS);
   key.Close();
 
   if (IsSystemInstall(scope)) {
@@ -1939,6 +1964,7 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_EQ(persisted_data->GetDateLastActive(kNoPVAppId), -2);
   EXPECT_EQ(persisted_data->GetDateLastRollCall(kNoPVAppId), -2);
 
+  // Chrome app with registration in the 32-bit hive should be migrated.
   EXPECT_EQ(persisted_data->GetProductVersion(kChromeAppId),
             base::Version("99.0.0.1"));
   EXPECT_EQ(persisted_data->GetAP(kChromeAppId), "TestAP");
@@ -1949,6 +1975,13 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_EQ(persisted_data->GetCohort(kChromeAppId), "TestCohort");
   EXPECT_EQ(persisted_data->GetCohortName(kChromeAppId), "TestCohortName");
   EXPECT_EQ(persisted_data->GetCohortHint(kChromeAppId), "TestCohortHint");
+
+  // App with registration in the 64-bit hive should be migrated.
+  const std::string k64BitAppId("{D7FB8805-0780-4A48-BEA8-7C1919185D3B}");
+  EXPECT_EQ(persisted_data->GetProductVersion(k64BitAppId),
+            base::Version("7.1.0.0"));
+  EXPECT_EQ(persisted_data->GetAP(k64BitAppId), "TAP");
+  EXPECT_EQ(persisted_data->GetBrandCode(k64BitAppId), "FFLS");
 
   int count_entries = 0;
   if (IsSystemInstall(scope)) {
