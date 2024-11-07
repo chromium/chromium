@@ -45,6 +45,20 @@ class ASH_EXPORT ManagementDisclosureDialog : public views::DialogDelegateView {
   base::WeakPtrFactory<ManagementDisclosureDialog> weak_factory_{this};
 };
 
+// Container for the device monitoring warning. Composed of enterprise icon and
+// enterprise manager.
+class ASH_EXPORT ManagedWarningView : public NonAccessibleView {
+  METADATA_HEADER(ManagedWarningView, NonAccessibleView)
+
+ public:
+  ManagedWarningView();
+
+  ManagedWarningView(const ManagedWarningView&) = delete;
+  ManagedWarningView& operator=(const ManagedWarningView&) = delete;
+
+  ~ManagedWarningView() override = default;
+};
+
 }  // namespace ash
 
 #endif  // ASH_LOGIN_UI_MANAGEMENT_DISCLOSURE_DIALOG_H_

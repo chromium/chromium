@@ -3967,6 +3967,7 @@ test("ash_unittests") {
     "login/ui/login_public_account_user_view_unittest.cc",
     "login/ui/login_remove_account_dialog_unittest.cc",
     "login/ui/login_user_view_unittest.cc",
+    "login/ui/management_disclosure_dialog_unittest.cc",
     "login/ui/pin_request_view_unittest.cc",
     "login/ui/smart_lock_auth_factor_model_unittest.cc",
     "login/ui/views_utils_unittest.cc",

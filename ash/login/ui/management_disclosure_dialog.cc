@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -58,7 +59,6 @@ constexpr int kTitleAndInfoPaddingDp = 20;
 constexpr int kLabelHeightDp = 16;
 
 // ManagedWarningView Title.
-constexpr char kManagedWarningClassName[] = "ManagedWarning";
 constexpr int kSpacingBetweenEnterpriseIconAndLabelDp = 20;
 constexpr int kEnterpriseIconSizeDp = 32;
 constexpr int kManagedWarningViewSize =
@@ -82,8 +82,9 @@ std::unique_ptr<views::Label> CreateLabel(const std::u16string& text,
 
 views::Builder<views::ImageView> CreateEnterpriseIcon() {
   return views::Builder<views::ImageView>()
-      .SetImage(ui::ImageModel::FromVectorIcon(
-          chromeos::kEnterpriseIcon, ui::kColorIcon, kEnterpriseIconSizeDp))
+      .SetImage(ui::ImageModel::FromVectorIcon(chromeos::kEnterpriseIcon,
+                                               cros_tokens::kCrosSysPrimary,
+                                               kEnterpriseIconSizeDp))
       .SetHorizontalAlignment(views::ImageViewBase::Alignment::kLeading);
 }
 
@@ -95,39 +96,27 @@ int GetDisclosureViewHeight() {
 
 }  // namespace
 
-// Container for the device monitoring warning. Composed of an optional warning
-// icon on the left and a label to the right.
-class ManagedWarningView : public NonAccessibleView {
-  METADATA_HEADER(ManagedWarningView, NonAccessibleView)
-
- public:
-  ManagedWarningView() : NonAccessibleView(kManagedWarningClassName) {
-    const std::u16string label_text = l10n_util::GetStringFUTF16(
-        IDS_MANAGEMENT_SUBTITLE_MANAGED_BY, ui::GetChromeOSDeviceName(),
-        base::UTF8ToUTF16(Shell::Get()
-                              ->system_tray_model()
-                              ->enterprise_domain()
-                              ->enterprise_domain_manager()));
-    auto enterprise_image = CreateEnterpriseIcon();
-    views::Builder<views::View>(this)
-        .SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::LayoutOrientation::kVertical, gfx::Insets(),
-            kSpacingBetweenEnterpriseIconAndLabelDp))
-        .SetProperty(views::kMarginsKey,
-                     gfx::Insets::TLBR(kPaddingDp, kPaddingDp, 0, kPaddingDp))
-        .AddChildren(
-            enterprise_image,
-            views::Builder<views::Label>(
-                CreateLabel(label_text, views::style::STYLE_HEADLINE_5))
-                .SetMultiLine(true))
-        .BuildChildren();
-  }
-
-  ManagedWarningView(const ManagedWarningView&) = delete;
-  ManagedWarningView& operator=(const ManagedWarningView&) = delete;
-
-  ~ManagedWarningView() override = default;
-};
+ManagedWarningView::ManagedWarningView() {
+  const std::u16string label_text = l10n_util::GetStringFUTF16(
+      IDS_MANAGEMENT_SUBTITLE_MANAGED_BY, ui::GetChromeOSDeviceName(),
+      base::UTF8ToUTF16(Shell::Get()
+                            ->system_tray_model()
+                            ->enterprise_domain()
+                            ->enterprise_domain_manager()));
+  auto enterprise_image = CreateEnterpriseIcon().Build();
+  enterprise_image->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
+  AddChildView(std::move(enterprise_image));
+  views::Builder<views::View>(this)
+      .SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::LayoutOrientation::kVertical, gfx::Insets(),
+          kSpacingBetweenEnterpriseIconAndLabelDp))
+      .SetProperty(views::kMarginsKey,
+                   gfx::Insets::TLBR(kPaddingDp, kPaddingDp, 0, kPaddingDp))
+      .AddChildren(views::Builder<views::Label>(
+                       CreateLabel(label_text, views::style::STYLE_HEADLINE_5))
+                       .SetMultiLine(true))
+      .BuildChildren();
+}
 
 BEGIN_METADATA(ManagedWarningView)
 END_METADATA
@@ -155,6 +144,8 @@ ManagementDisclosureDialog::ManagementDisclosureDialog(
 
   // Set up view for the header that contains management icon and who manages
   // the device.
+  auto managed_view = std::make_unique<ManagedWarningView>();
+  managed_view->SetID(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY);
   AddChildView(std::make_unique<ManagedWarningView>());
 
   // Set up disclosure pane that will contain informational text as well as
@@ -173,21 +164,20 @@ ManagementDisclosureDialog::ManagementDisclosureDialog(
       .AddChildren(
           views::Builder<views::Label>(
               CreateLabel(l10n_util::GetStringUTF16(
-                              IDS_MANAGEMENT_OPEN_CHROME_MANAGEMENT),
-                          views::style::STYLE_BODY_5))
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets().set_top(kTitleAndInfoPaddingDp)),
-          views::Builder<views::Label>(
-              CreateLabel(l10n_util::GetStringUTF16(
                               IDS_MANAGEMENT_PROXY_SERVER_PRIVACY_DISCLOSURE),
                           views::style::STYLE_BODY_5))
               .SetProperty(views::kMarginsKey,
-                           gfx::Insets().set_bottom(provider->GetDistanceMetric(
-                               views::DistanceMetric::
-                                   DISTANCE_UNRELATED_CONTROL_VERTICAL))),
-          views::Builder<views::Label>(CreateLabel(
-              l10n_util::GetStringUTF16(IDS_MANAGEMENT_DEVICE_CONFIGURATION),
-              views::style::STYLE_BODY_5)))
+                           gfx::Insets().set_top_bottom(
+                               kTitleAndInfoPaddingDp,
+                               provider->GetDistanceMetric(
+                                   views::DistanceMetric::
+                                       DISTANCE_UNRELATED_CONTROL_VERTICAL)))
+              .SetID(IDS_MANAGEMENT_PROXY_SERVER_PRIVACY_DISCLOSURE),
+          views::Builder<views::Label>(
+              CreateLabel(l10n_util::GetStringUTF16(
+                              IDS_MANAGEMENT_DEVICE_CONFIGURATION),
+                          views::style::STYLE_BODY_5))
+              .SetID(IDS_MANAGEMENT_DEVICE_CONFIGURATION))
       .BuildChildren();
 
   // Set up scroll bar.
@@ -209,8 +199,21 @@ ManagementDisclosureDialog::ManagementDisclosureDialog(
       views::ScrollBar::Orientation::kVertical);
   vertical_scroll->SetSnapBackOnDragOutside(false);
   scroll_view->SetVerticalScrollBar(std::move(vertical_scroll));
-  scroll_view->SetContents(std::make_unique<views::BulletedLabelListView>(
-      disclosures, views::style::STYLE_BODY_5));
+  // Set up bulleted list.
+  auto list = std::make_unique<views::BulletedLabelListView>(
+      disclosures, views::style::STYLE_BODY_5);
+  list->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
+  scroll_view->SetContents(std::move(list));
+
+  disclosure_view->AddChildView(
+      views::Builder<views::Label>(
+          CreateLabel(
+              l10n_util::GetStringUTF16(IDS_MANAGEMENT_OPEN_CHROME_MANAGEMENT),
+              views::style::STYLE_BODY_5))
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets().set_top(kTitleAndInfoPaddingDp))
+          .SetID(IDS_MANAGEMENT_OPEN_CHROME_MANAGEMENT)
+          .Build());
 
   // Parent the dialog widget to the LockSystemModalContainer to ensure that it
   // will get displayed on respective lock/signin or OOBE screen.
@@ -222,12 +225,18 @@ ManagementDisclosureDialog::ManagementDisclosureDialog(
           session_manager::SessionState::OOBE) {
     container_id = kShellWindowId_LockSystemModalContainer;
   }
-  Shell::GetContainer(Shell::GetPrimaryRootWindow(), container_id);
 
   views::Widget* widget = CreateDialogWidget(
       this, nullptr,
       Shell::GetContainer(Shell::GetPrimaryRootWindow(), container_id));
   widget->Show();
+
+  // Ensure that if ChromeVox is enabled, it focuses on the dialog.
+  AccessibilityController* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  if (accessibility_controller->spoken_feedback().enabled()) {
+    accessibility_controller->SetA11yOverrideWindow(widget->GetNativeWindow());
+  }
 }
 
 ManagementDisclosureDialog::~ManagementDisclosureDialog() = default;
