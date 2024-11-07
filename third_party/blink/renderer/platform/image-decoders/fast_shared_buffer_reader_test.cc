@@ -51,7 +51,7 @@ struct SegmentReaders {
 
 TEST(FastSharedBufferReaderTest, nonSequentialReads) {
   char reference_data[kDefaultTestSize];
-  PrepareReferenceData(reference_data, sizeof(reference_data));
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(reference_data, sizeof(reference_data));
 
@@ -74,7 +74,7 @@ TEST(FastSharedBufferReaderTest, nonSequentialReads) {
 
 TEST(FastSharedBufferReaderTest, readBackwards) {
   char reference_data[kDefaultTestSize];
-  PrepareReferenceData(reference_data, sizeof(reference_data));
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(reference_data, sizeof(reference_data));
 
@@ -99,7 +99,7 @@ TEST(FastSharedBufferReaderTest, readBackwards) {
 
 TEST(FastSharedBufferReaderTest, byteByByte) {
   char reference_data[kDefaultTestSize];
-  PrepareReferenceData(reference_data, sizeof(reference_data));
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(reference_data, sizeof(reference_data));
 
@@ -117,7 +117,7 @@ TEST(FastSharedBufferReaderTest, byteByByte) {
 TEST(FastSharedBufferReaderTest, readAllOverlappingLastSegmentBoundary) {
   const unsigned kDataSize = 2 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
-  PrepareReferenceData(reference_data, kDataSize);
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(reference_data, kDataSize);
 
@@ -134,7 +134,7 @@ TEST(FastSharedBufferReaderTest, readAllOverlappingLastSegmentBoundary) {
 TEST(SegmentReaderTest, readPastEndThenRead) {
   const unsigned kDataSize = 2 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
-  PrepareReferenceData(reference_data, kDataSize);
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(base::span(reference_data).subspan(0, kDefaultSegmentTestSize));
   data->Append(base::span(reference_data)
@@ -153,7 +153,7 @@ TEST(SegmentReaderTest, readPastEndThenRead) {
 TEST(SegmentReaderTest, getAsSkData) {
   const unsigned kDataSize = 4 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
-  PrepareReferenceData(reference_data, kDataSize);
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   for (size_t i = 0; i < 4; ++i) {
     data->Append(
@@ -182,7 +182,7 @@ TEST(SegmentReaderTest, getAsSkData) {
 TEST(SegmentReaderTest, variableSegments) {
   const size_t kDataSize = 3.5 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
-  PrepareReferenceData(reference_data, kDataSize);
+  PrepareReferenceData(reference_data);
 
   scoped_refptr<SegmentReader> segment_reader;
   {

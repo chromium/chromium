@@ -288,7 +288,7 @@ TEST_F(ParkableImageTest, LockAndUnlock) {
 TEST_F(ParkableImageTest, Append) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto pi = ParkableImage::Create();
   ASSERT_EQ(pi->size(), 0u);  // Should be empty when created.
@@ -302,7 +302,7 @@ TEST_F(ParkableImageTest, Append) {
 TEST_F(ParkableImageTest, AppendMultiple) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto pi = ParkableImage::Create();
   ASSERT_EQ(pi->size(), 0u);  // Should be empty when created.
@@ -326,7 +326,7 @@ TEST_F(ParkableImageTest, AppendMultiple) {
 TEST_F(ParkableImageTest, ParkAndUnpark) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   // We have no images currently.
   ASSERT_EQ(0u, ParkableImageManager::Instance().Size());
@@ -370,7 +370,7 @@ TEST_F(ParkableImageTest, ParkAndUnpark) {
 TEST_F(ParkableImageTest, ParkTwiceAndUnpark) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   // We have no images currently.
   ASSERT_EQ(0u, ParkableImageManager::Instance().Size());
@@ -410,7 +410,7 @@ TEST_F(ParkableImageTest, ParkTwiceAndUnpark) {
 TEST_F(ParkableImageTest, ParkAndUnparkSync) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   // We have no images currently.
   ASSERT_EQ(0u, ParkableImageManager::Instance().Size());
@@ -481,7 +481,7 @@ TEST_F(ParkableImageTest, ParkAndUnparkSync) {
 TEST_F(ParkableImageTest, ParkAndUnparkAborted) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   // We have no images currently.
   ASSERT_EQ(0u, ParkableImageManager::Instance().Size());
@@ -555,7 +555,7 @@ TEST_F(ParkableImageTest, ParkAndUnparkAborted) {
 TEST_F(ParkableImageTest, ManagerSimple) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -592,7 +592,7 @@ TEST_F(ParkableImageTest, ManagerSimple) {
 TEST_F(ParkableImageTest, ManagerSmall) {
   const size_t kDataSize = ParkableImageImpl::kMinSizeToPark - 10;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -621,7 +621,7 @@ TEST_F(ParkableImageTest, ManagerSmall) {
 TEST_F(ParkableImageTest, ManagerTwo) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -658,7 +658,7 @@ TEST_F(ParkableImageTest, ManagerTwo) {
 TEST_F(ParkableImageTest, ManagerNonFrozen) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -688,7 +688,7 @@ TEST_F(ParkableImageTest, ManagerNonFrozen) {
 TEST_F(ParkableImageNoParkingTest, Unpark) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto pi = MakeParkableImageForTesting(data);
 
@@ -711,7 +711,7 @@ TEST_F(ParkableImageNoParkingTest, Unpark) {
 TEST_F(ParkableImageTest, ManagerStatistics5min) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto pi = MakeParkableImageForTesting(data);
   pi->Freeze();
@@ -739,7 +739,7 @@ TEST_F(ParkableImageTest, ManagerStatistics5min) {
 TEST_F(ParkableImageNoParkingTest, ManagerStatistics5min) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto pi = MakeParkableImageForTesting(data);
   pi->Freeze();
@@ -764,7 +764,7 @@ TEST_F(ParkableImageNoParkingTest, ManagerStatistics5min) {
 TEST_F(ParkableImageNoParkingTest, ManagerSimple) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto pi = MakeParkableImageForTesting(data);
 
@@ -795,7 +795,7 @@ TEST_F(ParkableImageNoParkingTest, ManagerSimple) {
 TEST_F(ParkableImageTest, ManagerNotUnlocked) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -822,7 +822,7 @@ TEST_F(ParkableImageTest, ManagerNotUnlocked) {
 TEST_F(ParkableImageTest, ManagerRescheduleUnfrozen) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -864,7 +864,7 @@ TEST_F(ParkableImageTest, ManagerRescheduleUnfrozen) {
 TEST_F(ParkableImageTest, DestroyOnSeparateThread) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -912,7 +912,7 @@ TEST_F(ParkableImageTest, FailedWrite) {
 
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   EXPECT_EQ(0u, manager.Size());
 
@@ -934,7 +934,7 @@ TEST_F(ParkableImageTest, FailedWrite) {
 TEST_F(ParkableImageDelayedTest, Simple) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -968,7 +968,7 @@ TEST_F(ParkableImageDelayedTest, Simple) {
 TEST_F(ParkableImageDelayedTest, Read) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto& manager = ParkableImageManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -1004,7 +1004,7 @@ TEST_F(ParkableImageDelayedTest, Read) {
 TEST_F(ParkableImageDelayedTest, ParkAndUnpark) {
   const size_t kDataSize = 3.5 * 4096;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   // We have no images currently.
   ASSERT_EQ(0u, ParkableImageManager::Instance().Size());
@@ -1043,7 +1043,7 @@ TEST_F(ParkableImageWithLimitedDiskCapacityTest, ParkWithLimitedDiskCapacity) {
   constexpr size_t kMB = 1024 * 1024;
   constexpr size_t kDataSize = kMB;
   auto data = base::HeapArray<char>::Uninit(kDataSize);
-  PrepareReferenceData(data.data(), kDataSize);
+  PrepareReferenceData(data);
 
   auto pi = MakeParkableImageForTesting(data);
   pi->Freeze();

@@ -77,7 +77,7 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
 TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
   const size_t kDataSize = 3.5 * 4096;
   char data[kDataSize];
-  PrepareReferenceData(data, kDataSize);
+  PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);
@@ -108,7 +108,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
   const size_t kDataSize = 3.5 * 4096;
   char data[kDataSize];
-  PrepareReferenceData(data, kDataSize);
+  PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);
@@ -140,7 +140,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   const size_t kDataSize = 3.5 * 4096;
   char data[kDataSize];
-  PrepareReferenceData(data, kDataSize);
+  PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);
