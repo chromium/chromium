@@ -10,7 +10,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -38,7 +37,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
     private final ModuleDelegate mModuleDelegate;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Callback<String> mShowSurveyCallback;
+    private final SafetyHubHatsHelper mHatsHelper;
 
     private boolean mHasBeenDismissed;
 
@@ -52,7 +51,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull PrefChangeRegistrar prefChangeRegistrar,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull Callback<String> showSurveyCallback) {
+            @NonNull SafetyHubHatsHelper hatsHelper) {
         mContext = context;
         mProfile = profile;
         mPrefService = prefService;
@@ -62,7 +61,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModuleDelegate = moduleDelegate;
         mPrefChangeRegistrar = prefChangeRegistrar;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mShowSurveyCallback = showSurveyCallback;
+        mHatsHelper = hatsHelper;
     }
 
     void showModule() {
@@ -96,6 +95,9 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 bindCompromisedPasswordsView(magicStackEntry.getDescription());
                 break;
         }
+
+        mHatsHelper.triggerProactiveHatsSurveyWhenCardShown(
+                mTabModelSelector, magicStackEntry.getModuleType());
 
         mModuleDelegate.onDataReady(ModuleType.SAFETY_HUB, mModel);
 
@@ -175,7 +177,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
+                    mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
+                            mTabModelSelector, MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
                     SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
@@ -202,8 +205,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mShowSurveyCallback.onResult(
-                            MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS);
+                    mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
+                            mTabModelSelector, MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS);
                     SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
@@ -230,7 +233,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.SAFE_BROWSING);
+                    mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
+                            mTabModelSelector, MagicStackEntry.ModuleType.SAFE_BROWSING);
                     SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(mContext, SafeBrowsingSettingsFragment.class);
                     recordExternalInteractions(
@@ -260,7 +264,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.PASSWORDS);
+                    mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
+                            mTabModelSelector, MagicStackEntry.ModuleType.PASSWORDS);
                     SafetyHubUtils.showPasswordCheckUi(
                             mContext, mProfile, mModalDialogManagerSupplier);
                     recordExternalInteractions(ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK);

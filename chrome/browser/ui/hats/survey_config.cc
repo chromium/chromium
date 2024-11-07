@@ -588,7 +588,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kSafetyHubAndroidSurvey, kHatsSurveyTriggerSafetyHubAndroid,
       features::kSafetyHubAndroidTriggerId.Get(),
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_bits_data_fields=*/
+      std::vector<std::string>{"Tapped card"},
+      /*product_specific_string_data=*/
       std::vector<std::string>{"Notification module type"});
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 

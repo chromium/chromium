@@ -18,7 +18,8 @@ jboolean JNI_SafetyHubHatsBridge_TriggerHatsSurveyIfEnabled(
     JNIEnv* env,
     Profile* profile,
     const base::android::JavaParamRef<jobject>& jweb_contents_android,
-    std::string& module_type) {
+    std::string& module_type,
+    jboolean has_tapped_card) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents_android);
   HatsService* hats_service =
@@ -28,7 +29,7 @@ jboolean JNI_SafetyHubHatsBridge_TriggerHatsSurveyIfEnabled(
     return hats_service->LaunchDelayedSurveyForWebContents(
         kHatsSurveyTriggerSafetyHubAndroid, web_contents,
         /*timeout_ms=*/0,
-        /*product_specific_bits_data=*/{},
+        /*product_specific_bits_data=*/{{"Tapped card", has_tapped_card}},
         /*product_specific_string_data=*/
         {{"Notification module type", module_type}},
         HatsService::NavigationBehaviour::ALLOW_ANY,
