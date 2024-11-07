@@ -158,8 +158,7 @@ void Platform::InitializeMainThread(
   DCHECK(!g_platform);
   DCHECK(platform);
   g_platform = platform;
-  InitializeMainThreadCommon(platform,
-                             main_thread_scheduler->CreateMainThread());
+  InitializeMainThreadCommon(main_thread_scheduler->CreateMainThread());
 }
 
 void Platform::CreateMainThreadAndInitialize(Platform* platform) {
@@ -167,11 +166,10 @@ void Platform::CreateMainThreadAndInitialize(Platform* platform) {
   DCHECK(platform);
   g_platform = platform;
   InitializeBlink();
-  InitializeMainThreadCommon(platform, scheduler::CreateSimpleMainThread());
+  InitializeMainThreadCommon(scheduler::CreateSimpleMainThread());
 }
 
 void Platform::InitializeMainThreadCommon(
-    Platform* platform,
     std::unique_ptr<MainThread> main_thread) {
   DCHECK(did_initialize_blink_);
   MainThread::SetMainThread(std::move(main_thread));

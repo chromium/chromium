@@ -814,7 +814,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
  private:
   static void InitializeMainThreadCommon(
-      Platform* platform,
       std::unique_ptr<MainThread> main_thread);
 };
 
