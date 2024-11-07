@@ -143,8 +143,8 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
     return;
   }
 
-  content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, top_frame_site, *config_, std::move(callback));
+  ComputeFirstPartySetMetadataInternal(site, top_frame_site,
+                                       std::move(callback));
 }
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
