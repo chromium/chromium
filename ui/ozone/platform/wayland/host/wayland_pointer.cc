@@ -12,6 +12,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
@@ -23,15 +24,11 @@ namespace ui {
 
 namespace {
 
-// TODO(crbug.com/40235357): Remove this method when Compositors other
-// than Exo comply with `wl_pointer.frame`.
-wl::EventDispatchPolicy EventDispatchPolicyForPlatform() {
-  return
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      wl::EventDispatchPolicy::kOnFrame;
-#else
-      wl::EventDispatchPolicy::kImmediate;
-#endif
+// See TODO in //ui/ozone/common/features.cc
+wl::EventDispatchPolicy GetEventDispatchPolicy() {
+  return IsDispatchPointerEventsOnFrameEventEnabled()
+             ? wl::EventDispatchPolicy::kOnFrame
+             : wl::EventDispatchPolicy::kImmediate;
 }
 
 }  // namespace
@@ -87,7 +84,7 @@ void WaylandPointer::OnEnter(void* data,
       window,
       gfx::PointF(static_cast<float>(wl_fixed_to_double(surface_x)),
                   static_cast<float>(wl_fixed_to_double(surface_y))),
-      timestamp, EventDispatchPolicyForPlatform());
+      timestamp, GetEventDispatchPolicy());
 }
 
 // static
@@ -100,9 +97,9 @@ void WaylandPointer::OnLeave(void* data,
   auto* self = static_cast<WaylandPointer*>(data);
 
   self->connection_->serial_tracker().ResetSerial(wl::SerialType::kMouseEnter);
-  self->delegate_->OnPointerFocusChanged(
-      nullptr, self->delegate_->GetPointerLocation(), timestamp,
-      EventDispatchPolicyForPlatform());
+  self->delegate_->OnPointerFocusChanged(nullptr,
+                                         self->delegate_->GetPointerLocation(),
+                                         timestamp, GetEventDispatchPolicy());
 }
 
 // static
@@ -115,7 +112,7 @@ void WaylandPointer::OnMotion(void* data,
 
   self->delegate_->OnPointerMotionEvent(
       gfx::PointF(wl_fixed_to_double(surface_x), wl_fixed_to_double(surface_y)),
-      wl::EventMillisecondsToTimeTicks(time), EventDispatchPolicyForPlatform(),
+      wl::EventMillisecondsToTimeTicks(time), GetEventDispatchPolicy(),
       /*is_synthesized=*/false);
 }
 
@@ -159,7 +156,7 @@ void WaylandPointer::OnButton(void* data,
   }
   self->delegate_->OnPointerButtonEvent(
       type, changed_button, wl::EventMillisecondsToTimeTicks(time),
-      /*window=*/nullptr, EventDispatchPolicyForPlatform(),
+      /*window=*/nullptr, GetEventDispatchPolicy(),
       /*allow_release_of_unpressed_button=*/false, /*is_synthesized=*/false);
 }
 

@@ -40,6 +40,23 @@ BASE_FEATURE(kUseDynamicCursorSize,
              "UseDynamicCursorSize",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(crbug.com/40235357): Remove this and dispatch all ui events on
+// corresponding `wl_pointer.frame` calls when when linux compositors comply
+// with the protocol.
+BASE_FEATURE(kDispatchPointerEventsOnFrameEvent,
+             "DispatchPointerEventsOnFrameEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(crbug.com/40235357): Remove this and dispatch all ui events on
+// corresponding `wl_touch.frame` calls when when linux compositors comply with
+// the protocol. For instance, on Gnome/Wayland, KDE and Weston compositors a
+// wl_touch.up does not come accompanied by a respective wl_touch.frame event.
+// On these scenarios be conservative and always dispatch the events
+// immediately.
+BASE_FEATURE(kDispatchTouchEventsOnFrameEvent,
+             "DispatchTouchEventsOnFrameEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);
 }
@@ -58,6 +75,14 @@ bool IsPrettyPrintDrmModesetConfigLogsEnabled() {
 
 bool IsUseDynamicCursorSizeEnabled() {
   return base::FeatureList::IsEnabled(kUseDynamicCursorSize);
+}
+
+bool IsDispatchPointerEventsOnFrameEventEnabled() {
+  return base::FeatureList::IsEnabled(kDispatchPointerEventsOnFrameEvent);
+}
+
+bool IsDispatchTouchEventsOnFrameEventEnabled() {
+  return base::FeatureList::IsEnabled(kDispatchTouchEventsOnFrameEvent);
 }
 
 }  // namespace ui

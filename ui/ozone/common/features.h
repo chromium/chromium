@@ -13,12 +13,16 @@ BASE_DECLARE_FEATURE(kWaylandOverlayDelegation);
 BASE_DECLARE_FEATURE(kWaylandFractionalScaleV1);
 BASE_DECLARE_FEATURE(kPrettyPrintDrmModesetConfigLogs);
 BASE_DECLARE_FEATURE(kUseDynamicCursorSize);
+BASE_DECLARE_FEATURE(kDispatchPointerEventsOnFrameEvent);
+BASE_DECLARE_FEATURE(kDispatchTouchEventsOnFrameEvent);
 
 bool IsWaylandOverlayDelegationEnabled();
 bool IsWaylandFractionalScaleV1Enabled();
 bool IsWaylandXdgToplevelDragEnabled();
 bool IsPrettyPrintDrmModesetConfigLogsEnabled();
 bool IsUseDynamicCursorSizeEnabled();
+bool IsDispatchPointerEventsOnFrameEventEnabled();
+bool IsDispatchTouchEventsOnFrameEventEnabled();
 
 }  // namespace ui
 
