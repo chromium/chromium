@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isChromeOS, isLacros, isLinux, isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {getFavicon, getFaviconForPageURL, getFileIconUrl} from 'chrome://resources/js/icon.js';
+import {isChromeOS, isLinux, isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('IconTest', function() {
@@ -21,7 +21,7 @@ suite('IconTest', function() {
           encodeURIComponent(url) + '&allowGoogleServerFallback=0") ' +
           window.devicePixelRatio + 'x)';
 
-      const isDesktop = isMac || isChromeOS || isWindows || isLinux || isLacros;
+      const isDesktop = isMac || isChromeOS || isWindows || isLinux;
       return isDesktop ? expectedDesktop : expectedOther;
     }
 
@@ -54,7 +54,7 @@ suite('IconTest', function() {
         encodeURIComponent('http://foo.com/foo.ico') + '") ' +
         window.devicePixelRatio + 'x)';
 
-    const isDesktop = isMac || isChromeOS || isWindows || isLinux || isLacros;
+    const isDesktop = isMac || isChromeOS || isWindows || isLinux;
     const expected = isDesktop ? expectedDesktop : expectedOther;
     assertEquals(expected, getFavicon(url));
   });
