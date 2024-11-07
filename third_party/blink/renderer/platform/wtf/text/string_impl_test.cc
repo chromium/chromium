@@ -78,34 +78,33 @@ TEST(StringImplTest, LowerASCII) {
   EXPECT_FALSE(Equal(StringImpl::Create("A\xE1").get(),
                      StringImpl::Create("A\xC1")->LowerASCII().get()));
 
-  static const UChar kTest[5] = {0x006c, 0x0069, 0x006e, 0x006b, 0};  // link
-  static const UChar kTestCapitalized[5] = {0x004c, 0x0049, 0x004e, 0x004b,
-                                            0};  // LINK
+  static const UChar kTest[4] = {0x006c, 0x0069, 0x006e, 0x006b};  // link
+  static const UChar kTestCapitalized[4] = {0x004c, 0x0049, 0x004e,
+                                            0x004b};  // LINK
 
-  scoped_refptr<StringImpl> test_string_impl16 = StringImpl::Create(kTest, 4);
+  scoped_refptr<StringImpl> test_string_impl16 = StringImpl::Create(kTest);
   EXPECT_FALSE(test_string_impl16->Is8Bit());
 
   EXPECT_TRUE(Equal(test_string_impl16.get(),
-                    StringImpl::Create(kTest, 4)->LowerASCII().get()));
-  EXPECT_TRUE(
-      Equal(test_string_impl16.get(),
-            StringImpl::Create(kTestCapitalized, 4)->LowerASCII().get()));
+                    StringImpl::Create(kTest)->LowerASCII().get()));
+  EXPECT_TRUE(Equal(test_string_impl16.get(),
+                    StringImpl::Create(kTestCapitalized)->LowerASCII().get()));
 
-  static const UChar kTestWithNonASCII[3] = {0x0061, 0x00e1, 0};  // a\xE1
-  static const UChar kTestWithNonASCIIComparison[3] = {0x0061, 0x00c1,
-                                                       0};  // a\xC1
-  static const UChar kTestWithNonASCIICapitalized[3] = {0x0041, 0x00e1,
-                                                        0};  // A\xE1
+  static const UChar kTestWithNonASCII[2] = {0x0061, 0x00e1};  // a\xE1
+  static const UChar kTestWithNonASCIIComparison[2] = {0x0061,
+                                                       0x00c1};  // a\xC1
+  static const UChar kTestWithNonASCIICapitalized[2] = {0x0041,
+                                                        0x00e1};  // A\xE1
 
   // Make sure we support scoped_refptr<const StringImpl>.
   scoped_refptr<const StringImpl> const_ref = test_string_impl->IsolatedCopy();
   DCHECK(const_ref->HasOneRef());
   EXPECT_TRUE(Equal(
-      StringImpl::Create(kTestWithNonASCII, 2).get(),
-      StringImpl::Create(kTestWithNonASCIICapitalized, 2)->LowerASCII().get()));
+      StringImpl::Create(kTestWithNonASCII).get(),
+      StringImpl::Create(kTestWithNonASCIICapitalized)->LowerASCII().get()));
   EXPECT_FALSE(Equal(
-      StringImpl::Create(kTestWithNonASCII, 2).get(),
-      StringImpl::Create(kTestWithNonASCIIComparison, 2)->LowerASCII().get()));
+      StringImpl::Create(kTestWithNonASCII).get(),
+      StringImpl::Create(kTestWithNonASCIIComparison)->LowerASCII().get()));
 }
 
 TEST(StringImplTest, UpperASCII) {
@@ -136,35 +135,33 @@ TEST(StringImplTest, UpperASCII) {
   EXPECT_FALSE(Equal(StringImpl::Create("A\xE1").get(),
                      StringImpl::Create("A\xC1")->UpperASCII().get()));
 
-  static const UChar kTest[5] = {0x006c, 0x0069, 0x006e, 0x006b, 0};  // link
-  static const UChar kTestCapitalized[5] = {0x004c, 0x0049, 0x004e, 0x004b,
-                                            0};  // LINK
+  static const UChar kTest[4] = {0x006c, 0x0069, 0x006e, 0x006b};  // link
+  static const UChar kTestCapitalized[4] = {0x004c, 0x0049, 0x004e,
+                                            0x004b};  // LINK
 
   scoped_refptr<StringImpl> test_string_impl16 =
-      StringImpl::Create(kTestCapitalized, 4);
+      StringImpl::Create(kTestCapitalized);
   EXPECT_FALSE(test_string_impl16->Is8Bit());
 
   EXPECT_TRUE(Equal(test_string_impl16.get(),
-                    StringImpl::Create(kTest, 4)->UpperASCII().get()));
-  EXPECT_TRUE(
-      Equal(test_string_impl16.get(),
-            StringImpl::Create(kTestCapitalized, 4)->UpperASCII().get()));
+                    StringImpl::Create(kTest)->UpperASCII().get()));
+  EXPECT_TRUE(Equal(test_string_impl16.get(),
+                    StringImpl::Create(kTestCapitalized)->UpperASCII().get()));
 
-  static const UChar kTestWithNonASCII[3] = {0x0061, 0x00e1, 0};  // a\xE1
-  static const UChar kTestWithNonASCIIComparison[3] = {0x0061, 0x00c1,
-                                                       0};  // a\xC1
-  static const UChar kTestWithNonASCIICapitalized[3] = {0x0041, 0x00e1,
-                                                        0};  // A\xE1
+  static const UChar kTestWithNonASCII[2] = {0x0061, 0x00e1};  // a\xE1
+  static const UChar kTestWithNonASCIIComparison[2] = {0x0061,
+                                                       0x00c1};  // a\xC1
+  static const UChar kTestWithNonASCIICapitalized[2] = {0x0041,
+                                                        0x00e1};  // A\xE1
 
   // Make sure we support scoped_refptr<const StringImpl>.
   scoped_refptr<const StringImpl> const_ref = test_string_impl->IsolatedCopy();
   DCHECK(const_ref->HasOneRef());
-  EXPECT_TRUE(
-      Equal(StringImpl::Create(kTestWithNonASCIICapitalized, 2).get(),
-            StringImpl::Create(kTestWithNonASCII, 2)->UpperASCII().get()));
+  EXPECT_TRUE(Equal(StringImpl::Create(kTestWithNonASCIICapitalized).get(),
+                    StringImpl::Create(kTestWithNonASCII)->UpperASCII().get()));
   EXPECT_FALSE(Equal(
-      StringImpl::Create(kTestWithNonASCIICapitalized, 2).get(),
-      StringImpl::Create(kTestWithNonASCIIComparison, 2)->UpperASCII().get()));
+      StringImpl::Create(kTestWithNonASCIICapitalized).get(),
+      StringImpl::Create(kTestWithNonASCIIComparison)->UpperASCII().get()));
 }
 
 }  // namespace WTF

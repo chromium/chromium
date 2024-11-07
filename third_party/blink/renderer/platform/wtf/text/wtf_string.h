@@ -618,8 +618,7 @@ inline void swap(String& a, String& b) {
 
 template <wtf_size_t inlineCapacity>
 String::String(const Vector<UChar, inlineCapacity>& vector)
-    : impl_(vector.size() ? StringImpl::Create(vector.data(), vector.size())
-                          : StringImpl::empty_) {}
+    : impl_(vector.size() ? StringImpl::Create(vector) : StringImpl::empty_) {}
 
 template <>
 inline const LChar* String::GetCharacters<LChar>() const {

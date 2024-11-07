@@ -62,13 +62,13 @@ String::String(base::span<const UChar> utf16_data)
     : impl_(utf16_data.data() ? StringImpl::Create(utf16_data) : nullptr) {}
 
 String::String(const UChar* characters, unsigned length)
-    : impl_(characters ? StringImpl::Create(characters, length) : nullptr) {}
+    : impl_(characters ? StringImpl::Create({characters, length}) : nullptr) {}
 
 // Construct a string with UTF-16 data, from a null-terminated source.
 String::String(const UChar* str) {
   if (!str)
     return;
-  impl_ = StringImpl::Create(str, LengthOfNullTerminatedString(str));
+  impl_ = StringImpl::Create({str, LengthOfNullTerminatedString(str)});
 }
 
 // Construct a string with latin1 data.
@@ -77,8 +77,8 @@ String::String(base::span<const LChar> latin1_data)
 
 String::String(const char* characters, unsigned length)
     : impl_(characters
-                ? StringImpl::Create(reinterpret_cast<const LChar*>(characters),
-                                     length)
+                ? StringImpl::Create(
+                      {reinterpret_cast<const LChar*>(characters), length})
                 : nullptr) {}
 
 int CodeUnitCompare(const String& a, const String& b) {
@@ -484,7 +484,7 @@ String String::FromUTF8(const uint8_t* string_start, size_t string_length) {
 
   ASCIIStringAttributes attributes = CharacterAttributes(string_start, length);
   if (attributes.contains_only_ascii)
-    return StringImpl::Create(string_start, length, attributes);
+    return StringImpl::Create({string_start, length}, attributes);
 
   Vector<UChar, 1024> buffer(length);
   UChar* buffer_start = buffer.data();
@@ -497,10 +497,7 @@ String String::FromUTF8(const uint8_t* string_start, size_t string_length) {
           buffer_current + buffer.size()) != unicode::kConversionOK)
     return String();
 
-  unsigned utf16_length =
-      static_cast<wtf_size_t>(buffer_current - buffer_start);
-  DCHECK_LT(utf16_length, length);
-  return StringImpl::Create(buffer_start, utf16_length);
+  return StringImpl::Create(base::span(buffer_start, buffer_current));
 }
 
 String String::FromUTF8(const char* s) {

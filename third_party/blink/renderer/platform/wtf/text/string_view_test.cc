@@ -22,7 +22,7 @@ const LChar* const kChars8 = reinterpret_cast<const LChar*>(kChars);
 const UChar* const kChars16 = reinterpret_cast<const UChar*>(kCharsU);
 
 TEST(StringViewTest, ConstructionStringImpl8) {
-  scoped_refptr<StringImpl> impl8_bit = StringImpl::Create(kChars8, 5);
+  scoped_refptr<StringImpl> impl8_bit = StringImpl::Create({kChars8, 5u});
 
   // StringView(StringImpl*);
   ASSERT_TRUE(StringView(impl8_bit.get()).Is8Bit());
@@ -52,7 +52,7 @@ TEST(StringViewTest, ConstructionStringImpl8) {
 }
 
 TEST(StringViewTest, ConstructionStringImpl16) {
-  scoped_refptr<StringImpl> impl16_bit = StringImpl::Create(kChars16, 5);
+  scoped_refptr<StringImpl> impl16_bit = StringImpl::Create({kChars16, 5u});
 
   // StringView(StringImpl*);
   ASSERT_FALSE(StringView(impl16_bit.get()).Is8Bit());
@@ -82,7 +82,7 @@ TEST(StringViewTest, ConstructionStringImpl16) {
 }
 
 TEST(StringViewTest, ConstructionStringImplRef8) {
-  scoped_refptr<StringImpl> impl8_bit = StringImpl::Create(kChars8, 5);
+  scoped_refptr<StringImpl> impl8_bit = StringImpl::Create({kChars8, 5u});
 
   // StringView(StringImpl&);
   ASSERT_TRUE(StringView(*impl8_bit).Is8Bit());
@@ -111,7 +111,7 @@ TEST(StringViewTest, ConstructionStringImplRef8) {
 }
 
 TEST(StringViewTest, ConstructionStringImplRef16) {
-  scoped_refptr<StringImpl> impl16_bit = StringImpl::Create(kChars16, 5);
+  scoped_refptr<StringImpl> impl16_bit = StringImpl::Create({kChars16, 5u});
 
   // StringView(StringImpl&);
   ASSERT_FALSE(StringView(*impl16_bit).Is8Bit());
@@ -140,7 +140,7 @@ TEST(StringViewTest, ConstructionStringImplRef16) {
 }
 
 TEST(StringViewTest, ConstructionString8) {
-  String string8_bit = String(StringImpl::Create(kChars8, 5));
+  String string8_bit = String(StringImpl::Create({kChars8, 5u}));
 
   // StringView(const String&);
   ASSERT_TRUE(StringView(string8_bit).Is8Bit());
@@ -169,7 +169,7 @@ TEST(StringViewTest, ConstructionString8) {
 }
 
 TEST(StringViewTest, ConstructionString16) {
-  String string16_bit = String(StringImpl::Create(kChars16, 5));
+  String string16_bit = String(StringImpl::Create({kChars16, 5u}));
 
   // StringView(const String&);
   ASSERT_FALSE(StringView(string16_bit).Is8Bit());
@@ -199,7 +199,7 @@ TEST(StringViewTest, ConstructionString16) {
 }
 
 TEST(StringViewTest, ConstructionAtomicString8) {
-  AtomicString atom8_bit = AtomicString(StringImpl::Create(kChars8, 5));
+  AtomicString atom8_bit = AtomicString(StringImpl::Create({kChars8, 5u}));
 
   // StringView(const AtomicString&);
   ASSERT_TRUE(StringView(atom8_bit).Is8Bit());
@@ -228,7 +228,7 @@ TEST(StringViewTest, ConstructionAtomicString8) {
 }
 
 TEST(StringViewTest, ConstructionAtomicString16) {
-  AtomicString atom16_bit = AtomicString(StringImpl::Create(kChars16, 5));
+  AtomicString atom16_bit = AtomicString(StringImpl::Create({kChars16, 5u}));
 
   // StringView(const AtomicString&);
   ASSERT_FALSE(StringView(atom16_bit).Is8Bit());

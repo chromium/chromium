@@ -161,18 +161,15 @@ class WTF_EXPORT StringImpl {
 
   static scoped_refptr<StringImpl> Create(base::span<const UChar>);
   static scoped_refptr<StringImpl> Create(base::span<const LChar>);
-  static scoped_refptr<StringImpl> Create(const UChar*, wtf_size_t length);
-  static scoped_refptr<StringImpl> Create(const LChar*, wtf_size_t length);
   static scoped_refptr<StringImpl> Create(
-      const LChar*,
-      wtf_size_t length,
+      base::span<const LChar>,
       ASCIIStringAttributes ascii_attributes);
   static scoped_refptr<StringImpl> Create8BitIfPossible(
       base::span<const UChar>);
 
-  ALWAYS_INLINE static scoped_refptr<StringImpl> Create(const char* s,
-                                                        wtf_size_t length) {
-    return Create(reinterpret_cast<const LChar*>(s), length);
+  ALWAYS_INLINE static scoped_refptr<StringImpl> Create(
+      base::span<const char> s) {
+    return Create(base::as_bytes(s));
   }
   static scoped_refptr<StringImpl> Create(const LChar*);
   ALWAYS_INLINE static scoped_refptr<StringImpl> Create(const char* s) {
@@ -959,8 +956,8 @@ static inline int CodeUnitCompare(const StringImpl* string1,
 
 inline scoped_refptr<StringImpl> StringImpl::IsolatedCopy() const {
   if (Is8Bit())
-    return Create(Characters8(), length_);
-  return Create(Characters16(), length_);
+    return Create(Span8());
+  return Create(Span16());
 }
 
 template <typename BufferType>
