@@ -222,6 +222,8 @@ public class ToolbarManager
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final ObservableSupplierImpl<Boolean> mIsNtpShowingSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mFindInPageShowingSupplier =
+            new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Boolean> mIsTabSwitcherShowingSupplier =
             new ObservableSupplierImpl<>();
     private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
@@ -1234,6 +1236,7 @@ public class ToolbarManager
                     @Override
                     public void onFindToolbarShown() {
                         mToolbar.handleFindLocationBarStateChange(true);
+                        mFindInPageShowingSupplier.set(true);
                         if (mControlsVisibilityDelegate != null) {
                             mFullscreenFindInPageToken =
                                     mControlsVisibilityDelegate
@@ -1245,6 +1248,7 @@ public class ToolbarManager
                     @Override
                     public void onFindToolbarHidden() {
                         mToolbar.handleFindLocationBarStateChange(false);
+                        mFindInPageShowingSupplier.set(false);
                         if (mControlsVisibilityDelegate != null) {
                             mControlsVisibilityDelegate.releasePersistentShowingToken(
                                     mFullscreenFindInPageToken);
@@ -1380,6 +1384,7 @@ public class ToolbarManager
                 mIsTabSwitcherShowingSupplier,
                 mOmniboxFocusStateSupplier,
                 mFormFieldFocusedSupplier,
+                mFindInPageShowingSupplier,
                 mControlContainer,
                 mBottomControlsStacker,
                 mBottomToolbarControlsOffsetSupplier,

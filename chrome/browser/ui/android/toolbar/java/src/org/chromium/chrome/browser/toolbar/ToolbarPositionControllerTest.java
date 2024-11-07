@@ -207,9 +207,11 @@ public class ToolbarPositionControllerTest {
     @Mock private View mProgressBarContainer;
 
     private Context mContext;
-    private ObservableSupplierImpl<Boolean> mIsNtpShowing = new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mIsTabSwitcherShowing = new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mIsOmniboxFocused = new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mIsNtpShowing = new ObservableSupplierImpl<>(false);
+    private ObservableSupplierImpl<Boolean> mIsTabSwitcherShowing = new ObservableSupplierImpl<>(false);
+    private ObservableSupplierImpl<Boolean> mIsOmniboxFocused = new ObservableSupplierImpl<>(false);
+    private ObservableSupplierImpl<Boolean> mIsFindInPageShowing =
+            new ObservableSupplierImpl<>(false);
     private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private BottomControlsStacker mBottomControlsStacker;
 
@@ -232,9 +234,6 @@ public class ToolbarPositionControllerTest {
         mProgressBarLayoutParams.gravity = Gravity.TOP;
         mProgressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
         mProgressBarLayoutParams.setAnchorId(CONTROL_CONTAINER_ID);
-        mIsNtpShowing.set(false);
-        mIsTabSwitcherShowing.set(false);
-        mIsOmniboxFocused.set(false);
         mController =
                 new ToolbarPositionController(
                         mBrowserControlsSizer,
@@ -243,6 +242,7 @@ public class ToolbarPositionControllerTest {
                         mIsTabSwitcherShowing,
                         mIsOmniboxFocused,
                         mIsFormFieldFocused,
+                        mIsFindInPageShowing,
                         mControlContainer,
                         mBottomControlsStacker,
                         mBottomToolbarOffsetSupplier,
@@ -375,6 +375,23 @@ public class ToolbarPositionControllerTest {
         assertControlsAtTop();
 
         mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
+        assertControlsAtBottom();
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testUpdatePositionChangesWithFindInPage() {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
+                .commit();
+        assertControlsAtBottom();
+
+        mIsFindInPageShowing.set(true);
+        assertControlsAtTop();
+
+        mIsFindInPageShowing.set(false);
         assertControlsAtBottom();
     }
 

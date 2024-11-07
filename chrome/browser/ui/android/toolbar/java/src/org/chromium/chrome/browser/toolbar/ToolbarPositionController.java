@@ -38,6 +38,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final ObservableSupplier<Boolean> mIsTabSwitcherShowingSupplier;
     private final ObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
     private final ObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
+    @NonNull private final ObservableSupplier<Boolean> mIsFindInPageShowingSupplier;
     private final ControlContainer mControlContainer;
     private final BottomControlsStacker mBottomControlsStacker;
     private final ObservableSupplierImpl<Integer> mBrowserControlsOffsetSupplier;
@@ -58,6 +59,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      *     non-null value immediately available.
      * @param isFormFieldFocusedSupplier Supplier of the current form field focus state for the
      *     active WebContents. Must have a non-null value immediately available.
+     * @param isFindInPageShowingSupplier Supplier telling us if the "find in page" UI is showing.
      * @param controlContainer The control container for the current context.
      * @param bottomControlsStacker {@link BottomControlsStacker} used to harmonize the position of
      *     the bottom toolbar with other bottom-anchored UI.
@@ -69,6 +71,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             @NonNull ObservableSupplier<Boolean> isTabSwitcherShowingSupplier,
             @NonNull ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
             @NonNull ObservableSupplier<Boolean> isFormFieldFocusedSupplier,
+            @NonNull ObservableSupplier<Boolean> isFindInPageShowingSupplier,
             @NonNull ControlContainer controlContainer,
             @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull ObservableSupplierImpl<Integer> browserControlsOffsetSupplier,
@@ -79,6 +82,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsTabSwitcherShowingSupplier = isTabSwitcherShowingSupplier;
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
+        mIsFindInPageShowingSupplier = isFindInPageShowingSupplier;
         mControlContainer = controlContainer;
         mBottomControlsStacker = bottomControlsStacker;
         mBrowserControlsOffsetSupplier = browserControlsOffsetSupplier;
@@ -89,6 +93,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsTabSwitcherShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mIsOmniboxFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
         mIsFormFieldFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
+        mIsFindInPageShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         mLayerVisibility = LayerVisibility.HIDDEN;
@@ -200,6 +205,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean tabSwitcherShowing = mIsTabSwitcherShowingSupplier.get();
         boolean isOmniboxFocused = mIsOmniboxFocusedSupplier.get();
         boolean isFormFieldFocused = mIsFormFieldFocusedSupplier.get();
+        boolean isFindInPageShowing = mIsFindInPageShowingSupplier.get();
         boolean doesUserPreferTopToolbar =
                 mSharedPreferences.getBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
 
@@ -208,6 +214,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 || tabSwitcherShowing
                 || isOmniboxFocused
                 || isFormFieldFocused
+                || isFindInPageShowing
                 || doesUserPreferTopToolbar) {
             newControlsPosition = ControlsPosition.TOP;
         } else {
