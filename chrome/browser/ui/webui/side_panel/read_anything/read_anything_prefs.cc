@@ -70,7 +70,7 @@ void RegisterReadAnythingProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterBooleanPref(
-      prefs::kAccessibilityReadAnythingImagesEnabled, true,
+      prefs::kAccessibilityReadAnythingImagesEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
