@@ -16,8 +16,10 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,7 +59,8 @@ public class ReorderDelegate {
     private boolean mInitialized;
 
     // Reorder State.
-    private boolean mInReorderMode;
+    private final ObservableSupplierImpl<Boolean> mInReorderModeSupplier =
+            new ObservableSupplierImpl<>(/* initialValue= */ false);
     private boolean mReorderingForTabDrop;
 
     /** The last x-position we processed for reorder. */
@@ -77,11 +80,11 @@ public class ReorderDelegate {
     // ============================================================================================
 
     boolean getInReorderMode() {
-        return mInReorderMode;
+        return Boolean.TRUE.equals(mInReorderModeSupplier.get());
     }
 
     void setInReorderMode(boolean inReorderMode) {
-        mInReorderMode = inReorderMode;
+        mInReorderModeSupplier.set(inReorderMode);
     }
 
     boolean getReorderingForTabDrop() {
@@ -160,7 +163,7 @@ public class ReorderDelegate {
 
         // 1. Set reorder mode to true before selecting this tab to prevent unnecessary triggering
         // of #bringSelectedTabToVisibleArea for edge tabs when the tab strip is full.
-        mInReorderMode = true;
+        setInReorderMode(true);
 
         // 2. Select this tab so that it is always in the foreground.
         TabModelUtils.setIndex(
@@ -190,14 +193,15 @@ public class ReorderDelegate {
      * @param stripTabs The list of {@link StripLayoutTab}.
      */
     void stopReorderMode(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
-        assert mInReorderMode : "Tried to stop reorder mode, without first starting reorder mode.";
+        assert getInReorderMode()
+                : "Tried to stop reorder mode, without first starting reorder mode.";
         ArrayList<Animator> animationList = null;
         // TODO(crbug.com/372546700): Clean-up when mAnimationsDisabledForTesting is removed.
         if (!mAnimationsDisabledForTesting) animationList = new ArrayList<>();
 
         // 1. Reset the state variables.
         mReorderScrollState = REORDER_SCROLL_NONE;
-        mInReorderMode = false;
+        setInReorderMode(false);
 
         // 2. Reset the interacting view (clear any offset and reattach the container).
         mAnimationHost.finishAnimationsAndPushTabUpdates();
@@ -235,6 +239,14 @@ public class ReorderDelegate {
 
         // 6. Start animations.
         mAnimationHost.startAnimations(animationList, /* listener= */ null);
+    }
+
+    void addInReorderModeObserver(Callback<Boolean> observer) {
+        mInReorderModeSupplier.addObserver(observer);
+    }
+
+    void removeInReorderModeObserver(Callback<Boolean> observer) {
+        mInReorderModeSupplier.removeObserver(observer);
     }
 
     // ============================================================================================
@@ -356,7 +368,7 @@ public class ReorderDelegate {
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
             @Nullable ArrayList<Animator> animationList) {
-        assert !mInReorderMode;
+        assert !getInReorderMode();
 
         // TODO(crbug.com/372546700): Investigate only resetting first and last margin, as we now
         //  don't use trailing margins to demarcate tab group bounds.

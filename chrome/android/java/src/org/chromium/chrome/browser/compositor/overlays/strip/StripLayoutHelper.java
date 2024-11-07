@@ -48,6 +48,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
@@ -339,6 +340,7 @@ public class StripLayoutHelper
     private final StripStacker mStripStacker = new ScrollingStripStacker();
     private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
     private final ReorderDelegate mReorderDelegate = new ReorderDelegate();
+    private final Callback<Boolean> mInReorderModeObserver = this::onInReorderModeChanged;
 
     // Common state used for animations on the strip triggered by independent actions including and
     // not limited to tab closure, tab creation/selection, and tab reordering. Not intended to be
@@ -639,6 +641,7 @@ public class StripLayoutHelper
                 new ActionConfirmationDelegate(
                         actionConfirmationManager, mToolbarContainerView, mIncognito);
         mGroupIdToHideSupplier.addObserver((newIdToHide) -> rebuildStripViews());
+        mReorderDelegate.addInReorderModeObserver(mInReorderModeObserver);
 
         mIsFirstLayoutPass = true;
     }
@@ -646,6 +649,7 @@ public class StripLayoutHelper
     /** Cleans up internal state. */
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
+        mReorderDelegate.removeInReorderModeObserver(mInReorderModeObserver);
         if (mTabHoverCardView != null) {
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
@@ -2331,7 +2335,9 @@ public class StripLayoutHelper
      */
     public void onUpOrCancel(long time) {
         // 1. Stop any reordering that is happening.
-        if (mReorderDelegate.getInReorderMode()) stopReorderMode();
+        if (mReorderDelegate.getInReorderMode()) {
+            mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
+        }
 
         // 2. Reset state
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
@@ -3672,7 +3678,6 @@ public class StripLayoutHelper
                 return;
             }
 
-            setCompositorButtonsVisible(false);
             mReorderDelegate.startReorderTab(mStripTabs, interactingTab, getEffectiveTabWidth(), x);
         }
 
@@ -3694,7 +3699,6 @@ public class StripLayoutHelper
         mReorderDelegate.setInReorderMode(true);
         mReorderDelegate.setReorderingForTabDrop(true);
         mReorderDelegate.prepareStripForReorder(mStripTabs, getEffectiveTabWidth(), startX);
-        if (mReorderDelegate.getInReorderMode()) setCompositorButtonsVisible(false);
 
         // 4. Add a tab group margin to the "interacting" tab to indicate where the tab will be
         // inserted should the drag be dropped.
@@ -3707,9 +3711,7 @@ public class StripLayoutHelper
         mUpdateHost.requestUpdate();
     }
 
-    @VisibleForTesting
-    void stopReorderMode() {
-        setCompositorButtonsVisible(true);
+    void stopReorderModeForTesting() {
         mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
     }
 
@@ -3746,6 +3748,10 @@ public class StripLayoutHelper
         }
     }
 
+    private void onInReorderModeChanged(boolean inReorderMode) {
+        setCompositorButtonsVisible(!inReorderMode);
+    }
+
     /**
      * This method checks whether or not interacting tab has met the conditions to be moved out of
      * its tab group. If so, it moves tab out of group and returns the new index for the interacting
@@ -3769,7 +3775,9 @@ public class StripLayoutHelper
                     /* tabClosing= */ false,
                     () -> mReorderDelegate.moveTabOutOfGroupInDirection(tabId, towardEnd));
             // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
-            if (!mActionConfirmationDelegate.isTabRemoveDialogSkipped()) stopReorderMode();
+            if (!mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
+                mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
+            }
         } else {
             mReorderDelegate.moveTabOutOfGroupInDirection(tabId, towardEnd);
         }
