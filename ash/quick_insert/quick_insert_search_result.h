@@ -241,9 +241,12 @@ struct ASH_EXPORT QuickInsertEditorResult {
 };
 
 struct ASH_EXPORT QuickInsertLobsterResult {
+  enum class Mode { kNoSelection, kWithSelection };
+
+  Mode mode;
   std::u16string display_name;
 
-  QuickInsertLobsterResult(std::u16string display_name);
+  QuickInsertLobsterResult(Mode mode, std::u16string display_name);
   QuickInsertLobsterResult(const QuickInsertLobsterResult&);
   QuickInsertLobsterResult& operator=(const QuickInsertLobsterResult&);
   ~QuickInsertLobsterResult();

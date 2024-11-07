@@ -308,7 +308,8 @@ void QuickInsertClientImpl::StartCrosSearch(
   switch (*category) {
     case ash::QuickInsertCategory::kEditorWrite:
     case ash::QuickInsertCategory::kEditorRewrite:
-    case ash::QuickInsertCategory::kLobster:
+    case ash::QuickInsertCategory::kLobsterWithNoSelectedText:
+    case ash::QuickInsertCategory::kLobsterWithSelectedText:
     case ash::QuickInsertCategory::kEmojisGifs:
     case ash::QuickInsertCategory::kEmojis:
     case ash::QuickInsertCategory::kClipboard:
@@ -585,7 +586,8 @@ QuickInsertClientImpl::CreateSearchProviderForCategory(
   switch (category) {
     case ash::QuickInsertCategory::kEditorWrite:
     case ash::QuickInsertCategory::kEditorRewrite:
-    case ash::QuickInsertCategory::kLobster:
+    case ash::QuickInsertCategory::kLobsterWithNoSelectedText:
+    case ash::QuickInsertCategory::kLobsterWithSelectedText:
     case ash::QuickInsertCategory::kEmojisGifs:
     case ash::QuickInsertCategory::kEmojis:
     case ash::QuickInsertCategory::kClipboard:

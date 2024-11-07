@@ -45,7 +45,8 @@ TEST(QuickInsertModelTest,
   EXPECT_THAT(
       model.GetAvailableCategories(),
       ElementsAre(
-          QuickInsertCategory::kEditorWrite, QuickInsertCategory::kLobster,
+          QuickInsertCategory::kEditorWrite,
+          QuickInsertCategory::kLobsterWithNoSelectedText,
           QuickInsertCategory::kLinks, QuickInsertCategory::kEmojis,
           QuickInsertCategory::kClipboard, QuickInsertCategory::kDriveFiles,
           QuickInsertCategory::kLocalFiles, QuickInsertCategory::kDatesTimes,
@@ -63,7 +64,7 @@ TEST(QuickInsertModelTest,
                          QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(model.GetAvailableCategories(),
               ElementsAre(QuickInsertCategory::kEditorRewrite,
-                          QuickInsertCategory::kLobster));
+                          QuickInsertCategory::kLobsterWithSelectedText));
 }
 
 TEST(QuickInsertModelTest, AvailableCategoriesContainsEditorWriteWhenEnabled) {
@@ -121,7 +122,7 @@ TEST(QuickInsertModelTest, AvailableCategoriesContainsLobsterWhenEnabled) {
                          QuickInsertModel::EditorStatus::kDisabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
   EXPECT_THAT(model.GetAvailableCategories(),
-              Contains(QuickInsertCategory::kLobster));
+              Contains(QuickInsertCategory::kLobsterWithNoSelectedText));
 }
 
 TEST(QuickInsertModelTest, AvailableCategoriesOmitsLobsterWriteWhenDisabled) {
@@ -132,7 +133,9 @@ TEST(QuickInsertModelTest, AvailableCategoriesOmitsLobsterWriteWhenDisabled) {
                          QuickInsertModel::EditorStatus::kDisabled,
                          QuickInsertModel::LobsterStatus::kDisabled);
   EXPECT_THAT(model.GetAvailableCategories(),
-              Not(Contains(QuickInsertCategory::kLobster)));
+              Not(Contains(QuickInsertCategory::kLobsterWithNoSelectedText)));
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Not(Contains(QuickInsertCategory::kLobsterWithSelectedText)));
 }
 
 TEST(QuickInsertModelTest,

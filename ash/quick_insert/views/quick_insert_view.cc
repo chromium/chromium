@@ -243,7 +243,8 @@ std::u16string GetNoResultsFoundDescription(QuickInsertCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT);
     case QuickInsertCategory::kEditorWrite:
     case QuickInsertCategory::kEditorRewrite:
-    case QuickInsertCategory::kLobster:
+    case QuickInsertCategory::kLobsterWithNoSelectedText:
+    case QuickInsertCategory::kLobsterWithSelectedText:
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       NOTREACHED_NORETURN();
@@ -756,7 +757,8 @@ void QuickInsertView::SelectCategoryWithQuery(QuickInsertCategory category,
     return;
   }
 
-  if (category == QuickInsertCategory::kLobster) {
+  if (category == QuickInsertCategory::kLobsterWithNoSelectedText ||
+      category == QuickInsertCategory::kLobsterWithSelectedText) {
     if (auto* widget = GetWidget()) {
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }

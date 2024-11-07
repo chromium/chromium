@@ -90,7 +90,7 @@ std::vector<QuickInsertCategory> QuickInsertModel::GetAvailableCategories()
       }
 
       if (lobster_status_ == LobsterStatus::kEnabled) {
-        categories.push_back(QuickInsertCategory::kLobster);
+        categories.push_back(QuickInsertCategory::kLobsterWithSelectedText);
       }
       return categories;
     }
@@ -101,7 +101,7 @@ std::vector<QuickInsertCategory> QuickInsertModel::GetAvailableCategories()
       }
 
       if (lobster_status_ == LobsterStatus::kEnabled) {
-        categories.push_back(QuickInsertCategory::kLobster);
+        categories.push_back(QuickInsertCategory::kLobsterWithNoSelectedText);
       }
 
       categories.push_back(QuickInsertCategory::kLinks);

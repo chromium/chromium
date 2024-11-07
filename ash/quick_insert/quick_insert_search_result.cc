@@ -231,8 +231,9 @@ QuickInsertEditorResult::~QuickInsertEditorResult() = default;
 bool QuickInsertEditorResult::operator==(const QuickInsertEditorResult&) const =
     default;
 
-QuickInsertLobsterResult::QuickInsertLobsterResult(std::u16string display_name)
-    : display_name(std::move(display_name)) {}
+QuickInsertLobsterResult::QuickInsertLobsterResult(Mode mode,
+                                                   std::u16string display_name)
+    : mode(mode), display_name(std::move(display_name)) {}
 
 QuickInsertLobsterResult::QuickInsertLobsterResult(
     const QuickInsertLobsterResult&) = default;

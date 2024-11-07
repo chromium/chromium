@@ -109,7 +109,11 @@ const TestCase kContentEditorSectionTestCases[] = {
         .section_type = QuickInsertSectionType::kContentEditor,
     },
     TestCase{
-        .source = QuickInsertSearchSource::kLobster,
+        .source = QuickInsertSearchSource::kLobsterWithNoSelectedText,
+        .section_type = QuickInsertSectionType::kContentEditor,
+    },
+    TestCase{
+        .source = QuickInsertSearchSource::kLobsterWithSelectedText,
         .section_type = QuickInsertSectionType::kContentEditor,
     },
 };
@@ -542,7 +546,10 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
                           u"rewrite")),
                       VariantWith<QuickInsertTextResult>(Field(
                           "primary_text", &QuickInsertTextResult::primary_text,
-                          u"lobster"))))))))
+                          u"lobster_with_no_selected_text")),
+                      VariantWith<QuickInsertTextResult>(Field(
+                          "primary_text", &QuickInsertTextResult::primary_text,
+                          u"lobster_with_selected_text"))))))))
       .Times(1);
 
   QuickInsertSearchAggregator aggregator(
@@ -584,9 +591,14 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kEditorRewrite,
                                        {QuickInsertTextResult(u"rewrite")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kLobster,
-                                       {QuickInsertTextResult(u"lobster")},
-                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      QuickInsertSearchSource::kLobsterWithNoSelectedText,
+      {QuickInsertTextResult(u"lobster_with_no_selected_text")},
+      /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      QuickInsertSearchSource::kLobsterWithSelectedText,
+      {QuickInsertTextResult(u"lobster_with_selected_text")},
+      /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -794,9 +806,14 @@ TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kEditorRewrite,
                                        {QuickInsertTextResult(u"rewrite")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(QuickInsertSearchSource::kLobster,
-                                       {QuickInsertTextResult(u"lobster")},
-                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      QuickInsertSearchSource::kLobsterWithNoSelectedText,
+      {QuickInsertTextResult(u"lobster")},
+      /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(
+      QuickInsertSearchSource::kLobsterWithSelectedText,
+      {QuickInsertTextResult(u"lobster")},
+      /*has_more_results=*/false);
 }
 
 TEST_F(QuickInsertSearchAggregatorMultipleSourcesTest,

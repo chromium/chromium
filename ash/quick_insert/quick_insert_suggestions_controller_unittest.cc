@@ -101,9 +101,11 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback, Run(IsSupersetOf({
-                            QuickInsertLobsterResult(u""),
-                        })))
+  EXPECT_CALL(callback,
+              Run(IsSupersetOf({
+                  QuickInsertLobsterResult(
+                      QuickInsertLobsterResult::Mode::kWithSelection, u""),
+              })))
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());

@@ -65,9 +65,9 @@ void PickerSuggestionsController::GetSuggestions(QuickInsertClient& client,
   }
 
   if (base::Contains(model.GetAvailableCategories(),
-                     QuickInsertCategory::kLobster) &&
-      model.GetMode() == PickerModeType::kHasSelection) {
-    callback.Run({QuickInsertLobsterResult(/*display_name=*/u"")});
+                     QuickInsertCategory::kLobsterWithSelectedText)) {
+    callback.Run({QuickInsertLobsterResult(
+        QuickInsertLobsterResult::Mode::kWithSelection, /*display_name=*/u"")});
   }
 
   if (model.GetMode() == PickerModeType::kHasSelection) {
@@ -129,7 +129,8 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
   switch (category) {
     case QuickInsertCategory::kEditorWrite:
     case QuickInsertCategory::kEditorRewrite:
-    case QuickInsertCategory::kLobster:
+    case QuickInsertCategory::kLobsterWithNoSelectedText:
+    case QuickInsertCategory::kLobsterWithSelectedText:
       NOTREACHED_NORETURN();
     case QuickInsertCategory::kLinks:
       // TODO: b/366237507 - Request only kMaxRecentLinks results once

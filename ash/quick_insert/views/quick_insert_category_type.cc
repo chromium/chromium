@@ -15,8 +15,10 @@ GetQuickInsertCategoryType(QuickInsertCategory category) {
       return QuickInsertCategoryType::kEditorWrite;
     case QuickInsertCategory::kEditorRewrite:
       return QuickInsertCategoryType::kEditorRewrite;
-    case QuickInsertCategory::kLobster:
+    case QuickInsertCategory::kLobsterWithNoSelectedText:
       return QuickInsertCategoryType::kEditorWrite;
+    case QuickInsertCategory::kLobsterWithSelectedText:
+      return QuickInsertCategoryType::kEditorRewrite;
     case QuickInsertCategory::kLinks:
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:

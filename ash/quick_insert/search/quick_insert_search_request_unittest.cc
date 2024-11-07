@@ -1117,10 +1117,11 @@ TEST_P(QuickInsertSearchRequestLobsterTest, RecordsLobsterMetrics) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     QuickInsertSearchRequestLobsterTest,
-    testing::Values(std::make_pair(QuickInsertCategory::kLobster,
-                                   QuickInsertSearchSource::kLobster),
-                    std::make_pair(QuickInsertCategory::kLobster,
-                                   QuickInsertSearchSource::kLobster)));
+    testing::Values(
+        std::make_pair(QuickInsertCategory::kLobsterWithNoSelectedText,
+                       QuickInsertSearchSource::kLobsterWithNoSelectedText),
+        std::make_pair(QuickInsertCategory::kLobsterWithSelectedText,
+                       QuickInsertSearchSource::kLobsterWithSelectedText)));
 
 TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
   // This actually calls category search.

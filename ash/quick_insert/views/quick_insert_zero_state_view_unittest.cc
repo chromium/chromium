@@ -86,7 +86,8 @@ constexpr base::span<const QuickInsertCategory> kAllCategories = {
     (QuickInsertCategory[]){
         QuickInsertCategory::kEditorWrite,
         QuickInsertCategory::kEditorRewrite,
-        QuickInsertCategory::kLobster,
+        QuickInsertCategory::kLobsterWithNoSelectedText,
+        QuickInsertCategory::kLobsterWithSelectedText,
         QuickInsertCategory::kLinks,
         QuickInsertCategory::kEmojisGifs,
         QuickInsertCategory::kClipboard,
@@ -490,17 +491,18 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
 }
 
 TEST_F(QuickInsertZeroStateViewTest,
-       DoesntShowLobsterCategoryForEmptySuggestions) {
+       DoesntShowLobsterWithTextSelectionCategoryForEmptySuggestions) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({});
           });
-  PickerZeroStateView view(&mock_delegate,
-                           base::span_from_ref(QuickInsertCategory::kLobster),
-                           kPickerWidth, &asset_fetcher_, &submenu_controller_,
-                           &preview_controller_);
+  PickerZeroStateView view(
+      &mock_delegate,
+      base::span_from_ref(QuickInsertCategory::kLobsterWithSelectedText),
+      kPickerWidth, &asset_fetcher_, &submenu_controller_,
+      &preview_controller_);
 
   EXPECT_THAT(view.category_section_views_for_testing(), IsEmpty());
 }
@@ -511,12 +513,14 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsListItem) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({QuickInsertLobsterResult(
+                QuickInsertLobsterResult::Mode::kWithSelection,
                 /*display_name=*/u"lobster")});
           });
-  PickerZeroStateView view(&mock_delegate,
-                           base::span_from_ref(QuickInsertCategory::kLobster),
-                           kPickerWidth, &asset_fetcher_, &submenu_controller_,
-                           &preview_controller_);
+  PickerZeroStateView view(
+      &mock_delegate,
+      base::span_from_ref(QuickInsertCategory::kLobsterWithSelectedText),
+      kPickerWidth, &asset_fetcher_, &submenu_controller_,
+      &preview_controller_);
 
   EXPECT_THAT(
       view.category_section_views_for_testing(),

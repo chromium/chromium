@@ -1820,6 +1820,11 @@ BASE_FEATURE(kLobsterDogfood,
              "LobsterDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables lobster entry point in quick insert zero state.
+BASE_FEATURE(kLobsterQuickInsertZeroState,
+             "LobsterQuickInsertZeroState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables lobster right click menu entry point.
 BASE_FEATURE(kLobsterRightClickMenu,
              "LobsterRightClickMenu",

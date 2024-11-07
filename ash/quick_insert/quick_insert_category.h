@@ -14,7 +14,8 @@ enum class ASH_EXPORT QuickInsertCategory {
   // Editor categories:
   kEditorWrite,
   kEditorRewrite,
-  kLobster,
+  kLobsterWithSelectedText,
+  kLobsterWithNoSelectedText,
   // General categories:
   kLinks,
   kEmojisGifs,

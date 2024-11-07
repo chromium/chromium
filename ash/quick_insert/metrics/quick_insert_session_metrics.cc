@@ -109,7 +109,8 @@ cros_events::PickerAction ConvertToCrosEventAction(
       return cros_events::PickerAction::OPEN_EDITOR_WRITE;
     case QuickInsertCategory::kEditorRewrite:
       return cros_events::PickerAction::OPEN_EDITOR_REWRITE;
-    case QuickInsertCategory::kLobster:
+    case QuickInsertCategory::kLobsterWithSelectedText:
+    case QuickInsertCategory::kLobsterWithNoSelectedText:
       return cros_events::PickerAction::OPEN_LOBSTER;
     case QuickInsertCategory::kLinks:
       return cros_events::PickerAction::OPEN_LINKS;

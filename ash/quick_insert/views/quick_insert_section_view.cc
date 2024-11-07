@@ -79,6 +79,16 @@ QuickInsertCategory GetCategoryForEditorData(
   }
 }
 
+QuickInsertCategory GetCategoryForLobsterData(
+    const QuickInsertLobsterResult& data) {
+  switch (data.mode) {
+    case QuickInsertLobsterResult::Mode::kNoSelection:
+      return QuickInsertCategory::kLobsterWithNoSelectedText;
+    case QuickInsertLobsterResult::Mode::kWithSelection:
+      return QuickInsertCategory::kLobsterWithSelectedText;
+  }
+}
+
 std::u16string GetLabelForNewWindowType(QuickInsertNewWindowResult::Type type) {
   switch (type) {
     case QuickInsertNewWindowResult::Type::kDoc:
@@ -360,7 +370,8 @@ QuickInsertSectionView::CreateItemFromResult(
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));
 
-            const QuickInsertCategory category = QuickInsertCategory::kLobster;
+            const QuickInsertCategory category =
+                GetCategoryForLobsterData(data);
             item_view->SetPrimaryText(GetLabelForQuickInsertCategory(category));
             item_view->SetLeadingIcon(GetIconForQuickInsertCategory(category));
             return item_view;

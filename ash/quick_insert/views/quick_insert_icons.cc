@@ -26,7 +26,8 @@ const gfx::VectorIcon& GetVectorIconForQuickInsertCategory(
     case QuickInsertCategory::kEditorRewrite:
       // TODO: b/322926823 - Use correct icons.
       return kPencilIcon;
-    case QuickInsertCategory::kLobster:
+    case QuickInsertCategory::kLobsterWithNoSelectedText:
+    case QuickInsertCategory::kLobsterWithSelectedText:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return kLobsterIcon;
 #else

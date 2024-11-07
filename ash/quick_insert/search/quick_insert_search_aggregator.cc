@@ -51,7 +51,8 @@ QuickInsertSectionType SectionTypeFromSearchSource(
       return QuickInsertSectionType::kDriveFiles;
     case QuickInsertSearchSource::kEditorWrite:
     case QuickInsertSearchSource::kEditorRewrite:
-    case QuickInsertSearchSource::kLobster:
+    case QuickInsertSearchSource::kLobsterWithNoSelectedText:
+    case QuickInsertSearchSource::kLobsterWithSelectedText:
       return QuickInsertSectionType::kContentEditor;
   }
 }

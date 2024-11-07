@@ -73,7 +73,8 @@ const char* SearchSourceToHistogram(QuickInsertSearchSource source) {
     case QuickInsertSearchSource::kEditorWrite:
     case QuickInsertSearchSource::kEditorRewrite:
       return "Ash.Picker.Search.EditorProvider.QueryTime";
-    case QuickInsertSearchSource::kLobster:
+    case QuickInsertSearchSource::kLobsterWithNoSelectedText:
+    case QuickInsertSearchSource::kLobsterWithSelectedText:
       return "Ash.Picker.Search.LobsterProvider.QueryTime";
   }
   NOTREACHED() << "Unexpected search source " << base::to_underlying(source);
@@ -204,11 +205,24 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
           PickerEditorSearch(QuickInsertEditorResult::Mode::kRewrite, query));
     }
 
-    if (base::Contains(available_categories, QuickInsertCategory::kLobster)) {
-      // Editor results are currently synchronous.
-      MarkSearchStarted(QuickInsertSearchSource::kLobster);
-      HandleLobsterSearchResults(QuickInsertSearchSource::kLobster,
-                                 PickerLobsterSearch(query));
+    if (base::Contains(available_categories,
+                       QuickInsertCategory::kLobsterWithNoSelectedText)) {
+      // Lobster results are currently synchronous.
+      MarkSearchStarted(QuickInsertSearchSource::kLobsterWithNoSelectedText);
+      HandleLobsterSearchResults(
+          QuickInsertSearchSource::kLobsterWithNoSelectedText,
+          PickerLobsterSearch(QuickInsertLobsterResult::Mode::kNoSelection,
+                              query));
+    }
+
+    if (base::Contains(available_categories,
+                       QuickInsertCategory::kLobsterWithSelectedText)) {
+      // Lobster results are currently synchronous.
+      MarkSearchStarted(QuickInsertSearchSource::kLobsterWithSelectedText);
+      HandleLobsterSearchResults(
+          QuickInsertSearchSource::kLobsterWithSelectedText,
+          PickerLobsterSearch(QuickInsertLobsterResult::Mode::kWithSelection,
+                              query));
     }
   }
 

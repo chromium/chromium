@@ -107,12 +107,17 @@ PickerZeroStateView::PickerZeroStateView(
       picker_view_width, asset_fetcher, submenu_controller_));
 
   for (QuickInsertCategory category : available_categories) {
-    // kEditorRewrite is not visible in the zero-state, since it's replaced with
-    // the rewrite suggestions.
-    // TODO: b/369701127 - Shows kLobster entry once its implementation is
-    // ready.
+    // kEditorRewrite and LobsterWithSelectedText are not visible in the
+    // zero-state, since it's replaced with the rewrite suggestions and the
+    // lobster result, respectively.
     if (category == QuickInsertCategory::kEditorRewrite ||
-        category == QuickInsertCategory::kLobster) {
+        category == QuickInsertCategory::kLobsterWithSelectedText) {
+      continue;
+    }
+
+    if (!base::FeatureList::IsEnabled(
+            ash::features::kLobsterQuickInsertZeroState) &&
+        category == QuickInsertCategory::kLobsterWithNoSelectedText) {
       continue;
     }
 
