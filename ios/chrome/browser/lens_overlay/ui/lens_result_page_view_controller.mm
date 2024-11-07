@@ -246,6 +246,8 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(updateMutatorDarkMode)];
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+                       withAction:@selector(updateMutatorContentSizeCategory)];
   }
 }
 
@@ -259,6 +261,11 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   if (self.traitCollection.userInterfaceStyle !=
       previousTraitCollection.userInterfaceStyle) {
     [self updateMutatorDarkMode];
+  }
+
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    [self updateMutatorContentSizeCategory];
   }
 }
 #endif
@@ -285,6 +292,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 - (void)setMutator:(id<LensResultPageMutator>)mutator {
   _mutator = mutator;
   [self updateMutatorDarkMode];
+  [self updateMutatorContentSizeCategory];
 }
 
 - (void)setCancelButtonHidden:(BOOL)hidden animated:(BOOL)animated {
@@ -464,6 +472,11 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 - (void)updateMutatorDarkMode {
   [self.mutator setIsDarkMode:self.traitCollection.userInterfaceStyle ==
                               UIUserInterfaceStyleDark];
+}
+
+- (void)updateMutatorContentSizeCategory {
+  [self.mutator
+      setContentSizeCategory:self.traitCollection.preferredContentSizeCategory];
 }
 
 @end
