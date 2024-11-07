@@ -5184,6 +5184,16 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
     frame_tree.MakeSpeculativeRVHCurrent();
   }
 
+  // Update the owner of the new RenderFrameHost to point to the current frame.
+  // Note that this is a no-op for pending commit RenderFrameHosts (which start
+  // with owner pointing to the FrameTreeNode owning them) and prerendering
+  // activations (where RenderFrameHost's owner has been updated in
+  // PrerenderHost::Activate), but is necessary for RFHs restored from
+  // back/forward cache.
+  if (render_frame_host_) {
+    render_frame_host_->SetRenderFrameHostOwner(frame_tree_node_);
+  }
+
   // Swapping the current RenderFrameHost in a FrameTreeNode comes along with an
   // update to its LifecycleStateImpl.
 
@@ -5252,17 +5262,9 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
     }
   }
 
-  // Update the owner of the new RenderFrameHost to point to the current frame.
-  // Note that this is a no-op for pending commit RenderFrameHosts (which start
-  // with owner pointing to the FrameTreeNode owning them) and prerendering
-  // activations (where RenderFrameHost's owner has been updated in
-  // PrerenderHost::Activate), but is necessary for RFHs restored from
-  // back/forward cache.
-  if (render_frame_host_)
-    render_frame_host_->SetRenderFrameHostOwner(frame_tree_node_);
-
-  if (old_render_frame_host)
+  if (old_render_frame_host) {
     old_render_frame_host->SetRenderFrameHostOwner(nullptr);
+  }
 
   if (render_frame_host_) {
     SiteInstanceGroupId sig_id =
