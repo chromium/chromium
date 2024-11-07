@@ -256,22 +256,16 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (is_consumer_domain && show_link_data_option_ &&
-      state == ManagedUserProfileNoticeHandler::State::kValueProposition &&
-      IsJavascriptAllowed() && UseMultiscreen()) {
-    FireWebUIListener(
-        "on-state-changed",
-        ManagedUserProfileNoticeHandler::State::kUserDataHandling);
-    return;
-  }
-
-  if (!is_consumer_domain && show_link_data_option_ &&
-      state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
-      IsJavascriptAllowed() && UseMultiscreen()) {
-    FireWebUIListener(
-        "on-state-changed",
-        ManagedUserProfileNoticeHandler::State::kUserDataHandling);
-    return;
+  if (show_link_data_option_ && IsJavascriptAllowed() && UseMultiscreen()) {
+    if ((is_consumer_domain &&
+         state == ManagedUserProfileNoticeHandler::State::kValueProposition) ||
+        (!is_consumer_domain &&
+         state == ManagedUserProfileNoticeHandler::State::kDisclosure)) {
+      FireWebUIListener(
+          "on-state-changed",
+          ManagedUserProfileNoticeHandler::State::kUserDataHandling);
+      return;
+    }
   }
 #endif
   if (process_user_choice_with_confirmation_callback_ &&

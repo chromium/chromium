@@ -526,7 +526,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     on_closed_callback = ManagedProfileRequiredNavigationThrottle::
         BlockNavigationUntilEnterpriseActionTaken(browser->profile(),
                                                   dialog_web_contents);
-    ;
+
     content::WebContents* active_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     // Reload the active web contents so that the managed profile required
