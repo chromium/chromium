@@ -22,6 +22,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
 #import "ios/chrome/credential_provider_extension/font_provider.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
@@ -114,6 +115,12 @@ UIColor* BackgroundColor() {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = BackgroundColor();
+
+  UINavigationBar* navigationBar = [self createNavigationBar];
+  [self.view addSubview:navigationBar];
+  AddSameConstraintsToSides(
+      navigationBar, self.view.safeAreaLayoutGuide,
+      LayoutSides::kTrailing | LayoutSides::kTop | LayoutSides::kLeading);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -886,6 +893,21 @@ UIColor* BackgroundColor() {
   // If it is not set, metrics are disabled.
   return [app_group::GetGroupUserDefaults()
              objectForKey:@(app_group::kChromeAppClientID)] != nil;
+}
+
+// Creates and configures the navigation bar for this view controller.
+- (UINavigationBar*)createNavigationBar {
+  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
+  navigationItem.titleView = self.passkeyNavigationItemTitleView;
+
+  UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
+  navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
+  navigationBar.translucent = NO;
+  [navigationBar setShadowImage:[[UIImage alloc] init]];
+  [navigationBar setBarTintColor:BackgroundColor()];
+  [navigationBar setItems:@[ navigationItem ]];
+
+  return navigationBar;
 }
 
 // Returns the view currently being presented, which should therefore be the new

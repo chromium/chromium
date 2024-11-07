@@ -46,6 +46,7 @@ source_set("credential_provider") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/credential_provider_extension/resources",
     "//ios/chrome/credential_provider_extension/ui",
     "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
