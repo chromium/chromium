@@ -2897,8 +2897,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return navigation_allowed;
 
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
-      return navigation_allowed && params_.link_url.is_valid() &&
-             IsOpenLinkAllowedByDlp(params_.link_url);
     case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
     case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:

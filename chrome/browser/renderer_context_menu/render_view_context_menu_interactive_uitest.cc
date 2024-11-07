@@ -22,6 +22,9 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/launchservices_utils_mac.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -223,6 +226,18 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
         ->tab_strip_model()
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame();
+  }
+
+  void InstallTestWebApp(const GURL& start_url) {
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+    web_app_info->scope = start_url;
+    web_app_info->title = u"Test app";
+    web_app_info->description = u"Test description";
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+
+    web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info));
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -784,6 +799,146 @@ IN_PROC_BROWSER_TEST_F(
               Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
   EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
               Not(Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS)));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       OpenLinkInWebAppEntryIsDisabledAfterNetworkCutoff) {
+  // Add content/test/data for cross_site_iframe_factory.html.
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      "content/test/data");
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate fenced frame to a page with an anchor element with href to a web
+  // App.
+  GURL fenced_frame_url(embedded_https_test_server().GetURL(
+      "a.test", "/fenced_frames/web_app.html"));
+
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(fenced_frame_url);
+
+  // Install the anchor element href as a web App.
+  InstallTestWebApp(GURL("https://www.google.com/"));
+
+  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+
+  // Get the coordinate of the anchor element inside the fenced frame.
+  const gfx::PointF anchor_element =
+      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
+
+  // Open a context menu by right clicking on the anchor element.
+  ContextMenuWaiter menu_observer;
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // "Open Link In [App]" should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // "Open Link In [App]" should be disabled in the context menu after fenced
+  // frame has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
+  EXPECT_THAT(
+      menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+      testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    OpenLinkInWebAppEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
+  // Add content/test/data for cross_site_iframe_factory.html.
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      "content/test/data");
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate the nested iframe to a page with an anchor element with href to a
+  // web App.
+  GURL nested_iframe_url(embedded_https_test_server().GetURL(
+      "a.test", "/fenced_frames/web_app.html"));
+
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrameWithNestedIframe(nested_iframe_url);
+  content::RenderFrameHost* nested_iframe_rfh =
+      content::ChildFrameAt(fenced_frame_rfh, 0);
+  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
+
+  // Install the anchor element href as a web App.
+  InstallTestWebApp(GURL("https://www.google.com/"));
+
+  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
+  // ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+  content::WaitForHitTestData(nested_iframe_rfh);
+
+  // Get the coordinate of the anchor element inside the nested iframe.
+  gfx::PointF anchor_element =
+      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
+
+  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
+  // fenced frame, the anchor element needs to be offset by the top left
+  // coordinates of the nested iframe relative to the fenced frame.
+  const gfx::PointF iframe_offset =
+      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
+                                                          "child-0");
+  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
+
+  // Open a context menu by right clicking on the anchor element.
+  ContextMenuWaiter menu_observer;
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // "Open Link In [App]" should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // "Open Link In [App]" should be disabled in the context menu after fenced
+  // frame has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
+  EXPECT_THAT(
+      menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+      testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP)));
 }
 
 // "Open Link in Profile" functionality is not available on ChromeOS Ash where
