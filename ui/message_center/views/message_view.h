@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/notification_list.h"
@@ -22,7 +21,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/time/time.h"
 #endif
 
@@ -162,7 +161,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void OnSettingsButtonPressed(const ui::Event& event);
   virtual void OnSnoozeButtonPressed(const ui::Event& event);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Gets the animation duration for a recent bounds change.
   virtual base::TimeDelta GetBoundsAnimationDuration(
       const Notification& notification) const;

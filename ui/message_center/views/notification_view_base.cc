@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "components/url_formatter/elide_url.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/class_property.h"
@@ -109,11 +108,11 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
 }
 
 bool IsForAshNotification() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // anonymous namespace
@@ -589,9 +588,9 @@ void NotificationViewBase::CreateOrUpdateIconView(
   }
 
   bool apply_rounded_corners = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   apply_rounded_corners = for_ash_notification_;
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
   icon_view_->SetImage(icon, icon.Size(), apply_rounded_corners);
 
   // Hide the icon on the right side when the notification is expanded.

@@ -5,7 +5,6 @@
 #include "ui/message_center/views/message_popup_view.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,7 +22,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #endif
@@ -154,9 +153,7 @@ std::unique_ptr<views::Widget> MessagePopupView::Show() {
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Make the widget explicitly activatable as TYPE_POPUP is not activatable by
   // default but we need focus for the inline reply textarea.
   params.activatable = views::Widget::InitParams::Activatable::kYes;
@@ -180,7 +177,7 @@ std::unique_ptr<views::Widget> MessagePopupView::Show() {
 
   widget->Init(std::move(params));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, notification pop-ups are shown in the
   // `SettingBubbleContainer`, together with other shelf pod bubbles. This
   // widget would inherit the parent's window targeter by default. But it is not
