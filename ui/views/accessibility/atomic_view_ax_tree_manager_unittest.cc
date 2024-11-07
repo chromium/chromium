@@ -95,15 +95,13 @@ TEST_F(AtomicViewAXTreeManagerTest, GetRootAsAXNode) {
       delegate_->GetAtomicViewAXTreeManagerForTesting()->GetRoot()->data());
 }
 
-TEST_F(AtomicViewAXTreeManagerTest, GetNodeFromTree) {
+TEST_F(AtomicViewAXTreeManagerTest, GetNode) {
   CompareNodeData(
       delegate_data(),
       delegate_->GetAtomicViewAXTreeManagerForTesting()
-          ->GetNodeFromTree(
-              delegate_->GetAtomicViewAXTreeManagerForTesting()->GetTreeID(),
-              delegate_->GetAtomicViewAXTreeManagerForTesting()
-                  ->GetRoot()
-                  ->id())
+          ->GetNode(delegate_->GetAtomicViewAXTreeManagerForTesting()
+                        ->GetRoot()
+                        ->id())
           ->data());
 }
 
