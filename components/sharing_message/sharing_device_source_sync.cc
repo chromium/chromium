@@ -28,16 +28,6 @@ using sync_pb::SharingSpecificFields;
 namespace {
 
 bool IsStale(const syncer::DeviceInfo& device) {
-  if (base::FeatureList::IsEnabled(kSharingMatchPulseInterval)) {
-    base::TimeDelta pulse_delta = base::Hours(
-        device.form_factor() == syncer::DeviceInfo::FormFactor::kDesktop
-            ? kSharingPulseDeltaDesktopHours.Get()
-            : kSharingPulseDeltaAndroidHours.Get());
-    base::Time min_updated_time =
-        base::Time::Now() - device.pulse_interval() - pulse_delta;
-    return device.last_updated_timestamp() < min_updated_time;
-  }
-
   const base::Time min_updated_time =
       base::Time::Now() - kSharingDeviceExpiration;
   return device.last_updated_timestamp() < min_updated_time;
