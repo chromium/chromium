@@ -1178,8 +1178,13 @@ AccessibilityPrivateUpdateFaceGazeBubbleFunction::Run() {
       accessibility_private::UpdateFaceGazeBubble::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  bool is_warning = false;
+  if (params->is_warning.has_value()) {
+    is_warning = params->is_warning.value();
+  }
+
   ash::AccessibilityController::Get()->UpdateFaceGazeBubble(
-      base::UTF8ToUTF16(params->text));
+      base::UTF8ToUTF16(params->text), is_warning);
   return RespondNow(NoArguments());
 }
 

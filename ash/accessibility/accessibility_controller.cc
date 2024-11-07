@@ -3835,13 +3835,14 @@ void AccessibilityController::ScrollAtPoint(
   std::ignore = host->GetEventSink()->OnEventFromSource(&wheel);
 }
 
-void AccessibilityController::UpdateFaceGazeBubble(const std::u16string& text) {
+void AccessibilityController::UpdateFaceGazeBubble(const std::u16string& text,
+                                                   bool is_warning) {
   if (!facegaze_bubble_controller_ ||
       !::features::IsAccessibilityFaceGazeEnabled()) {
     return;
   }
 
-  facegaze_bubble_controller_->UpdateBubble(text);
+  facegaze_bubble_controller_->UpdateBubble(text, is_warning);
 }
 
 FaceGazeBubbleController*

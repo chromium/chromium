@@ -18,6 +18,8 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -29,6 +31,10 @@ namespace {
 
 constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+constexpr ui::ColorId kWarningBackgroundColor =
+    cros_tokens::kCrosSysWarningContainer;
+constexpr ui::ColorId kWarningForegroundColor =
+    cros_tokens::kCrosSysOnWarningContainer;
 constexpr int kIconSizeDip = 24;
 constexpr int kLeftRightMarginDip = 20;
 constexpr int kRoundedCornerRadius = 24.f;
@@ -93,7 +99,8 @@ FaceGazeBubbleView::FaceGazeBubbleView() {
 
 FaceGazeBubbleView::~FaceGazeBubbleView() = default;
 
-void FaceGazeBubbleView::Update(const std::u16string& text) {
+void FaceGazeBubbleView::Update(const std::u16string& text, bool is_warning) {
+  UpdateColor(is_warning);
   label_->SetVisible(text != u"");
   label_->SetText(text);
   SizeToContents();
@@ -102,6 +109,27 @@ void FaceGazeBubbleView::Update(const std::u16string& text) {
 void FaceGazeBubbleView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   set_color(GetColorProvider()->GetColor(kBackgroundColor));
+}
+
+void FaceGazeBubbleView::UpdateColor(bool is_warning) {
+  ui::ColorId background_color_id =
+      is_warning ? kWarningBackgroundColor : kBackgroundColor;
+  SkColor background_color = GetColorProvider()->GetColor(background_color_id);
+  ui::ColorId foreground_color =
+      is_warning ? kWarningForegroundColor : kColorAshTextColorPrimary;
+
+  set_color(background_color);
+  View* const contents_view = GetContentsView();
+  DCHECK(contents_view);
+  contents_view->SetBackground(
+      (views::CreateSolidBackground(background_color)));
+  views::BubbleFrameView* frame_view = GetBubbleFrameView();
+  if (frame_view) {
+    frame_view->SetBackgroundColor(background_color);
+  }
+  image_->SetImage(ui::ImageModel::FromVectorIcon(
+      kFacegazeIcon, foreground_color, kIconSizeDip));
+  label_->SetEnabledColor(GetColorProvider()->GetColor(foreground_color));
 }
 
 const std::u16string& FaceGazeBubbleView::GetTextForTesting() const {

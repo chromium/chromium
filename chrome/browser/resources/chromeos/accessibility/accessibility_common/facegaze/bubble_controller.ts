@@ -20,7 +20,8 @@ export class BubbleController {
   }
 
   updateBubble(text: string): void {
-    chrome.accessibilityPrivate.updateFaceGazeBubble(text);
+    chrome.accessibilityPrivate.updateFaceGazeBubble(
+        text, /*isWarning=*/ false);
     this.setResetBubbleTimeout_();
   }
 
@@ -69,7 +70,8 @@ export class BubbleController {
           BubbleController.getDisplayTextForGesture_(dictation)));
     }
 
-    chrome.accessibilityPrivate.updateFaceGazeBubble(this.baseText_.join(', '));
+    chrome.accessibilityPrivate.updateFaceGazeBubble(
+        this.baseText_.join(', '), /*isWarning=*/ this.baseText_.length > 0);
   }
 
   static getDisplayText(gesture: FacialGesture, macro: Macro): string {

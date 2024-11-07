@@ -820,8 +820,10 @@ chrome.accessibilityPrivate.sendGestureInfoToSettings = function(gestureInfo) {}
 /**
  * Updates FaceGaze's bubble UI.
  * @param {string} text The text to be displayed in the bubble UI.
+ * @param {boolean=} isWarning True if the bubble UI contains a warning about
+ *     state.
  */
-chrome.accessibilityPrivate.updateFaceGazeBubble = function(text) {};
+chrome.accessibilityPrivate.updateFaceGazeBubble = function(text, isWarning) {};
 
 /**
  * Turns on/off the DragEventRewriter, which rewrites kMouseMoved events into

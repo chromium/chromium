@@ -599,7 +599,7 @@ class ASH_EXPORT AccessibilityController
       const std::optional<std::vector<DictationBubbleHintType>>& hints);
 
   // Updates the FaceGaze UI bubble.
-  void UpdateFaceGazeBubble(const std::u16string& text);
+  void UpdateFaceGazeBubble(const std::u16string& text, bool is_warning);
 
   // Shows a notification notifying the user about the FaceGaze DLC download.
   void ShowNotificationForFaceGaze(FaceGazeNotificationType type);

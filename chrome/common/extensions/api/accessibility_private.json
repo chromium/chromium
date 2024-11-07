@@ -1148,6 +1148,12 @@
             "name": "text",
             "type": "string",
             "description": "The text to be displayed in the bubble UI."
+          },
+          {
+            "name": "isWarning",
+            "type": "boolean",
+            "description": "True if the bubble UI contains a warning about state.",
+            "optional": true
           }
         ]
       },

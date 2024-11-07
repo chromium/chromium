@@ -174,6 +174,9 @@ class MockAccessibilityPrivate {
     /** @private {?string} */
     this.faceGazeBubbleText_ = null;
 
+    /** @private {boolean} */
+    this.faceGazeBubbleIsWarning_ = false;
+
     /** @private {Function} */
     this.onUpdateDictationBubble_ = null;
 
@@ -573,8 +576,9 @@ class MockAccessibilityPrivate {
   }
 
   /** @param {string} text */
-  updateFaceGazeBubble(text) {
+  updateFaceGazeBubble(text, isWarning) {
     this.faceGazeBubbleText_ = text;
+    this.faceGazeBubbleIsWarning_ = isWarning;
   }
 
   /** @param {boolean} enabled */
@@ -588,6 +592,11 @@ class MockAccessibilityPrivate {
   /** @return {?string} */
   getFaceGazeBubbleText() {
     return this.faceGazeBubbleText_;
+  }
+
+  /** @return {boolean} */
+  getFaceGazeBubbleIsWarning() {
+    return this.faceGazeBubbleIsWarning_;
   }
 
   /**

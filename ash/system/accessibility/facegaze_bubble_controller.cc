@@ -35,9 +35,10 @@ void FaceGazeBubbleController::OnViewIsDeleting(views::View* observed_view) {
   widget_ = nullptr;
 }
 
-void FaceGazeBubbleController::UpdateBubble(const std::u16string& text) {
+void FaceGazeBubbleController::UpdateBubble(const std::u16string& text,
+                                            bool is_warning) {
   MaybeInitialize();
-  Update(text);
+  Update(text, is_warning);
   widget_->Show();
 }
 
@@ -56,12 +57,13 @@ void FaceGazeBubbleController::MaybeInitialize() {
       CollisionDetectionUtils::RelativePriority::kFaceGazeBubble);
 }
 
-void FaceGazeBubbleController::Update(const std::u16string& text) {
+void FaceGazeBubbleController::Update(const std::u16string& text,
+                                      bool is_warning) {
   if (!facegaze_bubble_view_) {
     return;
   }
 
-  facegaze_bubble_view_->Update(text);
+  facegaze_bubble_view_->Update(text, is_warning);
 
   const gfx::Rect primary_work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();

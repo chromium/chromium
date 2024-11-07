@@ -35,7 +35,7 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
   ~FaceGazeBubbleView() override;
 
   // Updates text content of this view.
-  void Update(const std::u16string& text);
+  void Update(const std::u16string& text, bool is_warning);
 
   // views::BubbleDialogDelegateView:
   void OnThemeChanged() override;
@@ -44,6 +44,9 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   friend class FaceGazeBubbleControllerTest;
+
+  // Updates color of this view.
+  void UpdateColor(bool is_warning);
 
   // An image that displays the FaceGaze logo.
   raw_ptr<views::ImageView> image_ = nullptr;

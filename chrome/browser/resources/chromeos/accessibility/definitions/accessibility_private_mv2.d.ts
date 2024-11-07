@@ -487,7 +487,8 @@ declare global {
       export function sendGestureInfoToSettings(gestureInfo: GestureInfo[]):
           void;
 
-      export function updateFaceGazeBubble(text: string): void;
+      export function updateFaceGazeBubble(text: string, isWarning?: boolean):
+          void;
 
       export function enableDragEventRewriter(enabled: boolean): void;
 
