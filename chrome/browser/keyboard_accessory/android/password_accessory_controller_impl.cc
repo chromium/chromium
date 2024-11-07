@@ -861,6 +861,11 @@ void PasswordAccessoryControllerImpl::FillSelection(
   }
   driver->FillIntoFocusedField(selection.is_obfuscated(),
                                selection.display_text());
+  if (selection.suggestion_type() ==
+          autofill::AccessorySuggestionType::kPlusAddress &&
+      plus_address_service_) {
+    plus_address_service_->DidFillPlusAddress();
+  }
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
@@ -1010,11 +1015,6 @@ void PasswordAccessoryControllerImpl::ReauthenticateAndFill(
     const url::Origin& origin_to_fill_on) {
   authenticator_ = password_client_->GetDeviceAuthenticator();
   if (!ShouldTriggerBiometricReauth(selection)) {
-    if (selection.suggestion_type() ==
-            autofill::AccessorySuggestionType::kPlusAddress &&
-        plus_address_service_) {
-      plus_address_service_->DidFillPlusAddress();
-    }
     authenticator_.reset();
     FillSelection(selection, origin_to_fill_on);
     return;
