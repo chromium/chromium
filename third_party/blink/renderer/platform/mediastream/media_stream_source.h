@@ -137,7 +137,6 @@ class PLATFORM_EXPORT MediaStreamSource final
     Vector<double> aspect_ratio;
     Vector<double> frame_rate;
     Vector<bool> echo_cancellation;
-    Vector<String> echo_cancellation_type;
     Vector<bool> auto_gain_control;
     Vector<bool> noise_suppression;
     Vector<bool> voice_isolation;

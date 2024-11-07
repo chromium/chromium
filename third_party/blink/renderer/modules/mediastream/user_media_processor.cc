@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/scoped_media_stream_tracer.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
-#include "third_party/blink/renderer/platform/mediastream/media_constraints_consts.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
@@ -1788,17 +1787,6 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.echo_cancellation = {true, false};
-  capabilities.echo_cancellation_type.reserve(3);
-  capabilities.echo_cancellation_type.emplace_back(
-      String::FromUTF8(kEchoCancellationTypeBrowser));
-  capabilities.echo_cancellation_type.emplace_back(
-      String::FromUTF8(kEchoCancellationTypeAec3));
-  if (device.input.effects() &
-      (media::AudioParameters::ECHO_CANCELLER |
-       media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER)) {
-    capabilities.echo_cancellation_type.emplace_back(
-        String::FromUTF8(kEchoCancellationTypeSystem));
-  }
   capabilities.auto_gain_control = {true, false};
   capabilities.noise_suppression = {true, false};
   capabilities.voice_isolation = {true, false};

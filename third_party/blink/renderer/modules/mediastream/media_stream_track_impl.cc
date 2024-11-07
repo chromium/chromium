@@ -482,10 +482,6 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
       voice_isolation.push_back(value);
     }
     capabilities->setVoiceIsolation(voice_isolation);
-    Vector<String> echo_cancellation_type;
-    for (String value : platform_capabilities.echo_cancellation_type) {
-      echo_cancellation_type.push_back(value);
-    }
     // Sample size.
     if (platform_capabilities.sample_size.size() == 2) {
       LongRange* sample_size = LongRange::Create();
