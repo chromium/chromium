@@ -67,6 +67,7 @@ import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.PaymentInstrument;
+import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -1430,6 +1431,51 @@ public class AutofillPaymentMethodsFragmentTest {
         // Verify that the financial accounts management fragment is opened.
         Assert.assertTrue(
                 rule.getLastestShownFragment() instanceof FinancialAccountsManagementFragment);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void testFirstCardPromo_promoShownAndButtonOpensAddCard() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference promoPreference = getFirstPaymentMethodPreference(activity);
+        Assert.assertTrue(promoPreference instanceof CardWithButtonPreference);
+        String title = promoPreference.getTitle().toString();
+        assertThat(title)
+                .isEqualTo(activity.getString(R.string.autofill_create_first_credit_card_title));
+        String summary = promoPreference.getSummary().toString();
+        assertThat(summary)
+                .isEqualTo(activity.getString(R.string.autofill_create_first_credit_card_summary));
+
+        // Simulate click on the preference.
+        ThreadUtils.runOnUiThreadBlocking(promoPreference::performClick);
+        rule.waitForFragmentToBeShown();
+
+        // Verify that the local card editor fragment is opened.
+        Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void testFirstCardPromo_promoNotShownWithExistingCards() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getFirstPaymentMethodPreference(activity);
+        Assert.assertFalse(cardPreference instanceof CardWithButtonPreference);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void testFirstCardPromo_featureDisabledPromoNotShown() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardPreference = getFirstPaymentMethodPreference(activity);
+        Assert.assertFalse(cardPreference instanceof CardWithButtonPreference);
     }
 
     private void setUpBiometricAuthenticationResult(boolean success) {

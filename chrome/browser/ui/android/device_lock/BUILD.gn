@@ -121,7 +121,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/device_lock_alert_illustration.xml",
     "java/res/drawable/missing_device_lock_illustration.xml",
-    "java/res/drawable/rounded_corner_card.xml",
     "java/res/layout/device_lock_view.xml",
     "java/res/layout/missing_device_lock_view.xml",
     "java/res/values-night/colors.xml",
@@ -131,6 +130,7 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
 }

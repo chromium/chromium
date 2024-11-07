@@ -1116,6 +1116,15 @@
     <message name="IDS_AUTOFILL_SCAN_CREDIT_CARD_BUTTON" desc="Button that allows the user to scan a card using the camera on the device that will be filled into a card editor to be saved." formatter_data="android_java">
       Scan card
     </message>
+    <message name="IDS_AUTOFILL_CREATE_FIRST_CREDIT_CARD_TITLE" desc="Title for a call to action settings preference to add a new autofill credit card when the user does not have any cards added." formatter_data="android_java">
+      Check out faster with autofill
+    </message>
+    <message name="IDS_AUTOFILL_CREATE_FIRST_CREDIT_CARD_SUMMARY" desc="Summary for a call to action settings preference to add a new autofill credit card when the user does not have any cards added." formatter_data="android_java">
+      Save a payment method in your Google Account to autofill it for purchases made in Chrome
+    </message>
+    <message name="IDS_AUTOFILL_CREATE_FIRST_CREDIT_CARD_BUTTON_TEXT" desc="Button text for a call to action settings preference to add a new autofill credit card when the user does not have any cards added." formatter_data="android_java">
+      Add payment method
+    </message>
   </if>
 
   <!-- Autofill IBAN preferences -->

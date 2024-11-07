@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.hardware.biometrics.BiometricManager;
@@ -51,6 +52,7 @@ import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -345,16 +347,41 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         // Add 'Add credit card' button. Tap of it brings up card editor which allows users type in
         // new credit cards.
         if (personalDataManager.isAutofillPaymentMethodsEnabled()) {
-            Preference add_card_pref = new Preference(getStyledContext());
-            Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
-            plusIcon.mutate();
-            plusIcon.setColorFilter(
-                    SemanticColorUtils.getDefaultControlColorActive(getContext()),
-                    PorterDuff.Mode.SRC_IN);
-            add_card_pref.setIcon(plusIcon);
-            add_card_pref.setTitle(R.string.autofill_create_credit_card);
-            add_card_pref.setFragment(AutofillLocalCardEditor.class.getName());
-            getPreferenceScreen().addPreference(add_card_pref);
+            if (personalDataManager.getCreditCardsForSettings().isEmpty()
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList
+                                    .AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD)) {
+                CardWithButtonPreference addFirstCardPref =
+                        new CardWithButtonPreference(getStyledContext(), null);
+                addFirstCardPref.setTitle(R.string.autofill_create_first_credit_card_title);
+                addFirstCardPref.setSummary(R.string.autofill_create_first_credit_card_summary);
+                addFirstCardPref.setButtonText(
+                        getResources()
+                                .getString(R.string.autofill_create_first_credit_card_button_text));
+                // CardWithButtonPreference calls the click listener for button clicks.
+                addFirstCardPref.setOnPreferenceClickListener(
+                        preference -> {
+                            Intent intent =
+                                    SettingsNavigationFactory.createSettingsNavigation()
+                                            .createSettingsIntent(
+                                                    getActivity(), AutofillLocalCardEditor.class);
+                            startActivity(intent);
+                            return true;
+                        });
+                getPreferenceScreen().addPreference(addFirstCardPref);
+            } else {
+                Preference addCardPref = new Preference(getStyledContext());
+                Drawable plusIcon =
+                        ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
+                plusIcon.mutate();
+                plusIcon.setColorFilter(
+                        SemanticColorUtils.getDefaultControlColorActive(getContext()),
+                        PorterDuff.Mode.SRC_IN);
+                addCardPref.setIcon(plusIcon);
+                addCardPref.setTitle(R.string.autofill_create_credit_card);
+                addCardPref.setFragment(AutofillLocalCardEditor.class.getName());
+                getPreferenceScreen().addPreference(addCardPref);
+            }
         }
 
         // Add 'Add IBAN' button. Tapping it brings up the IBAN editor which allows users to type in
