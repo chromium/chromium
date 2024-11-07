@@ -422,8 +422,7 @@ void UpgradeDetector::CheckIdle() {
   // Don't proceed while an off-the-record or Guest window is open. The timer
   // will still keep firing, so this function will get a chance to re-evaluate
   // this.
-  if (chrome::IsOffTheRecordSessionActive() ||
-      BrowserList::GetGuestBrowserCount()) {
+  if (IsOffTheRecordSessionActive() || BrowserList::GetGuestBrowserCount()) {
     return;
   }
 

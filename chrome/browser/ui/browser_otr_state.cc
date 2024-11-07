@@ -6,10 +6,6 @@
 
 #include "chrome/browser/ui/browser_list.h"
 
-namespace chrome {
-
 bool IsOffTheRecordSessionActive() {
   return BrowserList::IsOffTheRecordBrowserActive();
 }
-
-}  // namespace chrome

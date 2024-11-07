@@ -157,7 +157,7 @@ bool ChromeTracingDelegate::IsActionAllowed(
   }
 
   if (requires_anonymized_data &&
-      (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {
+      (incognito_launched_ || IsOffTheRecordSessionActive())) {
     tracing::RecordDisallowedMetric(
         tracing::TracingFinalizationDisallowedReason::kIncognitoLaunched);
     return false;
