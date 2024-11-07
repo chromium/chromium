@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 
 #include <string>
 
@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -32,7 +33,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
-BrowserFeaturePromoController::BrowserFeaturePromoController(
+BrowserFeaturePromoController20::BrowserFeaturePromoController20(
     BrowserView* browser_view,
     feature_engagement::Tracker* feature_engagement_tracker,
     user_education::FeaturePromoRegistry* registry,
@@ -41,46 +42,22 @@ BrowserFeaturePromoController::BrowserFeaturePromoController(
     user_education::FeaturePromoSessionPolicy* session_policy,
     user_education::TutorialService* tutorial_service,
     user_education::ProductMessagingController* messaging_controller)
-    : FeaturePromoControllerCommon(feature_engagement_tracker,
-                                   registry,
-                                   help_bubble_registry,
-                                   storage_service,
-                                   session_policy,
-                                   tutorial_service,
-                                   messaging_controller),
+    : FeaturePromoController20(feature_engagement_tracker,
+                               registry,
+                               help_bubble_registry,
+                               storage_service,
+                               session_policy,
+                               tutorial_service,
+                               messaging_controller),
       browser_view_(browser_view) {}
 
-BrowserFeaturePromoController::~BrowserFeaturePromoController() = default;
+BrowserFeaturePromoController20::~BrowserFeaturePromoController20() = default;
 
-// static
-void BrowserFeaturePromoController::MaybeCloseOverlappingHelpBubbles(
-    const views::View* view) {
-  if (!view) {
-    return;
-  }
-  const views::Widget* widget = view->GetWidget();
-  if (!widget) {
-    return;
-  }
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-      widget->GetPrimaryWindowWidget()->GetNativeWindow());
-  if (!browser_view) {
-    return;
-  }
-
-  if (auto* const controller = static_cast<BrowserFeaturePromoController*>(
-          browser_view->GetFeaturePromoController(
-              base::PassKey<BrowserFeaturePromoController>()))) {
-    controller->DismissNonCriticalBubbleInRegion(view->GetBoundsInScreen());
-  }
-}
-
-ui::ElementContext BrowserFeaturePromoController::GetAnchorContext() const {
+ui::ElementContext BrowserFeaturePromoController20::GetAnchorContext() const {
   return views::ElementTrackerViews::GetContextForView(browser_view_);
 }
 
-bool BrowserFeaturePromoController::CanShowPromoForElement(
+bool BrowserFeaturePromoController20::CanShowPromoForElement(
     ui::TrackedElement* anchor_element) const {
   // Trying to show an IPH while the browser is closing can cause problems;
   // see crbug.com/346461762 for an example.
@@ -145,84 +122,34 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
 }
 
 const ui::AcceleratorProvider*
-BrowserFeaturePromoController::GetAcceleratorProvider() const {
+BrowserFeaturePromoController20::GetAcceleratorProvider() const {
   return browser_view_;
 }
 
-std::u16string BrowserFeaturePromoController::GetTutorialScreenReaderHint()
+std::u16string BrowserFeaturePromoController20::GetTutorialScreenReaderHint()
     const {
-  ui::Accelerator accelerator;
-  std::u16string accelerator_text;
-#if BUILDFLAG(IS_CHROMEOS)
-  // IDC_FOCUS_NEXT_PANE still reports as F6 on ChromeOS, but many ChromeOS
-  // devices do not have function keys. Therefore, instead prompt the other
-  // accelerator that does the same thing.
-  static const auto kAccelerator = IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY;
-#else
-  static const auto kAccelerator = IDC_FOCUS_NEXT_PANE;
-#endif
-  if (browser_view_->GetAccelerator(kAccelerator, &accelerator)) {
-    accelerator_text = accelerator.GetShortcutText();
-  } else {
-    NOTREACHED();
-  }
-  return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION,
-                                    accelerator.GetShortcutText());
+  return BrowserHelpBubble::GetFocusTutorialBubbleScreenReaderHint(
+      browser_view_);
 }
 
 std::u16string
-BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
+BrowserFeaturePromoController20::GetFocusHelpBubbleScreenReaderHint(
     user_education::FeaturePromoSpecification::PromoType promo_type,
     ui::TrackedElement* anchor_element) const {
-  return GetFocusHelpBubbleScreenReaderHintCommon(promo_type, browser_view_,
-                                                  anchor_element);
+  return BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
+      promo_type, browser_view_, anchor_element);
 }
 
-std::u16string GetFocusHelpBubbleScreenReaderHintCommon(
-    user_education::FeaturePromoSpecification::PromoType promo_type,
-    const ui::AcceleratorProvider* accelerator_provider,
-    ui::TrackedElement* anchor_element) {
-  // No message is required as this is a background bubble with a
-  // screen reader-specific prompt and will dismiss itself.
-  if (promo_type ==
-      user_education::FeaturePromoSpecification::PromoType::kToast) {
-    return std::u16string();
-  }
-
-  ui::Accelerator accelerator;
-  std::u16string accelerator_text;
-  CHECK(accelerator_provider->GetAcceleratorForCommandId(IDC_FOCUS_NEXT_PANE,
-                                                         &accelerator));
-  accelerator_text = accelerator.GetShortcutText();
-
-  // Present the user with the full help bubble navigation shortcut.
-  auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
-  if (promo_type ==
-          user_education::FeaturePromoSpecification::PromoType::kTutorial ||
-      (anchor_view &&
-       (anchor_view->view()
-            ->GetViewAccessibility()
-            .IsAccessibilityFocusable() ||
-        views::IsViewClass<views::AccessiblePaneView>(anchor_view->view())))) {
-    return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION,
-                                      accelerator_text);
-  }
-
-  // Present the user with an abridged help bubble navigation shortcut.
-  return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_DESCRIPTION,
-                                    accelerator_text);
-}
-
-std::u16string BrowserFeaturePromoController::GetBodyIconAltText() const {
+std::u16string BrowserFeaturePromoController20::GetBodyIconAltText() const {
   return l10n_util::GetStringUTF16(IDS_CHROME_TIP);
 }
 
 const base::Feature*
-BrowserFeaturePromoController::GetScreenReaderPromptPromoFeature() const {
+BrowserFeaturePromoController20::GetScreenReaderPromptPromoFeature() const {
   return &feature_engagement::kIPHFocusHelpBubbleScreenReaderPromoFeature;
 }
 
-const char* BrowserFeaturePromoController::GetScreenReaderPromptPromoEventName()
-    const {
+const char*
+BrowserFeaturePromoController20::GetScreenReaderPromptPromoEventName() const {
   return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
 }

@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+
 namespace user_education {
+class FeaturePromoControllerCommon;
 class FeaturePromoRegistry;
 class HelpBubbleDelegate;
 class HelpBubbleFactoryRegistry;
@@ -15,7 +18,6 @@ class NewBadgeRegistry;
 class TutorialRegistry;
 }  // namespace user_education
 
-class BrowserFeaturePromoController;
 class BrowserView;
 
 // These do low-level initialization of data structures required for user
@@ -35,7 +37,7 @@ extern void MaybeRegisterChromeTutorials(
 // headless, kiosk, guest, incognito, and other off-the-record browsers do
 // _not_ show IPH. Initializes all other User Education data associated with the
 // browser as well.
-extern std::unique_ptr<BrowserFeaturePromoController>
+extern std::unique_ptr<user_education::FeaturePromoControllerCommon>
 CreateUserEducationResources(BrowserView* browser_view);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_USER_EDUCATION_SERVICE_H_

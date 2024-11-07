@@ -15,7 +15,7 @@
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 
 class AppMenuButton;
-class BrowserFeaturePromoController;
+class BrowserHelpBubble;
 class UserEducationInternalsPageHandlerImpl;
 
 namespace content {
@@ -57,7 +57,7 @@ class BrowserUserEducationInterface {
   // feature promo controller.
   template <typename T>
     requires std::same_as<T, AppMenuButton> ||
-             std::same_as<T, BrowserFeaturePromoController> ||
+             std::same_as<T, BrowserHelpBubble> ||
              std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
              std::same_as<T, web_app::WebAppUiManagerImpl>
   user_education::FeaturePromoController* GetFeaturePromoController(

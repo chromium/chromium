@@ -170,7 +170,6 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -5295,7 +5294,8 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
   return ShowEyeDropper(frame, listener);
 }
 
-BrowserFeaturePromoController* BrowserView::GetFeaturePromoControllerImpl() {
+user_education::FeaturePromoControllerCommon*
+BrowserView::GetFeaturePromoControllerImpl() {
   return feature_promo_controller_.get();
 }
 

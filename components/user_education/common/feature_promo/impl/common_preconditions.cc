@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_education/common/feature_promo/common_preconditions.h"
+#include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 
 #include "base/functional/bind.h"
 #include "components/feature_engagement/public/tracker.h"

@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -57,18 +57,19 @@ BASE_FEATURE(kLegalNoticeTestFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
-class BrowserFeaturePromoControllerUiTest : public InteractiveFeaturePromoTest {
+class BrowserFeaturePromoController20UiTest
+    : public InteractiveFeaturePromoTest {
  public:
-  BrowserFeaturePromoControllerUiTest()
+  BrowserFeaturePromoController20UiTest()
       : InteractiveFeaturePromoTest(UseMockTracker(),
                                     ClockMode::kUseDefaultClock) {}
 
-  ~BrowserFeaturePromoControllerUiTest() override = default;
+  ~BrowserFeaturePromoController20UiTest() override = default;
 
-  BrowserFeaturePromoControllerUiTest(
-      const BrowserFeaturePromoControllerUiTest&) = delete;
-  BrowserFeaturePromoControllerUiTest& operator=(
-      const BrowserFeaturePromoControllerUiTest&) = delete;
+  BrowserFeaturePromoController20UiTest(
+      const BrowserFeaturePromoController20UiTest&) = delete;
+  BrowserFeaturePromoController20UiTest& operator=(
+      const BrowserFeaturePromoController20UiTest&) = delete;
 
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
@@ -182,7 +183,7 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   user_education::FeaturePromoController* promo_controller() const {
-    return static_cast<BrowserFeaturePromoController*>(
+    return static_cast<BrowserFeaturePromoController20*>(
         browser()->window()->GetFeaturePromoControllerForTesting());
   }
 
@@ -191,7 +192,8 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveFeaturePromoTest {
   base::UserActionTester user_action_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest, LogsAbortMetrics) {
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
+                       LogsAbortMetrics) {
   RunTestSequence(MaybeShowPromo(kToastTestFeature),
                   AbortPromo(kToastTestFeature),
                   CheckMetrics(kToastTestFeature,
@@ -202,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest, LogsAbortMetrics) {
                                /*custom_action_count*/ 0));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                        LogsEngagedMetrics) {
   RunTestSequence(MaybeShowPromo(kToastTestFeature),
                   UseFeature(kToastTestFeature),
@@ -214,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                                /*custom_action_count*/ 0));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                        LogsCustomActionMetrics) {
   RunTestSequence(MaybeShowPromo(kCustomActionTestFeature),
                   PressNonDefaultPromoButton(),
@@ -226,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                                /*custom_action_count*/ 1));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                        CanShowPromoReturnsExpectedValue) {
   RunTestSequence(
       QueryIPH(kToastTestFeature,
@@ -239,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                user_education::FeaturePromoResult::kPermanentlyDismissed));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                        CallbackHappensAfterCancel) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
@@ -260,19 +262,18 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
       CheckVariable(close_reason, FeaturePromoClosedReason::kCancel));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                        CallbackHappensAfterConfirm) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
   user_education::FeaturePromoParams params(kCustomActionTestFeature);
   params.close_callback =
-      base::BindLambdaForTesting(
-          [this, &called, &close_reason]() {
-            called = true;
-            EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
-                kCustomActionTestFeature, &close_reason));
-          });
+      base::BindLambdaForTesting([this, &called, &close_reason]() {
+        called = true;
+        EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
+            kCustomActionTestFeature, &close_reason));
+      });
 
   RunTestSequence(
       MaybeShowPromo(std::move(params),
@@ -281,21 +282,20 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
       CheckVariable(close_reason, FeaturePromoClosedReason::kDismiss));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20UiTest,
                        CallbackHappensAfterCustomAction) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
   user_education::FeaturePromoParams params(kLegalNoticeTestFeature);
   params.close_callback =
-      base::BindLambdaForTesting(
-          [this, &called, &close_reason]() {
-            // Normal promos will defer writing close data until the promo is
-            // fully ended.
-            called = true;
-            EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
-                kLegalNoticeTestFeature, &close_reason));
-          });
+      base::BindLambdaForTesting([this, &called, &close_reason]() {
+        // Normal promos will defer writing close data until the promo is
+        // fully ended.
+        called = true;
+        EXPECT_TRUE(promo_controller()->HasPromoBeenDismissed(
+            kLegalNoticeTestFeature, &close_reason));
+      });
 
   RunTestSequence(
       MaybeShowPromo(std::move(params),
@@ -306,14 +306,14 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
 
 // Using the base interactive browser test re-enables window activation
 // checking.
-using BrowserFeaturePromoControllerActivationUiTest = InteractiveBrowserTest;
+using BrowserFeaturePromoController20ActivationUiTest = InteractiveBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerActivationUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20ActivationUiTest,
                        CanShowPromoForElement) {
   auto widget = std::make_unique<views::Widget>();
 
   auto can_show_promo = [this](ui::TrackedElement* anchor) {
-    return static_cast<BrowserFeaturePromoController*>(
+    return static_cast<BrowserFeaturePromoController20*>(
                browser()->window()->GetFeaturePromoControllerForTesting())
         ->CanShowPromoForElement(anchor);
   };

@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/grit/generated_resources.h"
@@ -243,8 +243,9 @@ class FeaturePromoLifecycleUiTest : public TestBase {
                              "CheckHistogram(%s)", name.c_str())));
   }
 
-  static BrowserFeaturePromoController* GetPromoController(Browser* browser) {
-    return static_cast<BrowserFeaturePromoController*>(
+  static user_education::FeaturePromoControllerCommon* GetPromoController(
+      Browser* browser) {
+    return static_cast<user_education::FeaturePromoControllerCommon*>(
         browser->window()->GetFeaturePromoControllerForTesting());
   }
 
@@ -526,12 +527,10 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                        DismissInRegionRecordsHistogram) {
   RunTestSequence(
       ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
-      WithView(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
-          [](user_education::HelpBubbleView* bubble) {
-            BrowserFeaturePromoController::MaybeCloseOverlappingHelpBubbles(
-                bubble);
-          }),
+      WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+               [](user_education::HelpBubbleView* bubble) {
+                 BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(bubble);
+               }),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       CheckMessageActionHistogram(

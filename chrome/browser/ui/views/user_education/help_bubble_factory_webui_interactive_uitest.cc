@@ -23,10 +23,10 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
@@ -171,7 +171,8 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   user_education::HelpBubbleFactoryRegistry* GetHelpBubbleFactory() {
     auto* const controller =
         browser()->window()->GetFeaturePromoControllerForTesting();
-    return static_cast<BrowserFeaturePromoController*>(controller)
+    return static_cast<user_education::FeaturePromoControllerCommon*>(
+               controller)
         ->bubble_factory_registry();
   }
 

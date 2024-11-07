@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_COMMON_PRECONDITIONS_H_
-#define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_COMMON_PRECONDITIONS_H_
+#ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_COMMON_PRECONDITIONS_H_
+#define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_COMMON_PRECONDITIONS_H_
 
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -76,4 +76,4 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
 
 }  // namespace user_education
 
-#endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_COMMON_PRECONDITIONS_H_
+#endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_COMMON_PRECONDITIONS_H_
