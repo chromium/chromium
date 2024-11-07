@@ -79,6 +79,10 @@ QuicSessionKey::QuicSessionKey(
       require_dns_https_alpn_(require_dns_https_alpn) {}
 
 QuicSessionKey::QuicSessionKey(const QuicSessionKey& other) = default;
+QuicSessionKey::QuicSessionKey(QuicSessionKey&& other) = default;
+QuicSessionKey& QuicSessionKey::operator=(const QuicSessionKey& other) =
+    default;
+QuicSessionKey& QuicSessionKey::operator=(QuicSessionKey&& other) = default;
 
 bool QuicSessionKey::operator<(const QuicSessionKey& other) const {
   const uint16_t port = server_id_.port();
