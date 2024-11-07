@@ -23,6 +23,12 @@
 namespace ash {
 
 bool IsStyleTransferSupportedByVc() {
+  // The toggle is added only if it's supported. After added, dlc progress will
+  // be queried. To avoid getting `nullopt` when querying dlcs, we export
+  // `false` here if it's `nullopt`.
+  if (CrasAudioHandler::Get()->GetAudioEffectDlcs() == std::nullopt) {
+    return false;
+  }
   return CrasAudioHandler::Get()->IsStyleTransferSupportedForDevice(
       CrasAudioHandler::Get()->GetPrimaryActiveInputNode());
 }
@@ -30,6 +36,12 @@ bool IsStyleTransferSupportedByVc() {
 // Vc can only support either noise cancellation or style transfer. So we skip
 // noise cancellation if style transfer is supported already.
 bool IsNoiseCancellationSupportedByVc() {
+  // The toggle is added only if it's supported. After added, dlc progress will
+  // be queried. To avoid getting `nullopt` when querying dlcs, we export
+  // `false` here if it's `nullopt`.
+  if (CrasAudioHandler::Get()->GetAudioEffectDlcs() == std::nullopt) {
+    return false;
+  }
   return CrasAudioHandler::Get()->IsNoiseCancellationSupportedForDevice(
              CrasAudioHandler::Get()->GetPrimaryActiveInputNode()) &&
          !IsStyleTransferSupportedByVc();

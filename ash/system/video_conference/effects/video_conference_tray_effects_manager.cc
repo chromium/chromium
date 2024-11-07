@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
@@ -214,9 +215,11 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kStudioLook:
       return {"ml-core-dlc"};
-    case VcEffectId::kTestEffect:
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kStyleTransfer:
+      CHECK(CrasAudioHandler::Get()->GetAudioEffectDlcs() != std::nullopt);
+      return CrasAudioHandler::Get()->GetAudioEffectDlcs().value();
+    case VcEffectId::kTestEffect:
     case VcEffectId::kCameraFraming:
       return {};
   }
