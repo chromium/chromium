@@ -6472,7 +6472,7 @@
   {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
     "owners": [ "mahmadi@chromium.org", "ender@google.com", "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-max-url-matches",
