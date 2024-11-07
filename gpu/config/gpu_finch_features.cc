@@ -349,7 +349,7 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
 // in the GPU process before we can re-enable this feature.
 BASE_FEATURE(kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported,
              "SharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enable Skia Graphite. This will use the Dawn backend by default, but can be
