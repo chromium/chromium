@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_command_delegate.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -23,19 +24,91 @@ namespace ash {
 
 namespace {
 
+using enum ScannerFeatureUserState;
+
+void RecordPopulateActionFailure(
+    manta::proto::ScannerAction::ActionCase action_case) {
+  // TODO(b/363101363): Add tests once scanner action view model tests are set
+  // up.
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      RecordScannerFeatureUserState(kNewCalendarEventActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::kNewContact:
+      RecordScannerFeatureUserState(kNewContactActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      RecordScannerFeatureUserState(kNewGoogleDocActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      RecordScannerFeatureUserState(kNewGoogleSheetActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      RecordScannerFeatureUserState(kCopyToClipboardActionPopulationFailed);
+      return;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      return;
+  }
+}
+
+void RecordActionExecutionAndRun(
+    manta::proto::ScannerAction::ActionCase action_case,
+    ScannerCommandCallback action_finished_callback,
+    bool success) {
+  // TODO(b/363101363): Add tests once scanner action view model tests are set
+  // up.
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      RecordScannerFeatureUserState(
+          success ? kNewCalendarEventActionFinishedSuccessfully
+                  : kNewCalendarEventPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::kNewContact:
+      RecordScannerFeatureUserState(
+          success ? kNewContactActionFinishedSuccessfully
+                  : kNewContactPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      RecordScannerFeatureUserState(
+          success ? kNewGoogleDocActionFinishedSuccessfully
+                  : kNewGoogleDocPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      RecordScannerFeatureUserState(
+          success ? kNewGoogleSheetActionFinishedSuccessfully
+                  : kNewGoogleSheetPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      RecordScannerFeatureUserState(
+          success ? kCopyToClipboardActionFinishedSuccessfully
+                  : kCopyToClipboardPopulatedActionExecutionFailed);
+      break;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      break;
+  }
+
+  std::move(action_finished_callback).Run(success);
+}
+
 // Executes the populated action, if it exists, calling
 // `action_finished_callback` with the result of the execution.
-void ExecutePopulatedAction(base::WeakPtr<ScannerCommandDelegate> delegate,
+void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
+                            base::WeakPtr<ScannerCommandDelegate> delegate,
                             ScannerCommandCallback action_finished_callback,
                             std::optional<ScannerAction> populated_action) {
   if (!populated_action.has_value()) {
+    RecordPopulateActionFailure(action_case);
     std::move(action_finished_callback).Run(false);
     return;
   }
 
+  ScannerCommandCallback record_metrics_callback =
+      base::BindOnce(&RecordActionExecutionAndRun, action_case,
+                     std::move(action_finished_callback));
+
   HandleScannerCommand(std::move(delegate),
                        ScannerActionToCommand(std::move(*populated_action)),
-                       std::move(action_finished_callback));
+                       std::move(record_metrics_callback));
 }
 
 }  // namespace
@@ -92,8 +165,9 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
 
 void ScannerActionViewModel::ExecuteAction(
     ScannerCommandCallback action_finished_callback) const {
-  unpopulated_action_.PopulateToVariant(base::BindOnce(
-      &ExecutePopulatedAction, delegate_, std::move(action_finished_callback)));
+  unpopulated_action_.PopulateToVariant(
+      base::BindOnce(&ExecutePopulatedAction, unpopulated_action_.action_case(),
+                     delegate_, std::move(action_finished_callback)));
 }
 
 }  // namespace ash
