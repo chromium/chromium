@@ -41,7 +41,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -59,6 +58,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTestUti
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -379,7 +379,7 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/377800167")
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testOpenArchivedTabFromHubSearch() {
         finishLoading();
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));
