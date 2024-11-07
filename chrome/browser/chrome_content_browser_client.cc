@@ -1678,6 +1678,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 #endif
 
   registry->RegisterBooleanPref(prefs::kWebAudioOutputBufferingEnabled, false);
+  registry->RegisterBooleanPref(prefs::kSharedWorkerBlobURLFixEnabled, true);
 }
 
 // static
@@ -3276,6 +3277,13 @@ bool ChromeContentBrowserClient::AllowCompressionDictionaryTransport(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return profile->GetPrefs()->GetBoolean(
       prefs::kCompressionDictionaryTransportEnabled);
+}
+
+bool ChromeContentBrowserClient::AllowSharedWorkerBlobURLFix(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile->GetPrefs()->GetBoolean(prefs::kSharedWorkerBlobURLFixEnabled);
 }
 
 void ChromeContentBrowserClient::RequestFilesAccess(

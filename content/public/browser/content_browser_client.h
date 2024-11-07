@@ -881,6 +881,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // feature can be used. This is called on the UI thread.
   virtual bool AllowCompressionDictionaryTransport(BrowserContext* context);
 
+  // Allow to apply the fix to make SharedWorker with a blob URL inherit a
+  // ServiceWorker controller, which is aligned with the specification.
+  // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client.
+  virtual bool AllowSharedWorkerBlobURLFix(BrowserContext* context);
+
   virtual bool IsDataSaverEnabled(BrowserContext* context);
 
   // Updates the given prefs for Service Worker and Shared Worker. The prefs

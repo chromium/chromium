@@ -4371,6 +4371,11 @@ inline constexpr char kExtensibleEnterpriseSSOEnabled[] =
 // Allow or don't allow bypassing WebAudio output buffering
 inline constexpr char kWebAudioOutputBufferingEnabled[] =
     "web_audio_output_buffering_enabled";
+
+// Boolean that specifies whether a controller inherits if a blob URL
+// is set as a SharedWorker script URL.
+inline constexpr char kSharedWorkerBlobURLFixEnabled[] =
+    "worker.shared_worker_blob_url_fix_enabled";
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

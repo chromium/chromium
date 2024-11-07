@@ -165,7 +165,9 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
   if ((tentative_resource_request.destination ==
            network::mojom::RequestDestination::kSharedWorker &&
-       base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix)) ||
+       base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix) &&
+       GetContentClient()->browser()->AllowSharedWorkerBlobURLFix(
+           browser_context)) ||
       tentative_resource_request.destination ==
           network::mojom::RequestDestination::kWorker) {
     // For the blob worker case, inherit the controller from the worker's

@@ -2177,6 +2177,7 @@ chromium-metrics-reviews@google.com.
   <int value="1310" label="WebAudioOutputBufferingEnabled"/>
   <int value="1311" label="NTPOutlookCardVisible"/>
   <int value="1312" label="NTPSharepointCardVisible"/>
+  <int value="1313" label="SharedWorkerBlobURLFixEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

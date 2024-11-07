@@ -419,6 +419,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDownloadRestrictions,
     prefs::kDownloadRestrictions,
     base::Value::Type::INTEGER },
+  { key::kSharedWorkerBlobURLFixEnabled,
+    prefs::kSharedWorkerBlobURLFixEnabled,
+    base::Value::Type::BOOLEAN},
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,
