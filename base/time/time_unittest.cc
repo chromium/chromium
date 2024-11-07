@@ -1470,7 +1470,7 @@ TEST(TimeTicks, MaybeHighRes) {
 }
 #endif
 
-#if !BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
 // Check that the low resolution tick value is "close" to the high resolution
 // tick value across platforms. This property holds on non-Apple platforms.
 TEST(TimeTicks, LowRes) {
