@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/service/input/render_input_router_delegate_impl.h"
+#include "components/viz/service/input/render_input_router_iterator_impl.h"
 #include "components/viz/service/input/render_input_router_support_child_frame.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -121,7 +122,7 @@ void InputManager::OnCreateCompositorFrameSink(
 
   // |rir_delegate| should outlive |render_input_router|.
   auto rir_delegate = std::make_unique<RenderInputRouterDelegateImpl>(
-      it->second, frame_sink_id);
+      it->second, *this, frame_sink_id, grouping_id);
 
   auto render_input_router = std::make_unique<input::RenderInputRouter>(
       /* host */ nullptr,
@@ -229,6 +230,53 @@ RenderInputRouterSupportBase* InputManager::GetRootRenderInputRouterSupport(
   return nullptr;
 }
 
+std::unique_ptr<input::RenderInputRouterIterator>
+InputManager::GetEmbeddedRenderInputRouters(const FrameSinkId& id) {
+  auto rirs = std::make_unique<RenderInputRouterIteratorImpl>(
+      *this, frame_sink_manager_->GetChildrenByParent(id));
+  return std::move(rirs);
+}
+
+void InputManager::NotifyObserversOfInputEvent(
+    const FrameSinkId& frame_sink_id,
+    uint32_t grouping_id,
+    std::unique_ptr<blink::WebCoalescedInputEvent> event) {
+  rir_delegate_remote_map_.at(grouping_id)
+      ->NotifyObserversOfInputEvent(frame_sink_id, std::move(event));
+}
+
+void InputManager::NotifyObserversOfInputEventAcks(
+    const FrameSinkId& frame_sink_id,
+    uint32_t grouping_id,
+    blink::mojom::InputEventResultSource ack_source,
+    blink::mojom::InputEventResultState ack_result,
+    std::unique_ptr<blink::WebCoalescedInputEvent> event) {
+  rir_delegate_remote_map_.at(grouping_id)
+      ->NotifyObserversOfInputEventAcks(frame_sink_id, ack_source, ack_result,
+                                        std::move(event));
+}
+
+void InputManager::OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
+                                             uint32_t grouping_id) {
+  rir_delegate_remote_map_.at(grouping_id)
+      ->OnInvalidInputEventSource(frame_sink_id);
+}
+
+void InputManager::SetupRenderInputRouterDelegateConnection(
+    uint32_t grouping_id,
+    mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+        rir_delegate_remote) {
+  rir_delegate_remote_map_[grouping_id].Bind(std::move(rir_delegate_remote));
+  rir_delegate_remote_map_[grouping_id].set_disconnect_handler(
+      base::BindOnce(&InputManager::OnRIRDelegateClientDisconnected,
+                     base::Unretained(this), grouping_id));
+}
+
+input::RenderInputRouter* InputManager::GetRenderInputRouterFromFrameSinkId(
+    const FrameSinkId& id) {
+  return rir_map_[id].get();
+}
+
 std::unique_ptr<RenderInputRouterSupportBase>
 InputManager::MakeRenderInputRouterSupport(input::RenderInputRouter* rir,
                                            const FrameSinkId& frame_sink_id) {
@@ -246,6 +294,10 @@ InputManager::MakeRenderInputRouterSupport(input::RenderInputRouter* rir,
   }
   return std::make_unique<RenderInputRouterSupportChildFrame>(rir, this,
                                                               frame_sink_id);
+}
+
+void InputManager::OnRIRDelegateClientDisconnected(uint32_t grouping_id) {
+  rir_delegate_remote_map_.erase(grouping_id);
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -212,6 +212,15 @@ interface FrameSinkManager {
   [RuntimeFeature=EnableVizTestApis]
   EnableFrameSinkManagerTestApi(
       pending_receiver<FrameSinkManagerTestApi> receiver);
+
+  // Setup the connection between the Browser (at WebContentsImpl level) and
+  // the VizCompositor thread (at InputManager level) to allow transferring
+  // information from Viz to the Browser when the VizCompositor thread is
+  // handling input using RenderInputRouters with InputVizard.
+  SetupRenderInputRouterDelegateConnection(
+    uint32 grouping_id,
+    pending_remote<input.mojom.RenderInputRouterDelegateClient>
+      rir_delegate_client_remote);
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display

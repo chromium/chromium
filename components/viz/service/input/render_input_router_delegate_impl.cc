@@ -1,4 +1,3 @@
-
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -9,13 +8,29 @@
 
 #include "base/notimplemented.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 
+namespace {
+bool IsInputEventContinuous(const blink::WebInputEvent& event) {
+  using Type = blink::mojom::EventType;
+  return (event.GetType() == Type::kTouchMove ||
+          event.GetType() == Type::kGestureScrollUpdate ||
+          event.GetType() == Type::kGesturePinchUpdate);
+}
+
+}  // namespace
+
 RenderInputRouterDelegateImpl::RenderInputRouterDelegateImpl(
     scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier,
-    const FrameSinkId& frame_sink_id)
-    : rwhier_(std::move(rwhier)), frame_sink_id_(frame_sink_id) {
+    Delegate& delegate,
+    const FrameSinkId& frame_sink_id,
+    uint32_t grouping_id)
+    : rwhier_(std::move(rwhier)),
+      delegate_(delegate),
+      frame_sink_id_(frame_sink_id),
+      grouping_id_(grouping_id) {
   TRACE_EVENT_INSTANT(
       "input", "RenderInputRouterDelegateImpl::RenderInputRouterDelegateImpl",
       "frame_sink_id", frame_sink_id);
@@ -44,9 +59,7 @@ RenderInputRouterDelegateImpl::GetLastRenderFrameMetadata() {
 
 std::unique_ptr<input::RenderInputRouterIterator>
 RenderInputRouterDelegateImpl::GetEmbeddedRenderInputRouters() {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return delegate_->GetEmbeddedRenderInputRouters(frame_sink_id_);
 }
 
 input::RenderWidgetHostInputEventRouter*
@@ -68,8 +81,29 @@ bool RenderInputRouterDelegateImpl::PreHandleGestureEvent(
 
 void RenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
     const blink::WebInputEvent& event) {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTIMPLEMENTED();
+  if (IsInputEventContinuous(event)) {
+    return;
+  }
+  auto web_coalesced_event =
+      std::make_unique<blink::WebCoalescedInputEvent>(event, ui::LatencyInfo());
+
+  delegate_->NotifyObserversOfInputEvent(frame_sink_id_, grouping_id_,
+                                         std::move(web_coalesced_event));
+}
+
+void RenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(
+    blink::mojom::InputEventResultSource ack_source,
+    blink::mojom::InputEventResultState ack_result,
+    const blink::WebInputEvent& event) {
+  if (IsInputEventContinuous(event)) {
+    return;
+  }
+  auto web_coalesced_event =
+      std::make_unique<blink::WebCoalescedInputEvent>(event, ui::LatencyInfo());
+
+  delegate_->NotifyObserversOfInputEventAcks(frame_sink_id_, grouping_id_,
+                                             ack_source, ack_result,
+                                             std::move(web_coalesced_event));
 }
 
 bool RenderInputRouterDelegateImpl::IsInitializedAndNotDead() {
@@ -83,6 +117,10 @@ input::TouchEmulator* RenderInputRouterDelegateImpl::GetTouchEmulator(
     bool create_if_necessary) {
   // Touch emulation is handled solely on browser.
   return nullptr;
+}
+
+void RenderInputRouterDelegateImpl::OnInvalidInputEventSource() {
+  delegate_->OnInvalidInputEventSource(frame_sink_id_, grouping_id_);
 }
 
 std::unique_ptr<input::PeakGpuMemoryTracker>

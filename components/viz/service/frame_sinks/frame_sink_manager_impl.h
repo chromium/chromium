@@ -190,6 +190,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       override;
   void EnableFrameSinkManagerTestApi(
       mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) override;
+  void SetupRenderInputRouterDelegateConnection(
+      uint32_t grouping_id,
+      mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+          rir_delegate_client_remote) override;
 
   // mojom::FrameSinksMetricsTracker implementation:
   void StartFrameCounting(base::TimeTicks start_time,

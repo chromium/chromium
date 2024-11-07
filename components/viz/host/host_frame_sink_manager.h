@@ -208,6 +208,15 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
                            std::unique_ptr<CopyOutputRequest> request,
                            bool capture_exact_surface_id = false);
 
+  // Setup the connection between the Browser (at WebContentsImpl level) and the
+  // VizCompositor thread (at InputManager level) to allow transferring
+  // information from Viz to the Browser when the VizCompositor thread is
+  // handling input with InputVizard.
+  void SetupRenderInputRouterDelegateConnection(
+      uint32_t grouping_id,
+      mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+          rir_delegate_client_remote);
+
   using ScreenshotDestinationReadyCallback =
       base::OnceCallback<void(const SkBitmap& copy_output)>;
   // Sets the callback which is invoked when a `CopyOutputResult` associated

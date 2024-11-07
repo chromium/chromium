@@ -1180,6 +1180,14 @@ void FrameSinkManagerImpl::EnableFrameSinkManagerTestApi(
   test_api_receiver_.Bind(std::move(receiver));
 }
 
+void FrameSinkManagerImpl::SetupRenderInputRouterDelegateConnection(
+    uint32_t grouping_id,
+    mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+        rir_delegate_client_remote) {
+  input_manager_->SetupRenderInputRouterDelegateConnection(
+      grouping_id, std::move(rir_delegate_client_remote));
+}
+
 void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {
   if (root_begin_frame_source_ && gpu_service_) {
     if (toggle) {

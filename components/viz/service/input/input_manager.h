@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/input/render_input_router.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/utils.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -54,7 +55,8 @@ class VIZ_SERVICE_EXPORT InputManager
 #if BUILDFLAG(IS_ANDROID)
       public AndroidInputCallbackClient,
 #endif
-      public RenderInputRouterSupportBase::Delegate {
+      public RenderInputRouterSupportBase::Delegate,
+      public RenderInputRouterDelegateImpl::Delegate {
  public:
   explicit InputManager(FrameSinkManagerImpl* frame_sink_manager);
 
@@ -93,10 +95,36 @@ class VIZ_SERVICE_EXPORT InputManager
                      const FrameSinkId& root_frame_sink_id) override;
 #endif
 
+  // RenderInputRouterDelegateImpl::Delegate implementation.
+  std::unique_ptr<input::RenderInputRouterIterator>
+  GetEmbeddedRenderInputRouters(const FrameSinkId& id) override;
+  void NotifyObserversOfInputEvent(
+      const FrameSinkId& frame_sink_id,
+      uint32_t grouping_id,
+      std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
+  void NotifyObserversOfInputEventAcks(
+      const FrameSinkId& frame_sink_id,
+      uint32_t grouping_id,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result,
+      std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
+  void OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
+                                 uint32_t grouping_id) override;
+
+  void SetupRenderInputRouterDelegateConnection(
+      uint32_t grouping_id,
+      mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+          rir_delegate_client_remote);
+
+  input::RenderInputRouter* GetRenderInputRouterFromFrameSinkId(
+      const FrameSinkId& id);
+
  private:
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
       input::RenderInputRouter* rir,
       const FrameSinkId& frame_sink_id);
+
+  void OnRIRDelegateClientDisconnected(uint32_t grouping_id);
 
 #if BUILDFLAG(IS_ANDROID)
   void CreateAndroidInputReceiver(const FrameSinkId& frame_sink_id,
@@ -121,6 +149,14 @@ class VIZ_SERVICE_EXPORT InputManager
   // the layer tree frame sinks requested by renderers.
   base::flat_map<FrameSinkId, std::unique_ptr<input::RenderInputRouter>>
       rir_map_;
+
+  // Keeps track of RIRDelegateClient connections, which are between
+  // WebContentsImpl (in the Browser) and InputManager (in Viz) using a
+  // CompositorFrameSink grouping_id sent from the browser. This interface is
+  // used by Viz to update browser's state of input event handling in Viz.
+  base::flat_map</*grouping_id=*/uint32_t,
+                 mojo::Remote<input::mojom::RenderInputRouterDelegateClient>>
+      rir_delegate_remote_map_;
 
   raw_ptr<FrameSinkManagerImpl> frame_sink_manager_;
 

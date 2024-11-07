@@ -14,6 +14,7 @@
 #include "components/input/render_input_router_iterator.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 
 namespace input {
 class RenderWidgetHostViewInput;
@@ -29,9 +30,29 @@ namespace viz {
 class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
     : public input::RenderInputRouterDelegate {
  public:
-  explicit RenderInputRouterDelegateImpl(
+  class Delegate {
+   public:
+    virtual std::unique_ptr<input::RenderInputRouterIterator>
+    GetEmbeddedRenderInputRouters(const FrameSinkId& id) = 0;
+    virtual void NotifyObserversOfInputEvent(
+        const FrameSinkId& frame_sink_id,
+        uint32_t grouping_id,
+        std::unique_ptr<blink::WebCoalescedInputEvent> event) = 0;
+    virtual void NotifyObserversOfInputEventAcks(
+        const FrameSinkId& frame_sink_id,
+        uint32_t grouping_id,
+        blink::mojom::InputEventResultSource ack_source,
+        blink::mojom::InputEventResultState ack_result,
+        std::unique_ptr<blink::WebCoalescedInputEvent> event) = 0;
+    virtual void OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
+                                           uint32_t grouping_id) = 0;
+  };
+
+  RenderInputRouterDelegateImpl(
       scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier,
-      const FrameSinkId& frame_sink_id);
+      Delegate& delegate,
+      const FrameSinkId& frame_sink_id,
+      uint32_t grouping_id);
 
   ~RenderInputRouterDelegateImpl() override;
 
@@ -52,7 +73,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   void NotifyObserversOfInputEventAcks(
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,
-      const blink::WebInputEvent& event) override {}
+      const blink::WebInputEvent& event) override;
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
   std::unique_ptr<input::PeakGpuMemoryTracker> MakePeakGpuMemoryTracker(
       input::PeakGpuMemoryTracker::Usage usage) override;
@@ -62,14 +83,16 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
       blink::mojom::InputEventResultState ack_result) override {}
   bool IsInitializedAndNotDead() override;
   void OnInputEventPreDispatch(const blink::WebInputEvent& event) override {}
-  void OnInvalidInputEventSource() override {}
+  void OnInvalidInputEventSource() override;
   void NotifyUISchedulerOfGestureEventUpdate(
       blink::WebInputEvent::Type gesture_event) override {}
   void OnInputIgnored(const blink::WebInputEvent& event) override {}
 
  private:
   scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier_;
+  raw_ref<Delegate> delegate_;
   const FrameSinkId frame_sink_id_;
+  const uint32_t grouping_id_;
 };
 
 }  // namespace viz

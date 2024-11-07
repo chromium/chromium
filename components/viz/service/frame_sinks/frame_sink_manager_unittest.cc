@@ -18,6 +18,7 @@
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/input/mock_input_manager.h"
+#include "components/viz/service/input/render_input_router_iterator_impl.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/begin_frame_source_test.h"
@@ -146,6 +147,15 @@ class FrameSinkManagerTest : public testing::Test {
     config->rir_client = std::move(rir_client);
     config->grouping_id = grouping_id;
     return config;
+  }
+
+  base::flat_set<FrameSinkId> GetEmbeddedRenderInputRouters(
+      const FrameSinkId& frame_sink_id) {
+    auto rir_iterator =
+        GetMockInputManager()->GetEmbeddedRenderInputRouters(frame_sink_id);
+
+    return static_cast<RenderInputRouterIteratorImpl*>(rir_iterator.get())
+        ->GetRenderInputRoutersForTesting();
   }
 
   // testing::Test implementation.
@@ -424,7 +434,7 @@ TEST_F(FrameSinkManagerTest, FrameSinkParentChildRelationship) {
       manager_.GetOldestRootCompositorFrameSinkId(client_e->frame_sink_id()),
       root2->frame_sink_id());
 
-  // // Attach A into root2's subtree, like a window moving across displays.
+  //  Attach A into root2's subtree, like a window moving across displays.
   // root1 -> A -> B -> C
   //               + -> D
   // root2 -> E -> A -> B -> C
@@ -1444,7 +1454,7 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
       GetMockInputManager()->GetRootRenderInputRouterSupport(kFrameSinkIdD),
       GetMockInputManager()->GetSupportForFrameSink(kFrameSinkIdA));
 
-  // // Attach A into root2's subtree, like a window moving across displays.
+  // Attach A into root2's subtree, like a window moving across displays.
   // root1 -> A -> B -> C
   //               + -> D
   // root2 -> E -> A -> B -> C
@@ -1478,6 +1488,100 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
   EXPECT_EQ(
       GetMockInputManager()->GetRootRenderInputRouterSupport(kFrameSinkIdD),
       GetMockInputManager()->GetSupportForFrameSink(kFrameSinkIdE));
+
+  manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdRoot2, kFrameSinkIdE);
+  manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdD);
+  manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdC);
+  manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdE, kFrameSinkIdA);
+
+  // Delete RootCompositorFrameSinks.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot2);
+
+  // Invalidating should destroy the CompositorFrameSinkImpl's.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_.InvalidateFrameSinkId(kFrameSinkIdB);
+  manager_.InvalidateFrameSinkId(kFrameSinkIdC);
+  manager_.InvalidateFrameSinkId(kFrameSinkIdD);
+  manager_.InvalidateFrameSinkId(kFrameSinkIdE);
+}
+
+TEST_P(AndroidFrameSinkManagerTest, EmbeddedRenderInputRouters) {
+  const bool expected_creation = input::IsTransferInputToVizSupported();
+
+  if (!expected_creation) {
+    return;
+  }
+
+  RootCompositorFrameSinkData root_data1;
+  manager_.CreateRootCompositorFrameSink(
+      root_data1.BuildParams(kFrameSinkIdRoot));
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdRoot));
+
+  RootCompositorFrameSinkData root_data2;
+  manager_.CreateRootCompositorFrameSink(
+      root_data2.BuildParams(kFrameSinkIdRoot2));
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdRoot2));
+
+  manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
+  manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
+  manager_.RegisterFrameSinkId(kFrameSinkIdC, true /* report_activation */);
+  manager_.RegisterFrameSinkId(kFrameSinkIdD, true /* report_activation */);
+  manager_.RegisterFrameSinkId(kFrameSinkIdE, true /* report_activation */);
+
+  // Create CompositorFrameSinkImpl's.
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdC, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdD, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdE, CreateRIRConfig(/*grouping_id=*/1));
+
+  // Set up initial hierarchy.
+  // root1 -> A -> B -> C
+  //               + -> D
+  // root2 -> E
+  manager_.RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+  manager_.RegisterFrameSinkHierarchy(kFrameSinkIdRoot2, kFrameSinkIdE);
+
+  manager_.RegisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_.RegisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdC);
+  manager_.RegisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdD);
+
+  EXPECT_THAT(
+      GetEmbeddedRenderInputRouters(kFrameSinkIdA),
+      testing::ContainerEq(base::flat_set<FrameSinkId>({kFrameSinkIdB})));
+  EXPECT_THAT(GetEmbeddedRenderInputRouters(kFrameSinkIdB),
+              testing::ContainerEq(
+                  base::flat_set<FrameSinkId>({kFrameSinkIdC, kFrameSinkIdD})));
+  EXPECT_THAT(GetEmbeddedRenderInputRouters(kFrameSinkIdC),
+              testing::ContainerEq(base::flat_set<FrameSinkId>({})));
+
+  // Attach A into root2's subtree, like a window moving across displays.
+  // root1 -> A -> B -> C
+  //               + -> D
+  // root2 -> E -> A -> B -> C
+  //                    + -> D
+  manager_.RegisterFrameSinkHierarchy(kFrameSinkIdE, kFrameSinkIdA);
+
+  // Detach A from root1.
+  manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+
+  // root1
+  // root2 -> E -> A -> B -> C
+  //                    + -> D
+  EXPECT_THAT(
+      GetEmbeddedRenderInputRouters(kFrameSinkIdE),
+      testing::ContainerEq(base::flat_set<FrameSinkId>({kFrameSinkIdA})));
+  EXPECT_THAT(
+      GetEmbeddedRenderInputRouters(kFrameSinkIdA),
+      testing::ContainerEq(base::flat_set<FrameSinkId>({kFrameSinkIdB})));
+  EXPECT_THAT(GetEmbeddedRenderInputRouters(kFrameSinkIdB),
+              testing::ContainerEq(
+                  base::flat_set<FrameSinkId>({kFrameSinkIdC, kFrameSinkIdD})));
+  EXPECT_THAT(
+      GetEmbeddedRenderInputRouters(kFrameSinkIdRoot2),
+      testing::ContainerEq(base::flat_set<FrameSinkId>({kFrameSinkIdE})));
 
   manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdRoot2, kFrameSinkIdE);
   manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
