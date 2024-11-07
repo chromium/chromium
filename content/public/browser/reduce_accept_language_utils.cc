@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/strings/string_util.h"
@@ -53,8 +54,9 @@ std::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
   }
   ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
       browser_context->GetReduceAcceptLanguageControllerDelegate();
-  if (!reduce_accept_lang_delegate)
+  if (!reduce_accept_lang_delegate) {
     return std::nullopt;
+  }
   return std::make_optional<ReduceAcceptLanguageUtils>(
       *reduce_accept_lang_delegate);
 }
@@ -152,8 +154,9 @@ bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
     return false;
   }
 
-  if (!OriginCanReduceAcceptLanguage(request_origin))
+  if (!OriginCanReduceAcceptLanguage(request_origin)) {
     return false;
+  }
 
   // Skip when reading user's accept-language is empty since it's required when
   // doing language negotiation.
@@ -194,20 +197,34 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
     return std::nullopt;
   }
 
-  const std::vector<std::string>& user_accept_languages =
+  const std::optional<url::Origin> origin_for_lookup =
+      GetOriginForLanguageLookup(request_origin, frame_tree_node);
+
+  if (!origin_for_lookup) {
+    return GetFirstUserAcceptLanguage(delegate_->GetUserAcceptLanguages());
+  }
+
+  return LookupReducedAcceptLanguage(request_origin, origin_for_lookup.value());
+}
+
+std::optional<std::string>
+ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
+    const url::Origin& request_origin,
+    const url::Origin& top_frame_origin) {
+  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+      !OriginCanReduceAcceptLanguage(request_origin)) {
+    return std::nullopt;
+  }
+
+  const std::vector<std::string> user_accept_languages =
       delegate_->GetUserAcceptLanguages();
   // Early return when user's accept-language preference is empty.
   if (user_accept_languages.empty()) {
     return std::nullopt;
   }
 
-  const std::optional<url::Origin>& origin_for_lookup =
-      GetOriginForLanguageLookup(request_origin, frame_tree_node);
-
-  const std::optional<std::string>& persisted_language =
-      origin_for_lookup
-          ? delegate_->GetReducedLanguage(origin_for_lookup.value())
-          : std::nullopt;
+  const std::optional<std::string> persisted_language =
+      delegate_->GetReducedLanguage(top_frame_origin);
 
   // We should return user's first accept-language if the feature is enabled
   // and no persist language was found in prefs service.
@@ -217,12 +234,11 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
 
   // Use the preferred language stored by the delegate if it matches any of the
   // user's current preferences.
-  auto iter = base::ranges::find_if(
-      user_accept_languages, [&](const std::string& language) {
-        return DoesAcceptLanguageMatchContentLanguage(
-            language, persisted_language.value());
-      });
-  if (iter != user_accept_languages.end()) {
+  if (std::ranges::any_of(user_accept_languages,
+                          [&](const std::string& language) {
+                            return DoesAcceptLanguageMatchContentLanguage(
+                                language, persisted_language.value());
+                          })) {
     return persisted_language;
   }
 
@@ -230,7 +246,7 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
   // user's currently preferred Accept-Languages, then the user might have
   // changed their preferences since the result was stored. In this case, clear
   // the persisted value and use the first Accept-Language instead.
-  delegate_->ClearReducedLanguage(origin_for_lookup.value());
+  delegate_->ClearReducedLanguage(top_frame_origin);
   return GetFirstUserAcceptLanguage(user_accept_languages);
 }
 

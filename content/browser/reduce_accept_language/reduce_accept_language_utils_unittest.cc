@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 
 #include <array>
 

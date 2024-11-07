@@ -1646,8 +1646,6 @@ source_set("browser") {
     "quota/quota_manager_host.h",
     "reduce_accept_language/reduce_accept_language_throttle.cc",
     "reduce_accept_language/reduce_accept_language_throttle.h",
-    "reduce_accept_language/reduce_accept_language_utils.cc",
-    "reduce_accept_language/reduce_accept_language_utils.h",
     "renderer_host/agent_scheduling_group_host.cc",
     "renderer_host/agent_scheduling_group_host.h",
     "renderer_host/agent_scheduling_group_host_factory.h",
