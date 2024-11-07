@@ -28,6 +28,7 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -68,14 +69,9 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
-struct PrivacyTableViewControllerTestConfig {
-  // Available of Incognito mode tests should run with.
-  IncognitoModePrefs incognitoModeAvailability;
-};
-
 class PrivacyTableViewControllerTest
     : public LegacyChromeTableViewControllerTest,
-      public testing::WithParamInterface<PrivacyTableViewControllerTestConfig> {
+      public testing::WithParamInterface<std::tuple<IncognitoModePrefs, bool>> {
  protected:
   PrivacyTableViewControllerTest() {}
 
@@ -101,9 +97,10 @@ class PrivacyTableViewControllerTest
     profile_->GetTestingPrefService()->SetManagedPref(
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(
-            static_cast<int>(GetParam().incognitoModeAvailability)));
+            static_cast<int>(IncognitoModeAvailability())));
 
-    feature_list_.InitAndEnableFeature(kPrivacyGuideIos);
+    feature_list_.InitWithFeatureStates(
+        {{kPrivacyGuideIos, YES}, {kIOSSoftLock, SoftLockEnabled()}});
   }
 
   void TearDown() override {
@@ -144,6 +141,12 @@ class PrivacyTableViewControllerTest
     return l10n_util::GetNSString(
         IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_DETAIL_TITLE);
   }
+
+  IncognitoModePrefs IncognitoModeAvailability() {
+    return std::get<0>(GetParam());
+  }
+
+  bool SoftLockEnabled() { return std::get<1>(GetParam()); }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -211,18 +214,32 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
       handoffSubtitle, currentSection, 0);
 
-  // IncognitoAuth section.
   currentSection++;
   EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-  if ((IsIncognitoModeDisabled(prefService) ||
-       !DeviceSupportsAuthentication())) {
-    // Disabled version of Incognito auth item is expected in this case.
-    CheckInfoButtonCellStatusWithIdAndTextWithId(
-        IDS_IOS_SETTING_OFF, IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME,
-        currentSection, 0);
+  if (IsIOSSoftLockEnabled()) {
+    // IncognitoLock section.
+    if (IsIncognitoModeDisabled(prefService)) {
+      // Disabled version of Incognito lock item is expected in this case.
+      CheckInfoButtonCellStatusWithIdAndTextWithId(
+          IDS_IOS_SETTING_OFF, IDS_IOS_INCOGNITO_LOCK_SETTING_NAME,
+          currentSection, 0);
+    } else {
+      CheckTextCellTextAndDetailText(
+          l10n_util::GetNSString(IDS_IOS_INCOGNITO_LOCK_SETTING_NAME),
+          l10n_util::GetNSString(IDS_IOS_SETTING_ON), currentSection, 0);
+    }
   } else {
-    CheckSwitchCellStateAndTextWithId(NO, IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME,
-                                      currentSection, 0);
+    // IncognitoAuth section.
+    if ((IsIncognitoModeDisabled(prefService) ||
+         !DeviceSupportsAuthentication())) {
+      // Disabled version of Incognito auth item is expected in this case.
+      CheckInfoButtonCellStatusWithIdAndTextWithId(
+          IDS_IOS_SETTING_OFF, IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME,
+          currentSection, 0);
+    } else {
+      CheckSwitchCellStateAndTextWithId(
+          NO, IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME, currentSection, 0);
+    }
   }
 
   // IncognitoInterstitial section.
@@ -333,12 +350,9 @@ TEST_P(PrivacyTableViewControllerTest,
 INSTANTIATE_TEST_SUITE_P(
     PrivacyTableViewControllerTestAllConfigs,
     PrivacyTableViewControllerTest,
-    testing::Values(
-        PrivacyTableViewControllerTestConfig{
-            /* incognitoModeAvailability= */ IncognitoModePrefs::kEnabled},
-        PrivacyTableViewControllerTestConfig{
-            /* incognitoModeAvailability= */ IncognitoModePrefs::kDisabled},
-        PrivacyTableViewControllerTestConfig{
-            /* incognitoModeAvailability= */ IncognitoModePrefs::kForced}));
-
+    testing::Combine(/*incognitoModeAvailability*/ testing::Values(
+                         IncognitoModePrefs::kEnabled,
+                         IncognitoModePrefs::kDisabled,
+                         IncognitoModePrefs::kForced),
+                     /*softLockEnabled*/ testing::Bool()));
 }  // namespace

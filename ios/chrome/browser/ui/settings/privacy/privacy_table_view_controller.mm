@@ -94,6 +94,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeIncognitoReauthDisabled,
   ItemTypePrivacySafeBrowsing,
   ItemTypeIncognitoLock,
+  ItemTypeIncognitoLockDisabled,
   ItemTypeHTTPSOnlyMode,
   ItemTypeIncognitoInterstitial,
   ItemTypeIncognitoInterstitialDisabled,
@@ -282,7 +283,11 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   if (IsIOSSoftLockEnabled()) {
     // Incognito Lock item.
-    [model addItem:[self incognitoLockItem]
+    TableViewItem* incognitoLockItem =
+        IsIncognitoModeDisabled(_profile->GetPrefs())
+            ? self.incognitoLockItemDisabled
+            : self.incognitoLockItem;
+    [model addItem:incognitoLockItem
         toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   } else {
     // Incognito reauth item is added. If Incognito mode is disabled, or device
@@ -451,6 +456,17 @@ const char kSyncSettingsURL[] = "settings://open_sync";
                        detailText:[self incognitoLockDetailText]
           accessibilityIdentifier:kSettingsIncognitoLockCellId];
   return _incognitoLockItem;
+}
+
+- (TableViewInfoButtonItem*)incognitoLockItemDisabled {
+  TableViewInfoButtonItem* itemDisabled = [[TableViewInfoButtonItem alloc]
+      initWithType:ItemTypeIncognitoLockDisabled];
+  itemDisabled.text =
+      l10n_util::GetNSString(IDS_IOS_INCOGNITO_LOCK_SETTING_NAME);
+  itemDisabled.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  itemDisabled.iconTintColor = [UIColor colorNamed:kGrey300Color];
+  itemDisabled.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  return itemDisabled;
 }
 
 - (TableViewItem*)lockdownModeDetailItem {
@@ -649,6 +665,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
                   action:@selector
                   (didTapIncognitoInterstitialDisabledInfoButton:)
         forControlEvents:UIControlEventTouchUpInside];
+  } else if (itemType == ItemTypeIncognitoLockDisabled) {
+    TableViewInfoButtonCell* managedCell =
+        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+    [managedCell.trailingButton
+               addTarget:self
+                  action:@selector(didTapIncognitoLockDisabledInfoButton:)
+        forControlEvents:UIControlEventTouchUpInside];
   }
   return cell;
 }
@@ -733,6 +756,22 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 }
 
 #pragma mark - Private
+
+- (void)didTapIncognitoLockDisabledInfoButton:(UIButton*)buttonView {
+  InfoPopoverViewController* popover;
+  if (supervised_user::IsSubjectToParentalControls(_profile)) {
+    popover = [[SupervisedUserInfoPopoverViewController alloc]
+        initWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED_BY_PARENT)];
+  } else {
+    popover = [[EnterpriseInfoPopoverViewController alloc]
+        initWithMessage:l10n_util::GetNSString(
+                            IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED)
+         enterpriseName:nil];
+  }
+  [self showInfoPopover:popover forInfoButton:buttonView];
+}
 
 // Called when the user taps on the information button of the disabled Incognito
 // reauth setting's UI cell.

@@ -150,6 +150,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
