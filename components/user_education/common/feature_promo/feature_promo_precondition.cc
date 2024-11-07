@@ -104,6 +104,12 @@ FeaturePromoPreconditionList::CheckPreconditions() const {
   return CheckResult(FeaturePromoResult::Success(), {});
 }
 
+void FeaturePromoPreconditionList::AppendAll(
+    FeaturePromoPreconditionList other) {
+  std::move(other.preconditions_.begin(), other.preconditions_.end(),
+            std::back_inserter(preconditions_));
+}
+
 void FeaturePromoPreconditionList::AddPrecondition(
     std::unique_ptr<FeaturePromoPrecondition> precondition) {
   CHECK(precondition);
