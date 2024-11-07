@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -61,7 +62,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -717,7 +717,7 @@ public class CustomTabActivityAppMenuTest {
 
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         // Set up an OTR custom tab to trigger "Open in Chrome Incognito".
-        intent.putExtra(IntentHandler.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        intent.putExtra(EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(
                 new ComponentName(

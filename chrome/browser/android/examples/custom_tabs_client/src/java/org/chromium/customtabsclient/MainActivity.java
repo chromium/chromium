@@ -16,6 +16,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_S
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 
@@ -1077,12 +1078,7 @@ public class MainActivity extends AppCompatActivity
                     "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
                     mCctType.equals(CCT_OPTION_INCOGNITO));
             customTabsIntent.intent.putExtra(
-                    "androidx.browser.customtabs.extra.ENABLE_EPHEMERAL_BROWSING",
-                    mCctType.equals(CCT_OPTION_EPHEMERAL));
-            // TODO(crbug.com/358346921): Remove when crrev.com/c/5770644 lands.
-            customTabsIntent.intent.putExtra(
-                    "com.google.android.apps.chrome.EXTRA_OPEN_NEW_EPHEMERAL_TAB",
-                    mCctType.equals(CCT_OPTION_EPHEMERAL));
+                    EXTRA_ENABLE_EPHEMERAL_BROWSING, mCctType.equals(CCT_OPTION_EPHEMERAL));
 
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
         }

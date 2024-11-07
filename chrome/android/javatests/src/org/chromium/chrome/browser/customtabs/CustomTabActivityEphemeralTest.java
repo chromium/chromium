@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -128,7 +129,7 @@ public class CustomTabActivityEphemeralTest {
 
     private Intent createEphemeralCustomTabIntent() {
         return createMinimalCustomTabIntent(ApplicationProvider.getApplicationContext(), mTestPage)
-                .putExtra(IntentHandler.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+                .putExtra(EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
     }
 
     private static int getThemeColor(CustomTabActivity activity) {
