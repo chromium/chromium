@@ -240,9 +240,69 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group)
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   GetViewAccessibility().SetDescription(
       l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION));
+  for (WindowCycleItemView* mini_view : mini_views_) {
+    focus_changed_callback_.push_back(mini_view->AddFocusedChangedCallback(
+        base::BindRepeating(&GroupContainerCycleView::OnChildFocusChanged,
+                            weak_ptr_factory_.GetWeakPtr())));
+  }
 }
 
 GroupContainerCycleView::~GroupContainerCycleView() = default;
+
+// `WindowCycleItemView` inherits from `WindowMiniView` which sets the name and
+// ignored a11y properties of the focused mini view.
+void GroupContainerCycleView::OnChildFocusChanged() {
+  for (WindowCycleItemView* mini_view : mini_views_) {
+    if (mini_view->is_mini_view_focused()) {
+      UpdateAccessibleName(
+          base::UTF16ToUTF8(mini_view->GetViewAccessibility().GetCachedName()));
+      GetViewAccessibility().SetIsIgnored(
+          mini_view->GetViewAccessibility().GetIsIgnored());
+
+      name_changed_subscription_ =
+          mini_view->GetViewAccessibility().AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&GroupContainerCycleView::OnAXNameChanged,
+                                  weak_ptr_factory_.GetWeakPtr()));
+      ignored_state_changed_callback_ =
+          mini_view->GetViewAccessibility().AddStateChangedCallback(
+              ax::mojom::State::kIgnored,
+              base::BindRepeating(
+                  &GroupContainerCycleView::OnAccessibleIgnoredStateChanged,
+                  weak_ptr_factory_.GetWeakPtr()));
+
+      return;
+    }
+  }
+
+  name_changed_subscription_ = base::CallbackListSubscription();
+  ignored_state_changed_callback_ = base::CallbackListSubscription();
+  // If none of of the `mini_view_` are focused we should clear the old
+  // properties.
+  GetViewAccessibility().RemoveName();
+  GetViewAccessibility().SetIsIgnored(false);
+}
+
+void GroupContainerCycleView::UpdateAccessibleName(const std::string& name) {
+  if (name.empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(name);
+  }
+}
+
+void GroupContainerCycleView::OnAXNameChanged(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  UpdateAccessibleName(name.value_or(""));
+}
+
+void GroupContainerCycleView::OnAccessibleIgnoredStateChanged(
+    ax::mojom::State state,
+    const bool value) {
+  GetViewAccessibility().SetIsIgnored(value);
+}
 
 bool GroupContainerCycleView::Contains(aura::Window* window) const {
   return base::ranges::any_of(mini_views_,
@@ -299,16 +359,8 @@ int GroupContainerCycleView::TryRemovingChildItem(
   }
 
   RefreshItemVisuals();
+  OnChildFocusChanged();
   return mini_views_.size();
-}
-
-void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  for (WindowCycleItemView* mini_view : mini_views_) {
-    if (mini_view->is_mini_view_focused()) {
-      mini_view->GetViewAccessibility().GetAccessibleNodeData(node_data);
-      break;
-    }
-  }
 }
 
 gfx::RoundedCornersF GroupContainerCycleView::GetRoundedCorners() const {

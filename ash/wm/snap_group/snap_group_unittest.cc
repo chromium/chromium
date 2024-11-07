@@ -28,6 +28,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
@@ -10857,7 +10858,92 @@ TEST_F(SnapGroupMetricsTest, GroupContainerCycleViewAccessibleProperties) {
   ui::AXNodeData data;
 
   cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
+  EXPECT_EQ(ax::mojom::Role::kGroup, data.role);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION),
+      data.GetString16Attribute(ax::mojom::StringAttribute::kDescription));
+  // Default accessible state when none of the mini views are focused.
+  EXPECT_TRUE(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName).empty());
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Put focus on first mini view to gets its accessible properties.
+  cycle_view->SetSelectedWindowForFocus(w1.get());
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Window -1",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Set new titles for both mini view's windows.
+  cycle_view->mini_views()[0]->source_window()->SetTitle(u"Title 1");
+  cycle_view->mini_views()[1]->source_window()->SetTitle(u"Title 2");
+
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Title 1",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Put focus on both mini views, but notice that since first mini view is
+  // still focused accessible properties of the first mini view are prioritized.
+  cycle_view->SetSelectedWindowForFocus(w2.get());
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Title 1",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Clear focus on all the mini views.
+  cycle_view->ClearFocusSelection();
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName).empty());
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Now put focus on only second mini view so that only its accessible
+  // properties are propagated.
+  cycle_view->SetSelectedWindowForFocus(w2.get());
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Title 2",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Delete the focused mini view so once again the accessible properties should
+  // be reset.
+  EXPECT_EQ(cycle_view->TryRemovingChildItem(w2.get()), 1);
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName).empty());
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Once again put focus on the first mini view.
+  cycle_view->SetSelectedWindowForFocus(w1.get());
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Title 1",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Test when source window title of the focus mini view is empty.
+  cycle_view->mini_views()[0]->source_window()->SetTitle(std::u16string());
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_WM_WINDOW_CYCLER_UNTITLED_WINDOW),
+            data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Test that view is hidden to a11y when source window of the focus mini view
+  // is destroyed.
+  cycle_view->mini_views()[0]->OnWindowDestroying(w1.get());
+  data = ui::AXNodeData();
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_WM_WINDOW_CYCLER_UNTITLED_WINDOW),
+            data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
 }
 
 }  // namespace ash
