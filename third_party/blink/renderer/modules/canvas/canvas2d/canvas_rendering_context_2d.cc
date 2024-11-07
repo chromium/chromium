@@ -247,7 +247,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   needs_context_lost_event_ = true;
 }
 
-void CanvasRenderingContext2D::DidSetSurfaceSize() {
+void CanvasRenderingContext2D::RestoreProviderAndContextIfPossible() {
   if (!context_restorable_)
     return;
   // This code path is for restoring from an eviction

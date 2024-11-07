@@ -1109,7 +1109,7 @@ void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
   did_fail_to_create_resource_provider_ = false;
   DiscardResourceProvider();
   if (IsRenderingContext2D() && context_->isContextLost())
-    context_->DidSetSurfaceSize();
+    context_->RestoreProviderAndContextIfPossible();
   if (frame_dispatcher_)
     frame_dispatcher_->Reshape(Size());
 }
