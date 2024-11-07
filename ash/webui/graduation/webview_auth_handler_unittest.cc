@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -163,12 +164,21 @@ class WebviewAuthHandlerTest : public testing::Test {
 
 TEST_F(WebviewAuthHandlerTest, AuthSuccess) {
   base::RunLoop run_loop;
+  base::HistogramTester histogram_tester;
 
   QueueResponseForResult(signin::SetAccountsInCookieResult::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      WebviewAuthHandler::kAuthResultHistogramName,
+      WebviewAuthHandler::AuthResult::kSuccess, 0);
 
   auth_handler().AuthenticateWebview(
       base::BindLambdaForTesting([&](bool is_success) -> void {
         EXPECT_TRUE(is_success);
+
+        histogram_tester.ExpectUniqueSample(
+            WebviewAuthHandler::kAuthResultHistogramName,
+            WebviewAuthHandler::AuthResult::kSuccess, 1);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -176,12 +186,21 @@ TEST_F(WebviewAuthHandlerTest, AuthSuccess) {
 
 TEST_F(WebviewAuthHandlerTest, AuthPersistentFailure) {
   base::RunLoop run_loop;
+  base::HistogramTester histogram_tester;
 
   QueueResponseForResult(signin::SetAccountsInCookieResult::kPersistentError);
+
+  histogram_tester.ExpectUniqueSample(
+      WebviewAuthHandler::kAuthResultHistogramName,
+      WebviewAuthHandler::AuthResult::kPersistentFailure, 0);
 
   auth_handler().AuthenticateWebview(
       base::BindLambdaForTesting([&](bool is_success) -> void {
         EXPECT_FALSE(is_success);
+
+        histogram_tester.ExpectUniqueSample(
+            WebviewAuthHandler::kAuthResultHistogramName,
+            WebviewAuthHandler::AuthResult::kPersistentFailure, 1);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -189,12 +208,22 @@ TEST_F(WebviewAuthHandlerTest, AuthPersistentFailure) {
 
 TEST_F(WebviewAuthHandlerTest, AuthTransientFailure_MaxRetry) {
   base::RunLoop run_loop;
+  base::HistogramTester histogram_tester;
 
   QueueResponseForResult(signin::SetAccountsInCookieResult::kTransientError);
+
+  histogram_tester.ExpectUniqueSample(
+      WebviewAuthHandler::kAuthResultHistogramName,
+      WebviewAuthHandler::AuthResult::kTransientFailure, 0);
 
   auth_handler().AuthenticateWebview(
       base::BindLambdaForTesting([&](bool is_success) -> void {
         EXPECT_FALSE(is_success);
+
+        histogram_tester.ExpectUniqueSample(
+            WebviewAuthHandler::kAuthResultHistogramName,
+            WebviewAuthHandler::AuthResult::kTransientFailure,
+            WebviewAuthHandler::kMaxRetries);
         run_loop.Quit();
       }));
   run_loop.Run();

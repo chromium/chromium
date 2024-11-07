@@ -58,6 +58,9 @@ class WebviewAuthHandler
   static constexpr char kAuthResultHistogramName[] =
       "Ash.ContentTransfer.AuthenticationResult";
 
+  // The maximum number of retries attempted following a transient error.
+  static constexpr int kMaxRetries = 3;
+
   // Constructs the `WebviewAuthHandler` for the webview identified by given
   // browser `context` and `webview_host_name`.
   WebviewAuthHandler(content::BrowserContext* context,

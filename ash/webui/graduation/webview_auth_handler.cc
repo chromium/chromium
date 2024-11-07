@@ -32,7 +32,6 @@ namespace ash::graduation {
 
 namespace {
 
-constexpr int kMaxRetries = 3;
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,          // Number of initial errors to ignore.
     500,        // Initial delay in ms.
