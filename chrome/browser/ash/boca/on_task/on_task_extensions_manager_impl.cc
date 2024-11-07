@@ -89,12 +89,6 @@ bool OnTaskExtensionsManagerImpl::CanDisableExtension(
     const Extension* extension) {
   CHECK(extension);
 
-  // TODO (b/374827023): Remove feature flag for user installed extension.
-  if (features::IsBocaExtensionConsumerEnabled() &&
-      extension->location() == extensions::mojom::ManifestLocation::kUnpacked) {
-    return false;
-  }
-
   bool is_component_extension =
       extensions::Manifest::IsComponentLocation(extension->location());
   const ManagementPolicy* const policy =
