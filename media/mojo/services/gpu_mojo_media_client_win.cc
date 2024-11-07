@@ -40,22 +40,7 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
             traits.media_gpu_channel_manager
                 ? traits.media_gpu_channel_manager->GetSharedContextState()
                 : nullptr,
-            traits) {
-    // D3D11 multi-thread protection must be enabled before the device is used
-    // on other threads than the one it was created on.
-    // See https://crbugs.com/361718010 for more details.
-    if (!gpu_workarounds_.disable_d3d11_video_decoder) {
-      if (IsDedicatedMediaServiceThreadEnabled(
-              gpu_info_.gl_implementation_parts.angle) &&
-          d3d11_device_) {
-        Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
-        auto hr = d3d11_device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
-        CHECK(SUCCEEDED(hr));
-        multi_threaded->SetMultithreadProtected(TRUE);
-        multithread_protected_ = true;
-      }
-    }
-  }
+            traits) {}
 
   ~GpuMojoMediaClientWin() final = default;
 
@@ -183,7 +168,6 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
         d3d11_device_, d3d12_device_);
   }
 
-  bool multithread_protected_ = false;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
 };
