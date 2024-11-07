@@ -732,6 +732,56 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
+// Tests the behavior of destroy().
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslatorDestroy) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // Test that Translator API works.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      window._translator = await translation.createTranslator({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      return await window._translator.translate('hello');
+    )"),
+            "en to ja: hello");
+  // Test that after destroy() is called, the translator is not usable.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      window._translator.destroy();
+      return await window._translator.translate('hello');
+    )"),
+            "InvalidStateError: Failed to execute 'translate' on "
+            "'LanguageTranslator': The translator has been destoried.");
+}
+
+// Tests the behavior of destroy() while translating.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       TranslatorDestroyWhileTranslating) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // Test that Translator API works.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const translator = await translation.createTranslator({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      const promise = translator.translate('hello');
+      translator.destroy();
+      await promise;
+    )"),
+            "AbortError: The translator has been destoried.");
+}
+
 // Test the behavior of canTranslate() when the language pack is ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CanTranslateReadily) {
   MockComponentManager mock_component_manager(GetTempDir());

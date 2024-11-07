@@ -8,8 +8,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -33,11 +36,16 @@ class LanguageTranslator final : public ScriptWrappable {
   ScriptPromise<IDLString> translate(ScriptState* script_state,
                                      const String& input,
                                      ExceptionState& exception_state);
+  void destroy();
 
  private:
+  void OnTranslateFinished(ScriptPromiseResolver<IDLString>* resolver,
+                           const WTF::String& output);
+
   const String source_lang_;
   const String target_lang_;
   HeapMojoRemote<blink::mojom::blink::Translator> translator_remote_{nullptr};
+  HeapHashSet<Member<ScriptPromiseResolver<IDLString>>> pending_resolvers_;
 };
 
 }  // namespace blink

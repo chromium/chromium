@@ -13,4 +13,6 @@ interface LanguageTranslator {
     RaisesException
   ]
   Promise<DOMString> translate(DOMString input);
+
+  undefined destroy();
 };

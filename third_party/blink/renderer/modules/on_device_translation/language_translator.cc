@@ -29,6 +29,7 @@ LanguageTranslator::LanguageTranslator(
 void LanguageTranslator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(translator_remote_);
+  visitor->Trace(pending_resolvers_);
 }
 
 // TODO(crbug.com/322229993): The new version is AITranslator::translate().
@@ -43,28 +44,49 @@ ScriptPromise<IDLString> LanguageTranslator::translate(
     return EmptyPromise();
   }
 
+  if (!translator_remote_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The translator has been destoried.");
+    return EmptyPromise();
+  }
+
   ScriptPromiseResolver<IDLString>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  pending_resolvers_.insert(resolver);
   ScriptPromise<IDLString> promise = resolver->Promise();
 
-  // TODO(crbug.com/335374928): implement the error handling for the translation
-  // service crash.
   translator_remote_->Translate(
-      input, WTF::BindOnce(
-                 [](ScriptPromiseResolver<IDLString>* resolver,
-                    const WTF::String& output) {
-                   if (output.IsNull()) {
-                     resolver->Reject(DOMException::Create(
-                         "Unable to translate the given text.",
-                         DOMException::GetErrorName(
-                             DOMExceptionCode::kNotReadableError)));
-                   } else {
-                     resolver->Resolve(output);
-                   }
-                 },
-                 WrapPersistent(resolver)));
-
+      input, WTF::BindOnce(&LanguageTranslator::OnTranslateFinished,
+                           WrapWeakPersistent(this), WrapPersistent(resolver)));
   return promise;
+}
+
+void LanguageTranslator::destroy() {
+  translator_remote_.reset();
+  auto resolvers = std::move(pending_resolvers_);
+  for (auto resolver : resolvers) {
+    resolver->Reject(DOMException::Create(
+        "The translator has been destoried.",
+        DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
+  }
+}
+
+void LanguageTranslator::OnTranslateFinished(
+    ScriptPromiseResolver<IDLString>* resolver,
+    const WTF::String& output) {
+  auto it = pending_resolvers_.find(resolver);
+  if (it == pending_resolvers_.end()) {
+    return;
+  }
+  pending_resolvers_.erase(it);
+
+  if (output.IsNull()) {
+    resolver->Reject(DOMException::Create(
+        "Unable to translate the given text.",
+        DOMException::GetErrorName(DOMExceptionCode::kNotReadableError)));
+  } else {
+    resolver->Resolve(output);
+  }
 }
 
 }  // namespace blink
