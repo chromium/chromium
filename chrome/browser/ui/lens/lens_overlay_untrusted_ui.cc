@@ -110,6 +110,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY);
   html_source->AddLocalizedString("searchboxGhostLoaderErrorText",
                                   IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT);
+  html_source->AddLocalizedString(
+      "searchboxGhostLoaderNoSuggestText",
+      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
@@ -181,8 +184,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableOverlayContextualSearchbox",
       lens::features::IsLensOverlayContextualSearchboxEnabled());
-  html_source->AddBoolean("showContextualSearchboxGhostLoader",
-                          lens::features::ShowContextualSearchboxGhostLoader());
+  html_source->AddBoolean(
+      "showContextualSearchboxLoadingState",
+      lens::features::ShowContextualSearchboxGhostLoaderLoadingState());
   html_source->AddBoolean(
       "shouldFetchSupportedLanguages",
       lens::features::IsLensOverlayTranslateLanguagesFetchEnabled());

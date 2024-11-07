@@ -258,7 +258,7 @@
    * Show the ghost loader when the searchbox is focused and the searchbox
    * dropdown isn't showing (no results available).
    */
-   :host([is-ghost-loader-enabled][is-searchbox-focused]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+   :host([is-searchbox-focused]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
     display: block;
   }
 </style>

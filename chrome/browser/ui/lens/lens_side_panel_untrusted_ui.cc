@@ -54,6 +54,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY);
   html_source->AddLocalizedString("searchboxGhostLoaderErrorText",
                                   IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT);
+  html_source->AddLocalizedString(
+      "searchboxGhostLoaderNoSuggestText",
+      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT);
 
   // Add finch flags
   html_source->AddString(
@@ -67,8 +70,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
           ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))));
   html_source->AddBoolean("enableErrorPage",
                           lens::features::GetLensOverlayEnableErrorPage());
-  html_source->AddBoolean("showContextualSearchboxGhostLoader",
-                          lens::features::ShowContextualSearchboxGhostLoader());
+  html_source->AddBoolean(
+      "showContextualSearchboxLoadingState",
+      lens::features::ShowContextualSearchboxGhostLoaderLoadingState());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

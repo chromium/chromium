@@ -70,7 +70,8 @@
 }
 
 #loadingState,
-:host([show-error-state]) #errorState  {
+:host([show-error-state]) #errorState,
+#hintState {
   display: flex;
 }
 
@@ -93,17 +94,25 @@
 }
 </style>
 <div id="content">
-  <div id="loadingState" class="status-container">
-    <div class="spinner"></div>
-    <span id="hint-text1" class="loader-text">
-      $i18n{searchboxGhostLoaderHintTextPrimary}
-    </span>
-    <span id="hint-text2" class="loader-text">
-      $i18n{searchboxGhostLoaderHintTextSecondary}
-    </span>
-  </div>
-  <div id="errorState" class="status-container">
-    <div id="errorIcon"></div>
-    <span class="loader-text">$i18n{searchboxGhostLoaderErrorText}</span>
-  </div>
+  <template is="dom-if" if="[[showContextualSearchboxLoadingState]]">
+    <div id="loadingState" class="status-container">
+      <div class="spinner"></div>
+      <span id="hint-text1" class="loader-text">
+        $i18n{searchboxGhostLoaderHintTextPrimary}
+      </span>
+      <span id="hint-text2" class="loader-text">
+        $i18n{searchboxGhostLoaderHintTextSecondary}
+      </span>
+    </div>
+    <div id="errorState" class="status-container">
+      <div id="errorIcon"></div>
+      <span class="loader-text">$i18n{searchboxGhostLoaderErrorText}</span>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!showContextualSearchboxLoadingState]]">
+    <div id="hintState" class="status-container">
+      <div id="errorIcon"></div>
+      <span class="loader-text">$i18n{searchboxGhostLoaderNoSuggestText}</span>
+    </div>
+  </template>
 </div>

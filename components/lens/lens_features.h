@@ -646,7 +646,7 @@ extern std::string GetLensOverlayTranslateEndpointURL();
 
 // Returns whether to show the ghost loader in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool ShowContextualSearchboxGhostLoader();
+extern bool ShowContextualSearchboxGhostLoaderLoadingState();
 
 // The list of source languages supported by Lens.
 COMPONENT_EXPORT(LENS_FEATURES)

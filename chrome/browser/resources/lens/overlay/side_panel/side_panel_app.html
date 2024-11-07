@@ -194,9 +194,7 @@
     </cr-icon-button>
   </template>
   <cr-searchbox id="searchbox"></cr-searchbox>
-  <template is="dom-if" if="[[isGhostLoaderEnabled]]">
-    <cr-searchbox-ghost-loader show-error-state="{{showErrorState}}"></cr-searchbox-ghost-loader>
-  </template>
+  <cr-searchbox-ghost-loader show-error-state="{{showErrorState}}"></cr-searchbox-ghost-loader>
 </div>
 
 <!-- Network error UI that is initially hidden -->

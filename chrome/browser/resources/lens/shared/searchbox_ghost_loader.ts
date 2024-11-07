@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_spinner_style.css.js';
+import '/strings.m.js';
 import './searchbox_shared_style.css.js';
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './searchbox_ghost_loader.html.js';
@@ -28,6 +30,12 @@ export class SearchboxGhostLoaderElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
         notify: true,
+      },
+      showContextualSearchboxLoadingState: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('showContextualSearchboxLoadingState'),
+        reflectToAttribute: true,
       },
     };
   }

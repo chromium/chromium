@@ -90,11 +90,6 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Boolean,
         value: true,
       },
-      isGhostLoaderEnabled: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('showContextualSearchboxGhostLoader'),
-      },
       showGhostLoader: {
         type: Boolean,
         computed: `computeShowGhostLoader(isSearchboxFocused,

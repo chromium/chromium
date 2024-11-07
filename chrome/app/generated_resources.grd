@@ -7688,6 +7688,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT" desc="The error text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can still ask questions about the page even though suggestions were failed to be generated.">
         No questions available. Try asking things like “summarize this page” or your own question.
       </message>
+      <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT" desc="The hint text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can ask questions about the page.">
+        Try asking things like “summarize this page” or your own question.
+      </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_MULTIMODAL_IMAGE_THUMBNAIL" desc="Aria label for the Lens image selection thumbnail in the multimodal searchbox. Spoken by screen readers when the thumbnail is highlighted, and instructs the user to press enter or backspace to delete the selection.">
         Your Google Lens selection. Press enter or backspace to delete your Google Lens selection
       </message>
