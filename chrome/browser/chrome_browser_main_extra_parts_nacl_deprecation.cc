@@ -14,15 +14,35 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 #if BUILDFLAG(ENABLE_NACL)
 bool ShouldNaClBeAllowed() {
-  // Enabled by policy.
 #if BUILDFLAG(IS_CHROMEOS)
+  // ForceEnabled by policy.
   if (g_browser_process->local_state()->GetBoolean(
           prefs::kNativeClientForceAllowed)) {
     return true;
+  }
+
+  // On unmanaged devices we consider NaCl enabled until we will implement a
+  // device owner settings to emulate the functionality of the device policy
+  // above.
+  // TODO(crbug.com/377443982): Modify after device owner settings is
+  // implemented.
+  BrowserProcessPlatformPart* platform_part =
+      g_browser_process->platform_part();
+  if (platform_part) {
+    policy::BrowserPolicyConnectorAsh* connector =
+        platform_part->browser_policy_connector_ash();
+    if (connector && !connector->IsDeviceEnterpriseManaged()) {
+      return true;
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kNaclAllow);
