@@ -490,10 +490,8 @@ bool XMLDocumentParser::ParseDocumentFragment(
     return true;
   }
 
-  v8::Isolate* isolate = fragment->GetExecutionContext()
-                             ? fragment->GetExecutionContext()->GetIsolate()
-                             : nullptr;
-  TryRethrowScope rethrow_scope(isolate, exception_state);
+  TryRethrowScope rethrow_scope(fragment->GetExecutionContext()->GetIsolate(),
+                                exception_state);
   auto* parser = MakeGarbageCollected<XMLDocumentParser>(
       fragment, context_element, parser_content_policy);
   bool well_formed = parser->AppendFragmentSource(chunk);
@@ -1041,18 +1039,17 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
     return;
   }
 
-  // When PassThroughException() is given a nullptr v8::Isolate*, it ignores
-  // exceptions. We ignore exceptions outside of fragment parsing. We also
-  // ignore exceptions when we don't have a path to a v8::Isolate (this can
-  // happen when `document_` is a document that was attached to the FrameTree at
-  // one point but is now detached.
-  v8::Isolate* isolate = parsing_fragment_ && document_->GetExecutionContext()
-                             ? document_->GetExecutionContext()->GetIsolate()
-                             : nullptr;
+  v8::Isolate* isolate = document_->GetExecutionContext()->GetIsolate();
+  v8::TryCatch try_catch(isolate);
   if (!HandleElementAttributes(prefixed_attributes, libxml_attributes,
                                nb_attributes, prefix_to_namespace_map_,
-                               PassThroughException(isolate))) {
+                               parsing_fragment_ ? PassThroughException(isolate)
+                                                 : IGNORE_EXCEPTION)) {
     StopParsing();
+    if (parsing_fragment_) {
+      DCHECK(try_catch.HasCaught());
+      try_catch.ReThrow();
+    }
     return;
   }
 

@@ -206,25 +206,18 @@ class PLATFORM_EXPORT TryRethrowScope {
 
  public:
   TryRethrowScope(v8::Isolate* isolate, ExceptionState& exception_state)
-      : exception_state_(exception_state) {
-    if (isolate) {
-      try_catch_.emplace(isolate);
-    }
-  }
+      : try_catch_(isolate), exception_state_(exception_state) {}
 
   ~TryRethrowScope() {
-    if (try_catch_ && try_catch_->HasCaught()) [[unlikely]] {
-      exception_state_.RethrowV8Exception(*try_catch_);
+    if (try_catch_.HasCaught()) [[unlikely]] {
+      exception_state_.RethrowV8Exception(try_catch_);
     }
   }
 
-  bool HasCaught() { return try_catch_ && try_catch_->HasCaught(); }
-  v8::Local<v8::Value> GetException() {
-    CHECK(try_catch_);
-    return try_catch_->Exception();
-  }
+  bool HasCaught() { return try_catch_.HasCaught(); }
+  v8::Local<v8::Value> GetException() { return try_catch_.Exception(); }
 
-  std::optional<v8::TryCatch> try_catch_;
+  v8::TryCatch try_catch_;
   ExceptionState& exception_state_;
 };
 
