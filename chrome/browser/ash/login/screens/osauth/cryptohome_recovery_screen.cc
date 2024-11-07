@@ -153,17 +153,18 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     CHECK(user_context->HasAuthFactorsConfiguration());
-    bool has_smart_card =
+    const bool has_pin =
+        config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin);
+    const bool has_smart_card =
         config.HasConfiguredFactor(cryptohome::AuthFactorType::kSmartCard);
     CHECK(!has_smart_card) << "Recovery for smart card users is not supported!";
 
-    // Exactly one of the password should exists.
-    CHECK_NE(has_online_password, has_local_password);
-
     context()->user_context = std::move(user_context);
     if (has_online_password) {
+      CHECK(!has_local_password);
       exit_callback_.Run(Result::kFallbackOnline);
     } else {
+      CHECK(has_local_password || has_pin);
       exit_callback_.Run(Result::kFallbackLocal);
     }
   }
