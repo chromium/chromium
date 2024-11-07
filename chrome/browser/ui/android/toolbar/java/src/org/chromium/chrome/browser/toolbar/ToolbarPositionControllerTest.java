@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.Observer;
 
@@ -214,10 +215,27 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>(false);
     private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private BottomControlsStacker mBottomControlsStacker;
-
     private ToolbarPositionController mController;
     private ObservableSupplierImpl<Integer> mBottomToolbarOffsetSupplier =
             new ObservableSupplierImpl<>();
+
+    static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
+        private boolean mIsShowing;
+
+        public void setVisibilityForTests(boolean isShowing) {
+            mIsShowing = isShowing;
+            notifyListeners(isShowing);
+        }
+
+        @Override
+        public boolean isKeyboardShowing(Context context, View view) {
+            return mIsShowing;
+        }
+    }
+    ;
+
+    private FakeKeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
+            new FakeKeyboardVisibilityDelegate();
 
     @Before
     public void setUp() {
@@ -243,10 +261,12 @@ public class ToolbarPositionControllerTest {
                         mIsOmniboxFocused,
                         mIsFormFieldFocused,
                         mIsFindInPageShowing,
+                        mKeyboardVisibilityDelegate,
                         mControlContainer,
                         mBottomControlsStacker,
                         mBottomToolbarOffsetSupplier,
-                        mProgressBarContainer);
+                        mProgressBarContainer,
+                        mContext);
     }
 
     @Test
@@ -372,6 +392,13 @@ public class ToolbarPositionControllerTest {
         assertControlsAtBottom();
 
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        assertControlsAtTop();
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(false);
+        assertControlsAtBottom();
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
         assertControlsAtTop();
 
         mIsFormFieldFocused.onNodeAttributeUpdated(false, false);

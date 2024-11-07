@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Class responsible for managing the position (top, bottom) of the browsing mode toolbar. */
@@ -43,6 +44,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final BottomControlsStacker mBottomControlsStacker;
     private final ObservableSupplierImpl<Integer> mBrowserControlsOffsetSupplier;
     @NonNull private final View mToolbarProgressBarContainer;
+    @NonNull private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @NonNull private final Context mContext;
     @LayerVisibility private int mLayerVisibility;
     private final BottomControlsLayer mBottomToolbarLayer;
     private final BottomControlsLayer mProgressBarLayer;
@@ -72,10 +75,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             @NonNull ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
             @NonNull ObservableSupplier<Boolean> isFormFieldFocusedSupplier,
             @NonNull ObservableSupplier<Boolean> isFindInPageShowingSupplier,
+            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             @NonNull ControlContainer controlContainer,
             @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull ObservableSupplierImpl<Integer> browserControlsOffsetSupplier,
-            @NonNull View toolbarProgressBarContainer) {
+            @NonNull View toolbarProgressBarContainer,
+            @NonNull Context context) {
         mBrowserControlsSizer = browserControlsSizer;
         mSharedPreferences = sharedPreferences;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
@@ -83,10 +88,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mIsFindInPageShowingSupplier = isFindInPageShowingSupplier;
+        mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mControlContainer = controlContainer;
         mBottomControlsStacker = bottomControlsStacker;
         mBrowserControlsOffsetSupplier = browserControlsOffsetSupplier;
         mToolbarProgressBarContainer = toolbarProgressBarContainer;
+        mContext = context;
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
@@ -94,6 +101,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsOmniboxFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
         mIsFormFieldFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
         mIsFindInPageShowingSupplier.addObserver((showing) -> updateCurrentPosition());
+        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
+                (showing) -> updateCurrentPosition());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         mLayerVisibility = LayerVisibility.HIDDEN;
@@ -204,8 +213,11 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean ntpShowing = mIsNtpShowingSupplier.get();
         boolean tabSwitcherShowing = mIsTabSwitcherShowingSupplier.get();
         boolean isOmniboxFocused = mIsOmniboxFocusedSupplier.get();
-        boolean isFormFieldFocused = mIsFormFieldFocusedSupplier.get();
         boolean isFindInPageShowing = mIsFindInPageShowingSupplier.get();
+        boolean isFormFieldFocusedWithKeyboardVisible =
+                mIsFormFieldFocusedSupplier.get()
+                        && mKeyboardVisibilityDelegate.isKeyboardShowing(
+                                mContext, mControlContainer.getView());
         boolean doesUserPreferTopToolbar =
                 mSharedPreferences.getBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
 
@@ -213,8 +225,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         if (ntpShowing
                 || tabSwitcherShowing
                 || isOmniboxFocused
-                || isFormFieldFocused
                 || isFindInPageShowing
+                || isFormFieldFocusedWithKeyboardVisible
                 || doesUserPreferTopToolbar) {
             newControlsPosition = ControlsPosition.TOP;
         } else {

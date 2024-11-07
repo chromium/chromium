@@ -1385,10 +1385,12 @@ public class ToolbarManager
                 mOmniboxFocusStateSupplier,
                 mFormFieldFocusedSupplier,
                 mFindInPageShowingSupplier,
+                mWindowAndroid.getKeyboardDelegate(),
                 mControlContainer,
                 mBottomControlsStacker,
                 mBottomToolbarControlsOffsetSupplier,
-                mProgressBarContainer);
+                mProgressBarContainer,
+                mActivity);
     }
 
     // TODO(b/315204103): add tests
