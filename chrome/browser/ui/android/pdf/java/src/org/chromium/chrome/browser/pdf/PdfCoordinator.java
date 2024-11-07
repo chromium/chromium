@@ -22,7 +22,13 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
-/** The class responsible for setting up PdfPage. */
+/**
+ * The class responsible for setting up PdfPage.
+ *
+ * <p>Lint suppression for NewApi is added because we are using PdfViewerFragment and inline pdf
+ * support is enabled via PdfUtils#shouldOpenPdfInline.
+ */
+@SuppressLint("NewApi")
 public class PdfCoordinator {
     private static final String TAG = "PdfCoordinator";
     private static boolean sSkipLoadPdfForTesting;
@@ -83,13 +89,7 @@ public class PdfCoordinator {
         loadPdfFile(filepath);
     }
 
-    /**
-     * The class responsible for rendering pdf document.
-     *
-     * <p>Lint suppression for NewApi is added because inline pdf support is enabled via
-     * PdfUtils#shouldOpenPdfInline.
-     */
-    @SuppressLint("NewApi")
+    /** The class responsible for rendering pdf document. */
     public static class ChromePdfViewerFragment extends PdfViewerFragment {
         /** Whether the pdf has been loaded successfully. */
         boolean mIsLoadDocumentSuccess;
