@@ -47,6 +47,9 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
   void MaybeDismissUserNudgeForever() override;
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
+  void OnPerformCaptureForSearchStarting(
+      PerformCaptureType capture_type) override;
+  void OnPerformCaptureForSearchEnded(PerformCaptureType capture_type) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
   ActionButtonView* AddActionButton(views::Button::PressedCallback callback,
                                     std::u16string text,

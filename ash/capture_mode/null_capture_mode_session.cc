@@ -113,6 +113,12 @@ NullCaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return std::set<aura::Window*>();
 }
 
+void NullCaptureModeSession::OnPerformCaptureForSearchStarting(
+    PerformCaptureType capture_type) {}
+
+void NullCaptureModeSession::OnPerformCaptureForSearchEnded(
+    PerformCaptureType capture_type) {}
+
 ActionButtonView* NullCaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,

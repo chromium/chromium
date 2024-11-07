@@ -512,16 +512,21 @@ bool CaptureModeBehavior::RequiresCaptureFolderCreation() const {
 
 bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
     PerformCaptureType capture_type) const {
-  // We don't need to bring capture mode UIs back if `type_` is
-  // `CaptureModeType::kImage` or `capture_type` is
-  // `PerformCaptureType::kSearch` since the session is about to shutdown
-  // anyways at these use cases, so it's better to avoid any wasted effort. In
-  // the case of video recording, we need to reshow the UIs so that we can start
-  // the 3-second count down animation.
-  return capture_type == PerformCaptureType::kTextDetection ||
-         capture_type == PerformCaptureType::kScanner ||
-         (capture_type != PerformCaptureType::kSearch &&
-          CaptureModeController::Get()->type() != CaptureModeType::kImage);
+  switch (capture_type) {
+    case PerformCaptureType::kCapture:
+      // The session shuts down after image capture so there is no need to
+      // reshow the UIs. For video recording, we need to reshow the UIs so that
+      // we can start the 3-second count down animation.
+      return CaptureModeController::Get()->type() != CaptureModeType::kImage;
+    case PerformCaptureType::kSearch:
+      // The session shuts down after capture for `PerformCaptureType::kSearch`
+      // so there is no need to reshow the UIs.
+      return false;
+    case PerformCaptureType::kScanner:
+    case PerformCaptureType::kTextDetection:
+    case PerformCaptureType::kSunfish:
+      return true;
+  }
 }
 
 bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()

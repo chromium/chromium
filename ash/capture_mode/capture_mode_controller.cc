@@ -1065,12 +1065,20 @@ void CaptureModeController::PerformCapture(PerformCaptureType capture_type) {
 
 void CaptureModeController::PerformImageSearch(
     PerformCaptureType capture_type) {
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due to e.g. locking the screen, suspending, or
+    // switching users.
+    return;
+  }
+
   DCHECK(delegate_->IsCaptureAllowedByPolicy());
 
   const std::optional<CaptureParams> capture_params = GetCaptureParams();
   CHECK(capture_params);
 
   const bool was_cursor_originally_blocked = MaybeLockCursor();
+  capture_mode_session_->OnPerformCaptureForSearchStarting(capture_type);
 
   // Capture the image for search. We use JPEG bytes for low file size and fast
   // compression speed.
@@ -1872,6 +1880,7 @@ void CaptureModeController::OnImageCapturedForSearch(
   if (!IsActive()) {
     return;
   }
+  capture_mode_session_->OnPerformCaptureForSearchEnded(capture_type);
   MaybeUnlockCursor(was_cursor_originally_blocked);
 
   const SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);

@@ -1865,4 +1865,46 @@ TEST_F(
       1);
 }
 
+// Tests that the capture label is hidden while capturing an image to send to
+// the Scanner backend.
+TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  // Select a region to trigger text detection. The capture label should be
+  // hidden so that it does not interfere with text detection.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+  // The capture label should be reshown once capture completes.
+  WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
+  EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+  detect_text_future.Take().Run("detected text");
+  // Smart actions button should have been created.
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(action_buttons,
+              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+
+  // Click the smart actions button. The capture label should be hidden so that
+  // it does not interfere with detecting Scanner actions.
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  LeftClickOn(action_buttons[0]);
+  EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+  // The capture label should be reshown once capture completes.
+  WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
+  EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+}
+
 }  // namespace ash

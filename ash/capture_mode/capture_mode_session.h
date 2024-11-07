@@ -179,6 +179,9 @@ class ASH_EXPORT CaptureModeSession
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
+  void OnPerformCaptureForSearchStarting(
+      PerformCaptureType capture_type) override;
+  void OnPerformCaptureForSearchEnded(PerformCaptureType capture_type) override;
   ActionButtonView* AddActionButton(views::Button::PressedCallback callback,
                                     std::u16string text,
                                     const gfx::VectorIcon* icon,
@@ -244,8 +247,12 @@ class ASH_EXPORT CaptureModeSession
   void HideAllUis();
   void ShowAllUis();
 
-  // Called by `ShowAllUis` for each widget. Returns true if the given `widget`
-  // could be shown, otherwise, returns false.
+  // Shows or hides all session UI widgets.
+  void HideAllWidgets();
+  void ShowAllWidgets();
+
+  // Called by `ShowAllWidgets()` for each widget. Returns true if the given
+  // `widget` could be shown, otherwise, returns false.
   bool CanShowWidget(views::Widget* widget) const;
 
   // If possible, this recreates and shows the nudge that alerts the user about

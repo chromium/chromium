@@ -161,6 +161,15 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // label widget, etc.) that should be ignored as the topmost window.
   virtual std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() = 0;
 
+  // Called just before performing capture for search.
+  // This will hide capture UI widgets if needed.
+  virtual void OnPerformCaptureForSearchStarting(
+      PerformCaptureType capture_type) = 0;
+  // Called just after finishing performing capture for search.
+  // This will reshow capture UI widgets if needed.
+  virtual void OnPerformCaptureForSearchEnded(
+      PerformCaptureType capture_type) = 0;
+
   // Adds an action button below the selected region during an active session.
   // Returns a pointer to the added button, or nullptr if no button was added.
   virtual ActionButtonView* AddActionButton(

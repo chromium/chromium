@@ -1359,6 +1359,22 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return ignore_windows;
 }
 
+void CaptureModeSession::OnPerformCaptureForSearchStarting(
+    PerformCaptureType capture_type) {
+  // We only need to hide widgets since other parts of the session UI don't
+  // cover the selected region. Note in particular that we avoid hiding and
+  // reshowing the dimming shield background (to avoid a flash effect).
+  HideAllWidgets();
+}
+
+void CaptureModeSession::OnPerformCaptureForSearchEnded(
+    PerformCaptureType capture_type) {
+  if (!active_behavior_->ShouldReShowUisAtPerformingCapture(capture_type)) {
+    return;
+  }
+  ShowAllWidgets();
+}
+
 // TODO(crbug.com/372740410): Determine behavior when we add a button with the
 // exact same rank (type and priority) as an existing valid button.
 ActionButtonView* CaptureModeSession::AddActionButton(
@@ -1869,7 +1885,20 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
 void CaptureModeSession::HideAllUis() {
   is_all_uis_visible_ = false;
   cursor_setter_.reset();
+  HideAllWidgets();
+  // Refresh painting the layer, since we don't paint anything while a DLP
+  // dialog might be shown.
+  layer()->SchedulePaint(layer()->bounds());
+}
 
+void CaptureModeSession::ShowAllUis() {
+  is_all_uis_visible_ = true;
+  cursor_setter_ = std::make_unique<CursorSetter>();
+  ShowAllWidgets();
+  layer()->SchedulePaint(layer()->bounds());
+}
+
+void CaptureModeSession::HideAllWidgets() {
   for (auto* widget : GetAvailableWidgets()) {
     // The order here matters. We need to disable the animation before we hide
     // to avoid any hide animation here, or until the widgets are shown (also
@@ -1883,16 +1912,9 @@ void CaptureModeSession::HideAllUis() {
     widget->GetLayer()->SetOpacity(1.f);
     widget->Hide();
   }
-
-  // Refresh painting the layer, since we don't paint anything while a DLP
-  // dialog might be shown.
-  layer()->SchedulePaint(layer()->bounds());
 }
 
-void CaptureModeSession::ShowAllUis() {
-  is_all_uis_visible_ = true;
-  cursor_setter_ = std::make_unique<CursorSetter>();
-
+void CaptureModeSession::ShowAllWidgets() {
   for (auto* widget : GetAvailableWidgets()) {
     // The order here matters. See HideAllUis() above.
     // At this point the animation is still disabled, so we show the window now
@@ -1904,8 +1926,6 @@ void CaptureModeSession::ShowAllUis() {
     widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
                                            false);
   }
-
-  layer()->SchedulePaint(layer()->bounds());
 }
 
 bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
