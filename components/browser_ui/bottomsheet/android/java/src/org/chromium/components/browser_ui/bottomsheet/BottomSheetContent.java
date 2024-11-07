@@ -208,22 +208,12 @@ public interface BottomSheetContent {
     default void onBackPressed() {}
 
     /**
-     * Returns the resource id of the content description for the bottom sheet. This is generally
-     * the name of the feature/content that is showing. 'Swipe down to close.' will be automatically
-     * appended after the content description.
-     */
-    default int getSheetContentDescriptionStringId() {
-        return 0;
-    }
-
-    /**
      * Returns the content description for the bottom sheet. This is generally the name of the
      * feature/content that is showing. It can be a dynamic string. 'Swipe down to close.' will be
      * automatically appended after the content description.
      */
-    default @NonNull String getSheetContentDescription(Context context) {
-        return "";
-    }
+    @NonNull
+    String getSheetContentDescription(Context context);
 
     /**
      * @return The resource id of the string announced when the sheet is opened at half height. This
