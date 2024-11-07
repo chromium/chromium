@@ -2587,6 +2587,10 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     return;
   }
 
+  // Close any previously opened panel to ensure a clean slate.
+  // TODO(b/377370403): Revisit this decision.
+  search_results_panel_widget_.reset();
+
   // Before we start the session, if video recording is in progress, we need to
   // set the current type to image (except if the new behavior type is sunfish),
   // as we can't have more than one recording at a time. The video toggle button

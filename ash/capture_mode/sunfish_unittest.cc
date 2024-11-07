@@ -1093,10 +1093,9 @@ TEST_F(SunfishTest, SwitchSessionsWhilePanelOpen) {
   search_results_panel->SetSearchBoxText(u"cat");
   EXPECT_EQ(u"cat", search_results_panel->GetSearchBoxTextfield()->GetText());
 
-  // Switch to default mode. Test the panel remains the same.
+  // Switch to default mode. Test the panel is closed.
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  ASSERT_TRUE(search_results_panel);
-  EXPECT_EQ(u"cat", search_results_panel->GetSearchBoxTextfield()->GetText());
+  ASSERT_FALSE(controller->GetSearchResultsPanel());
 }
 
 // Tests no dangling ptr and crash when closing the panel.
