@@ -847,6 +847,28 @@ mojom("url_loader_base") {
     ]
   }
 
+  if (enable_device_bound_sessions) {
+    sources += [ "device_bound_sessions.mojom" ]
+
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "network.mojom.DeviceBoundSessionKey"
+            cpp = "::net::device_bound_sessions::SessionKey"
+          },
+        ]
+        traits_headers = [
+          "//services/network/public/cpp/device_bound_sessions_mojom_traits.h",
+        ]
+        traits_sources = [
+          "//services/network/public/cpp/device_bound_sessions_mojom_traits.cc",
+        ]
+        traits_public_deps = [ "//net" ]
+      },
+    ]
+  }
+
   cpp_typemaps += shared_typemaps
 
   blink_cpp_typemaps = shared_typemaps

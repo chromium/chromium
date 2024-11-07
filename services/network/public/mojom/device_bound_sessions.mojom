@@ -1,0 +1,30 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/schemeful_site.mojom";
+import "url/mojom/url.mojom";
+
+// Typemapped to //net/device_bound_sessions/session.h:SessionKey
+struct DeviceBoundSessionKey {
+  // The site the session is scoped to.
+  SchemefulSite site;
+
+  // The site-scoped identifier for the session.
+  string id;
+};
+
+// Observer that is notified on use of a device bound session.
+interface DeviceBoundSessionAccessObserver {
+  // Called when a device bound session is used. This includes:
+  // - Newly registered sessions
+  // - Sessions deferring requests
+  // - Session deletion
+  OnDeviceBoundSessionAccessed(DeviceBoundSessionKey session);
+
+  // Called to create a copy of this observer. (e.g. when cloning observers
+  // from ResourceRequest).
+  Clone(pending_receiver<DeviceBoundSessionAccessObserver> observer);
+};

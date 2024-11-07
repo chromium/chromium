@@ -13,6 +13,7 @@
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_service.h"
 
 namespace net {
@@ -40,7 +41,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // during construction. Otherwise, it is a no-op.
   void LoadSessionsAsync();
 
-  void RegisterBoundSession(RegistrationFetcherParam registration_params,
+  void RegisterBoundSession(OnAccessCallback on_access_callback,
+                            RegistrationFetcherParam registration_params,
                             const IsolationInfo& isolation_info) override;
 
   std::optional<Session::Id> GetAnySessionRequiringDeferral(
@@ -52,7 +54,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       RefreshCompleteCallback restart_callback,
       RefreshCompleteCallback continue_callback) override;
 
-  void SetChallengeForBoundSession(const GURL& request_url,
+  void SetChallengeForBoundSession(OnAccessCallback on_access_callback,
+                                   const GURL& request_url,
                                    const SessionChallengeParam& param) override;
 
   Session* GetSessionForTesting(const SchemefulSite& site,
@@ -67,6 +70,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void OnLoadSessionsComplete(SessionsMap sessions);
 
   void OnRegistrationComplete(
+      OnAccessCallback on_access_callback,
       std::optional<RegistrationFetcher::RegistrationCompleteParams> params);
 
   // Get all the unexpired sessions for a given site. This also removes

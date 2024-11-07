@@ -13,6 +13,20 @@
 
 namespace net::device_bound_sessions {
 
+namespace {
+
+void NotifySessionAccess(SessionService::OnAccessCallback callback,
+                         const SchemefulSite& site,
+                         const Session& session) {
+  if (callback.is_null()) {
+    return;
+  }
+
+  callback.Run({site, session.id()});
+}
+
+}  // namespace
+
 SessionServiceImpl::SessionServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     const URLRequestContext* request_context,
@@ -34,13 +48,15 @@ void SessionServiceImpl::LoadSessionsAsync() {
 }
 
 void SessionServiceImpl::RegisterBoundSession(
+    OnAccessCallback on_access_callback,
     RegistrationFetcherParam registration_params,
     const IsolationInfo& isolation_info) {
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(registration_params), key_service_.get(), context_.get(),
       isolation_info,
       base::BindOnce(&SessionServiceImpl::OnRegistrationComplete,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(on_access_callback)));
 }
 
 void SessionServiceImpl::OnLoadSessionsComplete(
@@ -49,6 +65,7 @@ void SessionServiceImpl::OnLoadSessionsComplete(
 }
 
 void SessionServiceImpl::OnRegistrationComplete(
+    OnAccessCallback on_access_callback,
     std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
   if (!params) {
     return;
@@ -56,17 +73,15 @@ void SessionServiceImpl::OnRegistrationComplete(
 
   auto session = Session::CreateIfValid(std::move(params->params), params->url);
   if (session) {
+    SchemefulSite site(url::Origin::Create(params->url));
+    NotifySessionAccess(on_access_callback, site, *session);
     session->set_unexportable_key_id(std::move(params->key_id));
-    auto site = SchemefulSite(url::Origin::Create(params->url));
     if (session_store_) {
       session_store_->SaveSession(site, *session);
     }
+    // TODO(crbug.com/353774923): Enforce unique session ids per site.
     unpartitioned_sessions_.insert(std::make_pair(site, std::move(session)));
   }
-  // Call Session::CreateIfValid(params). This callback will also need to take
-  // the original request's info (in order to store the IsolationInfo etc).
-  // Add the created session to the appropriate map, overwriting any existing
-  // one that has the same SessionId.
 }
 
 std::pair<SessionServiceImpl::SessionsMap::iterator,
@@ -96,6 +111,8 @@ std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
   auto range = GetSessionsForSite(site);
   for (auto it = range.first; it != range.second; ++it) {
     if (it->second->ShouldDeferRequest(request)) {
+      NotifySessionAccess(request->device_bound_session_access_callback(), site,
+                          *it->second);
       return it->second->id();
     }
   }
@@ -116,6 +133,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
 }
 
 void SessionServiceImpl::SetChallengeForBoundSession(
+    OnAccessCallback on_access_callback,
     const GURL& request_url,
     const SessionChallengeParam& param) {
   if (!param.session_id()) {
@@ -126,6 +144,7 @@ void SessionServiceImpl::SetChallengeForBoundSession(
   auto range = GetSessionsForSite(site);
   for (auto it = range.first; it != range.second; ++it) {
     if (it->second->id().value() == param.session_id()) {
+      NotifySessionAccess(on_access_callback, site, *it->second);
       it->second->set_cached_challenge(param.challenge());
       return;
     }

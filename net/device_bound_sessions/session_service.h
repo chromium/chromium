@@ -7,10 +7,12 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
+#include "net/device_bound_sessions/session_key.h"
 
 namespace net {
 class IsolationInfo;
@@ -25,6 +27,7 @@ namespace net::device_bound_sessions {
 class NET_EXPORT SessionService {
  public:
   using RefreshCompleteCallback = base::OnceClosure;
+  using OnAccessCallback = base::RepeatingCallback<void(const SessionKey&)>;
 
   // Returns nullptr if unexportable key provider is not supported by the
   // platform or the device.
@@ -44,6 +47,7 @@ class NET_EXPORT SessionService {
   // same as was used for the response with the Sec-Session-Registration
   // header.
   virtual void RegisterBoundSession(
+      OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
       const IsolationInfo& isolation_info) = 0;
 
@@ -72,6 +76,7 @@ class NET_EXPORT SessionService {
   // Set the challenge for a bound session after getting a
   // Sec-Session-Challenge header.
   virtual void SetChallengeForBoundSession(
+      OnAccessCallback on_access_callback,
       const GURL& request_url,
       const SessionChallengeParam& param) = 0;
 

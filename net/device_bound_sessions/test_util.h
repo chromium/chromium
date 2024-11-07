@@ -48,7 +48,8 @@ class SessionServiceMock : public SessionService {
 
   MOCK_METHOD(void,
               RegisterBoundSession,
-              (RegistrationFetcherParam registration_params,
+              (OnAccessCallback on_access_callback,
+               RegistrationFetcherParam registration_params,
                const IsolationInfo& isolation_info),
               (override));
   MOCK_METHOD(std::optional<Session::Id>,
@@ -64,7 +65,8 @@ class SessionServiceMock : public SessionService {
               (override));
   MOCK_METHOD(void,
               SetChallengeForBoundSession,
-              (const GURL& request_url,
+              (OnAccessCallback on_access_callback,
+               const GURL& request_url,
                const SessionChallengeParam& challenge_param),
               (override));
 };

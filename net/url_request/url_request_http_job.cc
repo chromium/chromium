@@ -1151,14 +1151,18 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
       device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
           request_url, headers);
   for (auto& param : params) {
-    service->RegisterBoundSession(std::move(param), request_->isolation_info());
+    service->RegisterBoundSession(
+        request_->device_bound_session_access_callback(), std::move(param),
+        request_->isolation_info());
   }
 
   std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =
       device_bound_sessions::SessionChallengeParam::CreateIfValid(request_url,
                                                                   headers);
   for (auto& param : challenge_params) {
-    service->SetChallengeForBoundSession(request_url, std::move(param));
+    service->SetChallengeForBoundSession(
+        request_->device_bound_session_access_callback(), request_url,
+        std::move(param));
   }
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

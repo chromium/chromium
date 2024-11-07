@@ -4,6 +4,7 @@
 
 #include "net/device_bound_sessions/session_service_impl.h"
 
+#include "base/test/test_future.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/device_bound_sessions/test_util.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
@@ -99,12 +100,12 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
-  service().RegisterBoundSession(std::move(fetch_param),
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
-
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -123,12 +124,12 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
-  service().RegisterBoundSession(std::move(fetch_param),
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
-
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   std::optional<Session::Id> maybe_id =
@@ -143,12 +144,12 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
-  service().RegisterBoundSession(std::move(fetch_param),
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
-
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   std::optional<Session::Id> maybe_id =
@@ -165,7 +166,7 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
-  service().RegisterBoundSession(std::move(fetch_param),
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
   scoped_refptr<net::HttpResponseHeaders> headers =
@@ -181,7 +182,7 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
   EXPECT_EQ(params.size(), 3U);
 
   for (const auto& param : params) {
-    service().SetChallengeForBoundSession(kTestUrl, param);
+    service().SetChallengeForBoundSession(base::DoNothing(), kTestUrl, param);
   }
 
   const Session* session =
@@ -202,7 +203,7 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
-  service().RegisterBoundSession(std::move(fetch_param),
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
   Session* session =
@@ -220,6 +221,95 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
   service().GetAnySessionRequiringDeferral(request.get());
 
   EXPECT_GT(session->expiry_date(), base::Time::Now() + base::Days(399));
+}
+
+TEST_F(SessionServiceImplTest, NullAccessObserver) {
+  // Set the session id to be used for in TestFetcher()
+  g_session_id = "SessionId";
+  ScopedTestFetcher scopedTestFetcher;
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(SessionService::OnAccessCallback(),
+                                 std::move(fetch_param),
+                                 IsolationInfo::CreateTransient());
+
+  // The access observer was null, so no call is expected
+}
+
+TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
+  // Set the session id to be used for in TestFetcher()
+  g_session_id = "SessionId";
+  ScopedTestFetcher scopedTestFetcher;
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  base::test::TestFuture<SessionKey> future;
+  service().RegisterBoundSession(
+      future.GetRepeatingCallback<const SessionKey&>(), std::move(fetch_param),
+      IsolationInfo::CreateTransient());
+
+  SessionKey session_key = future.Take();
+  EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
+  EXPECT_EQ(session_key.id.value(), g_session_id);
+}
+
+TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
+  // Set the session id to be used for in TestFetcher()
+  g_session_id = "SessionId";
+  ScopedTestFetcher scopedTestFetcher;
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                 IsolationInfo::CreateTransient());
+
+  // The request needs to be samesite for it to be considered
+  // candidate for deferral.
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  base::test::TestFuture<SessionKey> future;
+  request->SetDeviceBoundSessionAccessCallback(
+      future.GetRepeatingCallback<const SessionKey&>());
+  service().GetAnySessionRequiringDeferral(request.get());
+
+  SessionKey session_key = future.Take();
+  EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
+  EXPECT_EQ(session_key.id.value(), g_session_id);
+}
+
+TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
+  // Set the session id to be used for in TestFetcher()
+  g_session_id = "SessionId";
+  ScopedTestFetcher scopedTestFetcher;
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                 IsolationInfo::CreateTransient());
+
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  headers->AddHeader("Sec-Session-Challenge", "\"challenge\";id=\"SessionId\"");
+
+  std::vector<SessionChallengeParam> params =
+      SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
+  ASSERT_EQ(params.size(), 1U);
+
+  base::test::TestFuture<SessionKey> future;
+  service().SetChallengeForBoundSession(
+      future.GetRepeatingCallback<const SessionKey&>(), kTestUrl, params[0]);
+
+  SessionKey session_key = future.Take();
+  EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
+  EXPECT_EQ(session_key.id.value(), g_session_id);
 }
 
 }  // namespace
@@ -273,7 +363,7 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
   // Will invoke the store's save session method.
-  service().RegisterBoundSession(std::move(fetch_param),
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
   auto site = SchemefulSite(kTestUrl);
