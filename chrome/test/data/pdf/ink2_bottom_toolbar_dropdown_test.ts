@@ -32,7 +32,25 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testClickElsewhereClosesDropdown() {
+  async function testFocusOnMenuDoesNotCloseDropdown() {
+    const dropdown = createDropdown();
+
+    // Open the dropdown.
+    getRequiredElement(dropdown, 'cr-button').click();
+    await microtasksFinished();
+
+    const menu = getMenu(dropdown);
+    chrome.test.assertTrue(!!menu);
+
+    // Focus on the dropdown menu. The dropdown should stay visible.
+    dropdown.dispatchEvent(new FocusEvent('focusout', {relatedTarget: menu}));
+    await microtasksFinished();
+
+    chrome.test.assertTrue(!!getMenu(dropdown));
+    chrome.test.succeed();
+  },
+
+  async function testFocusElsewhereClosesDropdown() {
     const dropdown = createDropdown();
 
     // Open the dropdown.
@@ -41,8 +59,9 @@ chrome.test.runTests([
 
     chrome.test.assertTrue(!!getMenu(dropdown));
 
-    // Click a different element. The dropdown should not be visible.
-    document.body.click();
+    // Focus on a different element. The dropdown should not be visible.
+    dropdown.dispatchEvent(
+        new FocusEvent('focusout', {relatedTarget: document.body}));
     await microtasksFinished();
 
     chrome.test.assertTrue(!getMenu(dropdown));

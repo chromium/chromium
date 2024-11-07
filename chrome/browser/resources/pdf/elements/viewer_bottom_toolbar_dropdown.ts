@@ -51,19 +51,24 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
     this.showDropdown_ = !this.showDropdown_;
 
     if (this.showDropdown_) {
-      this.tracker_.add(window, 'click', this.handleClick_.bind(this));
+      this.tracker_.add(this, 'focusout', this.handleFocusOut_.bind(this));
     } else {
-      this.tracker_.remove(window, 'click');
+      this.tracker_.remove(this, 'focusout');
     }
   }
 
-
-  // Exit out of the dropdown when the user clicks elsewhere.
-  private handleClick_(e: Event) {
-    if (!this.showDropdown_ || e.composedPath().includes(this)) {
+  // Exit out of the dropdown when focus shifts away from the dropdown menu.
+  private handleFocusOut_(e: FocusEvent) {
+    if (!(e.relatedTarget instanceof HTMLElement)) {
       return;
     }
 
+    // Skip if dropdown is not shown or if the focus target is the menu.
+    const nextElement = e.relatedTarget as HTMLElement;
+    if (!this.showDropdown_ ||
+        (nextElement !== this && this.contains(nextElement))) {
+      return;
+    }
     this.toggleDropdown_();
   }
 
