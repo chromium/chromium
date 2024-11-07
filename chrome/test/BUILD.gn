@@ -6096,6 +6096,7 @@ test("unit_tests") {
       "../browser/net/server_certificate_database_test_util.h",
       "../browser/net/server_certificate_database_unittest.cc",
       "../browser/ui/webui/certificate_manager/client_cert_sources_unittest.cc",
+      "../browser/ui/webui/certificate_manager/user_cert_sources_unittest.cc",
     ]
     if (is_chromeos) {
       sources += [

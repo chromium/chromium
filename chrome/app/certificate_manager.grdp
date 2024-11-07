@@ -165,6 +165,9 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR" desc="Eror message displayed in certificate manager when the user tried to import a certificate but the file could not be read.">
       Error reading file
     </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_MULTIPLE_CERT_ERROR" desc="Eror message displayed in certificate manager when the user tried to import multiple certificates through a UI that only supports one.">
+      Import is only supported for a single certificate
+    </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR_TITLE" desc="Title of dialog displayed in certificate manager when the user tried to delete a certificate but their was an error preventing the certificate from being deleted.">
       Error deleting certificate
     </message>
