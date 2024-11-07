@@ -825,6 +825,12 @@ class CORE_EXPORT ConstraintSpace final {
   bool ShouldTextBoxTrimFragmentainerEnd() const {
     return HasRareData() && rare_data_->should_text_box_trim_fragmentainer_end;
   }
+  // Return true if the last line before clamp which is a descendant of a node
+  // should trim to the end.
+  bool ShouldTextBoxTrimInsideWhenLineClamp() const {
+    return HasRareData() &&
+           rare_data_->should_text_box_trim_inside_when_line_clamp;
+  }
 
   // Apply `text-box-trim` to the block-end even if there are following content.
   bool ShouldForceTextBoxTrimEnd() const {
@@ -1007,6 +1013,8 @@ class CORE_EXPORT ConstraintSpace final {
           should_text_box_trim_fragmentainer_end(
               other.should_text_box_trim_fragmentainer_end),
           should_force_text_box_trim_end(other.should_force_text_box_trim_end),
+          should_text_box_trim_inside_when_line_clamp(
+              other.should_text_box_trim_inside_when_line_clamp),
           decoration_percentage_resolution_type(
               other.decoration_percentage_resolution_type) {
       switch (GetDataUnionType()) {
@@ -1100,6 +1108,8 @@ class CORE_EXPORT ConstraintSpace final {
               other.should_text_box_trim_fragmentainer_end ||
           should_force_text_box_trim_end !=
               other.should_force_text_box_trim_end ||
+          should_text_box_trim_inside_when_line_clamp !=
+              other.should_text_box_trim_inside_when_line_clamp ||
           decoration_percentage_resolution_type !=
               other.decoration_percentage_resolution_type) {
         return false;
@@ -1143,6 +1153,7 @@ class CORE_EXPORT ConstraintSpace final {
           should_text_box_trim_fragmentainer_start ||
           should_text_box_trim_fragmentainer_end ||
           should_force_text_box_trim_end ||
+          should_text_box_trim_inside_when_line_clamp ||
           decoration_percentage_resolution_type) {
         return false;
       }
@@ -1424,6 +1435,7 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned effective_text_box_edge : TextBoxEdge::kBits =
                                            static_cast<unsigned>(TextBoxEdge());
     unsigned should_force_text_box_trim_end : 1 = false;
+    unsigned should_text_box_trim_inside_when_line_clamp : 1 = false;
     unsigned decoration_percentage_resolution_type : 1 = static_cast<unsigned>(
         DecorationPercentageResolutionType::kContainingBlockInlineSize);
 

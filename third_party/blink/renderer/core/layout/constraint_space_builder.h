@@ -541,6 +541,11 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       space_.EnsureRareData()->should_text_box_trim_fragmentainer_end = b;
     }
   }
+  void SetShouldTextBoxTrimInsideWhenLineClamp(bool b) {
+    if (b || space_.rare_data_) {
+      space_.EnsureRareData()->should_text_box_trim_inside_when_line_clamp = b;
+    }
+  }
 
   void SetShouldForceTextBoxTrimEnd() { space_.SetShouldForceTextBoxTrimEnd(); }
   void SetEffectiveTextBoxEdge(TextBoxEdge value) {
