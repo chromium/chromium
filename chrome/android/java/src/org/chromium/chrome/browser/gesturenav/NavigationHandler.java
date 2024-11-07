@@ -29,6 +29,7 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -178,7 +179,11 @@ class NavigationHandler implements TouchEventObserver {
 
     void setTab(Tab tab) {
         if (mTab != null) mTab.removeObserver(mTabObserver);
-        onGestureEnd(GestureEndState.RESET);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+            onGestureEnd(GestureEndState.RESET);
+        } else {
+            mBackGestureForTabHistoryInProgress = false;
+        }
         mTab = tab;
         if (tab != null) tab.addObserver(mTabObserver);
     }
@@ -386,7 +391,16 @@ class NavigationHandler implements TouchEventObserver {
      * @see {@link HistoryNavigationCoordinator#reset()}
      */
     void reset() {
-        onGestureEnd(GestureEndState.RESET);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+            onGestureEnd(GestureEndState.RESET);
+        } else {
+            if (mState == GestureState.DRAGGED) {
+                mModel.set(ACTION, GestureAction.RESET_BUBBLE);
+            }
+            mState = GestureState.NONE;
+            mTriggerUiCallSource = TriggerUiCallSource.NO_TRIGGER;
+            mPullOffsetX = 0.f;
+        }
     }
 
     private void onGestureEnd(@GestureEndState int endState) {
