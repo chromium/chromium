@@ -607,8 +607,7 @@ bool RenderViewHostImpl::CreateRenderView(
   // We must send access information relative to the popin opener in order for
   // the renderer to properly conduct checks.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  if (!frame_tree_->GetMainFrame()->IsNestedWithinFencedFrame() &&
-      frame_tree_->GetMainFrame()->delegate()->IsPartitionedPopin()) {
+  if (frame_tree_->GetMainFrame()->ShouldPartitionAsPopin()) {
     params->partitioned_popin_params =
         frame_tree_->GetMainFrame()
             ->delegate()

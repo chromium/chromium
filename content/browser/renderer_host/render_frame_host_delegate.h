@@ -733,11 +733,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Whether the containing window was initially opened as a new popup.
   virtual bool IsPopup() const;
 
-  // If the containing window was opened as a new partitioned popin.
-  // If this returns true, IsPopup must also return true as all
-  // popins are considered popups for UX purposes.
+  // Returns true if `this` is a partitioned popin. If you are calling this to
+  // check if a `RenderFrameHost` should be partitioned due to being in a popin,
+  // check `ShouldPartitionAsPopin` on that host instead.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  // TODO(crbug.com/340606651): Integrate Fenced Frame check into this function.
   virtual bool IsPartitionedPopin() const;
 
   // If this window is a partitioned popin then this returns the properties

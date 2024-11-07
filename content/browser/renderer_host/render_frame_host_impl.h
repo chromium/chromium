@@ -3138,6 +3138,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // happen before it fires (to avoid flakiness).
   void DisableUnloadTimerForTesting();
 
+  // Returns true if the `delegate()` for this host is a partitioned
+  // popin and this host is not within a fenced frame (as this prevents the
+  // popin from impacting partitioning).
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  bool ShouldPartitionAsPopin() const;
+
  protected:
   friend class RenderFrameHostFactory;
 

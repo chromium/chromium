@@ -1390,7 +1390,7 @@ enum class WindowProxyPageContext {
 };
 
 WindowProxyPageContext GetWindowProxyPageContext(RenderFrameHostImpl* frame) {
-  if (frame->delegate()->IsPartitionedPopin()) {
+  if (frame->ShouldPartitionAsPopin()) {
     return WindowProxyPageContext::kPartitionedPopin;
   } else if (frame->delegate()->IsPopup()) {
     return WindowProxyPageContext::kPopup;
@@ -4705,7 +4705,7 @@ const url::Origin& RenderFrameHostImpl::ComputeTopFrameOrigin(
   // If this frame is in a partitioned popin, we consider the opener's top-frame
   // to be this frame's top-frame as long as we aren't in a fenced-frame.
   // See: https://explainers-by-googlers.github.io/partitioned-popins/
-  if (delegate_->IsPartitionedPopin() && !IsNestedWithinFencedFrame()) {
+  if (ShouldPartitionAsPopin()) {
     return delegate_->GetPartitionedPopinOpenerProperties().top_frame_origin;
   }
 
@@ -4745,8 +4745,7 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
   // fenced frame). Otherwise this is a sub frame request.
   // See: https://explainers-by-googlers.github.io/partitioned-popins/
   net::IsolationInfo::RequestType request_type =
-      (is_main_frame() &&
-       (!delegate()->IsPartitionedPopin() || IsNestedWithinFencedFrame()))
+      (is_main_frame() && !ShouldPartitionAsPopin())
           ? net::IsolationInfo::RequestType::kMainFrame
           : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
@@ -4782,7 +4781,7 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
   // must set site_for_cookies relative to the popin opener in order for the
   // renderer to properly conduct checks.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  if (delegate_->IsPartitionedPopin() && !IsNestedWithinFencedFrame()) {
+  if (ShouldPartitionAsPopin()) {
     candidate_site_for_cookies =
         delegate_->GetPartitionedPopinOpenerProperties().site_for_cookies;
   }
@@ -4858,7 +4857,7 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
   // partitioned popin as they are partitioned as an iframe would be.
   // See: https://explainers-by-googlers.github.io/partitioned-popins/
   if (main_frame_for_storage_partitioning == this &&
-      (!delegate()->IsPartitionedPopin() || IsNestedWithinFencedFrame())) {
+      !ShouldPartitionAsPopin()) {
     return false;
   }
 
@@ -4892,7 +4891,7 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
   } else {
     // `rfs_document_data_for_storage_key` should be available unless we are in
     // a popin examining the main frame's data
-    DCHECK(delegate()->IsPartitionedPopin() && !IsNestedWithinFencedFrame() &&
+    DCHECK(ShouldPartitionAsPopin() &&
            main_frame_for_storage_partitioning == this);
   }
 
@@ -4984,7 +4983,7 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   // If this frame is in a partitioned popin, we must use the top-site
   // of the popin opener as our point of comparison.
   // See: https://explainers-by-googlers.github.io/partitioned-popins/
-  if (delegate()->IsPartitionedPopin() && !IsNestedWithinFencedFrame()) {
+  if (ShouldPartitionAsPopin()) {
     top_level_site = net::SchemefulSite(
         delegate()->GetPartitionedPopinOpenerProperties().top_frame_origin);
   }
@@ -5008,7 +5007,7 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   // If this frame is in a partitioned popin, we may need to fixup the ancestor
   // chain bit based on whether the popin was opened from a cross-site context.
   // See: https://explainers-by-googlers.github.io/partitioned-popins/
-  if (delegate()->IsPartitionedPopin() && !IsNestedWithinFencedFrame()) {
+  if (ShouldPartitionAsPopin()) {
     if (delegate()->GetPartitionedPopinOpenerProperties().ancestor_chain_bit ==
         blink::mojom::AncestorChainBit::kCrossSite) {
       ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
@@ -6286,6 +6285,10 @@ void RenderFrameHostImpl::OnUnloaded() {
 
 void RenderFrameHostImpl::DisableUnloadTimerForTesting() {
   unload_event_monitor_timeout_.reset();
+}
+
+bool RenderFrameHostImpl::ShouldPartitionAsPopin() const {
+  return !IsNestedWithinFencedFrame() && delegate_->IsPartitionedPopin();
 }
 
 bool RenderFrameHostImpl::IsBackForwardCacheEvictionTimeRunningForTesting()
@@ -9092,7 +9095,7 @@ void RenderFrameHostImpl::CreateNewWindow(
           "Partitioned popins not permitted.");
       return;
     }
-    if (delegate()->IsPartitionedPopin()) {
+    if (ShouldPartitionAsPopin()) {
       frame_host_associated_receiver_.ReportBadMessage(
           "Partitioned popins cannot open their own popin.");
       return;
@@ -9327,8 +9330,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   // the renderer to properly conduct checks.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params = nullptr;
-  if (new_main_rfh->delegate()->IsPartitionedPopin() &&
-      !IsNestedWithinFencedFrame()) {
+  if (new_main_rfh->ShouldPartitionAsPopin()) {
     partitioned_popin_params = new_main_rfh->delegate()
                                    ->GetPartitionedPopinOpenerProperties()
                                    .AsMojom();
