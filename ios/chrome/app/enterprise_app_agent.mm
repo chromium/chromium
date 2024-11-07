@@ -100,14 +100,14 @@ constexpr base::TimeDelta kTimeout = base::Seconds(30);
 #pragma mark - Private methods
 
 - (void)showUIInScene:(SceneState*)sceneState {
-  if ([sceneState.window.rootViewController
+  if ([sceneState.rootViewController
           isKindOfClass:[EnterpriseLoadScreenViewController class]]) {
     return;
   }
 
-  sceneState.window.rootViewController =
-      [[EnterpriseLoadScreenViewController alloc] init];
-  [sceneState.window makeKeyAndVisible];
+  [sceneState
+      setRootViewController:[[EnterpriseLoadScreenViewController alloc] init]
+          makeKeyAndVisible:YES];
 }
 
 - (BOOL)shouldShowEnterpriseLoadScreen {
