@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DOWNLOAD_MODEL_MIME_TYPE_UTIL_H_
-#define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_MIME_TYPE_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_UTILS_MIME_TYPE_UTIL_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_UTILS_MIME_TYPE_UTIL_H_
 
-#include <string>
+#import <string>
 
 namespace base {
 class FilePath;
@@ -147,4 +147,4 @@ extern char kAnimatedPortableNetworkGraphicsImageMimeType[];
 bool IsUsdzFileFormat(const std::string& mime_type,
                       const base::FilePath& suggested_filename);
 
-#endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_MIME_TYPE_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_UTILS_MIME_TYPE_UTIL_H_

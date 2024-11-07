@@ -4,16 +4,16 @@
 
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 
-#import <memory>
-
 #import <PassKit/PassKit.h>
+
+#import <memory>
 
 #import "base/functional/callback_helpers.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_test_util.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/test/fakes/fake_web_content_handler.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

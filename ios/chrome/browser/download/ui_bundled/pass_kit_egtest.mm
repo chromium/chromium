@@ -9,7 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/download/model/download_test_util.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

@@ -16,7 +16,7 @@
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper_delegate.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"

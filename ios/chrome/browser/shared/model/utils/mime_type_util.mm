@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/download/model/mime_type_util.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 
-#include "base/files/file_path.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/files/file_path.h"
+#import "base/strings/utf_string_conversions.h"
 
 // Extensions.
 char kUsdzFileExtension[] = ".usdz";
