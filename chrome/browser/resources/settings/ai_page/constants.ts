@@ -29,6 +29,20 @@ export enum SettingsAiPageFeaturePrefName {
   WALLPAPER_SEARCH = 'optimization_guide.wallpaper_search_setting_state',
 }
 
+// Exporting enterprise pref names so that they can be referenced by tests.
+export enum AiEnterpriseFeaturePrefName {
+  HISTORY_SEARCH =
+      'optimization_guide.model_execution.history_search_enterprise_policy_allowed',
+  COMPOSE =
+      'optimization_guide.model_execution.compose_enterprise_policy_allowed',
+  TAB_ORGANIZATION =
+      'optimization_guide.model_execution.tab_organization_enterprise_policy_allowed',
+  WALLPAPER_SEARCH =
+      'optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed',
+  COMPARE =
+      'optimization_guide.model_execution.tab_compare_settings_enterprise_policy',
+}
+
 export enum AiPageActions {
   HISTORY_SEARCH_ENABLED = 'Settings.AiPage.HistorySearch.Enabled',
   HISTORY_SEARCH_DISABLED = 'Settings.AiPage.HistorySearch.Disabled',

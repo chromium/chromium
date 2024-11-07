@@ -5,9 +5,9 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsOfferWritingHelpPageElement} from 'chrome://settings/lazy_load.js';
-import {AiPageActions, COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF} from 'chrome://settings/lazy_load.js';
+import {AiEnterpriseFeaturePrefName, AiPageActions, COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {AiPageComposeInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {AiPageComposeInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -156,12 +156,25 @@ suite('ComposePage', function() {
     const learnMoreLink = page.shadowRoot!.querySelector('a');
     assertTrue(!!learnMoreLink);
     assertEquals(
-        learnMoreLink.href, loadTimeData.getString('composeLearnMorePageURL'));
+        loadTimeData.getString('composeLearnMorePageURL'), learnMoreLink.href);
 
     learnMoreLink.click();
     await assertFeatureInteractionMetrics(
         AiPageComposeInteractions.LEARN_MORE_LINK_CLICKED,
         AiPageActions.COMPOSE_LEARN_MORE_CLICKED);
+  });
+
+  test('ComposeLearnMoreManaged', async () => {
+    settingsPrefs.set(
+        `prefs.${AiEnterpriseFeaturePrefName.COMPOSE}.value`,
+        ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
+    await createPage();
+
+    const learnMoreLink = page.shadowRoot!.querySelector('a');
+    assertTrue(!!learnMoreLink);
+    assertEquals(
+        loadTimeData.getString('composeLearnMorePageManagedURL'),
+        learnMoreLink.href);
   });
 });
 

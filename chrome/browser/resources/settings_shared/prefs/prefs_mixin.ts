@@ -112,6 +112,14 @@ export const PrefsMixin = dedupingMixin(
           delete pref.value[key];
           this.set('prefs.' + prefPath + '.value', {...pref.value});
         }
+
+        /**
+         * Helper to assign a pref as a computed property from a string
+         * constant. Usage: computed: `computePref(prefs.${PREF_NAME})`,
+         */
+        computePref(pref: chrome.settingsPrivate.PrefObject) {
+          return pref;
+        }
       }
 
       return PrefsMixin;

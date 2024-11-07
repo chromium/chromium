@@ -27,7 +27,7 @@
       <div id="helpMeWriteLabel">$i18n{aiComposeLabel}</div>
       <div class="secondary">
         $i18n{aiComposeSublabelV2}$i18n{sentenceEnd}
-        <a href="$i18n{composeLearnMorePageURL}"
+        <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
             aria-label="$i18n{aiComposeSettingLearnMoreA11y}"
             on-click="onLearnMoreClick_" target="_blank">
           $i18n{learnMore}
@@ -56,8 +56,7 @@
           <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
           <div class="secondary">$i18n{aiComposeComposeConsiderData}</div>
         </li>
-        <settings-ai-logging-info-bullet
-            pref="[[prefs.optimization_guide.model_execution.compose_enterprise_policy_allowed]]">
+        <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
         </settings-ai-logging-info-bullet>
       </ul>
     </div>
