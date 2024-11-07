@@ -73,20 +73,6 @@ const char* ReadyStateToString(MediaStreamSource::ReadyState state) {
   return "Invalid";
 }
 
-const char* EchoCancellationModeToString(
-    MediaStreamSource::EchoCancellationMode mode) {
-  switch (mode) {
-    case MediaStreamSource::EchoCancellationMode::kDisabled:
-      return "disabled";
-    case MediaStreamSource::EchoCancellationMode::kBrowser:
-      return "browser";
-    case MediaStreamSource::EchoCancellationMode::kAec3:
-      return "AEC3";
-    case MediaStreamSource::EchoCancellationMode::kSystem:
-      return "system";
-  }
-}
-
 void GetSourceSettings(const blink::WebMediaStreamSource& web_source,
                        MediaStreamTrackPlatform::Settings& settings) {
   auto* const source = blink::MediaStreamAudioSource::From(web_source);
@@ -217,19 +203,17 @@ void MediaStreamSource::AddObserver(MediaStreamSource::Observer* observer) {
   observers_.insert(observer);
 }
 
-void MediaStreamSource::SetAudioProcessingProperties(
-    EchoCancellationMode echo_cancellation_mode,
-    bool auto_gain_control,
-    bool noise_supression,
-    bool voice_isolation) {
+void MediaStreamSource::SetAudioProcessingProperties(bool echo_cancellation,
+                                                     bool auto_gain_control,
+                                                     bool noise_supression,
+                                                     bool voice_isolation) {
   SendLogMessage(
-      String::Format("%s({echo_cancellation_mode=%s}, {auto_gain_control=%d}, "
+      String::Format("%s({echo_cancellation=%d}, {auto_gain_control=%d}, "
                      "{noise_supression=%d}, {voice_isolation=%d})",
-                     __func__,
-                     EchoCancellationModeToString(echo_cancellation_mode),
-                     auto_gain_control, noise_supression, voice_isolation)
+                     __func__, echo_cancellation, auto_gain_control,
+                     noise_supression, voice_isolation)
           .Utf8());
-  echo_cancellation_mode_ = echo_cancellation_mode;
+  echo_cancellation_ = echo_cancellation;
   auto_gain_control_ = auto_gain_control;
   noise_supression_ = noise_supression;
   voice_isolation_ = voice_isolation;
@@ -259,9 +243,8 @@ void MediaStreamSource::GetSettings(
   settings.device_id = Id();
   settings.group_id = GroupId();
 
-  if (echo_cancellation_mode_) {
-    settings.echo_cancellation =
-        *echo_cancellation_mode_ != EchoCancellationMode::kDisabled;
+  if (echo_cancellation_) {
+    settings.echo_cancellation = *echo_cancellation_;
   }
   if (auto_gain_control_) {
     settings.auto_gain_control = *auto_gain_control_;

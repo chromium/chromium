@@ -212,26 +212,11 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
           blink::ProcessedLocalAudioSource::From(source_impl)) {
     blink::AudioProcessingProperties properties =
         processed_source->audio_processing_properties();
-    MediaStreamSource::EchoCancellationMode echo_cancellation_mode;
-
-    switch (properties.echo_cancellation_type) {
-      case EchoCancellationType::kEchoCancellationDisabled:
-        echo_cancellation_mode =
-            MediaStreamSource::EchoCancellationMode::kDisabled;
-        break;
-      case EchoCancellationType::kEchoCancellationAec3:
-        echo_cancellation_mode =
-            MediaStreamSource::EchoCancellationMode::kBrowser;
-        break;
-      case EchoCancellationType::kEchoCancellationSystem:
-        echo_cancellation_mode =
-            MediaStreamSource::EchoCancellationMode::kSystem;
-        break;
-    }
 
     source->SetAudioProcessingProperties(
-        echo_cancellation_mode, properties.goog_auto_gain_control,
-        properties.goog_noise_suppression,
+        properties.echo_cancellation_type !=
+            EchoCancellationType::kEchoCancellationDisabled,
+        properties.goog_auto_gain_control, properties.goog_noise_suppression,
         properties.voice_isolation ==
             AudioProcessingProperties::VoiceIsolationType::
                 kVoiceIsolationEnabled);
@@ -239,14 +224,10 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
     // If the source is not a processed source, it could still support system
     // echo cancellation or voice. Surface that if it does.
     media::AudioParameters params = source_impl->GetAudioParameters();
-    const MediaStreamSource::EchoCancellationMode echo_cancellation_mode =
-        params.IsValid() &&
-                (params.effects() & media::AudioParameters::ECHO_CANCELLER)
-            ? MediaStreamSource::EchoCancellationMode::kSystem
-            : MediaStreamSource::EchoCancellationMode::kDisabled;
-
     source->SetAudioProcessingProperties(
-        echo_cancellation_mode, false, false,
+        params.IsValid() &&
+            (params.effects() & media::AudioParameters::ECHO_CANCELLER),
+        false, false,
         params.IsValid() &&
             (params.effects() &
              media::AudioParameters::VOICE_ISOLATION_SUPPORTED) &&
