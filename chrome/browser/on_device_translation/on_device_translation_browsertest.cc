@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
+#include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/test/test_util.h"
@@ -441,11 +442,11 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         run_loop_for_register_language_pack.Quit();
       }));
 
-  // Call createTranslator() 1024 times.
-  EXPECT_EQ(EvalJsCatchingError(R"(
+  // Call createTranslator() kMaxPendingTaskCount times.
+  EXPECT_EQ(EvalJsCatchingError(base::StringPrintf(R"(
       window._testPromises = [];
       window._testPromisesResolved = false;
-      const kMaxPendingTaskCount = 1024;
+      const kMaxPendingTaskCount = %zd;
       for (let i = 0; i < kMaxPendingTaskCount; ++i) {
         const promise = translation.createTranslator({
           sourceLanguage: 'en',
@@ -457,7 +458,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         window._testPromises.push(promise);
       }
       return 'OK';
-  )"),
+  )",
+                                                   kMaxPendingTaskCount)),
             "OK");
   // Wait until RegisterTranslateKitComponentImpl() is called.
   run_loop_for_register_translate_kit.Run();
@@ -792,8 +794,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CanTranslateReadily) {
   TestCanTranslateResult("en", "ja", CanCreateTranslatorResult::kReadily);
 }
 
-// Test the behavior of canTranslate() when the language pack is ready, but the
-// language pack is not ready.
+// Test the behavior of canTranslate() when the language pack is not ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateAfterDownloadLanguagePackNotReady) {
   MockComponentManager mock_component_manager(GetTempDir());

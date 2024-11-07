@@ -51,8 +51,6 @@ using mojom::OnDeviceTranslationServiceConfigPtr;
 
 namespace {
 
-constexpr size_t kMaxPendingTaskCount = 1024;
-
 // Limit the number of downloadable language packs to 3 during OT to mitigate
 // the risk of fingerprinting attacks.
 constexpr size_t kTranslationAPILimitLanguagePackCountMax = 3;
