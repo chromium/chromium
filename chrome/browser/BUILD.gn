@@ -3826,6 +3826,8 @@ static_library("browser") {
       "new_tab_page/modules/safe_browsing/safe_browsing_handler.h",
       "new_tab_page/modules/safe_browsing/safe_browsing_prefs.cc",
       "new_tab_page/modules/safe_browsing/safe_browsing_prefs.h",
+      "new_tab_page/modules/v2/calendar/calendar_fake_data_helper.cc",
+      "new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h",
       "new_tab_page/modules/v2/calendar/google_calendar_page_handler.cc",
       "new_tab_page/modules/v2/calendar/google_calendar_page_handler.h",
       "new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc",
