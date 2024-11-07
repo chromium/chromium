@@ -39,10 +39,6 @@ extern const base::FeatureParam<std::string> kPlusAddressManagementUrl;
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kPlusAddressLearnMoreUrl;
 
-// Url for user to report issues with plus addresses.
-COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-extern const base::FeatureParam<std::string> kPlusAddressErrorReportUrl;
-
 // The amount of time before the client aborts a request to the plus address
 // server.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)

@@ -15,7 +15,6 @@ constexpr char kEnterprisePlusAddressOAuthScopeName[] = "oauth-scope";
 constexpr char kEnterprisePlusAddressServerUrlName[] = "server-url";
 constexpr char kPlusAddressManagementUrlName[] = "manage-url";
 constexpr char kPlusAddressLearnMoreUrlName[] = "learn-more";
-constexpr char kPlusAddressErrorReportUrlName[] = "error-report-url";
 constexpr char kPlusAddressRequestTimeoutName[] = "request-timeout";
 
 }  // namespace
@@ -47,8 +46,6 @@ const base::FeatureParam<std::string> kPlusAddressManagementUrl{
     &kPlusAddressesEnabled, kPlusAddressManagementUrlName, ""};
 const base::FeatureParam<std::string> kPlusAddressLearnMoreUrl{
     &kPlusAddressesEnabled, kPlusAddressLearnMoreUrlName, ""};
-const base::FeatureParam<std::string> kPlusAddressErrorReportUrl{
-    &kPlusAddressesEnabled, kPlusAddressErrorReportUrlName, ""};
 const base::FeatureParam<base::TimeDelta> kPlusAddressRequestTimeout{
     &kPlusAddressesEnabled, kPlusAddressRequestTimeoutName, base::Seconds(5)};
 
