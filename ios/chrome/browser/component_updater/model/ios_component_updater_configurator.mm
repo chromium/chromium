@@ -94,7 +94,10 @@ IOSConfigurator::IOSConfigurator(const base::CommandLine* cmdline)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
                          false),
       persisted_data_(update_client::CreatePersistedData(
-          GetApplicationContext()->GetLocalState(),
+          base::BindRepeating([]() {
+            ApplicationContext* context = GetApplicationContext();
+            return context ? context->GetLocalState() : nullptr;
+          }),
           nullptr)) {}
 
 base::TimeDelta IOSConfigurator::InitialDelay() const {

@@ -70,9 +70,11 @@ PersistedData::PersistedData(
     std::unique_ptr<update_client::ActivityDataService> activity_service)
     : scope_(scope),
       pref_service_(pref_service),
-      delegate_(
-          update_client::CreatePersistedData(pref_service,
-                                             std::move(activity_service))) {
+      delegate_(update_client::CreatePersistedData(
+          base::BindRepeating(
+              [](PrefService* pref_service) { return pref_service; },
+              pref_service),
+          std::move(activity_service))) {
   CHECK(pref_service_);
 }
 

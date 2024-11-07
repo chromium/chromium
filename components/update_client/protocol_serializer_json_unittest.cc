@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -33,7 +34,9 @@ TEST(SerializeRequestJSON, Serialize) {
   {
     auto pref = std::make_unique<TestingPrefServiceSimple>();
     RegisterPersistedDataPrefs(pref->registry());
-    auto metadata = CreatePersistedData(pref.get(), nullptr);
+    auto metadata = CreatePersistedData(
+        base::BindRepeating([](PrefService* pref) { return pref; }, pref.get()),
+        nullptr);
     std::vector<std::string> items = {"id1"};
     test::SetDateLastData(metadata.get(), items, 1234);
 

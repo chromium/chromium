@@ -151,7 +151,7 @@ class PersistedData {
 // Creates a PersistedData instance. Passing null for either or both parameters
 // is safe and will disable functionality that relies on them.
 std::unique_ptr<PersistedData> CreatePersistedData(
-    PrefService* pref_service,
+    base::RepeatingCallback<PrefService*()> pref_service_provider,
     std::unique_ptr<ActivityDataService> activity_data_service);
 
 // Register prefs for a PersistedData returned by CreatePersistedData.

@@ -97,7 +97,10 @@ WebViewConfigurator::WebViewConfigurator(const base::CommandLine* cmdline)
           component_updater::ComponentUpdaterCommandLineConfigPolicy(cmdline),
           /*require_encryption=*/false),
       persisted_data_(update_client::CreatePersistedData(
-          ApplicationContext::GetInstance()->GetLocalState(),
+          base::BindRepeating([]() {
+            ApplicationContext* context = ApplicationContext::GetInstance();
+            return context ? context->GetLocalState() : nullptr;
+          }),
           nullptr)) {}
 
 base::TimeDelta WebViewConfigurator::InitialDelay() const {

@@ -313,7 +313,9 @@ class UpdateClientTest : public testing::Test {
 UpdateClientTest::UpdateClientTest() {
   RegisterPersistedDataPrefs(pref_->registry());
   config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
-  metadata_ = CreatePersistedData(pref_.get(), nullptr);
+  metadata_ = CreatePersistedData(
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref_.get()),
+      nullptr);
 }
 
 void UpdateClientTest::RunThreads() {
