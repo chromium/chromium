@@ -359,6 +359,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         AddAccountButtonProperties.Properties properties =
                 new AddAccountButtonProperties.Properties();
         properties.mIdpMetadata = mIdpMetadata;
+        properties.mRpMode = RpMode.ACTIVE;
         return new PropertyModel.Builder(AddAccountButtonProperties.ALL_KEYS)
                 .with(AddAccountButtonProperties.PROPERTIES, properties)
                 .build();

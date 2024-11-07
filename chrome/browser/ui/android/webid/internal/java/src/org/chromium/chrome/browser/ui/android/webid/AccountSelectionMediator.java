@@ -788,14 +788,17 @@ class AccountSelectionMediator {
 
     private void updateSheet(List<Account> accounts, boolean areAccountsClickable) {
         boolean supportsAddAccount =
-                mRpMode == RpMode.ACTIVE
-                        && mHeaderType == HeaderType.SIGN_IN
+                mHeaderType == HeaderType.SIGN_IN
                         && areAccountsClickable
                         && mIdpMetadata.supportsAddAccount();
         boolean isSingleAccountChooser = accounts != null && accounts.size() == 1;
 
+        // We add the add account button alongside the accounts if supported in passive mode and in
+        // the multi-account UI of active mode.
         updateAccounts(
-                accounts, areAccountsClickable, supportsAddAccount && !isSingleAccountChooser);
+                accounts,
+                areAccountsClickable,
+                (mRpMode == RpMode.PASSIVE || !isSingleAccountChooser) && supportsAddAccount);
         // If there is a change in the header, setFocusView() will be called and focus will land on
         // the header when screen reader is on. Since the header is updated before any item is
         // created, the header will always take precedence for focus. Do not reorder this
@@ -824,7 +827,7 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onLoginToIdP;
         }
 
-        if (supportsAddAccount && isSingleAccountChooser) {
+        if (supportsAddAccount && isSingleAccountChooser && mRpMode == RpMode.ACTIVE) {
             assert !isDataSharingConsentVisible;
             assert mSelectedAccount == null;
             mSelectedAccount = accounts.get(0);
@@ -882,10 +885,12 @@ class AccountSelectionMediator {
                 mHeaderType == HeaderType.SIGN_IN_ERROR
                         ? createErrorTextItem(mIdpForDisplay, mRpForDisplay, mError)
                         : null);
-        // For multiple account choosers, the add account button is added as an account row.
+        // The add account button is added separately for active mode single account chooser.
         mModel.set(
                 ItemProperties.ADD_ACCOUNT_BUTTON,
-                supportsAddAccount && isSingleAccountChooser ? createAddAccountBtnItem() : null);
+                supportsAddAccount && isSingleAccountChooser && mRpMode == RpMode.ACTIVE
+                        ? createAddAccountBtnItem()
+                        : null);
         mModel.set(
                 ItemProperties.ACCOUNT_CHIP,
                 mHeaderType == HeaderType.REQUEST_PERMISSION
@@ -1091,6 +1096,7 @@ class AccountSelectionMediator {
                 new AddAccountButtonProperties.Properties();
         properties.mIdpMetadata = mIdpMetadata;
         properties.mOnClickListener = this::onLoginToIdP;
+        properties.mRpMode = mRpMode;
         return new PropertyModel.Builder(AddAccountButtonProperties.ALL_KEYS)
                 .with(AddAccountButtonProperties.PROPERTIES, properties)
                 .build();

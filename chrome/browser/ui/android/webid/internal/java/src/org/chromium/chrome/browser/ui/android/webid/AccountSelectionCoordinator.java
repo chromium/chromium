@@ -125,7 +125,7 @@ public class AccountSelectionCoordinator
                 context.getResources()
                         .getDimensionPixelSize(
                                 rpMode == RpMode.ACTIVE
-                                        ? R.dimen.account_selection_button_mode_sheet_avatar_size
+                                        ? R.dimen.account_selection_active_mode_sheet_avatar_size
                                         : R.dimen.account_selection_account_avatar_size);
         mMediator =
                 new AccountSelectionMediator(
@@ -159,7 +159,7 @@ public class AccountSelectionCoordinator
             @RpMode.EnumType int rpMode) {
         int accountSelectionSheetLayout =
                 rpMode == RpMode.ACTIVE
-                        ? R.layout.account_selection_button_mode_sheet
+                        ? R.layout.account_selection_active_mode_sheet
                         : R.layout.account_selection_sheet;
         View contentView =
                 (LinearLayout)
@@ -185,12 +185,15 @@ public class AccountSelectionCoordinator
                 AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
                 new LayoutViewBuilder(
                         rpMode == RpMode.ACTIVE
-                                ? R.layout.account_selection_button_mode_account_item
+                                ? R.layout.account_selection_active_mode_account_item
                                 : R.layout.account_selection_account_item),
                 AccountSelectionViewBinder::bindAccountView);
         adapter.registerType(
                 AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT,
-                new LayoutViewBuilder(R.layout.account_selection_add_account_row_item),
+                new LayoutViewBuilder(
+                        rpMode == RpMode.ACTIVE
+                                ? R.layout.account_selection_active_mode_add_account_row_item
+                                : R.layout.account_selection_add_account_row_item),
                 AccountSelectionViewBinder::bindAddAccountView);
         sheetItemListView.setAdapter(adapter);
 

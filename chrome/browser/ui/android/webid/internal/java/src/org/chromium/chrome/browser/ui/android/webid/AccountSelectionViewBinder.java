@@ -31,6 +31,7 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
@@ -205,8 +206,12 @@ class AccountSelectionViewBinder {
                 TintedDrawable plusIcon =
                         TintedDrawable.constructTintedDrawable(
                                 context,
-                                R.drawable.plus,
-                                R.color.default_icon_color_accent1_tint_list);
+                                properties.mRpMode == RpMode.ACTIVE
+                                        ? R.drawable.plus
+                                        : R.drawable.open_in_new_tab,
+                                properties.mRpMode == RpMode.ACTIVE
+                                        ? R.color.default_icon_color_accent1_tint_list
+                                        : R.color.default_icon_color_tint_list);
                 iconView.setImageDrawable(plusIcon);
 
                 TextView subject = view.findViewById(R.id.title);
@@ -772,7 +777,7 @@ class AccountSelectionViewBinder {
                 int iconSize =
                         resources.getDimensionPixelSize(
                                 model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
-                                        ? R.dimen.account_selection_button_mode_sheet_icon_size
+                                        ? R.dimen.account_selection_active_mode_sheet_icon_size
                                         : R.dimen.account_selection_sheet_icon_size);
                 Drawable croppedBrandIcon =
                         createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
@@ -790,7 +795,7 @@ class AccountSelectionViewBinder {
             if (brandIcon != null) {
                 int iconSize =
                         resources.getDimensionPixelSize(
-                                R.dimen.account_selection_button_mode_sheet_icon_size);
+                                R.dimen.account_selection_active_mode_sheet_icon_size);
                 Drawable croppedBrandIcon =
                         createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
                 headerIconView.setImageDrawable(croppedBrandIcon);

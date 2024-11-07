@@ -12,14 +12,14 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginBottom="@dimen/account_selection_button_mode_sheet_item_padding"
+    android:layout_marginBottom="@dimen/account_selection_active_mode_sheet_item_padding"
     android:gravity="center"
     android:orientation="horizontal">
 
   <ImageView
       android:id="@+id/start_icon"
-      android:layout_width="@dimen/account_selection_button_mode_sheet_account_chip_avatar_size"
-      android:layout_height="@dimen/account_selection_button_mode_sheet_account_chip_avatar_size"
+      android:layout_width="@dimen/account_selection_active_mode_sheet_account_chip_avatar_size"
+      android:layout_height="@dimen/account_selection_active_mode_sheet_account_chip_avatar_size"
       android:layout_marginHorizontal="@dimen/account_selection_sheet_button_margin"
       android:importantForAccessibility="no"/>
 
