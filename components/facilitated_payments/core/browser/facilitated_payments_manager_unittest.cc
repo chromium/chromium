@@ -26,7 +26,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
-#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
@@ -75,24 +75,6 @@ class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
               (base::OnceCallback<void(mojom::PixCodeDetectionResult,
                                        const std::string&)>),
               (override));
-};
-
-class MockFacilitatedPaymentsNetworkInterface
-    : public FacilitatedPaymentsNetworkInterface {
- public:
-  MockFacilitatedPaymentsNetworkInterface()
-      : FacilitatedPaymentsNetworkInterface(/*url_loader_factory=*/nullptr,
-                                            /*identity_manager=*/nullptr,
-                                            /*account_info_getter=*/nullptr) {}
-  ~MockFacilitatedPaymentsNetworkInterface() override = default;
-
-  MOCK_METHOD(
-      void,
-      InitiatePayment,
-      (std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>,
-       InitiatePaymentResponseCallback,
-       const std::string&),
-      (override));
 };
 
 class FacilitatedPaymentsManagerTest : public testing::Test {

@@ -18,6 +18,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +41,16 @@ class EwalletManagerTest : public testing::Test {
     payments_data_manager_.SetSyncServiceForTest(&sync_service_);
     ON_CALL(client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(&payments_data_manager_));
+    ON_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
+        .WillByDefault(testing::Return(&payments_network_interface_));
     ON_CALL(client_, IsInLandscapeMode).WillByDefault(testing::Return(false));
+
+    // `initiate_payment_request_details_` is lazy initialized in the
+    // implementation. Initialize it here so tests depending on it won't crash.
+    test_api(ewallet_manager_)
+        .set_initiate_payment_request_details(
+            std::make_unique<
+                FacilitatedPaymentsInitiatePaymentRequestDetails>());
   }
 
   MockFacilitatedPaymentsApiClient& GetApiClient() {
@@ -54,6 +64,7 @@ class EwalletManagerTest : public testing::Test {
   std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
   autofill::TestPaymentsDataManager payments_data_manager_;
+  MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
 };
 
 // The manager checks for API availability after payment link validation.
@@ -139,6 +150,30 @@ TEST_F(EwalletManagerTest, InLandscapeMode_ApiClientNotCheckedForAvailability) {
                                              GURL("https://www.example.com"));
 }
 
+// API availability is not invoked if payments data manager is not available.
+TEST_F(EwalletManagerTest,
+       PaymentsDataManagerUnavailable_ApiClientNotCheckedForAvailability) {
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
+  GURL supportedPaymentLink(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(client_, GetPaymentsDataManager)
+      .Times(1)
+      .WillOnce(testing::Return(nullptr));
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+
+  ewallet_manager_.TriggerEwalletPushPayment(supportedPaymentLink,
+                                             GURL("https://www.example.com"));
+}
+
 // If the facilitated payment API is available, then the manager shows the
 // eWallet payment prompt.
 TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {
@@ -172,6 +207,73 @@ TEST_F(EwalletManagerTest,
   EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   test_api(ewallet_manager_).OnApiAvailabilityReceived(false);
+}
+
+// If the user does not select an eWallet account in the payment prompt, request
+// for risk data is not made, and progress screen is not shown.
+TEST_F(
+    EwalletManagerTest,
+    EwalletPaymentPromptNotAccepted_LoadRiskDataNotTriggered_ProgressScreenNotShown) {
+  EXPECT_CALL(client_, LoadRiskData(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowProgressScreen()).Times(0);
+
+  test_api(ewallet_manager_)
+      .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/false,
+                                    /*selected_instrument_id=*/0);
+}
+
+// If the user selects an eWallet account in the payment prompt, request for
+// risk data is made, and progress screen is shown.
+TEST_F(EwalletManagerTest,
+       EwalletPaymentPromptAccepted_LoadRiskDataTriggered_ProgressScreenShown) {
+  EXPECT_CALL(client_, LoadRiskData(testing::_));
+  EXPECT_CALL(client_, ShowProgressScreen());
+
+  test_api(ewallet_manager_)
+      .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                    /*selected_instrument_id=*/100L);
+}
+
+// If the risk data is empty, then the manager does not retrieve a client token
+// from the facilitated payments API client.
+TEST_F(EwalletManagerTest,
+       RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown) {
+  EXPECT_CALL(GetApiClient(), GetClientToken(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowErrorScreen);
+
+  test_api(ewallet_manager_).OnRiskDataLoaded(/*risk_data=*/"");
+}
+
+// If the risk data is not empty, then the manager retrieves a client token from
+// the facilitated payments API client.
+TEST_F(EwalletManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
+  EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
+
+  test_api(ewallet_manager_).OnRiskDataLoaded(/*risk_data=*/"fake risk data");
+}
+
+// If the client token is empty, an error screen will be shown.
+TEST_F(EwalletManagerTest, OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
+  EXPECT_CALL(client_, ShowErrorScreen);
+
+  test_api(ewallet_manager_).OnGetClientToken(std::vector<uint8_t>{});
+}
+
+// Test that SendInitiatePaymentRequest doesn't initiates payment when
+// FacilitatedPaymentsNetworkInterface is not available.
+TEST_F(
+    EwalletManagerTest,
+    SendInitiatePaymentRequest_PaymentsNetworkInterfaceNotAvailable_InitiatePaymentNotTriggered) {
+  EXPECT_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
+      .Times(1)
+      .WillOnce(testing::Return(nullptr));
+
+  EXPECT_CALL(payments_network_interface_,
+              InitiatePayment(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(client_, ShowErrorScreen);
+
+  test_api(ewallet_manager_).SendInitiatePaymentRequest();
 }
 
 }  // namespace payments::facilitated

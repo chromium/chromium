@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_EWALLET_MANAGER_TEST_API_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_EWALLET_MANAGER_TEST_API_H_
 
+#include <memory>
+
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 
 namespace payments::facilitated {
 
@@ -20,12 +23,42 @@ class EwalletManagerTestApi {
   EwalletManagerTestApi& operator=(const EwalletManagerTestApi&) = delete;
   ~EwalletManagerTestApi() = default;
 
+  void set_initiate_payment_request_details(
+      std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
+          initiate_payment_request_details) {
+    ewallet_manager_->initiate_payment_request_details_ =
+        std::move(initiate_payment_request_details);
+  }
+
   FacilitatedPaymentsApiClient* GetApiClient() {
     return ewallet_manager_->GetApiClient();
   }
 
   void OnApiAvailabilityReceived(bool is_api_available) {
     ewallet_manager_->OnApiAvailabilityReceived(is_api_available);
+  }
+
+  void OnEwalletPaymentPromptResult(bool is_prompt_accepted,
+                                    int64_t selected_instrument_id) {
+    ewallet_manager_->OnEwalletPaymentPromptResult(is_prompt_accepted,
+                                                   selected_instrument_id);
+  }
+
+  void OnRiskDataLoaded(const std::string& risk_data) {
+    ewallet_manager_->OnRiskDataLoaded(risk_data);
+  }
+
+  void OnGetClientToken(std::vector<uint8_t> client_token) {
+    ewallet_manager_->OnGetClientToken(client_token);
+  }
+
+  FacilitatedPaymentsInitiatePaymentRequestDetails*
+  initiate_payment_request_details() {
+    return ewallet_manager_->initiate_payment_request_details_.get();
+  }
+
+  void SendInitiatePaymentRequest() {
+    ewallet_manager_->SendInitiatePaymentRequest();
   }
 
  private:

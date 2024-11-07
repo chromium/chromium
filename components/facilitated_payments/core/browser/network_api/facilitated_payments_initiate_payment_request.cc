@@ -33,7 +33,11 @@ FacilitatedPaymentsInitiatePaymentRequest::
                         FacilitatedPaymentsInitiatePaymentResponseDetails>()),
       response_callback_(std::move(response_callback)),
       app_locale_(app_locale),
-      full_sync_enabled_(full_sync_enabled) {}
+      full_sync_enabled_(full_sync_enabled) {
+  CHECK(!request_details_->payment_link_.empty() ||
+        (request_details_->pix_code_.has_value() &&
+         !request_details_->pix_code_.value().empty()));
+}
 
 FacilitatedPaymentsInitiatePaymentRequest::
     ~FacilitatedPaymentsInitiatePaymentRequest() = default;
@@ -95,8 +99,10 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
     payment_details.Set("payment_rail", "PIX");
     payment_details.Set("qr_code", request_details_->pix_code_.value());
   }
-  // The request should have a payment rail.
-  DCHECK(payment_details.FindString("payment_rail"));
+  if (!request_details_->payment_link_.empty()) {
+    payment_details.Set("payment_rail", "PAYMENT_HYPERLINK");
+    payment_details.Set("payment_hyperlink", request_details_->payment_link_);
+  }
   request_dict.Set("payment_details", std::move(payment_details));
 
   std::string request_content;

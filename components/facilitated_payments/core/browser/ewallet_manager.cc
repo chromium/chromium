@@ -10,9 +10,14 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/util/payment_link_validator.h"
 #include "url/gurl.h"
@@ -39,8 +44,14 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
     return;
   }
 
+  autofill::PaymentsDataManager* payments_data_manager =
+      client_->GetPaymentsDataManager();
+  if (!payments_data_manager) {
+    return;
+  }
+
   base::span<const autofill::Ewallet> ewallet_accounts =
-      client_->GetPaymentsDataManager()->GetEwalletAccounts();
+      payments_data_manager->GetEwalletAccounts();
   supported_ewallets_.reserve(ewallet_accounts.size());
   std::ranges::copy_if(
       ewallet_accounts, std::back_inserter(supported_ewallets_),
@@ -58,6 +69,12 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
     return;
   }
 
+  initiate_payment_request_details_ =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  initiate_payment_request_details_->merchant_payment_page_hostname_ =
+      page_url.host();
+  initiate_payment_request_details_->payment_link_ = payment_link_url.spec();
+
   GetApiClient()->IsAvailable(
       base::BindOnce(&EwalletManager::OnApiAvailabilityReceived,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -65,6 +82,7 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
 
 void EwalletManager::Reset() {
   supported_ewallets_.clear();
+  initiate_payment_request_details_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -83,8 +101,72 @@ void EwalletManager::OnApiAvailabilityReceived(bool is_api_available) {
     return;
   }
 
-  // TODO(crbug.com/40280186): Implement the callback.
-  client_->ShowEwalletPaymentPrompt(supported_ewallets_, base::DoNothing());
+  initiate_payment_request_details_->billing_customer_number_ =
+      autofill::payments::GetBillingCustomerId(
+          client_->GetPaymentsDataManager());
+
+  client_->ShowEwalletPaymentPrompt(
+      supported_ewallets_,
+      base::BindOnce(&EwalletManager::OnEwalletPaymentPromptResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
+
+void EwalletManager::OnEwalletPaymentPromptResult(
+    bool is_prompt_accepted,
+    int64_t selected_instrument_id) {
+  if (!is_prompt_accepted) {
+    return;
+  }
+
+  client_->ShowProgressScreen();
+
+  initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
+
+  client_->LoadRiskData(base::BindOnce(&EwalletManager::OnRiskDataLoaded,
+                                       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EwalletManager::OnRiskDataLoaded(const std::string& risk_data) {
+  if (risk_data.empty()) {
+    client_->ShowErrorScreen();
+    return;
+  }
+
+  initiate_payment_request_details_->risk_data_ = risk_data;
+
+  GetApiClient()->GetClientToken(base::BindOnce(
+      &EwalletManager::OnGetClientToken, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EwalletManager::OnGetClientToken(std::vector<uint8_t> client_token) {
+  if (client_token.empty()) {
+    client_->ShowErrorScreen();
+    return;
+  }
+  initiate_payment_request_details_->client_token_ = std::move(client_token);
+
+  SendInitiatePaymentRequest();
+}
+
+void EwalletManager::SendInitiatePaymentRequest() {
+  FacilitatedPaymentsNetworkInterface* payments_network_interface =
+      client_->GetFacilitatedPaymentsNetworkInterface();
+
+  if (!payments_network_interface) {
+    client_->ShowErrorScreen();
+    return;
+  }
+
+  payments_network_interface->InitiatePayment(
+      std::move(initiate_payment_request_details_),
+      base::BindOnce(&EwalletManager::OnInitiatePaymentResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr()),
+      client_->GetPaymentsDataManager()->app_locale());
+}
+
+void EwalletManager::OnInitiatePaymentResponseReceived(
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
+    std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
+        response_details) {}
 
 }  // namespace payments::facilitated

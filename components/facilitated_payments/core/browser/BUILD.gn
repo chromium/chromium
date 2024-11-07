@@ -73,6 +73,8 @@ static_library("test_support") {
     "mock_facilitated_payments_api_client.h",
     "mock_facilitated_payments_client.cc",
     "mock_facilitated_payments_client.h",
+    "network_api/mock_facilitated_payments_network_interface.cc",
+    "network_api/mock_facilitated_payments_network_interface.h",
   ]
 
   deps = [
