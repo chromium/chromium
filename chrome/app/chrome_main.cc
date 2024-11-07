@@ -213,9 +213,8 @@ int ChromeMain(int argc, const char** argv) {
   }
 
 #if BUILDFLAG(IS_MAC)
-  // Gracefully exit if the system tried to launch the macOS notification helper
-  // app when a user clicked on a notification.
-  if (IsAlertsHelperLaunchedViaNotificationAction()) {
+  // Gracefully exit if a helper app was launched in an unexpected situation.
+  if (IsHelperAppLaunchedBySystemOrThirdPartyApplication()) {
     return 0;
   }
 #endif
