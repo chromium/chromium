@@ -43813,6 +43813,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.MessageNotShown.AlreadyQueued">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user because it was already queued to show.
+  </description>
+</action>
+
 <action name="UserEducation.MessageNotShown.BlockedByConfig">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
@@ -43941,6 +43949,16 @@ should be able to be added at any place in this file.
   <owner>frizzle-team@google.com</owner>
   <description>
     An IPH was not shown to the user due to being snoozed.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.TimedOut">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user because it was not eligible to show for a
+    significant period of time after being requested to show, and was therefore
+    discarded.
   </description>
 </action>
 

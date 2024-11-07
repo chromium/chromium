@@ -73,6 +73,12 @@ std::ostream& operator<<(std::ostream& os,
     case FeaturePromoResult::kBlockedByReshowDelay:
       os << "kBlockedByReshowDelay";
       break;
+    case FeaturePromoResult::kTimedOut:
+      os << "kTimedOut";
+      break;
+    case FeaturePromoResult::kAlreadyQueued:
+      os << "kAlreadyQueued";
+      break;
   }
   return os;
 }

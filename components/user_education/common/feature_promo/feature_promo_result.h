@@ -59,7 +59,16 @@ class FeaturePromoResult {
     kBlockedByReshowDelay = 14,  // The promo is allowed to reshow after
                                  // dismissal, but the required time has not
                                  // elapsed yet.
-    kMaxValue = kBlockedByReshowDelay
+    kTimedOut = 15,  // The promo sat in the queue for too long without being
+                     // able to show and expired, without anything else in
+                     // particular being wrong. This is a diagnosis-by-exclusion
+                     // as the system will attempt to identify a specific
+                     // blocking condition and return that failure instead.
+                     // (User Education 2.5 only.)
+    kAlreadyQueued = 16,  // It is not valid to re-queue an already-queued
+                          // promo; this is the error code for when this
+                          // happens.
+    kMaxValue = kAlreadyQueued
   };
 
   constexpr FeaturePromoResult() = default;

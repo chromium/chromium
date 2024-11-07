@@ -29660,6 +29660,8 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="ExceededMaxShowCount"/>
   <int value="13" label="BlockedByNewProfile"/>
   <int value="14" label="BlockedByReshowDelay"/>
+  <int value="15" label="TimedOut"/>
+  <int value="16" label="AlreadyQueued"/>
 </enum>
 
 <enum name="PromoSubtype">

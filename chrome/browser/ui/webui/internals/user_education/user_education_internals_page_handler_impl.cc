@@ -607,6 +607,12 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
       case Failure::kError:
         reason = "Internal error.";
         break;
+      case Failure::kTimedOut:
+        reason = "Timed out.";
+        break;
+      case Failure::kAlreadyQueued:
+        reason = "Already queued.";
+        break;
       case Failure::kBlockedByConfig:
       case Failure::kFeatureDisabled:
       case Failure::kPermanentlyDismissed:

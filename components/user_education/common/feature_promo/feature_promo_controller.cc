@@ -770,6 +770,12 @@ void FeaturePromoControllerCommon::RecordPromoNotShown(
     case FeaturePromoResult::kBlockedByReshowDelay:
       failure_action_name.append("BlockedByReshowDelay");
       break;
+    case FeaturePromoResult::kTimedOut:
+      failure_action_name.append("TimedOut");
+      break;
+    case FeaturePromoResult::kAlreadyQueued:
+      failure_action_name.append("AlreadyQueued");
+      break;
     default:
       NOTREACHED_IN_MIGRATION();
   }
