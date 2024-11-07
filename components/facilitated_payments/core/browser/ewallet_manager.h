@@ -87,6 +87,11 @@ class EwalletManager {
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
           response_details);
 
+  // Called after receiving the `result` of invoking the purchase manager for
+  // payment.
+  void OnTransactionResult(
+      FacilitatedPaymentsApiClient::PurchaseActionResult result);
+
   // A list of eWallets that support the payment link provided in
   // TriggerEwalletPushPayment().
   //

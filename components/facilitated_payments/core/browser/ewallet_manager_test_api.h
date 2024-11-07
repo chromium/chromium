@@ -61,6 +61,14 @@ class EwalletManagerTestApi {
     ewallet_manager_->SendInitiatePaymentRequest();
   }
 
+  void OnInitiatePaymentResponseReceived(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
+          response_details) {
+    ewallet_manager_->OnInitiatePaymentResponseReceived(
+        result, std::move(response_details));
+  }
+
  private:
   const raw_ref<EwalletManager> ewallet_manager_;
 };

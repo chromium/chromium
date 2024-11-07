@@ -167,6 +167,36 @@ void EwalletManager::SendInitiatePaymentRequest() {
 void EwalletManager::OnInitiatePaymentResponseReceived(
     autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
     std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
-        response_details) {}
+        response_details) {
+  if (result !=
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    client_->ShowErrorScreen();
+    return;
+  }
+  if (!response_details || response_details->action_token_.empty()) {
+    client_->ShowErrorScreen();
+    return;
+  }
+  std::optional<CoreAccountInfo> account_info = client_->GetCoreAccountInfo();
+  // If the user logged out after selecting the payment method, the
+  // `account_info` would be empty, and the  the payment flow should be
+  // abandoned.
+  if (!account_info.has_value() || account_info.value().IsEmpty()) {
+    client_->ShowErrorScreen();
+    return;
+  }
+  GetApiClient()->InvokePurchaseAction(
+      account_info.value(), response_details->action_token_,
+      base::BindOnce(&EwalletManager::OnTransactionResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EwalletManager::OnTransactionResult(
+    FacilitatedPaymentsApiClient::PurchaseActionResult result) {
+  // When server responds to the purchase action, Google Play Services takes
+  // over, but the dismiss of progress screen is not taken over. Calling
+  // `DismissPrompt` to dismiss it manually.
+  client_->DismissPrompt();
+}
 
 }  // namespace payments::facilitated
