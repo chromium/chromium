@@ -24,17 +24,26 @@ export function disableTranscription(firstTime = false): void {
 }
 
 /**
- * Enables transcription and installs Soda.
+ * Enables transcription.
  */
 export function enableTranscription(): void {
   settings.mutate((s) => {
     s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
   });
-  // TODO(hsuanling): Move download logic to language picker.
+  const selectedLanguage = settings.value.transcriptionLanguage;
+  if (selectedLanguage !== null) {
+    void usePlatformHandler().installSoda(selectedLanguage);
+  }
+}
+
+/**
+ * Set transcription language and install Soda.
+ */
+export function setTranscriptionLanguage(language: LanguageCode): void {
   settings.mutate((s) => {
-    s.transcriptionLanguage = LanguageCode.EN_US;
+    s.transcriptionLanguage = language;
   });
-  void usePlatformHandler().installSoda(LanguageCode.EN_US);
+  void usePlatformHandler().installSoda(language);
 }
 
 /**

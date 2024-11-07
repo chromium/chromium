@@ -4,6 +4,7 @@
 
 import './cra/cra-button.js';
 import './cra/cra-image.js';
+import './language-dropdown.js';
 import './speaker-label-consent-dialog-content.js';
 
 import {
@@ -19,6 +20,7 @@ import {
 import {i18n, NoArgStringName} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {LanguageCode} from '../core/soda/language_info.js';
 import {
   settings,
   SpeakerLabelEnableState,
@@ -26,10 +28,16 @@ import {
 import {
   disableTranscription,
   enableTranscription,
+  setTranscriptionLanguage,
 } from '../core/state/transcription.js';
-import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
+import {
+  assertExhaustive,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 
 import {CraButton} from './cra/cra-button.js';
+import {LanguageDropdown} from './language-dropdown.js';
 import {
   DESCRIPTION_NAMES as SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
 } from './speaker-label-consent-dialog-content.js';
@@ -91,6 +99,10 @@ export class OnboardingDialog extends ReactiveLitElement {
       margin: 0 0 16px;
     }
 
+    language-dropdown {
+      margin-top: 16px;
+    }
+
     #description {
       color: var(--cros-sys-on_surface_variant);
       flex: 1;
@@ -123,12 +135,25 @@ export class OnboardingDialog extends ReactiveLitElement {
 
   /**
    * The currently shown step index starting from 0.
+   *
+   * Step 0: Welcoming page.
+   * Step 1: Transcription consent dialog for users to turn on transcription and
+   * download en-US model.
+   * Step 2: Transcription consent dialog for users to turn on transcription.
+   * Step 3: Transcription language selection dialog for users to choose and
+   * download language model.
+   * Step 4: Speaker label consent dialog for users to turn on speaker label.
+   *
+   * When there are multiple language options, skip step 1. Otherwise, skip step
+   * 2 and step 3.
    */
-  step: 0|1|2 = 0;
+  step: 0|1|2|3|4 = 0;
 
   private readonly platformHandler = usePlatformHandler();
 
   private readonly autoFocusItem = createRef<CraButton>();
+
+  private readonly dropdown = createRef<LanguageDropdown>();
 
   get dialog(): HTMLDivElement {
     return assertInstanceof(
@@ -219,7 +244,8 @@ export class OnboardingDialog extends ReactiveLitElement {
             this.close();
             return;
           }
-          this.step = 1;
+          this.step =
+            this.platformHandler.getLangPackList().length <= 1 ? 1 : 2;
         };
         return this.renderDialog(
           this.step,
@@ -236,12 +262,13 @@ export class OnboardingDialog extends ReactiveLitElement {
       case 1: {
         const turnOnTranscription = () => {
           enableTranscription();
+          setTranscriptionLanguage(LanguageCode.EN_US);
           if (!this.platformHandler.canUseSpeakerLabel.value) {
             // Speaker label isn't supported on this platform.
             this.close();
             return;
           }
-          this.step = 2;
+          this.step = 4;
         };
         const turnOffTranscription = () => {
           disableTranscription(/* firstTime= */ true);
@@ -264,13 +291,90 @@ export class OnboardingDialog extends ReactiveLitElement {
               @click=${turnOffTranscription}
             ></cra-button>
             <cra-button
-              .label=${i18n.onboardingDialogTranscriptionTurnOnButton}
+              .label=${i18n.onboardingDialogTranscriptionDownloadButton}
               @click=${turnOnTranscription}
             ></cra-button>
           `,
         );
       }
       case 2: {
+        const turnOnTranscription = () => {
+          enableTranscription();
+          this.step = 3;
+        };
+        const turnOffTranscription = () => {
+          disableTranscription(/* firstTime= */ true);
+          this.close();
+        };
+        return this.renderDialog(
+          this.step,
+          'onboarding_transcription',
+          i18n.onboardingDialogTranscriptionTurnOnHeader,
+          i18n.onboardingDialogTranscriptionTurnOnDescription,
+          html`
+            <cra-button
+              .label=${i18n.onboardingDialogTranscriptionDeferButton}
+              class="left"
+              @click=${this.close}
+              ${ref(this.autoFocusItem)}
+            ></cra-button>
+            <cra-button
+              .label=${i18n.onboardingDialogTranscriptionCancelButton}
+              @click=${turnOffTranscription}
+            ></cra-button>
+            <cra-button
+              .label=${i18n.onboardingDialogTranscriptionTurnOnButton}
+              @click=${turnOnTranscription}
+            ></cra-button>
+          `,
+        );
+      }
+      case 3: {
+        const dialogBody = html`
+          ${i18n.onboardingDialogLanguageSelectionDescription}
+          <language-dropdown
+            .languageList=${this.platformHandler.getLangPackList()}
+            ${ref(this.dropdown)}
+          >
+          </language-dropdown>
+        `;
+
+        const downloadLanguage = () => {
+          const languageCode = assertExists(this.dropdown.value).value;
+          if (languageCode === null) {
+            return;
+          }
+          setTranscriptionLanguage(languageCode);
+          if (!this.platformHandler.canUseSpeakerLabel.value) {
+            // Speaker label isn't supported on this platform.
+            this.close();
+            return;
+          }
+          this.step = 4;
+        };
+
+        const cancelSelection = () => {
+          this.close();
+        };
+
+        return this.renderDialog(
+          this.step,
+          'onboarding_transcription',
+          i18n.onboardingDialogLanguageSelectionHeader,
+          dialogBody,
+          html`
+            <cra-button
+              .label=${i18n.onboardingDialogLanguageSelectionCancelButton}
+              @click=${cancelSelection}
+            ></cra-button>
+            <cra-button
+              label=${i18n.onboardingDialogLanguageSelectionDownloadButton}
+              @click=${downloadLanguage}
+            ></cra-button>
+          `,
+        );
+      }
+      case 4: {
         const ALLOW_BUTTON_NAME: NoArgStringName =
           'onboardingDialogSpeakerLabelAllowButton';
         const DISALLOW_BUTTON_NAME: NoArgStringName =

@@ -74,6 +74,9 @@
   <message desc="Tooltip of the link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK_TOOLTIP">
     Learn more about Generative AI
   </message>
+  <message desc="Hint text for users to choose language from the dropdown." name="IDS_RECORDER_LANGUAGE_DROPDOWN_HINT_OPTION">
+    Select language
+  </message>
   <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_RECORDINGS_LIST_LANDMARK_ARIA_LABEL">
     List of audio recordings
   </message>
@@ -94,6 +97,18 @@
   </message>
   <message desc="Label of the option to include system audio in the recording." name="IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION">
     Chromebook audio
+  </message>
+  <message desc="Button to defer transcription language selection and go next step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_LANGUAGE_SELECTION_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Description of the transcription language selection step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_LANGUAGE_SELECTION_DESCRIPTION">
+    You can change this later in Recorder settings
+  </message>
+  <message desc="Button to download transcription model and go next step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_LANGUAGE_SELECTION_DOWNLOAD_BUTTON">
+    Download
+  </message>
+  <message desc="Header of the transcription language selection step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_LANGUAGE_SELECTION_HEADER">
+    Select transcription language and download model
   </message>
   <message desc="Button to enable speaker label and go next step in the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_ALLOW_BUTTON">
     Allow
@@ -131,15 +146,24 @@
   <message desc="Button to defer enabling transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DEFER_BUTTON">
     Skip
   </message>
-  <message desc="Description of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DESCRIPTION">
+  <message desc="Description of the transcription enable and download step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DESCRIPTION">
     Recorder can create transcriptions for recordings with speech.
 Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
-  <message desc="Header of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_HEADER">
+  <message desc="Button to enable transcription and download transcription model, and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DOWNLOAD_BUTTON">
+    Turn on and download
+  </message>
+  <message desc="Header of the transcription enable and download step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_HEADER">
     Turn on transcription and download transcription model?
   </message>
   <message desc="Button to enable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_TURN_ON_BUTTON">
-    Turn on and download
+    Turn on
+  </message>
+  <message desc="Description of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_TURN_ON_DESCRIPTION">
+    Recorder can create transcriptions for recordings with speech. In the next step, you need to select the transcription language and download the model (up to 100MB).
+  </message>
+  <message desc="Header of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_TURN_ON_HEADER">
+    Turn on transcription?
   </message>
   <message desc="Description of the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_DESCRIPTION">
     Automatically create transcriptions, get recording summaries using Google AI, and search audio. Create recordings even when you’re not connected to the internet.
