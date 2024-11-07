@@ -371,4 +371,9 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
                 .notifyEvent(EventConstants.SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP);
         mCloseRunnable.run();
     }
+
+    @NonNull
+    String getFolderName() {
+        return mFolderName;
+    }
 }

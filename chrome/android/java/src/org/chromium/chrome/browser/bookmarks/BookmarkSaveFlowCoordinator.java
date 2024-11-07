@@ -290,7 +290,8 @@ public class BookmarkSaveFlowCoordinator {
 
         @Override
         public @NonNull String getSheetContentDescription(Context context) {
-            return context.getString(R.string.bookmarks_save_flow_content_description);
+            return context.getString(
+                    R.string.bookmarks_save_flow_content_description, mMediator.getFolderName());
         }
 
         @Override
