@@ -102,15 +102,9 @@ void ScriptValueToObject(ScriptState* script_state,
 ScriptValue JsonStringToScriptValue(ScriptState* script_state,
                                     const String& json_string) {
   DCHECK(script_state->ContextIsValid());
-
   ScriptState::Scope scope(script_state);
-  v8::Local<v8::Value> v8_value;
-  if (!v8::JSON::Parse(script_state->GetContext(),
-                       V8String(script_state->GetIsolate(), json_string))
-           .ToLocal(&v8_value)) {
-    return ScriptValue();
-  }
-  return ScriptValue(script_state->GetIsolate(), v8_value);
+  return ScriptValue(script_state->GetIsolate(),
+                     FromJSONString(script_state, json_string));
 }
 
 Member<AuctionAd> ConvertMojomAdToIDLAd(

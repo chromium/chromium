@@ -49,13 +49,8 @@ ScriptValue StringDataToScriptValue(ScriptState* script_state,
     return ScriptValue();
 
   ScriptState::Scope scope(script_state);
-  v8::Local<v8::Value> v8_value;
-  if (!v8::JSON::Parse(script_state->GetContext(),
-                       V8String(script_state->GetIsolate(), stringified_data))
-           .ToLocal(&v8_value)) {
-    return ScriptValue();
-  }
-  return ScriptValue(script_state->GetIsolate(), v8_value);
+  return ScriptValue(script_state->GetIsolate(),
+                     FromJSONString(script_state, stringified_data));
 }
 
 PaymentMethodData* ToPaymentMethodData(

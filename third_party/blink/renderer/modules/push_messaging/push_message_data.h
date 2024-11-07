@@ -16,7 +16,6 @@ namespace blink {
 
 class Blob;
 class DOMArrayBuffer;
-class ExceptionState;
 class ScriptState;
 class V8UnionArrayBufferOrArrayBufferViewOrUSVString;
 
@@ -34,8 +33,7 @@ class MODULES_EXPORT PushMessageData final : public ScriptWrappable {
   DOMArrayBuffer* arrayBuffer() const;
   Blob* blob() const;
   DOMUint8Array* bytes() const;
-  ScriptValue json(ScriptState* script_state,
-                   ExceptionState& exception_state) const;
+  ScriptValue json(ScriptState* script_state) const;
   String text() const;
 
  private:

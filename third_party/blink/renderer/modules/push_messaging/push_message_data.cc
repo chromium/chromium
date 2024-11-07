@@ -85,16 +85,9 @@ DOMUint8Array* PushMessageData::bytes() const {
   return DOMUint8Array::Create(data_);
 }
 
-ScriptValue PushMessageData::json(ScriptState* script_state,
-                                  ExceptionState& exception_state) const {
-  ScriptState::Scope scope(script_state);
-  v8::Local<v8::Value> parsed =
-      FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
-                     text(), exception_state);
-  if (exception_state.HadException())
-    return ScriptValue();
-
-  return ScriptValue(script_state->GetIsolate(), parsed);
+ScriptValue PushMessageData::json(ScriptState* script_state) const {
+  return ScriptValue(script_state->GetIsolate(),
+                     FromJSONString(script_state, text()));
 }
 
 String PushMessageData::text() const {

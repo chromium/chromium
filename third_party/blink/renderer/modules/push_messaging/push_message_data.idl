@@ -10,6 +10,6 @@
     ArrayBuffer arrayBuffer();
     Blob blob();
     [RuntimeEnabled=PushMessageDataBytes] Uint8Array bytes();
-    [CallWith=ScriptState, RaisesException] any json();
+    [CallWith=ScriptState] any json();
     USVString text();
 };

@@ -1396,9 +1396,8 @@ void PaymentRequest::OnPaymentMethodChange(const String& method_name,
 
   if (!stringified_details.empty()) {
     v8::TryCatch try_catch(script_state->GetIsolate());
-    v8::Local<v8::Value> parsed_value = FromJSONString(
-        script_state->GetIsolate(), script_state->GetContext(),
-        stringified_details, PassThroughException(script_state->GetIsolate()));
+    v8::Local<v8::Value> parsed_value =
+        FromJSONString(script_state, stringified_details);
     if (try_catch.HasCaught()) {
       GetPendingAcceptPromiseResolver()->Reject(try_catch.Exception());
       ClearResolversAndCloseMojoConnection();

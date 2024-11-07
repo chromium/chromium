@@ -255,10 +255,9 @@ void NavigatorManagedData::OnConfigurationReceived(
 
   HeapVector<std::pair<String, ScriptValue>> result;
   for (const auto& config_pair : *configurations) {
-    v8::Local<v8::Value> v8_object;
-    if (v8::JSON::Parse(script_state->GetContext(),
-                        V8String(script_state->GetIsolate(), config_pair.value))
-            .ToLocal(&v8_object)) {
+    v8::Local<v8::Value> v8_object =
+        FromJSONString(script_state, config_pair.value);
+    if (!v8_object.IsEmpty()) {
       result.emplace_back(config_pair.key,
                           ScriptValue(script_state->GetIsolate(), v8_object));
     }

@@ -492,17 +492,8 @@ CORE_EXPORT bool IsValidEnum(const Vector<String>& values,
                              const String& enum_name,
                              ExceptionState&);
 
-CORE_EXPORT v8::Local<v8::Value> FromJSONString(v8::Isolate*,
-                                                v8::Local<v8::Context>,
-                                                const String& stringified_json,
-                                                ExceptionState&);
-
-// The `TryRethrowScope` parameter is unused, but expected to be on stack to
-// handle any exceptions thrown by V8 if JSON parsing fails.
-CORE_EXPORT v8::Local<v8::Value> FromJSONString(v8::Isolate*,
-                                                v8::Local<v8::Context>,
-                                                const String& stringified_json,
-                                                TryRethrowScope&);
+CORE_EXPORT v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
+                                                const String& stringified_json);
 
 // Ensure that a typed array value is not backed by a SharedArrayBuffer. If it
 // is, an exception will be thrown. The return value will use the NotShared

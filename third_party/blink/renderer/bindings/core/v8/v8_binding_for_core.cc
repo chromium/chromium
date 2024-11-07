@@ -887,21 +887,12 @@ v8::Isolate* ToIsolate(const LocalFrame* frame) {
   return frame->GetWindowProxyManager()->GetIsolate();
 }
 
-v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
-                                    v8::Local<v8::Context> context,
-                                    const String& stringified_json,
-                                    ExceptionState& exception_state) {
-  TryRethrowScope rethrow_scope(isolate, exception_state);
-  return FromJSONString(isolate, context, stringified_json, rethrow_scope);
-}
-
-v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
-                                    v8::Local<v8::Context> context,
-                                    const String& stringified_json,
-                                    TryRethrowScope&) {
+v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
+                                    const String& stringified_json) {
+  auto v8_string = V8String(script_state->GetIsolate(), stringified_json);
   v8::Local<v8::Value> parsed;
-  std::ignore = v8::JSON::Parse(context, V8String(isolate, stringified_json))
-                    .ToLocal(&parsed);
+  std::ignore =
+      v8::JSON::Parse(script_state->GetContext(), v8_string).ToLocal(&parsed);
   return parsed;
 }
 

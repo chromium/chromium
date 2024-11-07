@@ -371,21 +371,17 @@ Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {
   return response_document_.Get();
 }
 
-v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(
-    v8::Isolate* isolate,
-    ExceptionState& exception_state) {
+v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(ScriptState* script_state) {
   DCHECK_EQ(response_type_code_, V8XMLHttpRequestResponseType::Enum::kJson);
   DCHECK(!error_);
   DCHECK_EQ(state_, kDone);
-  TryRethrowScope rethrow_scope(isolate, exception_state);
   // Catch syntax error. Swallows an exception (when thrown) as the
   // spec says. https://xhr.spec.whatwg.org/#response-body
+  v8::TryCatch try_catch(script_state->GetIsolate());
   v8::Local<v8::Value> json =
-      FromJSONString(isolate, isolate->GetCurrentContext(),
-                     response_text_.ToString(), rethrow_scope);
-  if (rethrow_scope.HasCaught()) {
-    rethrow_scope.SwallowException();
-    return v8::Null(isolate);
+      FromJSONString(script_state, response_text_.ToString());
+  if (try_catch.HasCaught()) {
+    return v8::Null(script_state->GetIsolate());
   }
   return json;
 }
@@ -446,46 +442,33 @@ DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
 }
 
 // https://xhr.spec.whatwg.org/#dom-xmlhttprequest-response
-ScriptValue XMLHttpRequest::response(ScriptState* script_state,
-                                     ExceptionState& exception_state) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-
+v8::Local<v8::Value> XMLHttpRequest::response(ScriptState* script_state) {
   // The spec handles default or `text` responses as a special case, because
   // these cases are allowed to access the response while still loading.
   if (response_type_code_ == kResponseTypeDefault ||
       response_type_code_ == V8XMLHttpRequestResponseType::Enum::kText) {
-    const auto& text = responseText(exception_state);
-    if (exception_state.HadException()) {
-      return ScriptValue();
-    }
-    return ScriptValue(isolate,
-                       ToV8Traits<IDLString>::ToV8(script_state, text));
+    return ToV8Traits<IDLString>::ToV8(script_state,
+                                       responseText(ASSERT_NO_EXCEPTION));
   }
 
   if (error_ || state_ != kDone) {
-    return ScriptValue(isolate, v8::Null(isolate));
+    return v8::Null(script_state->GetIsolate());
   }
 
   switch (response_type_code_) {
     case V8XMLHttpRequestResponseType::Enum::kJson:
-      return ScriptValue(isolate, ResponseJSON(isolate, exception_state));
+      return ResponseJSON(script_state);
     case V8XMLHttpRequestResponseType::Enum::kDocument: {
-      Document* document = responseXML(exception_state);
-      if (exception_state.HadException()) {
-        return ScriptValue();
-      }
-      return ScriptValue(isolate, ToV8Traits<IDLNullable<Document>>::ToV8(
-                                      script_state, document));
+      return ToV8Traits<IDLNullable<Document>>::ToV8(
+          script_state, responseXML(ASSERT_NO_EXCEPTION));
     }
     case V8XMLHttpRequestResponseType::Enum::kBlob:
-      return ScriptValue(isolate,
-                         ToV8Traits<Blob>::ToV8(script_state, ResponseBlob()));
+      return ToV8Traits<Blob>::ToV8(script_state, ResponseBlob());
     case V8XMLHttpRequestResponseType::Enum::kArraybuffer:
-      return ScriptValue(isolate, ToV8Traits<IDLNullable<DOMArrayBuffer>>::ToV8(
-                                      script_state, ResponseArrayBuffer()));
+      return ToV8Traits<IDLNullable<DOMArrayBuffer>>::ToV8(
+          script_state, ResponseArrayBuffer());
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ScriptValue();
+      NOTREACHED();
   }
 }
 

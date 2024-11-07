@@ -412,9 +412,7 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
       if (!response_modifier->method_data->stringified_data.empty()) {
         v8::TryCatch try_catch(script_state->GetIsolate());
         v8::Local<v8::Value> parsed_value = FromJSONString(
-            script_state->GetIsolate(), script_state->GetContext(),
-            response_modifier->method_data->stringified_data,
-            PassThroughException(script_state->GetIsolate()));
+            script_state, response_modifier->method_data->stringified_data);
         if (try_catch.HasCaught()) {
           change_payment_request_details_resolver_->Reject(
               try_catch.Exception());
@@ -450,10 +448,8 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
   if (response->stringified_payment_method_errors &&
       !response->stringified_payment_method_errors.empty()) {
     v8::TryCatch try_catch(script_state->GetIsolate());
-    v8::Local<v8::Value> parsed_value =
-        FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
-                       response->stringified_payment_method_errors,
-                       PassThroughException(script_state->GetIsolate()));
+    v8::Local<v8::Value> parsed_value = FromJSONString(
+        script_state, response->stringified_payment_method_errors);
     if (try_catch.HasCaught()) {
       change_payment_request_details_resolver_->Reject(try_catch.Exception());
       change_payment_request_details_resolver_.Clear();

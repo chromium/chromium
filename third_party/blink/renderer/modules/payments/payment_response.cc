@@ -52,9 +52,7 @@ v8::Local<v8::Value> BuildDetails(
   }
 
   v8::TryCatch try_catch(script_state->GetIsolate());
-  v8::Local<v8::Value> parsed_value =
-      FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
-                     json, PassThroughException(script_state->GetIsolate()));
+  v8::Local<v8::Value> parsed_value = FromJSONString(script_state, json);
   if (try_catch.HasCaught()) {
     return V8ObjectBuilder(script_state).V8Value();
   }

@@ -75,14 +75,8 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
     const ModuleScriptCreationParams& params,
     Modulator* settings_object) {
   DCHECK(settings_object->HasValidContext());
-  ScriptState::Scope scope(settings_object->GetScriptState());
-  v8::Local<v8::Context> context =
-      settings_object->GetScriptState()->GetContext();
-  v8::Isolate* isolate = context->GetIsolate();
-  v8::Local<v8::String> original_json =
-      V8String(isolate, params.GetSourceText());
-  v8::Local<v8::Value> parsed_json;
-  UseCounter::Count(ExecutionContext::From(settings_object->GetScriptState()),
+  ScriptState* script_state = settings_object->GetScriptState();
+  UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kCreateJSONModuleScript);
   // Step 1. "Let script be a new module script that this algorithm will
   // subsequently initialize."
@@ -97,9 +91,11 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
   // If this throws an exception, set script's parse error to that exception,
   // and return script."
   // [spec text]
-  v8::TryCatch try_catch(isolate);
-  if (!v8::JSON::Parse(context, original_json).ToLocal(&parsed_json)) {
-    DCHECK(try_catch.HasCaught());
+  ScriptState::Scope scope(script_state);
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  v8::Local<v8::Value> parsed_json =
+      FromJSONString(script_state, params.GetSourceText().ToString());
+  if (try_catch.HasCaught()) {
     return ValueWrapperSyntheticModuleScript::CreateWithError(
         parsed_json, settings_object, params.SourceURL(), KURL(),
         ScriptFetchOptions(), try_catch.Exception());

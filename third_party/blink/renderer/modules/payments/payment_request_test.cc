@@ -487,8 +487,7 @@ TEST(PaymentRequestTest,
       "\"5.00\"}, \"selected\": true}]}";
   request->OnUpdatePaymentDetails(PaymentDetailsUpdate::Create(
       scope.GetIsolate(),
-      FromJSONString(scope.GetIsolate(), scope.GetContext(),
-                     detail_with_shipping_options, ASSERT_NO_EXCEPTION),
+      FromJSONString(scope.GetScriptState(), detail_with_shipping_options),
       ASSERT_NO_EXCEPTION));
 
   EXPECT_EQ("standardShippingOption", request->shippingOption());
@@ -499,8 +498,7 @@ TEST(PaymentRequestTest,
       "\"value\": \"5.00\"}}}";
   request->OnUpdatePaymentDetails(PaymentDetailsUpdate::Create(
       scope.GetIsolate(),
-      FromJSONString(scope.GetIsolate(), scope.GetContext(),
-                     detail_without_shipping_options, ASSERT_NO_EXCEPTION),
+      FromJSONString(scope.GetScriptState(), detail_without_shipping_options),
       ASSERT_NO_EXCEPTION));
 
   EXPECT_TRUE(request->shippingOption().IsNull());
@@ -529,9 +527,7 @@ TEST(
       "\"USD\", \"value\": \"50.00\"}}]}";
 
   request->OnUpdatePaymentDetails(PaymentDetailsUpdate::Create(
-      scope.GetIsolate(),
-      FromJSONString(scope.GetIsolate(), scope.GetContext(), detail,
-                     ASSERT_NO_EXCEPTION),
+      scope.GetIsolate(), FromJSONString(scope.GetScriptState(), detail),
       ASSERT_NO_EXCEPTION));
 
   EXPECT_TRUE(request->shippingOption().IsNull());
@@ -560,9 +556,7 @@ TEST(PaymentRequestTest, UseTheSelectedShippingOptionFromPaymentDetailsUpdate) {
       "\"USD\", \"value\": \"50.00\"}, \"selected\": true}]}";
 
   request->OnUpdatePaymentDetails(PaymentDetailsUpdate::Create(
-      scope.GetIsolate(),
-      FromJSONString(scope.GetIsolate(), scope.GetContext(), detail,
-                     ASSERT_NO_EXCEPTION),
+      scope.GetIsolate(), FromJSONString(scope.GetScriptState(), detail),
       ASSERT_NO_EXCEPTION));
 
   EXPECT_EQ("fast", request->shippingOption());
@@ -585,8 +579,7 @@ TEST(PaymentRequestTest, NoExceptionWithErrorMessageInUpdate) {
 
   request->OnUpdatePaymentDetails(PaymentDetailsUpdate::Create(
       scope.GetIsolate(),
-      FromJSONString(scope.GetIsolate(), scope.GetContext(),
-                     detail_with_error_msg, ASSERT_NO_EXCEPTION),
+      FromJSONString(scope.GetScriptState(), detail_with_error_msg),
       ASSERT_NO_EXCEPTION));
 }
 
