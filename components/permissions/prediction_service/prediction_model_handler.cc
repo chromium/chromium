@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/prediction_signature_model_executor.h"
+#include "components/version_info/version_info.h"
 
 namespace permissions {
 
@@ -24,7 +25,7 @@ PredictionModelHandler::PredictionModelHandler(
           GetExecutor(),
           /*model_inference_timeout=*/std::nullopt,
           optimization_target,
-          std::nullopt) {}
+          GetModelHandshakeProto()) {}
 
 void PredictionModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
@@ -68,4 +69,21 @@ PredictionModelHandler::GetExecutor() {
   return std::make_unique<PredictionModelExecutor>();
 }
 
+std::optional<optimization_guide::proto::Any>
+PredictionModelHandler::GetModelHandshakeProto() {
+  if (base::FeatureList::IsEnabled(features::kCpssUseTfliteSignatureRunner)) {
+    const char url[] =
+        "type.googleapis.com/"
+        "google.privacy.webpermissionpredictions.v1."
+        "WebPermissionPredictionsClientInfo";
+    optimization_guide::proto::Any any_metadata;
+    any_metadata.set_type_url(url);
+    WebPermissionPredictionsClientInfo model_handshake_info;
+    model_handshake_info.set_milestone(
+        version_info::GetMajorVersionNumberAsInt());
+    model_handshake_info.SerializeToString(any_metadata.mutable_value());
+    return any_metadata;
+  }
+  return std::nullopt;
+}
 }  // namespace permissions

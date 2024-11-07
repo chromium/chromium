@@ -2,6 +2,7 @@ include_rules = [
   "+google/protobuf",
   "+net",
   "+components/optimization_guide",
+  "+components/version_info",
   "+services/network/public",
   "+services/network/test",
   "+third_party/googletest",

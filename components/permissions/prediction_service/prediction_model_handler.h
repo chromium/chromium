@@ -47,6 +47,8 @@ class PredictionModelHandler : public optimization_guide::ModelHandler<
       optimization_guide::ModelExecutor<GeneratePredictionsResponse,
                                         const PredictionModelExecutorInput&>>
   GetExecutor();
+
+  std::optional<optimization_guide::proto::Any> GetModelHandshakeProto();
 };
 
 }  // namespace permissions
