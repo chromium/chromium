@@ -240,7 +240,6 @@ struct MediaTrackConstraintSetPlatform {
   LongConstraint sample_size;
   BooleanConstraint echo_cancellation;
   BooleanConstraint voice_isolation;
-  StringConstraint echo_cancellation_type;
   DoubleConstraint latency;
   LongConstraint channel_count;
   StringConstraint device_id;
