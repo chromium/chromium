@@ -818,6 +818,24 @@ Called by update_protocol_commands_enum.py.-->
   <int value="167"
       label="Console insight reminder teaser aborted via settings"/>
   <int value="168" label="Console insight generated skipping disclaimers"/>
+  <int value="169"
+      label="Freestyler opened from Elements panel floating button"/>
+  <int value="170"
+      label="DrJones Network opened from Network panel context menu"/>
+  <int value="171" label="DrJones File opened from Sources panel context menu"/>
+  <int value="172"
+      label="DrJones File opened from Sources panel floating button"/>
+  <int value="173"
+      label="DrJones Performance opened from Performance panel context menu"/>
+  <int value="174"
+      label="DrJones Network opened from Network panel floating button"/>
+  <int value="175" label="AI Assistance - Panel opened"/>
+  <int value="176" label="AI Assistance - Query submitted"/>
+  <int value="177" label="AI Assistance - Answer received"/>
+  <int value="178" label="AI Assistance - Suggestion clicked"/>
+  <int value="179" label="AI Assistance - Side effect confirmed"/>
+  <int value="180" label="AI Assistance - Side effect rejected"/>
+  <int value="181" label="AI Assistance - Error"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
