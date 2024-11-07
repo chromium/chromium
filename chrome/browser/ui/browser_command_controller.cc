@@ -239,7 +239,7 @@ BrowserCommandController::BrowserCommandController(Browser* browser)
                           base::Unretained(this)));
 #endif  // BUILDFLAG(ENABLE_PRINTING)
   profile_pref_registrar_.Add(
-      policy::policy_prefs::kDownloadRestrictions,
+      prefs::kDownloadRestrictions,
       base::BindRepeating(&BrowserCommandController::UpdateSaveAsState,
                           base::Unretained(this)));
 #if !BUILDFLAG(IS_MAC)

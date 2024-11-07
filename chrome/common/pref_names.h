@@ -44,6 +44,15 @@ inline constexpr char kSafeBrowsingForTrustedSourcesEnabled[] =
 // handling code reads local state, while extension APIs use profile pref.
 inline constexpr char kDisableScreenshots[] = "disable_screenshots";
 
+// Prevents certain types of downloads based on integer value, which corresponds
+// to DownloadPrefs::DownloadRestriction.
+// 0 - No special restrictions (default)
+// 1 - Block dangerous downloads
+// 2 - Block potentially dangerous downloads
+// 3 - Block all downloads
+// 4 - Block malicious downloads
+inline constexpr char kDownloadRestrictions[] = "download_restrictions";
+
 // A boolean specifying whether the partial download bubble (which shows up
 // automatically when downloads are complete) should be enabled. True (partial
 // bubble will show automatically) by default.

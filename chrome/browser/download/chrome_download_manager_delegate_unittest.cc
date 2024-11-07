@@ -793,8 +793,8 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedByPolicy) {
                                        ui::SelectedFileInfo(kExpectedPath))));
 
   pref_service()->SetInteger(
-      policy::policy_prefs::kDownloadRestrictions,
-      static_cast<int>(policy::DownloadRestriction::ALL_FILES));
+      prefs::kDownloadRestrictions,
+      static_cast<int>(DownloadPrefs::DownloadRestriction::ALL_FILES));
 
   download::DownloadTargetInfo target_info =
       DetermineDownloadTarget(download_item.get());
@@ -830,8 +830,8 @@ TEST_F(ChromeDownloadManagerDelegateTest, NoSafetyChecksNotBlockedByPolicy) {
                                        ui::SelectedFileInfo(kExpectedPath))));
 
   pref_service()->SetInteger(
-      policy::policy_prefs::kDownloadRestrictions,
-      static_cast<int>(policy::DownloadRestriction::ALL_FILES));
+      prefs::kDownloadRestrictions,
+      static_cast<int>(DownloadPrefs::DownloadRestriction::ALL_FILES));
 
   download::DownloadTargetInfo target_info =
       DetermineDownloadTarget(download_item.get());
@@ -1925,7 +1925,7 @@ struct SafeBrowsingTestParameters {
   download::DownloadDangerType initial_danger_type;
   DownloadFileType::DangerLevel initial_danger_level;
   safe_browsing::DownloadCheckResult verdict;
-  policy::DownloadRestriction download_restriction;
+  DownloadPrefs::DownloadRestriction download_restriction;
 
   download::DownloadDangerType expected_danger_type;
   bool blocked;
@@ -2061,7 +2061,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     // SAFE verdict for a safe file.
     {download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      DownloadFileType::NOT_DANGEROUS, safe_browsing::DownloadCheckResult::SAFE,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      /*blocked=*/false},
@@ -2070,7 +2070,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      DownloadFileType::NOT_DANGEROUS,
      safe_browsing::DownloadCheckResult::UNKNOWN,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      /*blocked=*/false},
@@ -2079,7 +2079,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      DownloadFileType::NOT_DANGEROUS,
      safe_browsing::DownloadCheckResult::DANGEROUS,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
      /*blocked=*/false},
@@ -2088,7 +2088,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      DownloadFileType::NOT_DANGEROUS,
      safe_browsing::DownloadCheckResult::UNCOMMON,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
      /*blocked=*/false},
@@ -2097,7 +2097,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      DownloadFileType::NOT_DANGEROUS,
      safe_browsing::DownloadCheckResult::POTENTIALLY_UNWANTED,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
      /*blocked=*/false},
@@ -2106,7 +2106,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::SAFE,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      /*blocked=*/false},
@@ -2115,7 +2115,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::UNKNOWN,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      /*blocked=*/false},
@@ -2124,7 +2124,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::UNKNOWN,
-     policy::DownloadRestriction::DANGEROUS_FILES,
+     DownloadPrefs::DownloadRestriction::DANGEROUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
      /*blocked=*/true},
@@ -2133,7 +2133,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::UNKNOWN,
-     policy::DownloadRestriction::MALICIOUS_FILES,
+     DownloadPrefs::DownloadRestriction::MALICIOUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      /*blocked=*/false},
@@ -2142,7 +2142,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::DANGEROUS,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
      /*blocked=*/false},
@@ -2151,7 +2151,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::DANGEROUS,
-     policy::DownloadRestriction::MALICIOUS_FILES,
+     DownloadPrefs::DownloadRestriction::MALICIOUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
      /*blocked=*/true},
@@ -2160,7 +2160,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::DANGEROUS,
-     policy::DownloadRestriction::MALICIOUS_FILES,
+     DownloadPrefs::DownloadRestriction::MALICIOUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
      /*blocked=*/true},
@@ -2169,7 +2169,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::DANGEROUS,
-     policy::DownloadRestriction::MALICIOUS_FILES,
+     DownloadPrefs::DownloadRestriction::MALICIOUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
      /*blocked=*/true},
@@ -2178,7 +2178,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::UNCOMMON,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
      /*blocked=*/false},
@@ -2187,7 +2187,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::POTENTIALLY_UNWANTED,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
      /*blocked=*/false},
@@ -2197,7 +2197,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::POTENTIALLY_UNWANTED,
-     policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES,
+     DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
      /*blocked=*/true},
@@ -2207,7 +2207,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::POTENTIALLY_UNWANTED,
-     policy::DownloadRestriction::DANGEROUS_FILES,
+     DownloadPrefs::DownloadRestriction::DANGEROUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
      /*blocked=*/true},
@@ -2217,7 +2217,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::POTENTIALLY_UNWANTED,
-     policy::DownloadRestriction::MALICIOUS_FILES,
+     DownloadPrefs::DownloadRestriction::MALICIOUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
      /*blocked=*/false},
@@ -2225,7 +2225,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     // SAFE verdict for a dangerous file.
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::DANGEROUS, safe_browsing::DownloadCheckResult::SAFE,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
      /*blocked=*/false},
@@ -2233,7 +2233,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     // UNKNOWN verdict for a dangerous file.
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::DANGEROUS, safe_browsing::DownloadCheckResult::UNKNOWN,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
      /*blocked=*/false},
@@ -2241,7 +2241,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     // DANGEROUS verdict for a dangerous file.
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::DANGEROUS, safe_browsing::DownloadCheckResult::DANGEROUS,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
      /*blocked=*/false},
@@ -2249,7 +2249,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     // UNCOMMON verdict for a dangerous file.
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::DANGEROUS, safe_browsing::DownloadCheckResult::UNCOMMON,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
      /*blocked=*/false},
@@ -2258,7 +2258,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::DANGEROUS,
      safe_browsing::DownloadCheckResult::POTENTIALLY_UNWANTED,
-     policy::DownloadRestriction::NONE,
+     DownloadPrefs::DownloadRestriction::NONE,
 
      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
      /*blocked=*/false},
@@ -2302,7 +2302,7 @@ TEST_P(ChromeDownloadManagerDelegateTestWithSafeBrowsing, CheckClientDownload) {
   }
 
   pref_service()->SetInteger(
-      policy::policy_prefs::kDownloadRestrictions,
+      prefs::kDownloadRestrictions,
       static_cast<int>(kParameters.download_restriction));
 
   base::RunLoop run_loop;

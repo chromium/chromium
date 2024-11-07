@@ -52,7 +52,6 @@
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
@@ -1086,8 +1085,8 @@ class DownloadRestrictionsDeepScanningBrowserTest
     DownloadDeepScanningBrowserTestBase::SetUpOnMainThread();
 
     browser()->profile()->GetPrefs()->SetInteger(
-        policy::policy_prefs::kDownloadRestrictions,
-        static_cast<int>(policy::DownloadRestriction::DANGEROUS_FILES));
+        prefs::kDownloadRestrictions,
+        static_cast<int>(DownloadPrefs::DownloadRestriction::DANGEROUS_FILES));
     enterprise_connectors::test::SetAnalysisConnector(
         browser()->profile()->GetPrefs(),
         enterprise_connectors::FILE_DOWNLOADED,

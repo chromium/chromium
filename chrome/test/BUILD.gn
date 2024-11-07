@@ -3369,7 +3369,6 @@ if (!is_android) {
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//components/live_caption:live_translate",
       "//components/plus_addresses:blocklist_data",
-      "//components/policy/core/common:common_constants",
     ]
     if (!is_win || target_cpu != "arm64") {
       # SODA doesn't support Windows on Arm64.
@@ -6471,7 +6470,6 @@ test("unit_tests") {
     "//components/plus_addresses/settings:test_support",
     "//components/policy:generated",
     "//components/policy/core/browser:test_support",
-    "//components/policy/core/common:common_constants",
     "//components/policy/test_support:unittests",
     "//components/privacy_sandbox:privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_notice_constants",

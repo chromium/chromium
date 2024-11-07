@@ -417,7 +417,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kReportingEndpoints,
     base::Value::Type::DICT },
   { key::kDownloadRestrictions,
-    policy::policy_prefs::kDownloadRestrictions,
+    prefs::kDownloadRestrictions,
     base::Value::Type::INTEGER },
   { key::kSharedWorkerBlobURLFixEnabled,
     prefs::kSharedWorkerBlobURLFixEnabled,

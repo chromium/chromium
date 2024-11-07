@@ -214,8 +214,7 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   save_file_type_.Init(prefs::kSaveFileType, prefs);
   safebrowsing_for_trusted_sources_enabled_.Init(
       prefs::kSafeBrowsingForTrustedSourcesEnabled, prefs);
-  download_restriction_.Init(policy::policy_prefs::kDownloadRestrictions,
-                             prefs);
+  download_restriction_.Init(prefs::kDownloadRestrictions, prefs);
 
   pref_change_registrar_.Add(
       prefs::kDownloadExtensionsToOpenByPolicy,
@@ -284,7 +283,7 @@ void DownloadPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kDownloadDirUpgraded, false);
   registry->RegisterIntegerPref(prefs::kSaveFileType,
                                 content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
-  registry->RegisterIntegerPref(policy::policy_prefs::kDownloadRestrictions, 0);
+  registry->RegisterIntegerPref(prefs::kDownloadRestrictions, 0);
   // The following two prefs are ignored on ChromeOS Lacros if SysUI integration
   // is enabled.
   // TODO(chlily): Clean them up once SysUI integration is enabled by default.

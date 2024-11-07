@@ -48,7 +48,6 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -1745,39 +1744,38 @@ TEST_P(DeepScanningDownloadFailClosedTest, HandlesDefaultActionCorrectly) {
 
 class DeepScanningDownloadRestrictionsTest
     : public DeepScanningReportingTest,
-      public testing::WithParamInterface<policy::DownloadRestriction> {
+      public testing::WithParamInterface<DownloadPrefs::DownloadRestriction> {
  public:
   void SetUp() override {
     DeepScanningReportingTest::SetUp();
-    profile_->GetPrefs()->SetInteger(
-        policy::policy_prefs::kDownloadRestrictions,
-        static_cast<int>(download_restriction()));
+    profile_->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
+                                     static_cast<int>(download_restriction()));
   }
 
-  policy::DownloadRestriction download_restriction() const {
+  DownloadPrefs::DownloadRestriction download_restriction() const {
     return GetParam();
   }
 
   EventResult expected_event_result_for_malware() const {
     switch (download_restriction()) {
-      case policy::DownloadRestriction::NONE:
+      case DownloadPrefs::DownloadRestriction::NONE:
         return EventResult::WARNED;
-      case policy::DownloadRestriction::DANGEROUS_FILES:
-      case policy::DownloadRestriction::MALICIOUS_FILES:
-      case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
-      case policy::DownloadRestriction::ALL_FILES:
+      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
+      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::ALL_FILES:
         return EventResult::BLOCKED;
     }
   }
 
   EventResult expected_event_result_for_safe_large_file() const {
     switch (download_restriction()) {
-      case policy::DownloadRestriction::NONE:
-      case policy::DownloadRestriction::DANGEROUS_FILES:
-      case policy::DownloadRestriction::MALICIOUS_FILES:
-      case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::NONE:
+      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
+      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
         return EventResult::ALLOWED;
-      case policy::DownloadRestriction::ALL_FILES:
+      case DownloadPrefs::DownloadRestriction::ALL_FILES:
         return EventResult::BLOCKED;
     }
   }
@@ -1785,12 +1783,12 @@ class DeepScanningDownloadRestrictionsTest
   enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
   expected_final_action() const {
     switch (download_restriction()) {
-      case policy::DownloadRestriction::NONE:
+      case DownloadPrefs::DownloadRestriction::NONE:
         return enterprise_connectors::ContentAnalysisAcknowledgement::WARN;
-      case policy::DownloadRestriction::DANGEROUS_FILES:
-      case policy::DownloadRestriction::MALICIOUS_FILES:
-      case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
-      case policy::DownloadRestriction::ALL_FILES:
+      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
+      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::ALL_FILES:
         return enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK;
     }
   }
@@ -1799,11 +1797,12 @@ class DeepScanningDownloadRestrictionsTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     DeepScanningDownloadRestrictionsTest,
-    testing::Values(policy::DownloadRestriction::NONE,
-                    policy::DownloadRestriction::DANGEROUS_FILES,
-                    policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES,
-                    policy::DownloadRestriction::ALL_FILES,
-                    policy::DownloadRestriction::MALICIOUS_FILES));
+    testing::Values(
+        DownloadPrefs::DownloadRestriction::NONE,
+        DownloadPrefs::DownloadRestriction::DANGEROUS_FILES,
+        DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES,
+        DownloadPrefs::DownloadRestriction::ALL_FILES,
+        DownloadPrefs::DownloadRestriction::MALICIOUS_FILES));
 
 TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
   enterprise_connectors::test::SetAnalysisConnector(

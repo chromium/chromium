@@ -412,7 +412,6 @@ static_library("safe_browsing") {
         "//components/keyed_service/content",
         "//components/language/core/common",
         "//components/policy/core/browser",
-        "//components/policy/core/common:common_constants",
         "//components/prefs",
         "//components/safe_browsing/content/common:interfaces",
         "//components/safe_browsing/core/browser:verdict_cache_manager",
