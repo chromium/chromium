@@ -205,8 +205,8 @@ AuthenticatorMechanismSelectorSheetModel::
     : AuthenticatorSheetModelBase(dialog_model) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
-  webauthn::user_actions::RecordMultipleOptionsShown(dialog_model->mechanisms,
-                                                     /*is_create=*/true);
+  webauthn::user_actions::RecordMultipleOptionsShown(
+      dialog_model->mechanisms, dialog_model->request_type);
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
@@ -230,7 +230,7 @@ AuthenticatorInsertAndActivateUsbSheetModel::
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
   webauthn::user_actions::RecordSecurityKeyDialogShown(
-      dialog_model->request_type == device::FidoRequestType::kMakeCredential);
+      dialog_model->request_type);
   vector_illustrations_.emplace(kPasskeyUsbIcon, kPasskeyUsbDarkIcon);
 }
 
@@ -568,7 +568,7 @@ AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
   webauthn::user_actions::RecordGpmTouchIdDialogShown(
-      dialog_model->request_type == device::FidoRequestType::kMakeCredential);
+      dialog_model->request_type);
 }
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
@@ -1241,7 +1241,7 @@ AuthenticatorHybridAndSecurityKeySheetModel::
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
   webauthn::user_actions::RecordHybridAndSecurityKeyDialogShown(
-      dialog_model->request_type == device::FidoRequestType::kMakeCredential);
+      dialog_model->request_type);
 }
 
 AuthenticatorHybridAndSecurityKeySheetModel::
@@ -1478,8 +1478,8 @@ AuthenticatorMultiSourcePickerSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
 
-  webauthn::user_actions::RecordMultipleOptionsShown(dialog_model->mechanisms,
-                                                     /*is_create=*/false);
+  webauthn::user_actions::RecordMultipleOptionsShown(
+      dialog_model->mechanisms, dialog_model->request_type);
   if (base::ranges::any_of(dialog_model->mechanisms,
                            &IsLocalPasskeyOrEnclaveAuthenticator)) {
     primary_passkeys_label_ =
@@ -1725,8 +1725,7 @@ AuthenticatorGpmPinSheetModel::AuthenticatorGpmPinSheetModel(
     : AuthenticatorGpmPinSheetModelBase(dialog_model, mode),
       pin_digits_count_(pin_digits_count) {
   webauthn::user_actions::RecordGpmPinSheetShown(
-      /*is_credential_creation=*/dialog_model->request_type ==
-          device::FidoRequestType::kMakeCredential,
+      dialog_model->request_type,
       /*is_pin_creation=*/mode == Mode::kPinCreate,
       /*is_arbitrary=*/false);
 }
@@ -1798,8 +1797,7 @@ AuthenticatorGpmArbitraryPinSheetModel::AuthenticatorGpmArbitraryPinSheetModel(
     Mode mode)
     : AuthenticatorGpmPinSheetModelBase(dialog_model, mode) {
   webauthn::user_actions::RecordGpmPinSheetShown(
-      /*is_credential_creation=*/dialog_model->request_type ==
-          device::FidoRequestType::kMakeCredential,
+      dialog_model->request_type,
       /*is_pin_creation=*/mode == Mode::kPinCreate,
       /*is_arbitrary=*/true);
 }
@@ -1859,7 +1857,7 @@ AuthenticatorTrustThisComputerAssertionSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_LAPTOP_LIGHT,
                                 IDR_WEBAUTHN_LAPTOP_DARK);
 
-  webauthn::user_actions::RecordTrustDialogShown(/*is_create=*/false);
+  webauthn::user_actions::RecordTrustDialogShown(dialog_model->request_type);
 }
 
 AuthenticatorTrustThisComputerAssertionSheetModel::
@@ -2030,7 +2028,7 @@ AuthenticatorTrustThisComputerCreationSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_LAPTOP_LIGHT,
                                 IDR_WEBAUTHN_LAPTOP_DARK);
 
-  webauthn::user_actions::RecordTrustDialogShown(/*is_create=*/true);
+  webauthn::user_actions::RecordTrustDialogShown(dialog_model->request_type);
 }
 
 AuthenticatorTrustThisComputerCreationSheetModel::

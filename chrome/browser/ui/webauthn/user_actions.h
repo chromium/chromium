@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "device/fido/fido_constants.h"
 
 namespace webauthn::user_actions {
 
@@ -16,15 +17,16 @@ namespace webauthn::user_actions {
 // iCloud Keychain and Windows Hello authenticators.
 void RecordMultipleOptionsShown(
     const std::vector<AuthenticatorRequestDialogModel::Mechanism>& mechanisms,
-    bool is_create);
+    device::FidoRequestType request_type);
 
 // Emits what authenticator is displayed as the priority mechanism in the
 // priority WebAuthn credential selector dialog.
 void RecordPriorityOptionShown(
     const AuthenticatorRequestDialogModel::Mechanism& mechanism);
 
-void RecordHybridAndSecurityKeyDialogShown(bool is_create);
-void RecordSecurityKeyDialogShown(bool is_create);
+void RecordHybridAndSecurityKeyDialogShown(
+    device::FidoRequestType request_type);
+void RecordSecurityKeyDialogShown(device::FidoRequestType request_type);
 
 void RecordMechanismClick(
     const AuthenticatorRequestDialogModel::Mechanism& mech);
@@ -33,22 +35,22 @@ void RecordCancelClick();
 
 void RecordAcceptClick();
 
-void RecordTrustDialogShown(bool is_create);
+void RecordTrustDialogShown(device::FidoRequestType request_type);
 
 void RecordCreateGpmDialogShown();
 
-void RecordRecoveryShown(bool is_create);
+void RecordRecoveryShown(device::FidoRequestType request_type);
 void RecordRecoveryCancelled();
 void RecordRecoverySucceeded();
 
-void RecordICloudShown(bool is_create);
+void RecordICloudShown(device::FidoRequestType request_type);
 void RecordICloudCancelled();
 void RecordICloudSuccess();
 
-void RecordGpmTouchIdDialogShown(bool is_create);
+void RecordGpmTouchIdDialogShown(device::FidoRequestType request_type);
 // TODO(crbug.com/358277466): Add user action for cancelling MacOS password
 // dialog.
-void RecordGpmPinSheetShown(bool is_credential_creation,
+void RecordGpmPinSheetShown(device::FidoRequestType request_type,
                             bool is_pin_creation,
                             bool is_arbitrary);
 void RecordGpmForgotPinClick();
@@ -56,15 +58,16 @@ void RecordGpmPinOptionChangeClick();
 void RecordGpmLockedShown();
 void RecordGpmSuccess();
 void RecordGpmFailureShown();
-void RecordGpmWinUvShown(bool is_create);
+void RecordGpmWinUvShown(device::FidoRequestType request_type);
 // TODO(crbug.com/358277466): Add user action for cancelling Windows Hello
 // dialog.
 
-void RecordChromeProfileAuthenticatorShown(bool is_create);
+void RecordChromeProfileAuthenticatorShown(
+    device::FidoRequestType request_type);
 void RecordChromeProfileCancelled();
 void RecordChromeProfileSuccess();
 
-void RecordWindowsHelloShown(bool is_create);
+void RecordWindowsHelloShown(device::FidoRequestType request_type);
 void RecordWindowsHelloCancelled();
 void RecordWindowsHelloSuccess();
 

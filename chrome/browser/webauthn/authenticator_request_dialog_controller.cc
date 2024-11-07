@@ -1001,15 +1001,15 @@ void AuthenticatorRequestDialogController::
 
   ephemeral_state_.dispatched_platform_authenticator_type_ =
       platform_authenticator_it->type;
-  bool is_make_credential =
-      transport_availability_.request_type == FidoRequestType::kMakeCredential;
   if (platform_authenticator_it->type == AuthenticatorType::kICloudKeychain) {
-    webauthn::user_actions::RecordICloudShown(is_make_credential);
+    webauthn::user_actions::RecordICloudShown(
+        transport_availability_.request_type);
   } else if (platform_authenticator_it->type == AuthenticatorType::kTouchID) {
     webauthn::user_actions::RecordChromeProfileAuthenticatorShown(
-        is_make_credential);
+        transport_availability_.request_type);
   } else if (platform_authenticator_it->type == AuthenticatorType::kWinNative) {
-    webauthn::user_actions::RecordWindowsHelloShown(is_make_credential);
+    webauthn::user_actions::RecordWindowsHelloShown(
+        transport_availability_.request_type);
   }
 
   DispatchRequestAsync(&*platform_authenticator_it);

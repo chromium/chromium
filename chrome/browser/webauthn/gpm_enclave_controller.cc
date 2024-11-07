@@ -349,12 +349,12 @@ void ResetDeclinedBootstrappingCount(
                    0);
 }
 
-void MaybeRecordUserActionForWinUv(bool is_create,
+void MaybeRecordUserActionForWinUv(device::FidoRequestType request_type,
                                    EnclaveUserVerificationMethod uv_method) {
 #if BUILDFLAG(IS_WIN)
   if (uv_method == EnclaveUserVerificationMethod::kUVKeyWithSystemUI ||
       uv_method == EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI) {
-    webauthn::user_actions::RecordGpmWinUvShown(is_create);
+    webauthn::user_actions::RecordGpmWinUvShown(request_type);
   }
 #endif  // BUILDFLAG(IS_WIN)
 }
@@ -1294,9 +1294,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
           enclave_manager_->UserVerifyingKeySigningCallback(
               std::move(uv_options));
       request->user_verified = true;
-      MaybeRecordUserActionForWinUv(
-          request_type_ == device::FidoRequestType::kMakeCredential,
-          uv_method_.value());
+      MaybeRecordUserActionForWinUv(request_type_, uv_method_.value());
       break;
     }
     case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
@@ -1308,9 +1306,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
       request->user_verified = true;
       request->uv_key_creation_callback =
           enclave_manager_->UserVerifyingKeyCreationCallback();
-      MaybeRecordUserActionForWinUv(
-          request_type_ == device::FidoRequestType::kMakeCredential,
-          uv_method_.value());
+      MaybeRecordUserActionForWinUv(request_type_, uv_method_.value());
       break;
     case EnclaveUserVerificationMethod::kUnsatisfiable:
       NOTREACHED();
