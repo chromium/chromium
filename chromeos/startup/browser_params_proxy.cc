@@ -139,10 +139,6 @@ bool BrowserParamsProxy::PublishChromeApps() const {
   return BrowserInitParams::Get()->publish_chrome_apps;
 }
 
-bool BrowserParamsProxy::PublishHostedApps() const {
-  return BrowserInitParams::Get()->publish_hosted_apps;
-}
-
 crosapi::mojom::BrowserInitParams::InitialKeepAlive
 BrowserParamsProxy::InitialKeepAlive() const {
   return BrowserInitParams::Get()->initial_keep_alive;

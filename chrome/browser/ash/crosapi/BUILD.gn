@@ -141,8 +141,6 @@ static_library("crosapi") {
     "fullscreen_controller_ash.h",
     "geolocation_service_ash.cc",
     "geolocation_service_ash.h",
-    "hosted_app_util.cc",
-    "hosted_app_util.h",
     "identity_manager_ash.cc",
     "identity_manager_ash.h",
     "idle_service_ash.cc",

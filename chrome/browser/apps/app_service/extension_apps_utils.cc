@@ -10,36 +10,12 @@
 #include "base/strings/string_split.h"
 #include "chrome/browser/profiles/profile.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool g_enable_hosted_apps_in_lacros_for_testing = false;
-#endif
-}  // namespace
-
 namespace apps {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShouldHostedAppsRunInLacros() {
-  if (g_enable_hosted_apps_in_lacros_for_testing) {
-    return true;
-  }
-
-  return chromeos::BrowserParamsProxy::Get()->PublishHostedApps();
-}
-
-void EnableHostedAppsInLacrosForTesting() {
-  g_enable_hosted_apps_in_lacros_for_testing = true;
-}
-#endif  // IS_CHROMEOS_LACROS
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetEscapedAppId(const std::string& app_id, AppType app_type) {
