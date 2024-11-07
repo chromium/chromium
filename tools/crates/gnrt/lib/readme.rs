@@ -112,7 +112,11 @@ pub fn readme_file_from_package<'a>(
     };
 
     let path_if_exists = |path: &'a Path| -> Result<Option<&'a Path>> {
-        if crate_dir.join(path).try_exists()? { Ok(Some(path)) } else { Ok(None) }
+        if crate_dir.join(path).try_exists()? {
+            Ok(Some(path))
+        } else {
+            Ok(None)
+        }
     };
     let to_crate_dir_string = |path: &Path| -> String {
         format!("//{}", paths::normalize_unix_path_separator(&crate_dir.join(path)))
@@ -221,12 +225,13 @@ static ALLOWED_LICENSES: [(&str, &str); 21] = [
     ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache 2.0"),
 ];
 
-static EXPECTED_LICENSE_FILE: [(&str, &str); 20] = [
+static EXPECTED_LICENSE_FILE: [(&str, &str); 21] = [
     ("Apache 2.0", "LICENSE"),
-    ("Apache 2.0", "LICENSE.md"),
     ("Apache 2.0", "LICENSE-APACHE"),
-    ("Apache 2.0", "LICENSE-APACHE.txt"),
     ("Apache 2.0", "LICENSE-APACHE.md"),
+    ("Apache 2.0", "LICENSE-APACHE.txt"),
+    ("Apache 2.0", "LICENSE.md"),
+    ("Apache 2.0", "license-apache-2.0"),
     ("MIT", "LICENSE"),
     ("MIT", "LICENSE.md"),
     ("MIT", "LICENSE-MIT"),

@@ -3,7 +3,7 @@ URL: https://crates.io/crates/windows_aarch64_msvc
 Version: 0.52.6
 Revision: db06b51c2ebb743efb544d40e3064efa49f28d38
 License: Apache 2.0
-License File:
+License File: //third_party/rust/chromium_crates_io/vendor/windows_aarch64_msvc-0.52.6/license-apache-2.0
 Shipped: no
 Security Critical: yes
 

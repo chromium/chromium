@@ -196,7 +196,7 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         let config_str = vet_handlebars.render("template", &vet_config_toml)?;
         let file_path = paths.vet_config_file;
         let file = std::fs::File::create(paths.vet_config_file).with_context(|| {
-            format!("Could not create README.chromium output file {}", file_path.to_string_lossy())
+            format!("Could not create vet config output file {}", file_path.to_string_lossy())
         })?;
         use std::io::Write;
         write!(std::io::BufWriter::new(file), "{}", config_str)
@@ -230,7 +230,11 @@ fn download_crate(
     }
     let num_bytes = {
         let header = response.headers().get(reqwest::header::CONTENT_LENGTH);
-        if let Some(value) = header { value.to_str()?.parse::<usize>()? } else { 0 }
+        if let Some(value) = header {
+            value.to_str()?.parse::<usize>()?
+        } else {
+            0
+        }
     };
     let mut bytes = Vec::with_capacity(num_bytes);
     {
