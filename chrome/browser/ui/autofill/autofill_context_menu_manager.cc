@@ -10,6 +10,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -782,7 +784,8 @@ void AutofillContextMenuManager::ExecuteFallbackForPlusAddressesCommand(
                     FieldRendererId(params_.field_renderer_id)},
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
 
-  // TODO(crbug.com/327566698): Add metrics for plus addresses.
+  base::RecordAction(base::UserMetricsAction(
+      "PlusAddresses.ManualFallbackDesktopContextManualFallbackSelected"));
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       delegate_->GetBrowserContext(),
       plus_addresses::features::kPlusAddressFallbackFromContextMenu);

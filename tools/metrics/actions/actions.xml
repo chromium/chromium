@@ -32261,6 +32261,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.ManualFallbackDesktopContextManualFallbackSelected">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User selected manual fallback option for plus address in the context menu on
+    Desktop.
+  </description>
+</action>
+
 <action name="PlusAddresses.QuotaErrorAccepted">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>
