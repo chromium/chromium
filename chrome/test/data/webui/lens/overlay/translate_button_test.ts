@@ -1030,7 +1030,7 @@ suite('OverlayTranslateButtonLanguages', function() {
 
   test('UseServerLanguageListOnSuccess', async () => {
     testBrowserProxy.handler.setLanguagesToFetchForTesting(
-        TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
     await addTranslateButtonElement();
 
     assertEquals(testLanguageBrowserProxy.getStoredLocale(), 'en-US');
@@ -1078,7 +1078,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     loadTimeData.overrideValues(
         {'translateSourceLanguages': 'es', 'translateTargetLanguages': 'fr'});
     testBrowserProxy.handler.setLanguagesToFetchForTesting(
-        TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
     await addTranslateButtonElement();
 
     assertEquals(testLanguageBrowserProxy.getStoredLocale(), 'en-US');
@@ -1120,7 +1120,7 @@ suite('OverlayTranslateButtonLanguages', function() {
   test('TestClientLanguageFilters', async () => {
     loadTimeData.overrideValues(
         {'translateSourceLanguages': 'sw', 'translateTargetLanguages': 'en'});
-    testBrowserProxy.handler.setLanguagesToFetchForTesting([], []);
+    testBrowserProxy.handler.setLanguagesToFetchForTesting('en-US', [], []);
     await addTranslateButtonElement();
 
     // If the fetch fails, it will return empty language lists. In this case,
@@ -1160,7 +1160,7 @@ suite('OverlayTranslateButtonLanguages', function() {
   });
 
   test('UseClientLanguageListIfFetchFails', async () => {
-    testBrowserProxy.handler.setLanguagesToFetchForTesting([], []);
+    testBrowserProxy.handler.setLanguagesToFetchForTesting('en-US', [], []);
     await addTranslateButtonElement();
 
     // If the fetch fails, it will return empty language lists. In this case,
@@ -1204,7 +1204,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     testLanguageBrowserProxy.storeLanguages(
         'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
     testBrowserProxy.handler.setLanguagesToFetchForTesting(
-        TEST_FETCH_LANGUAGES_OTHER, TEST_FETCH_LANGUAGES_OTHER);
+        'en-US', TEST_FETCH_LANGUAGES_OTHER, TEST_FETCH_LANGUAGES_OTHER);
     await new Promise(
         resolve => setTimeout(resolve, 2));  // Advance time by 2ms for testing.
     await addTranslateButtonElement();
@@ -1252,7 +1252,7 @@ suite('OverlayTranslateButtonLanguages', function() {
 
   test('StoreLastUsedSourceLanguage', async () => {
     testBrowserProxy.handler.setLanguagesToFetchForTesting(
-        TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
     await addTranslateButtonElement();
 
     assertFalse(
@@ -1302,7 +1302,7 @@ suite('OverlayTranslateButtonLanguages', function() {
 
   test('StoreLastUsedTargetLanguage', async () => {
     testBrowserProxy.handler.setLanguagesToFetchForTesting(
-        TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
     await addTranslateButtonElement();
 
     assertFalse(
@@ -1339,5 +1339,55 @@ suite('OverlayTranslateButtonLanguages', function() {
         overlayTranslateButtonElement.$.targetLanguageButton.innerText,
         targetLanguageMenuItem.innerText.trim());
     assertEquals(testLanguageBrowserProxy.getLastUsedTargetLanguage(), 'es');
+  });
+
+  test('LocaleChangeCausesFetchLanguageCall', async () => {
+    loadTimeData.overrideValues({'language': 'fr'});
+    // Do a fake store to test if languages are changed due to locale change.
+    testLanguageBrowserProxy.storeLanguages(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'fr', TEST_FETCH_LANGUAGES_OTHER, TEST_FETCH_LANGUAGES_OTHER);
+    await addTranslateButtonElement();
+
+    // The local storage proxy should have stored the newly fetched languages.
+    assertEquals(testLanguageBrowserProxy.getStoredLocale(), 'fr');
+    assertDeepEquals(
+        testLanguageBrowserProxy.getStoredSourceLanguages(),
+        TEST_FETCH_LANGUAGES_OTHER);
+    assertDeepEquals(
+        testLanguageBrowserProxy.getStoredTargetLanguages(),
+        TEST_FETCH_LANGUAGES_OTHER);
+
+    const oldLanguageNames =
+        TEST_FETCH_LANGUAGES.map((lang: Language) => lang.name);
+    const newLanguageNames =
+        TEST_FETCH_LANGUAGES_OTHER.map((lang: Language) => lang.name);
+
+    // Check the language picker list as it should be using the server language
+    // list.
+    const sourceLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>(
+                           'cr-button:not(#sourceAutoDetectButton)'));
+    assertTrue(sourceLanguageMenuItems !== null);
+    assertTrue(sourceLanguageMenuItems.length > 0);
+    sourceLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(newLanguageNames.includes(button.innerText.trim()));
+      assertFalse(oldLanguageNames.includes(button.innerText.trim()));
+    });
+
+    const targetLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>('cr-button'));
+    assertTrue(targetLanguageMenuItems !== null);
+    assertTrue(targetLanguageMenuItems.length > 0);
+    targetLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(newLanguageNames.includes(button.innerText.trim()));
+      assertFalse(oldLanguageNames.includes(button.innerText.trim()));
+    });
+
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('fetchSupportedLanguages'));
   });
 });

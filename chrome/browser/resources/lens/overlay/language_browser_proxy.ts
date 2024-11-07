@@ -140,8 +140,11 @@ export class LanguageBrowserProxyImpl implements LanguageBrowserProxy {
         loadTimeData.getInteger('languagesCacheTimeout');
     const currentTimestamp = Date.now();
 
-    // TODO(crbug.com/369368710): Add support for resetting cache when browser
-    // locale is different.
+    const locale = window.localStorage.getItem(SUPPORTED_LANGUAGES_LOCALE_KEY);
+    if (locale && !locale.startsWith(loadTimeData.getString('language'))) {
+      return true;
+    }
+
     // If there is no stored timestamp, we should fetch supported languages.
     const storedTimestampString =
         window.localStorage.getItem(LAST_FETCH_SUPPORTED_LANGUAGES_TIME_KEY);
