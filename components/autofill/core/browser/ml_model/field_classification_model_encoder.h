@@ -63,11 +63,6 @@ class FieldClassificationModelEncoder {
 
   TokenId TokenToId(std::u16string_view token) const;
 
-  // Returns a special CLS ("classification") token indicating the beginning of
-  // a field. This is the token where the encoder generates the field
-  // classification in the output.
-  TokenId cls_token() const { return TokenId(token_to_id_.size() + 1); }
-
   // Encodes the `form` into the `ModelInput` representation understood by the
   // `FieldClassificationModelExecutor`. This is done by encoding the attributes
   // of the form's fields.
@@ -77,6 +72,11 @@ class FieldClassificationModelEncoder {
   // field attributes. More specifically, handles the attributes encoding and
   // prepares the final input.
   std::vector<TokenId> EncodeField(const AutofillField& field) const;
+
+  // Constructs the input for Field Classification ML model using
+  // form level attributes.
+  std::vector<FieldClassificationModelEncoder::TokenId> EncodeFormFeatures(
+      const FormStructure& form) const;
 
   // Standardizes a string according to encoding_parameters_:
   //   - Optionally split on CamelCase.
@@ -93,6 +93,19 @@ class FieldClassificationModelEncoder {
   std::vector<TokenId> EncodeAttribute(std::u16string_view input) const;
 
  private:
+  // Returns if the model's encoding parameters specify any form level features.
+  bool ShouldEncodeFormLevelFeatures() const;
+
+  // Returns a special CLS ("classification") token indicating the beginning of
+  // a field. This is the token where the encoder generates the field
+  // classification in the output.
+  TokenId cls_token() const { return TokenId(token_to_id_.size() + 1); }
+
+  // Returns a special CLS ("classification") token indicating the beginning of
+  // a placeholder field containing information about the form-level features.
+  // Only used when the model is requiring encoding form level features.
+  TokenId form_cls_token() const;
+
   base::flat_map<std::u16string, TokenId> token_to_id_;
   optimization_guide::proto::AutofillFieldClassificationEncodingParameters
       encoding_parameters_;

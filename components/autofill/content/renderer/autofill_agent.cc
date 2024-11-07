@@ -97,15 +97,6 @@ constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
 using FormAndField = std::pair<FormData, raw_ref<const FormFieldData>>;
 
-std::string GetButtonTitlesString(const ButtonTitleList& titles_list) {
-  std::vector<std::string> titles;
-  titles.reserve(titles_list.size());
-  base::ranges::transform(
-      titles_list, std::back_inserter(titles),
-      [](const auto& list_item) { return base::UTF16ToUTF8(list_item.first); });
-  return base::JoinString(titles, ",");
-}
-
 // For each field in the |form| sets the title to include the field's heuristic
 // type, server type, and signature; as well as the form's signature and the
 // experiment id for the server predictions.
@@ -184,8 +175,8 @@ bool ShowPredictions(const WebDocument& document,
         "\nform id: ",
         base::UTF16ToUTF8(form.data.id_attribute()),
         "\nform button titles: ",
-        GetButtonTitlesString(form_util::GetButtonTitles(
-            form_element, /*button_titles_cache=*/nullptr)),
+        base::UTF16ToUTF8(GetButtonTitlesString(form_util::GetButtonTitles(
+            form_element, /*button_titles_cache=*/nullptr))),
         "\nfield frame token: ",
         frame_token.ToString(),
         "\nform renderer id: ",

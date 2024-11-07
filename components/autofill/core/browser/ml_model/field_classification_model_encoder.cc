@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -26,6 +27,14 @@ namespace {
 
 constexpr FieldClassificationModelEncoder::TokenId kUnknownTokenId =
     FieldClassificationModelEncoder::TokenId(1);
+
+size_t GetFieldEncodingSize(
+    const optimization_guide::proto::
+        AutofillFieldClassificationEncodingParameters& encoding_parameters) {
+  return 1 + encoding_parameters.max_tokens_per_feature() *
+                 std::max(encoding_parameters.features_size(),
+                          encoding_parameters.form_features_size());
+}
 
 }  // namespace
 
@@ -68,9 +77,17 @@ FieldClassificationModelEncoder::TokenToId(std::u16string_view token) const {
 
 std::vector<std::vector<FieldClassificationModelEncoder::TokenId>>
 FieldClassificationModelEncoder::EncodeForm(const FormStructure& form) const {
-  std::vector<std::vector<TokenId>> encoded_form(form.field_count());
+  // Form-level features are encoded in an additional field.
+  std::vector<std::vector<TokenId>> encoded_form(ShouldEncodeFormLevelFeatures()
+                                                     ? form.field_count() + 1
+                                                     : form.field_count());
+
   for (size_t i = 0; i < form.field_count(); ++i) {
     encoded_form[i] = EncodeField(*form.field(i));
+  }
+
+  if (ShouldEncodeFormLevelFeatures()) {
+    encoded_form[form.field_count()] = EncodeFormFeatures(form);
   }
   return encoded_form;
 }
@@ -84,7 +101,7 @@ FieldClassificationModelEncoder::EncodeField(const AutofillField& field) const {
 
   auto encode = [&](int feature) -> std::vector<TokenId> {
     static_assert(FeaturesEnum::AutofillFieldClassificationFeature_MAX ==
-                      FeaturesEnum::FEATURE_NAME,
+                      FeaturesEnum::FEATURE_TYPE,
                   "Update the switch when adding more features");
     switch (feature) {
       case FeaturesEnum::FEATURE_UNKNOWN:
@@ -100,16 +117,63 @@ FieldClassificationModelEncoder::EncodeField(const AutofillField& field) const {
         return EncodeAttribute(field.id_attribute());
       case FeaturesEnum::FEATURE_NAME:
         return EncodeAttribute(field.name_attribute());
+      case FeaturesEnum::FEATURE_TYPE:
+        return EncodeAttribute(base::UTF8ToUTF16(
+            autofill::FormControlTypeToString(field.form_control_type())));
     }
     return {};
   };
   std::vector<TokenId> output;
-  output.reserve(1 + encoding_parameters_.features_size() *
-                         encoding_parameters_.max_tokens_per_feature());
+  output.reserve(GetFieldEncodingSize(encoding_parameters_));
   output.emplace_back(cls_token());
+
   for (int feature : encoding_parameters_.features()) {
     base::ranges::move(encode(feature), std::back_inserter(output));
   }
+
+  // Pad the remaining space, if any, with zeroes.
+  std::fill(output.end(), output.begin() + output.capacity(), TokenId(0u));
+
+  return output;
+}
+
+std::vector<FieldClassificationModelEncoder::TokenId>
+FieldClassificationModelEncoder::EncodeFormFeatures(
+    const FormStructure& form) const {
+  // Protobuf does not generate an `enum class`. Therefore, this points to the
+  // wrapping container class.
+  using FeaturesEnum =
+      optimization_guide::proto::AutofillFieldClassificationEncodingParameters;
+
+  auto encode = [&](int feature) -> std::vector<TokenId> {
+    static_assert(
+        FeaturesEnum::AutofillFieldClassificationFormLevelFeature_MAX ==
+            FeaturesEnum::FEATURE_FRAME_URL_PATH,
+        "Update the switch when adding more features");
+    switch (feature) {
+      case FeaturesEnum::FEATURE_UNKNOWN:
+        return {};
+      case FeaturesEnum::FEATURE_FORM_BUTTON_TITLES:
+        return EncodeAttribute(GetButtonTitlesString(form.button_titles()));
+      case FeaturesEnum::FEATURE_FORM_ID:
+        return EncodeAttribute(form.id_attribute());
+      case FeaturesEnum::FEATURE_FORM_NAME:
+        return EncodeAttribute(form.name_attribute());
+      case FeaturesEnum::FEATURE_FRAME_URL_PATH:
+        return EncodeAttribute(base::UTF8ToUTF16(form.source_url().path()));
+    }
+    return {};
+  };
+  std::vector<TokenId> output;
+  output.reserve(GetFieldEncodingSize(encoding_parameters_));
+  output.emplace_back(form_cls_token());
+
+  for (int feature : encoding_parameters_.form_features()) {
+    base::ranges::move(encode(feature), std::back_inserter(output));
+  }
+
+  // Pad the remaining space, if any, with zeroes.
+  std::fill(output.end(), output.begin() + output.capacity(), TokenId(0u));
   return output;
 }
 
@@ -154,6 +218,16 @@ FieldClassificationModelEncoder::EncodeAttribute(
   return base::ToVector(split_string, [&](std::u16string_view token) {
     return TokenToId(token);
   });
+}
+
+bool FieldClassificationModelEncoder::ShouldEncodeFormLevelFeatures() const {
+  return encoding_parameters_.form_features().size() > 0;
+}
+
+FieldClassificationModelEncoder::TokenId
+FieldClassificationModelEncoder::form_cls_token() const {
+  CHECK(ShouldEncodeFormLevelFeatures());
+  return TokenId(token_to_id_.size() + 2);
 }
 
 }  // namespace autofill

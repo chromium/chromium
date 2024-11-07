@@ -26,6 +26,23 @@ message AutofillFieldClassificationEncodingParameters {
     // The name attribute of the field (not FormFieldData::name() which falls
     // back to the id attribute if the name attribute does not exist).
     FEATURE_NAME = 5;
+    // The form control type attribute of the field.
+    FEATURE_TYPE = 6;
+  }
+
+  // Per-form features that can be included in the model input.
+  enum AutofillFieldClassificationFormLevelFeature {
+    // Don't use.
+    FORM_FEATURE_UNKNOWN = 0;
+    // The titles of <button> and <submit> elements in a form containing the
+    // field.
+    FEATURE_FORM_BUTTON_TITLES = 1;
+    // The id attribute of a form containing the field.
+    FEATURE_FORM_ID = 2;
+    // The name attribute of a form containing the field.
+    FEATURE_FORM_NAME = 3;
+    // The URL path of the frame containing the field.
+    FEATURE_FRAME_URL_PATH = 4;
   }
 
   // Maximum number of form fields for which the model can predict types.
@@ -36,8 +53,8 @@ message AutofillFieldClassificationEncodingParameters {
   // Max tokens per field per feature.
   int32 max_tokens_per_feature = 2;
 
-  // The features provided to the model in the order they are presented to the
-  // model.
+  // The per-field features provided to the model in the order they are
+  // presented to the model.
   repeated AutofillFieldClassificationFeature features = 3;
 
   // Pre-processing of feature strings:
@@ -57,6 +74,10 @@ message AutofillFieldClassificationEncodingParameters {
   // Replace all characters listed in `remove_chars` with the empty string.
   // If empty, this step is skipped.
   string remove_chars = 7;
+
+  // The per-form features provided to the model in the order they are presented
+  // to the model.
+  repeated AutofillFieldClassificationFormLevelFeature form_features = 8;
 }
 
 message AutofillFieldClassificationPostprocessingParameters {

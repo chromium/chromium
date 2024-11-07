@@ -1109,6 +1109,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/autofill/merge/output/validation.out",
     "//components/test/data/autofill/ml_model/autofill_model-fold-one.tflite",
     "//components/test/data/autofill/ml_model/autofill_model_metadata.binarypb",
+    "//components/test/data/autofill/ml_model/model_with_form_features_metadata.binarypb",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

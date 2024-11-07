@@ -23,6 +23,11 @@ encoding_parameters {
   features: FEATURE_LABEL
   features: FEATURE_PLACEHOLDER
   features: FEATURE_AUTOCOMPLETE
+  features: FEATURE_TYPE
+  form_features: FEATURE_FORM_BUTTON_TITLES
+  form_features: FEATURE_FORM_ID
+  form_features: FEATURE_FORM_NAME
+  form_features: FEATURE_FRAME_URL_PATH
   lowercase: true
   replace_chars_with_whitespace: "#$%&()\\*+,-./:;<=>?@[]^_`{|}~'×—•∗…–“▼)\u200b\u3164\u2062\u2063"
 }
