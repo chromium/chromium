@@ -183,6 +183,9 @@ class AccessibilityManager
   // Returns true if the Sticky Keys is enabled, or false if not.
   bool IsStickyKeysEnabled() const;
 
+  // Returns true if the built-in touchpad is disabled, or false if not.
+  bool IsTouchpadDisabled() const;
+
   // Enables or disables spoken feedback. Enabling spoken feedback installs the
   // ChromeVox component extension.
   void EnableSpokenFeedback(bool enabled);

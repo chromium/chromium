@@ -755,6 +755,10 @@ bool AccessibilityManager::IsStickyKeysEnabled() const {
                          prefs::kAccessibilityStickyKeysEnabled);
 }
 
+bool AccessibilityManager::IsTouchpadDisabled() const {
+  return AccessibilityController::Get()->IsTouchpadDisabled();
+}
+
 void AccessibilityManager::OnStickyKeysChanged() {
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kToggleStickyKeys, IsStickyKeysEnabled());
@@ -1896,6 +1900,8 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
                             IsVirtualKeyboardEnabled());
   base::UmaHistogramBoolean("Accessibility.CrosStickyKeys",
                             IsStickyKeysEnabled());
+  base::UmaHistogramBoolean("Accessibility.CrosDisableTouchpad",
+                            IsTouchpadDisabled());
   if (MagnificationManager::Get()) {
     base::UmaHistogramBoolean(
         "Accessibility.CrosScreenMagnifier",

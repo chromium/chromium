@@ -786,6 +786,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosDisableTouchpad" enum="BooleanEnabled"
+    expires_after="2025-10-30">
+  <owner>lkupo@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the built-in touchpad is enabled or disabled. It logs when the
+    touchpad is disabled, i.e. setting the internal touchpad mode to
+    &quot;Always disabled&quot; or &quot;Disabled on mouse connected&quot;, and
+    when the touchpad is enabled, which occurs when the internal touchpad mode
+    is set to &quot;Never disabled&quot;.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosLargeCursorSize2" units="dip"
     expires_after="2025-05-04">
   <owner>katie@chromium.org</owner>
@@ -1127,6 +1140,7 @@ chromium-metrics-reviews@google.com.
     <variant name="AlwaysShowScrollbar"/>
     <variant name="Autoclick"/>
     <variant name="CursorColor"/>
+    <variant name="DisableTouchpad"/>
     <variant name="FlashNotifications"/>
     <variant name="LiveCaption"/>
     <variant name="MonoAudio"/>

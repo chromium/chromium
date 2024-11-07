@@ -363,6 +363,8 @@ class ASH_EXPORT AccessibilityController
   bool IsReducedAnimationsSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForReducedAnimations();
 
+  bool IsTouchpadDisabled();
+
   void OnTouchpadNotificationClicked(std::optional<int> button_index);
 
   // Switch access may be disabled in prefs but still running when the disable

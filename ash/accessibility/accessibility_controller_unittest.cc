@@ -2394,6 +2394,8 @@ class AccessibilityControllerDisableTouchpadTest : public AshTestBase {
         ->GetDisableTouchpadEventRewriterForTest();
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2671,6 +2673,32 @@ TEST_F(AccessibilityControllerDisableTouchpadTest,
   controller()->AcceptDisableTouchpadDialogForTesting();
   notifications = MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());
+}
+
+TEST_F(AccessibilityControllerDisableTouchpadTest,
+       DisableInternalTouchpadMetrics) {
+  const std::string kDisableInternalTouchpadUmaMetric =
+      "Accessibility.CrosDisableTouchpad.SessionDuration";
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTouchpadMode::kAlways));
+
+  EXPECT_EQ(1, observer.status_changed_count_);
+  histogram_tester_.ExpectTotalCount(kDisableInternalTouchpadUmaMetric, 0);
+
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTouchpadMode::kNever));
+
+  EXPECT_EQ(2, observer.status_changed_count_);
+  histogram_tester_.ExpectTotalCount(kDisableInternalTouchpadUmaMetric, 1);
+
+  controller->RemoveObserver(&observer);
 }
 
 }  // namespace ash

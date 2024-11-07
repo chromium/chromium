@@ -2945,11 +2945,11 @@ void AccessibilityController::UpdateDisableTouchpadFromPrefs(bool notify) {
     return;
   }
 
-  const DisableTouchpadMode trackpad_mode = static_cast<DisableTouchpadMode>(
+  const DisableTouchpadMode touchpad_mode = static_cast<DisableTouchpadMode>(
       active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
 
-  if (trackpad_mode == DisableTouchpadMode::kAlways ||
-      trackpad_mode == DisableTouchpadMode::kOnExternalMouseConnected) {
+  if (touchpad_mode == DisableTouchpadMode::kAlways ||
+      touchpad_mode == DisableTouchpadMode::kOnExternalMouseConnected) {
     disable_touchpad_event_rewriter_->SetEnabled(true);
   }
 }
@@ -2973,10 +2973,11 @@ void AccessibilityController::DisableTouchpadWithDialog() {
       break;
 
     case DisableTouchpadMode::kNever:
+      active_user_prefs_->SetBoolean(
+          prefs::kAccessibilityDisableTrackpadEnabled, false);
       message_center::MessageCenter* message_center =
           message_center::MessageCenter::Get();
       message_center->RemoveNotification(kNotificationId, false /* by_user */);
-
       ShowToast(AccessibilityToastType::kTouchpadDisabled);
       disable_touchpad_event_rewriter_->SetEnabled(false);
       break;
@@ -3009,6 +3010,8 @@ void AccessibilityController::ExternalDeviceConnected() {
 
 void AccessibilityController::ShowDisableTouchpadDialog() {
   accessibility_notification_controller_->CancelToast();
+  active_user_prefs_->SetBoolean(prefs::kAccessibilityDisableTrackpadEnabled,
+                                 true);
   // The internal touchpad should be disabled before the user clicks "Accept",
   // This is done to ensure the user can navigate with their keyboard.
   disable_touchpad_event_rewriter_->SetEnabled(true);
@@ -3062,6 +3065,14 @@ void AccessibilityController::OnDisableTouchpadDialogDismissed() {
 DisableTouchpadMode AccessibilityController::GetDisableTouchpadMode() {
   return static_cast<DisableTouchpadMode>(
       active_user_prefs_->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
+}
+
+bool AccessibilityController::IsTouchpadDisabled() {
+  return disable_touchpad().enabled() &&
+         disable_touchpad_event_rewriter_->IsEnabled() &&
+         active_user_prefs_->GetInteger(
+             prefs::kAccessibilityDisableTrackpadMode) !=
+             static_cast<int>(DisableTouchpadMode::kNever);
 }
 
 void AccessibilityController::UpdateColorCorrectionFromPrefs() {
