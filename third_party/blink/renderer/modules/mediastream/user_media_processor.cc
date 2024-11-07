@@ -318,13 +318,13 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-
 // Returns true if `kGetUserMediaDeferredDeviceSettingsSelection` is enabled,
 // but gates it on `kCameraMicPreview` also being being enabled. This only
 // applies to user media requests.
 bool ShouldDeferDeviceSettingsSelection(
     UserMediaRequestType request_type,
-    mojom::blink::MediaStreamType media_stream_type) {
+    mojom::blink::MediaStreamType media_stream_type,
+    const ExecutionContext* execution_context) {
   // The new behavior shouldn't be applied for anything except for user media
   // requests.
   // TODO(crbug.com/341136036): Find a better long-term solution for keeping
@@ -344,6 +344,10 @@ bool ShouldDeferDeviceSettingsSelection(
     return false;
   }
 
+  if (RuntimeEnabledFeatures::MediaPreviewsOptOutEnabled(execution_context)) {
+    return false;
+  }
+
   // Enables camera preview in permission bubble and site settings.
   return base::FeatureList::IsEnabled(features::kCameraMicPreview) &&
          base::FeatureList::IsEnabled(
@@ -352,7 +356,8 @@ bool ShouldDeferDeviceSettingsSelection(
 #else
 bool ShouldDeferDeviceSettingsSelection(
     UserMediaRequestType request_type,
-    mojom::blink::MediaStreamType media_stream_type) {
+    mojom::blink::MediaStreamType media_stream_type,
+    const ExecutionContext* execution_context) {
   return false;
 }
 #endif
@@ -801,7 +806,8 @@ void UserMediaProcessor::SelectAudioSettings(
                                     current_request_info_->request_id()));
   if (ShouldDeferDeviceSettingsSelection(
           user_media_request->MediaRequestType(),
-          user_media_request->AudioMediaStreamType())) {
+          user_media_request->AudioMediaStreamType(),
+          user_media_request->GetExecutionContext())) {
     base::expected<Vector<blink::AudioCaptureSettings>, std::string>
         eligible_settings = SelectEligibleSettingsAudioCapture(
             capabilities, user_media_request->AudioConstraints(),
@@ -1064,7 +1070,8 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
   // Do constraints processing.
   if (ShouldDeferDeviceSettingsSelection(
           user_media_request->MediaRequestType(),
-          user_media_request->VideoMediaStreamType())) {
+          user_media_request->VideoMediaStreamType(),
+          user_media_request->GetExecutionContext())) {
     auto eligible_settings = SelectEligibleSettingsVideoDeviceCapture(
         std::move(capabilities), user_media_request->VideoConstraints(),
         blink::MediaStreamVideoSource::kDefaultWidth,
@@ -1280,9 +1287,12 @@ void UserMediaProcessor::OnStreamsGenerated(
     return;
   }
 
+  const auto* execution_context =
+      current_request_info_->request()->GetExecutionContext();
   if (ShouldDeferDeviceSettingsSelection(
           current_request_info_->request()->MediaRequestType(),
-          current_request_info_->request()->AudioMediaStreamType()) &&
+          current_request_info_->request()->AudioMediaStreamType(),
+          execution_context) &&
       !current_request_info_->eligible_audio_settings().empty() &&
       stream_devices_set->stream_devices.front()->audio_device.has_value()) {
     const std::string selected_id =
@@ -1306,7 +1316,8 @@ void UserMediaProcessor::OnStreamsGenerated(
   }
   if (ShouldDeferDeviceSettingsSelection(
           current_request_info_->request()->MediaRequestType(),
-          current_request_info_->request()->VideoMediaStreamType()) &&
+          current_request_info_->request()->VideoMediaStreamType(),
+          execution_context) &&
       !current_request_info_->eligible_video_settings().empty() &&
       stream_devices_set->stream_devices.front()->video_device.has_value()) {
     const std::string selected_id =
