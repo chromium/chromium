@@ -9,9 +9,12 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network {
+
+namespace {
+constexpr size_t kMaxBufSize = 64 * 1024;
+}
 
 NetToMojoPendingBuffer::NetToMojoPendingBuffer(
     mojo::ScopedDataPipeProducerHandle handle,
@@ -29,7 +32,6 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
     mojo::ScopedDataPipeProducerHandle* handle,
     scoped_refptr<NetToMojoPendingBuffer>* pending) {
   base::span<uint8_t> buf;
-  const size_t kMaxBufSize = features::GetNetAdapterMaxBufSize();
   MojoResult result =
       (*handle)->BeginWriteData(kMaxBufSize, MOJO_WRITE_DATA_FLAG_NONE, buf);
   if (result != MOJO_RESULT_OK) {

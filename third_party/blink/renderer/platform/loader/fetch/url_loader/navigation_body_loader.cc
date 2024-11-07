@@ -131,7 +131,7 @@ void ReadFromDataPipeImpl(BodyReader& reader,
       reader.FinishedReading(/*has_error=*/true);
       return;
     }
-    const size_t chunk_size = network::features::GetLoaderChunkSize();
+    const size_t chunk_size = network::features::kMaxNumConsumedBytesInTask;
     DCHECK_LE(num_bytes_consumed, chunk_size);
     buffer = buffer.first(
         std::min<size_t>(buffer.size(), chunk_size - num_bytes_consumed));
