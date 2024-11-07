@@ -983,7 +983,18 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       : UNSAFE_BUFFERS(span(std::ranges::data(arr), std::ranges::size(arr))) {}
 
   template <typename R>
-    requires(internal::LegacyCompatibleRange<T, R>)
+    requires(internal::CompatibleRange<T, R>)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr span(R&& range) noexcept
+      // SAFETY: `std::ranges::size()` returns the number of elements
+      // `std::ranges::data()` will point to, so accessing those elements will
+      // be safe.
+      : UNSAFE_BUFFERS(
+            span(std::ranges::data(range), std::ranges::size(range))) {}
+
+  template <typename R>
+    requires(internal::LegacyCompatibleRange<T, R> &&
+             !internal::CompatibleRange<T, R>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr span(R&& range) noexcept
       // SAFETY: The std::ranges::size() function gives the number of elements
