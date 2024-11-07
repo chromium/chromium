@@ -55,8 +55,9 @@ export class CrRippleElement extends CrLitElement {
     this.eventTracker_.add(
         keyEventTarget, 'pointerdown',
         (e: Event) => this.uiDownAction(e as PointerEvent));
-    this.eventTracker_.add(
-        keyEventTarget, 'pointerup', () => this.uiUpAction());
+    const cancelOrUp = (e: Event) => this.uiUpAction(e as PointerEvent);
+    this.eventTracker_.add(keyEventTarget, 'pointercancel', cancelOrUp);
+    this.eventTracker_.add(keyEventTarget, 'pointerup', cancelOrUp);
 
     this.eventTracker_.add(keyEventTarget, 'keydown', (e: KeyboardEvent) => {
       if (e.defaultPrevented) {
@@ -103,9 +104,11 @@ export class CrRippleElement extends CrLitElement {
       return;
     }
 
-    if (!this.noink) {
-      this.downAction_(e);
+    if (this.noink) {
+      return;
     }
+
+    this.downAction_(e);
   }
 
   private downAction_(e?: PointerEvent) {
@@ -130,6 +133,10 @@ export class CrRippleElement extends CrLitElement {
   }
 
   private showRipple_(e?: PointerEvent) {
+    if (e !== undefined) {
+      this.setPointerCapture(e.pointerId);
+    }
+
     const rect = this.getBoundingClientRect();
 
     const roundedCenterX = function() {
@@ -192,19 +199,27 @@ export class CrRippleElement extends CrLitElement {
         });
   }
 
-  uiUpAction() {
-    if (!this.noink) {
-      this.upAction_();
+  uiUpAction(e?: PointerEvent) {
+    if (this.noink) {
+      return;
     }
+
+    this.upAction_(e);
   }
 
-  private upAction_() {
-    if (!this.holdDown) {
-      this.hideRipple_();
+  private upAction_(e?: PointerEvent) {
+    if (this.holdDown) {
+      return;
     }
+
+    this.hideRipple_(e);
   }
 
-  private hideRipple_() {
+  private hideRipple_(e?: PointerEvent) {
+    if (e !== undefined) {
+      this.releasePointerCapture(e.pointerId);
+    }
+
     if (this.ripples_.length === 0) {
       return;
     }
