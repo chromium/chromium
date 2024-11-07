@@ -109,6 +109,7 @@ optimize_ts("child_frame_registration_ts") {
   sources = [ "resources/child_frame_registration_lib.ts" ]
   deps = [
     ":autofill_form_features_ts",
+    ":fill_js_namespace",
     "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
@@ -216,6 +217,7 @@ source_set("programmatic_form_submission_handler_feature") {
   ]
 
   deps = [
+    ":autofill_form_features",
     ":form_util",
     ":form_util_feature",
     ":programatic_form_submission_js",

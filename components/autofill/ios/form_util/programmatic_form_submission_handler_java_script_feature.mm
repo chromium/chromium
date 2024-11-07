@@ -8,6 +8,7 @@
 
 #import "base/feature_list.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
@@ -47,6 +48,7 @@ ProgrammaticFormSubmissionHandlerJavaScriptFeature::
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
+              AutofillFormFeaturesJavaScriptFeature::GetInstance(),
               autofill::FormUtilJavaScriptFeature::GetInstance(),
           }) {}
 

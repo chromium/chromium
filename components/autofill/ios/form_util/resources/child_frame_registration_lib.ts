@@ -7,6 +7,7 @@
  * by generating a unique ID and sending it to the browser from each frame.
  */
 
+import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {generateRandomId, getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -157,6 +158,10 @@ function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
  */
 function registerChildFrame(frame: HTMLIFrameElement): string {
   const remoteFrameId: string = getRemoteIdForFrame(frame);
+
+  // Store remote frame token in DOM. This way, page content world scripts can
+  // read the token as the DOM is shared across content worlds.
+  frame.setAttribute(CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE, remoteFrameId);
 
   const register = (delayUntilNextRetryMs: number) => {
     if ((registrationLogbook.get(remoteFrameId) ?? 0) >=

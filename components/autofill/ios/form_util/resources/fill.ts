@@ -300,8 +300,7 @@ function formOrFieldsetsToFormData(
   for (let j = 0; j < iframeElements.length; ++j) {
     const frame = iframeElements[j]!;
 
-    childFrames[j]!['token'] =
-        gCrWeb.remoteFrameRegistration.registerChildFrame(frame);
+    childFrames[j]!['token'] = getChildFrameRemoteToken(frame) ?? '';
   }
 
   // Loop through the form control elements, extracting the label text from
@@ -360,6 +359,19 @@ function formOrFieldsetsToFormData(
     (form.child_frames as any).toJSON = null;
   }
   return true;
+}
+
+/**
+ Returns a remote frame token associated to a child frame. When called from the
+ isolated world a new token is generated and `frame` registers itself with it.
+ When called from the page world, the last generated token in the isolated world
+ is returned.
+ */
+function getChildFrameRemoteToken(frame: HTMLIFrameElement): string|null {
+  // Either register a new token when in the isolated world or read the last
+  // registered token from the page content world.
+  return gCrWeb.remoteFrameRegistration?.registerChildFrame(frame) ??
+      frame.getAttribute(fillConstants.CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
 }
 
 /**
@@ -422,10 +434,8 @@ gCrWeb.fill.webFormElementToFormData = function(
 
   const controlElements = gCrWeb.form.getFormControlElements(formElement);
 
-  // TODO(crbug.com/372688163): Handle page world submissions of forms
-  // containing iframes.
   const iframeElements =
-      gCrWeb.autofill_form_features?.isAutofillAcrossIframesEnabled() ?
+      gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
       gCrWeb.form.getIframeElements(formElement) :
       [];
 

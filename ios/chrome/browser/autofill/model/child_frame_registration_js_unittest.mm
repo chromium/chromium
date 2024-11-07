@@ -239,7 +239,8 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
       [[FakeScriptMessageHandler alloc] init];
   [web_view().configuration.userContentController
       addScriptMessageHandler:msg_handler
-                         name:@"FormHandlersMessage"];
+                         name:base::SysUTF8ToNSString(
+                                  kRemoteFrameRegistrationMessageHandlerName)];
 
   NSString* const html =
       @"<body> outer frame"

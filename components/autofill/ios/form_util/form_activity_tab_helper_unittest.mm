@@ -14,6 +14,7 @@
 #import "base/test/with_feature_override.h"
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -21,6 +22,7 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
@@ -44,11 +46,15 @@ using base::test::WithFeatureOverride;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using test::kTrackFormMutationsDelayInMs;
+using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::IsTrue;
 using ::testing::Not;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
+using ::testing::VariantWith;
 using web::JavaScriptFeature;
 using web::WebFrame;
 
@@ -59,6 +65,14 @@ constexpr NSString* kTestHTMLForm = @"<form name='form-name'>"
                                      "<input type='text' id='text'/>"
                                      "<input type='submit' id='button'/>"
                                      "</form>";
+// HTML containing one form wrapping two iframe elements.
+constexpr NSString* kTestHTMLFormWithIframes =
+    @"<form name='form-name'>"
+     "<iframe id='frame1' srcdoc='<form><input type=\"text\" name=\"username\" "
+     "id=\"username\"></form>'></iframe>"
+     "<iframe id='frame2' srcdoc='<form><input type=\"password\" "
+     "name=\"password\" id=\"password\"></form>'></iframe>"
+     "</form>";
 
 // Returns the `FormData` representation of the form in `kTestHTMLForm`.
 [[nodiscard]] FormData BuildTestFormData(std::string frame_id) {
@@ -121,15 +135,19 @@ class FormActivityTabHelperTest : public AutofillTestWithWebState {
   }
 
  protected:
-  WebFrame* WaitForMainFrame() {
+  WebFrame* WaitForMainFrame(web::ContentWorld content_world) {
     __block WebFrame* main_frame = nullptr;
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
       web::WebFramesManager* frames_manager =
-          GetWebFramesManagerForAutofill(web_state());
+          web_state()->GetWebFramesManager(content_world);
       main_frame = frames_manager->GetMainWebFrame();
       return main_frame != nullptr;
     }));
     return main_frame;
+  }
+
+  WebFrame* WaitForMainFrame() {
+    return WaitForMainFrame(ContentWorldForAutofillJavascriptFeatures());
   }
 
   // Verifies the form activity params received after a form mutation.
@@ -810,6 +828,24 @@ class FormSubmittedHookTest : public WithFeatureOverride,
   }
 
  protected:
+  // Runs the form extraction script and returns true if the script ran
+  // successfully.
+  bool FetchForms() {
+    WebFrame* main_frame = WaitForMainFrame();
+    if (!main_frame) {
+      return false;
+    }
+    __block bool finished = false;
+    feature_container_.autofill_java_script_feature()->FetchForms(
+        main_frame, base::BindOnce(^(NSString* result) {
+          finished = true;
+        }));
+
+    return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      return finished;
+    });
+  }
+
   //  Test instances of JavaScriptFeature's that are injected in a different
   //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
   //  TODO(crbug.com/359538514): Remove this variable and use
@@ -858,6 +894,51 @@ TEST_P(FormSubmittedHookTest, TestFormSubmittedHook) {
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount", 0);
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount", 0);
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio", 0);
+}
+
+// Validate that programmatic form submissions are detected and sent to
+// observers of the tab helper.
+TEST_P(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
+  base::test::ScopedFeatureList feature(features::kAutofillAcrossIframesIos);
+
+  LoadHtml(kTestHTMLFormWithIframes);
+
+  WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  // Set feature flags in both worlds.
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillIsolatedContentWorld(main_frame, IsParamFeatureEnabled());
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillAcrossIframes(main_frame, true);
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillIsolatedContentWorld(
+          WaitForMainFrame(web::ContentWorld::kPageContentWorld),
+          IsParamFeatureEnabled());
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillAcrossIframes(
+          WaitForMainFrame(web::ContentWorld::kPageContentWorld), true);
+
+  // Trigger form extraction so child frame tokens are set in the isolated
+  // world. Page scripts will be able to access the tokens through the fallback
+  // stored in the DOM.
+  FetchForms();
+
+  ASSERT_FALSE(observer_->submit_document_info());
+
+  // Run script triggering the submission hooks in the page
+  // content world.
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), @"document.forms[0].submit();",
+      ProgrammaticFormSubmissionHandlerJavaScriptFeature::GetInstance());
+
+  ASSERT_TRUE(observer_->submit_document_info());
+  const FormData& submitted_form = observer_->submit_document_info()->form_data;
+  // Make sure child frames are populated.
+
+  EXPECT_THAT(submitted_form.child_frames(),
+              Each(Field(&FrameTokenWithPredecessor::token,
+                         VariantWith<RemoteFrameToken>(IsTrue()))));
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormSubmittedHookTest);
