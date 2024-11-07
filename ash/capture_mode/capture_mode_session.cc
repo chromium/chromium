@@ -2585,7 +2585,7 @@ void CaptureModeSession::OnLocatedEventReleased(
       capture_mode_util::AddActionButton(
           base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()),
-          u"Search", &kCaptureModeImageIcon,
+          u"Search with Lens", &kLensIcon,
           ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1));
     }
   }
