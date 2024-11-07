@@ -48,6 +48,9 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// DRAW_KEY_NATIVE_EDGE_TO_EDGE is a cached flag that is reset between batch runs, which results
+// in breakage when trying to reset the test environment back to the original state between tests.
+@DisableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
 public class UndoBarControllerTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
