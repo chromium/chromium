@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/updater/linux/systemd_util.h"
 
 #include <fcntl.h>
@@ -19,6 +14,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -144,8 +140,8 @@ void StopService(UpdaterScope scope) {
                                       std::string unit_definition) {
   base::File unit_file(unit_path,
                        base::File::FLAG_WRITE | base::File::FLAG_CREATE_ALWAYS);
-  return unit_file.IsValid() && unit_file.Write(0, unit_definition.c_str(),
-                                                unit_definition.size()) != -1;
+  return unit_file.IsValid() &&
+         unit_file.WriteAndCheck(0, base::as_byte_span(unit_definition));
 }
 
 // Returns the command line which should be used to start the updater service.
