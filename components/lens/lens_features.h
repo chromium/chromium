@@ -662,6 +662,11 @@ extern std::string GetLensOverlayTranslateTargetLanguages();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern base::TimeDelta GetLensOverlaySupportedLanguagesCacheTimeoutMs();
 
+// Returns whether to show autocomplete search suggestions in the contextual
+// searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShowContextualSearchboxSearchSuggest();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

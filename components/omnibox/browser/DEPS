@@ -20,7 +20,7 @@ include_rules = [
   "+components/keep_alive_registry",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
-  "+components/lens/proto/server",
+  "+components/lens",
   "+components/memory_pressure",
   "+components/metrics",
   "+components/navigation_metrics",

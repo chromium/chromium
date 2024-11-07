@@ -321,6 +321,7 @@ static_library("browser") {
     "//base",
     "//base:i18n",
     "//components/history/core/browser",
+    "//components/lens:features",
     "//components/lens/proto/server:proto",
     "//components/omnibox/common",
     "//components/omnibox/resources:omnibox_pedal_synonyms",

@@ -31,6 +31,7 @@
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -698,6 +699,14 @@ base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
 }
 
 void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
+  // Since there is currently no contextual search suggest, lens contextual
+  // searchboxes, shouldn't query suggest and only the verbatim matches should
+  // be shown.
+  if (omnibox::IsLensContextualSearchbox(
+          input_.current_page_classification()) &&
+      !lens::features::ShowContextualSearchboxSearchSuggest()) {
+    return;
+  }
   // Make sure the current query can be sent to at least one suggest service.
   // Don't send potentially private data to the default search provider. It's
   // okay to send potentially private data to a keyword suggest server, if any.

@@ -109,7 +109,9 @@ class SearchProvider : public BaseSearchProvider,
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,
                            SendRequestWithLensInteractionResponse);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,
-                           SendRequestWithoutLensInteractionResponse);
+                           LensContextualSearchboxSuggestRequest);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,
+                           LensContextualSearchboxNoSuggestRequest);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderOTRTest, DoesNotSendSuggestRequest);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderOTRTest, SendSuggestRequestForLens);
 

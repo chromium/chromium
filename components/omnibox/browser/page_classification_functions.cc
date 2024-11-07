@@ -34,8 +34,12 @@ bool IsOtherWebPage(OEP::PageClassification classification) {
          (classification == OEP::OTHER_ZPS_PREFETCH);
 }
 
+bool IsLensContextualSearchbox(OEP::PageClassification classification) {
+  return classification == OEP::CONTEXTUAL_SEARCHBOX;
+}
+
 bool IsLensSearchbox(OEP::PageClassification classification) {
-  return (classification == OEP::CONTEXTUAL_SEARCHBOX) ||
+  return IsLensContextualSearchbox(classification) ||
          (classification == OEP::SEARCH_SIDE_PANEL_SEARCHBOX) ||
          (classification == OEP::LENS_SIDE_PANEL_SEARCHBOX);
 }

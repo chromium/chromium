@@ -21,6 +21,10 @@ bool IsSearchResultsPage(
 bool IsOtherWebPage(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if supplied page classification is a Lens contextual searchbox.
+bool IsLensContextualSearchbox(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 // Return true, if supplied page classification is a Lens unimodal, multimodal,
 // or contextual searchbox.
 bool IsLensSearchbox(
