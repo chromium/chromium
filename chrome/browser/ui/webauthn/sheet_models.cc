@@ -229,6 +229,8 @@ AuthenticatorInsertAndActivateUsbSheetModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
+  webauthn::user_actions::RecordSecurityKeyDialogShown(
+      dialog_model->request_type == device::FidoRequestType::kMakeCredential);
   vector_illustrations_.emplace(kPasskeyUsbIcon, kPasskeyUsbDarkIcon);
 }
 
@@ -1237,7 +1239,11 @@ AuthenticatorHybridAndSecurityKeySheetModel::
     AuthenticatorHybridAndSecurityKeySheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible) {}
+                                  OtherMechanismButtonVisibility::kVisible) {
+  webauthn::user_actions::RecordHybridAndSecurityKeyDialogShown(
+      dialog_model->request_type == device::FidoRequestType::kMakeCredential);
+}
+
 AuthenticatorHybridAndSecurityKeySheetModel::
     ~AuthenticatorHybridAndSecurityKeySheetModel() = default;
 

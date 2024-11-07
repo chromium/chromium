@@ -23,6 +23,9 @@ void RecordMultipleOptionsShown(
 void RecordPriorityOptionShown(
     const AuthenticatorRequestDialogModel::Mechanism& mechanism);
 
+void RecordHybridAndSecurityKeyDialogShown(bool is_create);
+void RecordSecurityKeyDialogShown(bool is_create);
+
 void RecordMechanismClick(
     const AuthenticatorRequestDialogModel::Mechanism& mech);
 
@@ -64,6 +67,8 @@ void RecordChromeProfileSuccess();
 void RecordWindowsHelloShown(bool is_create);
 void RecordWindowsHelloCancelled();
 void RecordWindowsHelloSuccess();
+
+void RecordContextMenuEntryClick();
 
 }  // namespace webauthn::user_actions
 

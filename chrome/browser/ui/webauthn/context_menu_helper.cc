@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -62,6 +63,7 @@ bool IsPasskeyFromAnotherDeviceContextMenuEnabled(
 
 void OnPasskeyFromAnotherDeviceContextMenuItemSelected(
     content::RenderFrameHost* render_frame_host) {
+  user_actions::RecordContextMenuEntryClick();
   auto* delegate = GetWebAuthnCredentialsDelegate(render_frame_host);
   if (!delegate) {
     return;

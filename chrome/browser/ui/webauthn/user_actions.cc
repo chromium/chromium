@@ -171,6 +171,26 @@ void RecordPriorityOptionShown(const Mechanism& mechanism) {
   }
 }
 
+void RecordHybridAndSecurityKeyDialogShown(bool is_create) {
+  if (is_create) {
+    base::RecordAction(base::UserMetricsAction(
+        "WebAuthn.MakeCredential.HybridAndSecurityKeyDialogShown"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "WebAuthn.GetAssertion.HybridAndSecurityKeyDialogShown"));
+  }
+}
+
+void RecordSecurityKeyDialogShown(bool is_create) {
+  if (is_create) {
+    base::RecordAction(base::UserMetricsAction(
+        "WebAuthn.MakeCredential.SecurityKeyDialogShown"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "WebAuthn.GetAssertion.SecurityKeyDialogShown"));
+  }
+}
+
 void RecordMechanismClick(const Mechanism& mech) {
   std::string_view metric_to_emit;
   switch (CategoryFromMechanism(mech)) {
@@ -333,6 +353,11 @@ void RecordWindowsHelloCancelled() {
 
 void RecordWindowsHelloSuccess() {
   base::RecordAction(base::UserMetricsAction("WebAuthn.WinHello.Success"));
+}
+
+void RecordContextMenuEntryClick() {
+  base::RecordAction(base::UserMetricsAction(
+      "WebAuthn.ContextMenu.PasskeyFromAnotherDeviceClicked"));
 }
 
 }  // namespace webauthn::user_actions

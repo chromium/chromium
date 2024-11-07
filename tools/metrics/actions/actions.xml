@@ -44466,6 +44466,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.ContextMenu.PasskeyFromAnotherDeviceClicked">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user selected the &quot;Use passkey from another
+    device&quot; entry in the &quot;Passwords and Passkeys&quot; submenu of the
+    right click context menu.
+  </description>
+</action>
+
 <action name="WebAuthn.Dialog.Accepted">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -44627,6 +44637,18 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user selected a GPM passkey and displayed the native
     Windows UI for user verification. Recorded for GetAssertion requests only.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.HybridAndSecurityKeyDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is shown a dialog where they are prompted to sign in
+    with a passkey on another device using a QR code. The dialog may also
+    display an option to use a security key. Recorded for GetAssertion requests
+    only.
   </description>
 </action>
 
@@ -44800,6 +44822,17 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user is displayed the window to enter the recovery factor
     in order to use GPM passkeys. Recorded during a GetAssertion flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.SecurityKeyDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is shown a dialog where they are prompted to sign in
+    with a WebAuthn credential stored in a security key. Recorded for
+    GetAssertion requests only.
   </description>
 </action>
 
@@ -45019,6 +45052,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.MakeCredential.HybridAndSecurityKeyDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is shown a dialog where they are prompted to create a
+    passkey on another device using a QR code. The dialog may also display an
+    option to use a security key. Recorded for MakeCredential requests only.
+  </description>
+</action>
+
 <action name="WebAuthn.MakeCredential.ICloudShown" not_user_triggered="true">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -45144,6 +45188,17 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user is displayed the window to enter the recovery factor
     in order to use GPM passkeys. Recorded during a MakeCredential flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.SecurityKeyDialogShown"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is shown a dialog where they are prompted to create a
+    WebAuthn credential to be stored in a security key. Recorded for
+    MakeCredential requests only.
   </description>
 </action>
 
