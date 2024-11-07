@@ -21,9 +21,6 @@ class SegmentationPlatformService;
 // targeted segment.
 @interface DefaultBrowserGenericPromoMediator : NSObject
 
-// Main consumer for this mediator.
-@property(nonatomic, weak) id<DefaultBrowserGenericPromoConsumer> consumer;
-
 // Initializer with `segmentationService` and `deviceSwitcherResultDispatcher`.
 - (instancetype)initWithSegmentationService:
                     (segmentation_platform::SegmentationPlatformService*)
@@ -40,6 +37,10 @@ class SegmentationPlatformService;
 
 // Disconnects this mediator.
 - (void)disconnect;
+
+// Returns the Default Browser screen view title with targeted messaging based
+// on the user's segment.
+- (NSString*)promoTitle;
 
 @end
 

@@ -56,6 +56,21 @@ source_set("detent_state_header") {
   sources = [ "lens_overlay_sheet_detent_state.h" ]
 }
 
+source_set("metrics_recorder") {
+  sources = [
+    "lens_overlay_metrics_recorder.h",
+    "lens_overlay_metrics_recorder.mm",
+  ]
+  deps = [
+    "//base",
+    "//ui/base",
+  ]
+  public_deps = [
+    ":entrypoint",
+    "//components/lens",
+  ]
+}
+
 source_set("entrypoint") {
   sources = [
     "lens_overlay_entrypoint.h",

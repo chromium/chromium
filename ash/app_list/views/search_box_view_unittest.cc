@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -1379,6 +1380,28 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
     ASSERT_EQ(BehaviorType::kSunfish,
               session->active_behavior()->behavior_type());
   }
+}
+
+TEST_P(SunfishLauncherButtonTest, TabletModeAppList) {
+  if (!IsSunfishEnabled()) {
+    // TODO(b/356877313): Consider unparametizing these tests.
+    GTEST_SKIP() << "skip if not enabled";
+  }
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  // Add a number of apps.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+  auto* presenter = Shell::Get()->app_list_controller()->fullscreen_presenter();
+  ASSERT_TRUE(presenter);
+  EXPECT_TRUE(presenter->GetTargetVisibility());
+
+  // Press the launcher button. Test the app list remains visible.
+  auto* sunfish_button = helper->GetSearchBoxView()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  GestureTapOn(sunfish_button);
+  EXPECT_TRUE(presenter->GetTargetVisibility());
 }
 
 }  // namespace

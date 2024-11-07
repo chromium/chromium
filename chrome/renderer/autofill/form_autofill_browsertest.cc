@@ -256,8 +256,7 @@ std::string RetrievalMethodToString(
     case WebElementDescriptor::NONE:
       return "NONE";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "UNKNOWN";
+  NOTREACHED();
 }
 
 bool ClickElement(const WebDocument& document,

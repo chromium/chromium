@@ -1761,6 +1761,34 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 }
 
+// Tests that an alert is displayed when update GPM PIN flow returns an error.
+// For now, fake trusted vault backend returns the error unconditionally.
+- (void)testUpdateGPMPinErrorAlert {
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kPasswordSettingsChangePinDescriptionId)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kPasswordSettingsChangePinButtonId)];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordSettingsChangePinButtonId)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  id<GREYMatcher> pinErrorTitleMatcher = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_TITLE));
+  CheckVisibilityOfElement(pinErrorTitleMatcher, /*is_visible=*/true);
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_BUTTON)]
+      performAction:grey_tap()];
+  CheckVisibilityOfElement(pinErrorTitleMatcher, /*is_visible=*/false);
+}
+
 // Test export flow
 - (void)testExportFlow {
   // Saving a form is needed for exporting passwords.

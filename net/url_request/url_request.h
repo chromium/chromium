@@ -581,13 +581,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   const HttpResponseInfo& response_info() const { return response_info_; }
 
   // Access the LOAD_* flags modifying this request (see load_flags.h).
-  int load_flags() const {
-    if (cookie_setting_overrides().Has(
-            CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-      return partial_load_flags_ | LOAD_BYPASS_CACHE;
-    }
-    return partial_load_flags_;
-  }
+  int load_flags() const { return partial_load_flags_ | per_hop_load_flags_; }
 
   bool is_created_from_network_anonymization_key() const {
     return is_created_from_network_anonymization_key_;
@@ -622,6 +616,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // before Start() is called, it must only set the flag, and if set,
   // the priority of this request must already be MAXIMUM_PRIORITY.
   void SetLoadFlags(int flags);
+
+  // Sets "temporary" load flags. They are cleared upon receiving a redirect.
+  void set_per_hop_load_flags(int flags) { per_hop_load_flags_ = flags; }
 
   // Controls the Secure DNS behavior to use when creating the socket for this
   // request.
@@ -1027,6 +1024,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Flags indicating the request type for the load. Expected values are LOAD_*
   // enums above.
   int partial_load_flags_ = LOAD_NORMAL;
+  // Load flags that only apply to a single hop in the redirect chain.
+  int per_hop_load_flags_ = LOAD_NORMAL;
+
   // Whether the request is allowed to send credentials in general. Set by
   // caller.
   bool allow_credentials_ = true;

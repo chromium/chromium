@@ -14,7 +14,6 @@ import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import type {CalendarElement} from './calendar.js';
-import {getCss} from './google_calendar_module.css.js';
 import {getHtml} from './google_calendar_module.html.js';
 import {GoogleCalendarProxyImpl} from './google_calendar_proxy.js';
 
@@ -35,10 +34,6 @@ export class GoogleCalendarModuleElement extends
     GoogleCalendarModuleElementBase {
   static get is() {
     return 'ntp-google-calendar-module';
-  }
-
-  static override get styles() {
-    return getCss();
   }
 
   override render() {

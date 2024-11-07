@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
+#include "components/media_router/browser/presentation/controller_presentation_service_delegate_impl.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -92,11 +92,11 @@ Response CastHandler::SetSinkToUse(const std::string& in_sink_name) {
   Response init_response = EnsureInitialized();
   if (!init_response.IsSuccess())
     return init_response;
-  media_router::PresentationServiceDelegateImpl::GetOrCreateForWebContents(
-      web_contents_)
-      ->set_start_presentation_cb(
-          base::BindRepeating(&CastHandler::StartPresentation,
-                              weak_factory_.GetWeakPtr(), in_sink_name));
+  media_router::ControllerPresentationServiceDelegateImpl::
+      GetOrCreateForWebContents(web_contents_)
+          ->set_start_presentation_cb(
+              base::BindRepeating(&CastHandler::StartPresentation,
+                                  weak_factory_.GetWeakPtr(), in_sink_name));
   return Response::Success();
 }
 

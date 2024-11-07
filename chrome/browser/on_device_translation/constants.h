@@ -19,6 +19,11 @@ extern const base::FilePath::CharType
 extern const base::FilePath::CharType
     kTranslateKitLanguagePackInstallationRelativeDir[];
 
+// The maximum number of pending tasks in the task queue in
+// OnDeviceTranslationServiceController. When the number of pending tasks will
+// exceed this limit, the request will fail.
+extern const size_t kMaxPendingTaskCount;
+
 }  // namespace on_device_translation
 
 #endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_CONSTANTS_H_

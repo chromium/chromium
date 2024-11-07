@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_bdi_element.h"
@@ -1595,7 +1596,15 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   if (RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
     SetImplicitAnchor(invoker);
   }
+
   PseudoStateChanged(CSSSelector::kPseudoPopoverOpen);
+  if (HTMLSelectElement::IsPopoverForAppearanceBase(this)) {
+    // If this element is the ::picker(select) popover, then we need to
+    // invalidate the select element's :open pseudo-class at the same time as
+    // :popover-open https://issues.chromium.org/issues/375004874
+    OwnerShadowHost()->PseudoStateChanged(CSSSelector::kPseudoOpen);
+  }
+
   CHECK(!original_document.AllOpenPopovers().Contains(this));
   original_document.AllOpenPopovers().insert(this);
 
@@ -1903,7 +1912,15 @@ void HTMLElement::HidePopoverInternal(
 
   // Re-apply display:none, and stop matching `:popover-open`.
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kHidden);
+
   PseudoStateChanged(CSSSelector::kPseudoPopoverOpen);
+  if (HTMLSelectElement::IsPopoverForAppearanceBase(this)) {
+    // If this element is the ::picker(select) popover, then we need to
+    // invalidate the select element's :open pseudo-class at the same time as
+    // :popover-open https://issues.chromium.org/issues/375004874
+    OwnerShadowHost()->PseudoStateChanged(CSSSelector::kPseudoOpen);
+  }
+
   document.AllOpenPopovers().erase(this);
 
   Element* previously_focused_element =

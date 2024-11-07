@@ -24,6 +24,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -57,10 +58,10 @@ public class TrustedWebActivityClientLocationDelegationTest {
     @Before
     public void setUp() throws TimeoutException, RemoteException {
         ChromeAppComponent component = ChromeApplicationImpl.getComponent();
-        mClient = component.resolveTrustedWebActivityClient();
+        mClient = TrustedWebActivityClient.getInstance();
 
         // TestTrustedWebActivityService is in the test support apk.
-        component.resolvePermissionManager().addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
+        InstalledWebappPermissionManager.addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
     }
 
     /** Tests {@link TrustedWebActivityClient#checkLocationPermission} */

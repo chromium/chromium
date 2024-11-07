@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/ui_string_overrider.h"
@@ -463,6 +464,9 @@ class VariationsService
 
   // The main entry point for managing safe mode state.
   SafeSeedManager safe_seed_manager_;
+
+  // Used to provide entropy to field trials.
+  std::unique_ptr<const EntropyProviders> entropy_providers_;
 
   // Member responsible for creating trials from a variations seed.
   VariationsFieldTrialCreator field_trial_creator_;

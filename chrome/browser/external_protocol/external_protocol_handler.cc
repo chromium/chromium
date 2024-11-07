@@ -632,8 +632,7 @@ void ExternalProtocolHandler::RecordHandleStateMetrics(bool checkbox_selected,
           checkbox_selected ? CHECKED_DONT_LAUNCH_DEPRECATED : DONT_LAUNCH;
       break;
     case UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   DCHECK_NE(CHECKED_DONT_LAUNCH_DEPRECATED, handle_state);
   UMA_HISTOGRAM_ENUMERATION(kHandleStateMetric, handle_state,

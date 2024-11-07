@@ -333,8 +333,7 @@ class NetworkContextConfigurationBrowserTest
     switch (network_context_type) {
       case NetworkContextType::kSystem:
       case NetworkContextType::kSafeBrowsing:
-        NOTREACHED_IN_MIGRATION() << "Network context has no storage partition";
-        return nullptr;
+        NOTREACHED() << "Network context has no storage partition";
       case NetworkContextType::kProfile:
         return browser()->profile()->GetDefaultStoragePartition();
       case NetworkContextType::kIncognitoProfile:
@@ -357,8 +356,7 @@ class NetworkContextConfigurationBrowserTest
         return incognito_->profile()->GetStoragePartition(kIncognitoConfig);
       }
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   network::mojom::URLLoaderFactory* loader_factory() {
@@ -384,8 +382,7 @@ class NetworkContextConfigurationBrowserTest
             ->GetURLLoaderFactoryForBrowserProcess()
             .get();
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   network::mojom::NetworkContext* network_context() {
@@ -409,8 +406,7 @@ class NetworkContextConfigurationBrowserTest
         return GetStoragePartitionForContextType(network_context_type)
             ->GetNetworkContext();
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   StorageType GetHttpCacheType() const {
@@ -426,8 +422,7 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         return StorageType::kMemory;
     }
-    NOTREACHED_IN_MIGRATION();
-    return StorageType::kNone;
+    NOTREACHED();
   }
 
   StorageType GetCookieStorageType() const {
@@ -442,8 +437,7 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kOnDiskApp:
         return StorageType::kDisk;
     }
-    NOTREACHED_IN_MIGRATION();
-    return StorageType::kNone;
+    NOTREACHED();
   }
 
   // Returns the pref service with most prefs related to the NetworkContext

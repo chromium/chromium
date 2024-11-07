@@ -18,10 +18,10 @@ namespace ash {
 //   fail.
 // These behaviours can be overridden with `WillOnce` and `WillRepeatedly` if
 // necessary.
-class ASH_EXPORT MockSearchPickerClient : public MockPickerClient {
+class ASH_EXPORT MockSearchQuickInsertClient : public MockQuickInsertClient {
  public:
-  MockSearchPickerClient();
-  ~MockSearchPickerClient() override;
+  MockSearchQuickInsertClient();
+  ~MockSearchQuickInsertClient() override;
 
   // Set by the default `StartCrosSearch` behaviour. If the behaviour is
   // overridden, this may not be set on a `StartCrosSearch` callback.

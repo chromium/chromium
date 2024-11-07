@@ -158,7 +158,7 @@
       'V8 Android GN (dbg)': 'android_debug_bot_reclient',
       'V8 Blink Linux': 'release_bot_blink',
       'V8 Blink Linux Debug': 'release_bot_blink_v8_debug_reclient',
-      'V8 Blink Linux Future': 'release_bot_blink',
+      'V8 Blink Linux Future': 'release_bot_blink_siso',
       'V8 Blink Mac': 'release_bot_blink',
       'V8 Blink Win': 'release_bot_blink',
       'V8 Linux GN': 'release_bot_reclient',
@@ -623,6 +623,10 @@
 
     'release_bot_blink': [
       'release_bot_blink',
+    ],
+
+    'release_bot_blink_siso': [
+      'release_bot_blink', 'use_siso',
     ],
 
     'release_bot_blink_v8_debug_reclient': [
@@ -1097,6 +1101,10 @@
 
     'use_cups': {
       'gn_args': 'use_cups=true',
+    },
+
+    'use_siso': {
+      'gn_args': 'use_siso=true',
     },
 
     'v8_enable_debugging_features': {

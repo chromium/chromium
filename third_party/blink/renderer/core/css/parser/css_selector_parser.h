@@ -100,10 +100,8 @@ class CORE_EXPORT CSSSelectorParser {
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end
   //
-  // Parse errors are signalled by returning std::nullopt. Empty spans are
-  // normal and expected, since <scope-start> / <scope-end> are forgiving
-  // selector lists.
-  static std::optional<base::span<CSSSelector>> ParseScopeBoundary(
+  // Parse errors are signalled by an empty span.
+  static base::span<CSSSelector> ParseScopeBoundary(
       CSSParserTokenStream&,
       const CSSParserContext*,
       CSSNestingType,

@@ -8,6 +8,8 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -25,6 +27,8 @@ message ModelPrototypingLoggingData {
   ModelPrototypingResponse response = 2;
 
   ModelPrototypingMetadata metadata = 3;
+
+  ModelExecutionInfo model_execution_info = 6;
 }
 
 message ModelPrototypingRequest {

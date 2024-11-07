@@ -1179,6 +1179,19 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // microsecond.
   static TimeTicks Now();
 
+  // Lower overhead, lower resolution platform-dependent tick count representing
+  // "right now." The resolution may be as coarse as ~15.6ms on Windows and
+  // single digit ms on other platforms. LowResolutionNow() can be used in place
+  // of Now() to reduce overhead of high frequency timekeeping where the finer
+  // resolution of Now() is not required. Generally, prefer to use Now() over
+  // LowResolutionNow() unless profiling shows measurable overhead.
+  //
+  // Note: LowResolutionNow() and Now() are NOT comparable. They use different
+  // underlying clocks on some platforms (e.g. Mac, iOS). On other platforms the
+  // monotonically non-decreasing property of TimeTicks does not hold for mixed
+  // comparisons.
+  static TimeTicks LowResolutionNow();
+
   // Returns true if the high resolution clock is working on this system and
   // Now() will return high resolution values. Note that, on systems where the
   // high resolution clock works but is deemed inefficient, the low resolution

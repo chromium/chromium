@@ -8,6 +8,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "media/base/mock_media_log.h"
 #include "media/base/test_helpers.h"
 #include "media/filters/hls_network_access_impl.h"
 #include "media/filters/hls_test_helpers.h"
@@ -144,6 +145,7 @@ const std::string kDiscontinuous =
 
 using testing::_;
 using testing::ElementsAreArray;
+using testing::NiceMock;
 using testing::Return;
 
 MATCHER_P(MediaSegmentHasUrl, urlstr, "MediaSegment has provided URL") {
@@ -152,6 +154,7 @@ MATCHER_P(MediaSegmentHasUrl, urlstr, "MediaSegment has provided URL") {
 
 class HlsRenditionImplUnittest : public testing::Test {
  protected:
+  std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<MockManifestDemuxerEngineHost> mock_mdeh_;
   std::unique_ptr<MockHlsRenditionHost> mock_hrh_;
   base::test::TaskEnvironment task_environment_{
@@ -167,9 +170,11 @@ class HlsRenditionImplUnittest : public testing::Test {
     }
     auto playlist = std::move(parsed).value();
     auto duration = playlist->GetComputedDuration();
+    media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
+
     return std::make_unique<HlsRenditionImpl>(mock_mdeh_.get(), mock_hrh_.get(),
                                               "test", std::move(playlist),
-                                              duration, uri);
+                                              duration, uri, media_log_.get());
   }
 
   std::unique_ptr<HlsRenditionImpl> MakeLiveRendition(
@@ -181,9 +186,10 @@ class HlsRenditionImplUnittest : public testing::Test {
       LOG(ERROR) << MediaSerialize(std::move(parsed).error());
       return nullptr;
     }
-    return std::make_unique<HlsRenditionImpl>(mock_mdeh_.get(), mock_hrh_.get(),
-                                              "test", std::move(parsed).value(),
-                                              std::nullopt, uri);
+    media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
+    return std::make_unique<HlsRenditionImpl>(
+        mock_mdeh_.get(), mock_hrh_.get(), "test", std::move(parsed).value(),
+        std::nullopt, uri, media_log_.get());
   }
 
   MOCK_METHOD(void, CheckStateComplete, (base::TimeDelta delay), ());
@@ -217,7 +223,7 @@ class HlsRenditionImplUnittest : public testing::Test {
       ranges.Add(start, end);
     }
     EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
-        .WillOnce(Return(ranges));
+        .WillRepeatedly(Return(ranges));
   }
 
   void RespondWithRangeTwice(base::TimeDelta A,
@@ -444,7 +450,8 @@ TEST_F(HlsRenditionImplUnittest, TestPausedRenditionHasEnoughBufferedData) {
   Ranges<base::TimeDelta> loaded_ranges;
   loaded_ranges.Add(base::Seconds(0), base::Seconds(12));
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
-      .WillOnce(Return(loaded_ranges));
+      .Times(2)
+      .WillRepeatedly(Return(loaded_ranges));
   // Old data will try to be removed. Since media time is 0, there is nothing
   // to do. Then there will be an attempt to fetch a new manifest, which won't
   // have any work to do either, instead just posting the delay_cb back.
@@ -466,7 +473,8 @@ TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataFetchNewManifest) {
   Ranges<base::TimeDelta> loaded_ranges;
   loaded_ranges.Add(base::Seconds(0), base::Seconds(12));
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
-      .WillOnce(Return(loaded_ranges));
+      .Times(2)
+      .WillRepeatedly(Return(loaded_ranges));
   // Old data will try to be removed. Since media time is 0, there is nothing
   // to do. Then there will be an attempt to fetch a new manifest, which will
   // get an update.
@@ -496,7 +504,8 @@ TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataDeleteOldContent) {
   Ranges<base::TimeDelta> loaded_ranges;
   loaded_ranges.Add(base::Seconds(0), base::Seconds(32));
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
-      .WillOnce(Return(loaded_ranges));
+      .Times(2)
+      .WillRepeatedly(Return(loaded_ranges));
   // Old data will try to be removed. Since media time is 15, there are 5
   // seconds of old data to delete. There will be no new fetch and parse for
   // manifest updates.

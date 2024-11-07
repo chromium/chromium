@@ -350,13 +350,6 @@ BASE_FEATURE(kPlatformHEVCEncoderSupport,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-// Enables HEVC MediaRecorder muxer support.
-BASE_FEATURE(kMediaRecorderHEVCSupport,
-             "MediaRecorderHEVCSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-
 // Let videos be resumed via remote controls (for example, the notification)
 // when in background.
 BASE_FEATURE(kResumeBackgroundVideo,
@@ -1144,12 +1137,6 @@ BASE_FEATURE(kRequestSystemAudioFocus,
 BASE_FEATURE(kUseAudioLatencyFromHAL,
              "UseAudioLatencyFromHAL",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable pooling of AndroidVideoImageBacking objects for use by MCVD, to save a
-// hop to the GPU main thread during VideoFrame construction.
-BASE_FEATURE(kUsePooledSharedImageVideoProvider,
-             "UsePooledSharedImageVideoProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allow the media pipeline to prioritize the software decoder provided by
 // MediaCodec, instead of the built-in software decoders. This is only enabled

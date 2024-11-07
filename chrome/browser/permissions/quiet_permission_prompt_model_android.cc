@@ -25,8 +25,7 @@ std::u16string GetPermissionBlockedTitle(
       return l10n_util::GetStringUTF16(
           IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_TITLE);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -40,8 +39,7 @@ std::u16string GetGeolocationBlockedUIDescription(QuietUiReason reason) {
       return l10n_util::GetStringUTF16(
           IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_PREDICTION_SERVICE);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -65,8 +63,7 @@ std::u16string GetNotificationBlockedUIDescription(QuietUiReason reason) {
       return l10n_util::GetStringUTF16(
           IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_DISRUPTIVE_MESSAGE);
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string GetPermissionBlockedUIDescription(
@@ -78,8 +75,7 @@ std::u16string GetPermissionBlockedUIDescription(
     case ContentSettingsType::GEOLOCATION:
       return GetGeolocationBlockedUIDescription(reason);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 

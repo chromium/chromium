@@ -86,6 +86,7 @@ BatchUploadService::~BatchUploadService() = default;
 
 void BatchUploadService::OpenBatchUpload(
     Browser* browser,
+    EntryPoint entry_point,
     base::OnceCallback<void(bool)> success_callback) {
   if (!IsUserEligibleToOpenDialog()) {
     std::move(success_callback).Run(false);
@@ -106,6 +107,7 @@ void BatchUploadService::OpenBatchUpload(
   // the local data descriptions, no other dialog opening is triggered.
   state_.dialog_state_ = std::make_unique<ResettableState::DialogState>();
   state_.dialog_state_->browser_ = browser;
+  state_.dialog_state_->entry_point_ = entry_point;
   state_.dialog_state_->dialog_shown_callback_ = std::move(success_callback);
 
   RequestLocalDataDescriptions();
@@ -135,6 +137,7 @@ void BatchUploadService::OnGetLocalDataDescriptionsReady(
   delegate_->ShowBatchUploadDialog(
       state_.dialog_state_->browser_,
       GetOrderedListOfNonEmptyDataDescriptions(std::move(local_data_map)),
+      state_.dialog_state_->entry_point_,
       /*complete_callback=*/
       base::BindOnce(&BatchUploadService::OnBatchUplaodDialogResult,
                      base::Unretained(this)));

@@ -23,7 +23,7 @@ enum class ToastId {
   kImageCopied = 1,
   kLinkToHighlightCopied = 2,
   kAddedToReadingList = 3,
-  kLensOverlay = 4,
+  // kLensOverlay = 4,
   kNonMilestoneUpdate = 5,
   kAddedToComparisonTable = 6,
   kClearBrowsingData = 7,

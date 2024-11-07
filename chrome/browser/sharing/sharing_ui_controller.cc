@@ -66,8 +66,7 @@ std::u16string SharingUiController::GetTitle(SharingDialogType dialog_type) {
 
     case SharingSendMessageResult::kSuccessful:
     case SharingSendMessageResult::kCancelled:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
 
     case SharingSendMessageResult::kPayloadTooLarge:
     case SharingSendMessageResult::kInternalError:

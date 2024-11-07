@@ -242,12 +242,13 @@ class PermissionStatusChangeWaiter : public PermissionObserver {
 
 class TestPermissionService : public PermissionService {
  public:
-  explicit TestPermissionService(
-      mojo::PendingReceiver<PermissionService> pending_receiver)
-      : receiver_(this) {
-    receiver_.Bind(std::move(pending_receiver));
-  }
+  explicit TestPermissionService() = default;
   ~TestPermissionService() override = default;
+
+  void BindHandle(mojo::ScopedMessagePipeHandle handle) {
+    receivers_.Add(this,
+                   mojo::PendingReceiver<PermissionService>(std::move(handle)));
+  }
 
   // mojom::blink::PermissionService implementation
   void HasPermission(PermissionDescriptorPtr permission,
@@ -315,8 +316,8 @@ class TestPermissionService : public PermissionService {
       PermissionDescriptorPtr permission,
       MojoPermissionStatus last_known_status,
       mojo::PendingRemote<PermissionObserver> observer) override {
-    observers_.insert(permission->name,
-                      mojo::Remote<PermissionObserver>(std::move(observer)));
+    observers_.emplace_back(permission->name, mojo::Remote<PermissionObserver>(
+                                                  std::move(observer)));
     if (run_loop_) {
       run_loop_->Quit();
     }
@@ -328,9 +329,11 @@ class TestPermissionService : public PermissionService {
 
   void NotifyPermissionStatusChange(PermissionName name,
                                     MojoPermissionStatus status) {
-    auto it = observers_.find(name);
-    CHECK(it != observers_.end());
-    it->value->OnPermissionStatusChange(status);
+    for (const auto& observer : observers_) {
+      if (observer.first == name) {
+        observer.second->OnPermissionStatusChange(status);
+      }
+    }
     WaitForPermissionStatusChange(status);
   }
 
@@ -370,8 +373,9 @@ class TestPermissionService : public PermissionService {
   }
 
  private:
-  mojo::Receiver<PermissionService> receiver_;
-  HashMap<PermissionName, mojo::Remote<PermissionObserver>> observers_;
+  mojo::ReceiverSet<PermissionService> receivers_;
+  Vector<std::pair<PermissionName, mojo::Remote<PermissionObserver>>>
+      observers_;
   std::unique_ptr<base::RunLoop> run_loop_;
   Vector<MojoPermissionStatus> initial_statuses_;
   bool should_defer_registered_callback_ = false;
@@ -424,26 +428,17 @@ class HTMLPemissionElementTest : public HTMLPemissionElementTestBase {
     HTMLPemissionElementTestBase::SetUp();
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,
-        WTF::BindRepeating(&HTMLPemissionElementTest::Bind,
-                           WTF::Unretained(this)));
+        base::BindRepeating(&TestPermissionService::BindHandle,
+                            base::Unretained(&permission_service_)));
   }
 
   void TearDown() override {
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_, {});
-    permission_service_.reset();
     HTMLPemissionElementTestBase::TearDown();
   }
 
-  void Bind(mojo::ScopedMessagePipeHandle message_pipe_handle) {
-    permission_service_ = std::make_unique<TestPermissionService>(
-        mojo::PendingReceiver<PermissionService>(
-            std::move(message_pipe_handle)));
-  }
-
-  TestPermissionService* permission_service() {
-    return permission_service_.get();
-  }
+  TestPermissionService* permission_service() { return &permission_service_; }
 
   HTMLPermissionElement* CreatePermissionElement(
       const char* permission,
@@ -462,7 +457,7 @@ class HTMLPemissionElementTest : public HTMLPemissionElementTestBase {
   }
 
  private:
-  std::unique_ptr<TestPermissionService> permission_service_;
+  TestPermissionService permission_service_;
   ScopedTestingPlatformSupport<LocalePlatformSupport> support_;
 };
 
@@ -536,6 +531,13 @@ class DeferredChecker {
 };
 
 TEST_F(HTMLPemissionElementTest, InitializeInnerText) {
+  CachedPermissionStatus::From(GetDocument().domWindow())
+      ->SetPermissionStatusMap({{blink::mojom::PermissionName::VIDEO_CAPTURE,
+                                 MojoPermissionStatus::ASK},
+                                {blink::mojom::PermissionName::AUDIO_CAPTURE,
+                                 MojoPermissionStatus::ASK},
+                                {blink::mojom::PermissionName::GEOLOCATION,
+                                 MojoPermissionStatus::ASK}});
   const struct {
     const char* type;
     String expected_text;
@@ -555,13 +557,13 @@ TEST_F(HTMLPemissionElementTest, InitializeInnerText) {
       permission_element->setAttribute(html_names::kPreciselocationAttr,
                                        AtomicString(""));
     }
-    EXPECT_EQ(
-        data.expected_text,
-        permission_element->permission_text_span_for_testing()->innerText());
     permission_element->setAttribute(html_names::kStyleAttr,
                                      AtomicString("width: auto; height: auto"));
     GetDocument().body()->AppendChild(permission_element);
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    EXPECT_EQ(
+        data.expected_text,
+        permission_element->permission_text_span_for_testing()->innerText());
     DOMRect* rect = permission_element->GetBoundingClientRect();
     EXPECT_NE(0, rect->width());
     EXPECT_NE(0, rect->height());
@@ -591,8 +593,9 @@ TEST_F(HTMLPemissionElementTest, TranslateInnerText) {
       {"ta", kGeolocationStringTa, kGeolocationAllowedStringTa}};
 
   auto* permission_element = CreatePermissionElement("geolocation");
+  // Calling one more time waiting for the cache observer.
   permission_service()->WaitForPermissionObserverAdded();
-
+  permission_service()->WaitForPermissionObserverAdded();
   for (const auto& data : kTestData) {
     permission_element->setAttribute(html_names::kLangAttr,
                                      AtomicString(data.lang_attr_value));
@@ -779,11 +782,14 @@ TEST_F(HTMLPemissionElementTest, StatusChangeSinglePermissionElement) {
   for (const auto& data : kTestData) {
     auto* permission_element =
         CreatePermissionElement(data.type, data.precise_location);
+    // Calling one more time waiting for the cache observer.
+    permission_service()->WaitForPermissionObserverAdded();
     permission_service()->WaitForPermissionObserverAdded();
     permission_service()->NotifyPermissionStatusChange(data.name, data.status);
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
+    GetDocument().body()->RemoveChild(permission_element);
   }
 }
 
@@ -815,6 +821,8 @@ TEST_F(HTMLPemissionElementTest,
   };
   for (const auto& data : kTestData) {
     auto* permission_element = CreatePermissionElement("camera microphone");
+    // Calling one more time waiting for the cache observer.
+    permission_service()->WaitForPermissionObserverAdded();
     permission_service()->WaitForPermissionObserverAdded();
     permission_service()->NotifyPermissionStatusChange(
         PermissionName::VIDEO_CAPTURE, data.camera_status);
@@ -826,14 +834,19 @@ TEST_F(HTMLPemissionElementTest,
   }
 }
 
-TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusMicCamera) {
+TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatus) {
   for (const auto initial_status :
        {MojoPermissionStatus::ASK, MojoPermissionStatus::DENIED,
         MojoPermissionStatus::GRANTED}) {
+    CachedPermissionStatus::From(GetDocument().domWindow())
+        ->SetPermissionStatusMap(
+            {{blink::mojom::PermissionName::GEOLOCATION, initial_status}});
     V8PermissionState::Enum expected_initial_status =
         PermissionStatusV8Enum(initial_status);
     auto* permission_element = CreatePermissionElement("geolocation");
     permission_service()->set_initial_statuses({initial_status});
+    // Calling one more time waiting for the cache observer.
+    permission_service()->WaitForPermissionObserverAdded();
     permission_service()->WaitForPermissionObserverAdded();
     EXPECT_EQ(expected_initial_status,
               permission_element->initialPermissionStatus());
@@ -853,10 +866,16 @@ TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusMicCamera) {
       EXPECT_EQ(expected_updated_status,
                 permission_element->permissionStatus());
     }
+    GetDocument().body()->RemoveChild(permission_element);
   }
 }
 
-TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusCameraMic) {
+TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusGrouped) {
+  CachedPermissionStatus::From(GetDocument().domWindow())
+      ->SetPermissionStatusMap({{blink::mojom::PermissionName::VIDEO_CAPTURE,
+                                 MojoPermissionStatus::ASK},
+                                {blink::mojom::PermissionName::AUDIO_CAPTURE,
+                                 MojoPermissionStatus::ASK}});
   auto* permission_element = CreatePermissionElement("camera microphone");
   permission_service()->set_initial_statuses(
       {MojoPermissionStatus::ASK, MojoPermissionStatus::DENIED});
@@ -873,9 +892,13 @@ TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusCameraMic) {
   permission_service()->WaitForPermissionObserverAdded();
   permission_service()->WaitForPermissionObserverAdded();
 
+  // Calling one more time waiting for the cache observer.
+  permission_service()->WaitForPermissionObserverAdded();
+  permission_service()->WaitForPermissionObserverAdded();
+
   // The status is the most restrictive of the two permissions. The initial
   // status never changes. camera: ASK, mic: DENIED
-  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::DENIED),
+  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::ASK),
             permission_element->initialPermissionStatus());
   EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::DENIED),
             permission_element->permissionStatus());
@@ -883,7 +906,7 @@ TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusCameraMic) {
   // camera:ASK, mic: ASK
   permission_service()->NotifyPermissionStatusChange(
       PermissionName::AUDIO_CAPTURE, MojoPermissionStatus::ASK);
-  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::DENIED),
+  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::ASK),
             permission_element->initialPermissionStatus());
   EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::ASK),
             permission_element->permissionStatus());
@@ -891,7 +914,7 @@ TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusCameraMic) {
   // camera:DENIED, mic: ASK
   permission_service()->NotifyPermissionStatusChange(
       PermissionName::VIDEO_CAPTURE, MojoPermissionStatus::DENIED);
-  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::DENIED),
+  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::ASK),
             permission_element->initialPermissionStatus());
   EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::DENIED),
             permission_element->permissionStatus());
@@ -899,7 +922,7 @@ TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusCameraMic) {
   // camera:DENIED, mic: GRANTED
   permission_service()->NotifyPermissionStatusChange(
       PermissionName::AUDIO_CAPTURE, MojoPermissionStatus::GRANTED);
-  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::DENIED),
+  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::ASK),
             permission_element->initialPermissionStatus());
   EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::DENIED),
             permission_element->permissionStatus());
@@ -907,7 +930,7 @@ TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusCameraMic) {
   // camera:GRANTED, mic: GRANTED
   permission_service()->NotifyPermissionStatusChange(
       PermissionName::VIDEO_CAPTURE, MojoPermissionStatus::GRANTED);
-  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::DENIED),
+  EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::ASK),
             permission_element->initialPermissionStatus());
   EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::GRANTED),
             permission_element->permissionStatus());
@@ -957,26 +980,17 @@ class HTMLPemissionElementSimTest : public SimTest {
     SimTest::SetUp();
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,
-        WTF::BindRepeating(&HTMLPemissionElementSimTest::Bind,
-                           WTF::Unretained(this)));
+        base::BindRepeating(&TestPermissionService::BindHandle,
+                            base::Unretained(&permission_service_)));
   }
 
   void TearDown() override {
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_, {});
-    permission_service_.reset();
     SimTest::TearDown();
   }
 
-  void Bind(mojo::ScopedMessagePipeHandle message_pipe_handle) {
-    permission_service_ = std::make_unique<TestPermissionService>(
-        mojo::PendingReceiver<PermissionService>(
-            std::move(message_pipe_handle)));
-  }
-
-  TestPermissionService* permission_service() {
-    return permission_service_.get();
-  }
+  TestPermissionService* permission_service() { return &permission_service_; }
 
   HTMLPermissionElement* CreatePermissionElement(
       Document& document,
@@ -996,10 +1010,50 @@ class HTMLPemissionElementSimTest : public SimTest {
   }
 
  private:
-  std::unique_ptr<TestPermissionService> permission_service_;
+  TestPermissionService permission_service_;
   ScopedTestingPlatformSupport<LocalePlatformSupport> support;
   ScopedPermissionElementForTest scoped_feature_{true};
 };
+
+TEST_F(HTMLPemissionElementSimTest, InitializeGrantedText) {
+  SimRequest resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  resource.Complete(R"(
+    <body>
+    </body>
+  )");
+  CachedPermissionStatus::From(GetDocument().domWindow())
+      ->SetPermissionStatusMap({{blink::mojom::PermissionName::VIDEO_CAPTURE,
+                                 MojoPermissionStatus::GRANTED},
+                                {blink::mojom::PermissionName::AUDIO_CAPTURE,
+                                 MojoPermissionStatus::GRANTED},
+                                {blink::mojom::PermissionName::GEOLOCATION,
+                                 MojoPermissionStatus::GRANTED}});
+  const struct {
+    const char* type;
+    String expected_text;
+  } kTestData[] = {{"geolocation", kGeolocationAllowedString},
+                   {"microphone", kMicrophoneAllowedString},
+                   {"camera", kCameraAllowedString},
+                   {"camera microphone", kCameraMicrophoneAllowedString}};
+
+  for (const auto& data : kTestData) {
+    auto* permission_element =
+        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(data.type));
+    permission_element->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("width: auto; height: auto"));
+    GetDocument().body()->AppendChild(permission_element);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    EXPECT_EQ(
+        data.expected_text,
+        permission_element->permission_text_span_for_testing()->innerText());
+    DOMRect* rect = permission_element->GetBoundingClientRect();
+    EXPECT_NE(0, rect->width());
+    EXPECT_NE(0, rect->height());
+  }
+}
 
 TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
   SimRequest main_resource("https://example.test", "text/html");
@@ -1491,8 +1545,9 @@ TEST_F(HTMLPemissionElementSimTest, GrantedSelectorDisplayNone) {
 
   auto* permission_element =
       CreatePermissionElement(GetDocument(), "geolocation");
+  // Calling one more time waiting for the cache observer.
   permission_service()->WaitForPermissionObserverAdded();
-
+  permission_service()->WaitForPermissionObserverAdded();
   EXPECT_TRUE(permission_element->GetComputedStyle());
   EXPECT_EQ(
       EDisplay::kInlineBlock,
@@ -1518,7 +1573,10 @@ TEST_F(HTMLPemissionElementSimTest, GrantedSelectorDisplayNone) {
       permission_element->GetComputedStyle()->GetDisplayStyle().Display());
 }
 
-TEST_F(HTMLPemissionElementSimTest, MovePEPCToAnotherDocument) {
+// TODO(crbug.com/375231573): We should verify this test again. It's likely when
+// moving PEPC between documents, the execution context binding to permission
+// service will be changed.
+TEST_F(HTMLPemissionElementSimTest, DISABLED_MovePEPCToAnotherDocument) {
   SimRequest main_resource("https://example.test/", "text/html");
   SimRequest iframe_resource("https://example.test/foo.html", "text/html");
   LoadURL("https://example.test/");

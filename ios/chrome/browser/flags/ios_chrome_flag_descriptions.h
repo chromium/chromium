@@ -134,6 +134,17 @@ extern const char kAutofillShowManualFillForVirtualCardsDescription[];
 extern const char kAutofillStickyInfobarName[];
 extern const char kAutofillStickyInfobarDescription[];
 
+// Title and description for the flag that enables the throttling of Autofill
+// document form scans.
+extern const char kAutofillThrottleDocumentFormScanName[];
+extern const char kAutofillThrottleDocumentFormScanDescription[];
+
+// Title and description for the flag that enables the throttling of Autofill
+// filtered document form scans. Those are the scans used to take the latest
+// snapshot of a specific form, on the spot.
+extern const char kAutofillThrottleFilteredDocumentFormScanName[];
+extern const char kAutofillThrottleFilteredDocumentFormScanDescription[];
+
 // Title and description for the flag that sets a client-side timeout on
 // UnmaskCardRequests to Google Payments servers.
 extern const char kAutofillUnmaskCardRequestTimeoutName[];
@@ -496,6 +507,12 @@ extern const char kIOSSaveToPhotosDescription[];
 // improvements.
 extern const char kIOSSaveToPhotosImprovementsName[];
 extern const char kIOSSaveToPhotosImprovementsDescription[];
+
+// Title and description for the flag to enable the new feed positionig
+// experiment on iOS. This experiments controls the UX of the most visited tiles
+// and the homestack.
+extern const char kNewFeedPositioningExperimentName[];
+extern const char kNewFeedPositioningExperimentDescription[];
 
 // Title and description of the flag to enable client side new tab page
 // experiments aimed at improving user retention.

@@ -77,19 +77,19 @@ std::u16string GetAccessibleNameForSeeMoreButton(
 }
 
 QuickInsertSectionView::LocalFileResultStyle ConvertLocalFileResultStyle(
-    PickerSearchResultsView::LocalFileResultStyle style) {
+    QuickInsertSearchResultsView::LocalFileResultStyle style) {
   switch (style) {
-    case PickerSearchResultsView::LocalFileResultStyle::kList:
+    case QuickInsertSearchResultsView::LocalFileResultStyle::kList:
       return QuickInsertSectionView::LocalFileResultStyle::kList;
-    case PickerSearchResultsView::LocalFileResultStyle::kGrid:
+    case QuickInsertSearchResultsView::LocalFileResultStyle::kGrid:
       return QuickInsertSectionView::LocalFileResultStyle::kGrid;
   }
 }
 
 }  // namespace
 
-PickerSearchResultsView::PickerSearchResultsView(
-    PickerSearchResultsViewDelegate* delegate,
+QuickInsertSearchResultsView::QuickInsertSearchResultsView(
+    QuickInsertSearchResultsViewDelegate* delegate,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher,
     PickerSubmenuController* submenu_controller,
@@ -141,22 +141,22 @@ PickerSearchResultsView::PickerSearchResultsView(
           .Build());
 }
 
-PickerSearchResultsView::~PickerSearchResultsView() = default;
+QuickInsertSearchResultsView::~QuickInsertSearchResultsView() = default;
 
-void PickerSearchResultsView::SetLocalFileResultStyle(
+void QuickInsertSearchResultsView::SetLocalFileResultStyle(
     LocalFileResultStyle style) {
   local_file_result_style_ = style;
 }
 
-views::View* PickerSearchResultsView::GetTopItem() {
+views::View* QuickInsertSearchResultsView::GetTopItem() {
   return section_list_view_->GetTopItem();
 }
 
-views::View* PickerSearchResultsView::GetBottomItem() {
+views::View* QuickInsertSearchResultsView::GetBottomItem() {
   return section_list_view_->GetBottomItem();
 }
 
-views::View* PickerSearchResultsView::GetItemAbove(views::View* item) {
+views::View* QuickInsertSearchResultsView::GetItemAbove(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
@@ -170,7 +170,7 @@ views::View* PickerSearchResultsView::GetItemAbove(views::View* item) {
   return Contains(prev_item) ? prev_item : nullptr;
 }
 
-views::View* PickerSearchResultsView::GetItemBelow(views::View* item) {
+views::View* QuickInsertSearchResultsView::GetItemBelow(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
@@ -184,25 +184,25 @@ views::View* PickerSearchResultsView::GetItemBelow(views::View* item) {
   return Contains(next_item) ? next_item : nullptr;
 }
 
-views::View* PickerSearchResultsView::GetItemLeftOf(views::View* item) {
+views::View* QuickInsertSearchResultsView::GetItemLeftOf(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemLeftOf(item);
 }
 
-views::View* PickerSearchResultsView::GetItemRightOf(views::View* item) {
+views::View* QuickInsertSearchResultsView::GetItemRightOf(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemRightOf(item);
 }
 
-bool PickerSearchResultsView::ContainsItem(views::View* item) {
+bool QuickInsertSearchResultsView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-void PickerSearchResultsView::ClearSearchResults() {
+void QuickInsertSearchResultsView::ClearSearchResults() {
   section_views_.clear();
   section_list_view_->ClearSectionList();
   section_list_view_->SetVisible(true);
@@ -214,7 +214,7 @@ void PickerSearchResultsView::ClearSearchResults() {
   UpdateAccessibleName();
 }
 
-void PickerSearchResultsView::AppendSearchResults(
+void QuickInsertSearchResultsView::AppendSearchResults(
     QuickInsertSearchResultsSection section) {
   StopLoadingAnimation();
   StopThrobber();
@@ -227,8 +227,9 @@ void PickerSearchResultsView::AppendSearchResults(
     section_view->AddTitleTrailingLink(
         l10n_util::GetStringUTF16(IDS_PICKER_SEE_MORE_BUTTON_TEXT),
         GetAccessibleNameForSeeMoreButton(section.type()),
-        base::BindRepeating(&PickerSearchResultsView::OnTrailingLinkClicked,
-                            base::Unretained(this), section.type()));
+        base::BindRepeating(
+            &QuickInsertSearchResultsView::OnTrailingLinkClicked,
+            base::Unretained(this), section.type()));
   }
   for (const auto& result : section.results()) {
     AddResultToSection(result, section_view);
@@ -243,8 +244,8 @@ void PickerSearchResultsView::AppendSearchResults(
   UpdateAccessibleName();
 }
 
-bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
-                                            std::u16string description) {
+bool QuickInsertSearchResultsView::SearchStopped(ui::ImageModel illustration,
+                                                 std::u16string description) {
   StopLoadingAnimation();
   StopThrobber();
   if (!section_views_.empty()) {
@@ -260,7 +261,7 @@ bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
   return true;
 }
 
-void PickerSearchResultsView::ShowLoadingAnimation() {
+void QuickInsertSearchResultsView::ShowLoadingAnimation() {
   ClearSearchResults();
   StopThrobber();
   skeleton_loader_view_->StartAnimationAfter(kLoadingAnimationDelay);
@@ -268,12 +269,12 @@ void PickerSearchResultsView::ShowLoadingAnimation() {
   delegate_->OnSearchResultsViewHeightChanged();
 }
 
-void PickerSearchResultsView::SelectSearchResult(
+void QuickInsertSearchResultsView::SelectSearchResult(
     const QuickInsertSearchResult& result) {
   delegate_->SelectSearchResult(result);
 }
 
-void PickerSearchResultsView::AddResultToSection(
+void QuickInsertSearchResultsView::AddResultToSection(
     const QuickInsertSearchResult& result,
     QuickInsertSectionView* section_view) {
   // `base::Unretained` is safe here because `this` will own the item view which
@@ -281,7 +282,7 @@ void PickerSearchResultsView::AddResultToSection(
   QuickInsertItemView* view = section_view->AddResult(
       result, preview_controller_,
       ConvertLocalFileResultStyle(local_file_result_style_),
-      base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
+      base::BindRepeating(&QuickInsertSearchResultsView::SelectSearchResult,
                           base::Unretained(this), result));
 
   if (auto* list_item_view =
@@ -293,13 +294,13 @@ void PickerSearchResultsView::AddResultToSection(
   }
 }
 
-void PickerSearchResultsView::OnTrailingLinkClicked(
+void QuickInsertSearchResultsView::OnTrailingLinkClicked(
     QuickInsertSectionType section_type,
     const ui::Event& event) {
   delegate_->SelectMoreResults(section_type);
 }
 
-int PickerSearchResultsView::GetIndex(
+int QuickInsertSearchResultsView::GetIndex(
     const QuickInsertSearchResult& inserted_result) {
   if (top_results_.empty()) {
     return -1;
@@ -312,30 +313,30 @@ int PickerSearchResultsView::GetIndex(
                   static_cast<int>(it - top_results_.begin()));
 }
 
-void PickerSearchResultsView::SetNumEmojiResultsForA11y(
+void QuickInsertSearchResultsView::SetNumEmojiResultsForA11y(
     size_t num_emoji_results) {
   num_emoji_results_displayed_ = num_emoji_results;
 }
 
-void PickerSearchResultsView::StartThrobber() {
+void QuickInsertSearchResultsView::StartThrobber() {
   throbber_container_->SetVisible(true);
   throbber_->Start();
   delegate_->OnSearchResultsViewHeightChanged();
 }
 
-void PickerSearchResultsView::StopThrobber() {
+void QuickInsertSearchResultsView::StopThrobber() {
   throbber_container_->SetVisible(false);
   throbber_->Stop();
   delegate_->OnSearchResultsViewHeightChanged();
 }
 
-void PickerSearchResultsView::StopLoadingAnimation() {
+void QuickInsertSearchResultsView::StopLoadingAnimation() {
   skeleton_loader_view_->StopAnimation();
   skeleton_loader_view_->SetVisible(false);
   delegate_->OnSearchResultsViewHeightChanged();
 }
 
-void PickerSearchResultsView::UpdateAccessibleName() {
+void QuickInsertSearchResultsView::UpdateAccessibleName() {
   // If the sections are empty but the no results view is not visible, it means
   // we are in a pending state, which should not have an announcement.
   if (!section_views_.empty() || !no_results_view_->GetVisible()) {
@@ -357,7 +358,7 @@ void PickerSearchResultsView::UpdateAccessibleName() {
   NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged, true);
 }
 
-BEGIN_METADATA(PickerSearchResultsView)
+BEGIN_METADATA(QuickInsertSearchResultsView)
 END_METADATA
 
 }  // namespace ash

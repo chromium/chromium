@@ -9,7 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -43,6 +43,9 @@ enum class DefaultBrowserSettingsPageUsage {
 
   // Whether the user visited the iOS Default Browser settings page.
   BOOL _defaultBrowserSettingsVisited;
+
+  // The view controller for default browser instructions.
+  DefaultBrowserInstructionsViewController* _instructionsViewController;
 }
 @end
 
@@ -121,23 +124,25 @@ enum class DefaultBrowserSettingsPageUsage {
 
 // Adds default browser video instructions view as a background view.
 - (void)addDefaultBrowserVideoInstructionsView {
-  ConfirmationAlertViewController* alertScreen =
-      [[ConfirmationAlertViewController alloc] init];
-  DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
-                                                   hasRemindMeLater:NO
-                                                           hasSteps:YES
-                                                      actionHandler:self
-                                          alertScreenViewController:alertScreen
-                                                          titleText:nil];
+  _instructionsViewController =
+      [[DefaultBrowserInstructionsViewController alloc]
+          initWithDismissButton:NO
+               hasRemindMeLater:NO
+                       hasSteps:YES
+                  actionHandler:self
+                      titleText:nil];
+  [self addChildViewController:_instructionsViewController];
 
   self.tableView.backgroundView = [[UIView alloc] init];
   [self.tableView.backgroundView
       setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
-  [self.tableView addSubview:instructionsView];
-  instructionsView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(instructionsView, self.tableView);
+  [self.tableView addSubview:_instructionsViewController.view];
+  _instructionsViewController.view.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  AddSameConstraints(_instructionsViewController.view, self.tableView);
   AddSameConstraints(self.tableView.backgroundView, self.tableView);
+
+  [_instructionsViewController didMoveToParentViewController:self];
 }
 
 - (void)recordMetrics:(DefaultBrowserSettingsPageUsage)usage {

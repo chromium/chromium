@@ -92,6 +92,9 @@
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #endif
 
+namespace autofill::autofill_metrics {
+namespace {
+
 using ::autofill::test::AddFieldPredictionToForm;
 using ::autofill::test::CreateTestFormField;
 using ::base::ASCIIToUTF16;
@@ -104,9 +107,6 @@ using ::testing::HasSubstr;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::UnorderedPointwise;
-
-namespace autofill::autofill_metrics {
-namespace {
 
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 using PaymentsSigninState = AutofillMetrics::PaymentsSigninState;
@@ -296,10 +296,11 @@ TEST_F(AutofillMetricsTest, StoredProfileCountAutofillableFormSubmission) {
 // Verify that when submitting a non-autofillable form, the stored profile
 // metric is not logged.
 TEST_F(AutofillMetricsTest, StoredProfileCountNonAutofillableFormSubmission) {
-  // Two fields is not enough to make it an autofillable form.
+  // Two non-email fields is not enough to make it an autofillable form.
   FormData form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText)});
+       CreateTestFormField("Last Name", "last-name", "",
+                           FormControlType::kInputText)});
 
   base::HistogramTester histogram_tester;
   SeeForm(form);
@@ -371,7 +372,8 @@ TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
 TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   FormData form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText)});
+       CreateTestFormField("Last Name", "last-name", "",
+                           FormControlType::kInputText)});
 
   // Ensure no metrics are logged when small form support is disabled (min
   // number of fields enforced).
@@ -425,7 +427,8 @@ TEST_F(AutofillMetricsTest,
        UkmDeveloperEngagement_LogFillableFormParsedWithoutTypeHints) {
   FormData form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText)});
+       CreateTestFormField("Last Name", "last-name", "",
+                           FormControlType::kInputText)});
 
   // Ensure no entries are logged when loading a non-fillable form.
   {
@@ -5482,7 +5485,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   EXPECT_THAT(SamplesOf({kFillable, kBefore, kAll, kBitmask}),
               BucketsAre(Bucket(kName | kNumber | kExp | kCvc, 2)));
   EXPECT_THAT(SamplesOf({kFillable, kAfter, kAll, kBitmask}),
-              BucketsAre(Bucket(kName | kExp, 1), Bucket(kNumber | kCvc, 1)));
+              BucketsAre(Bucket(kName | kExp, 1), Bucket(kNumber, 1)));
   EXPECT_THAT(
       SamplesOf({kFills, kBefore, kAll, kBitmask}),
       BucketsAre(Bucket(kName | kNumber | kExp, 1), Bucket(kNumber, 1)));
@@ -5571,7 +5574,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
 
            {UkmBuilder::kFillable_BeforeSecurity_BitmaskName,
             kName | kNumber | kExp | kCvc},
-           {UkmBuilder::kFillable_AfterSecurity_BitmaskName, kNumber | kCvc},
+           {UkmBuilder::kFillable_AfterSecurity_BitmaskName, kNumber},
            {UkmBuilder::kFilled_BeforeSecurity_BitmaskName, kNumber},
            {UkmBuilder::kFilled_AfterSecurity_BitmaskName, kNumber},
 

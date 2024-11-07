@@ -84,6 +84,7 @@ public class TabGridDialogView extends FrameLayout {
 
     private final Context mContext;
     private final float mTabGridCardPadding;
+    private final Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
     private FrameLayout mAnimationClip;
     private FrameLayout mToolbarContainer;
     private FrameLayout mRecyclerViewContainer;
@@ -112,7 +113,6 @@ public class TabGridDialogView extends FrameLayout {
     private AnimatorSet mHideDialogAnimation;
     private AnimatorListenerAdapter mShowDialogAnimationListener;
     private AnimatorListenerAdapter mHideDialogAnimationListener;
-    private Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
     private int mSideMargin;
     private int mTopMargin;
     private int mAppHeaderHeight;

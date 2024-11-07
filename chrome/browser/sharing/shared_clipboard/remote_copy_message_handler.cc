@@ -116,8 +116,7 @@ void RemoteCopyMessageHandler::OnMessage(
       HandleImage(message.remote_copy_message().image_url());
       break;
     case components_sharing_message::RemoteCopyMessage::CONTENT_NOT_SET:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   std::move(done_callback).Run(/*response=*/nullptr);

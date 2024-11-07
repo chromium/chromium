@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/local_data_description.h"
@@ -54,6 +55,7 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   static BatchUploadDialogView* CreateBatchUploadDialogView(
       Browser& browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
+      BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback);
 
   views::WebView* GetWebViewForTesting();
@@ -73,6 +75,7 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   explicit BatchUploadDialogView(
       Profile* profile,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
+      BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback);
 
   // Callback to properly resize the view based on the loaded web ui content.
@@ -111,6 +114,7 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // Account info for which the data is showing.
   AccountInfo primary_account_info_;
   BatchUploadSelectedDataTypeItemsCallback complete_callback_;
+  BatchUploadService::EntryPoint entry_point_;
 
   raw_ptr<views::WebView> web_view_;
 

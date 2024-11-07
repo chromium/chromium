@@ -380,8 +380,7 @@ void SessionServiceBase::SetTabUserAgentOverride(
   // This is overridden by session_service implementation.
   // We still need it here because we derive from
   // sessions::SessionTabHelperDelegate.
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 void SessionServiceBase::SetSelectedNavigationIndex(SessionID window_id,

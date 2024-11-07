@@ -5068,20 +5068,26 @@ TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-class IntegrationInstallerResultsTestNewInstalls : public IntegrationTestMsi {};
+class IntegrationInstallerResultsNewInstallsTest
+    : public ::testing::WithParamInterface<TestUpdaterVersion>,
+      public IntegrationTestMsi {};
 
-TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
+INSTANTIATE_TEST_SUITE_P(IntegrationInstallerResultsNewInstallsTestCases,
+                         IntegrationInstallerResultsNewInstallsTest,
+                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+
+TEST_P(IntegrationInstallerResultsNewInstallsTest, OnDemandCancel) {
   // Delay download a bit to allow cancellation.
   test_server_->set_download_delay(base::Seconds(5));
 
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
 
-  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   ASSERT_NO_FATAL_FAILURE(InstallApp(kMsiAppId, base::Version({0, 0, 0, 0})));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kMsiAppId, UpdateService::Priority::kForeground,
-      base::Version({0, 0, 0, 0}), kMsiUpdatedVersion));
+      base::Version({0, 0, 0, 0}), kMsiUpdatedVersion, GetParam().version));
 
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
@@ -5097,13 +5103,17 @@ TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
               /*always_serve_crx=*/true, UpdateService::ErrorCategory::kService,
               static_cast<int>(update_client::ServiceError::CANCELLED),
               /*EVENT_INSTALL_COMPLETE=*/2, {}),
-      });
+      },
+      GetParam().version);
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
       kMsiAppId, AppBundleWebCreateMode::kCreateApp, STATE_ERROR,
       static_cast<int>(update_client::ServiceError::CANCELLED),
       /*cancel_when_downloading=*/true));
+
+  // Cleanup by overinstalling the current version and uninstalling.
+  ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

@@ -121,8 +121,7 @@ constexpr int GetMessageIdForTransportDescription(
     case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -146,8 +145,7 @@ constexpr int GetMessageIdForTransportShortDescription(
     case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -171,8 +169,7 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
     case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::kNoneIcon;
+      NOTREACHED();
   }
 }
 

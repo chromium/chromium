@@ -4,23 +4,34 @@
 
 #include "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
 
+#include <sys/types.h>
+
+#include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/saved_tab_groups/public/types.h"
 
 namespace collaboration::messaging {
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
+    std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     data_sharing::DataSharingService* data_sharing_service)
-    : tab_group_sync_service_(tab_group_sync_service),
-      data_sharing_service_(data_sharing_service) {}
+    : tab_group_change_notifier_(std::move(tab_group_change_notifier)),
+      tab_group_sync_service_(tab_group_sync_service),
+      data_sharing_service_(data_sharing_service) {
+  tab_group_change_notifier_->AddObserver(this);
+  tab_group_change_notifier_->Initialize();
+}
 
-MessagingBackendServiceImpl::~MessagingBackendServiceImpl() = default;
+MessagingBackendServiceImpl::~MessagingBackendServiceImpl() {
+  tab_group_change_notifier_->RemoveObserver(this);
+}
 
 void MessagingBackendServiceImpl::SetInstantMessageDelegate(
     InstantMessageDelegate* instant_message_delegate) {
@@ -40,7 +51,7 @@ void MessagingBackendServiceImpl::RemovePersistentMessageObserver(
 }
 
 bool MessagingBackendServiceImpl::IsInitialized() {
-  return false;
+  return tab_group_change_notifier_initialized_;
 }
 
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForTab(
@@ -72,5 +83,30 @@ std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
   // interface description.
   return std::vector<ActivityLogItem>();
 }
+
+void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
+  tab_group_change_notifier_initialized_ = true;
+}
+
+void MessagingBackendServiceImpl::OnTabGroupAdded(
+    const tab_groups::SavedTabGroup& added_group) {}
+
+void MessagingBackendServiceImpl::OnTabGroupRemoved(
+    tab_groups::SavedTabGroup removed_group) {}
+
+void MessagingBackendServiceImpl::OnTabGroupNameUpdated(
+    const tab_groups::SavedTabGroup& updated_group) {}
+
+void MessagingBackendServiceImpl::OnTabGroupColorUpdated(
+    const tab_groups::SavedTabGroup& updated_group) {}
+
+void MessagingBackendServiceImpl::OnTabAdded(
+    const tab_groups::SavedTabGroupTab& added_tab) {}
+
+void MessagingBackendServiceImpl::OnTabRemoved(
+    tab_groups::SavedTabGroupTab removed_tab) {}
+
+void MessagingBackendServiceImpl::OnTabUpdated(
+    const tab_groups::SavedTabGroupTab& updated_tab) {}
 
 }  // namespace collaboration::messaging

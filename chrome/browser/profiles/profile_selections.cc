@@ -147,8 +147,7 @@ ProfileSelection ProfileSelections::GetProfileSelection(
     return system_profile_selection_;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ProfileSelection::kNone;
+  NOTREACHED();
 }
 
 void ProfileSelections::SetProfileSelectionForRegular(

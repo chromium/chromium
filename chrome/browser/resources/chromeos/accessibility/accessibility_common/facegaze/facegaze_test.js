@@ -1951,7 +1951,8 @@ AX_TEST_F(
       this.triggerBubbleControllerTimeout();
       assertEquals(
           'Custom key combination: ctrl + c (Open your mouth wide), ' +
-              'Scroll mode active. Raise eyebrows to exit. Other gestures temporarily unavailable.',
+              'Scroll mode active. Raise eyebrows to exit. Other ' +
+              'gestures temporarily unavailable.',
           this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
       // Release jaw open for custom key release.
@@ -1960,7 +1961,8 @@ AX_TEST_F(
       this.processFaceLandmarkerResult(result);
 
       assertEquals(
-          'Scroll mode active. Raise eyebrows to exit. Other gestures temporarily unavailable.',
+          'Scroll mode active. Raise eyebrows to exit. Other gestures ' +
+              'temporarily unavailable.',
           this.mockAccessibilityPrivate.getFaceGazeBubbleText());
     });
 

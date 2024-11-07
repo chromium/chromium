@@ -41,14 +41,12 @@ ScopedJavaLocalRef<jobject> JNI_ProfileKeyUtil_GetLastUsedRegularProfileKey(
     JNIEnv* env) {
   ProfileKey* key = ::android::GetLastUsedRegularProfileKey();
   if (!key) {
-    NOTREACHED_IN_MIGRATION() << "ProfileKey not found.";
-    return ScopedJavaLocalRef<jobject>();
+    NOTREACHED() << "ProfileKey not found.";
   }
 
   ProfileKeyAndroid* profile_key_android = key->GetProfileKeyAndroid();
   if (!profile_key_android) {
-    NOTREACHED_IN_MIGRATION() << "ProfileKeyAndroid not found.";
-    return ScopedJavaLocalRef<jobject>();
+    NOTREACHED() << "ProfileKeyAndroid not found.";
   }
 
   return profile_key_android->GetJavaObject();

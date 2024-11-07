@@ -3,10 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 
 assert(enable_extensions_core)
+
+# If enable_extensions is true then enable_guest_view must also be true.
+assert(!enable_extensions || enable_guest_view)
 
 source_set("renderer") {
   sources = [
@@ -242,6 +246,7 @@ source_set("renderer") {
     "//build:chromeos_buildflags",
     "//chrome:resources",
     "//components/crx_file",
+    "//components/guest_view/buildflags",
     "//components/version_info",
     "//content:content_resources",
     "//content/public/renderer",

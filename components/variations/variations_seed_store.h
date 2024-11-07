@@ -13,10 +13,12 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_reader_writer.h"
@@ -68,16 +70,20 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // |channel| describes the release channel of the browser.
   // |seed_file_dir| is the file path to the seed file directory. If empty, the
   // seed is not stored in a separate seed file, only in |local_state_|.
+  // |entropy_providers| used to provide entropy when setting up the seed file
+  // field trial. If null, the client will not participate in the experiment.
   // |use_first_run_prefs|, if true (default), facilitates modifying Java
   // SharedPreferences ("first run prefs") on Android. If false,
   // SharedPreferences are not accessed.
-  VariationsSeedStore(PrefService* local_state,
-                      std::unique_ptr<SeedResponse> initial_seed,
-                      bool signature_verification_enabled,
-                      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
-                      version_info::Channel channel,
-                      const base::FilePath& seed_file_dir,
-                      bool use_first_run_prefs = true);
+  VariationsSeedStore(
+      PrefService* local_state,
+      std::unique_ptr<SeedResponse> initial_seed,
+      bool signature_verification_enabled,
+      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
+      version_info::Channel channel,
+      const base::FilePath& seed_file_dir,
+      const variations::EntropyProviders* entropy_providers = nullptr,
+      bool use_first_run_prefs = true);
 
   VariationsSeedStore(const VariationsSeedStore&) = delete;
   VariationsSeedStore& operator=(const VariationsSeedStore&) = delete;

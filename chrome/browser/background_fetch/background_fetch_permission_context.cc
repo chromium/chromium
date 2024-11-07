@@ -42,7 +42,7 @@ ContentSetting BackgroundFetchPermissionContext::GetPermissionStatusInternal(
         return CONTENT_SETTING_BLOCK;
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // |render_frame_host| is either a nullptr, which means we're being called
@@ -75,7 +75,7 @@ void BackgroundFetchPermissionContext::DecidePermission(
   // from BackgroundFetchPermissionContext.
   // BackgroundFetchDelegateImpl invokes CanDownload() on DownloadRequestLimiter
   // to prompt the user.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BackgroundFetchPermissionContext::NotifyPermissionSet(

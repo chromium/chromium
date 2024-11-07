@@ -244,7 +244,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
 
   if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(updateMutatorDarkMode)];
   }
 }

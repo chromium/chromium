@@ -96,7 +96,9 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false);
+      /*add_entropy_source_to_variations_ids=*/false,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false));
 
   if (used_seed) {
     if (seed_type == SeedType::kRegularSeed) {
@@ -257,8 +259,7 @@ std::unique_ptr<CrOSVariationsFieldTrialCreator> GetFieldTrialCreator(
     safe_seed = std::make_unique<EarlyBootSafeSeed>(safe_seed_details.value());
   } else {
     safe_seed = std::make_unique<VariationsSafeSeedStoreLocalState>(
-        local_state, client->GetChannelForVariations(),
-        client->GetVariationsSeedFileDir());
+        local_state, client->GetVariationsSeedFileDir());
   }
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,

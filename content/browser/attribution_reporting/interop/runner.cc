@@ -467,6 +467,11 @@ RunAttributionInteropSimulation(
         attribution_reporting::features::kAttributionScopes);
   }
 
+  if (run.config.needs_aggregatable_named_budgets) {
+    enabled_features.emplace_back(
+        attribution_reporting::features::kAttributionAggregatableNamedBudgets);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       enabled_features,

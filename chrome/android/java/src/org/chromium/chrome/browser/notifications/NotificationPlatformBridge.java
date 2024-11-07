@@ -39,7 +39,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -137,8 +136,6 @@ public class NotificationPlatformBridge {
     // the `PRE_UNSUBSCRIBE` intent was started. Used to measure the time, as perceived by the user,
     // that elapses until we see a duplicate intent being dispatched.
     private static long sLastPreUnsubscribePreNativeTaskStartRealMillis = -1;
-
-    private TrustedWebActivityClient mTwaClient;
 
     /** Encapsulates attributes that identify a notification and where it originates from. */
     private static class NotificationIdentifyingAttributes {
@@ -1545,10 +1542,7 @@ public class NotificationPlatformBridge {
     }
 
     private TrustedWebActivityClient getTwaClient() {
-        if (mTwaClient == null) {
-            mTwaClient = ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
-        }
-        return mTwaClient;
+        return TrustedWebActivityClient.getInstance();
     }
 
     private static void reportTrampolineTrackerJobCompleted(Intent intent) {

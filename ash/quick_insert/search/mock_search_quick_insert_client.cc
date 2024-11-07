@@ -12,7 +12,7 @@ namespace ash {
 using ::testing::Invoke;
 using ::testing::SaveArg;
 
-MockSearchPickerClient::MockSearchPickerClient() {
+MockSearchQuickInsertClient::MockSearchQuickInsertClient() {
   ON_CALL(*this, StartCrosSearch)
       .WillByDefault(SaveArg<2>(&cros_search_callback_));
   ON_CALL(*this, GetSharedURLLoaderFactory).WillByDefault([]() {
@@ -26,10 +26,10 @@ MockSearchPickerClient::MockSearchPickerClient() {
   });
 }
 
-MockSearchPickerClient::~MockSearchPickerClient() {}
+MockSearchQuickInsertClient::~MockSearchQuickInsertClient() {}
 
-MockSearchPickerClient::CrosSearchResultsCallback&
-MockSearchPickerClient::cros_search_callback() {
+MockSearchQuickInsertClient::CrosSearchResultsCallback&
+MockSearchQuickInsertClient::cros_search_callback() {
   return cros_search_callback_;
 }
 

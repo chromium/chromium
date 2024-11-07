@@ -671,6 +671,9 @@
       <message name="IDS_ACCESSIBILITY_TOOLBAR_VIEW_SITE_INFO" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to view site information'.">
         View site information
       </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_EXIT_HUB_SEARCH" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to exit hub search'.">
+        Exit hub search
+      </message>
 
       <!-- Media Capture and Streams -->
       <message name="IDS_VIDEO_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a WebRTC video call is in progress.">

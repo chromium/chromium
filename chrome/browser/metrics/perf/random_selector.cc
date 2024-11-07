@@ -56,8 +56,7 @@ const std::string& RandomSelector::GetValueFor(double random) {
     if (random < current)
       return odd.value;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid value for key: " << random;
-  return base::EmptyString();
+  NOTREACHED() << "Invalid value for key: " << random;
 }
 
 // Print the value. Used for friendly test failure messages.

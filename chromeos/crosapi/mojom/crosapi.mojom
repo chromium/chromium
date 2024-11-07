@@ -1515,8 +1515,7 @@ struct BrowserInitParams {
   [MinVersion=64]
   bool REMOVED_64@64;
 
-  // If true, the DriveFsBulkPinning flag and it's accompanying feature
-  // management flag has been enabled.
+  // If true, the DriveFsBulkPinning feature management flag has been enabled.
   [MinVersion=65, RenamedFrom="is_drivefs_bulk_pinning_enabled"]
   bool is_drivefs_bulk_pinning_available@65;
 
@@ -1575,6 +1574,7 @@ struct BrowserInitParams {
   [MinVersion=76]
   uint64 limited_entropy_synthetic_trial_seed@76;
 
+  // Deprecated.
   // If true, captive portal signin windows are opened as a popup window.
   [MinVersion=77]
   bool is_captive_portal_popup_window_enabled@77;

@@ -196,10 +196,7 @@ unsigned int MockXRDeviceHookBase::ConnectController(
     }
   }
   // We shouldn't be running out of slots during a test.
-  NOTREACHED_IN_MIGRATION();
-  // NOTREACHED should make it unnecessary to return here (as it does elsewhere
-  // in the code), but compilation fails if this is not present.
-  return device::kMaxTrackedDevices;
+  NOTREACHED();
 }
 
 void MockXRDeviceHookBase::TerminateDeviceServiceProcessForTesting() {

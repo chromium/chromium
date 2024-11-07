@@ -237,9 +237,9 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
   // the storage type of frames produced by CreateFrame().
   CHECK_EQ(origin_frame->storage_type(), GetFrameStorageType());
 
-  auto it = buffer_id_to_video_frame_id_.emplace(
-      origin_frame->GetSharedMemoryId(), video_frame->id);
-  DCHECK(it.second);
+  auto res = frame_token_to_video_frame_id_.emplace(
+      origin_frame->tracking_token(), video_frame->id);
+  CHECK(res.second);
 
   // Wrap the video frame and attach a destruction observer so we're notified
   // when all references to the frame have been dropped.
@@ -416,9 +416,12 @@ std::optional<int32_t> GpuArcVideoFramePool::GetVideoFrameId(
     return std::nullopt;
   }
 
-  auto it =
-      buffer_id_to_video_frame_id_.find(media::GetSharedMemoryId(*video_frame));
-  return it != buffer_id_to_video_frame_id_.end()
+  CHECK(video_frame->metadata().tracking_token.has_value());
+  CHECK(!video_frame->metadata().tracking_token->is_empty());
+
+  auto it = frame_token_to_video_frame_id_.find(
+      *video_frame->metadata().tracking_token);
+  return it != frame_token_to_video_frame_id_.end()
              ? std::optional<int32_t>(it->second)
              : std::nullopt;
 }
@@ -432,10 +435,11 @@ void GpuArcVideoFramePool::OnFrameReleased(
     return;
   }
 
-  auto it =
-      buffer_id_to_video_frame_id_.find(origin_frame->GetSharedMemoryId());
-  DCHECK(it != buffer_id_to_video_frame_id_.end());
-  buffer_id_to_video_frame_id_.erase(it);
+  auto it = frame_token_to_video_frame_id_.find(origin_frame->tracking_token());
+  DCHECK(it != frame_token_to_video_frame_id_.end());
+  frame_token_to_video_frame_id_.erase(it);
+
+  frame_tracking_token_helper_.ClearToken(origin_frame->tracking_token());
 }
 
 gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
@@ -499,7 +503,7 @@ gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
 
 scoped_refptr<media::FrameResource> GpuArcVideoFramePool::CreateFrame(
     gfx::GpuMemoryBufferHandle gmb_handle,
-    media::VideoPixelFormat pixel_format) const {
+    media::VideoPixelFormat pixel_format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!has_error_);
 
@@ -507,12 +511,18 @@ scoped_refptr<media::FrameResource> GpuArcVideoFramePool::CreateFrame(
   CHECK(buffer_format);
   // Usage is SCANOUT_CPU_READ_WRITE because we may need to map the buffer in
   // order to use the LibYUVImageProcessorBackend.
-  return media::NativePixmapFrameResource::Create(
-      gfx::Rect(coded_size_), coded_size_, base::TimeDelta(),
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-      base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-          coded_size_, *buffer_format,
-          std::move(gmb_handle.native_pixmap_handle)));
+  scoped_refptr<media::FrameResource> frame =
+      media::NativePixmapFrameResource::Create(
+          gfx::Rect(coded_size_), coded_size_, base::TimeDelta(),
+          gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+          base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
+              coded_size_, *buffer_format,
+              std::move(gmb_handle.native_pixmap_handle)));
+
+  // Ensures that the tracking token is unique for frames in the frame pool.
+  frame_tracking_token_helper_.SetUniqueTrackingToken(frame->metadata());
+
+  return frame;
 }
 
 void GpuArcVideoFramePool::Stop() {

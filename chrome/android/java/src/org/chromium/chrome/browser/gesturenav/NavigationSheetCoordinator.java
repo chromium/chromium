@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -345,8 +346,8 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.overscroll_navigation_sheet_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.overscroll_navigation_sheet_description);
     }
 
     @Override

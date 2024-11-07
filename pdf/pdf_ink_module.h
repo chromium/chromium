@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_brush.h"
-#include "pdf/pdf_ink_stroke_id.h"
+#include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"

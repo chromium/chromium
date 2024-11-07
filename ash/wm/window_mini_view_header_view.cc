@@ -105,21 +105,29 @@ void WindowMiniViewHeaderView::UpdateTitleLabel(aura::Window* window) {
 }
 
 void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
-  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
+  const int default_corner_radius =
+      window_util::GetMiniWindowRoundedCornerRadius();
+  const gfx::RoundedCornersF new_rounded_corners =
+      custom_header_view_rounded_corners_.value_or(gfx::RoundedCornersF(
+          default_corner_radius, default_corner_radius, 0, 0));
+  if (current_header_view_rounded_corners_ &&
+      *current_header_view_rounded_corners_ == new_rounded_corners) {
+    DCHECK(GetBackground());
+    return;
+  }
+  current_header_view_rounded_corners_ = new_rounded_corners;
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysHeader,
-      header_view_rounded_corners_.value_or(
-          gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0))));
+      cros_tokens::kCrosSysHeader, new_rounded_corners));
 }
 
 void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(
     gfx::RoundedCornersF& header_view_rounded_corners) {
-  header_view_rounded_corners_ = header_view_rounded_corners;
+  custom_header_view_rounded_corners_ = header_view_rounded_corners;
   RefreshHeaderViewRoundedCorners();
 }
 
 void WindowMiniViewHeaderView::ResetRoundedCorners() {
-  header_view_rounded_corners_.reset();
+  custom_header_view_rounded_corners_.reset();
   RefreshHeaderViewRoundedCorners();
 }
 

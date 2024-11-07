@@ -32,11 +32,6 @@ BASE_FEATURE(kBluetoothWifiQSPodRefresh,
              "BluetoothWifiQSPodRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables show captive portal signin in a specially flagged popup window.
-BASE_FEATURE(kCaptivePortalPopupWindow,
-             "CaptivePortalPopupWindow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables updated UI for the clipboard history menu and new system behavior
 // related to clipboard history.
 BASE_FEATURE(kClipboardHistoryRefresh,
@@ -368,15 +363,6 @@ bool IsBatteryBadgeIconEnabled() {
 
 bool IsBluetoothWifiQSPodRefreshEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
-}
-
-bool IsCaptivePortalPopupWindowEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsCaptivePortalPopupWindowEnabled();
-#else
-  return base::FeatureList::IsEnabled(kCaptivePortalPopupWindow);
-#endif
 }
 
 bool IsClipboardHistoryRefreshEnabled() {

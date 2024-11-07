@@ -24,6 +24,7 @@ const char kOnEventKey[] = "onEvent";
 const char kPitchKey[] = "pitch";
 const char kRateKey[] = "rate";
 const char kRemoteKey[] = "remote";
+const char kUninstallImmediatelyKey[] = "uninstallImmediately";
 const char kRequiredEventTypesKey[] = "requiredEventTypes";
 const char kSourceKey[] = "source";
 const char kSrcIdKey[] = "srcId";

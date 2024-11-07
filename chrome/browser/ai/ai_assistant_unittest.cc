@@ -175,10 +175,35 @@ class AIAssistantTest : public AITestUtils::AITestBase {
 
     // Set up mock service.
     SetupMockOptimizationGuideKeyedService();
-    EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-        // It will run twice, the first time for the session creation, and the
-        // second time for the session cloning.
-        .Times(2)
+    // When the sampling param is not specified, `StartSession()` will run three
+    // times:
+    // 1. when getting the default sampling params.
+    // 2. when creating the session.
+    // 3. when cloning the session.
+    // Other wise, it will run twice as the first one is unnecessary.
+    auto& expectation =
+        EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+            .Times(sampling_params_copy ? 2 : 3);
+    if (!sampling_params_copy) {
+      expectation.WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            auto session = std::make_unique<
+                testing::NiceMock<optimization_guide::MockSession>>();
+            SetUpMockSession(*session, options.use_prompt_api_proto);
+            ON_CALL(*session, GetSamplingParams())
+                .WillByDefault(
+                    [&]() -> const optimization_guide::SamplingParams {
+                      return optimization_guide::SamplingParams{
+                          .top_k = kDefaultTopK,
+                          .temperature = kDefaultTemperature};
+                    });
+
+            return session;
+          });
+    }
+    expectation
         .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
                       const std::optional<
                           optimization_guide::SessionConfigParams>&

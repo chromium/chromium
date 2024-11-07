@@ -213,6 +213,7 @@ using net::CreateTestURLRequestContextBuilder;
 using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::Key;
@@ -10678,14 +10679,81 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, Retry) {
   EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
 }
 
-TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       RetryThen1pRedirect) {
+struct StorageAccessRedirectData {
+  std::string redirect_dest_host;
+  std::vector<std::string> expected_storage_access_header_sequence;
+  std::vector<std::string> expected_cookie_header_sequence;
+};
+
+class StorageAccessHeaderRedirectNetworkContextTest
+    : public StorageAccessHeaderNetworkContextTest,
+      public testing::WithParamInterface<StorageAccessRedirectData> {
+ public:
+  StorageAccessHeaderRedirectNetworkContextTest() {
+    features_.InitAndEnableFeature(network::features::kStorageAccessHeaders);
+  }
+
+  std::string redirect_dest_host() const {
+    return GetParam().redirect_dest_host;
+  }
+
+  std::vector<testing::Matcher<net::test_server::HttpRequest::HeaderMap>>
+  ExpectedStorageAccessHeaderSequence() const {
+    std::vector<testing::Matcher<net::test_server::HttpRequest::HeaderMap>>
+        matchers;
+    for (const auto& value :
+         GetParam().expected_storage_access_header_sequence) {
+      matchers.emplace_back(Contains(Pair(kSecFetchStorageAccess, value)));
+    }
+    return matchers;
+  }
+
+  std::vector<std::string> expected_cookie_header_sequence() const {
+    return GetParam().expected_cookie_header_sequence;
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         StorageAccessHeaderRedirectNetworkContextTest,
+                         testing::ValuesIn({
+                             // Redirect to the top-level site
+                             StorageAccessRedirectData{
+                                 "b.test",
+                                 {"inactive", "active", "inactive"},
+                                 {"None", "3PCookie=1", "None"},
+                             },
+                             // Redirect to a different 3P
+                             StorageAccessRedirectData{
+                                 "c.test",
+                                 {"inactive", "active", "none"},
+                                 {"None", "3PCookie=1", "None"},
+                             },
+                             // Same-origin redirect
+                             StorageAccessRedirectData{
+                                 "a.test",
+                                 {"inactive", "active", "active"},
+                                 {"None", "3PCookie=1", "3PCookie=1"},
+                             },
+                             // Same-site, cross-origin redirect
+                             StorageAccessRedirectData{
+                                 "sub.a.test",
+                                 {"inactive", "active", "inactive"},
+                                 {"None", "3PCookie=1", "None"},
+                             },
+                         }));
+
+// Issues a cross-site request to "a.test" (with a top-level site of "b.test"),
+// which redirects to somewhere else after going through the "retry" flow.
+TEST_P(StorageAccessHeaderRedirectNetworkContextTest, RetryThenRedirect) {
   set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kRedirect});
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   GURL::Replacements replacements;
   const GURL redirect_dest =
-      test_server_.GetURL("b.test", "/echoheader?cookie");
+      test_server_.GetURL(redirect_dest_host(), "/echoheader?cookie");
   replacements.SetQueryStr(redirect_dest.spec());
   const GURL request_url =
       test_server_.GetURL("a.test", kStorageAccessRetryPath)
@@ -10694,11 +10762,6 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  if (is_origin_trial_test()) {
-    SeedStorageAccessHeaderOriginTrialToken(request_url, top_level_url,
-                                            network_context.get());
-  }
 
   ASSERT_TRUE(
       SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
@@ -10744,84 +10807,10 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
 
   client.RunUntilComplete();
 
-  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1", "None"));
+  EXPECT_THAT(cookie_headers(),
+              ElementsAreArray(expected_cookie_header_sequence()));
   EXPECT_THAT(most_recent_request_headers(),
-              ElementsAre(Contains(Pair(kSecFetchStorageAccess, "inactive")),
-                          Contains(Pair(kSecFetchStorageAccess, "active")),
-                          Contains(Pair(kSecFetchStorageAccess, "inactive"))));
-}
-
-TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
-       RetryThen3pRedirect) {
-  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kRedirect});
-  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
-
-  GURL::Replacements replacements;
-  const GURL redirect_dest =
-      test_server_.GetURL("c.test", "/echoheader?cookie");
-  replacements.SetQueryStr(redirect_dest.spec());
-  const GURL request_url =
-      test_server_.GetURL("a.test", kStorageAccessRetryPath)
-          .ReplaceComponents(replacements);
-  const GURL top_level_url = test_server_.GetURL("b.test", "/");
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  if (is_origin_trial_test()) {
-    SeedStorageAccessHeaderOriginTrialToken(request_url, top_level_url,
-                                            network_context.get());
-  }
-
-  ASSERT_TRUE(
-      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
-  ASSERT_TRUE(SetCookieHelper(network_context.get(), redirect_dest,
-                              "Other3PCookie", "1"));
-
-  network_context->cookie_manager()->BlockThirdPartyCookies(true);
-  SetContentSettings(
-      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
-      {
-          {
-              ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                  request_url),
-              ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                  top_level_url),
-              CONTENT_SETTING_ALLOW,
-          },
-      });
-
-  ResourceRequest request;
-  request.url = request_url;
-  auto params = mojom::URLLoaderFactoryParams::New();
-  params->is_trusted = true;
-  params->process_id = mojom::kBrowserProcessId;
-  params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther,
-      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
-      request.site_for_cookies);
-
-  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
-  network_context->CreateURLLoaderFactory(
-      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
-
-  TestURLLoaderClient client;
-  mojo::Remote<mojom::URLLoader> loader;
-  loader_factory->CreateLoaderAndStart(
-      loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
-      mojom::kURLLoadOptionNone, request, client.CreateRemote(),
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-  client.RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, {});
-
-  client.RunUntilComplete();
-
-  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1", "None"));
-  EXPECT_THAT(most_recent_request_headers(),
-              ElementsAre(Contains(Pair(kSecFetchStorageAccess, "inactive")),
-                          Contains(Pair(kSecFetchStorageAccess, "active")),
-                          Contains(Pair(kSecFetchStorageAccess, "none"))));
+              ElementsAreArray(ExpectedStorageAccessHeaderSequence()));
 }
 
 // Regression test for https://crbug.com/352722603.

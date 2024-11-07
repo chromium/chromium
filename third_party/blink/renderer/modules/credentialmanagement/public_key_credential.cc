@@ -78,6 +78,32 @@ void OnGetClientCapabilitiesComplete(
   results.emplace_back(kSignalCurrentUserDetails, report_enabled);
   results.emplace_back(kSignalUnknownCredential, report_enabled);
 
+  // Extensions are added from the AuthenticationExtensionsClientInputs
+  // dictionary defined in authentication_extensions_client_inputs.idl.
+  // According to the specification, we should include a key for each
+  // extension implemented by the client, formed by prefixing "extension:"
+  // to the extension identifier.
+  //
+  // Excluded extensions: cableAuthentication, uvm, remoteDesktopClientOverride,
+  // and supplementalPubKeys.
+  results.emplace_back("extension:appid", true);
+  results.emplace_back("extension:appidExclude", true);
+  results.emplace_back("extension:hmacCreateSecret", true);
+  results.emplace_back("extension:credentialProtectionPolicy", true);
+  results.emplace_back("extension:enforceCredentialProtectionPolicy", true);
+  results.emplace_back("extension:minPinLength", true);
+  results.emplace_back("extension:credProps", true);
+  results.emplace_back(
+      "extension:largeBlob",
+      RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
+  results.emplace_back("extension:credBlob", true);
+  results.emplace_back("extension:getCredBlob", true);
+  results.emplace_back(
+      "extension:payment",
+      RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled());
+  results.emplace_back("extension:prf",
+                       RuntimeEnabledFeatures::WebAuthenticationPRFEnabled());
+
   // Results should be sorted lexicographically based on the keys.
   std::sort(
       results.begin(), results.end(),

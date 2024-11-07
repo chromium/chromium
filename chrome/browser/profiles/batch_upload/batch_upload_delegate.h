@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "components/sync/service/local_data_description.h"
 
 class Browser;
@@ -25,6 +26,7 @@ class BatchUploadDelegate {
   virtual void ShowBatchUploadDialog(
       Browser* browser,
       std::vector<syncer::LocalDataDescription> local_data_descriptions_list,
+      BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback) = 0;
 };
 

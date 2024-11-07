@@ -105,11 +105,12 @@ class TestAutofillDriverTemplate : public T {
 
   // The return value contains the FieldGlobalIds of all elements (field_id,
   // type) of `field_type_map` for which
-  // `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
+  // `field_type_map_filter_.Run(triggered_origin, field, type)` is true and for
+  // which there's a corresponding field in `fields`.
   base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
-      base::span<const FormFieldData> form_data,
+      base::span<const FormFieldData> fields,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override {
     if (action_type == mojom::FormActionType::kUndo) {
@@ -117,8 +118,9 @@ class TestAutofillDriverTemplate : public T {
     }
     std::vector<FieldGlobalId> result;
     for (const auto& [id, type] : field_type_map) {
-      if (!field_type_map_filter_ ||
-          field_type_map_filter_.Run(triggered_origin, id, type)) {
+      if ((!field_type_map_filter_ ||
+           field_type_map_filter_.Run(triggered_origin, id, type)) &&
+          base::Contains(fields, id, &FormFieldData::global_id)) {
         result.push_back(id);
       }
     }

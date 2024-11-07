@@ -108,8 +108,7 @@ bool OnTaskExtensionsManagerImpl::CanEnableExtension(
   CHECK(extension);
   const ManagementPolicy* const policy =
       ExtensionSystem::Get(profile_)->management_policy();
-  return !policy->MustRemainDisabled(extension, /*reason=*/nullptr,
-                                     /*error=*/nullptr);
+  return !policy->MustRemainDisabled(extension, /*reason=*/nullptr);
 }
 
 void OnTaskExtensionsManagerImpl::SaveDisabledExtensionIds(

@@ -29,12 +29,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -128,7 +128,7 @@ public class HubToolbarMediator {
 
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
 
-        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             mPropertyModel.set(SEARCH_LISTENER, this::onSearchClicked);
             // Fire an event for the original setup.
             mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
@@ -145,7 +145,7 @@ public class HubToolbarMediator {
         mRemoveReferenceButtonObservers.stream().forEach(r -> r.run());
         mRemoveReferenceButtonObservers.clear();
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChange);
-        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
     }

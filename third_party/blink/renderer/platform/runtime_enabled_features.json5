@@ -464,7 +464,7 @@
     // Killswitch activated for crbug.com/365405756; need to re-enable this.
     {
       name: "AuraScrollbarUsesNinePatchTrack",
-      status: "test",
+      status: "stable",
     },
     // Killswitch. Remove after 1 or 2 stable releases.
     {
@@ -753,7 +753,7 @@
     },
     {
       name: "ClipboardItemWithDOMStringSupport",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "ClipPathRejectEmptyPaths",
@@ -2050,33 +2050,6 @@
       status: "stable",
     },
     {
-      name: "FledgeFeatureDetectAll",
-      // FledgeFeatureDetectAll should be enabled by any feature-detectable
-      // experiment that enters trials after it got created; this makes it easy
-      // to polyfill by only checking older things, and makes it serve its
-      // purpose of modularly advertising new things.
-      implied_by: ["FledgeAuctionDealSupport",
-                   "FledgePermitCrossOriginTrustedSignals",
-                   "FledgeRealTimeReporting",
-                   "FledgeSellerNonce",
-                   "FledgeTrustedSignalsKVv2Support"],
-      base_feature: "none",
-    },
-    {
-      name: "FledgeFeatureDetection",
-      // FledgeFeatureDetection should be on if any of the features it aims
-      // to help detect is on.
-      implied_by: ["FledgeAuctionDealSupport",
-                   "FledgeCustomMaxAuctionAdComponents",
-                   "FledgeDeprecatedRenderURLReplacements",
-                   "FledgePermitCrossOriginTrustedSignals",
-                   "FledgeRealTimeReporting",
-                   "FledgeReportingTimeout",
-                   "FledgeSellerNonce",
-                   "FledgeTrustedSignalsKVv2Support"],
-      base_feature: "none",
-    },
-    {
       name: "FledgeMultiBid",
       public: true,
       status: "stable",
@@ -2538,13 +2511,6 @@
       status: "stable",
     },
     {
-      // This feature makes HTMLLabelElement::DefaultEventHandler always call
-      // HTMLElement::DefaultEventHandler instead of only doing so
-      // conditionally. Shipping in M123 so should be safe to remove in M127.
-      name: "LabelEventHandlerCallSuper",
-      status: "stable",
-    },
-    {
       name: "LangAttributeAwareFormControlUI",
       settable_from_internals: true,
     },
@@ -2841,6 +2807,10 @@
     {
       name: "MoveToParagraphStartOrEndSkipsNonEditable",
       status: "stable",
+    },
+    {
+      name: "MultipleImportMaps",
+      status: "experimental",
     },
     {
       name: "MultiSelectDeselectWhenOnlyOption",
@@ -3264,7 +3234,7 @@
       name: "PermissionElement",
       origin_trial_feature_name: "PermissionElement",
       origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
-      status: "experimental",
+      status: {"Android": "", "default": "experimental"},
       public: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
@@ -3819,6 +3789,14 @@
       // https://chromestatus.com/feature/5164535504437248
       name: "SelectAudioOutput",
       status: "test",
+    },
+    {
+      // The selectedoptionelement attribute is for connecting select elements
+      // to arbitrary <selectedoption> elements.
+      // https://github.com/openui/open-ui/issues/1063
+      name: "SelectedoptionelementAttribute",
+      status: "experimental",
+      depends_on: ["CustomizableSelect"],
     },
     {
       // Implement Selection API across shadow DOM

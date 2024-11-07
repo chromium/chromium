@@ -72,7 +72,7 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
     }
 
     if (@available(iOS 17, *)) {
-      [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
+      [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                          withAction:@selector(updateViews)];
     }
   }

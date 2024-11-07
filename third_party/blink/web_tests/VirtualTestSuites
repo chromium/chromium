@@ -1205,7 +1205,9 @@
   {
     "prefix": "port-bound-cookies",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases":[ "http/tests/inspector-protocol/issues/port-mismatch-exclusion.js" ],
+    "bases":[
+      "http/tests/inspector-protocol/issues/port-mismatch-exclusion.js",
+      "http/tests/inspector-protocol/network/blocked-cookie-port-mismatch.js"],
     "expires": "Mar 1, 2025",
     "exclusive_tests": "ALL",
     "args": [ "--enable-features=EnablePortBoundCookies"],
@@ -1215,7 +1217,9 @@
   {
     "prefix": "scheme-bound-cookies",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases":[ "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js" ],
+    "bases":[
+      "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js",
+      "http/tests/inspector-protocol/network/blocked-cookie-scheme-mismatch.js"],
     "expires": "Mar 1, 2025",
     "exclusive_tests": "ALL",
     "args": [ "--enable-features=EnableSchemeBoundCookies"],
@@ -4028,6 +4032,15 @@
     "args": ["--js-flags=--js-float16array"],
     "owners": ["syg@chromium.org"],
     "expires": "Jan 1, 2025"
+  },
+  {
+    "prefix": "single-import-map",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/import-maps",
+              "wpt_internal/import-maps"],
+    "args": ["--disable-blink-features=MultipleImportMaps"],
+    "owners": ["yoavweiss@chromium.org"],
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "at-property-string-syntax",

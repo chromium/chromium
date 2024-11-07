@@ -16133,10 +16133,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ThirdPartyCookieBlockingEnabledForSite" enum="Boolean">
     <owner>dullweber@chromium.org</owner>
-    <owner>huanzhong@chromium.org</owner>
     <summary>
       Records whether third party cookie blocking was enabled for a site. Only
-      recorded for users who enabled the cookie controls ui.
+      recorded when third party cookies are bocked in general.
     </summary>
     <aggregation>
       <history>

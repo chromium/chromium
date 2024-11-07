@@ -11,10 +11,18 @@
 
 :host {
   --menu-item-margin: 12px;
-  background-color: var(--color-new-tab-page-module-item-background);
+  background-color: var(--color-new-tab-page-module-background);
   border-radius: var(--ntp-module-item-border-radius);
   display: flex;
   flex-direction: column;
+  margin: 8px;
+}
+
+@media (forced-colors: active) {
+  :host {
+      /* Set outline since background isn't visible in hcm */
+    outline: var(--cr-border-hcm);
+   }
 }
 
 #titleContainer {

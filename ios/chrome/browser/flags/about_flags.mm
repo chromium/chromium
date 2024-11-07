@@ -1072,11 +1072,15 @@ const FeatureEntry::FeatureParam
     kSendTabIOSPushNotificationsWithMagicStackCard[] = {
         {send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
          "true"}};
+const FeatureEntry::FeatureParam kSendTabIOSPushNotificationsWithURLImage[] = {
+    {send_tab_to_self::kSendTabIOSPushNotificationsURLImageParam, "true"}};
 const FeatureEntry::FeatureVariation kSendTabIOSPushNotificationsVariations[] =
     {
         {"With Magic Stack Card",
          kSendTabIOSPushNotificationsWithMagicStackCard,
          std::size(kSendTabIOSPushNotificationsWithMagicStackCard), nullptr},
+        {"With URL Image", kSendTabIOSPushNotificationsWithURLImage,
+         std::size(kSendTabIOSPushNotificationsWithURLImage), nullptr},
 };
 
 const FeatureEntry::FeatureParam kSegmentedDefaultBrowserStatic[] = {
@@ -1127,6 +1131,81 @@ const FeatureEntry::FeatureVariation
          kIOSStartTimeStartupRemediationsSaveNTPWebStateArm,
          std::size(kIOSStartTimeStartupRemediationsSaveNTPWebStateArm),
          nullptr}};
+
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kAutofillThrottleDocFormScanShortPeriodParam[] = {{"period-ms", "250"}};
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kAutofillThrottleDocFormScanMediumPeriodParam[] = {{"period-ms", "500"}};
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kAutofillThrottleDocFormScanLongPeriodParam[] = {{"period-ms", "1000"}};
+constexpr flags_ui::FeatureEntry::FeatureVariation
+    kAutofillThrottleDocFormScanVariations[] = {
+        {"Short period", kAutofillThrottleDocFormScanShortPeriodParam,
+         std::size(kAutofillThrottleDocFormScanShortPeriodParam), nullptr},
+        {"Medium period", kAutofillThrottleDocFormScanMediumPeriodParam,
+         std::size(kAutofillThrottleDocFormScanMediumPeriodParam), nullptr},
+        {"Long period", kAutofillThrottleDocFormScanLongPeriodParam,
+         std::size(kAutofillThrottleDocFormScanLongPeriodParam), nullptr}};
+
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kAutofillThrottleFilteredDocFormScanShortPeriodParam[] = {
+        {"period-ms", "100"}};
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kAutofillThrottleFilteredDocFormScanMediumPeriodParam[] = {
+        {"period-ms", "250"}};
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kAutofillThrottleFilteredDocFormScanLongPeriodParam[] = {
+        {"period-ms", "500"}};
+constexpr flags_ui::FeatureEntry::FeatureVariation
+    kAutofillThrottleFilteredDocFormScanVariations[] = {
+        {"Short period", kAutofillThrottleFilteredDocFormScanShortPeriodParam,
+         std::size(kAutofillThrottleFilteredDocFormScanShortPeriodParam),
+         nullptr},
+        {"Medium period", kAutofillThrottleFilteredDocFormScanMediumPeriodParam,
+         std::size(kAutofillThrottleFilteredDocFormScanMediumPeriodParam),
+         nullptr},
+        {"Long period", kAutofillThrottleFilteredDocFormScanLongPeriodParam,
+         std::size(kAutofillThrottleFilteredDocFormScanLongPeriodParam),
+         nullptr}};
+
+const FeatureEntry::FeatureParam kNewFeedPositioningArm2[] = {
+    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
+    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
+    {kNewFeedPositioningHomestackOnForAll, "true"},
+};
+
+const FeatureEntry::FeatureParam kNewFeedPositioningArm3[] = {
+    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
+    {kNewFeedPositioningHomestackOnForAll, "true"},
+};
+
+const FeatureEntry::FeatureParam kNewFeedPositioningArm4[] = {
+    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
+    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
+    {kNewFeedPositioningHomestackOnForAll, "false"},
+};
+
+const FeatureEntry::FeatureParam kNewFeedPositioningArm5[] = {
+    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
+    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
+    {kNewFeedPositioningHomestackOnForAll, "false"},
+};
+
+const FeatureEntry::FeatureVariation kNewFeedPositioningVariations[] = {
+    {"Enabled - Treatment  2", kNewFeedPositioningArm2,
+     std::size(kNewFeedPositioningArm2), nullptr},
+    {"Enabled - Treatment  3", kNewFeedPositioningArm3,
+     std::size(kNewFeedPositioningArm3), nullptr},
+    {"Enabled - Treatment  4", kNewFeedPositioningArm4,
+     std::size(kNewFeedPositioningArm4), nullptr},
+    {"Enabled - Treatment  5", kNewFeedPositioningArm5,
+     std::size(kNewFeedPositioningArm5), nullptr},
+};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -2111,6 +2190,28 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSStartTimeStartupRemediations,
                                     kIOSStartTimeStartupRemediationsVariations,
                                     "IOSStartTimeStartupRemediations")},
+    {"autofill-throttle-doc-form-scans",
+     flag_descriptions::kAutofillThrottleDocumentFormScanName,
+     flag_descriptions::kAutofillThrottleDocumentFormScanDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAutofillThrottleDocumentFormScanIos,
+                                    kAutofillThrottleDocFormScanVariations,
+                                    "AutofillThrottleDocumentFormScan")},
+    {"autofill-throttle-filtered-doc-form-scan",
+     flag_descriptions::kAutofillThrottleFilteredDocumentFormScanName,
+     flag_descriptions::kAutofillThrottleFilteredDocumentFormScanDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kAutofillThrottleFilteredDocumentFormScanIos,
+         kAutofillThrottleFilteredDocFormScanVariations,
+         "AutofillThrottleFilteredDocumentFormScan")},
+    {"ios-new-feed-positioning",
+     flag_descriptions::kNewFeedPositioningExperimentName,
+     flag_descriptions::kNewFeedPositioningExperimentDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kNewFeedPositioning,
+                                    kNewFeedPositioningVariations,
+                                    "IOSNewFeedPositioningStudy")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

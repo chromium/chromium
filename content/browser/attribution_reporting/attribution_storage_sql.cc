@@ -2791,8 +2791,8 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
   if (named_budget_iter != source_named_budgets.end() &&
       !named_budget_iter->second.SubtractRemainingBudget(
           budget_required_value)) {
-    // TODO(crbug.com/369865063): Return `InsufficientNamedBudget()`.
-    return CreateReportResult::InsufficientBudget();
+    return CreateReportResult::InsufficientNamedBudget(
+        *budget_candidate, named_budget_iter->second.original_budget());
   }
 
   sql::Transaction transaction(&db_);

@@ -2221,7 +2221,7 @@ class SearchPreloadServingTestURLLoader
  private:
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
@@ -2232,12 +2232,12 @@ class SearchPreloadServingTestURLLoader
   }
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override { return; }
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
@@ -2282,14 +2282,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   SearchPrefetchURLLoader::RequestHandler prerender_serving_handler =
       CreatePrerenderRequestHandler(prerender_serving_request);
   if (!prerender_serving_handler) {
-    NOTREACHED_IN_MIGRATION()
-        << "prerender handler should not be an empty callback!";
+    NOTREACHED() << "prerender handler should not be an empty callback!";
   }
   SearchPrefetchURLLoader::RequestHandler prefetch_serving_handler =
       CreatePrefetchRequestHandler(prefetch_serving_request);
   if (!prefetch_serving_handler) {
-    NOTREACHED_IN_MIGRATION()
-        << "prefetch handler should not be an empty callback!";
+    NOTREACHED() << "prefetch handler should not be an empty callback!";
   }
   SearchPreloadServingTestURLLoader prefetch_serving_loader;
   SearchPreloadServingTestURLLoader prerender_serving_loader;

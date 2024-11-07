@@ -482,7 +482,7 @@ void LocalBinaryUploadService::DoLocalContentAnalysis(Request::Id id,
                                                mapping.size());
 #endif
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(

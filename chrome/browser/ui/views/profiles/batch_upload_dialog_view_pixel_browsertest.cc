@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/i18n/number_formatting.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -169,6 +170,7 @@ class BatchUploadDialogViewPixelTest
 
     BatchUploadDialogView::CreateBatchUploadDialogView(
         *browser(), fake_descriptions_,
+        BatchUploadService::EntryPoint::kPasswordManagerSettings,
         /*complete_callback*/ base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();

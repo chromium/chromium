@@ -65,18 +65,15 @@ public class TwaSplashController implements SplashDelegate {
 
     private final SplashController mSplashController;
     private final Activity mActivity;
-    private final SplashImageHolder mSplashImageCache;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @Inject
     public TwaSplashController(
             SplashController splashController,
             Activity activity,
-            SplashImageHolder splashImageCache,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mSplashController = splashController;
         mActivity = activity;
-        mSplashImageCache = splashImageCache;
         mIntentDataProvider = intentDataProvider;
 
         long splashHideAnimationDurationMs =
@@ -89,7 +86,7 @@ public class TwaSplashController implements SplashDelegate {
 
     @Override
     public View buildSplashView() {
-        Bitmap bitmap = mSplashImageCache.takeImage(mIntentDataProvider.getSession());
+        Bitmap bitmap = SplashImageHolder.getInstance().takeImage(mIntentDataProvider.getSession());
         if (bitmap == null) {
             return null;
         }

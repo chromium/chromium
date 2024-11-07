@@ -77,7 +77,7 @@ class CONTENT_EXPORT AttributionStorageSql {
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
-  static constexpr int kDeprecatedVersionNumber = 51;
+  static constexpr int kDeprecatedVersionNumber = 53;
 
   static_assert(kCompatibleVersionNumber <= kCurrentVersionNumber);
   static_assert(kDeprecatedVersionNumber < kCompatibleVersionNumber);

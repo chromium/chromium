@@ -1330,7 +1330,7 @@ class AutofillAgentTestCaret
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::kAutofillCaretExtraction};
+      features::kAutofillCaretExtraction};
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillAgentTest,

@@ -11,7 +11,6 @@ ci/Android FYI Release (Samsung S23)
 ci/Android Release (Nexus 5X)
 ci/Android Release (Pixel 2)
 ci/ChromeOS FYI Release (amd64-generic)
-ci/ChromeOS FYI Release Skylab (volteer)
 ci/GPU FYI Android arm Builder
 ci/GPU FYI Android arm64 Builder
 ci/GPU FYI Linux Builder

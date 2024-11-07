@@ -6,6 +6,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
+#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -13,8 +14,10 @@
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 
 namespace {
-// Currently, the following errors, which are used when a model may have been
-// installed but not yet loaded, are treated as waitable.
+
+// Currently, the following errors, which are used when a model is being
+// downloaded or have been installed but not yet loaded, are treated as
+// waitable.
 static constexpr auto kWaitableReasons =
     base::MakeFixedFlatSet<optimization_guide::OnDeviceModelEligibilityReason>({
         optimization_guide::OnDeviceModelEligibilityReason::
@@ -25,6 +28,7 @@ static constexpr auto kWaitableReasons =
             kLanguageDetectionModelNotAvailable,
         optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
     });
+
 }  // namespace
 
 CreateOnDeviceSessionTask::CreateOnDeviceSessionTask(
@@ -33,55 +37,66 @@ CreateOnDeviceSessionTask::CreateOnDeviceSessionTask(
     : browser_context_(browser_context), feature_(feature) {}
 
 CreateOnDeviceSessionTask::~CreateOnDeviceSessionTask() {
-  if (observing_availability_) {
-    OptimizationGuideKeyedService* service = GetOptimizationGuideService();
-    if (service) {
-      service->RemoveOnDeviceModelAvailabilityChangeObserver(feature_, this);
-    }
+  OptimizationGuideKeyedService* service = GetOptimizationGuideService();
+  if (service) {
+    service->RemoveOnDeviceModelAvailabilityChangeObserver(feature_, this);
   }
 }
 
-void CreateOnDeviceSessionTask::Run() {
+void CreateOnDeviceSessionTask::Finish(
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session) {
+  CHECK(state_ != State::kCancelled && state_ != State::kFinished);
+  SetState(State::kFinished);
+  OnFinish(std::move(session));
+}
+
+void CreateOnDeviceSessionTask::Start() {
+  CHECK(state_ == State::kNotStarted);
   OptimizationGuideKeyedService* service = GetOptimizationGuideService();
   if (!service) {
-    OnFinish(nullptr);
+    Finish(nullptr);
     return;
   }
 
   if (auto session = StartSession()) {
-    OnFinish(std::move(session));
+    Finish(std::move(session));
     return;
   }
   optimization_guide::OnDeviceModelEligibilityReason reason;
   bool can_create = service->CanCreateOnDeviceSession(feature_, &reason);
   CHECK(!can_create);
   if (!kWaitableReasons.contains(reason)) {
-    OnFinish(nullptr);
+    Finish(nullptr);
     return;
   }
-  observing_availability_ = true;
+  SetState(State::kPending);
   service->AddOnDeviceModelAvailabilityChangeObserver(feature_, this);
 }
 
 void CreateOnDeviceSessionTask::Cancel() {
-  CHECK(observing_availability_);
-  CHECK(deletion_callback_);
-  std::move(deletion_callback_).Run();
-}
-
-void CreateOnDeviceSessionTask::SetDeletionCallback(
-    base::OnceClosure deletion_callback) {
-  deletion_callback_ = std::move(deletion_callback);
+  SetState(State::kCancelled);
+  if (deletion_callback_) {
+    std::move(deletion_callback_).Run();
+  }
 }
 
 void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
     optimization_guide::ModelBasedCapabilityKey feature,
     optimization_guide::OnDeviceModelEligibilityReason reason) {
+  CHECK(state_ == State::kPending);
   if (kWaitableReasons.contains(reason)) {
     return;
   }
-  OnFinish(StartSession());
-  std::move(deletion_callback_).Run();
+  Finish(StartSession());
+  if (deletion_callback_) {
+    std::move(deletion_callback_).Run();
+  }
+}
+
+void CreateOnDeviceSessionTask::SetDeletionCallback(
+    base::OnceClosure deletion_callback) {
+  deletion_callback_ = std::move(deletion_callback);
 }
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
@@ -107,6 +122,38 @@ CreateOnDeviceSessionTask::GetOptimizationGuideService() {
       Profile::FromBrowserContext(browser_context_));
 }
 
+std::ostream& operator<<(std::ostream& os,
+                         CreateOnDeviceSessionTask::State state) {
+  switch (state) {
+    case CreateOnDeviceSessionTask::State::kCancelled:
+      os << "Cancelled";
+      break;
+    case CreateOnDeviceSessionTask::State::kFinished:
+      os << "Finished";
+      break;
+    case CreateOnDeviceSessionTask::State::kNotStarted:
+      os << "Not Started";
+      break;
+    case CreateOnDeviceSessionTask::State::kPending:
+      os << "Pending";
+      break;
+    default:
+      os << "<invalid value: " << static_cast<int>(state) << ">";
+  }
+  return os;
+}
+
+void CreateOnDeviceSessionTask::SetState(State state) {
+  static const base::NoDestructor<base::StateTransitions<State>> transitions(
+      base::StateTransitions<State>({
+          {State::kNotStarted, {State::kFinished, State::kPending}},
+          {State::kPending, {State::kFinished, State::kCancelled}},
+      }));
+
+  DCHECK_STATE_TRANSITION(transitions, state_, state);
+  state_ = state;
+}
+
 CreateAssistantOnDeviceSessionTask::CreateAssistantOnDeviceSessionTask(
     content::BrowserContext* browser_context,
     const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
@@ -118,18 +165,15 @@ CreateAssistantOnDeviceSessionTask::CreateAssistantOnDeviceSessionTask(
           browser_context,
           optimization_guide::ModelBasedCapabilityKey::kPromptApi),
       completion_callback_(std::move(completion_callback)) {
+  AIManagerKeyedService* service =
+      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(browser_context);
   if (sampling_params) {
     sampling_params_ = optimization_guide::SamplingParams{
-        .top_k = std::min(
-            sampling_params->top_k,
-            uint32_t(AIManagerKeyedService::GetAssistantModelMaxTopK())),
+        .top_k = std::min(sampling_params->top_k,
+                          service->GetAssistantModelMaxTopK()),
         .temperature = sampling_params->temperature};
   } else {
-    sampling_params_ = optimization_guide::SamplingParams{
-        .top_k = uint32_t(
-            optimization_guide::features::GetOnDeviceModelDefaultTopK()),
-        .temperature = float(
-            AIManagerKeyedService::GetAssistantModelDefaultTemperature())};
+    sampling_params_ = service->GetAssistantDefaultSamplingParams();
   }
 }
 

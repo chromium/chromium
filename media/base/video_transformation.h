@@ -41,6 +41,13 @@ struct MEDIA_EXPORT VideoTransformation {
   // and a horizontal flip is represented by the sine's having the same sign.
   VideoTransformation(const int32_t matrix[4]);
 
+  // Rotation is snapped to the nearest multiple of 90 degrees, rounding ties
+  // toward positive infinity.
+  VideoTransformation(double rotation, bool mirrored);
+
+  // The result of rotating and then mirroring `this` according to `delta`.
+  VideoTransformation add(VideoTransformation delta) const;
+
   // The video rotation value, in 90 degree steps.
   VideoRotation rotation;
 

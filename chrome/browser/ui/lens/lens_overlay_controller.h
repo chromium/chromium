@@ -37,6 +37,7 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/sessions/core/session_id.h"

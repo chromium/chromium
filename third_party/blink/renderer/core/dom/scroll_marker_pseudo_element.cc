@@ -54,10 +54,11 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
       } else if (is_click || is_enter_or_space) {
         ScrollMarkerPseudoElement* scroll_marker = this;
         scroll_marker_group_->SetSelected(*scroll_marker);
+        // parentElement is ::column for column scroll marker and
+        // ultimate originating element for regular scroll marker.
         mojom::blink::ScrollIntoViewParamsPtr params =
             scroll_into_view_util::CreateScrollIntoViewParams(
-                *scroll_marker->UltimateOriginatingElement()
-                     ->GetComputedStyle());
+                *scroll_marker->parentElement()->GetComputedStyle());
         scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
         scroll_marker_group_->SetSelected(*this);
       }

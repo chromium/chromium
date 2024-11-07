@@ -216,7 +216,7 @@ void SerializeConfig(base::Value::Dict& dict,
 
 bool IsValid(int budget,
              const AggregatableDebugReportingConfig::DebugData& data) {
-  if (!IsRemainingAggregatableBudgetInRange(budget)) {
+  if (!IsAggregatableBudgetInRange(budget)) {
     return false;
   }
 

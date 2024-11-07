@@ -59,6 +59,7 @@ export interface TranslateButtonElement {
     targetLanguagePickerBackButton: CrIconButtonElement,
     targetLanguagePickerContainer: DomRepeat,
     targetLanguagePickerMenu: HTMLDivElement,
+    translateContainer: HTMLDivElement,
     translateDisableButton: CrButtonElement,
     translateEnableButton: CrButtonElement,
   };
@@ -93,17 +94,31 @@ export class TranslateButtonElement extends PolymerElement {
               isTranslateModeEnabled, sourceLanguageMenuVisible,
               targetLanguageMenuVisible)`,
       },
+      shouldHideLanguagePicker: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       shouldShowStarsIcon: {
         type: Boolean,
         computed: 'computeShouldShowStarsIcon(sourceLanguage)',
         reflectToAttribute: true,
       },
       sourceLanguage: Object,
+      sourceLanguageList: {
+        type: Array,
+        computed: `getSourceLanguageList(clientSourceLanguageList,
+                                   serverSourceLanguageList)`,
+      },
       sourceLanguageMenuVisible: {
         type: Boolean,
         reflectToAttribute: true,
       },
       targetLanguage: Object,
+      targetLanguageList: {
+        type: Array,
+        computed: `getTargetLanguageList(clientTargetLanguageList,
+                                   serverTargetLanguageList)`,
+      },
       targetLanguageMenuVisible: {
         type: Boolean,
         reflectToAttribute: true,
@@ -111,7 +126,7 @@ export class TranslateButtonElement extends PolymerElement {
     };
   }
 
-  private eventTracker_: EventTracker = new EventTracker();
+  private eventTracker: EventTracker = new EventTracker();
   // Whether the lens overlay contextual searchbox is enabled. Passed in from
   // parent.
   private isLensOverlayContextualSearchboxEnabled: boolean;
@@ -130,10 +145,29 @@ export class TranslateButtonElement extends PolymerElement {
   private sourceLanguageMenuVisible: boolean = false;
   // Whether the target language menu picker is visible.
   private targetLanguageMenuVisible: boolean = false;
-  // The list of target languages provided by the chrome API.
-  private translateLanguageList: Language[];
+  // The list of source translate language codes supported by Lens. This differs
+  // from the server source translate list because it is a list of language
+  // codes that can currently be reliably sent to Lens for translation.
+  private supportedSourceLanguages: Set<string> =
+      new Set(loadTimeData.getString('translateSourceLanguages').split(','));
+  // The list of target translate language codes supported by Lens. This differs
+  // from the server target translate list because it is a list of language
+  // codes that can currently be reliably sent to Lens for translation. This set
+  // needs to be combined with `supportedSourceLanguages` before use.
+  private supportedTargetLanguages: Set<string> =
+      new Set(loadTimeData.getString('translateTargetLanguages').split(','));
+  // The list of source translate languages provided by the chrome API.
+  private clientSourceLanguageList: Language[];
+  // The list of source translate languages provided by the chrome API.
+  private clientTargetLanguageList: Language[];
+  // The list of source translate languages provided by the server.
+  private serverSourceLanguageList: Language[] = [];
+  // The list of target translate languages provided by the server.
+  private serverTargetLanguageList: Language[] = [];
   // The content language code received from the lext layer.
   private contentLanguage: string = '';
+  // Whether we should hide the language picker.
+  private shouldHideLanguagePicker: boolean = false;
   // A browser proxy for communicating with the C++ Lens overlay controller.
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   // A browser proxy for fetching the language settings from the Chrome API.
@@ -145,9 +179,8 @@ export class TranslateButtonElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.languageBrowserProxy.getLanguageList().then(
-        this.onLanguageListRetrieved.bind(this));
-    this.eventTracker_.add(
+    this.handleFetchLanguageList();
+    this.eventTracker.add(
         document, 'received-content-language', (e: CustomEvent) => {
           // Lens sends 'zh' and 'zh-Hant', which need to be converted to
           // 'zh-CN' and 'zh-TW' to match the language codes used by
@@ -160,7 +193,7 @@ export class TranslateButtonElement extends PolymerElement {
             this.contentLanguage = e.detail.contentLanguage;
           }
         });
-    this.eventTracker_.add(
+    this.eventTracker.add(
         this.$.sourceLanguagePickerMenu, 'focusout', (event: FocusEvent) => {
           const targetWithFocus = event.relatedTarget;
           if (!targetWithFocus || !(targetWithFocus instanceof Node) ||
@@ -168,7 +201,7 @@ export class TranslateButtonElement extends PolymerElement {
             this.hideLanguagePickerMenus(/*shouldFocus=*/ false);
           }
         });
-    this.eventTracker_.add(
+    this.eventTracker.add(
         this.$.targetLanguagePickerMenu, 'focusout', (event: FocusEvent) => {
           const targetWithFocus = event.relatedTarget;
           if (!targetWithFocus || !(targetWithFocus instanceof Node) ||
@@ -190,7 +223,7 @@ export class TranslateButtonElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
-    this.eventTracker_.removeAll();
+    this.eventTracker.removeAll();
   }
 
   getTranslateEnableButton(): CrButtonElement {
@@ -206,10 +239,16 @@ export class TranslateButtonElement extends PolymerElement {
       return;
     }
 
+    // Get the appropriate language list by checking which language menu is
+    // visible.
+    const languageList = this.sourceLanguageMenuVisible ?
+        this.getSourceLanguageList() :
+        this.getTargetLanguageList();
+
     let scrollLanguageIndex = -1;
     const startingChar = event.key.toLowerCase();
-    for (let i = 0; i < this.translateLanguageList.length; i++) {
-      const language = this.translateLanguageList[i];
+    for (let i = 0; i < languageList.length; i++) {
+      const language = languageList[i];
       const languageStartingChar = language.name.charAt(0).toLowerCase();
       if (startingChar === languageStartingChar) {
         scrollLanguageIndex = i;
@@ -229,9 +268,46 @@ export class TranslateButtonElement extends PolymerElement {
     }
   }
 
-  private onLanguageListRetrieved(languageList: Language[]) {
-    this.translateLanguageList = languageList.filter((language) => {
-      return SUPPORTED_TRANSLATION_LANGUAGES.has(language.languageCode);
+  private handleFetchLanguageList() {
+    if (loadTimeData.getBoolean('shouldFetchSupportedLanguages')) {
+      // Combine the source and target translate languages into one set.
+      this.supportedSourceLanguages.forEach(
+          (code: string) => this.supportedTargetLanguages.add(code));
+      this.languageBrowserProxy.getStoredServerLanguages(this.browserProxy)
+          .then(this.onServerLanguageListRetrieved.bind(this));
+    }
+
+    this.languageBrowserProxy.getClientLanguageList().then(
+        this.onClientLanguageListRetrieved.bind(this));
+  }
+
+  private onServerLanguageListRetrieved(
+      languages: {sourceLanguages: Language[], targetLanguages: Language[]}) {
+    this.serverSourceLanguageList =
+        languages.sourceLanguages.filter((language) => {
+          return this.supportedSourceLanguages.has(language.languageCode);
+        });
+
+    this.serverTargetLanguageList =
+        languages.targetLanguages.filter((language) => {
+          return this.supportedTargetLanguages.has(language.languageCode);
+        });
+  }
+
+  private onClientLanguageListRetrieved(languageList: Language[]) {
+    const supportedSourceTranslateLanguages =
+        loadTimeData.getBoolean('shouldFetchSupportedLanguages') ?
+        this.supportedSourceLanguages :
+        SUPPORTED_TRANSLATION_LANGUAGES;
+    const supportedTargetTranslateLanguages =
+        loadTimeData.getBoolean('shouldFetchSupportedLanguages') ?
+        this.supportedTargetLanguages :
+        SUPPORTED_TRANSLATION_LANGUAGES;
+    this.clientSourceLanguageList = languageList.filter((language) => {
+      return supportedSourceTranslateLanguages.has(language.languageCode);
+    });
+    this.clientTargetLanguageList = languageList.filter((language) => {
+      return supportedTargetTranslateLanguages.has(language.languageCode);
     });
 
     // After receiving the language list, get the default translate target
@@ -241,9 +317,9 @@ export class TranslateButtonElement extends PolymerElement {
         this.onTargetLanguageRetrieved.bind(this));
   }
 
-  private onTargetLanguageRetrieved(languageCode: string) {
-    const defaultLanguage = this.translateLanguageList.find(
-        language => language.languageCode === languageCode);
+  private onTargetLanguageRetrieved(targetLanguageCode: string) {
+    const defaultLanguage = this.getTargetLanguageList().find(
+        language => language.languageCode === targetLanguageCode);
 
     // If the target language is set to one supported by Lens, then we set it
     // and are done.
@@ -253,7 +329,7 @@ export class TranslateButtonElement extends PolymerElement {
     }
 
     // Otherwise, we default to the first language in the list.
-    this.targetLanguage = this.translateLanguageList[0];
+    this.targetLanguage = this.getTargetLanguageList()[0];
   }
 
   private onAutoDetectMenuItemClick() {
@@ -306,25 +382,19 @@ export class TranslateButtonElement extends PolymerElement {
         INVOCATION_SOURCE, UserAction.kTranslateTargetLanguageChanged);
     // Dispatch event to let other components know the overlay translate mode
     // state.
-    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.languageCode,
-        shouldUnselectWords: true,
-      },
-    }));
+    this.updateTranslateModeState(true);
   }
 
   private onTranslateButtonClick() {
     // Toggle translate mode on button click.
     this.isTranslateModeEnabled = !this.isTranslateModeEnabled;
     if (this.isTranslateModeEnabled) {
+      this.addOnHoverListeners();
       this.browserProxy.handler.maybeCloseTranslateFeaturePromo(
           /*featureEngaged=*/ true);
       this.maybeIssueTranslateRequest();
     } else {
+      this.removeOnHoverListeners();
       this.browserProxy.handler.issueEndTranslateModeRequest();
     }
     recordLensOverlayInteraction(
@@ -346,15 +416,7 @@ export class TranslateButtonElement extends PolymerElement {
 
     // Dispatch event to let other components know the overlay translate mode
     // state.
-    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.languageCode,
-        shouldUnselectWords: true,
-      },
-    }));
+    this.updateTranslateModeState(true);
   }
 
   private maybeIssueTranslateRequest() {
@@ -373,9 +435,9 @@ export class TranslateButtonElement extends PolymerElement {
 
     const newSourceLanguage = sourceLanguage === 'auto' ?
         null :
-        this.translateLanguageList.find(
+        this.getSourceLanguageList().find(
             language => language.languageCode === sourceLanguage);
-    const newTargetLanguage = this.translateLanguageList.find(
+    const newTargetLanguage = this.getTargetLanguageList().find(
         language => language.languageCode === targetLanguage);
 
     // Do nothing if the languages set are not in the language list. Source
@@ -398,16 +460,9 @@ export class TranslateButtonElement extends PolymerElement {
           ShimmerControlRequester.TRANSLATE);
     }
     this.isTranslateModeEnabled = true;
+    this.addOnHoverListeners();
     this.maybeIssueTranslateRequest();
-    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.languageCode,
-        shouldUnselectWords: true,
-      },
-    }));
+    this.updateTranslateModeState(true);
   }
 
   private disableTranslateMode() {
@@ -415,17 +470,10 @@ export class TranslateButtonElement extends PolymerElement {
       return;
     }
 
+    this.removeOnHoverListeners();
     this.isTranslateModeEnabled = false;
     unfocusShimmer(this, ShimmerControlRequester.TRANSLATE);
-    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.languageCode,
-        shouldUnselectWords: false,
-      },
-    }));
+    this.updateTranslateModeState(false);
   }
 
   private hideLanguagePickerMenus(shouldFocus = true) {
@@ -454,8 +502,8 @@ export class TranslateButtonElement extends PolymerElement {
     // browser proxy returns the language list. For this reason, we need to
     // check if the translate language list is present before attempting to find
     // the content language display name inside of it.
-    if (this.contentLanguage !== '' && this.translateLanguageList) {
-      const detectedLanguage = this.translateLanguageList.find(
+    if (this.contentLanguage !== '' && this.getSourceLanguageList()) {
+      const detectedLanguage = this.getSourceLanguageList().find(
           language => language.languageCode === this.contentLanguage);
       if (detectedLanguage !== undefined) {
         return detectedLanguage.name;
@@ -477,8 +525,8 @@ export class TranslateButtonElement extends PolymerElement {
     // browser proxy returns the language list. For this reason, we need to
     // check if the translate language list is present before attempting to find
     // the content language display name inside of it.
-    if (this.contentLanguage !== '' && this.translateLanguageList) {
-      const detectedLanguage = this.translateLanguageList.find(
+    if (this.contentLanguage !== '' && this.getSourceLanguageList()) {
+      const detectedLanguage = this.getSourceLanguageList().find(
           language => language.languageCode === this.contentLanguage);
       if (detectedLanguage !== undefined) {
         return detectedLanguage.name;
@@ -544,6 +592,70 @@ export class TranslateButtonElement extends PolymerElement {
   private getLanguageCheckedClass(
       language: Language, selectedLanguage: Language): string {
     return selectedLanguage === language ? 'selected' : '';
+  }
+
+  private updateTranslateModeState(shouldUnselectWords: boolean) {
+    this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        translateModeEnabled: this.isTranslateModeEnabled,
+        targetLanguage: this.targetLanguage.languageCode,
+        shouldHideSearchbox:
+            this.isTranslateModeEnabled && !this.shouldHideLanguagePicker,
+        shouldUnselectWords: shouldUnselectWords,
+      },
+    }));
+  }
+
+  private addOnHoverListeners() {
+    // We do not want to enable this functionality unless the contextual
+    // searchbox is enabled.
+    if (!this.isLensOverlayContextualSearchboxEnabled) {
+      return;
+    }
+
+    this.eventTracker.add(this.$.translateContainer, 'mouseleave', () => {
+      if (this.sourceLanguageMenuVisible || this.targetLanguageMenuVisible) {
+        return;
+      }
+
+      this.shouldHideLanguagePicker = true;
+      this.$.sourceLanguageButton.blur();
+      this.$.targetLanguageButton.blur();
+      this.updateTranslateModeState(false);
+    });
+    this.eventTracker.add(this.$.translateDisableButton, 'mouseover', () => {
+      this.shouldHideLanguagePicker = false;
+      this.updateTranslateModeState(false);
+    });
+    // We also need to track focus events for accessibility reasons.
+    this.eventTracker.add(this.$.translateDisableButton, 'focus', () => {
+      this.shouldHideLanguagePicker = false;
+      this.updateTranslateModeState(false);
+    });
+  }
+
+  private removeOnHoverListeners() {
+    this.eventTracker.remove(this.$.translateContainer, 'mouseleave');
+    this.eventTracker.remove(this.$.translateDisableButton, 'mouseover');
+    this.shouldHideLanguagePicker = false;
+  }
+
+  setContextualSearchboxEnabledForTesting(enabled: boolean) {
+    this.isLensOverlayContextualSearchboxEnabled = enabled;
+  }
+
+  private getSourceLanguageList(): Language[] {
+    return this.serverSourceLanguageList.length === 0 ?
+        this.clientSourceLanguageList :
+        this.serverSourceLanguageList;
+  }
+
+  private getTargetLanguageList(): Language[] {
+    return this.serverTargetLanguageList.length === 0 ?
+        this.clientTargetLanguageList :
+        this.serverTargetLanguageList;
   }
 }
 

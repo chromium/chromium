@@ -26,14 +26,14 @@
 namespace ash {
 namespace {
 
-// This is the maximum size of PickerView, including emoji bar.
-constexpr int kPickerViewMaxHeight = 356;
+// This is the maximum size of QuickInsertView, including emoji bar.
+constexpr int kQuickInsertViewMaxHeight = 356;
 
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
 PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds,
                                PickerPositionType position_type) {
   return position_type == PickerPositionType::kCentered ||
-                 anchor_bounds.bottom() + kPickerViewMaxHeight <=
+                 anchor_bounds.bottom() + kQuickInsertViewMaxHeight <=
                      display::Screen::GetScreen()
                          ->GetDisplayMatching(anchor_bounds)
                          .work_area()
@@ -43,11 +43,11 @@ PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds,
 }
 
 views::Widget::InitParams CreateInitParams(
-    PickerViewDelegate* delegate,
+    QuickInsertViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     PickerPositionType position_type,
     const base::TimeTicks trigger_event_timestamp) {
-  auto picker_view = std::make_unique<PickerView>(
+  auto picker_view = std::make_unique<QuickInsertView>(
       delegate, anchor_bounds, GetLayoutType(anchor_bounds, position_type),
       position_type, trigger_event_timestamp);
 
@@ -71,7 +71,7 @@ views::Widget::InitParams CreateInitParams(
 }  // namespace
 
 views::UniqueWidgetPtr QuickInsertWidget::Create(
-    PickerViewDelegate* delegate,
+    QuickInsertViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     base::TimeTicks trigger_event_timestamp) {
   return base::WrapUnique(new QuickInsertWidget(delegate, anchor_bounds,
@@ -80,7 +80,7 @@ views::UniqueWidgetPtr QuickInsertWidget::Create(
 }
 
 views::UniqueWidgetPtr QuickInsertWidget::CreateCentered(
-    PickerViewDelegate* delegate,
+    QuickInsertViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     base::TimeTicks trigger_event_timestamp) {
   return base::WrapUnique(new QuickInsertWidget(delegate, anchor_bounds,
@@ -98,7 +98,7 @@ void QuickInsertWidget::OnNativeBlur() {
   Close();
 }
 
-QuickInsertWidget::QuickInsertWidget(PickerViewDelegate* delegate,
+QuickInsertWidget::QuickInsertWidget(QuickInsertViewDelegate* delegate,
                                      const gfx::Rect& anchor_bounds,
                                      PickerPositionType position_type,
                                      base::TimeTicks trigger_event_timestamp)

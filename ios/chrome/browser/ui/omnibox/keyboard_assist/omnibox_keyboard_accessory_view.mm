@@ -83,7 +83,7 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits =
-          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.self ]);
+          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
       [self
           registerForTraitChanges:traits
                        withAction:@selector(updateLensAppearanceOnTraitChange)];

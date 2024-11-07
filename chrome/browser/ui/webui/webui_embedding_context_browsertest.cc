@@ -6,6 +6,8 @@
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -17,20 +19,28 @@ using WebUIEmbeddingContextTest = InProcessBrowserTest;
 
 namespace webui {
 
-IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
-                       MovingTabsAcrossWindowsUpdatesBrowserInterface) {
+IN_PROC_BROWSER_TEST_F(
+    WebUIEmbeddingContextTest,
+    InitEmbeddingContext_MovingTabsAcrossWindowsUpdatesContext) {
   // Create a browser with 2 tabs.
   content::WebContents* tab_contents =
       chrome::AddAndReturnTabAt(browser(), GURL(url::kAboutBlankURL), 1, true);
+  tabs::TabInterface* tab_interface =
+      browser()->tab_strip_model()->GetTabAtIndex(1);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
   EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
 
+  base::MockCallback<base::RepeatingClosure> tab_changed_callback;
   base::MockCallback<base::RepeatingClosure> browser_changed_callback;
-  base::CallbackListSubscription subscription =
+  base::CallbackListSubscription tab_subscription =
+      RegisterTabInterfaceChanged(tab_contents, tab_changed_callback.Get());
+  base::CallbackListSubscription browser_subscription =
       RegisterBrowserWindowInterfaceChanged(tab_contents,
                                             browser_changed_callback.Get());
 
   // Move the tab into a new browser window.
+  EXPECT_CALL(tab_changed_callback, Run).Times(0);
   EXPECT_CALL(browser_changed_callback, Run).Times(1);
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
@@ -39,16 +49,50 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, new_browser->tab_strip_model()->count());
+  EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
   EXPECT_EQ(new_browser, GetBrowserWindowInterface(tab_contents));
+  testing::Mock::VerifyAndClearExpectations(&tab_changed_callback);
   testing::Mock::VerifyAndClearExpectations(&browser_changed_callback);
 
   // Move the tab back into its original browser window. This results in the
-  // closing and destruction of the previously created browser.
-  EXPECT_CALL(browser_changed_callback, Run).Times(2);
+  // closing and destruction of the previously created browser. Only one
+  // browser-changed notification is expected as the tab is moved to the new
+  // browser before the old browser is destroyed.
+  EXPECT_CALL(tab_changed_callback, Run).Times(0);
+  EXPECT_CALL(browser_changed_callback, Run).Times(1);
   chrome::MoveTabsToExistingWindow(new_browser, browser(), {0});
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
   EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
   testing::Mock::VerifyAndClearExpectations(&browser_changed_callback);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
+                       InitEmbeddingContext_SetCorrectlyOnTabDiscard) {
+  // Create a browser with 2 tabs.
+  content::WebContents* tab_contents =
+      chrome::AddAndReturnTabAt(browser(), GURL(url::kAboutBlankURL), 1, false);
+  tabs::TabInterface* tab_interface =
+      browser()->tab_strip_model()->GetTabAtIndex(1);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
+  EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
+
+  // Discard the tab.
+  EXPECT_NE(browser()->tab_strip_model()->GetActiveTab(), tab_interface);
+  auto* lifecycle_unit =
+      resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
+          tab_contents);
+  lifecycle_unit->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
+
+  EXPECT_EQ(mojom::LifecycleUnitState::DISCARDED,
+            lifecycle_unit->GetTabState());
+  tab_contents = browser()->tab_strip_model()->GetTabAtIndex(1)->GetContents();
+
+  // The tab and browser interfaces should remain associated with the tab
+  // contents after discard.
+  EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
+  EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,

@@ -122,11 +122,9 @@ bool IsDownloadAllowedBySafeBrowsing(
     case Result::DEEP_SCANNED_FAILED:
     case Result::BLOCKED_SCAN_FAILED:
     case Result::IMMEDIATE_DEEP_SCAN:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void InterpretSafeBrowsingVerdict(base::OnceCallback<void(bool)> recipient,
@@ -695,9 +693,7 @@ void FileSelectHelper::RunFileChooserOnUIThread(
       dialog_type_ = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
       break;
     default:
-      // Prevent warning.
-      dialog_type_ = ui::SelectFileDialog::SELECT_OPEN_FILE;
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   gfx::NativeWindow owning_window =

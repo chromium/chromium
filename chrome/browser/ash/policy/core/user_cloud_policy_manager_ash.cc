@@ -39,7 +39,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
-#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
@@ -57,6 +56,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 #include "components/policy/policy_constants.h"
 #include "components/session_manager/core/session_manager.h"
@@ -814,7 +814,7 @@ void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
 
   invalidator_->Initialize(
       invalidation_provider->GetInvalidationServiceOrListener(
-          GetInvalidationProjectNumber()));
+          std::string(GetRemoteCommandsInvalidationProjectNumber())));
 
   shutdown_subscription_ =
       UserCloudPolicyManagerAshNotifierFactory::GetInstance()

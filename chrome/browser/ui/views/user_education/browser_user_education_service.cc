@@ -38,6 +38,8 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/autofill_help_bubble_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_25.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
@@ -1636,8 +1638,8 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           "Shown in app menu when Tab Declutter menu item is enabled.")));
 }
 
-std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
-    BrowserView* browser_view) {
+std::unique_ptr<user_education::FeaturePromoControllerCommon>
+CreateUserEducationResources(BrowserView* browser_view) {
   Profile* const profile = browser_view->GetProfile();
 
   // Get the user education service.
@@ -1663,13 +1665,25 @@ std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
 
   LowUsageHelpController::MaybeCreateForProfile(browser_view->GetProfile());
 
-  return std::make_unique<BrowserFeaturePromoController>(
-      browser_view,
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile),
-      &user_education_service->feature_promo_registry(),
-      &user_education_service->help_bubble_factory_registry(),
-      &user_education_service->user_education_storage_service(),
-      &user_education_service->feature_promo_session_policy(),
-      &user_education_service->tutorial_service(),
-      &user_education_service->product_messaging_controller());
+  if (user_education::features::IsUserEducationV25()) {
+    return std::make_unique<BrowserFeaturePromoController25>(
+        browser_view,
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile),
+        &user_education_service->feature_promo_registry(),
+        &user_education_service->help_bubble_factory_registry(),
+        &user_education_service->user_education_storage_service(),
+        &user_education_service->feature_promo_session_policy(),
+        &user_education_service->tutorial_service(),
+        &user_education_service->product_messaging_controller());
+  } else {
+    return std::make_unique<BrowserFeaturePromoController20>(
+        browser_view,
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile),
+        &user_education_service->feature_promo_registry(),
+        &user_education_service->help_bubble_factory_registry(),
+        &user_education_service->user_education_storage_service(),
+        &user_education_service->feature_promo_session_policy(),
+        &user_education_service->tutorial_service(),
+        &user_education_service->product_messaging_controller());
+  }
 }

@@ -122,8 +122,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   // Enable the Keyboard Accessory Upgrade feature.
   config.features_enabled_and_params.push_back(
       {kIOSKeyboardAccessoryUpgrade, {}});
-  config.features_enabled_and_params.push_back(
-      {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
 
   return config;
 }

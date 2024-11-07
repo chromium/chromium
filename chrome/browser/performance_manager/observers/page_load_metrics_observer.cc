@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/navigation_handle.h"

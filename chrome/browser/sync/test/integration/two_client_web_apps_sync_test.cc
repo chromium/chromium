@@ -51,7 +51,7 @@ class DisplayModeChangeWaiter : public WebAppRegistrarObserver {
 
   void Wait() { run_loop_.Run(); }
 
-  void OnAppRegistrarDestroyed() override { NOTREACHED_IN_MIGRATION(); }
+  void OnAppRegistrarDestroyed() override { NOTREACHED(); }
 
  private:
   base::RunLoop run_loop_;

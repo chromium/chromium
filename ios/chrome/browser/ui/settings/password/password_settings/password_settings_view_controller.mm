@@ -90,6 +90,10 @@ bool IOSPasskeysM2Enabled() {
   // iOS level. This may not be known at load time; the detail text showing on
   // or off status will be omitted until this is populated.
   std::optional<bool> _passwordsInOtherAppsEnabled;
+
+  // Whether the change PIN button should be set up. This will be true when it's
+  // requested by the mediator before the model is loaded.
+  BOOL _shouldSetupChangePinButton;
 }
 
 // State
@@ -259,6 +263,10 @@ bool IOSPasskeysM2Enabled() {
     [model addItem:[self automaticPasskeyUpgradesSwitchItem]
         toSectionWithIdentifier:
             SectionIdentifierAutomaticPasskeyUpgradesSwitch];
+  }
+
+  if (_shouldSetupChangePinButton) {
+    [self setupChangeGPMPinButton];
   }
 
   if (self.onDeviceEncryptionState !=
@@ -497,6 +505,8 @@ bool IOSPasskeysM2Enabled() {
   _changeGooglePasswordManagerPinDescriptionItem.detailText =
       l10n_util::GetNSString(
           IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_DESCRIPTION);
+  _changeGooglePasswordManagerPinDescriptionItem.accessibilityIdentifier =
+      kPasswordSettingsChangePinDescriptionId;
   return _changeGooglePasswordManagerPinDescriptionItem;
 }
 
@@ -509,6 +519,8 @@ bool IOSPasskeysM2Enabled() {
       [UIColor colorNamed:kBlueColor];
   _changeGooglePasswordManagerPinItem.accessibilityTraits =
       UIAccessibilityTraitButton;
+  _changeGooglePasswordManagerPinItem.accessibilityIdentifier =
+      kPasswordSettingsChangePinButtonId;
   return _changeGooglePasswordManagerPinItem;
 }
 
@@ -701,6 +713,11 @@ bool IOSPasskeysM2Enabled() {
 }
 
 - (void)setupChangeGPMPinButton {
+  _shouldSetupChangePinButton = YES;
+  if (self.modelLoadStatus == ModelNotLoaded) {
+    return;
+  }
+
   TableViewModel* model = self.tableViewModel;
   if ([model hasSectionForSectionIdentifier:
                  SectionIdentifierGooglePasswordManagerPin]) {

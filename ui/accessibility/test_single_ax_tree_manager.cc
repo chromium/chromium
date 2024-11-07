@@ -189,8 +189,7 @@ AXNode* TestSingleAXTreeManager::GetParentNodeFromParentTree() const {
       parent_manager->GetTree()->GetNodeIdsForChildTreeId(GetTreeID());
 
   for (AXNodeID host_node_id : host_node_ids) {
-    AXNode* parent_node =
-        parent_manager->GetNodeFromTree(parent_tree_id, host_node_id);
+    AXNode* parent_node = parent_manager->GetNode(host_node_id);
     if (parent_node) {
       return parent_node;
     }

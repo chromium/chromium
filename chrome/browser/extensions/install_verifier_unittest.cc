@@ -112,12 +112,9 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
     EXPECT_EQ(test_case.expected_from_store_status == FROM_STORE,
               InstallVerifier::IsFromStore(*extension, profile()));
     disable_reason::DisableReason disable_reason;
-    std::u16string error;
     EXPECT_EQ(
         test_case.expected_must_remain_disabled_status == MUST_REMAIN_DISABLED,
-        install_verifier->MustRemainDisabled(extension.get(), &disable_reason,
-                                             &error))
-        << error;
+        install_verifier->MustRemainDisabled(extension.get(), &disable_reason));
   }
 }
 
@@ -147,9 +144,8 @@ TEST_F(InstallVerifierTest, ForceInstalledExtensionBehaviorWithTrustLevels) {
 
     // In a low-trust environment, the extension should remain disabled.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-    std::u16string error;
     EXPECT_TRUE(install_verifier->MustRemainDisabled(forced_extension.get(),
-                                                     &disable_reason, &error));
+                                                     &disable_reason));
     EXPECT_EQ(disable_reason::DISABLE_NOT_VERIFIED, disable_reason);
   }
 
@@ -165,9 +161,8 @@ TEST_F(InstallVerifierTest, ForceInstalledExtensionBehaviorWithTrustLevels) {
 
     // In a high-trust environment, the extension should not remain disabled.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-    std::u16string error;
     EXPECT_FALSE(install_verifier->MustRemainDisabled(forced_extension.get(),
-                                                      &disable_reason, &error));
+                                                      &disable_reason));
     // Verify that disable_reason is still DISABLE_NONE.
     EXPECT_EQ(disable_reason::DISABLE_NONE, disable_reason);
   }

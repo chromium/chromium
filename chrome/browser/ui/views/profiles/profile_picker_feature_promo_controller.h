@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
 
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
 
 class UserEducationService;
 class ProfilePickerView;
@@ -16,7 +16,7 @@ class ProfilePickerView;
 // The class allows the management of IPH that are displayed in the Profile
 // Picker.
 class ProfilePickerFeaturePromoController
-    : public user_education::FeaturePromoControllerCommon {
+    : public user_education::FeaturePromoController20 {
  public:
   ProfilePickerFeaturePromoController(
       feature_engagement::Tracker* tracker_service,

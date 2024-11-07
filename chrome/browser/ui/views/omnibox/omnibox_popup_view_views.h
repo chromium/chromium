@@ -111,7 +111,7 @@ class OmniboxPopupViewViews : public views::View,
   // Find the index of the match under the given |point|, specified in window
   // coordinates. Returns OmniboxPopupSelection::kNoMatch if there isn't a match
   // at the specified point.
-  size_t GetIndexForPoint(const gfx::Point& point);
+  size_t GetIndexForPoint(const gfx::Point& point) const;
 
  private:
   void UpdateAccessibleStates() const;

@@ -383,7 +383,9 @@ using segmentation_platform::TipIdentifier;
                      localState:GetApplicationContext()->GetLocalState()
         pushNotificationService:GetApplicationContext()
                                     ->GetPushNotificationService()
-          authenticationService:self.authService];
+          authenticationService:self.authService
+                  faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                    profile)];
     _priceTrackingPromoMediator.dispatcher =
         static_cast<id<ApplicationCommands, SnackbarCommands>>(
             self.browser->GetCommandDispatcher());

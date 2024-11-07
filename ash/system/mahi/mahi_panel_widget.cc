@@ -14,6 +14,7 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_widget_delegate.h"
 #include "ash/system/mahi/refresh_banner_view.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -152,6 +153,9 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
     delegate->SetCanResize(true);
     delegate->SetContentsView(std::move(contents_view));
     params.delegate = delegate.release();
+
+    // If resizable, disable the resize shadow on the window border.
+    params.init_properties_container.SetProperty(kDisableResizeShadow, true);
   }
 
   // `SystemModalContainer` can travel across displays, is not automatically

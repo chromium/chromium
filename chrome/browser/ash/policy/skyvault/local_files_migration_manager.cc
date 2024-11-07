@@ -165,6 +165,20 @@ bool ShouldFail(const std::map<base::FilePath, MigrationUploadError> errors,
   return false;
 }
 
+// Checks if the destination cloud provider is enabled.
+bool IsMigrationMisconfigured(Profile* profile, CloudProvider provider) {
+  switch (provider) {
+    case CloudProvider::kNotSpecified:
+      NOTREACHED_NORETURN();
+    case CloudProvider::kGoogleDrive:
+      return !drive::DriveIntegrationServiceFactory::FindForProfile(profile)
+                  ->is_enabled();
+    case CloudProvider::kOneDrive:
+      return !chromeos::cloud_upload::
+          IsMicrosoftOfficeOneDriveIntegrationAllowed(profile);
+  }
+}
+
 }  // namespace
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
@@ -221,6 +235,22 @@ void LocalFilesMigrationManager::Initialize() {
   // Migration is enabled.
   SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
 
+  if (IsMigrationMisconfigured(profile, cloud_provider_)) {
+    LOG(WARNING) << "Local files migration policy is set to use "
+                 << (cloud_provider_ == CloudProvider::kGoogleDrive
+                         ? "Google Drive"
+                         : "OneDrive")
+                 << ", but it is not enabled for this user.";
+    SkyVaultMigrationMisconfiguredHistogram(cloud_provider_, true);
+    if (!notification_manager_) {
+      // Can be null in unittests.
+      CHECK_IS_TEST();
+      return;
+    }
+    notification_manager_->ShowConfigurationErrorNotification(cloud_provider_);
+    return;
+  }
+
   if (skip_empty_check_for_testing_) {
     CHECK_IS_TEST();
     OnMyFilesChecked(/*is_empty=*/false);
@@ -276,8 +306,9 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     return;
   }
 
-  LocalStorageHistograms(Profile::FromBrowserContext(context_),
-                         local_user_files_allowed_);
+  Profile* profile = Profile::FromBrowserContext(context_);
+
+  LocalStorageHistograms(profile, local_user_files_allowed_);
 
   // If local files are allowed or migration is turned off, just stop ongoing
   // migration or timers if any.
@@ -296,17 +327,7 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     MaybeStopMigration(cloud_provider_old, /*close_dialog=*/false);
   }
 
-  // Check if the destination cloud provider is enabled.
-  Profile* profile = Profile::FromBrowserContext(context_);
-  const bool google_drive_disabled =
-      !drive::DriveIntegrationServiceFactory::FindForProfile(profile)
-           ->is_enabled();
-  const bool one_drive_disabled =
-      !chromeos::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
-          profile);
-  if ((cloud_provider_ == CloudProvider::kGoogleDrive &&
-       google_drive_disabled) ||
-      (cloud_provider_ == CloudProvider::kOneDrive && one_drive_disabled)) {
+  if (IsMigrationMisconfigured(profile, cloud_provider_)) {
     LOG(WARNING) << "Local files migration policy is set to use "
                  << (cloud_provider_ == CloudProvider::kGoogleDrive
                          ? "Google Drive"

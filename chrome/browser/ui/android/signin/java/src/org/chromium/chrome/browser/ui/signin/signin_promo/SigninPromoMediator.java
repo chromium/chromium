@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
-import android.view.View;
-
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -29,8 +27,8 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
             ProfileDataCache profileDataCache,
             SigninPromoDelegate delegate) {
         mIdentityManager = identityManager;
-        mDelegate = delegate;
         mProfileDataCache = profileDataCache;
+        mDelegate = delegate;
 
         @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
         @Nullable
@@ -41,8 +39,8 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
         mModel =
                 SigninPromoProperties.createModel(
                         profileData,
-                        this::onAcceptClicked,
-                        this::onDeclineClicked,
+                        mDelegate::onPrimaryButtonClicked,
+                        mDelegate::onSecondaryButtonClicked,
                         delegate.getTitle(),
                         delegate.getDescription(),
                         delegate.getTextForPrimaryButton(profileData),
@@ -78,14 +76,6 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
 
     PropertyModel getModel() {
         return mModel;
-    }
-
-    private void onAcceptClicked(View view) {
-        // TODO(crbug.com/327387704): Implement this method
-    }
-
-    private void onDeclineClicked(View view) {
-        // TODO(crbug.com/327387704): Implement this method
     }
 
     private @Nullable CoreAccountInfo getVisibleAccount() {

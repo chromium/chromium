@@ -533,15 +533,11 @@ LockContentsView::LockContentsView(
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   RegisterAccelerators();
 
-  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
-  // it's false by default.
-  if (features::IsKioskLoginScreenEnabled()) {
-    kiosk_license_mode_ =
-        Shell::Get()
-            ->system_tray_model()
-            ->enterprise_domain()
-            ->management_device_mode() == ManagementDeviceMode::kKioskSku;
-  }
+  kiosk_license_mode_ =
+      Shell::Get()
+          ->system_tray_model()
+          ->enterprise_domain()
+          ->management_device_mode() == ManagementDeviceMode::kKioskSku;
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
   GetViewAccessibility().SetName(
@@ -1546,12 +1542,6 @@ void LockContentsView::SuspendImminent(
 }
 
 void LockContentsView::OnDeviceEnterpriseInfoChanged() {
-  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
-  // it's false by default.
-  if (!features::IsKioskLoginScreenEnabled()) {
-    return;
-  }
-
   kiosk_license_mode_ =
       Shell::Get()
           ->system_tray_model()

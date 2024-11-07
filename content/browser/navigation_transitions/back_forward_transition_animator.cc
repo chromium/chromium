@@ -950,12 +950,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       break;
     }
     case State::kDisplayingCancelAnimation: {
-      CHECK(navigation_state_ == NavigationState::kNotStarted ||
-            navigation_state_ == NavigationState::kCancelled ||
-            navigation_state_ == NavigationState::kCancelledBeforeStart)
-          << NavigationStateToString(navigation_state_);
-
-      // A new navigation to C finished while we are displaying the cancel
+      // A new navigation to C commits while we are displaying the cancel
       // animation. The live page will be replaced by C.
       break;
     }
@@ -969,9 +964,9 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       break;
     case State::kWaitingForContentForNavigationEntryShown:
       // Our navigation has already committed while waiting for a native
-      // entry to be finished drawing by the embedder.
-      CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-      CHECK(tracked_request_);
+      // entry to be finished drawing by the embedder; or the cancel animation
+      // is finished and a new navigation commits before the live entry is
+      // redrawn by the embedder.
       OnContentForNavigationEntryShown();
       break;
     case State::kDisplayingCrossFadeAnimation: {

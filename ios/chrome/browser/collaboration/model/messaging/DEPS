@@ -5,4 +5,5 @@ include_rules = [
 
   # Allows service construction.
   "+components/collaboration/internal/messaging/messaging_backend_service_impl.h",
+  "+components/collaboration/internal/messaging/tab_group_change_notifier_impl.h",
 ]

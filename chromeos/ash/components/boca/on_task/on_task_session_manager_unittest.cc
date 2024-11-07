@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -159,6 +160,11 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     return &session_manager_->provider_url_restriction_level_map_;
   }
 
+  std::optional<std::string>* active_session_id() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
+    return &session_manager_->active_session_id_;
+  }
+
   bool* should_lock_window() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
     return &session_manager_->should_lock_window_;
@@ -202,13 +208,24 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
   session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
-TEST_F(OnTaskSessionManagerTest, ShouldClosePreExistingBocaSWAOnSessionStart) {
+TEST_F(OnTaskSessionManagerTest,
+       ShouldPreparePreExistingBocaSWAOnSessionStart) {
   const SessionID kWindowId = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
-      .WillOnce(Return(kWindowId))
-      .WillRepeatedly(Return(SessionID::InvalidValue()));
-  EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(kWindowId))
-      .Times(1);
+      .WillOnce(Return(kWindowId));
+
+  const std::vector<boca::BocaWindowObserver*> kWindowObservers = {
+      session_manager_->active_tab_tracker(), session_manager_.get()};
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              PrepareSystemWebAppWindowForOnTask(kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(
+      *system_web_app_manager_ptr_,
+      SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
+      .Times(1)
+      .InSequence(s);
   session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
@@ -686,6 +703,7 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   (*provider_url_restriction_level_map())[GURL(kTestUrl1)] =
       ::boca::LockedNavigationOptions::BLOCK_NAVIGATION;
   (*provider_url_tab_ids_map())[GURL(kTestUrl2)].insert(kOldTabId2);
+  *active_session_id() = "test_session";
 
   // Attempt an app reload and verify tabs are restored with newer tab ids.
   const SessionID kWindowId = SessionID::NewUnique();
@@ -736,6 +754,7 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
 TEST_F(OnTaskSessionManagerTest, LockWindowOnAppReload) {
   // Set window lock state for testing purposes.
   *should_lock_window() = true;
+  *active_session_id() = "test_session";
 
   // Attempt an app reload and verify that the app window is locked.
   const SessionID kWindowId = SessionID::NewUnique();

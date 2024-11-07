@@ -76,8 +76,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
 
     switch (bitmap_settings.duplex_mode) {
       case mojom::DuplexMode::kUnknownDuplexMode:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case mojom::DuplexMode::kSimplex:
         // Already defaults to false/false.
         break;

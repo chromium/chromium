@@ -44,8 +44,7 @@ scoped_refptr<Importer> CreateImporterByType(ImporterType type) {
       return new SafariImporter(base::apple::GetUserLibraryPath());
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

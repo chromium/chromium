@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_ASH_H_
 #define CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_ASH_H_
 
+#include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <variant>
 #include <vector>
@@ -263,10 +263,10 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
   std::unique_ptr<CrdAdminSessionController> crd_admin_session_controller_;
   std::unique_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
-  std::variant<std::unique_ptr<AffiliatedInvalidationServiceProvider>,
-               std::unique_ptr<invalidation::InvalidationListener>>
-      invalidation_service_provider_or_listener_ =
-          std::unique_ptr<AffiliatedInvalidationServiceProvider>{nullptr};
+  std::map<std::string,
+           std::variant<std::unique_ptr<AffiliatedInvalidationServiceProvider>,
+                        std::unique_ptr<invalidation::InvalidationListener>>>
+      invalidation_service_provider_or_listener_per_project_;
   raw_ptr<DeviceCloudPolicyManagerAsh> device_cloud_policy_manager_ = nullptr;
   raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
@@ -281,8 +281,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
                std::unique_ptr<RemoteCommandsInvalidator>>
       device_remote_commands_invalidator_ =
           std::unique_ptr<AffiliatedRemoteCommandsInvalidator>{nullptr};
-  std::unique_ptr<FmRegistrationTokenUploader>
-      device_fm_registration_token_uploader_;
+  std::vector<std::unique_ptr<FmRegistrationTokenUploader>>
+      device_fm_registration_token_uploaders_;
 
   std::unique_ptr<BluetoothPolicyHandler> bluetooth_policy_handler_;
   std::unique_ptr<DeviceNamePolicyHandler> device_name_policy_handler_;

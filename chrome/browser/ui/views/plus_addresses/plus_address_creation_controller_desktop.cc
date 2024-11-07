@@ -33,6 +33,9 @@
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 
 namespace plus_addresses {
+
+using metrics::PlusAddressModalCompletionStatus;
+
 // static
 PlusAddressCreationController* PlusAddressCreationController::GetOrCreate(
     content::WebContents* web_contents) {
@@ -122,6 +125,11 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
 void PlusAddressCreationControllerDesktop::OnConfirmed() {
   // The UI prevents any attempt to Confirm if Reserve() had failed.
   CHECK(plus_profile_.has_value());
+  if (modal_error_status_ ==
+      PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.CreateErrorTryAgainClicked"));
+  }
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed,
                             ShouldShowNotice());
 
@@ -147,14 +155,24 @@ void PlusAddressCreationControllerDesktop::OnCanceled() {
   const bool was_notice_shown = ShouldShowNotice();
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalCanceled,
                             was_notice_shown);
-  if (modal_error_status_.has_value()) {
-    RecordModalShownOutcome(modal_error_status_.value(), was_notice_shown);
-    modal_error_status_.reset();
-  } else {
-    RecordModalShownOutcome(
-        metrics::PlusAddressModalCompletionStatus::kModalCanceled,
-        was_notice_shown);
+  if (!modal_error_status_) {
+    RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalCanceled,
+                            was_notice_shown);
+    return;
   }
+
+  RecordModalShownOutcome(modal_error_status_.value(), was_notice_shown);
+  if (modal_error_status_ ==
+      PlusAddressModalCompletionStatus::kReservePlusAddressError) {
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
+  } else {
+    CHECK_EQ(*modal_error_status_,
+             PlusAddressModalCompletionStatus::kConfirmPlusAddressError);
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
+  }
+  modal_error_status_.reset();
 }
 void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
   dialog_delegate_.reset();
@@ -167,7 +185,7 @@ PlusAddressCreationControllerDesktop::get_view_for_testing() {
 }
 
 void PlusAddressCreationControllerDesktop::RecordModalShownOutcome(
-    metrics::PlusAddressModalCompletionStatus status,
+    PlusAddressModalCompletionStatus status,
     bool was_notice_shown) {
   if (modal_shown_time_.has_value()) {
     // The number of refreshes is equal to the number of `reserve` responses
@@ -203,7 +221,7 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
     ++reserve_response_count_;
   } else {
     modal_error_status_ =
-        metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError;
+        PlusAddressModalCompletionStatus::kReservePlusAddressError;
   }
   // Display result on UI only after setting `plus_profile_` to prevent
   // premature confirm without `plus_profile_` value.
@@ -237,12 +255,11 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
       }
     }
 
-    RecordModalShownOutcome(
-        metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
-        was_notice_shown);
+    RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalConfirmed,
+                            was_notice_shown);
   } else {
     modal_error_status_ =
-        metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
+        PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
   }
 
   // Display result on UI after setting `modal_error_status_` to ensure correct

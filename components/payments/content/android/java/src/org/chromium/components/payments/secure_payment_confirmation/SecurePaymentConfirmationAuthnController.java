@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
@@ -111,8 +112,9 @@ public class SecurePaymentConfirmationAuthnController {
                 }
 
                 @Override
-                public int getSheetContentDescriptionStringId() {
-                    return R.string.secure_payment_confirmation_authentication_sheet_description;
+                public @NonNull String getSheetContentDescription(Context context) {
+                    return context.getString(
+                            R.string.secure_payment_confirmation_authentication_sheet_description);
                 }
 
                 @Override

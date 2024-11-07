@@ -26,7 +26,11 @@
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -37,6 +41,8 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace autofill {
 
@@ -65,7 +71,10 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
  public:
   ChromeAutofillClientIOSTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
     profile_ = TestProfileIOS::Builder().Build();
+
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
@@ -76,9 +85,17 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    mock_snackbar_handler_ = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mock_snackbar_handler_
+                             forProtocol:@protocol(SnackbarCommands)];
+
     AutofillAgent* autofill_agent =
         [[AutofillAgent alloc] initWithPrefService:profile_->GetPrefs()
                                           webState:web_state_.get()];
+
+    autofill_agent.snackbarHandler = mock_snackbar_handler_;
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
         profile_.get(), web_state_.get(),
@@ -112,6 +129,8 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
 
   web::WebState* web_state() { return web_state_.get(); }
 
+  id mock_snackbar_handler_;
+
  private:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   test::AutofillUnitTestEnvironment autofill_environment_{
@@ -123,6 +142,8 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
       autofill_manager_injector_;
+  std::unique_ptr<TestBrowser> browser_;
+  SceneState* scene_state_;
 };
 
 // Tests that ClassifyAsPasswordForm correctly classifies a login form.
@@ -230,6 +251,17 @@ TEST_F(ChromeAutofillClientIOSTest,
       client().ClassifyAsPasswordForm(
           *main_frame_manager(), browser_form.global_id(), random_field_id),
       PasswordFormClassification{});
+}
+
+// Tests that the call to `ShowPlusAddressEmailOverrideNotification` shows a
+// snackbar.
+TEST_F(ChromeAutofillClientIOSTest, CallToAgentUndoSnackbar) {
+  OCMExpect([mock_snackbar_handler_ showSnackbarWithMessage:[OCMArg isNotNil]
+                                                 buttonText:[OCMArg isNotNil]
+                                              messageAction:[OCMArg isNotNil]
+                                           completionAction:nil]);
+  client().ShowPlusAddressEmailOverrideNotification("", base::DoNothing());
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
 }
 
 }  // namespace autofill

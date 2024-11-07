@@ -79,9 +79,7 @@ class ShowDialogAction : public Action {
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
-    NOTREACHED_IN_MIGRATION();  // Should only be called in
-                                // ActionFactory::Build().
-    return false;
+    NOTREACHED();  // Should only be called in ActionFactory::Build().
   }
 
  private:
@@ -415,7 +413,7 @@ ActionFactory::ActionQueue ActionFactory::Build(
 
       default:
         // TODO(crbug.com/40222234): Perform validation in the `PolicyHandler`.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

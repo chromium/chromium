@@ -102,11 +102,6 @@ bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
     }
   }
 
-  // Features used for tests have this prefix and are excluded.
-  if (name.starts_with("TEST_")) {
-    return true;
-  }
-
   return false;
 }
 
@@ -244,9 +239,9 @@ FeaturePromoSpecification::FeaturePromoSpecification(
     PromoType promo_type,
     ui::ElementIdentifier anchor_element_id,
     int bubble_body_string_id)
-    : feature_(feature),
+    : AnchorElementProviderCommon(anchor_element_id),
+      feature_(feature),
       promo_type_(promo_type),
-      anchor_element_id_(anchor_element_id),
       bubble_body_string_id_(bubble_body_string_id),
       custom_action_dismiss_string_id_(IDS_PROMO_DISMISS_BUTTON) {
   DCHECK_NE(promo_type, PromoType::kUnspecified);
@@ -406,6 +401,19 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForLegacyPromo(
                                    anchor_element_id, body_text_string_id);
 }
 
+// static
+FeaturePromoSpecification FeaturePromoSpecification::CreateForTesting(
+    const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
+    int body_text_string_id,
+    PromoType type,
+    PromoSubtype subtype) {
+  FeaturePromoSpecification result(&feature, type, anchor_element_id,
+                                   body_text_string_id);
+  result.set_promo_subtype_for_testing(subtype);  // IN-TEST
+  return result;
+}
+
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleTitleText(
     int title_text_string_id) {
   DCHECK_NE(promo_type_, PromoType::kUnspecified);
@@ -481,13 +489,13 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetReshowPolicy(
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetAnchorElementFilter(
     AnchorElementFilter anchor_element_filter) {
-  anchor_element_filter_ = std::move(anchor_element_filter);
+  set_anchor_element_filter(std::move(anchor_element_filter));
   return *this;
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetInAnyContext(
     bool in_any_context) {
-  in_any_context_ = in_any_context;
+  set_in_any_context(in_any_context);
   return *this;
 }
 
@@ -529,19 +537,7 @@ ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
   // Should not be called directly on a rotating promo.
   CHECK_NE(PromoType::kRotating, promo_type_);
 
-  auto* const element_tracker = ui::ElementTracker::GetElementTracker();
-  if (anchor_element_filter_) {
-    return anchor_element_filter_.Run(
-        in_any_context_ ? element_tracker->GetAllMatchingElementsInAnyContext(
-                              anchor_element_id_)
-                        : element_tracker->GetAllMatchingElements(
-                              anchor_element_id_, context));
-  } else {
-    return in_any_context_
-               ? element_tracker->GetElementInAnyContext(anchor_element_id_)
-               : element_tracker->GetFirstMatchingElement(anchor_element_id_,
-                                                          context);
-  }
+  return AnchorElementProviderCommon::GetAnchorElement(context);
 }
 
 // static

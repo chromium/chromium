@@ -25,6 +25,7 @@
 
 class GURL;
 class Profile;
+class TabFeaturesAndroid;
 
 namespace cc::slim {
 class Layer;
@@ -197,6 +198,10 @@ class TabAndroid : public TabAndroidDataProvider,
       web_contents_delegate_;
   scoped_refptr<content::DevToolsAgentHost> devtools_host_;
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
+
+  // Holds tab-scoped state. Constructed after tab_helpers.
+  std::unique_ptr<TabFeaturesAndroid> tab_features_;
+
   base::ObserverList<Observer> observers_;
 
   const base::WeakPtr<Profile> profile_;

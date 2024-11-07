@@ -1387,8 +1387,7 @@ void PrivacySandboxServiceImpl::RecordUpdatedTopicsConsent(
   std::string consent_text;
   switch (source) {
     case privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
     case privacy_sandbox::TopicsConsentUpdateSource::kConfirmation: {
       consent_text = GetTopicsConfirmationText();
@@ -1402,7 +1401,7 @@ void PrivacySandboxServiceImpl::RecordUpdatedTopicsConsent(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   pref_service_->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven,

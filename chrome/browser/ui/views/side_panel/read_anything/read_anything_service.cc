@@ -20,10 +20,6 @@
 #include "extensions/browser/extension_system.h"
 #include "ui/accessibility/accessibility_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 // The number of seconds to wait before removing the extension. This avoids
@@ -82,15 +78,11 @@ void ReadAnythingService::OnReadAnythingSidePanelEntryHidden() {
 
 void ReadAnythingService::InstallGDocsHelperExtension() {
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(true);
-#else
   EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithId(
       extension_misc::kReadingModeGDocsHelperExtensionId,
       extension_misc::kReadingModeGDocsHelperExtensionPath,
       extension_misc::kReadingModeGDocsHelperManifestFilename,
       /*should_localize=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #else
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(profile_)->extension_service();
@@ -111,12 +103,8 @@ void ReadAnythingService::InstallGDocsHelperExtension() {
 
 void ReadAnythingService::RemoveGDocsHelperExtension() {
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(false);
-#else
   EmbeddedA11yExtensionLoader::GetInstance()->RemoveExtensionWithId(
       extension_misc::kReadingModeGDocsHelperExtensionId);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #else
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(profile_)->extension_service();

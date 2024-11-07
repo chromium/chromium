@@ -41,6 +41,14 @@ FreezingVote::~FreezingVote() {
           page_node_));
 }
 
+std::set<std::string> GetCannotFreezeReasonsForPageNode(
+    const PageNode* page_node) {
+  auto* freezing_policy =
+      performance_manager::FreezingPolicy::GetFromGraph(page_node->GetGraph());
+  CHECK(freezing_policy);
+  return freezing_policy->GetCannotFreezeReasons(page_node);
+}
+
 Discarder::Discarder() = default;
 Discarder::~Discarder() = default;
 

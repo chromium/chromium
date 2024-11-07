@@ -39,7 +39,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeStrictMode;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -51,6 +50,7 @@ import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.backup.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
+import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
 import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
 import org.chromium.chrome.browser.content_capture.ContentCaptureHistoryDeletionObserver;
 import org.chromium.chrome.browser.crash.CrashUploadCountStore;
@@ -90,6 +90,7 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
+import org.chromium.chrome.browser.searchwidget.WidgetMetrics;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -419,6 +420,7 @@ public class ProcessInitializationHandler {
                 });
 
         SearchActivityPreferencesManager.onNativeLibraryReady();
+        WidgetMetrics.recordInstalledWidgetsHistograms();
         SearchWidgetProvider.initialize();
         QuickActionSearchWidgetProvider.initialize();
 
@@ -662,9 +664,7 @@ public class ProcessInitializationHandler {
 
         tasks.add(MediaViewerUtils::updateMediaLauncherActivityEnabled);
 
-        tasks.add(
-                ChromeApplicationImpl.getComponent().resolveClearDataDialogResultRecorder()
-                        ::makeDeferredRecordings);
+        tasks.add(ClearDataDialogResultRecorder::makeDeferredRecordings);
         tasks.add(WebApkUninstallTracker::runDeferredTasks);
 
         tasks.add(OfflineContentAvailabilityStatusProvider::getInstance);

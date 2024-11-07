@@ -5,7 +5,6 @@
 #include "ui/events/keycodes/keyboard_code_conversion_xkb.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion_xkb.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
@@ -210,7 +209,7 @@ DomKey NonPrintableXKeySymToDomKey(xkb_keysym_t keysym) {
       return DomKey::CONTROL;
     case XKB_KEY_Caps_Lock:
       return DomKey::CAPS_LOCK;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case XKB_KEY_Meta_L:
     case XKB_KEY_Meta_R:
     case XKB_KEY_Alt_L:
@@ -225,7 +224,7 @@ DomKey NonPrintableXKeySymToDomKey(xkb_keysym_t keysym) {
     case XKB_KEY_Alt_L:
     case XKB_KEY_Alt_R:
       return DomKey::ALT;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     case XKB_KEY_Super_L:
     case XKB_KEY_Super_R:
       return DomKey::META;

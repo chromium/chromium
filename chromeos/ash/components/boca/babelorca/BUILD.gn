@@ -102,12 +102,15 @@ source_set("test_support") {
     "fakes/fake_token_fetcher.h",
     "fakes/fake_token_manager.cc",
     "fakes/fake_token_manager.h",
+    "fakes/fake_translation_dispatcher.cc",
+    "fakes/fake_translation_dispatcher.h",
   ]
 
   deps = [
     ":babelorca",
     "//base",
     "//components/live_caption",
+    "//components/live_caption:live_translate",
     "//components/prefs",
     "//media/mojo/mojom:speech_recognition",
     "//net/traffic_annotation",

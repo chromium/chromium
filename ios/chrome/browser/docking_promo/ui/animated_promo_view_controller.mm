@@ -12,9 +12,9 @@
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 
 namespace {
-constexpr CGFloat kCustomSpacingAtTopIfNoNavigationBar = 24;
+constexpr CGFloat kCustomSpacingAtTopIfNoNavigationBar = 32;
 constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
-constexpr CGFloat kCustomSpacing = 20;
+constexpr CGFloat kCustomSpacing = 8;
 }  // namespace
 
 @interface AnimatedPromoViewController ()
@@ -70,7 +70,7 @@ constexpr CGFloat kCustomSpacing = 20;
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitUserInterfaceStyle.self, UITraitVerticalSizeClass.self ]);
+        @[ UITraitUserInterfaceStyle.class, UITraitVerticalSizeClass.class ]);
     __weak __typeof(self) weakSelf = self;
     UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                      UITraitCollection* previousCollection) {
@@ -228,8 +228,11 @@ constexpr CGFloat kCustomSpacing = 20;
   _animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
   _animationViewWrapperDarkMode.animationView.hidden =
       hidden || !darkModeEnabled;
+
   if (_animationBackgroundColor) {
     _animationViewWrapper.animationView.backgroundColor =
+        _animationBackgroundColor;
+    _animationViewWrapperDarkMode.animationView.backgroundColor =
         _animationBackgroundColor;
   }
 

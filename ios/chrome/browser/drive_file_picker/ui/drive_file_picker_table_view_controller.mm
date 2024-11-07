@@ -295,7 +295,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitUserInterfaceStyle.self ])
+                                      @[ UITraitUserInterfaceStyle.class ])
                        withAction:@selector(userInterfaceStyleDidChange)];
   }
 }

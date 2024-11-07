@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -378,10 +379,13 @@ Status FindElementCommon(int interval_ms,
         session->GetCurrentFrameId(), script, arguments, &temp);
 
     // If navigation is detected during the WebView::CallFunction call the error
-    // code will be kNoSuchExecutionContext or kNavigationDetectedByRemoteEnd.
+    // code will be kNoSuchExecutionContext or kAbortedByNavigation.
     // We will wait and retry again until the timeout.
-    if (status.IsError() && status.code() != kNoSuchExecutionContext &&
-        status.code() != kNavigationDetectedByRemoteEnd) {
+    static const base::flat_set<StatusCode> kNavigationHints = {
+        kNoSuchExecutionContext,
+        kAbortedByNavigation,
+    };
+    if (status.IsError() && !kNavigationHints.contains(status.code())) {
       if (status.code() == kJavaScriptError) {
         status = Status{kInvalidSelector, status};
       }

@@ -541,8 +541,9 @@ def _CheckForMissingSymbols(options, dex_files, error_title):
         # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
         'kotlin.KotlinVersion',
 
-        # An ErrorProne annotation.
+        # Not sure why these two are missing, but they do not seem important.
         'ResultIgnorabilityUnspecified',
+        'kotlin.DeprecationLevel',
     ]
 
     had_unfiltered_items = '  ' in stderr

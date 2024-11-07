@@ -21,11 +21,11 @@
 #include "base/android/build_info.h"
 #endif
 
-using autofill::CountryDataMap;
-using base::ASCIIToUTF16;
-using ::i18n::addressinput::AddressField;
-
 namespace autofill {
+namespace {
+
+using ::base::ASCIIToUTF16;
+using ::i18n::addressinput::AddressField;
 
 // Test the constructor and accessors
 TEST(AutofillCountryTest, AutofillCountry) {
@@ -235,4 +235,5 @@ TEST(AutofillCountryTest, PLAddressRequirements) {
       country.IsAddressFieldSettingAccessible(FieldType::ADDRESS_HOME_STATE));
 }
 
+}  // namespace
 }  // namespace autofill

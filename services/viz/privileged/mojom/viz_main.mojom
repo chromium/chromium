@@ -37,6 +37,14 @@ struct FrameSinkManagerParams {
   DebugRendererSettings debug_renderer_settings;
 };
 
+struct GpuServiceCreationParams {
+  // On Ozone the information of whether overlays are supported is propagated
+  // from the browser.
+  [EnableIf=use_ozone]
+  bool supports_overlays = false;
+
+};
+
 // This is the primordial interface used to (re)start the viz services.
 interface VizMain {
   CreateFrameSinkManager(FrameSinkManagerParams params);
@@ -46,7 +54,8 @@ interface VizMain {
       pending_remote<GpuHost> gpu_host,
       pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      mojo_base.mojom.UnsafeSharedMemoryRegion? use_shader_cache_shm_count);
+      mojo_base.mojom.UnsafeSharedMemoryRegion? use_shader_cache_shm_count,
+      GpuServiceCreationParams params);
 
   // Sets parameters necessary for rendering.
   SetRenderParams(

@@ -647,7 +647,7 @@ WebContentsImpl* DumpAccessibilityTestBase::GetWebContents() const {
 }
 
 gfx::AcceleratedWidget DumpAccessibilityTestBase::GetAcceleratedWidget() const {
-#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE)
   return static_cast<gfx::AcceleratedWidget>(getpid());
 #else
   // The getpid() function is unavailable on some platforms, like Windows. Use 0

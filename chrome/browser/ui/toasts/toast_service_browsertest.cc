@@ -17,8 +17,21 @@
 #include "content/public/test/browser_test.h"
 
 namespace {
+
 using ToastIdEnumSet =
     base::EnumSet<ToastId, ToastId::kMinValue, ToastId::kMaxValue>;
+
+// Toast IDs that have been deprecated and no longer have a registered
+// specification.
+constexpr auto kDeprecatedToastIds =
+    std::to_array<std::underlying_type_t<ToastId>>({/*kLensOverlay=*/4});
+
+ToastIdEnumSet GetActiveToastIds() {
+  auto result = ToastIdEnumSet::All();
+  for (auto toast_id : kDeprecatedToastIds) {
+    result.Remove(static_cast<ToastId>(toast_id));
+  }
+  return result;
 }
 
 class ToastServiceBrowserTest : public InProcessBrowserTest {
@@ -44,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, RegisterAllToastIds) {
       browser()->browser_window_features()->toast_service();
   const ToastRegistry* const toast_registry = toast_service->toast_registry();
 
-  for (ToastId id : ToastIdEnumSet::All()) {
+  for (ToastId id : GetActiveToastIds()) {
     EXPECT_NE(toast_registry->GetToastSpecification(id), nullptr);
   }
 }
@@ -82,3 +95,5 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForBrowserTypes) {
   EXPECT_FALSE(devtools_window_features->toast_service());
   EXPECT_FALSE(devtools_window_features->toast_controller());
 }
+
+}  // namespace

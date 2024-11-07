@@ -4378,10 +4378,10 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
   content::TestNavigationObserver url_observer(url);
   if (mode == NavigationMode::kNewTab) {
     url_observer.StartWatchingNewWebContents();
+    chrome::NewTab(browser());
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
-            ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+        browser(), GURL(url), WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   } else {
     url_observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

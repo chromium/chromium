@@ -55,6 +55,7 @@
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "components/drive/file_errors.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/audio_service.h"

@@ -7,6 +7,8 @@
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/mock_entropy_provider.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/timer/mock_timer.h"
@@ -44,30 +46,33 @@ std::string CreateCompressedVariationsSeed() {
 }
 
 struct SeedReaderWriterTestParams {
-  using TupleT = std::tuple<std::string_view, version_info::Channel>;
+  using TupleT = std::tuple<std::string_view, std::string_view>;
 
   SeedReaderWriterTestParams(std::string_view seed_pref,
-                             version_info::Channel channel)
-      : seed_pref(seed_pref), channel(channel) {}
+                             std::string_view field_trial_group)
+      : seed_pref(seed_pref), field_trial_group(field_trial_group) {}
 
   explicit SeedReaderWriterTestParams(const TupleT& t)
       : SeedReaderWriterTestParams(std::get<0>(t), std::get<1>(t)) {}
 
   std::string_view seed_pref;
-  const version_info::Channel channel;
+  std::string_view field_trial_group;
 };
 
 class SeedReaderWriterTest : public TestWithParam<SeedReaderWriterTestParams> {
  public:
   SeedReaderWriterTest() : file_writer_thread_("SeedReaderWriter Test thread") {
+    scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
     file_writer_thread_.Start();
     CHECK(temp_dir_.CreateUniqueTempDir());
+    SetUpSeedFileTrial(std::string(GetParam().field_trial_group));
     temp_seed_file_path_ = temp_dir_.GetPath().Append(kSeedFilename);
     VariationsSeedStore::RegisterPrefs(local_state_.registry());
   }
   ~SeedReaderWriterTest() override = default;
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath temp_seed_file_path_;
   base::Thread file_writer_thread_;
   base::ScopedTempDir temp_dir_;
@@ -75,17 +80,20 @@ class SeedReaderWriterTest : public TestWithParam<SeedReaderWriterTestParams> {
   base::MockOneShotTimer timer_;
 };
 
-class SeedReaderWriterPreStableTest : public SeedReaderWriterTest {};
+class SeedReaderWriterSeedFilesGroupTest : public SeedReaderWriterTest {};
+class SeedReaderWriterControlAndLocalStateOnlyGroupTest
+    : public SeedReaderWriterTest {};
+class SeedReaderWriterAllGroupsTest : public SeedReaderWriterTest {};
 
-class SeedReaderWriterStableAndUnknownTest : public SeedReaderWriterTest {};
-
-// Verifies pre-stable clients write seeds to Local State and the seed file.
-TEST_P(SeedReaderWriterPreStableTest, WriteSeed) {
+// Verifies clients in SeedFiles group write seeds to Local State and the
+// seed file.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
   // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam().channel, GetParam().seed_pref,
-      file_writer_thread_.task_runner());
+      GetParam().seed_pref, file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed.
@@ -109,22 +117,22 @@ TEST_P(SeedReaderWriterPreStableTest, WriteSeed) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SeedReaderWriterPreStableTest,
+    SeedReaderWriterSeedFilesGroupTest,
     ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
         ::testing::Combine(
             ::testing::Values(prefs::kVariationsCompressedSeed,
                               prefs::kVariationsSafeCompressedSeed),
-            ::testing::Values(version_info::Channel::CANARY,
-                              version_info::Channel::DEV,
-                              version_info::Channel::BETA))));
+            ::testing::Values(kSeedFilesGroup))));
 
-// Verifies stable and unknown channel clients write seeds only to Local State.
-TEST_P(SeedReaderWriterStableAndUnknownTest, WriteSeed) {
+// Verifies clients in the control group and those using local state only write
+// seeds only to Local State.
+TEST_P(SeedReaderWriterControlAndLocalStateOnlyGroupTest, WriteSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
   // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam().channel, GetParam().seed_pref,
-      file_writer_thread_.task_runner());
+      GetParam().seed_pref, file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed.
@@ -145,23 +153,24 @@ TEST_P(SeedReaderWriterStableAndUnknownTest, WriteSeed) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SeedReaderWriterStableAndUnknownTest,
+    SeedReaderWriterControlAndLocalStateOnlyGroupTest,
     ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
         ::testing::Combine(
             ::testing::Values(prefs::kVariationsCompressedSeed,
                               prefs::kVariationsSafeCompressedSeed),
-            ::testing::Values(version_info::Channel::STABLE,
-                              version_info::Channel::UNKNOWN))));
+            ::testing::Values(kControlGroup, std::string()))));
 
 // Verifies that writing seeds with an empty path for `seed_file_dir` does not
 // cause a crash.
-TEST_P(SeedReaderWriterTest, EmptySeedFilePathIsValid) {
+TEST_P(SeedReaderWriterAllGroupsTest, EmptySeedFilePathIsValid) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
   // Initialize seed_reader_writer with test thread and timer and an empty file
   // path.
-  SeedReaderWriter seed_reader_writer(
-      &local_state_,
-      /*seed_file_dir=*/base::FilePath(), kSeedFilename, GetParam().channel,
-      GetParam().seed_pref, file_writer_thread_.task_runner());
+  SeedReaderWriter seed_reader_writer(&local_state_,
+                                      /*seed_file_dir=*/base::FilePath(),
+                                      kSeedFilename, GetParam().seed_pref,
+                                      file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed.
@@ -180,12 +189,13 @@ TEST_P(SeedReaderWriterTest, EmptySeedFilePathIsValid) {
 }
 
 // Verifies that a seed is cleared from both Local State and the seed file.
-TEST_P(SeedReaderWriterTest, ClearSeed) {
+TEST_P(SeedReaderWriterAllGroupsTest, ClearSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
   // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam().channel, GetParam().seed_pref,
-      file_writer_thread_.task_runner());
+      GetParam().seed_pref, file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed.
@@ -205,17 +215,14 @@ TEST_P(SeedReaderWriterTest, ClearSeed) {
   EXPECT_THAT(seed_file_data, IsEmpty());
   EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
 }
+
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SeedReaderWriterTest,
+    SeedReaderWriterAllGroupsTest,
     ::testing::ConvertGenerator<SeedReaderWriterTestParams::TupleT>(
         ::testing::Combine(
             ::testing::Values(prefs::kVariationsCompressedSeed,
                               prefs::kVariationsSafeCompressedSeed),
-            ::testing::Values(version_info::Channel::CANARY,
-                              version_info::Channel::DEV,
-                              version_info::Channel::BETA,
-                              version_info::Channel::STABLE,
-                              version_info::Channel::UNKNOWN))));
+            ::testing::Values(kSeedFilesGroup, kControlGroup, std::string()))));
 }  // namespace
 }  // namespace variations

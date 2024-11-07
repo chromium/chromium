@@ -344,7 +344,8 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
   std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
   gpu_service_->InitializeWithHost(
       std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
-      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()));
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()),
+      mojom::GpuServiceCreationParams::New());
 
   main_task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
       this, gpu_main_thread_.task_runner(), gpu_service_->GetGpuScheduler(),

@@ -27,7 +27,7 @@ class PrefService;
 
 namespace ash {
 
-class PickerClient;
+class QuickInsertClient;
 
 class ASH_EXPORT PickerSearchController {
  public:
@@ -44,20 +44,20 @@ class ASH_EXPORT PickerSearchController {
 
   // `client` must remain valid until `StopSearch` is called or until this
   // object is destroyed.
-  void StartSearch(PickerClient* client,
+  void StartSearch(QuickInsertClient* client,
                    std::u16string_view query,
                    std::optional<QuickInsertCategory> category,
                    base::span<const QuickInsertCategory> available_categories,
                    bool caps_lock_state_to_search,
                    bool search_case_transforms,
-                   PickerViewDelegate::SearchResultsCallback callback);
+                   QuickInsertViewDelegate::SearchResultsCallback callback);
 
   void StopSearch();
 
   void StartEmojiSearch(
       PrefService* prefs,
       std::u16string_view query,
-      PickerViewDelegate::EmojiSearchResultsCallback callback);
+      QuickInsertViewDelegate::EmojiSearchResultsCallback callback);
 
   // Gets the emoji name for the given emoji / emoticon / symbol.
   // Used for getting emoji tooltips for zero state emoji.

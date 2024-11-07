@@ -1101,7 +1101,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                  GLint y,
                                  GLsizei width,
                                  GLsizei height,
-                                 GLboolean unpack_flip_y,
                                  const volatile GLbyte* mailboxes);
   void DoCopySharedImageToTextureINTERNAL(GLuint texture,
                                           GLenum target,
@@ -16385,7 +16384,6 @@ void GLES2DecoderImpl::DoCopySharedImageINTERNAL(
     GLint y,
     GLsizei width,
     GLsizei height,
-    GLboolean unpack_flip_y,
     const volatile GLbyte* mailboxes) {
   NOTIMPLEMENTED_LOG_ONCE();
 }

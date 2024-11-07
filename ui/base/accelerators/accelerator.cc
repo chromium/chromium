@@ -146,6 +146,10 @@ bool Accelerator::operator!=(const Accelerator& rhs) const {
   return !(*this == rhs);
 }
 
+bool Accelerator::IsEmpty() const {
+  return key_code_ == VKEY_UNKNOWN && modifiers_ == EF_NONE;
+}
+
 bool Accelerator::IsShiftDown() const {
   return (modifiers_ & EF_SHIFT_DOWN) != 0;
 }

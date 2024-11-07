@@ -63,9 +63,9 @@ const CGFloat kFaviconContainerWidth = 30;
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = @[
-        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
-        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
-        UITraitUserInterfaceLevel.self
+        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+        UITraitUserInterfaceLevel.class
       ];
 
       [self registerForTraitChanges:traits

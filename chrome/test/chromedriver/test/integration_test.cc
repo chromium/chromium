@@ -18,6 +18,7 @@
 #include "base/process/launch.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome_launcher.h"
+#include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/net/pipe_builder.h"
 
 testing::AssertionResult StatusOk(const Status& status) {
@@ -28,9 +29,14 @@ testing::AssertionResult StatusOk(const Status& status) {
   }
 }
 
-IntegrationTest::IntegrationTest() = default;
+IntegrationTest::IntegrationTest()
+    : session_("IntegrationTestDefaultSession") {}
 
 IntegrationTest::~IntegrationTest() = default;
+
+void IntegrationTest::SetUpTestSuite() {
+  InitLogging();
+}
 
 void IntegrationTest::SetUp() {
   http_server_.Start();
@@ -75,6 +81,8 @@ void IntegrationTest::SetUp() {
   base::TerminationStatus chrome_status =
       base::GetTerminationStatus(process_.Handle(), &exit_code);
   ASSERT_EQ(base::TERMINATION_STATUS_STILL_RUNNING, chrome_status);
+
+  session_.w3c_compliant = true;
 
   browser_client_ = std::make_unique<DevToolsClientImpl>(
       DevToolsClientImpl::kBrowserwideDevToolsClientId, "");

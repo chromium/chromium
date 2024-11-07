@@ -7313,6 +7313,8 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
       properties, ax::mojom::BoolAttribute::kSelected, "selected");
   IntAttributeToUIAAriaProperty(properties, ax::mojom::IntAttribute::kSetSize,
                                 "setsize");
+  StateToUIAAriaProperty(properties, ax::mojom::State::kHasActions,
+                         "hasactions");
 
   int32_t sort_direction;
   if (IsTableHeader(GetRole()) &&

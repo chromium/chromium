@@ -218,6 +218,12 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   // Sets the label for the item at |index|.
   void SetLabel(size_t index, const std::u16string& label);
 
+  // Sets an accelerator for the item at |index|.
+  //
+  // Delegate's accelerator will be preferred over one set this way (in case the
+  // former is set).
+  void SetAcceleratorAt(size_t index, const ui::Accelerator& accelerator);
+
   // Sets the minor text for the item at |index|.
   void SetMinorText(size_t index, const std::u16string& minor_text);
 
@@ -264,6 +270,12 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   std::u16string GetMinorTextAt(size_t index) const override;
   ImageModel GetMinorIconAt(size_t index) const override;
   bool IsItemDynamicAt(size_t index) const override;
+  // First defers to the delegate's GetAcceleratorForCommandId() method to
+  // retrieve the accelerator for the command associated with the item at
+  // |index|.
+  // If no delegate is present or if the delegate does not provide an
+  // accelerator, GetAcceleratorAt() will retrieve simple menu model's
+  // accelerator for the item at |index| set by SetAcceleratorAt().
   bool GetAcceleratorAt(size_t index,
                         ui::Accelerator* accelerator) const override;
   bool IsItemCheckedAt(size_t index) const override;
@@ -300,6 +312,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
     int command_id = 0;
     ItemType type = TYPE_COMMAND;
     std::u16string label;
+    ui::Accelerator accelerator;
     std::u16string minor_text;
     ImageModel minor_icon;
     ImageModel icon;

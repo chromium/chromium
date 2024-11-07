@@ -44,13 +44,15 @@ constexpr char kUploadContentType[] = "application/octet-stream";
 constexpr char kMetadataContentType[] = "application/json";
 
 std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    bool is_obfuscated) {
   // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
   // user clicking "Open Now" without causing download errors.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_WIN_SHARE_DELETE);
 
-  return ConnectorDataPipeGetter::CreateResumablePipeGetter(std::move(file));
+  return ConnectorDataPipeGetter::CreateResumablePipeGetter(std::move(file),
+                                                            is_obfuscated);
 }
 
 }  // namespace
@@ -62,6 +64,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     BinaryUploadService::Result get_data_result,
     const base::FilePath& path,
     uint64_t file_size,
+    bool is_obfuscated,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
@@ -69,9 +72,11 @@ ResumableUploadRequest::ResumableUploadRequest(
                              metadata,
                              path,
                              file_size,
+                             is_obfuscated,
                              traffic_annotation,
                              std::move(callback)),
-      get_data_result_(get_data_result) {
+      get_data_result_(get_data_result),
+      is_obfuscated_(is_obfuscated) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -147,17 +152,18 @@ ResumableUploadRequest::CreateFileRequest(
     BinaryUploadService::Result get_data_result,
     const base::FilePath& path,
     uint64_t file_size,
+    bool is_obfuscated,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ResumableUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<ResumableUploadRequest>(
         url_loader_factory, base_url, metadata, get_data_result, path,
-        file_size, traffic_annotation, std::move(callback));
+        file_size, is_obfuscated, traffic_annotation, std::move(callback));
   }
 
-  return factory_->CreateFileRequest(url_loader_factory, base_url, metadata,
-                                     get_data_result, path, file_size,
-                                     traffic_annotation, std::move(callback));
+  return factory_->CreateFileRequest(
+      url_loader_factory, base_url, metadata, get_data_result, path, file_size,
+      is_obfuscated, traffic_annotation, std::move(callback));
 }
 
 // static
@@ -259,10 +265,9 @@ void ResumableUploadRequest::SendContentSoon() {
       break;
     // Resumable upload currently does not support paste.
     case STRING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -275,7 +280,7 @@ void ResumableUploadRequest::CreateDatapipe(
       std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&CreateFileDataPipeGetterBlocking, path_),
+      base::BindOnce(&CreateFileDataPipeGetterBlocking, path_, is_obfuscated_),
       base::BindOnce(&ResumableUploadRequest::OnDataPipeCreated,
                      weak_factory_.GetWeakPtr(), std::move(request)));
 }

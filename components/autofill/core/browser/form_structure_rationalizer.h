@@ -64,19 +64,15 @@ class FormStructureRationalizer {
   // contenteditables in their own code.
   void RationalizeContentEditables(LogManager* log_manager);
 
-  // Tunes the fields with identical predictions.
-  // The `form_signature` is needed for logging.
-  void RationalizeRepeatedFields(
-      FormSignature form_signature,
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      LogManager* log_manager);
-
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.
-  void RationalizeFieldTypePredictions(const url::Origin& main_origin,
-                                       const GeoIpCountryCode& client_country,
-                                       const LanguageCode& language_code,
-                                       LogManager* log_manager);
+  void RationalizeFieldTypePredictions(
+      const url::Origin& main_origin,
+      FormSignature form_signature,
+      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      const GeoIpCountryCode& client_country,
+      const LanguageCode& language_code,
+      LogManager* log_manager);
 
   // Ensures that only a single phone number (which can be split across multiple
   // fields) is autofilled per section. If a section contains multiple phone
@@ -103,6 +99,14 @@ class FormStructureRationalizer {
   // respectively, block of four digits.
   void RationalizeCreditCardNumberOffsets(LogManager* log_manager);
 
+  // Rewrites two or three (not necessarily consecutive)
+  // ADDRESS_HOME_STREET_ADDRESS fields in the same section into address line 1,
+  // 2 and 3.
+  void RationalizeRepeatedStreetAddressFields(
+      FormSignature form_signature,
+      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      LogManager* log_manager);
+
   // Rewrites sequences of (street address, address_line2) into (address_line1,
   // address_line2) as server predictions sometimes introduce wrong street
   // address predictions.
@@ -122,22 +126,6 @@ class FormStructureRationalizer {
   // This function rationalizes types of city code and city-and-number fields
   // accordingly.
   void RationalizePhoneNumberTrunkTypes(LogManager* log_manager);
-
-  // Set fields_[|field_index|] to |new_type| and log this change.
-  void ApplyRationalizationsToFieldAndLog(
-      AutofillField& field,
-      FieldType new_type,
-      FormSignature form_signature,
-      autofill_metrics::FormInteractionsUkmLogger*
-          form_interactions_ukm_logger);
-
-  // Two or three fields predicted as the whole address should be address lines
-  // 1, 2 and 3 instead.
-  void RationalizeAddressLineFields(
-      const std::vector<AutofillField*>& fields,
-      FormSignature form_signature,
-      autofill_metrics::FormInteractionsUkmLogger*,
-      LogManager* log_manager);
 
   // Filters out fields that don't meet the relationship ruleset for their type
   // defined in |type_relationships_rules_|.

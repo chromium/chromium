@@ -183,7 +183,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return level;
@@ -417,7 +417,7 @@ void DataTransferDlpController::ReportWarningProceededEvent(
   }
 
   if (data_dst.has_value() && IsVM(data_dst->type())) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   } else {
     const std::string src_url = (data_src.has_value() && data_src->IsUrlType())
                                     ? data_src->GetURL()->spec()
@@ -622,7 +622,7 @@ void DataTransferDlpController::ContinueDropIfAllowed(
       break;
 
     case DlpRulesManager::Level::kNotSet:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   const bool is_drop_allowed = (level == DlpRulesManager::Level::kAllow) ||

@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/xml/parser/shared_buffer_reader.h"
 
 #include <cstdlib>
@@ -47,34 +42,31 @@ TEST(SharedBufferReaderTest, readDataWithNullSharedBuffer) {
   SharedBufferReader reader(nullptr);
   char buffer[32];
 
-  EXPECT_EQ(0, reader.ReadData(buffer, sizeof(buffer)));
+  EXPECT_EQ(0u, reader.ReadData(buffer));
 }
 
 TEST(SharedBufferReaderTest, readDataWith0BytesRequest) {
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create();
   SharedBufferReader reader(shared_buffer);
 
-  EXPECT_EQ(0, reader.ReadData(nullptr, 0));
+  EXPECT_EQ(0u, reader.ReadData({}));
 }
 
 TEST(SharedBufferReaderTest, readDataWithSizeBiggerThanSharedBufferSize) {
-  static const char kTestData[] = "hello";
-  scoped_refptr<SharedBuffer> shared_buffer =
-      SharedBuffer::Create(kTestData, sizeof(kTestData));
-
+  static const auto kTestData = base::span_with_nul_from_cstring("hello");
+  scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(kTestData);
   SharedBufferReader reader(shared_buffer);
 
   const int kExtraBytes = 3;
-  char output_buffer[sizeof(kTestData) + kExtraBytes];
+  char output_buffer[kTestData.size() + kExtraBytes];
 
   const char kInitializationByte = 'a';
-  memset(output_buffer, kInitializationByte, sizeof(output_buffer));
-  EXPECT_EQ(sizeof(kTestData), static_cast<size_t>(reader.ReadData(
-                                   output_buffer, sizeof(output_buffer))));
+  std::ranges::fill(output_buffer, kInitializationByte);
 
-  EXPECT_TRUE(
-      std::equal(kTestData, kTestData + sizeof(kTestData), output_buffer));
-  // Check that the bytes past index sizeof(testData) were not touched.
+  EXPECT_EQ(kTestData.size(), reader.ReadData(output_buffer));
+
+  EXPECT_EQ(kTestData, base::span(output_buffer).first(kTestData.size()));
+  // Check that the bytes past index sizeof(kTestData) were not touched.
   EXPECT_EQ(kExtraBytes,
             base::ranges::count(output_buffer, kInitializationByte));
 }
@@ -86,16 +78,15 @@ TEST(SharedBufferReaderTest, readDataInMultiples) {
   Vector<char> test_data(kIterationsCount * kBytesPerIteration);
   std::generate(test_data.begin(), test_data.end(), &std::rand);
 
-  scoped_refptr<SharedBuffer> shared_buffer =
-      SharedBuffer::Create(&test_data[0], test_data.size());
+  scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(test_data);
   SharedBufferReader reader(shared_buffer);
 
   Vector<char> destination_vector(test_data.size());
 
   for (int i = 0; i < kIterationsCount; ++i) {
     const int offset = i * kBytesPerIteration;
-    const int bytes_read =
-        reader.ReadData(&destination_vector[0] + offset, kBytesPerIteration);
+    const int bytes_read = reader.ReadData(
+        base::span(destination_vector).subspan(offset, kBytesPerIteration));
     EXPECT_EQ(kBytesPerIteration, bytes_read);
   }
 
@@ -106,18 +97,19 @@ TEST(SharedBufferReaderTest, clearSharedBufferBetweenCallsToReadData) {
   Vector<char> test_data(128);
   std::generate(test_data.begin(), test_data.end(), &std::rand);
 
-  scoped_refptr<SharedBuffer> shared_buffer =
-      SharedBuffer::Create(&test_data[0], test_data.size());
+  scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(test_data);
   SharedBufferReader reader(shared_buffer);
 
   Vector<char> destination_vector(test_data.size());
-  const int bytes_to_read = test_data.size() / 2;
-  EXPECT_EQ(bytes_to_read,
-            reader.ReadData(&destination_vector[0], bytes_to_read));
+  const size_t bytes_to_read = test_data.size() / 2;
+  EXPECT_EQ(
+      bytes_to_read,
+      reader.ReadData(base::span(destination_vector).first(bytes_to_read)));
 
   shared_buffer->Clear();
 
-  EXPECT_EQ(0, reader.ReadData(&destination_vector[0], bytes_to_read));
+  EXPECT_EQ(
+      0u, reader.ReadData(base::span(destination_vector).first(bytes_to_read)));
 }
 
 }  // namespace blink

@@ -218,8 +218,7 @@ TransferFinalStatus TransferMetadataStatusToTransferFinalStatus(
     case TransferMetadata::Status::kInProgress:
     case TransferMetadata::Status::kMediaDownloading:
     case TransferMetadata::Status::kExternalProviderLaunched:
-      NOTREACHED_IN_MIGRATION();
-      return TransferFinalStatus::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -242,8 +241,7 @@ NearbyConnectionsStatusToStartAdvertisingFailureReason(
     case nearby::connections::mojom::Status::kWifiLanError:
       return StartAdvertisingFailureReason::kWifiLanError;
     case nearby::connections::mojom::Status::kSuccess:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case nearby::connections::mojom::Status::kAlreadyDiscovering:
     case nearby::connections::mojom::Status::kEndpointIOError:
     case nearby::connections::mojom::Status::kEndpointUnknown:
@@ -270,8 +268,7 @@ FinalStatus PayloadStatusToFinalStatus(
     case nearby::connections::mojom::PayloadStatus::kCanceled:
       return FinalStatus::kCanceled;
     case nearby::connections::mojom::PayloadStatus::kInProgress:
-      NOTREACHED_IN_MIGRATION();
-      return FinalStatus::kFailure;
+      NOTREACHED();
   }
 }
 
@@ -309,8 +306,7 @@ std::string GetPayloadStatusSubcategoryName(
     case nearby::connections::mojom::PayloadStatus::kCanceled:
       return ".Cancelled";
     case nearby::connections::mojom::PayloadStatus::kInProgress:
-      NOTREACHED_IN_MIGRATION();
-      return ".Failed";
+      NOTREACHED();
   }
 }
 

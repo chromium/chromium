@@ -41,6 +41,9 @@ class ToolbarController : public views::MenuDelegate,
     // Return true if any buttons should overflow given available size.
     virtual bool ShouldAnyButtonsOverflow(gfx::Size available_size) const = 0;
 
+    // Returns the ordered list of pinned ActionIds.
+    virtual const std::vector<actions::ActionId>& PinnedActionIds() const = 0;
+
    protected:
     virtual ~PinnedActionsDelegate() = default;
   };
@@ -264,10 +267,14 @@ class ToolbarController : public views::MenuDelegate,
   bool IsCommandIdEnabled(int command_id) const override;
 
   // The toolbar elements managed by this controller.
-  // This also serves as a map that its indices are used as command ids in
-  // overflowed menu model. To facilitate menu creation elements order should
-  // match overflow menu top to bottom.
+  // The order of the elements is determined at the constructor.
+  // To facilitate menu creation elements order should match overflow
+  // menu top to bottom.
   const std::vector<ResponsiveElementInfo> responsive_elements_;
+  // Returns responsive_elements_ but with the Actions in the correct order,
+  // as defined by the pinned_actions_delegate_
+  std::vector<ResponsiveElementInfo> GetResponsiveElementsWithOrderedActions()
+      const;
 
   std::vector<base::CallbackListSubscription> action_changed_subscription_;
 

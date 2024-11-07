@@ -7301,6 +7301,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Widget.InstalledWidgetTypes" enum="AndroidWidgetType"
+    expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the types of widgets installed on the Launcher screen.
+
+    Recorded once per Chrome milestone, if and only if the number of installed
+    {AndroidWidgetType} widgets is greater than 0.
+  </summary>
+</histogram>
+
+<histogram name="Android.Widget.NumInstalledWidgets{AndroidWidgetVariant}"
+    units="count" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the total count of {AndroidWidgetVariant} widgets installed on the
+    Launcher screen.
+
+    Recorded once per Chrome milestone, if and only if the number of installed
+    {AndroidWidgetVariant} widgets is greater than 0.
+  </summary>
+  <token key="AndroidWidgetVariant">
+    <variant name="" summary="total"/>
+    <variant name=".Bookmarks" summary="Bookmarks"/>
+    <variant name=".Dino" summary="Dino"/>
+    <variant name=".Search" summary="Search"/>
+    <variant name=".Shortcuts" summary="Shortcuts"/>
+  </token>
+</histogram>
+
 <histogram name="AndroidSearchEngineLogo.Events"
     enum="AndroidSearchEngineLogoEvents" expires_after="2025-05-04">
   <owner>wylieb@chromium.org</owner>

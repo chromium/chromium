@@ -11,10 +11,10 @@
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -33,10 +33,6 @@ namespace {
 
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
-
-const char kGoogleCalendarDriveIconUrl[] =
-    "https://drive-thirdparty.googleusercontent.com/16/type/application/"
-    "vnd.google-apps.document";
 
 // TODO(crbug.com/343738665): Update when more granular policy is added.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -88,37 +84,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         })");
 
-ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
-  ntp::calendar::mojom::CalendarEventPtr event =
-      ntp::calendar::mojom::CalendarEvent::New();
-  event->title = "Calendar Event " + base::NumberToString(index);
-  event->start_time = base::Time::Now() + base::Minutes(index * 30);
-  event->end_time = event->start_time + base::Minutes(30);
-  event->url = GURL("https://foo.com/" + base::NumberToString(index));
-  event->location = "Conference Room " + base::NumberToString(index);
-  for (int i = 0; i < 3; ++i) {
-    ntp::calendar::mojom::AttachmentPtr attachment =
-        ntp::calendar::mojom::Attachment::New();
-    attachment->title = "Attachment " + base::NumberToString(i);
-    attachment->resource_url =
-        GURL("https://foo.com/attachment" + base::NumberToString(i));
-    attachment->icon_url = GURL(kGoogleCalendarDriveIconUrl);
-    event->attachments.push_back(std::move(attachment));
-  }
-  event->conference_url =
-      GURL("https://foo.com/conference" + base::NumberToString(index));
-  event->is_accepted = true;
-  event->has_other_attendee = false;
-  return event;
-}
-
-std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents() {
-  std::vector<ntp::calendar::mojom::CalendarEventPtr> events;
-  for (int i = 0; i < 5; ++i) {
-    events.push_back(GetFakeEvent(i));
-  }
-  return events;
-}
 
 std::unique_ptr<google_apis::RequestSender> MakeSender(Profile* profile) {
   std::vector<std::string> scopes = {
@@ -188,7 +153,8 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
       ntp_features::kNtpCalendarModule,
       ntp_features::kNtpCalendarModuleDataParam);
   if (!fake_data_param.empty()) {
-    std::move(callback).Run(GetFakeEvents());
+    std::move(callback).Run(calendar::calendar_fake_data_helper::GetFakeEvents(
+        calendar::calendar_fake_data_helper::CalendarType::GOOGLE_CALENDAR));
   } else {
     std::vector<google_apis::calendar::EventType> event_types = {
         google_apis::calendar::EventType::kDefault};

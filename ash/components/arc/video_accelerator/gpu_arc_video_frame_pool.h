@@ -17,6 +17,7 @@
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -97,7 +98,7 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   // Create a frame from the specified |gmb_handle|.
   scoped_refptr<media::FrameResource> CreateFrame(
       gfx::GpuMemoryBufferHandle gmb_handle,
-      media::VideoPixelFormat pixel_format) const;
+      media::VideoPixelFormat pixel_format);
 
   // Submits a RequestFrames() call to |pool_client_|.
   void HandleRequestFrames(const media::Fourcc& fourcc,
@@ -132,8 +133,11 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   // The coded size currently used for video frames.
   gfx::Size coded_size_;
 
-  // Map of video frame buffer ids to the associated video frame ids.
-  std::map<gfx::GenericSharedMemoryId, int32_t> buffer_id_to_video_frame_id_;
+  // Used to guarantee that frames are produced with unique tracking tokens.
+  media::UniqueTrackingTokenHelper frame_tracking_token_helper_;
+
+  // Map of video frame ids from the associated frame tracking tokens.
+  std::map<base::UnguessableToken, int32_t> frame_token_to_video_frame_id_;
 
   // The protected buffer manager, used when decoding an encrypted video.
   scoped_refptr<ProtectedBufferManager> protected_buffer_manager_;

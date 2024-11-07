@@ -68,9 +68,7 @@ std::string IntAttrToString(const ui::AXNode& node,
                             int32_t value) {
   if (ui::IsNodeIdIntAttribute(attr)) {
     // Relation
-    ui::AXTreeID tree_id = node.tree()->GetAXTreeID();
-    ui::AXNode* target =
-        ui::AXTreeManager::FromID(tree_id)->GetNodeFromTree(tree_id, value);
+    const ui::AXNode* target = node.tree()->GetFromId(value);
     if (!target) {
       return "null";
     }

@@ -39,8 +39,7 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
   bool MustRemainEnabled(const Extension* extension,
                          std::u16string* error) const override;
   bool MustRemainDisabled(const Extension* extension,
-                          disable_reason::DisableReason* reason,
-                          std::u16string* error) const override;
+                          disable_reason::DisableReason* reason) const override;
   bool MustRemainInstalled(const Extension* extension,
                            std::u16string* error) const override;
   bool ShouldForceUninstall(const Extension* extension,

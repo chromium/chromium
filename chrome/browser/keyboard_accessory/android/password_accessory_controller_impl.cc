@@ -436,9 +436,8 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
                 WebAuthnCredManDelegate::RequestPasswords(false));
             return;
           default:
-            NOTREACHED_IN_MIGRATION()
-                << "WebAuthnCredManDelegate should not be used if "
-                   "CredManMode is kNotEnabled!";
+            NOTREACHED() << "WebAuthnCredManDelegate should not be used if "
+                            "CredManMode is kNotEnabled!";
         }
       }
       return;
@@ -478,8 +477,8 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
       plus_addresses::ShowManagePlusAddressesPage(GetWebContents());
       return;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unhandled selected action: " << static_cast<int>(selected_action);
+      NOTREACHED() << "Unhandled selected action: "
+                   << static_cast<int>(selected_action);
   }
 }
 
@@ -490,8 +489,8 @@ void PasswordAccessoryControllerImpl::OnToggleChanged(
     ChangeCurrentOriginSavePasswordsStatus(enabled);
     return;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unhandled selected action: " << static_cast<int>(toggled_action);
+  NOTREACHED() << "Unhandled selected action: "
+               << static_cast<int>(toggled_action);
 }
 
 void PasswordAccessoryControllerImpl::RegisterPlusProfilesProvider(

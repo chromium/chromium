@@ -95,6 +95,10 @@ const char kEnrollmentAutoAttributes[] = "enrollmentAutoAttributes";
 // Enrollment).
 const char kEnrollmentToken[] = "enrollmentToken";
 
+// Boolean value, indicating that the enrollment success screen should be
+// automatically proceeded through.
+const char kSkipEnrollmentSuccessScreen[] = "skipEnrollmentSuccessScreen";
+
 // String value, indicates origin of OOBE config (i.e. what agent/purpose
 // created the OOBE config and put it on the device).
 // Currently used values are:
@@ -137,6 +141,8 @@ constexpr struct {
     {kArcTosAutoAccept, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_BOTH},
     {kEnrollmentToken, ValueType::STRING,
+     ConfigurationHandlerSide::HANDLER_CPP},
+    {kSkipEnrollmentSuccessScreen, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kSource, ValueType::STRING, ConfigurationHandlerSide::HANDLER_CPP},
     {"desc", ValueType::STRING, ConfigurationHandlerSide::HANDLER_DOC},

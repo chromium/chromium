@@ -104,7 +104,7 @@ NSString* const kDeferredInitializationBlocksComplete =
       [MetricsMediator logStartupDuration:self.appState.startupInformation];
       if (ios::provider::IsPrimesSupported()) {
         ios::provider::PrimesAppReady();
-        [[DeferredInitializationRunner sharedInstance]
+        [self.appState.deferredRunner
             enqueueBlockNamed:kTakeStartupMemorySnapshot
                         block:^{
                           ios::provider::PrimesTakeMemorySnapshot(

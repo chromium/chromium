@@ -22,7 +22,7 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -31,11 +31,11 @@
 #include "chrome/common/pref_names.h"
 #endif
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -86,7 +86,7 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   ChromeLabsCoordinator* coordinator =
       browser_view()->browser()->GetFeatures().chrome_labs_coordinator();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::OwnerSettingsServiceAsh* service_ =
       ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(GetProfile());
   coordinator->SetShouldCircumventDeviceCheckForTesting(true);
@@ -97,7 +97,7 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(labs_button);
   test_api.NotifyClick(e);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   service_->RunPendingIsOwnerCallbacksForTesting(/*is_owner=*/false);
 #endif
   EXPECT_TRUE(coordinator->BubbleExists());
@@ -136,7 +136,7 @@ TEST_F(ChromeLabsButtonTest, DotIndicatorTest) {
   EXPECT_FALSE(chrome_labs_button->GetDotIndicatorVisibilityForTesting());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class ChromeLabsButtonTestSafeMode : public ChromeLabsButtonTest {
  public:
@@ -250,4 +250,4 @@ TEST_F(ChromeLabsButtonOnlyExpiredFeaturesAvailableTest,
   EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)

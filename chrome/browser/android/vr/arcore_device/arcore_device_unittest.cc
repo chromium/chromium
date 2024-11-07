@@ -151,7 +151,7 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
       SurfaceTouchCallback touch_callback,
       JavaShutdownCallback destroyed_callback,
       XrSessionButtonTouchedCallback button_touched_callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void EndSession() override {}
 

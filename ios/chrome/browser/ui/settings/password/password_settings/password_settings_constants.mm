@@ -34,3 +34,8 @@ NSString* const kPasswordSettingsOnDeviceEncryptionOptedInTextId =
     @"PasswordSettingsOnDeviceEncryptionOptedInTextId";
 NSString* const kPasswordSettingsOnDeviceEncryptionSetUpId =
     @"PasswordSettingsOnDeviceEncryptionSetUpId";
+
+NSString* const kPasswordSettingsChangePinButtonId =
+    @"PasswordSettingsChangePinButtonId";
+NSString* const kPasswordSettingsChangePinDescriptionId =
+    @"PasswordSettingsChangePinDescriptionId";

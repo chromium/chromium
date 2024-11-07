@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -131,8 +132,8 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.password_generation_bottom_sheet_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.password_generation_bottom_sheet_content_description);
     }
 
     @Override

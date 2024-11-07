@@ -1130,7 +1130,6 @@ void GLES2InterfaceStub::CopySharedImageINTERNAL(
     GLint /* y */,
     GLsizei /* width */,
     GLsizei /* height */,
-    GLboolean /* unpack_flip_y */,
     const GLbyte* /* mailboxes */) {}
 void GLES2InterfaceStub::CopySharedImageToTextureINTERNAL(
     GLuint /* texture */,

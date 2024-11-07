@@ -89,7 +89,7 @@ void OomInterventionTabHelper::DeclineInterventionWithReload() {
 }
 
 void OomInterventionTabHelper::DeclineInterventionSticky() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void OomInterventionTabHelper::WebContentsDestroyed() {

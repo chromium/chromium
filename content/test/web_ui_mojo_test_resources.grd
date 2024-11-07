@@ -37,6 +37,9 @@ This file specifies resources for content_browsertests.
       <include name="IDR_WEB_UI_TS_TEST_OTHER_MAPPED_TYPES_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_mojo_ts_test_other_mapped_types.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_mojo_ts_test_other_mapped_types.js" />
       <include name="IDR_WEB_UI_TS_TEST_CONVERTERS_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_mojo_ts_test_converters.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_mojo_ts_test_converters.js" />
       <include name="IDR_WEB_UI_TS_TEST_TYPES_MOJOM_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_ts_test_types.test-mojom-webui.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_ts_test_types.test-mojom-webui.js" />
+      <include name="IDR_WEB_UI_TS_TEST_CONFORMANCE_HTML" file="data/web_ui_mojo_conformance_test.html" type="BINDATA" />
+      <include name="IDR_WEB_UI_TS_TEST_CONFORMANCE_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_mojo_conformance_test.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_mojo_conformance_test.js" />
+      <include name="IDR_WEB_UI_TS_TEST_VALIDATION_MOJO_JS" file="${root_gen_dir}/content/test/data/tsc/validation_test_interfaces.mojom-webui.js" use_base_dir="false" type="BINDATA" resource_path="validation_test_interfaces.mojom-webui.js" />
     </includes>
   </release>
 </grit>

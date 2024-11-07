@@ -43,6 +43,18 @@ SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
   if (scope.get_scope_type() == SidePanelEntryScope::ScopeType::kBrowser) {
     webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
                                      &scope.GetBrowserWindowInterface());
+  } else if (scope.get_scope_type() == SidePanelEntryScope::ScopeType::kTab) {
+    webui::SetTabInterface(contents_wrapper_->web_contents(),
+                           &scope.GetTabInterface());
+    // TODO(crbug.com/371950942): Once the new discard implementation has landed
+    // there is no need to re-set the interface on discard and this can be
+    // removed.
+    tab_will_discard_subscription_ =
+        scope.GetTabInterface().RegisterWillDiscardContents(base::BindRepeating(
+            [](tabs::TabInterface* tab, content::WebContents* old_contents,
+               content::WebContents* new_contents) {
+              webui::SetTabInterface(new_contents, tab);
+            }));
   }
 }
 

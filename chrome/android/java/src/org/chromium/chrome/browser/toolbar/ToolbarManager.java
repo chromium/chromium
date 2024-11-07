@@ -430,11 +430,6 @@ public class ToolbarManager
                 assert mIsGestureMode : "Must be in gesture mode if transition handler is alive";
                 mHandler.onBackInvoked(mIsGestureMode);
             } else {
-                assert (!mBackGestureInProgress || !mIsGestureMode)
-                                || // called handleBackPress without handleBackStarted
-                                !GestureNavigationUtils.allowTransition(
-                                        mActivityTabProvider.get(), /* forward= */ false)
-                        : "No gesture handler when transition is disallowed.";
                 res = ToolbarManager.this.handleBackPress();
             }
             mBackGestureInProgress = false;
@@ -508,24 +503,24 @@ public class ToolbarManager
             if (!mIsGestureMode) return;
             if (!GestureNavigationUtils.allowTransition(mActivityTabProvider.get(), false)) return;
 
-            mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
-
             boolean navigatesForward = isForward();
             if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
-                    navigatesForward, backEvent.getSwipeEdge())) {
+                            navigatesForward, backEvent.getSwipeEdge())
+                    && mActivityTabProvider.get().canGoBack()) {
                 // Always force to show the top control at the start of the gesture.
                 TabBrowserControlsConstraintsHelper.update(
                         mLocationBarModel.getTab(),
                         BrowserControlsState.SHOWN,
                         /* animate= */ true);
+                mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
+                mHandler.onBackStarted(
+                        backEvent.getProgress(),
+                        backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
+                                ? BackGestureEventSwipeEdge.LEFT
+                                : BackGestureEventSwipeEdge.RIGHT,
+                        navigatesForward,
+                        mIsGestureMode);
             }
-            mHandler.onBackStarted(
-                    backEvent.getProgress(),
-                    backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
-                            ? BackGestureEventSwipeEdge.LEFT
-                            : BackGestureEventSwipeEdge.RIGHT,
-                    navigatesForward,
-                    mIsGestureMode);
         }
     }
 

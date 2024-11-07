@@ -180,7 +180,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBottomToolbar,
     &kAndroidElegantTextHeight,
     &kAndroidHubFloatingActionButton,
-    &kAndroidHubSearch,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidTabDeclutter,
     &kAndroidTabDeclutterArchiveAllButActiveTab,
@@ -460,10 +459,6 @@ BASE_FEATURE(kAndroidElegantTextHeight,
 
 BASE_FEATURE(kAndroidHubFloatingActionButton,
              "AndroidHubFloatingActionButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidHubSearch,
-             "AndroidHubSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,

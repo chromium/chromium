@@ -668,9 +668,9 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // settings object, and options. Wait until the algorithm asynchronously
   // completes with result." [spec text]
   //
-  // https://wicg.github.io/import-maps/#wait-for-import-maps
   modulator->SetAcquiringImportMapsState(
       Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
+  // Step 2. Fetch a single module script given ...
   modulator->FetchSingle(request, window->Fetcher(),
                          ModuleGraphLevel::kDependentModuleFetch,
                          ModuleScriptCustomFetchType::kNone, client);

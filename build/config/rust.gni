@@ -24,6 +24,13 @@ declare_args() {
   # Chromium-based projects that are built for for architectures Chrome does not
   # support may need to disable this as well, though they may need to replace
   # code with C/C++ to get a functional product.
+  #
+  # Based on the above:
+  #
+  # * `enable_rust` may be consulted under `//build` and `//testing` directories
+  #   (which may be used outside of Chromium build)
+  # * `enable_rust` should *not* be consulted in other Chromium directories
+  #   (including `//base`, `//net`, etc.)
   enable_rust = build_with_chromium
 
   # The CXX tool is in //third_party/rust which is not shared with downstream

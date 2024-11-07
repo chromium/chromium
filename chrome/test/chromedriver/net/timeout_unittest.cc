@@ -28,7 +28,7 @@ TEST(TimeoutTest, SetDuration) {
   // It's ok to set the same duration again, since nothing changes.
   timeout.SetDuration(base::Seconds(1));
 
-  EXPECT_DCHECK_DEATH(timeout.SetDuration(base::Minutes(30)));
+  EXPECT_NOTREACHED_DEATH(timeout.SetDuration(base::Minutes(30)));
 }
 
 TEST(TimeoutTest, Derive) {

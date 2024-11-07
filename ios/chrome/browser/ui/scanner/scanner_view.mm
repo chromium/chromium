@@ -69,7 +69,7 @@ const CGFloat kFlashDuration = 0.5;
   _delegate = delegate;
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(maybeHideCaptions)];
   }

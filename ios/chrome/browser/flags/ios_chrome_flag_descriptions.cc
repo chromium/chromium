@@ -165,6 +165,18 @@ const char kAutofillStickyInfobarDescription[] =
     "Makes the Address Infobar sticky to only dismiss on navigation from user "
     "gesture.";
 
+const char kAutofillThrottleDocumentFormScanName[] =
+    "Throttle Autofill Document Form Scans";
+const char kAutofillThrottleDocumentFormScanDescription[] =
+    "Enables the throttling of the recurrent document form scans done by "
+    "Autofill.";
+
+const char kAutofillThrottleFilteredDocumentFormScanName[] =
+    "Throttle Filtered Autofill Document Form Scans";
+const char kAutofillThrottleFilteredDocumentFormScanDescription[] =
+    "Enables the throttling of the on the spot filtered form scans done by "
+    "Autofill (e.g. get the latest state of a form that had an activity).";
+
 const char kAutofillUnmaskCardRequestTimeoutName[] =
     "Timeout for the credit card unmask request";
 const char kAutofillUnmaskCardRequestTimeoutDescription[] =
@@ -575,6 +587,11 @@ const char kIOSQuickDeleteName[] = "Quick Delete for iOS";
 const char kIOSQuickDeleteDescription[] =
     "Enables a new way for users to more easily delete their browsing data in "
     "iOS.";
+
+const char kNewFeedPositioningExperimentName[] =
+    "New Personalized Feed Positioning for iOS";
+const char kNewFeedPositioningExperimentDescription[] =
+    "Positions the most visited tiles and the feed based on user frequency.";
 
 const char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";

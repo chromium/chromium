@@ -103,12 +103,14 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
     @Mock private Profile mProfile;
 
+    private Context mApplicationContext;
+
     private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
     private WindowAndroid mWindow;
 
     @Before
     public void setUp() {
-        Context mApplicationContext = ApplicationProvider.getApplicationContext();
+        mApplicationContext = ApplicationProvider.getApplicationContext();
         mWindow = new WindowAndroid(mApplicationContext);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mViewBridge =
@@ -180,10 +182,11 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
         assertThat(content.getContentView(), notNullValue());
         assertThat(
-                content.getSheetContentDescriptionStringId(),
+                content.getSheetContentDescription(mApplicationContext),
                 equalTo(
-                        R.string
-                                .facilitated_payments_payment_methods_bottom_sheet_content_description));
+                        mApplicationContext.getString(
+                                R.string
+                                        .facilitated_payments_payment_methods_bottom_sheet_content_description)));
         assertThat(
                 content.getSheetFullHeightAccessibilityStringId(),
                 equalTo(R.string.facilitated_payments_payment_methods_bottom_sheet_full_height));
@@ -219,10 +222,11 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
         assertThat(content.getContentView(), notNullValue());
         assertThat(
-                content.getSheetContentDescriptionStringId(),
+                content.getSheetContentDescription(mApplicationContext),
                 equalTo(
-                        R.string
-                                .facilitated_payments_payment_methods_bottom_sheet_content_description));
+                        mApplicationContext.getString(
+                                R.string
+                                        .facilitated_payments_payment_methods_bottom_sheet_content_description)));
         assertThat(
                 content.getSheetFullHeightAccessibilityStringId(),
                 equalTo(R.string.facilitated_payments_payment_methods_bottom_sheet_full_height));

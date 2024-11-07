@@ -60,7 +60,7 @@ constexpr auto kTextfieldFocusIndicatorMargins = gfx::Insets::VH(6, 0);
 
 }  // namespace
 
-PickerSearchFieldView::PickerSearchFieldView(
+QuickInsertSearchFieldView::QuickInsertSearchFieldView(
     SearchCallback search_callback,
     BackCallback back_callback,
     PickerKeyEventHandler* key_event_handler,
@@ -68,7 +68,7 @@ PickerSearchFieldView::PickerSearchFieldView(
     : search_callback_(std::move(search_callback)),
       key_event_handler_(key_event_handler),
       performance_metrics_(performance_metrics) {
-  views::Builder<PickerSearchFieldView>(this)
+  views::Builder<QuickInsertSearchFieldView>(this)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding)
@@ -96,7 +96,7 @@ PickerSearchFieldView::PickerSearchFieldView(
                         // `base::Unretained` is safe here since the search
                         // field is owned by this class.
                         base::BindRepeating(
-                            &PickerSearchFieldView::ClearButtonPressed,
+                            &QuickInsertSearchFieldView::ClearButtonPressed,
                             base::Unretained(this)),
                         IconButton::Type::kSmallFloating, &views::kIcCloseIcon,
                         IDS_APP_LIST_CLEAR_SEARCHBOX))
@@ -115,21 +115,21 @@ PickerSearchFieldView::PickerSearchFieldView(
   UpdateTextfieldBorder();
 }
 
-PickerSearchFieldView::~PickerSearchFieldView() = default;
+QuickInsertSearchFieldView::~QuickInsertSearchFieldView() = default;
 
-void PickerSearchFieldView::RequestFocus() {
+void QuickInsertSearchFieldView::RequestFocus() {
   textfield_->RequestFocus();
 }
 
-void PickerSearchFieldView::AddedToWidget() {
+void QuickInsertSearchFieldView::AddedToWidget() {
   GetFocusManager()->AddFocusChangeListener(this);
 }
 
-void PickerSearchFieldView::RemovedFromWidget() {
+void QuickInsertSearchFieldView::RemovedFromWidget() {
   GetFocusManager()->RemoveFocusChangeListener(this);
 }
 
-void PickerSearchFieldView::OnPaint(gfx::Canvas* canvas) {
+void QuickInsertSearchFieldView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
   if (should_show_focus_indicator_) {
@@ -140,7 +140,7 @@ void PickerSearchFieldView::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
-void PickerSearchFieldView::ContentsChanged(
+void QuickInsertSearchFieldView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   ContentsChangedInternal(new_contents);
@@ -148,7 +148,7 @@ void PickerSearchFieldView::ContentsChanged(
   search_callback_.Run(new_contents);
 }
 
-void PickerSearchFieldView::ContentsChangedInternal(
+void QuickInsertSearchFieldView::ContentsChangedInternal(
     std::u16string_view new_contents) {
   performance_metrics_->MarkContentsChanged();
 
@@ -159,16 +159,16 @@ void PickerSearchFieldView::ContentsChangedInternal(
   ScheduleNotifyInitialActiveDescendantForA11y();
 }
 
-bool PickerSearchFieldView::HandleKeyEvent(views::Textfield* sender,
-                                           const ui::KeyEvent& key_event) {
+bool QuickInsertSearchFieldView::HandleKeyEvent(views::Textfield* sender,
+                                                const ui::KeyEvent& key_event) {
   return key_event_handler_->HandleKeyEvent(key_event);
 }
 
-void PickerSearchFieldView::OnWillChangeFocus(View* focused_before,
-                                              View* focused_now) {}
+void QuickInsertSearchFieldView::OnWillChangeFocus(View* focused_before,
+                                                   View* focused_now) {}
 
-void PickerSearchFieldView::OnDidChangeFocus(View* focused_before,
-                                             View* focused_now) {
+void QuickInsertSearchFieldView::OnDidChangeFocus(View* focused_before,
+                                                  View* focused_now) {
   if (focused_now == textfield_) {
     performance_metrics_->MarkInputFocus();
   }
@@ -176,17 +176,18 @@ void PickerSearchFieldView::OnDidChangeFocus(View* focused_before,
   ScheduleNotifyInitialActiveDescendantForA11y();
 }
 
-const std::u16string& PickerSearchFieldView::GetPlaceholderText() const {
+const std::u16string& QuickInsertSearchFieldView::GetPlaceholderText() const {
   return textfield_->GetPlaceholderText();
 }
 
-void PickerSearchFieldView::SetPlaceholderText(
+void QuickInsertSearchFieldView::SetPlaceholderText(
     const std::u16string& new_placeholder_text) {
   textfield_->SetPlaceholderText(new_placeholder_text);
   textfield_->GetViewAccessibility().SetName(new_placeholder_text);
 }
 
-void PickerSearchFieldView::SetTextfieldActiveDescendant(views::View* view) {
+void QuickInsertSearchFieldView::SetTextfieldActiveDescendant(
+    views::View* view) {
   // If the initial active descendant has not been announced yet, then track
   // this descendant so it can be announced when the timer fires.
   if (!textfield_->HasFocus() ||
@@ -206,23 +207,23 @@ void PickerSearchFieldView::SetTextfieldActiveDescendant(views::View* view) {
   active_descendant_tracker_.SetView(nullptr);
 }
 
-std::u16string_view PickerSearchFieldView::GetQueryText() const {
+std::u16string_view QuickInsertSearchFieldView::GetQueryText() const {
   return textfield_->GetText();
 }
 
-void PickerSearchFieldView::SetQueryText(std::u16string text) {
+void QuickInsertSearchFieldView::SetQueryText(std::u16string text) {
   if (text != GetQueryText()) {
     textfield_->SetText(std::move(text));
     ContentsChangedInternal(GetQueryText());
   }
 }
 
-void PickerSearchFieldView::SetBackButtonVisible(bool visible) {
+void QuickInsertSearchFieldView::SetBackButtonVisible(bool visible) {
   back_button_->SetVisible(visible);
   UpdateTextfieldBorder();
 }
 
-void PickerSearchFieldView::SetShouldShowFocusIndicator(
+void QuickInsertSearchFieldView::SetShouldShowFocusIndicator(
     bool should_show_focus_indicator) {
   if (should_show_focus_indicator_ == should_show_focus_indicator) {
     return;
@@ -231,7 +232,7 @@ void PickerSearchFieldView::SetShouldShowFocusIndicator(
   SchedulePaint();
 }
 
-views::View* PickerSearchFieldView::GetViewLeftOf(views::View* view) {
+views::View* QuickInsertSearchFieldView::GetViewLeftOf(views::View* view) {
   if (!Contains(view)) {
     return nullptr;
   }
@@ -240,7 +241,7 @@ views::View* PickerSearchFieldView::GetViewLeftOf(views::View* view) {
   return Contains(left_view) ? left_view : nullptr;
 }
 
-views::View* PickerSearchFieldView::GetViewRightOf(views::View* view) {
+views::View* QuickInsertSearchFieldView::GetViewRightOf(views::View* view) {
   if (!Contains(view)) {
     return nullptr;
   }
@@ -249,7 +250,7 @@ views::View* PickerSearchFieldView::GetViewRightOf(views::View* view) {
   return Contains(right_view) ? right_view : nullptr;
 }
 
-bool PickerSearchFieldView::LeftEventShouldMoveCursor(
+bool QuickInsertSearchFieldView::LeftEventShouldMoveCursor(
     views::View* pseudo_focused_view) {
   if (pseudo_focused_view == textfield_ &&
       textfield_->GetCursorPosition() != GetQueryStartIndexForTraversal()) {
@@ -258,7 +259,7 @@ bool PickerSearchFieldView::LeftEventShouldMoveCursor(
   return GetViewLeftOf(pseudo_focused_view) == nullptr;
 }
 
-bool PickerSearchFieldView::RightEventShouldMoveCursor(
+bool QuickInsertSearchFieldView::RightEventShouldMoveCursor(
     views::View* pseudo_focused_view) {
   if (pseudo_focused_view == textfield_ &&
       textfield_->GetCursorPosition() != GetQueryEndIndexForTraversal()) {
@@ -267,32 +268,33 @@ bool PickerSearchFieldView::RightEventShouldMoveCursor(
   return GetViewRightOf(pseudo_focused_view) == nullptr;
 }
 
-void PickerSearchFieldView::OnGainedPseudoFocusFromLeftEvent(
+void QuickInsertSearchFieldView::OnGainedPseudoFocusFromLeftEvent(
     views::View* pseudo_focused_view) {
   if (pseudo_focused_view == textfield_) {
     textfield_->SetSelectedRange(gfx::Range(GetQueryEndIndexForTraversal()));
   }
 }
 
-void PickerSearchFieldView::OnGainedPseudoFocusFromRightEvent(
+void QuickInsertSearchFieldView::OnGainedPseudoFocusFromRightEvent(
     views::View* pseudo_focused_view) {
   if (pseudo_focused_view == textfield_) {
     textfield_->SetSelectedRange(gfx::Range(GetQueryStartIndexForTraversal()));
   }
 }
 
-void PickerSearchFieldView::ClearButtonPressed() {
+void QuickInsertSearchFieldView::ClearButtonPressed() {
   textfield_->SetText(u"");
   ContentsChanged(textfield_, u"");
 }
 
-void PickerSearchFieldView::UpdateTextfieldBorder() {
+void QuickInsertSearchFieldView::UpdateTextfieldBorder() {
   textfield_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, back_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin, 0,
       clear_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin)));
 }
 
-void PickerSearchFieldView::ScheduleNotifyInitialActiveDescendantForA11y() {
+void QuickInsertSearchFieldView::
+    ScheduleNotifyInitialActiveDescendantForA11y() {
   // Delay the active descendant change so that:
   // (1) There's no jarring transition of the screen reader's focus rectangle.
   // (2) There's time for the screen reader to read out the change to input
@@ -300,31 +302,31 @@ void PickerSearchFieldView::ScheduleNotifyInitialActiveDescendantForA11y() {
   notify_initial_active_descendant_timer_.Start(
       FROM_HERE, kNotifyInitialActiveDescendantA11yDelay,
       base::BindOnce(
-          &PickerSearchFieldView::NotifyInitialActiveDescendantForA11y,
+          &QuickInsertSearchFieldView::NotifyInitialActiveDescendantForA11y,
           base::Unretained(this)));
 }
 
-void PickerSearchFieldView::NotifyInitialActiveDescendantForA11y() {
+void QuickInsertSearchFieldView::NotifyInitialActiveDescendantForA11y() {
   if (active_descendant_tracker_) {
     SetTextfieldActiveDescendant(active_descendant_tracker_.view());
   }
 }
 
-size_t PickerSearchFieldView::GetQueryStartIndexForTraversal() {
+size_t QuickInsertSearchFieldView::GetQueryStartIndexForTraversal() {
   // The query start index should actually be the same regardless of text
   // direction, but we reverse it here since left / right key events are swapped
   // when traversing Picker UI in RTL.
   return base::i18n::IsRTL() ? GetQueryText().length() : 0;
 }
 
-size_t PickerSearchFieldView::GetQueryEndIndexForTraversal() {
+size_t QuickInsertSearchFieldView::GetQueryEndIndexForTraversal() {
   // The query end index should actually be the same regardless of text
   // direction, but we reverse it here since left / right key events are swapped
   // when traversing Picker UI in RTL.
   return base::i18n::IsRTL() ? 0 : GetQueryText().length();
 }
 
-BEGIN_METADATA(PickerSearchFieldView)
+BEGIN_METADATA(QuickInsertSearchFieldView)
 END_METADATA
 
 }  // namespace ash

@@ -145,6 +145,12 @@ chromium-metrics-reviews@google.com.
   <int value="510" label="Question 5 - Answer 10"/>
 </enum>
 
+<enum name="ImportantFileReplaceResult">
+  <int value="0" label="Succeeded on first attempt"/>
+  <int value="1" label="Succeeded after retries"/>
+  <int value="2" label="Failed after retry limit"/>
+</enum>
+
 <enum name="RedactionToolCaller">
   <summary>The caller of the redaction tool.</summary>
   <int value="1" label="System Logs Uploader"/>

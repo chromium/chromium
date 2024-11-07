@@ -252,6 +252,15 @@
     <div class="cr-row first">
       <h2 class="cr-title-text">$i18n{advancedPageTitle}</h2>
     </div>
+    <template is="dom-if" if="[[enablePasswordLeakToggleMove_]]">
+      <settings-toggle-button id="passwordsLeakToggle"
+          label="$i18n{passwordsLeakDetectionLabel}"
+          pref="{{prefs.generated.password_leak_detection}}"
+          sub-label="[[getPasswordsLeakToggleSubLabel_(
+                        prefs.profile.password_manager_leak_detection.*,
+                        prefs.generated.password_leak_detection.*)]]">
+      </settings-toggle-button>
+    </template>
     <template is="dom-if" if="[[!enableHttpsFirstModeNewSettings_]]" restamp>
       <settings-toggle-button id="httpsOnlyModeToggle"
           pref="{{prefs.generated.https_first_mode_enabled}}"
@@ -280,15 +289,6 @@
         </cr-link-row>
     </template>
 </if>
-    <template is="dom-if" if="[[enablePasswordLeakToggleMove_]]">
-      <settings-toggle-button id="passwordsLeakToggle"
-          label="$i18n{passwordsLeakDetectionLabel}"
-          pref="{{prefs.generated.password_leak_detection}}"
-          sub-label="[[getPasswordsLeakToggleSubLabel_(
-                        prefs.profile.password_manager_leak_detection.*,
-                        prefs.generated.password_leak_detection.*)]]">
-      </settings-toggle-button>
-    </template>
     <cr-link-row id="v8-setting-link" class="hr" on-click="onV8SettingsClick_"
         label="$i18n{securityV8LinkTitle}"
         sub-label="$i18n{securityV8LinkDescription}"

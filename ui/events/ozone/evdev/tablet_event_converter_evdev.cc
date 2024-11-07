@@ -18,7 +18,7 @@
 #include "ui/events/event.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -162,7 +162,7 @@ void TabletEventConverterEvdev::ConvertKeyEvent(const input_event& input) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::features::IsPeripheralCustomizationEnabled()) {
     return;
   }

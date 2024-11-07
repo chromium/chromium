@@ -95,6 +95,20 @@ SummaryOutlinesElucidationSection::SummaryOutlinesElucidationSection(
               IDR_MAHI_LOADING_SUMMARY_ANIMATION))
           .Build());
 
+  AddChildView(views::Builder<views::Label>()
+                   .CopyAddressTo(&indicator_label_)
+                   .SetVisible(false)
+                   .SetID(mahi_constants::ViewId::kSummaryElucidationIndicator)
+                   .SetSelectable(false)
+                   .SetMultiLine(false)
+                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                   .AfterBuild(base::BindOnce([](views::Label* self) {
+                     TypographyProvider::Get()->StyleLabel(
+                         TypographyToken::kCrosButton2, *self);
+                   }))
+                   .Build());
+
   AddChildView(
       views::Builder<views::Label>()
           .CopyAddressTo(&summary_or_elucidation_label_)
@@ -169,6 +183,7 @@ void SummaryOutlinesElucidationSection::OnUpdated(const MahiUiUpdate& update) {
   switch (update.type()) {
     case MahiUiUpdateType::kContentsRefreshInitiated:
     case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+      indicator_label_->SetVisible(false);
       LoadContentForDisplay(ContentType::kSummaryAndOutline);
       return;
     case MahiUiUpdateType::kOutlinesLoaded:
@@ -178,6 +193,7 @@ void SummaryOutlinesElucidationSection::OnUpdated(const MahiUiUpdate& update) {
       HandleSummaryOrElucidationLoaded(update.GetSummary());
       return;
     case MahiUiUpdateType::kElucidationRequested:
+      indicator_label_->SetVisible(false);
       LoadContentForDisplay(ContentType::kElucidation);
       return;
     case MahiUiUpdateType::kElucidationLoaded:
@@ -236,6 +252,7 @@ void SummaryOutlinesElucidationSection::HandleOutlinesLoaded(
 
 void SummaryOutlinesElucidationSection::HandleSummaryOrElucidationLoaded(
     const std::u16string& result_text) {
+  indicator_label_->SetVisible(true);
   summary_or_elucidation_label_->SetVisible(true);
   summary_or_elucidation_label_->SetText(result_text);
   summary_or_elucidation_loading_animated_image_->Stop();
@@ -284,11 +301,18 @@ void SummaryOutlinesElucidationSection::LoadContentForDisplay(
 
   // TODO(b:374173466): need a label to indicate the result type.
   switch (content_type) {
-    case ContentType::kSummaryAndOutline:
+    case ContentType::kSummaryAndOutline: {
+      indicator_label_->SetText(
+          l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_INDICATOR_LABEL));
       ui_controller_->UpdateSummaryAndOutlines();
       return;
-    case ContentType::kElucidation:
+    }
+    case ContentType::kElucidation: {
+      indicator_label_->SetText(
+          l10n_util::GetStringUTF16(IDS_MAHI_SIMPLIFY_INDICATOR_LABEL));
       ui_controller_->UpdateElucidation();
+      return;
+    }
   }
 }
 

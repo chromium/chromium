@@ -157,31 +157,25 @@ bool HTMLLabelElement::IsInInteractiveContent(Node* node) const {
 }
 
 void HTMLLabelElement::DefaultEventHandler(Event& evt) {
-  if (DefaultEventHandlerInternal(evt) ||
-      RuntimeEnabledFeatures::LabelEventHandlerCallSuperEnabled()) {
-    HTMLElement::DefaultEventHandler(evt);
-  }
+  DefaultEventHandlerInternal(evt);
+  HTMLElement::DefaultEventHandler(evt);
 }
 
-// If this returns false, then it means that we should not run
-// HTMLElement::DefaultEventHandler when LabelEventHandlerCallSuper is disabled
-// to emulate old behavior.
-// TODO(crbug.com/1523168): Remove this method when the flag is removed.
-bool HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
+void HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
   if (evt.type() == event_type_names::kClick && !processing_click_) {
     HTMLElement* element = Control();
 
     // If we can't find a control or if the control received the click
     // event, then there's no need for us to do anything.
     if (!element)
-      return false;
+      return;
     Node* target_node = evt.target() ? evt.target()->ToNode() : nullptr;
     if (target_node) {
       if (element->IsShadowIncludingInclusiveAncestorOf(*target_node))
-        return false;
+        return;
 
       if (IsInInteractiveContent(target_node))
-        return false;
+        return;
     }
 
     //   Behaviour of label element is as follows:
@@ -222,7 +216,7 @@ bool HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
           // Only in case of drag, *neither* we pass the click event,
           // *nor* we focus the control element.
           if (mouse_event->ClickCount() == 1)
-            return false;
+            return;
         }
       }
     }
@@ -262,8 +256,6 @@ bool HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
 
     evt.SetDefaultHandled();
   }
-
-  return true;
 }
 
 bool HTMLLabelElement::HasActivationBehavior() const {

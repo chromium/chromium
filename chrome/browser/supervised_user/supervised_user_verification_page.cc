@@ -48,6 +48,22 @@ bool SupervisedUserVerificationPage::ShouldShowPage(
   }
 }
 
+// static
+FamilyLinkUserReauthenticationInterstitialState
+SupervisedUserVerificationPage::GetReauthenticationInterstitialStateFromStatus(
+    Status status) {
+  switch (status) {
+    case Status::SHOWN:
+      return FamilyLinkUserReauthenticationInterstitialState::kInterstitialShown;
+    case Status::REAUTH_STARTED:
+      return FamilyLinkUserReauthenticationInterstitialState::kReauthenticationStarted;
+    case Status::REAUTH_COMPLETED:
+      return FamilyLinkUserReauthenticationInterstitialState::kReauthenticationCompleted;
+    default:
+      NOTREACHED();
+  }
+}
+
 SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     content::WebContents* web_contents,
     const std::string& email_to_reauth,
@@ -212,8 +228,7 @@ void SupervisedUserVerificationPage::CommandReceived(
     case security_interstitials::CMD_OPEN_DIAGNOSTIC:
     case security_interstitials::CMD_REPORT_PHISHING_ERROR:
       // Not supported by the verification page.
-      NOTREACHED_IN_MIGRATION() << "Unsupported command: " << command;
-      break;
+      NOTREACHED() << "Unsupported command: " << command;
     case security_interstitials::CMD_ERROR:
     case security_interstitials::CMD_TEXT_FOUND:
     case security_interstitials::CMD_TEXT_NOT_FOUND:

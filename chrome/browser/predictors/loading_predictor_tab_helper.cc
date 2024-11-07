@@ -130,8 +130,7 @@ bool ShouldPrefetchDestination(network::mojom::RequestDestination destination) {
       return destination == network::mojom::RequestDestination::kScript ||
              destination == network::mojom::RequestDestination::kStyle;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Util class for recording the status for when we received optimization hints

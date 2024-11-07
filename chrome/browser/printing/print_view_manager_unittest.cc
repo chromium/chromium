@@ -343,19 +343,17 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
   }
   void SetupScriptedPrintPreview(
       SetupScriptedPrintPreviewCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void ShowScriptedPrintPreview(bool is_modifiable) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void ShowScriptedPrintPreview(bool is_modifiable) override { NOTREACHED(); }
   void RequestPrintPreview(
       mojom::RequestPrintPreviewParamsPtr params) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void CheckForCancel(int32_t preview_ui_id,
                       int32_t request_id,
                       CheckForCancelCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

@@ -149,8 +149,7 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
       return E_UNEXPECTED;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return S_OK;
+  NOTREACHED();
 }
 
 // Validates the provided CRX using the |crx_hash|, and if validation succeeds,

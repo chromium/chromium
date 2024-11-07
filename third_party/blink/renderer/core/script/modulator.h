@@ -171,7 +171,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // https://github.com/whatwg/html/pull/5883
   virtual ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) = 0;
 
-  // https://html.spec.whatwg.org/C/#resolve-a-module-specifier
+  // https://html.spec.whatwg.org/C#resolve-a-module-specifier
   virtual KURL ResolveModuleSpecifier(const String& module_request,
                                       const KURL& base_url,
                                       String* failure_reason) = 0;
@@ -181,17 +181,17 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
                                   const ReferrerScriptInfo&,
                                   ScriptPromiseResolver<IDLAny>*) = 0;
 
-  // Import maps. https://github.com/WICG/import-maps
+  // Methods below relate to import maps.
+  // https://html.spec.whatwg.org/C#import-maps
 
-  void SetImportMap(const ImportMap* import_map) {
-    // Because the second and subsequent import maps are already rejected in
-    // ScriptLoader::PrepareScript(), this is called only once.
-    DCHECK(!import_map_);
-    import_map_ = import_map;
+  // https://html.spec.whatwg.org/C#merge-existing-and-new-import-maps
+  virtual void MergeExistingAndNewImportMaps(ImportMap*) {
+    // 1. Assert: global implements Window
+    NOTREACHED();
   }
+
   const ImportMap* GetImportMapForTest() const { return import_map_.Get(); }
 
-  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
   enum class AcquiringImportMapsState {
     // The flag is true.
     kAcquiring,
@@ -209,11 +209,11 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
     acquiring_import_maps_ = value;
   }
 
-  // https://html.spec.whatwg.org/C/#hostgetimportmetaproperties
+  // https://html.spec.whatwg.org/C#hostgetimportmetaproperties
   virtual ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const = 0;
 
-  // https://html.spec.whatwg.org/C/#resolving-a-module-integrity-metadata
+  // https://html.spec.whatwg.org/C#resolving-a-module-integrity-metadata
   virtual String GetIntegrityMetadataString(const KURL&) const = 0;
   virtual IntegrityMetadataSet GetIntegrityMetadata(const KURL&) const = 0;
 
@@ -229,15 +229,17 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // Produce V8 code cache for the given ModuleScript and its submodules.
   virtual void ProduceCacheModuleTreeTopLevel(ModuleScript*) = 0;
 
+  // https://html.spec.whatwg.org/C#add-module-to-resolved-module-set
+  virtual void AddModuleToResolvedModuleSet(String, String) {
+    // 2. If global does not implement Window, then return.
+  }
+
  protected:
-  const ImportMap* GetImportMap() const { return import_map_.Get(); }
+  Member<ImportMap> import_map_;
 
  private:
-  Member<const ImportMap> import_map_;
-
-  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
-  // Each Document has an acquiring import maps boolean. It is initially true.
-  // [spec text]
+  // TODO(crbug.com/365578430): Remove this state and its setters/getters once
+  // the MultipleImportMaps flag is removed.
   AcquiringImportMapsState acquiring_import_maps_ =
       AcquiringImportMapsState::kAcquiring;
 };

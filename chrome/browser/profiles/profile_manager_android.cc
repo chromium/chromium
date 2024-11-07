@@ -32,8 +32,7 @@ ScopedJavaLocalRef<jobject> JNI_ProfileManager_GetLastUsedRegularProfile(
     JNIEnv* env) {
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (!profile) {
-    NOTREACHED_IN_MIGRATION() << "Profile not found.";
-    return nullptr;
+    NOTREACHED() << "Profile not found.";
   }
   return profile->GetJavaObject();
 }

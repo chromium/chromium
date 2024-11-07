@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.readaloud.player.Colors;
@@ -234,10 +235,10 @@ class OptionsMenuSheetContent extends MenuSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public @NonNull String getSheetContentDescription(Context context) {
         // "Options menu"
         // Automatically appended: "Swipe down to close."
-        return R.string.readaloud_options_menu_description;
+        return context.getString(R.string.readaloud_options_menu_description);
     }
 
     @Override

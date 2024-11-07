@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] After <script type="module"> import maps work fine
+  assert_array_equals: expected property 0 to be "log:B" but got "log:A" (expected array ["log:B"] got ["log:A"])
+Harness: the test ran to completion.
+

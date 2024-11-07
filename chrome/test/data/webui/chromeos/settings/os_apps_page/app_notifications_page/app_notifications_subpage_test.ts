@@ -51,7 +51,6 @@ suite('<settings-app-notifications-subpage>', () => {
   setup(() => {
     userActionRecorder = new FakeUserActionRecorder();
     setUserActionRecorderForTesting(userActionRecorder);
-    loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
   });
 
   teardown(() => {

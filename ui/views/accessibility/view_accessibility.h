@@ -19,6 +19,7 @@
 #include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/accessibility/ax_attribute_changed_callbacks.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/views_export.h"
@@ -36,6 +37,22 @@ class AtomicViewAXTreeManager;
 class View;
 class Widget;
 class ScopedAccessibilityEventBlocker;
+
+using RoleCallbackList = base::RepeatingCallbackList<void(ax::mojom::Role)>;
+using IntAttributeCallbackList =
+    base::RepeatingCallbackList<void(ax::mojom::IntAttribute,
+                                     std::optional<int>)>;
+using StringAttributeCallbackList =
+    base::RepeatingCallbackList<void(ax::mojom::StringAttribute,
+                                     const std::optional<std::string>&)>;
+using BoolAttributeCallbackList =
+    base::RepeatingCallbackList<void(ax::mojom::BoolAttribute,
+                                     std::optional<bool>)>;
+using StateCallbackList =
+    base::RepeatingCallbackList<void(ax::mojom::State, bool)>;
+using IntListAttributeCallbackList = base::RepeatingCallbackList<void(
+    ax::mojom::IntListAttribute,
+    const std::optional<std::vector<int32_t>>&)>;
 
 // An object that manages the accessibility interface for a View.
 //
@@ -309,6 +326,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetIsVertical(bool vertical);
 
   void SetIsDefault(bool is_default);
+  bool GetIsDefault() const;
 
   // Sets/gets whether or not this view should be marked as "enabled" for the
   // purpose exposing this state in the accessibility tree. As a general rule,
@@ -345,6 +363,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void AddAction(ax::mojom::Action action);
 
   void SetCheckedState(ax::mojom::CheckedState checked_state);
+  ax::mojom::CheckedState GetCheckedState() const;
   void RemoveCheckedState();
 
   void SetKeyShortcuts(const std::string& key_shortcuts);
@@ -391,6 +410,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetDefaultActionVerb(
       const ax::mojom::DefaultActionVerb default_action_verb);
+  ax::mojom::DefaultActionVerb GetDefaultActionVerb() const;
   void RemoveDefaultActionVerb();
 
   void SetAutoComplete(const std::string& autocomplete);
@@ -518,6 +538,66 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
     return initialization_state_ == State::kInitialized;
   }
 
+  // This mechanism allows views to listen for changes in the accessibility
+  // properties of other views. It facilitates communication between views that
+  // depend on each other's accessibility attributes, ensuring they can respond
+  // to updates effectively. For examples of how to do this, see
+  // view_accessibility_unittest.cc.
+  // Here's an example:
+  //
+  // class MyLabel : public View {
+  // public:
+  //  void SetAccessibleName(const std::string& name) {
+  //    GetViewAccessibility().SetName(name);
+  //  }
+  // };
+  //
+  // class MyButton : public View {
+  // public:
+  // explicit MyButton(MyLabel* label) {
+  // // Subscribe to label's accessible name changes.
+  //  name_changed_subscription_ =
+  //    label->GetViewAccessibility().AddStringAttributeChangedCallback(
+  //    ax::mojom::StringAttribute::kName,
+  //    base::BindRepeating(&MyButton::OnLabelNameChanged,
+  //    base::Unretained(this)));
+  // }
+  //
+  // private:
+  // void OnLabelNameChanged(ax::mojom::StringAttribute attribute,
+  // const std::optional<std::string>& name) {
+  //   // The call to SetName()/RemoveName() below will trigger an
+  //   // accessibility event. In most cases, this would be the expected
+  //   // behavior. However, if we don't want to trigger another one, we can
+  //   // block the event temporarily by uncommenting the following line.
+  //   // ScopedAccessibilityEventBlocker blocker(GetViewAccessibility());
+  //   if (name.has_value()) {
+  //     GetViewAccessibility().SetName(name.value());
+  //   } else {
+  //     GetViewAccessibility().RemoveName();
+  //   }
+  // }
+  //
+  // base::CallbackListSubscription name_changed_subscription_;
+  // };
+  base::CallbackListSubscription AddRoleChangedCallback(
+      RoleCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddIntAttributeChangedCallback(
+      ax::mojom::IntAttribute attribute,
+      IntAttributeCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddStringAttributeChangedCallback(
+      ax::mojom::StringAttribute attribute,
+      StringAttributeCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddBoolAttributeChangedCallback(
+      ax::mojom::BoolAttribute attribute,
+      BoolAttributeCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddStateChangedCallback(
+      ax::mojom::State state,
+      StateCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddIntListAttributeChangedCallback(
+      ax::mojom::IntListAttribute attribute,
+      IntListAttributeCallbackList::CallbackType callback);
+
  protected:
   explicit ViewAccessibility(View* view);
 
@@ -573,9 +653,22 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetDataForClosedWidget(ui::AXNodeData* data) const;
 
+  void OnRoleChanged(ax::mojom::Role role);
+  void OnIntAttributeChanged(ax::mojom::IntAttribute attribute,
+                             std::optional<int> value);
+  void OnStringAttributeChanged(ax::mojom::StringAttribute attribute,
+                                const std::optional<std::string>& value);
+  void OnBoolAttributeChanged(ax::mojom::BoolAttribute attribute,
+                              std::optional<bool> value);
+  void OnStateChanged(ax::mojom::State state, bool is_enabled);
+  void OnIntListAttributeChanged(ax::mojom::IntListAttribute attribute,
+                                 const std::optional<std::vector<int>>& value);
+
   void SetState(ax::mojom::State state, bool is_enabled);
 
   void SetBlockNotifyEvents(bool block);
+
+  ui::AXAttributeChangedCallbacks* GetOrCreateAXAttributeChangedCallbacks();
 
   // Weak. Owns this.
   const raw_ptr<View> view_;
@@ -633,6 +726,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   bool is_widget_closed_ = false;
 
+  std::unique_ptr<ui::AXAttributeChangedCallbacks>
+      attribute_changed_callbacks_ = nullptr;
+
   State initialization_state_ = State::kUninitialized;
 
   base::ScopedObservation<Widget, WidgetObserver> observation_{this};
@@ -652,6 +748,7 @@ class IgnoreMissingWidgetForTestingScopedSetter {
  private:
   raw_ptr<ViewAccessibility> view_accessibility_;
 };
+
 class ScopedAccessibilityEventBlocker {
  public:
   explicit ScopedAccessibilityEventBlocker(

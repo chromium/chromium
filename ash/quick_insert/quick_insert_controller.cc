@@ -279,7 +279,7 @@ void QuickInsertController::DisableFeatureTourForTesting() {
   g_feature_tour_enabled = false;
 }
 
-void QuickInsertController::SetClient(PickerClient* client) {
+void QuickInsertController::SetClient(QuickInsertClient* client) {
   // `PickerSearchController` may depend on the current client via
   // `StartSearch`. Stop the search before changing the `client`. This may send
   // a `StopSearch` call to the current `client_`.

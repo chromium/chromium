@@ -101,8 +101,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     std::unique_ptr<NetworkSpeechRecognitionEngineImpl> sr_engine =
         std::make_unique<NetworkSpeechRecognitionEngineImpl>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &url_loader_factory_),
-            "" /* accept_language */);
+                &url_loader_factory_));
     NetworkSpeechRecognitionEngineImpl::Config config;
     config.audio_num_bits_per_sample =
         SpeechRecognizerImpl::kNumBitsPerAudioSample;

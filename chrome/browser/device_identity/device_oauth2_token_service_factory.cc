@@ -31,8 +31,7 @@ std::unique_ptr<DeviceOAuth2TokenStore> CreatePlatformTokenStore(
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   return std::make_unique<DeviceOAuth2TokenStoreDesktop>(local_state);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 

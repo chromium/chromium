@@ -273,9 +273,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   dispatch_once(&onceToken, ^{
     dict = @{
+      @"accessibilityColumnIndexRange" :
+          NSAccessibilityColumnIndexRangeAttribute,
       @"accessibilityDisclosedByRow" : NSAccessibilityDisclosedByRowAttribute,
       @"accessibilityDisclosedRows" : NSAccessibilityDisclosedRowsAttribute,
       @"accessibilityDisclosureLevel" : NSAccessibilityDisclosureLevelAttribute,
+      @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
       @"isAccessibilityDisclosed" : NSAccessibilityDisclosingAttribute,
       @"isAccessibilityFocused" : NSAccessibilityFocusedAttribute,
     };
@@ -1505,6 +1508,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (id)accessibilityAttributeValue:(NSString*)attribute {
   if (!_node)
     return nil;  // Return nil when detached. Even for ax::mojom::Role.
+
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    // TODO(crbug.com/376723178): We should be able to add a NOTREACHED()
+    // here, but at the moment, test infrastructure still directly calls this
+    // api endpoint.
+    return nil;
+  }
 
   SEL selector = NSSelectorFromString(attribute);
 #pragma clang diagnostic push
@@ -2770,6 +2780,32 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return nil;
 
   return [self titleUIElement];
+}
+
+- (NSRange)accessibilityColumnIndexRange {
+  if (![self instanceActive] || ![self nodeDelegate]) {
+    return NSMakeRange(0, 0);
+  }
+
+  std::optional<int> column = [self nodeDelegate]->GetTableCellColIndex();
+  std::optional<int> columnSpan = [self nodeDelegate]->GetTableCellColSpan();
+  if (column && columnSpan) {
+    return NSMakeRange(*column, *columnSpan);
+  }
+  return NSMakeRange(0, 0);
+}
+
+- (NSRange)accessibilityRowIndexRange {
+  if (![self instanceActive] || ![self nodeDelegate]) {
+    return NSMakeRange(0, 0);
+  }
+
+  std::optional<int> row = [self nodeDelegate]->GetTableCellRowIndex();
+  std::optional<int> rowSpan = [self nodeDelegate]->GetTableCellRowSpan();
+  if (row && rowSpan) {
+    return NSMakeRange(*row, *rowSpan);
+  }
+  return NSMakeRange(0, 0);
 }
 
 //

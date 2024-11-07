@@ -161,6 +161,7 @@
 // - byte_span_with_nul_from_cstring() function.
 // - split_at() method.
 // - to_fixed_extent() method.
+// - get_at() method.
 // - operator==() comparator function.
 // - operator<=>() comparator function.
 // - operator<<() printing function.
@@ -571,6 +572,25 @@ class GSL_POINTER span {
     // SAFETY: Since data() always points to at least `N` elements, the check
     // above ensures `idx < N` and is thus in range for data().
     return UNSAFE_BUFFERS(data()[idx]);
+  }
+
+  // Returns a pointer to an element in the span.
+  //
+  // This avoids the construction of a reference to the element, which is
+  // important for cases such as in-place new, where the memory is
+  // uninitialized.
+  //
+  // This is sugar for `span.subspan(idx, 1u).data()` which also ensures the
+  // returned span has a pointer into and not past the end of the original span.
+  //
+  // # Checks
+  // The function CHECKs that the `idx` is inside the span and will terminate
+  // otherwise.
+  constexpr T* get_at(size_t idx) const noexcept {
+    CHECK_LT(idx, size());
+    // SAFETY: Since data() always points to at least `N` elements, the check
+    // above ensures `idx < N` and is thus in range for data().
+    return UNSAFE_BUFFERS(data() + idx);
   }
 
   constexpr T& front() const noexcept
@@ -1144,6 +1164,25 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     // SAFETY: Since data() always points to at least `size()` elements, the
     // check above ensures `idx < size()` and is thus in range for data().
     return UNSAFE_BUFFERS(data()[idx]);
+  }
+
+  // Returns a pointer to an element in the span.
+  //
+  // This avoids the construction of a reference to the element, which is
+  // important for cases such as in-place new, where the memory is
+  // uninitialized.
+  //
+  // This is sugar for `span.subspan(idx, 1u).data()` which also ensures the
+  // returned span has a pointer into and not past the end of the original span.
+  //
+  // # Checks
+  // The function CHECKs that the `idx` is inside the span and will terminate
+  // otherwise.
+  constexpr T* get_at(size_t idx) const noexcept {
+    CHECK_LT(idx, size());
+    // SAFETY: Since data() always points to at least `N` elements, the check
+    // above ensures `idx < N` and is thus in range for data().
+    return UNSAFE_BUFFERS(data() + idx);
   }
 
   // Returns a reference to the first element in the span.

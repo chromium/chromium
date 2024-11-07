@@ -38,6 +38,7 @@
 #include "build/build_config.h"
 #include "third_party/icu/source/common/unicode/rbbi.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
+#include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
@@ -68,9 +69,9 @@ constexpr auto kAcceptLanguageList = base::MakeFixedFlatSet<std::string_view>({
     "am",  // Amharic
     "an",  // Aragonese
     "ar",  // Arabic
-#if defined(ENABLE_PSEUDOLOCALES)
+#if BUILDFLAG(ENABLE_PSEUDOLOCALES)
     "ar-XB",           // RTL Pseudolocale
-#endif                 // defined(ENABLE_PSEUDOLOCALES)
+#endif                 // BUILDFLAG(ENABLE_PSEUDOLOCALES)
     "as",              // Assamese
     "ast",             // Asturian
     "ay",              // Aymara
@@ -108,9 +109,9 @@ constexpr auto kAcceptLanguageList = base::MakeFixedFlatSet<std::string_view>({
     "en-IN",           // English (India)
     "en-NZ",           // English (New Zealand)
     "en-US",           // English (US)
-#if defined(ENABLE_PSEUDOLOCALES)
+#if BUILDFLAG(ENABLE_PSEUDOLOCALES)
     "en-XA",  // Long strings Pseudolocale
-#endif        // defined(ENABLE_PSEUDOLOCALES)
+#endif        // BUILDFLAG(ENABLE_PSEUDOLOCALES)
     "en-ZA",  // English (South Africa)
     "eo",     // Esperanto
     "es",     // Spanish
@@ -659,13 +660,13 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
 
   std::u16string display_name;
 
-#if defined(ENABLE_PSEUDOLOCALES)
+#if BUILDFLAG(ENABLE_PSEUDOLOCALES)
   if (locale_code == "en-XA") {
     return u"Long strings pseudolocale (en-XA)";
   } else if (locale_code == "ar-XB") {
     return u"RTL pseudolocale (ar-XB)";
   }
-#endif  // defined(ENABLE_PSEUDOLOCALES)
+#endif  // BUILDFLAG(ENABLE_PSEUDOLOCALES)
 
 #if BUILDFLAG(IS_IOS)
   // Use the Foundation API to get the localized display name, removing the need

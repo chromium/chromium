@@ -44,7 +44,7 @@ enum StatusCode {
   kTabCrashed,
   kTargetDetached,
   kUnexpectedAlertOpen_Keep,
-  kNavigationDetectedByRemoteEnd,
+  kAbortedByNavigation,
   // This error differs from all other errors and is intended to be used in the
   // unit tests.
   kTestError,

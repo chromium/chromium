@@ -23,7 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -541,7 +540,7 @@ class FullscreenButton : public ImageButton {
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
     GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
         menu_model, fullscreen_index, accname_string_id,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         // ChromeOS uses a dedicated "fullscreen" media key for fullscreen
         // mode on most ChromeOS devices which cannot be specified in the
         // standard way here, so omit the accelerator to avoid providing
@@ -1483,7 +1482,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         break;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       case IDC_TAKE_SCREENSHOT:
         DCHECK(!screenshot_menu_item_);
         screenshot_menu_item_ = item;

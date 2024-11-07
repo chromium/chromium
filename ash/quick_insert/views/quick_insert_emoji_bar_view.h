@@ -86,7 +86,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
   // `delegate_` outlives `this`.
   raw_ptr<PickerEmojiBarViewDelegate> delegate_;
 
-  // The width of the PickerView that contains this emoji bar.
+  // The width of the QuickInsertView that contains this emoji bar.
   int picker_view_width_ = 0;
 
   // Contains the item views corresponding to each search result.

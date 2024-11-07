@@ -184,7 +184,7 @@ class TesterForType {
         break;
       default:
         // Add support as needed.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

@@ -601,7 +601,7 @@ void FormInteractionsUkmLogger::
   // Determine whether `pattern` matches `value`.
   auto matches = [](const std::u16string& value,
                     const icu::RegexPattern& pattern) {
-    return !value.empty() && autofill::MatchesRegex(value, pattern);
+    return !value.empty() && MatchesRegex(value, pattern);
   };
   // Count in `num_experimental_fields[i]` if `pattern[i]` matches the label,
   // id_attribute or name_attribute of `field`. Returns true if any pattern

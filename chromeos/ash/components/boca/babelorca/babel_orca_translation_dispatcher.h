@@ -14,11 +14,13 @@ namespace ash::babelorca {
 
 class BabelOrcaTranslationDipsatcher {
  public:
+  // TODO(avynn): Investigate if this should be a protected constructor for
+  // interface.
   virtual ~BabelOrcaTranslationDipsatcher() = default;
 
   virtual void GetTranslation(const std::string& result,
-                              std::string source_language,
-                              std::string target_language,
+                              const std::string& source_language,
+                              const std::string& target_language,
                               captions::OnTranslateEventCallback callback) = 0;
 };
 

@@ -88,7 +88,7 @@ TEST_F(UIKitUIUtilTest, UITraitArrayIsReturnedWhenKillswitchIsEnabled) {
     scoped_feature_list.InitAndDisableFeature(
         kEnableTraitCollectionRegistration);
 
-    NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.self ];
+    NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.class ];
     EXPECT_NE([TraitCollectionSetForTraits(traits) count], [traits count]);
   }
 }
@@ -102,7 +102,7 @@ TEST_F(UIKitUIUtilTest, UITraitArrayIsReturnedWhenKillswitchIsDisabled) {
     scoped_feature_list.InitAndEnableFeature(
         kEnableTraitCollectionRegistration);
 
-    NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.self ];
+    NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.class ];
     EXPECT_EQ([TraitCollectionSetForTraits(traits) count], [traits count]);
   }
 }

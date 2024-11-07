@@ -147,8 +147,9 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
   // If it's a single route with the same source, show the controller dialog
   // instead of the device picker.
   // TODO(avayvod): maybe this logic should be in
-  // PresentationServiceDelegateImpl: if the route exists for the same frame
-  // and tab, show the route controller dialog, if not, show the device picker.
+  // ControllerPresentationServiceDelegateImpl: if the route exists for the same
+  // frame and tab, show the route controller dialog, if not, show the device
+  // picker.
   MediaRouterAndroid* router = static_cast<MediaRouterAndroid*>(
       MediaRouterFactory::GetApiForBrowserContext(
           initiator()->GetBrowserContext()));

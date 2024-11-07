@@ -576,6 +576,13 @@ struct BLINK_EXPORT WebNavigationParams {
   // the VisitedLinkNotificationSink interface) after the :visited link
   // hashtable is initialized.
   std::optional<uint64_t> visited_link_salt;
+
+  // Map of permission statuses at commit time.
+  // Note: the permission statues will be only used as initial states of
+  // `CachedPermissionStatus` in renderer side.
+  //  Could be std::nullopt for synchronous commit, same document navigations.
+  std::optional<base::flat_map<mojom::PermissionName, mojom::PermissionStatus>>
+      initial_permission_statuses;
 };
 
 }  // namespace blink

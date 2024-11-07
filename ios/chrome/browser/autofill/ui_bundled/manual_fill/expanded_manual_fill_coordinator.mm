@@ -220,7 +220,7 @@ using manual_fill::ManualFillDataType;
 // Initializes `_manualFillPlusAddressMediator`.
 - (ManualFillPlusAddressMediator*)manualFillPlusAddressMediator {
   if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     return nil;
   }
 

@@ -18,10 +18,10 @@ class BabelOrcaController {
 
   virtual void OnSessionEnded() = 0;
 
-  virtual void OnSessionCaptionConfigUpdated(bool session_captions_enabled) = 0;
+  virtual void OnSessionCaptionConfigUpdated(bool session_captions_enabled,
+                                             bool translations_enabled) = 0;
 
   virtual void OnLocalCaptionConfigUpdated(bool local_captions_enabled) = 0;
-
  protected:
   BabelOrcaController() = default;
 };

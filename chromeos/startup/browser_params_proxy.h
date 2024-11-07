@@ -148,8 +148,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool ShouldDisableChromeComposeOnChromeOS() const;
 
-  bool IsCaptivePortalPopupWindowEnabled() const;
-
   bool IsFileSystemProviderCloudFileSystemEnabled() const;
 
   bool IsFileSystemProviderContentCacheEnabled() const;

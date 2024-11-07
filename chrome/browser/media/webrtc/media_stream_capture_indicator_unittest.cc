@@ -191,12 +191,13 @@ blink::mojom::StreamDevices CreateFakeDevice(
   if (param.display_media_info)
     device.display_media_info = param.display_media_info->Clone();
 
-  if (blink::IsAudioInputMediaType(param.stream_type))
+  if (blink::IsAudioInputMediaType(param.stream_type)) {
     fake_devices.audio_device = device;
-  else if (blink::IsVideoInputMediaType(param.stream_type))
+  } else if (blink::IsVideoInputMediaType(param.stream_type)) {
     fake_devices.video_device = device;
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   return fake_devices;
 }

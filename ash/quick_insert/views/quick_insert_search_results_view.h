@@ -27,14 +27,14 @@ class View;
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerSearchResultsViewDelegate;
+class QuickInsertSearchResultsViewDelegate;
 class PickerSectionListView;
 class QuickInsertSectionView;
 class PickerPreviewBubbleController;
 class PickerSkeletonLoaderView;
 
-class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
-  METADATA_HEADER(PickerSearchResultsView, PickerPageView)
+class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
+  METADATA_HEADER(QuickInsertSearchResultsView, PickerPageView)
 
  public:
   // Describes the way local file results are visually presented.
@@ -47,15 +47,16 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   // `delegate`, `asset_fetcher`, `submenu_controller`, `preview_controller`
   // must remain valid for the lifetime of this class.
-  explicit PickerSearchResultsView(
-      PickerSearchResultsViewDelegate* delegate,
+  explicit QuickInsertSearchResultsView(
+      QuickInsertSearchResultsViewDelegate* delegate,
       int picker_view_width,
       PickerAssetFetcher* asset_fetcher,
       PickerSubmenuController* submenu_controller,
       PickerPreviewBubbleController* preview_controller);
-  PickerSearchResultsView(const PickerSearchResultsView&) = delete;
-  PickerSearchResultsView& operator=(const PickerSearchResultsView&) = delete;
-  ~PickerSearchResultsView() override;
+  QuickInsertSearchResultsView(const QuickInsertSearchResultsView&) = delete;
+  QuickInsertSearchResultsView& operator=(const QuickInsertSearchResultsView&) =
+      delete;
+  ~QuickInsertSearchResultsView() override;
 
   // The skeleton loader should not be used for short loading times.
   // Wait for a delay before showing the animation.
@@ -135,7 +136,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void StopLoadingAnimation();
   void UpdateAccessibleName();
 
-  raw_ptr<PickerSearchResultsViewDelegate> delegate_;
+  raw_ptr<QuickInsertSearchResultsViewDelegate> delegate_;
 
   // The section list view, contains the section views.
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;

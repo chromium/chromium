@@ -87,12 +87,13 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
   device.display_media_info = std::move(display_media_info);
 
   blink::mojom::StreamDevices devices;
-  if (blink::IsAudioInputMediaType(device.type))
+  if (blink::IsAudioInputMediaType(device.type)) {
     devices.audio_device = device;
-  else if (blink::IsVideoInputMediaType(device.type))
+  } else if (blink::IsVideoInputMediaType(device.type)) {
     devices.video_device = device;
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   std::unique_ptr<content::MediaStreamUI> ui =
       indicator()->RegisterMediaStream(web_contents(), devices);

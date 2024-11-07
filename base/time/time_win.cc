@@ -607,6 +607,10 @@ TimeTicks TimeTicksNowIgnoringOverride() {
   return g_time_ticks_now_ignoring_override_function.load(
       std::memory_order_relaxed)();
 }
+
+TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
+  return RolloverProtectedNow();
+}
 }  // namespace subtle
 
 // static

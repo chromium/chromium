@@ -176,7 +176,7 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
       builder.SetTextEmphasisColor(style_color);
       return;
     case CSSPropertyID::kColumnRuleColor:
-      builder.SetColumnRuleColor(GapColorDataList(style_color));
+      builder.SetColumnRuleColor(GapDataList(style_color));
       return;
     case CSSPropertyID::kWebkitTextStrokeColor:
       builder.SetTextStrokeColor(style_color);
@@ -235,7 +235,7 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
       builder.SetInternalVisitedTextEmphasisColor(style_color);
       return;
     case CSSPropertyID::kColumnRuleColor:
-      builder.SetInternalVisitedColumnRuleColor(GapColorDataList(style_color));
+      builder.SetInternalVisitedColumnRuleColor(GapDataList(style_color));
       return;
     case CSSPropertyID::kWebkitTextStrokeColor:
       builder.SetInternalVisitedTextStrokeColor(style_color);

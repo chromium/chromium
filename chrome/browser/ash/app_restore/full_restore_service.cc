@@ -28,11 +28,9 @@
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
@@ -153,10 +151,6 @@ CollectRestoreIDsForNormalBrowserWindows(
     }
   }
   return app_restore_ids;
-}
-
-bool IsFactoryTestRunningMayBlock() {
-  return base::PathExists(base::FilePath("/usr/local/factory/enabled"));
 }
 
 }  // namespace
@@ -1006,22 +1000,10 @@ void FullRestoreService::MaybeShowInformedRestoreOnboarding(bool restore_on) {
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&IsFactoryTestRunningMayBlock),
-      base::BindOnce(&FullRestoreService::OnShouldShowInformedRestoreOnboarding,
-                     weak_ptr_factory_.GetWeakPtr(), restore_on));
-}
-
-void FullRestoreService::OnShouldShowInformedRestoreOnboarding(
-    bool restore_on,
-    bool factory_test_running) {
-  if (!factory_test_running) {
-    CHECK(Shell::Get()->informed_restore_controller());
-    Shell::Get()
-        ->informed_restore_controller()
-        ->MaybeShowInformedRestoreOnboarding(restore_on);
-  }
+  auto* informed_restore_controller =
+      Shell::Get()->informed_restore_controller();
+  CHECK(informed_restore_controller);
+  informed_restore_controller->MaybeShowInformedRestoreOnboarding(restore_on);
 }
 
 ScopedRestoreForTesting::ScopedRestoreForTesting() {

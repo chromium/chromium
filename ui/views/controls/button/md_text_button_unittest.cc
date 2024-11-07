@@ -139,4 +139,13 @@ TEST_F(MdTextButtonTest, StrokeColorIdOverride) {
   EXPECT_EQ(ui::kColorButtonBorder, button->GetStrokeColorIdOverride().value());
 }
 
+TEST_F(MdTextButtonTest, StrokeColorOverride) {
+  auto button = std::make_unique<MdTextButton>();
+
+  ASSERT_FALSE(button->GetStrokeColorOverrideDeprecated().has_value());
+
+  button->SetStrokeColorOverrideDeprecated(SK_ColorBLUE);
+  EXPECT_EQ(SK_ColorBLUE, button->GetStrokeColorOverrideDeprecated().value());
+}
+
 }  // namespace views

@@ -19,14 +19,12 @@ const base::FilePath::CharType kSafeSeedFilename[] =
 
 VariationsSafeSeedStoreLocalState::VariationsSafeSeedStoreLocalState(
     PrefService* local_state,
-    const version_info::Channel channel,
     const base::FilePath& seed_file_dir)
     : local_state_(local_state),
       seed_reader_writer_(std::make_unique<SeedReaderWriter>(
           local_state,
           seed_file_dir,
           kSafeSeedFilename,
-          channel,
           prefs::kVariationsSafeCompressedSeed)) {}
 
 VariationsSafeSeedStoreLocalState::~VariationsSafeSeedStoreLocalState() =

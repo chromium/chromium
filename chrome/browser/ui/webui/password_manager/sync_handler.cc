@@ -24,6 +24,33 @@
 
 namespace password_manager {
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+namespace {
+
+// Entry points to the Batch Upload dialog in the passwords settings section.
+// It is a subset of the entry points in `BatchUploadService::EntryPoint`.
+// WARNING: Keep synced with
+// chrome/browser/resources/password_manager/sync_browser_proxy.ts.
+enum class BatchUploadPasswordsEntryPoint {
+  kPasswordManager = 0,
+  kPromoCard = 1,
+
+  kMaxValue = kPromoCard,
+};
+
+BatchUploadService::EntryPoint ToBatchUploadEntryPoint(
+    BatchUploadPasswordsEntryPoint password_entry_point) {
+  switch (password_entry_point) {
+    case BatchUploadPasswordsEntryPoint::kPasswordManager:
+      return BatchUploadService::EntryPoint::kPasswordManagerSettings;
+    case BatchUploadPasswordsEntryPoint::kPromoCard:
+      return BatchUploadService::EntryPoint::kPasswordPromoCard;
+  }
+}
+
+}  // namespace
+#endif
+
 using password_manager::features_util::ShouldShowAccountStorageSettingToggle;
 
 SyncHandler::SyncHandler(Profile* profile) : profile_(profile) {}
@@ -150,10 +177,20 @@ void SyncHandler::HandleGetAccountInfo(const base::Value::List& args) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SyncHandler::HandleOpenBatchUploadDialog(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  CHECK(args[0].is_int());
+  int entry_point_int = args[0].GetInt();
+  CHECK(entry_point_int >= 0 &&
+        entry_point_int <=
+            static_cast<int>(BatchUploadPasswordsEntryPoint::kMaxValue));
+
+  BatchUploadService::EntryPoint entry_point = ToBatchUploadEntryPoint(
+      static_cast<BatchUploadPasswordsEntryPoint>(entry_point_int));
   BatchUploadService* batch_upload =
       BatchUploadServiceFactory::GetForProfile(profile_);
   CHECK(batch_upload);
-  batch_upload->OpenBatchUpload(chrome::FindBrowserWithProfile(profile_));
+  batch_upload->OpenBatchUpload(chrome::FindBrowserWithProfile(profile_),
+                                entry_point);
 }
 #endif
 

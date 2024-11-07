@@ -161,16 +161,6 @@ TEST_F(PlusAddressBottomSheetMediatorTest, OpenManagementUrlOnNewTab) {
   EXPECT_EQ(1, url_loader()->load_new_tab_call_count);
 }
 
-// Ensure that `openNewTab` opens errorReportUrl.
-TEST_F(PlusAddressBottomSheetMediatorTest, OpenErrorReportUrlOnNewTab) {
-  [mediator() openNewTab:PlusAddressURLType::kErrorReport];
-
-  EXPECT_EQ(GURL(plus_addresses::features::kPlusAddressErrorReportUrl.Get()),
-            url_loader()->last_params.web_params.url);
-  // Ensure one new tab is opened.
-  EXPECT_EQ(1, url_loader()->load_new_tab_call_count);
-}
-
 TEST_F(PlusAddressBottomSheetMediatorTest, OpenLearnMoreUrlOnNewTab) {
   [mediator() openNewTab:PlusAddressURLType::kLearnMore];
 

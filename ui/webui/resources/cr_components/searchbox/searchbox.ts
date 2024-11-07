@@ -324,6 +324,10 @@ export class SearchboxElement extends SearchboxElementBase {
     performance.measure('realbox-creation', 'realbox-creation-start');
   }
 
+  getSuggestionsElement(): HTMLElement {
+    return this.$.matches;
+  }
+
   //============================================================================
   // Callbacks
   //============================================================================

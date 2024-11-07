@@ -367,8 +367,7 @@ void PDFiumEngineExports::SetPDFUsePrintMode(int mode) {
 #endif  // BUILDFLAG(IS_WIN)
 
 bool PDFiumEngineExports::RenderPDFPageToBitmap(
-    base::span<const uint8_t> pdf_buffer,
-    int page_index,
+    FPDF_PAGE page,
     const RenderingSettings& settings,
     void* bitmap_buffer) {
   constexpr int kBgraImageColorChannels = 4;
@@ -378,17 +377,8 @@ bool PDFiumEngineExports::RenderPDFPageToBitmap(
     return false;
   }
 
-  ScopedUnsupportedFeature scoped_unsupported_feature(
-      ScopedUnsupportedFeature::kNoEngine);
-  ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
-  if (!doc)
-    return false;
-  ScopedFPDFPage page(FPDF_LoadPage(doc.get(), page_index));
-  if (!page)
-    return false;
-
   gfx::Rect dest;
-  int rotate = CalculatePosition(page.get(), settings, &dest);
+  int rotate = CalculatePosition(page, settings, &dest);
 
   ScopedFPDFBitmap bitmap(
       FPDFBitmap_CreateEx(settings.bounds.width(), settings.bounds.height(),
@@ -399,10 +389,29 @@ bool PDFiumEngineExports::RenderPDFPageToBitmap(
   // Shift top-left corner of bounds to (0, 0) if it's not there.
   dest.set_origin(dest.origin() - settings.bounds.OffsetFromOrigin());
 
-  FPDF_RenderPageBitmap(bitmap.get(), page.get(), dest.x(), dest.y(),
-                        dest.width(), dest.height(), rotate,
+  FPDF_RenderPageBitmap(bitmap.get(), page, dest.x(), dest.y(), dest.width(),
+                        dest.height(), rotate,
                         GetRenderFlagsFromSettings(settings));
   return true;
+}
+
+bool PDFiumEngineExports::RenderPDFPageToBitmap(
+    base::span<const uint8_t> pdf_buffer,
+    int page_index,
+    const RenderingSettings& settings,
+    void* bitmap_buffer) {
+  ScopedUnsupportedFeature scoped_unsupported_feature(
+      ScopedUnsupportedFeature::kNoEngine);
+  ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
+  if (!doc) {
+    return false;
+  }
+  ScopedFPDFPage page(FPDF_LoadPage(doc.get(), page_index));
+  if (!page) {
+    return false;
+  }
+
+  return RenderPDFPageToBitmap(page.get(), settings, bitmap_buffer);
 }
 
 std::vector<uint8_t> PDFiumEngineExports::ConvertPdfPagesToNupPdf(

@@ -267,10 +267,9 @@ class StyleBuilderConverter {
                                                  const CSSValue&);
   static LengthSize ConvertRadius(StyleResolverState&, const CSSValue&);
   static EPaintOrder ConvertPaintOrder(StyleResolverState&, const CSSValue&);
-  static GapColorDataList ConvertGapColorDataList(
-      StyleResolverState&,
-      const CSSValue&,
-      bool for_visited_link = false);
+  static GapDataList ConvertGapColorDataList(StyleResolverState&,
+                                             const CSSValue&,
+                                             bool for_visited_link = false);
   static ShadowData ConvertShadow(const CSSToLengthConversionData&,
                                   StyleResolverState*,
                                   const CSSValue&);

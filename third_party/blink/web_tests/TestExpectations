@@ -2610,6 +2610,7 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/377572928 external/wpt/css/css-masking/clip-path/clip-path-shape-hline-vline-keywords.tentative.html [ Failure ]
 crbug.com/377576485 [ Mac13 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
 crbug.com/377576485 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
+crbug.com/377543821 [ Mac13 ] external/wpt/css/css-shapes/shape-functions/shape-function-valid.tentative.html [ Failure ]
 crbug.com/377543821 [ Mac13 ] external/wpt/webrtc/RTCRtpEncodingParameters-codec-opus-stereo.https.html [ Timeout ]
 crbug.com/377543821 [ Mac14 ] external/wpt/webrtc/RTCRtpEncodingParameters-codec-opus-stereo.https.html [ Timeout ]
 crbug.com/377543817 [ Mac14 ] external/wpt/css/css-break/overflowed-abs-pos-with-percentage-height-print.html [ Failure ]
@@ -5714,7 +5715,6 @@ crbug.com/335458492 virtual/select-parser-relaxation/external/wpt/html/semantics
 crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/tab-closes-listbox.tentative.html [ Failure ]
 crbug.com/335458492 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/tab-closes-listbox.tentative.html [ Failure ]
 
-crbug.com/360357720 wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-icon-color.tentative.html [ Failure ]
 crbug.com/366415131 wpt_internal/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 
 

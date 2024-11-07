@@ -101,10 +101,6 @@
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/captured_surface_controller.h"
 #endif

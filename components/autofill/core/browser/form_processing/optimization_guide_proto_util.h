@@ -19,9 +19,8 @@ class FormData;
 // Converts `form_structure` to its corresponding form data proto.
 optimization_guide::proto::FormData ToFormDataProto(
     const FormData& form_data,
-    const base::flat_map<autofill::FieldGlobalId, bool>& field_eligibility_map,
-    const base::flat_map<autofill::FieldGlobalId, bool>&
-        field_value_sensitivity_map);
+    const base::flat_map<FieldGlobalId, bool>& field_eligibility_map,
+    const base::flat_map<FieldGlobalId, bool>& field_value_sensitivity_map);
 
 // Convenience overload that calls the function above with an empty
 // field_eligibility_map.

@@ -10,7 +10,6 @@
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/result.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_consumer.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -44,15 +43,9 @@
   _deviceSwitcherResultDispatcher = nullptr;
 }
 
-- (void)setConsumer:(id<DefaultBrowserGenericPromoConsumer>)consumer {
-  _consumer = consumer;
-  if (_consumer) {
-    // Sets the Default Browser screen view title with targeted messaging based
-    // on the user's segment.
-    [_consumer setPromoTitle:l10n_util::GetNSString(
-                                 GetDefaultBrowserGenericPromoTitleStringID(
-                                     _userSegment))];
-  }
+- (NSString*)promoTitle {
+  return l10n_util::GetNSString(
+      GetDefaultBrowserGenericPromoTitleStringID(_userSegment));
 }
 
 - (void)didTapPrimaryActionButton {

@@ -241,7 +241,8 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
     SyntheticTrialRegistry* synthetic_trial_registry,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManagerBase* safe_seed_manager,
-    bool add_entropy_source_to_variations_ids) {
+    bool add_entropy_source_to_variations_ids,
+    const EntropyProviders& entropy_providers) {
   DCHECK(feature_list);
   DCHECK(metrics_state_manager);
   DCHECK(platform_field_trials);
@@ -319,20 +320,15 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
         command_line->GetSwitchValuePath(switches::kVariationsTestSeedJsonPath));
   }
 
-  auto entropy_providers = metrics_state_manager->CreateEntropyProviders(
-      IsLimitedEntropyRandomizationSourceEnabled(
-          client_->GetChannelForVariations(),
-          limited_entropy_synthetic_trial_));
-
   bool used_seed = false;
   if (!used_testing_config) {
     used_seed =
-        CreateTrialsFromSeed(*entropy_providers, feature_list.get(),
+        CreateTrialsFromSeed(entropy_providers, feature_list.get(),
                              safe_seed_manager, synthetic_trial_registry);
   }
 
   platform_field_trials->SetUpClientSideFieldTrials(
-      used_seed, *entropy_providers, feature_list.get());
+      used_seed, entropy_providers, feature_list.get());
 
   platform_field_trials->RegisterFeatureOverrides(feature_list.get());
 

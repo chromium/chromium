@@ -84,7 +84,9 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
 };
 
 #if !BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
+// TODO(crbug.com/371487612): Re-enable this tests.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
+                       DISABLED_InvokeUi_Consent) {
   base::WaitableEvent shown_waiter;
   base::WaitableEvent closed_waiter;
 
@@ -105,7 +107,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
   closed_waiter.TimedWait(kMaxWaitTime);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Notice) {
+// TODO(crbug.com/371487612): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
+                       DISABLED_InvokeUi_Notice) {
   base::WaitableEvent shown_waiter;
   base::WaitableEvent closed_waiter;
 

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -152,8 +153,8 @@ import org.chromium.content_public.browser.WebContents;
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.payment_handler_sheet_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.payment_handler_sheet_description);
     }
 
     @Override

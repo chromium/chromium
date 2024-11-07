@@ -374,15 +374,6 @@ void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
 
 void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
     const Config& config,
-    std::vector<URLVisitAggregate> visit_aggregates,
-    DecorateURLVisitAggregatesCallback callback) {
-  URLVisitsMetadata url_visits_metadata;
-  DecorateURLVisitAggregates(config, std::move(url_visits_metadata),
-                             std::move(visit_aggregates), std::move(callback));
-}
-
-void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
-    const Config& config,
     visited_url_ranking::URLVisitsMetadata url_visits_metadata,
     std::vector<URLVisitAggregate> visit_aggregates,
     DecorateURLVisitAggregatesCallback callback) {

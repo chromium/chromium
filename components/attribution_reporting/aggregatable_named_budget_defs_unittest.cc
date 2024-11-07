@@ -65,8 +65,7 @@ TEST(AggregatableNamedBudgetDefsTest, Parse) {
       {
           "zero_budget",
           R"json({"a": 0})json",
-          ErrorIs(
-              SourceRegistrationError::kAggregatableNamedBudgetsValueInvalid),
+          ValueIs(AggregatableNamedBudgetDefs::FromBudgetMap({{"a", 0}})),
       },
       {
           "negative_budget",

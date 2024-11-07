@@ -477,8 +477,7 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
       SkBitmap available_bitmap =
           gfx::PNGCodec::Decode(*available_png_it->second);
       if (available_bitmap.isNull()) {
-        NOTREACHED_IN_MIGRATION();
-        return gfx::ImageSkiaRep();
+        NOTREACHED();
       }
       bitmap_map_[available_scale_factor] = available_bitmap;
       available_bitmap_it = bitmap_map_.find(available_scale_factor);
@@ -2096,10 +2095,8 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
         gfx::PNGCodec::EncodeBGRASkBitmap(scaled_bitmap,
                                           /*discard_transparency=*/false);
     if (!bitmap_data) {
-      NOTREACHED_IN_MIGRATION()
-          << "Unable to encode theme image for prs_id=" << prs_id
-          << " for scale_factor=" << scale_factors_[i];
-      break;
+      NOTREACHED() << "Unable to encode theme image for prs_id=" << prs_id
+                   << " for scale_factor=" << scale_factors_[i];
     }
     image_memory_[scaled_raw_id] = base::MakeRefCounted<base::RefCountedBytes>(
         std::move(bitmap_data).value());

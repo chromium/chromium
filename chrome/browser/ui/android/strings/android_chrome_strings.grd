@@ -6736,6 +6736,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_HUB_SEARCH_EMPTY_HINT_INCOGNITO" desc="The text displayed in the incognito search box when it's empty.">
         Search your Incognito tabs
       </message>
+      <message name="IDS_HUB_SEARCH_STATUS_VIEW_BACK_BUTTON_ICON_DESCRIPTION" desc="Accessibility string describing the back icon in the search box to exit hub search.">
+        Back
+      </message>
 
       <!-- Default browser promo -->
       <message name="IDS_DEFAULT_BROWSER_PROMO_CARD_TITLE" desc="Title of a promotion about setting Chrome the default browser.">

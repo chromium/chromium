@@ -26,6 +26,7 @@ extern const char kOnEventKey[];
 extern const char kPitchKey[];
 extern const char kRateKey[];
 extern const char kRemoteKey[];
+extern const char kUninstallImmediatelyKey[];
 extern const char kRequiredEventTypesKey[];
 extern const char kSourceKey[];
 extern const char kSrcIdKey[];

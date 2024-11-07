@@ -670,6 +670,13 @@ EVENT_TYPE(SSL_HANDSHAKE_MESSAGE_RECEIVED)
 EVENT_TYPE(SSL_HANDSHAKE_MESSAGE_SENT)
 EVENT_TYPE(SSL_ENCRYPTED_CLIENT_HELLO)
 
+// TLS 1.3 Early Data is accepted or rejected. This is logged when the handshake
+// fully completes. The following parameter is attached:
+//   {
+//     "early_data_reason": <The reason why Early Data is accepted or rejected>
+//   }
+EVENT_TYPE(SSL_HANDSHAKE_EARLY_DATA_REASON)
+
 // The specified number of bytes were sent on the socket.  Depending on the
 // source of the event, may be logged either once the data is sent, or when it
 // is queued to be sent.

@@ -125,16 +125,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
       },
 
       /**
-       * Whether the App Notifications page should be shown.
-       */
-      showAppNotificationsRow_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showOsSettingsAppNotificationsRow');
-        },
-      },
-
-      /**
        * Whether the Manage Isolated Web Apps page should be shown.
        */
       showManageIsolatedWebAppsRow_: {
@@ -298,7 +288,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private rowIcons_: Record<string, string>;
   private section_: Section;
   private readonly showAndroidApps_: boolean;
-  private showAppNotificationsRow_: boolean;
   private showManageIsolatedWebAppsRow_: boolean;
   private showParentalControlsDisablePinDialog_: boolean;
   private showParentalControlsSetupPinDialog_: boolean;

@@ -31,7 +31,7 @@ class AddressViewControllerTest : public LegacyChromeTableViewControllerTest,
  public:
   AddressViewControllerTest()
       : base::test::WithFeatureOverride(
-            plus_addresses::features::kPlusAddressIOSManualFallbackEnabled) {}
+            plus_addresses::features::kPlusAddressesEnabled) {}
 
  protected:
   void SetUp() override {
@@ -88,8 +88,7 @@ TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
   [address_view_controller presentActions:@[ action_item ]];
 
   BOOL plusAddressEnabled = base::FeatureList::IsEnabled(
-      plus_addresses::features::kPlusAddressIOSManualFallbackEnabled);
-
+      plus_addresses::features::kPlusAddressesEnabled);
   if (plusAddressEnabled) {
     [address_view_controller presentPlusAddresses:@[]];
   }

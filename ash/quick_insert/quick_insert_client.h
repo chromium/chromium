@@ -35,7 +35,7 @@ class SharedURLLoaderFactory;
 namespace ash {
 
 // Lets QuickInsertController in Ash to communicate with the browser.
-class ASH_EXPORT PickerClient {
+class ASH_EXPORT QuickInsertClient {
  public:
   using CrosSearchResultsCallback = base::RepeatingCallback<void(
       ash::AppListSearchResultType result_type,
@@ -105,8 +105,8 @@ class ASH_EXPORT PickerClient {
   virtual void Announce(std::u16string_view message) = 0;
 
  protected:
-  PickerClient();
-  virtual ~PickerClient();
+  QuickInsertClient();
+  virtual ~QuickInsertClient();
 };
 
 }  // namespace ash

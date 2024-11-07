@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -396,6 +397,10 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeAboutBlankFound) {
 // An MHTML document with an iframe trying to load a javascript URL.
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
                        IframeJavascriptUrlNotFound) {
+  // JS is allowed to execute when this feature is enabled.
+  if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
+    return;
+  }
   MhtmlArchive mhtml_archive;
   mhtml_archive.AddHtmlDocument(
       GURL("http://example.com"),
@@ -425,6 +430,10 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
 
 // An MHTML document with an iframe trying to load a javascript URL. The
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeJavascriptUrlFound) {
+  // JS is allowed to execute when this feature is enabled.
+  if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
+    return;
+  }
   MhtmlArchive mhtml_archive;
   mhtml_archive.AddHtmlDocument(
       GURL("http://example.com"),
@@ -734,6 +743,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, SandboxedIframe) {
       ~network::mojom::WebSandboxFlags::kPopups &
       ~network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts;
 
+  if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
+    default_mhtml_sandbox &= ~network::mojom::WebSandboxFlags::kScripts;
+  }
   EXPECT_EQ(default_mhtml_sandbox, rfh_main->active_sandbox_flags());
   EXPECT_EQ(default_mhtml_sandbox, rfh_unsandboxed->active_sandbox_flags());
   EXPECT_EQ(strict_sandbox, rfh_sandboxed->active_sandbox_flags());

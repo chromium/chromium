@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
@@ -62,10 +61,12 @@ public class AuxiliarySearchProvider {
     /* Only donate the recent 7 days accessed tabs.*/
     @VisibleForTesting static final String TAB_AGE_HOURS_PARAM = "tabs_max_hours";
     @VisibleForTesting static final String TASK_CREATED_TIME = "TaskCreatedTime";
-    @VisibleForTesting static final String TAB_DONATE_FILE_NAME = "tabs_donate";
     @VisibleForTesting static final int DEFAULT_TAB_AGE_HOURS = 168;
     @VisibleForTesting static final int DEFAULT_FAVICON_NUMBER = 5;
     @VisibleForTesting static final int DEFAULT_SCHEDULE_DELAY_TIME_MS = 0;
+
+    @VisibleForTesting
+    static final int DEFAULT_WINDOW_END_TIME_MS = 60 * 1000; // 1 min in milliseconds.
 
     /** The current version of the saved Tab donate metadata file. */
     private static final int SAVED_STATE_VERSION = 1;
@@ -125,12 +126,7 @@ public class AuxiliarySearchProvider {
         mTabModelSelector = tabModelSelector;
         mTabMaxAgeMillis = getTabsMaxAgeMs();
         mFaviconHelper = new FaviconHelper();
-        Resources resources = mContext.getResources();
-        mDefaultFaviconSize =
-                USE_LARGE_FAVICON.getValue()
-                        ? resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size)
-                        : resources.getDimensionPixelSize(
-                                R.dimen.auxiliary_search_favicon_size_small);
+        mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
         mZeroStateFaviconNumber = ZERO_STATE_FAVICON_NUMBER.getValue();
     }
@@ -164,6 +160,17 @@ public class AuxiliarySearchProvider {
                 });
     }
 
+    /** Returns a list of non sensitive Tabs. */
+    public void getTabsSearchableDataProtoAsync(@NonNull Callback<List<Tab>> callback) {
+        long minAccessTime = System.currentTimeMillis() - mTabMaxAgeMillis;
+        List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
+
+        // We will get up to 100 tabs as default. This is controlled by feature
+        // AuxiliarySearchDonation.
+        mAuxiliarySearchBridge.getNonSensitiveTabs(listTab, callback);
+    }
+
+    // TODO(crbug.com/376549664): Removes this method once the internal library is removed.
     @VisibleForTesting
     void onNonSensitiveTabsAvailable(
             @NonNull FaviconHelper faviconHelper,
@@ -223,7 +230,7 @@ public class AuxiliarySearchProvider {
         int remainingFaviconFetchCount = tabs.size() - zeroStateFaviconFetchedNumber;
         if (mIsFaviconEnabled && remainingFaviconFetchCount > 0) {
             saveTabMetadataToFile(
-                    getTabDonateFile(mContext),
+                    AuxiliarySearchUtils.getTabDonateFile(mContext),
                     tabs,
                     zeroStateFaviconFetchedNumber,
                     remainingFaviconFetchCount);
@@ -255,11 +262,6 @@ public class AuxiliarySearchProvider {
             tabBuilder.setLastAccessTimestamp(timestamp);
         }
         return tabBuilder.build();
-    }
-
-    /** Returns the file to save the metadata for donating tabs. */
-    static File getTabDonateFile(Context context) {
-        return new File(context.getFilesDir(), TAB_DONATE_FILE_NAME);
     }
 
     /**
@@ -377,7 +379,10 @@ public class AuxiliarySearchProvider {
 
         BackgroundTaskScheduler scheduler = BackgroundTaskSchedulerFactory.getScheduler();
         TaskInfo.TimingInfo oneOffTimingInfo =
-                TaskInfo.OneOffInfo.create().setWindowStartTimeMs(windowStartTimeMs).build();
+                TaskInfo.OneOffInfo.create()
+                        .setWindowStartTimeMs(windowStartTimeMs)
+                        .setWindowEndTimeMs(DEFAULT_WINDOW_END_TIME_MS)
+                        .build();
 
         TaskInfo.Builder builder =
                 TaskInfo.createTask(TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID, oneOffTimingInfo);

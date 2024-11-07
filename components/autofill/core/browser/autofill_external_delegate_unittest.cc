@@ -110,8 +110,7 @@ ACTION_TEMPLATE(SaveArgElementsTo,
   pointer->assign(span.begin(), span.end());
 }
 
-using SuggestionPosition =
-    autofill::AutofillSuggestionDelegate::SuggestionMetadata;
+using SuggestionPosition = AutofillSuggestionDelegate::SuggestionMetadata;
 
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
@@ -244,7 +243,7 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   MOCK_METHOD(AutofillClient::SuggestionUiSessionId,
               ShowAutofillSuggestions,
-              (const autofill::AutofillClient::PopupOpenArgs&,
+              (const AutofillClient::PopupOpenArgs&,
                base::WeakPtr<AutofillSuggestionDelegate>),
               (override));
   MOCK_METHOD(void,
@@ -1347,8 +1346,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(client(), ShowAutofillSuggestions);
   test::GenerateTestAutofillPopup(&external_delegate());
 
-  EXPECT_CALL(client(), HideAutofillSuggestions(
-                            autofill::SuggestionHidingReason::kEndEditing));
+  EXPECT_CALL(client(),
+              HideAutofillSuggestions(SuggestionHidingReason::kEndEditing));
   external_delegate().DidEndTextFieldEditing();
 }
 

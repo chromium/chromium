@@ -507,6 +507,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSNesting, WebDXFeature::kNesting},
           {WebFeature::kCSSSelectorNthChildOfSelector,
            WebDXFeature::kNthChildOf},
+          {WebFeature::kForcedColorsMediaFeature, WebDXFeature::kForcedColors},
       }};
 
   return *kMap;
@@ -514,6 +515,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
 
 const base::flat_map<blink::mojom::CSSSampleId, blink::mojom::WebDXFeature>&
 UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
+  static constexpr WebDXFeature logical_properties =
+      WebDXFeature::kLogicalProperties;
   static const base::NoDestructor<
       const base::flat_map<CSSSampleId, WebDXFeature>>
       kMap{{
@@ -568,6 +571,44 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kContentVisibility, WebDXFeature::kContentVisibility},
           {CSSSampleId::kCounterSet, WebDXFeature::kCounterSet},
           {CSSSampleId::kObjectViewBox, WebDXFeature::kObjectViewBox},
+          {CSSSampleId::kForcedColorAdjust, WebDXFeature::kForcedColors},
+          {CSSSampleId::kWhiteSpaceCollapse, WebDXFeature::kWhiteSpaceCollapse},
+          {CSSSampleId::kImageOrientation, WebDXFeature::kImageOrientation},
+          // https://drafts.csswg.org/css-logical-1/
+          {CSSSampleId::kBlockSize, logical_properties},
+          {CSSSampleId::kInlineSize, logical_properties},
+          {CSSSampleId::kMinBlockSize, logical_properties},
+          {CSSSampleId::kMaxBlockSize, logical_properties},
+          {CSSSampleId::kMinInlineSize, logical_properties},
+          {CSSSampleId::kMaxInlineSize, logical_properties},
+          {CSSSampleId::kMarginBlockStart, logical_properties},
+          {CSSSampleId::kMarginBlockEnd, logical_properties},
+          {CSSSampleId::kMarginInlineStart, logical_properties},
+          {CSSSampleId::kMarginInlineEnd, logical_properties},
+          {CSSSampleId::kInsetBlockStart, logical_properties},
+          {CSSSampleId::kInsetBlockEnd, logical_properties},
+          {CSSSampleId::kInsetInlineStart, logical_properties},
+          {CSSSampleId::kInsetInlineEnd, logical_properties},
+          {CSSSampleId::kPaddingBlockStart, logical_properties},
+          {CSSSampleId::kPaddingBlockEnd, logical_properties},
+          {CSSSampleId::kPaddingInlineStart, logical_properties},
+          {CSSSampleId::kPaddingInlineEnd, logical_properties},
+          {CSSSampleId::kBorderBlockStartWidth, logical_properties},
+          {CSSSampleId::kBorderBlockEndWidth, logical_properties},
+          {CSSSampleId::kBorderInlineStartWidth, logical_properties},
+          {CSSSampleId::kBorderInlineEndWidth, logical_properties},
+          {CSSSampleId::kBorderBlockStartStyle, logical_properties},
+          {CSSSampleId::kBorderBlockEndStyle, logical_properties},
+          {CSSSampleId::kBorderInlineStartStyle, logical_properties},
+          {CSSSampleId::kBorderInlineEndStyle, logical_properties},
+          {CSSSampleId::kBorderBlockStartColor, logical_properties},
+          {CSSSampleId::kBorderBlockEndColor, logical_properties},
+          {CSSSampleId::kBorderInlineStartColor, logical_properties},
+          {CSSSampleId::kBorderInlineEndColor, logical_properties},
+          {CSSSampleId::kBorderStartStartRadius, logical_properties},
+          {CSSSampleId::kBorderEndEndRadius, logical_properties},
+          {CSSSampleId::kBorderStartEndRadius, logical_properties},
+          {CSSSampleId::kBorderEndStartRadius, logical_properties},
       }};
 
   return *kMap;

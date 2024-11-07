@@ -82,5 +82,5 @@ MacNotificationProviderFactory::LaunchProvider() {
       return apps::AppShimManager::Get()->LaunchNotificationProvider(
           web_app_id_);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

@@ -410,8 +410,10 @@ void ClipboardPromise::ReadNextRepresentation() {
 
 void ClipboardPromise::OnRead(Blob* blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  clipboard_item_data_[clipboard_representation_index_].second =
-      MakeGarbageCollected<V8UnionBlobOrString>(blob);
+  if (blob) {
+    clipboard_item_data_[clipboard_representation_index_].second =
+        MakeGarbageCollected<V8UnionBlobOrString>(blob);
+  }
   ++clipboard_representation_index_;
   ReadNextRepresentation();
 }

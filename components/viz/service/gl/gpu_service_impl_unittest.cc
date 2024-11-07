@@ -121,7 +121,8 @@ TEST_F(GpuServiceTest, LoseAllContexts) {
   std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
   gpu_service()->InitializeWithHost(
       std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
-      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()));
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()),
+      mojom::GpuServiceCreationParams::New());
   gpu_service_remote.FlushForTesting();
 
   gpu_service()->MaybeExitOnContextLost(
@@ -138,7 +139,8 @@ TEST_F(GpuServiceTest, VisibilityCallbackCalled) {
   std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
   gpu_service()->InitializeWithHost(
       std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
-      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()));
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()),
+      mojom::GpuServiceCreationParams::New());
   gpu_service_remote.FlushForTesting();
 
   gpu_service()->SetVisibilityChangedCallback(base::BindRepeating(

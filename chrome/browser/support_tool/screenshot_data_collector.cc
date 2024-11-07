@@ -209,8 +209,7 @@ void ScreenshotDataCollector::OnSourceSelected(const std::string& err,
       break;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
   const gfx::Rect bounds(window->bounds().width(), window->bounds().height());
@@ -251,7 +250,7 @@ void ScreenshotDataCollector::OnSourceSelected(const std::string& err,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   desktop_capturer_->Start(this);
   if (!desktop_capturer_->SelectSource(id.id)) {

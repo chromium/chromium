@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
@@ -149,8 +150,8 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.no_passkeys_sheet_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.no_passkeys_sheet_content_description);
     }
 
     @Override

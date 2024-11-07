@@ -94,8 +94,7 @@ class PKIMetadataComponentInstallerTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::
-                                  kCertificateTransparencyAskBeforeEnabling,
-                              features::kKeyPinningComponentUpdater},
+                                  kCertificateTransparencyAskBeforeEnabling},
         /*disabled_features=*/{});
     ct_config_.set_disable_ct_enforcement(false);
     ct_config_.mutable_log_list()->set_compatibility_version(
@@ -568,8 +567,7 @@ class PKIMetadataComponentInstallerDisabledTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
-            features::kCertificateTransparencyAskBeforeEnabling,
-            features::kKeyPinningComponentUpdater});
+            features::kCertificateTransparencyAskBeforeEnabling});
   }
 };
 

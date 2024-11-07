@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_CONTROLLER_DESKTOP_H_
 #define CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_CONTROLLER_DESKTOP_H_
 
+#include <map>
 #include <variant>
+#include <vector>
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/policy/cbcm_invalidations_initializer.h"
@@ -87,12 +89,13 @@ class ChromeBrowserCloudManagementControllerDesktop
   scoped_refptr<network::SharedURLLoaderFactory> gaia_url_loader_factory_;
   std::unique_ptr<DeviceIdentityProvider> identity_provider_;
   std::unique_ptr<instance_id::InstanceIDDriver> device_instance_id_driver_;
-  std::variant<std::unique_ptr<invalidation::InvalidationService>,
-               std::unique_ptr<invalidation::InvalidationListener>>
-      invalidation_service_or_listener_ =
-          std::unique_ptr<invalidation::InvalidationService>{nullptr};
+  std::map<std::string,
+           std::variant<std::unique_ptr<invalidation::InvalidationService>,
+                        std::unique_ptr<invalidation::InvalidationListener>>>
+      invalidation_service_or_listener_per_project_;
   std::unique_ptr<CloudPolicyInvalidator> policy_invalidator_;
-  std::unique_ptr<FmRegistrationTokenUploader> fm_registration_token_uploader_;
+  std::vector<std::unique_ptr<FmRegistrationTokenUploader>>
+      fm_registration_token_uploaders_;
 
   // This invalidator is responsible for receiving remote commands invalidations
   std::unique_ptr<RemoteCommandsInvalidator> commands_invalidator_;

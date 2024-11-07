@@ -108,7 +108,7 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
 
     base::RunLoop run_loop;
     batch_upload_service->OpenBatchUpload(
-        browser,
+        browser, BatchUploadService::EntryPoint::kPasswordManagerSettings,
         base::BindOnce(&BatchUploadBrowserTest::OnBatchUploadShownResult,
                        base::Unretained(this), run_loop.QuitClosure()));
 
@@ -317,6 +317,7 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
   void ShowBatchUploadDialog(
       Browser* browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
+      BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback) override {
     local_data_description_list_ = std::move(local_data_description_list);
     complete_callback_ = std::move(complete_callback);

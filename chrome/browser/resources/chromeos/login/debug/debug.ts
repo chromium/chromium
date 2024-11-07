@@ -2552,6 +2552,7 @@ export class DebuggerUi {
       button.id = 'invokeDebuggerButton';
       button.className = 'debugger-button';
       button.textContent = 'Debug';
+      button.setAttribute('role', 'button');
       button.addEventListener('click', this.toggleDebugUi.bind(this));
 
       this.debuggerButton_ = button;
@@ -2561,7 +2562,6 @@ export class DebuggerUi {
       const overlay = (document.createElement('div')) as HTMLDivElement;
       overlay.id = 'debuggerOverlay';
       overlay.className = 'debugger-overlay';
-      overlay.setAttribute('aria-label', 'OOBE debug overlay');
       overlay.setAttribute('hidden', 'true');
       this.debuggerOverlay_ = overlay;
     }

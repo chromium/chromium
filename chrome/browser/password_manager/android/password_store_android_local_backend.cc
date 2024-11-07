@@ -81,7 +81,7 @@ void PasswordStoreAndroidLocalBackend::GetAutofillableLoginsAsync(
 void PasswordStoreAndroidLocalBackend::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PasswordStoreAndroidLocalBackend::FillMatchingLoginsAsync(

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.educational_tip.cards;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -60,8 +61,8 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.educational_tip_default_browser_title;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.educational_tip_default_browser_title);
     }
 
     @Override

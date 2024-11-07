@@ -242,7 +242,7 @@ void SetRegValueWorkItem::RollbackImpl() {
                             previous_type_);
     VLOG(1) << "rollback: restoring " << value_name_ << " error: " << result;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   status_ = VALUE_ROLL_BACK;

@@ -189,7 +189,7 @@ std::u16string GetNotificationText(const std::u16string& application_title,
             application_title);
       case content::DesktopMediaID::TYPE_NONE:
       case content::DesktopMediaID::TYPE_WINDOW:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     switch (capture_type) {
@@ -203,7 +203,7 @@ std::u16string GetNotificationText(const std::u16string& application_title,
         return l10n_util::GetStringFUTF16(
             IDS_MEDIA_TAB_CAPTURE_NOTIFICATION_TEXT, application_title);
       case content::DesktopMediaID::TYPE_NONE:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return std::u16string();

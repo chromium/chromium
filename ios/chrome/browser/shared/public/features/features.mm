@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 
+#import <string>
+#import <vector>
+
 #import "base/containers/contains.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/country_codes/country_codes.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ui/base/device_form_factor.h"
@@ -20,6 +24,42 @@ namespace {
 // is enabled, not if the capability was enabled at startup.
 bool IsFeedBackgroundRefreshEnabledOnly() {
   return base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh);
+}
+
+// Helper function that returns a vector of two booleans, with vector[0] being
+// the desired state for the combined MVT, and vector[1] being whether homestack
+// should be enabled.
+std::vector<bool> ShouldEnableCombinedMVTAndHomestack() {
+  // TODO(crbug.com/377587259): Use actual feed engagement level.
+  FeedActivityBucket engagement_level = FeedActivityBucket::kNoActivity;
+  if (engagement_level == FeedActivityBucket::kNoActivity ||
+      !base::FeatureList::IsEnabled(kNewFeedPositioning)) {
+    return {false, false};
+  }
+  std::string mvt_state_param_name;
+  switch (engagement_level) {
+    case FeedActivityBucket::kLowActivity:
+      mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
+      break;
+    case FeedActivityBucket::kMediumActivity:
+      mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
+      break;
+    case FeedActivityBucket::kHighActivity:
+      mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
+      break;
+    case FeedActivityBucket::kNoActivity:
+    default:
+      NOTREACHED() << "Should not reach engagement level: "
+                   << static_cast<int>(engagement_level);
+  }
+  bool should_combine_mvt = base::GetFieldTrialParamByFeatureAsBool(
+      kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
+  bool should_enable_homestack =
+      should_combine_mvt ||
+      base::GetFieldTrialParamByFeatureAsBool(
+          kNewFeedPositioning, kNewFeedPositioningHomestackOnForAll,
+          /*default_value=*/true);
+  return {should_combine_mvt, should_enable_homestack};
 }
 
 }  // namespace
@@ -930,7 +970,8 @@ bool IsTabResumptionImagesThumbnailsEnabled() {
 
 bool ShouldPutMostVisitedSitesInMagicStack() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kMagicStack, kMagicStackMostVisitedModuleParam, false);
+             kMagicStack, kMagicStackMostVisitedModuleParam, false) ||
+         ShouldEnableCombinedMVTAndHomestack()[0];
 }
 
 double ReducedNTPTopMarginSpaceForMagicStack() {
@@ -1133,4 +1174,20 @@ BASE_FEATURE(kProvisionalNotificationAlert,
 
 bool IsProvisionalNotificationAlertEnabled() {
   return base::FeatureList::IsEnabled(kProvisionalNotificationAlert);
+}
+
+BASE_FEATURE(kNewFeedPositioning,
+             "IOSNewFeedPositioning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kNewFeedPositioningCombinedMVTForHighEngaged[] =
+    "high_engagement_combined_mvt";
+const char kNewFeedPositioningCombinedMVTForMidEngaged[] =
+    "medium_engagement_combined_mvt";
+const char kNewFeedPositioningCombinedMVTForLowEngaged[] =
+    "low_engagement_combined_mvt";
+const char kNewFeedPositioningHomestackOnForAll[] = "homestack_on_for_all";
+
+// Returns whether homestack should be enabled.
+bool ShouldEnableHomestack() {
+  return ShouldEnableCombinedMVTAndHomestack()[1];
 }

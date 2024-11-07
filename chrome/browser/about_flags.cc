@@ -213,6 +213,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/websockets/websocket_basic_handshake_stream.h"
+#include "partition_alloc/buildflags.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -4193,6 +4194,43 @@ const FeatureEntry::FeatureVariation
          nullptr}};
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+const FeatureEntry::FeatureParam kSendTabIOSPushNotificationsWithURLImage[] = {
+    {send_tab_to_self::kSendTabIOSPushNotificationsURLImageParam, "true"}};
+const FeatureEntry::FeatureVariation kSendTabIOSPushNotificationsVariations[] =
+    {
+        {"With URL Image", kSendTabIOSPushNotificationsWithURLImage,
+         std::size(kSendTabIOSPushNotificationsWithURLImage), nullptr},
+};
+
+#if BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) && \
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Feature variations for kPartitionAllocMemoryTagging.
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingEnabledProcesses_BrowserOnly[] = {
+        {"enabled-processes", "browser-only"}};
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingEnabledProcesses_NonRenderer[] = {
+        {"enabled-processes", "non-renderer"}};
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingEnabledProcesses_AllProcesses[] = {
+        {"enabled-processes", "all-processes"}};
+const FeatureEntry::FeatureVariation
+    kPartitionAllocMemoryTaggingEnabledProcessesOptions[] = {
+        {"on browser process only",
+         kPartitionAllocMemoryTaggingEnabledProcesses_BrowserOnly,
+         std::size(kPartitionAllocMemoryTaggingEnabledProcesses_BrowserOnly),
+         nullptr},
+        {"on non renderer processes",
+         kPartitionAllocMemoryTaggingEnabledProcesses_NonRenderer,
+         std::size(kPartitionAllocMemoryTaggingEnabledProcesses_NonRenderer),
+         nullptr},
+        {"on all processes",
+         kPartitionAllocMemoryTaggingEnabledProcesses_AllProcesses,
+         std::size(kPartitionAllocMemoryTaggingEnabledProcesses_AllProcesses),
+         nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) &&
+        // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5884,13 +5922,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchTextEditingRedesignName,
      flag_descriptions::kTouchTextEditingRedesignDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kTouchTextEditingRedesign)},
-#if BUILDFLAG(IS_CHROMEOS)
-    {"quickoffice-force-file-download",
-     flag_descriptions::kQuickOfficeForceFileDownloadName,
-     flag_descriptions::kQuickOfficeForceFileDownloadDescription,
-     kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kQuickOfficeForceFileDownload)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
     {"enable-extensible-enterprise-sso",
      flag_descriptions::kEnableExtensibleEnterpriseSSOName,
@@ -8288,10 +8319,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"os-settings-app-notifications-page",
-     flag_descriptions::kOsSettingsAppNotificationsPageName,
-     flag_descriptions::kOsSettingsAppNotificationsPageDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kOsSettingsAppNotificationsPage)},
     {"help-app-app-detail-page", flag_descriptions::kHelpAppAppDetailPageName,
      flag_descriptions::kHelpAppAppDetailPageDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHelpAppAppDetailPage)},
@@ -10504,7 +10531,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"android-hub-search", flag_descriptions::kAndroidHubSearchName,
      flag_descriptions::kAndroidHubSearchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidHubSearch)},
+     FEATURE_VALUE_TYPE(omnibox::kAndroidHubSearch)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -10797,7 +10824,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"send-tab-ios-push-notifications",
      flag_descriptions::kSendTabToSelfIOSPushNotificationsName,
      flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfIOSPushNotifications)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         send_tab_to_self::kSendTabToSelfIOSPushNotifications,
+         kSendTabIOSPushNotificationsVariations,
+         "SendTabToSelfIOSPushNotifications")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"bookmarks-and-reading-list-behind-opt-in",
@@ -10812,13 +10842,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeskProfilesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDeskProfiles)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-    {"captive-portal-popup-window",
-     flag_descriptions::kCaptivePortalPopupWindowName,
-     flag_descriptions::kCaptivePortalPopupWindowDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCaptivePortalPopupWindow)},
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-display-performance-mode",
@@ -11810,6 +11833,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableLocalCardMigration)},
+    {"predictable-reported-quota",
+     flag_descriptions::kPredictableReportedQuotaName,
+     flag_descriptions::kPredictableReportedQuotaDescription, kOsAll,
+     FEATURE_VALUE_TYPE(storage::features::kStaticStorageQuota)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"use-ahardwarebuffer-usage-flags-from-vulkan",
@@ -11818,6 +11845,18 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(::features::kUseHardwareBufferUsageFlagsFromVulkan)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) && \
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    {"partition-alloc-memory-tagging",
+     flag_descriptions::kPartitionAllocMemoryTaggingName,
+     flag_descriptions::kPartitionAllocMemoryTaggingDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         base::features::kPartitionAllocMemoryTagging,
+         kPartitionAllocMemoryTaggingEnabledProcessesOptions,
+         "PartitionAllocMemoryTagging")},
+#endif  // BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) &&
+        // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -94,7 +94,12 @@ public class BookmarkPromoHeader
             mProfileDataCache = null;
             mSigninPromoCoordinator =
                     new SigninPromoCoordinator(
-                            mContext, mProfile, SigninPromoDelegate.forBookmarkManager(mContext));
+                            mContext,
+                            mProfile,
+                            SigninPromoDelegate.forBookmarkManager(
+                                    mContext,
+                                    mProfile,
+                                    SigninAndHistorySyncActivityLauncherImpl.get()));
             mSyncPromoController = null;
         } else if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
                 && syncPromoController.canShowSyncPromo()) {

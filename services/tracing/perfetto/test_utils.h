@@ -120,25 +120,22 @@ class MockProducerClient : public ProducerClient {
   std::unique_ptr<ProducerClient> old_producer_;
 };
 
-class MockConsumer : public perfetto::Consumer {
+class MockConsumerBase : public perfetto::Consumer {
  public:
   using PacketReceivedCallback = std::function<void(bool)>;
-  MockConsumer(std::vector<std::string> data_source_names,
-               perfetto::TracingService* service,
-               PacketReceivedCallback packet_received_callback);
-  MockConsumer(std::vector<std::string> data_source_names,
-               perfetto::TracingService* service,
-               PacketReceivedCallback packet_received_callback,
-               const perfetto::TraceConfig& config);
-  ~MockConsumer() override;
+  MockConsumerBase(perfetto::TracingService* service,
+                   PacketReceivedCallback packet_received_callback);
+  ~MockConsumerBase() override;
 
   void ReadBuffers();
 
+  void FreeBuffers();
+
+  void StartTracing(const perfetto::TraceConfig& trace_config);
+
   void StopTracing();
 
-  void StartTracing();
-
-  void FreeBuffers();
+  void CloneSession(const std::string& unique_session_name);
 
   size_t received_packets() const { return received_packets_; }
   size_t received_test_packets() const { return received_test_packets_; }
@@ -159,6 +156,35 @@ class MockConsumer : public perfetto::Consumer {
   void WaitForAllDataSourcesStarted();
   void WaitForAllDataSourcesStopped();
 
+ protected:
+  std::unique_ptr<perfetto::TracingService::ConsumerEndpoint>
+      consumer_endpoint_;
+  size_t received_packets_ = 0;
+  size_t received_test_packets_ = 0;
+  PacketReceivedCallback packet_received_callback_;
+};
+
+class MockConsumer : public MockConsumerBase {
+ public:
+  using PacketReceivedCallback = std::function<void(bool)>;
+  MockConsumer(std::vector<std::string> data_source_names,
+               perfetto::TracingService* service,
+               PacketReceivedCallback packet_received_callback);
+  MockConsumer(std::vector<std::string> data_source_names,
+               perfetto::TracingService* service,
+               PacketReceivedCallback packet_received_callback,
+               const perfetto::TraceConfig& config);
+  ~MockConsumer() override;
+
+  void StartTracing();
+
+  // perfetto::Consumer implementation
+  void OnConnect() override;
+  void OnObservableEvents(const perfetto::ObservableEvents&) override;
+
+  void WaitForAllDataSourcesStarted();
+  void WaitForAllDataSourcesStopped();
+
  private:
   struct DataSourceStatus {
     std::string name;
@@ -168,11 +194,6 @@ class MockConsumer : public perfetto::Consumer {
   void CheckForAllDataSourcesStarted();
   void CheckForAllDataSourcesStopped();
 
-  std::unique_ptr<perfetto::TracingService::ConsumerEndpoint>
-      consumer_endpoint_;
-  size_t received_packets_ = 0;
-  size_t received_test_packets_ = 0;
-  PacketReceivedCallback packet_received_callback_;
   std::vector<DataSourceStatus> data_sources_;
   raw_ptr<base::RunLoop> on_started_runloop_ = nullptr;
   raw_ptr<base::RunLoop> on_stopped_runloop_ = nullptr;

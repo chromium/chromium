@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits>
 #include <utility>
 
@@ -166,7 +161,7 @@ class TestWebUIController : public WebUIController {
                                    {BindingsPolicyValue::kMojoWebUi}))
       : WebUIController(web_ui) {
     const base::span<const webui::ResourcePath> kMojoWebUiResources =
-        base::make_span(kWebUiMojoTestResources, kWebUiMojoTestResourcesSize);
+        base::make_span(kWebUiMojoTestResources);
 
     web_ui->SetBindings(bindings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

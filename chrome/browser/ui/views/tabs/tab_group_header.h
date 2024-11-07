@@ -86,7 +86,7 @@ class TabGroupHeader : public TabSlotView,
   // Calculate the width for this View.
   int GetDesiredWidth() const;
   // Determines if the sync icon should be shown in the header.
-  bool ShouldShowSyncIcon() const;
+  bool ShouldShowHeaderIcon() const;
 
   void UpdateIsCollapsed();
 
@@ -123,8 +123,8 @@ class TabGroupHeader : public TabSlotView,
   // The current color of the group.
   SkColor color_;
 
-  // Determines if we should show the sync icon in front of the title.
-  bool should_show_sync_icon_;
+  // Determines if we should show the header icon in front of the title.
+  bool should_show_header_icon_;
 
   // Local saved collapsed state. When this differs from
   // `TabSlotController::IsGroupCollapsed()`, then the collapsed state has

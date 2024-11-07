@@ -357,7 +357,10 @@ enum Role {
   kWindow = 184,
 };
 
-// Next value: 19
+// Bitfield value. Each state can either be true or false.
+//
+// Next version: 2
+// Next value: 20
 [Extensible, Stable, Uuid="35e7123a-f31f-4de7-94a4-3412dcb6bd5a"]
 enum State {
   [Default]kNone = 0,
@@ -382,6 +385,7 @@ enum State {
   // Grows vertically, e.g. menu or combo box.
   kVertical = 17,
   kVisited = 18,
+  [MinVersion=1] kHasActions = 19,
 };
 
 // An action to be taken on an accessibility node.

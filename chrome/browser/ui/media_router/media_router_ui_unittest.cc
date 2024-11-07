@@ -25,7 +25,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_sinks_observer.h"
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/browser/test/test_helper.h"
 #include "components/media_router/common/media_source.h"

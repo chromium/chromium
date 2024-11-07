@@ -43,7 +43,7 @@ using ::testing::Property;
 using ::testing::SizeIs;
 
 constexpr size_t kNumSourceDebugDataTypes = 15;
-constexpr size_t kNumTriggerDebugDataTypes = 21;
+constexpr size_t kNumTriggerDebugDataTypes = 22;
 
 TEST(AggregatableDebugReportingConfig, Parse) {
   const struct {
@@ -912,6 +912,10 @@ TEST(AggregatableDebugReportingConfig, TriggerDebugDataTypes) {
       {
           "trigger-aggregate-insufficient-budget",
           DebugDataType::kTriggerAggregateInsufficientBudget,
+      },
+      {
+          "trigger-aggregate-insufficient-named-budget",
+          DebugDataType::kTriggerAggregateInsufficientNamedBudget,
       },
       {
           "trigger-aggregate-no-contributions",

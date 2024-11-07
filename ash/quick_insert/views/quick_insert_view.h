@@ -47,33 +47,34 @@ enum class PickerPositionType;
 enum class PickerPseudoFocusDirection;
 class PickerEmojiBarView;
 class PickerMainContainerView;
-class PickerSearchFieldView;
+class QuickInsertSearchFieldView;
 class PickerPageView;
 class QuickInsertSearchResultsSection;
-class PickerSearchResultsView;
+class QuickInsertSearchResultsView;
 class PickerTraversableItemContainer;
-class PickerViewDelegate;
+class QuickInsertViewDelegate;
 class PickerZeroStateView;
 
 // View for the Picker widget.
-class ASH_EXPORT PickerView : public views::WidgetDelegateView,
-                              public PickerZeroStateViewDelegate,
-                              public PickerSearchResultsViewDelegate,
-                              public PickerEmojiBarViewDelegate,
-                              public PickerPseudoFocusHandler,
-                              public PickerPreviewBubbleController::Observer {
-  METADATA_HEADER(PickerView, views::WidgetDelegateView)
+class ASH_EXPORT QuickInsertView
+    : public views::WidgetDelegateView,
+      public PickerZeroStateViewDelegate,
+      public QuickInsertSearchResultsViewDelegate,
+      public PickerEmojiBarViewDelegate,
+      public PickerPseudoFocusHandler,
+      public PickerPreviewBubbleController::Observer {
+  METADATA_HEADER(QuickInsertView, views::WidgetDelegateView)
 
  public:
   // `delegate` must remain valid for the lifetime of this class.
-  explicit PickerView(PickerViewDelegate* delegate,
-                      const gfx::Rect& anchor_bounds,
-                      PickerLayoutType layout_type,
-                      PickerPositionType position_type,
-                      base::TimeTicks trigger_event_timestamp);
-  PickerView(const PickerView&) = delete;
-  PickerView& operator=(const PickerView&) = delete;
-  ~PickerView() override;
+  explicit QuickInsertView(QuickInsertViewDelegate* delegate,
+                           const gfx::Rect& anchor_bounds,
+                           PickerLayoutType layout_type,
+                           PickerPositionType position_type,
+                           base::TimeTicks trigger_event_timestamp);
+  QuickInsertView(const QuickInsertView&) = delete;
+  QuickInsertView& operator=(const QuickInsertView&) = delete;
+  ~QuickInsertView() override;
 
   // Time from when a search starts to when the previous set of results are
   // cleared.
@@ -99,7 +100,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void SetCapsLockDisplayed(bool displayed) override;
   PickerCapsLockPosition GetCapsLockPosition() override;
 
-  // PickerSearchResultsViewDelegate:
+  // QuickInsertSearchResultsViewDelegate:
   void SelectSearchResult(const QuickInsertSearchResult& result) override;
   void SelectMoreResults(QuickInsertSectionType type) override;
   QuickInsertActionType GetActionForResult(
@@ -134,13 +135,13 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
     return preview_controller_;
   }
 
-  PickerSearchFieldView& search_field_view_for_testing() {
+  QuickInsertSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
   }
-  PickerSearchResultsView& search_results_view_for_testing() {
+  QuickInsertSearchResultsView& search_results_view_for_testing() {
     return *search_results_view_;
   }
-  PickerSearchResultsView& category_results_view_for_testing() {
+  QuickInsertSearchResultsView& category_results_view_for_testing() {
     return *category_results_view_;
   }
   PickerZeroStateView& zero_state_view_for_testing() {
@@ -204,8 +205,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Sets emoji bar visibility, or does nothing if the emoji bar is not enabled.
   void SetEmojiBarVisibleIfEnabled(bool visible);
 
-  // Moves pseudo focus between different parts of the PickerView, i.e. between
-  // the emoji bar and the main container.
+  // Moves pseudo focus between different parts of the QuickInsertView, i.e.
+  // between the emoji bar and the main container.
   void AdvanceActiveItemContainer(PickerPseudoFocusDirection direction);
 
   // Sets `view` as the pseudo focused view, i.e. the view which responds to
@@ -222,7 +223,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // placeholder emojis instead.
   void ResetEmojiBarToZeroState();
 
-  // Returns true if `view` is contained in a submenu of this PickerView.
+  // Returns true if `view` is contained in a submenu of this QuickInsertView.
   bool IsContainedInSubmenu(views::View* view);
 
   // Called to indicate that the Picker widget bounds need to be be updated
@@ -256,14 +257,14 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerSubmenuController submenu_controller_;
   PickerPreviewBubbleController preview_controller_;
   PickerPerformanceMetrics performance_metrics_;
-  raw_ptr<PickerViewDelegate> delegate_ = nullptr;
+  raw_ptr<QuickInsertViewDelegate> delegate_ = nullptr;
 
   // The main container contains the search field and contents pages.
   raw_ptr<PickerMainContainerView> main_container_view_ = nullptr;
-  raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
+  raw_ptr<QuickInsertSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
-  raw_ptr<PickerSearchResultsView> category_results_view_ = nullptr;
-  raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
+  raw_ptr<QuickInsertSearchResultsView> category_results_view_ = nullptr;
+  raw_ptr<QuickInsertSearchResultsView> search_results_view_ = nullptr;
 
   raw_ptr<PickerEmojiBarView> emoji_bar_view_ = nullptr;
 
@@ -289,7 +290,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                           PickerPreviewBubbleController::Observer>
       preview_bubble_observation_{this};
 
-  base::WeakPtrFactory<PickerView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

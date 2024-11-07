@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
@@ -14,6 +15,38 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+constexpr char kSubframeYoutubeReauthenticationInterstitiaHistogramName[] =
+    "FamilyLinkUser.SubframeYoutubeReauthenticationInterstitial";
+
+void RecordUkmForMainFrame(SupervisedUserVerificationPage::Status status,
+                           ukm::SourceId source_id) {
+  auto builder =
+      ukm::builders::FamilyLinkUser_ReauthenticationInterstitial(source_id);
+  switch (status) {
+    case SupervisedUserVerificationPage::Status::SHOWN:
+      builder.SetInterstitialShown(true);
+      break;
+    case SupervisedUserVerificationPage::Status::REAUTH_STARTED:
+      builder.SetReauthenticationStarted(true);
+      break;
+    case SupervisedUserVerificationPage::Status::REAUTH_COMPLETED:
+      builder.SetReauthenticationCompleted(true);
+      break;
+    default:
+      NOTREACHED();
+  }
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void RecordUmaForSubFrame(SupervisedUserVerificationPage::Status status) {
+  base::UmaHistogramEnumeration(
+      kSubframeYoutubeReauthenticationInterstitiaHistogramName,
+      SupervisedUserVerificationPage::
+          GetReauthenticationInterstitialStateFromStatus(status));
+}
+}  // namespace
 
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
@@ -87,25 +120,9 @@ void SupervisedUserVerificationPageForYouTube::PopulateInterstitialStrings(
 
 void SupervisedUserVerificationPageForYouTube::RecordReauthStatusMetrics(
     Status status) {
-  if (!is_main_frame_) {
-    // Do not record metrics for subframe interstitials.
-    return;
+  if (is_main_frame_) {
+    RecordUkmForMainFrame(status, source_id_);
+  } else {
+    RecordUmaForSubFrame(status);
   }
-
-  auto builder =
-      ukm::builders::FamilyLinkUser_ReauthenticationInterstitial(source_id_);
-  switch (status) {
-    case Status::SHOWN:
-      builder.SetInterstitialShown(true);
-      break;
-    case Status::REAUTH_STARTED:
-      builder.SetReauthenticationStarted(true);
-      break;
-    case Status::REAUTH_COMPLETED:
-      builder.SetReauthenticationCompleted(true);
-      break;
-    default:
-      NOTREACHED();
-  }
-  builder.Record(ukm::UkmRecorder::Get());
 }

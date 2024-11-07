@@ -7,14 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-class ProfileIOS;
-
 // Class handling all startup tasks.
 @interface StartupTasks : NSObject
 
-// Asynchronously finishes the profile initialization by starting the
-// deferred task runners.
-+ (void)scheduleDeferredProfileInitialization:(ProfileIOS*)profile;
 // Starts Omaha and, if first run, sets install time.  For official builds only.
 - (void)initializeOmaha;
 // Registers to receive UIApplicationWillResignActiveNotification.

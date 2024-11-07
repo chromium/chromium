@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   //   |base_timestamp| + (now() - |start_timestamp|
   // In other words, it will add the delta since the start of the repeat timer
   // to the given base. This is to get a more accurate representation of the
-  // repeat events from the first key event emitted from the server for lacros.
+  // repeat events from the first key event emitted from the server for Wayland.
   // See https://crbug.com/1499068 for details.
   struct RebaseTimestamp {
     base::TimeTicks base_timestamp;

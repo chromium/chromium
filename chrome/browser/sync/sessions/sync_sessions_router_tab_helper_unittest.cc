@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -28,6 +29,8 @@ class FakeLocalSessionEventHandler : public LocalSessionEventHandler {
   void OnLocalTabModified(SyncedTabDelegate* modified_tab) override {
     was_notified_ = true;
   }
+
+  void OnLocalTabClosed() override { was_notified_ = true; }
 
   bool was_notified_since_last_call() {
     bool was_notified = was_notified_;
@@ -51,24 +54,36 @@ class SyncSessionsRouterTabHelperTest : public ChromeRenderViewHostTestHarness {
     router_ =
         SyncSessionsWebContentsRouterFactory::GetInstance()->GetForProfile(
             profile());
-    SyncSessionsRouterTabHelper::CreateForWebContents(web_contents(), router_);
+    sync_sessions_router_ =
+        std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
+            web_contents(), router(),
+            ChromeTranslateClient::FromWebContents(web_contents()),
+            favicon::ContentFaviconDriver::FromWebContents(web_contents()));
     router_->StartRoutingTo(handler());
 
     BrowserSyncedTabDelegate::CreateForWebContents(web_contents());
     NavigateAndCommit(GURL("about:blank"));
   }
 
+  void TearDown() override {
+    sync_sessions_router_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
   SyncSessionsWebContentsRouter* router() { return router_; }
   FakeLocalSessionEventHandler* handler() { return &handler_; }
+  SyncSessionsRouterTabHelper* router_tab_helper() {
+    return sync_sessions_router_.get();
+  }
 
  private:
   raw_ptr<SyncSessionsWebContentsRouter, DanglingUntriaged> router_ = nullptr;
   FakeLocalSessionEventHandler handler_;
+  std::unique_ptr<SyncSessionsRouterTabHelper> sync_sessions_router_;
 };
 
 TEST_F(SyncSessionsRouterTabHelperTest, SubframeNavigationsIgnored) {
-  SyncSessionsRouterTabHelper* helper =
-      SyncSessionsRouterTabHelper::FromWebContents(web_contents());
+  SyncSessionsRouterTabHelper* helper = router_tab_helper();
 
   ASSERT_TRUE(handler()->was_notified_since_last_call());
 

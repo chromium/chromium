@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -178,17 +179,11 @@ bool StandardManagementPolicyProvider::MustRemainEnabled(
 
 bool StandardManagementPolicyProvider::MustRemainDisabled(
     const Extension* extension,
-    disable_reason::DisableReason* reason,
-    std::u16string* error) const {
+    disable_reason::DisableReason* reason) const {
   std::string required_version;
   if (!settings_->CheckMinimumVersion(extension, &required_version)) {
-    if (reason)
+    if (reason) {
       *reason = disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY;
-    if (error) {
-      *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSION_DISABLED_UPDATE_REQUIRED_BY_POLICY,
-          base::UTF8ToUTF16(extension->name()),
-          base::ASCIIToUTF16(required_version));
     }
     return true;
   }
@@ -197,22 +192,12 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     if (reason) {
       *reason = disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
     }
-    if (error) {
-      *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSION_DISABLED_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
-          base::UTF8ToUTF16(extension->name()));
-    }
     return true;
   }
 
   if (!settings_->IsAllowedByUnpackedDeveloperModePolicy(*extension)) {
     if (reason) {
       *reason = disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION;
-    }
-    if (error) {
-      // TODO(crbug.com/362756477): Replace temporary string with disable
-      // unsupported developer string once ready.
-      *error = u"Unpacked extension blocked by developer mode requirement.";
     }
     return true;
   }
@@ -221,11 +206,19 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     if (reason) {
       *reason = disable_reason::DISABLE_NOT_VERIFIED;
     }
-    if (error) {
-      *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE,
-          l10n_util::GetStringUTF16(IDS_EXTENSION_WEB_STORE_TITLE));
+    return true;
+  }
+
+  // Note: `mv2_experiment_manager` may be null for certain types of profiles
+  // (such as the sign-in profile). We can ignore this check in this case, since
+  // users can't install extensions in these profiles.
+  auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile_);
+  if (mv2_experiment_manager &&
+      mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
+    if (reason) {
+      *reason = disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION;
     }
+
     return true;
   }
 

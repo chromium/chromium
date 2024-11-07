@@ -70,7 +70,7 @@ gfx::Size PickerMainContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int preferred_height =
       views::View::CalculatePreferredSize(available_size).height();
-  return gfx::Size(kPickerViewWidth,
+  return gfx::Size(kQuickInsertViewWidth,
                    std::min(preferred_height, kMainContainerMaxHeight));
 }
 
@@ -116,8 +116,8 @@ bool PickerMainContainerView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-PickerSearchFieldView* PickerMainContainerView::AddSearchFieldView(
-    std::unique_ptr<PickerSearchFieldView> search_field_view) {
+QuickInsertSearchFieldView* PickerMainContainerView::AddSearchFieldView(
+    std::unique_ptr<QuickInsertSearchFieldView> search_field_view) {
   search_field_view_ = AddChildView(std::move(search_field_view));
   return search_field_view_;
 }

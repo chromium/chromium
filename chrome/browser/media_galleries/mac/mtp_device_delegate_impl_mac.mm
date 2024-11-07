@@ -188,7 +188,7 @@ void MTPDeviceDelegateImplMac::CreateDirectory(
     const bool recursive,
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::ReadDirectory(
@@ -224,7 +224,7 @@ void MTPDeviceDelegateImplMac::ReadBytes(
     int buf_len,
     ReadBytesSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool MTPDeviceDelegateImplMac::IsReadOnly() const {
@@ -238,7 +238,7 @@ void MTPDeviceDelegateImplMac::CopyFileLocal(
     CopyFileProgressCallback progress_callback,
     CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::MoveFileLocal(
@@ -247,7 +247,7 @@ void MTPDeviceDelegateImplMac::MoveFileLocal(
     CreateTemporaryFileCallback create_temporary_file_callback,
     MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::CopyFileFromLocal(
@@ -255,21 +255,21 @@ void MTPDeviceDelegateImplMac::CopyFileFromLocal(
     const base::FilePath& device_file_path,
     CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::DeleteFile(
     const base::FilePath& file_path,
     DeleteFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::DeleteDirectory(
     const base::FilePath& file_path,
     DeleteDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::AddWatcher(

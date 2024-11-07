@@ -95,6 +95,7 @@ class InvalidationListenerImpl : public InvalidationListener,
   raw_ptr<gcm::GCMDriver> gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   const std::string project_number_;
+  const std::string gcm_app_id_;
   const std::string log_prefix_;
 
   std::optional<std::string> registration_token_;

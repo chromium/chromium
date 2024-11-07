@@ -205,6 +205,13 @@ class EnrollmentScreenBaseTest : public testing::Test {
         .WillOnce([this]() { enrollment_screen_->OnConfirmationClosed(); });
   }
 
+  void ExpectSuccessScreenIsNotShown() {
+    EXPECT_CALL(mock_view_, ShowEnrollmentStatus(
+                                policy::EnrollmentStatus::ForEnrollmentCode(
+                                    policy::EnrollmentStatus::Code::kSuccess)))
+        .Times(0);
+  }
+
   void ExpectErrorScreen(policy::EnrollmentStatus status) {
     EXPECT_NE(status.enrollment_code(),
               policy::EnrollmentStatus::Code::kSuccess)
@@ -459,6 +466,24 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
   EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
 }
 
+TEST_P(EnrollmentScreenManualFlowTest, OobeConfigSkipEnrollmentSuccessScreen) {
+  wizard_context().configuration.Set(
+      configuration::kSkipEnrollmentSuccessScreen, true);
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectShowViewWithLogin();
+  ExpectManualEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  ExpectSuccessScreenIsNotShown();
+  SetupClearAuthExpectationsOnSuccess();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+}
+
 TEST_P(EnrollmentScreenManualFlowTest, ShouldNotAutomaticallyRetryEnrollment) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
@@ -699,7 +724,10 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldFinishEnrollmentScreen) {
 
   ExpectAttestationBasedEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-  if (!IsRollbackFlow()) {
+
+  if (IsRollbackFlow()) {
+    ExpectSuccessScreenIsNotShown();
+  } else {
     ExpectSuccessScreen();
   }
   ExpectClearAuth();
@@ -916,6 +944,25 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest, ShouldFinishEnrollmentScreen) {
   ExpectTokenBasedEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(false);
   ExpectSuccessScreen();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
+       OobeConfigSkipEnrollmentSuccessScreen) {
+  wizard_context().configuration.Set(
+      configuration::kSkipEnrollmentSuccessScreen, true);
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.enrollment_token);
+
+  ExpectTokenBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(false);
+  ExpectSuccessScreenIsNotShown();
   ExpectClearAuth();
 
   SetUpEnrollmentScreen(config);

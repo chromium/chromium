@@ -12,6 +12,7 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -181,8 +182,9 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.plus_address_all_plus_addresses_bottomsheet_ax_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(
+                R.string.plus_address_all_plus_addresses_bottomsheet_ax_description);
     }
 
     @Override

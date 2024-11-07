@@ -97,7 +97,7 @@ const CGFloat kCornerRadius = 8.0;
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.self ]);
+          @[ UITraitPreferredContentSizeCategory.class ]);
       [self registerForTraitChanges:traits
                          withAction:@selector(updateTitleLabelOnTraitChange)];
     }

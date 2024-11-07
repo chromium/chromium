@@ -304,10 +304,7 @@ class EVENTS_EXPORT Event {
   // Marks the event as skipped. This immediately stops the propagation of the
   // event like `StopPropagation()` but sets an extra bit so that the dispatcher
   // of the event can use this extra information to decide to handle the event
-  // themselves. For example in the case of ash-chrome - lacros-chrome
-  // interaction in ChromeOS, lacros-chrome can mark the event as 'skipped' to
-  // stop the propagation, but also notifies ash-chroem that the event was not
-  // handled in lacros. Note that `handled()` will still return true to stop the
+  // themselves. Note that `handled()` will still return true to stop the
   // event from being passed to the next phase. Note that SetSkipped() can be
   // called only for cancelable events.
   void SetSkipped();

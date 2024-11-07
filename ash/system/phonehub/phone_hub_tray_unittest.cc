@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_tray.h"
+
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/phonehub/multidevice_feature_opt_in_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -30,11 +32,13 @@
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -826,6 +830,26 @@ TEST_F(PhoneHubTrayTest, TrayPressedMetrics) {
 
   LeftClickOn(phone_hub_tray()->eche_icon_);
   histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 3);
+}
+
+TEST_F(PhoneHubTrayTest, BubbleViewAccessibleName) {
+  Shell::Get()->focus_cycler()->FocusWidget(phone_hub_tray_->GetWidget());
+  phone_hub_tray_->RequestFocus();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+
+  // Generate a tab key press.
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+
+  // The bubble widget should get focus when it's opened by keyboard and the tab
+  // key is pressed.
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  ASSERT_TRUE(bubble_view());
+
+  ui::AXNodeData node_data;
+  bubble_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            phone_hub_tray()->GetAccessibleNameForBubble());
 }
 
 }  // namespace ash

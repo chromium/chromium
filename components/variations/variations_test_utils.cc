@@ -375,4 +375,18 @@ bool ContainsTrialAndGroupName(
   return false;
 }
 
+void SetUpSeedFileTrial(std::string group_name) {
+  if (group_name.empty()) {
+    return;
+  }
+  base::MockEntropyProvider entropy_provider(0.9);
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          kSeedFileTrial, /*total_probability=*/100, kDefaultGroup,
+          entropy_provider));
+
+  trial->AppendGroup(group_name, /*group_probability=*/100);
+  trial->SetForced();
+}
+
 }  // namespace variations

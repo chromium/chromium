@@ -99,8 +99,7 @@ void TranslateService::OnResourceRequestsAllowed() {
   translate::TranslateLanguageList* language_list =
       translate::TranslateDownloadManager::GetInstance()->language_list();
   if (!language_list) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   language_list->SetResourceRequestsAllowed(

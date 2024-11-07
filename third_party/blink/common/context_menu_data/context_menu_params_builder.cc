@@ -19,7 +19,12 @@ namespace {
 blink::mojom::CustomContextMenuItemPtr MenuItemBuild(
     const blink::MenuItemInfo& item) {
   auto result = blink::mojom::CustomContextMenuItem::New();
-
+  if (item.accelerator.has_value()) {
+    auto accelerator = blink::mojom::Accelerator::New();
+    accelerator->key_code = item.accelerator->key_code;
+    accelerator->modifiers = item.accelerator->modifiers;
+    result->accelerator = std::move(accelerator);
+  }
   result->label = item.label;
   result->tool_tip = item.tool_tip;
   result->type =

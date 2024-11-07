@@ -211,7 +211,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // There is no sign-in flow for guest or system profile.
   if (profile->IsGuestSession() || profile->IsSystemProfile())
@@ -248,7 +248,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
 void ShowSigninPromptFromPromo(Profile* profile,
                                signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   CHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
   CHECK(!profile->IsOffTheRecord());
@@ -324,7 +324,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
       ->SetPrimaryAccount(account.account_id, signin::ConsentLevel::kSignin,
                           access_point);
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

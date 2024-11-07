@@ -52,6 +52,8 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/installed_loader.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -1267,9 +1269,10 @@ void ExtensionService::CheckManagementPolicy() {
   // Loop through the extensions list, finding extensions we need to disable.
   for (const auto& extension : registry_->enabled_extensions()) {
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-    if (system_->management_policy()->MustRemainDisabled(
-            extension.get(), &disable_reason, nullptr))
+    if (system_->management_policy()->MustRemainDisabled(extension.get(),
+                                                         &disable_reason)) {
       to_disable[extension->id()] = disable_reason;
+    }
   }
 
   ExtensionManagement* management =
@@ -1282,6 +1285,9 @@ void ExtensionService::CheckManagementPolicy() {
   for (const auto& extension : registry_->enabled_extensions()) {
     PermissionsUpdater(profile()).ApplyPolicyHostRestrictions(*extension);
   }
+
+  ManifestV2ExperimentManager* mv2_experiment_manager =
+      ManifestV2ExperimentManager::Get(profile_);
 
   // Loop through the disabled extension list, find extensions to re-enable
   // automatically. These extensions are exclusive from the |to_disable| list
@@ -1324,16 +1330,29 @@ void ExtensionService::CheckManagementPolicy() {
     disable_reason::DisableReason install_verifier_disable_reason =
         disable_reason::DISABLE_NONE;
     InstallVerifier::Get(GetBrowserContext())
-        ->MustRemainDisabled(extension.get(), &install_verifier_disable_reason,
-                             nullptr);
+        ->MustRemainDisabled(extension.get(), &install_verifier_disable_reason);
     if (install_verifier_disable_reason == disable_reason::DISABLE_NONE &&
         !management->ShouldBlockForceInstalledOffstoreExtension(*extension)) {
       disable_reasons &= ~disable_reason::DISABLE_NOT_VERIFIED;
     }
 
     if (!system_->management_policy()->MustRemainDisabled(extension.get(),
-                                                          nullptr, nullptr)) {
+                                                          nullptr)) {
       disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
+    }
+
+    // Note: `mv2_experiment_manager` may be null for certain types of profiles
+    // (such as the sign-in profile). We can ignore this check in this case,
+    // since users can't install extensions in these profiles.
+    // TODO(https://crbug.com/362756477): As above, this is effectively
+    // fragmenting logic between the policy provider and here to ensure that
+    // the extension gets properly re-enabled when appropriate.
+    if (mv2_experiment_manager &&
+        mv2_experiment_manager->GetCurrentExperimentStage() ==
+            MV2ExperimentStage::kUnsupported &&
+        !mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
+      disable_reasons &=
+          (~disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
     }
 
     // If this profile is not supervised, then remove any supervised user
@@ -2215,8 +2234,8 @@ int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
   disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
   // Extensions disabled by management policy should always be disabled, even
   // if it's force-installed.
-  if (system_->management_policy()->MustRemainDisabled(
-          extension, &disable_reason, nullptr)) {
+  if (system_->management_policy()->MustRemainDisabled(extension,
+                                                       &disable_reason)) {
     // A specified reason is required to disable the extension.
     DCHECK(disable_reason != disable_reason::DISABLE_NONE);
     return disable_reason;
@@ -2325,8 +2344,7 @@ void ExtensionService::PreAddExtension(const Extension* extension,
 }
 
 bool ExtensionService::CanEnableExtension(const Extension* extension) {
-  return !system_->management_policy()->MustRemainDisabled(extension, nullptr,
-                                                           nullptr);
+  return !system_->management_policy()->MustRemainDisabled(extension, nullptr);
 }
 
 bool ExtensionService::CanDisableExtension(const Extension* extension) {

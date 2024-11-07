@@ -547,6 +547,16 @@ void ReadAnythingUntrustedPageHandler::InstallVoicePack(
 #endif
 }
 
+void ReadAnythingUntrustedPageHandler::UninstallVoice(
+    const std::string& language) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  TtsController::GetInstance()->UninstallLanguageRequest(
+      profile_, language, string_constants::kReadingModeName,
+      static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE),
+      /*uninstall_immediately=*/false);
+#endif
+}
+
 void ReadAnythingUntrustedPageHandler::OnCopy() {
   if (main_observer_ && main_observer_->web_contents()) {
     main_observer_->web_contents()->Copy();

@@ -34,7 +34,7 @@ class PasswordViewControllerTest : public LegacyChromeTableViewControllerTest,
  public:
   PasswordViewControllerTest()
       : base::test::WithFeatureOverride(
-            plus_addresses::features::kPlusAddressIOSManualFallbackEnabled) {}
+            plus_addresses::features::kPlusAddressesEnabled) {}
 
  protected:
   void SetUp() override {
@@ -91,7 +91,7 @@ TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
   [password_view_controller presentActions:@[ action_item ]];
 
   BOOL plus_address_enabled = base::FeatureList::IsEnabled(
-      plus_addresses::features::kPlusAddressIOSManualFallbackEnabled);
+      plus_addresses::features::kPlusAddressesEnabled);
 
   if (plus_address_enabled) {
     [password_view_controller presentPlusAddresses:@[]];
@@ -184,7 +184,7 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
 
   // Test is irrelevant without the feature.
   if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     return;
   }
 

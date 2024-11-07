@@ -171,7 +171,6 @@ static_library("performance_manager") {
     "public/graph/node_state.h",
     "public/graph/node_type.h",
     "public/graph/page_node.h",
-    "public/graph/policies/background_tab_loading_policy.h",
     "public/graph/process_node.h",
     "public/graph/system_node.h",
     "public/graph/worker_node.h",

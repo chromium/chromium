@@ -774,8 +774,7 @@ int GetClipboardHistoryCommandId() {
 }
 
 bool IsCaptivePortalProfile(Profile* profile) {
-  return chromeos::features::IsCaptivePortalPopupWindowEnabled() &&
-         profile->IsOffTheRecord() &&
+  return profile->IsOffTheRecord() &&
          profile->GetOTRProfileID().IsCaptivePortal();
 }
 
@@ -1454,8 +1453,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
   int enum_id =
       FindUMAEnumValueForCommand(id, UmaEnumIdLookupType::GeneralEnumId);
   if (enum_id == -1) {
-    NOTREACHED_IN_MIGRATION() << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
-    return;
+    NOTREACHED() << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
   }
 
   UMA_HISTOGRAM_EXACT_LINEAR(
@@ -3051,11 +3049,13 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 #endif
 
     case IDC_SPELLCHECK_MENU:
-    case IDC_CONTENT_CONTEXT_OPENLINKWITH:
     case IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS:
     case IDC_CONTENT_CONTEXT_GENERATEPASSWORD:
     case IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS:
       return true;
+
+    case IDC_CONTENT_CONTEXT_OPENLINKWITH:
+      return IsAllowedByUntrustedNetworkStatus();
 
     case IDC_ROUTE_MEDIA:
       return IsRouteMediaEnabled();
@@ -3103,8 +3103,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
              !chromeos::clipboard_history::QueryItemDescriptors().empty();
     }
 #else
-      NOTREACHED_IN_MIGRATION() << "Unhandled id: " << id;
-      return false;
+      NOTREACHED() << "Unhandled id: " << id;
 #endif
 
     default:
@@ -3581,10 +3580,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
 
       ShowClipboardHistoryMenu(event_flags);
-#else
-      NOTREACHED_IN_MIGRATION() << "Unhandled id: " << id;
-#endif  // BUILDFLAG(IS_CHROMEOS)
       break;
+#else
+      NOTREACHED() << "Unhandled id: " << id;
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
 
     default:
@@ -4320,8 +4319,7 @@ void RenderViewContextMenu::ExecSaveAs() {
 void RenderViewContextMenu::ExecExitFullscreen() {
   Browser* browser = GetBrowser();
   if (!browser) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   browser->exclusive_access_manager()->ExitExclusiveAccess();

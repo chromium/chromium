@@ -5678,6 +5678,7 @@ interface LanguageDetector
 interface LanguageTranslator
     attribute @@toStringTag
     method constructor
+    method destroy
     method translate
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag

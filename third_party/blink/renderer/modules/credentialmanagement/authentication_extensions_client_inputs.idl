@@ -4,6 +4,10 @@
 
 // https://w3c.github.io/webauthn/#dictdef-authenticationextensionsclientinputs
 
+// LINT.IfChange
+// When adding or modifying extensions here, ensure that the
+// `OnGetClientCapabilitiesComplete` function in
+// `public_key_credential.cc` is updated accordingly.
 dictionary AuthenticationExtensionsClientInputs {
   // https://w3c.github.io/webauthn/#sctn-appid-extension
   USVString appid;
@@ -50,3 +54,4 @@ dictionary AuthenticationExtensionsClientInputs {
   // https://w3c.github.io/webauthn/#prf-extension
   [RuntimeEnabled=WebAuthenticationPRF] AuthenticationExtensionsPRFInputs prf;
 };
+// LINT.ThenChange(//third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc)

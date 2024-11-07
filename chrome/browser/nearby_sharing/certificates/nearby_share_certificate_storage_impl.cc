@@ -205,8 +205,7 @@ void NearbyShareCertificateStorageImpl::Initialize() {
           weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
       break;
     case InitStatus::kInitialized:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

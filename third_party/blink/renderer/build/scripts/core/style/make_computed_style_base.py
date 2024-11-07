@@ -65,7 +65,7 @@ ALIGNMENT_ORDER = [
     'std::optional<StyleOverflowClipMargin>',
     'std::optional<blink::PositionAreaOffsets>',
     'std::optional<PhysicalOffset>',
-    'GapColorDataList',
+    'GapDataList',
     # Compressed builds a Member can be 32 bits, vs. a pointer will be 64.
     'Member',
     # Aligns like float

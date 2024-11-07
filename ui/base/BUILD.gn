@@ -87,6 +87,7 @@ buildflag_header("buildflags") {
     "HAS_PLATFORM_ACCESSIBILITY_SUPPORT=$has_platform_accessibility_support",
     "USE_GTK=$use_gtk",
     "USE_QT=$use_qt",
+    "ENABLE_PSEUDOLOCALES=$enable_pseudolocales",
   ]
 }
 
@@ -356,6 +357,8 @@ component("base") {
 
   if (is_ios) {
     sources += [
+      "accelerators/accelerator.cc",
+      "accelerators/accelerator.h",
       "device_form_factor_ios.mm",
       "resource/resource_bundle_ios.mm",
     ]
@@ -462,10 +465,6 @@ component("base") {
 
   defines = [ "IS_UI_BASE_IMPL" ]
 
-  if (enable_pseudolocales) {
-    defines += [ "ENABLE_PSEUDOLOCALES" ]
-  }
-
   public_deps = [
     ":buildflags",
     ":features",
@@ -525,6 +524,9 @@ component("base") {
     deps += [
       ":l10n_util_ios",
       "//base",
+      "//ui/events:dom_keycode_converter",
+      "//ui/events:events",
+      "//ui/events:events_base",
     ]
   }
 

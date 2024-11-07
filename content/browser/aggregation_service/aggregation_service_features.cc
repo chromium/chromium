@@ -10,12 +10,6 @@ BASE_FEATURE(kPrivacySandboxAggregationService,
              "PrivacySandboxAggregationService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string>
-    kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam{
-        &kPrivacySandboxAggregationService, "trusted_server_url",
-        "https://publickeyservice.aws.privacysandboxservices.com/v1alpha/"
-        "publicKeys"};
-
 BASE_FEATURE(kPrivacySandboxAggregationServiceFilteringIds,
              "PrivacySandboxAggregationServiceFilteringIds",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -66,6 +66,8 @@ const char kOnPause[] = "ttsEngine.onPause";
 const char kOnResume[] = "ttsEngine.onResume";
 const char kOnInstallLanguageRequest[] = "ttsEngine.onInstallLanguageRequest";
 const char kOnLanguageStatusRequest[] = "ttsEngine.onLanguageStatusRequest";
+const char kOnUninstallLanguageRequest[] =
+    "ttsEngine.onUninstallLanguageRequest";
 }  // namespace tts_engine_events
 
 namespace {
@@ -406,6 +408,30 @@ void TtsExtensionEngine::Resume(content::BrowserContext* browser_context,
   WarnIfMissingPauseOrResumeListener(profile, event_router, engine_id);
 }
 
+void TtsExtensionEngine::UninstallLanguageRequest(
+    content::BrowserContext* browser_context,
+    const std::string& lang,
+    const std::string& client_id,
+    int source,
+    bool uninstall_immediately) {
+  tts_engine_events::TtsClientSource tts_client_source =
+      static_cast<tts_engine_events::TtsClientSource>(source);
+  base::Value::List args =
+      BuildLanguagePackArgs(lang, client_id, tts_client_source);
+
+  base::Value::Dict removal_options = base::Value::Dict().Set(
+      constants::kUninstallImmediatelyKey, uninstall_immediately);
+  args.Append((std::move(removal_options)));
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::TTS_ENGINE_ON_UNINSTALL_LANGUAGE_REQUEST,
+      tts_engine_events::kOnUninstallLanguageRequest, std::move(args), profile);
+  EventRouter* event_router = EventRouter::Get(profile);
+
+  event_router->BroadcastEvent(std::move(event));
+}
+
 void TtsExtensionEngine::InstallLanguageRequest(
     content::BrowserContext* browser_context,
     const std::string& lang,
@@ -690,7 +716,6 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   return RespondNow(NoArguments());
 #else
   // Given tts engine json api definition, we should never get here.
-  NOTREACHED_IN_MIGRATION();
-  return RespondNow(Error("Unsupported on this platform."));
+  NOTREACHED();
 #endif
 }

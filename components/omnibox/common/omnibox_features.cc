@@ -389,6 +389,11 @@ BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices,
              "SuppressIntermediateACUpdatesOnLowEndDevices",
              DISABLED);
 
+// (Android only) Show the search feature in the hub.
+BASE_FEATURE(kAndroidHubSearch,
+             "AndroidHubSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
@@ -397,7 +402,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
            &kOmniboxTouchDownTriggerForPrefetch, &kOmniboxAsyncViewInflation,
            &kRichAutocompletion, &kUseFusedLocationProvider,
            &kOmniboxElegantTextHeight, &kRetainOmniboxOnFocus,
-           &kJumpStartOmnibox}});
+           &kJumpStartOmnibox, &kAndroidHubSearch}});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());
 }

@@ -545,11 +545,6 @@ extern const char kCanvasHibernationDescription[];
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kCaptivePortalPopupWindowName[];
-extern const char kCaptivePortalPopupWindowDescription[];
-#endif
-
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
 
@@ -1620,9 +1615,6 @@ extern const char kOrcaKeyDescription[];
 extern const char kOsFeedbackDialogName[];
 extern const char kOsFeedbackDialogDescription[];
 
-extern const char kOsSettingsAppNotificationsPageName[];
-extern const char kOsSettingsAppNotificationsPageDescription[];
-
 extern const char kOverviewDeskNavigationName[];
 extern const char kOverviewDeskNavigationDescription[];
 
@@ -1673,6 +1665,9 @@ extern const char kPageVisibilityPageContentAnnotationsDescription[];
 
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
+
+extern const char kPartitionAllocMemoryTaggingName[];
+extern const char kPartitionAllocMemoryTaggingDescription[];
 
 extern const char kPartitionAllocWithAdvancedChecksName[];
 extern const char kPartitionAllocWithAdvancedChecksDescription[];
@@ -2391,6 +2386,9 @@ extern const char kEnablePasswordSharingDescription[];
 
 extern const char kEnableMantaServiceName[];
 extern const char kEnableMantaServiceDescription[];
+
+extern const char kPredictableReportedQuotaName[];
+extern const char kPredictableReportedQuotaDescription[];
 
 extern const char kPromptAPIForGeminiNanoName[];
 extern const char kPromptAPIForGeminiNanoDescription[];

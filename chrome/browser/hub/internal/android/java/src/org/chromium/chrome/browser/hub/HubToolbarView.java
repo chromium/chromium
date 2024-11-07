@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -25,8 +26,8 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class HubToolbarView extends LinearLayout {
     private LinearLayout mMenuButtonContainer;
     private View mSearchBoxLayout;
     private EditText mSearchBoxTextView;
-    private View mSearchLoupeView;
+    private ImageView mSearchLoupeView;
 
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
@@ -118,13 +119,14 @@ public class HubToolbarView extends LinearLayout {
                 HubColors.getSelectableIconList(selectedIconColor, iconColor.getDefaultColor()));
         mPaneSwitcher.setSelectedTabIndicatorColor(selectedIconColor);
 
-        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             @ColorInt int hintTextColor = HubColors.getSearchBoxHintTextColor(context, colorScheme);
             mSearchBoxTextView.setHintTextColor(hintTextColor);
             GradientDrawable backgroundDrawable =
                     (GradientDrawable) mSearchBoxLayout.getBackground();
             @ColorInt int searchBoxBgColor = HubColors.getSearchBoxBgColor(context, colorScheme);
             backgroundDrawable.setColor(searchBoxBgColor);
+            mSearchLoupeView.setImageTintList(iconColor);
         }
 
         // TODO(crbug.com/40948541): Updating the app menu color here is more correct and
@@ -150,7 +152,7 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void updateIncognitoElements(boolean isIncognito) {
-        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             updateSearchBoxElements(isIncognito);
         }
     }

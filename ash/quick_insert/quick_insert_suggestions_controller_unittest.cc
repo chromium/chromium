@@ -44,7 +44,7 @@ using QuickInsertSuggestionsControllerTest = testing::Test;
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenUnfocusedReturnsNewWindowResults) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
@@ -62,7 +62,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenSelectedTextReturnsEditorRewriteResults) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedEditorResults)
       .WillRepeatedly(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
           QuickInsertEditorResult(QuickInsertEditorResult::Mode::kRewrite, u"",
@@ -90,7 +90,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithSelectionReturnsLobsterResult) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
@@ -111,7 +111,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenFocusedDoesNotReturnNewWindowResults) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
@@ -130,7 +130,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenCapsOffReturnsCapsOn) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(false);
@@ -151,7 +151,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenCapsOnReturnsCapsOff) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(true);
@@ -172,7 +172,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithSelectionReturnsCaseTransforms) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
@@ -199,7 +199,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithNoSelectionDoesNotReturnCaseTransforms) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
@@ -226,7 +226,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsRequestsAndReturnsOneSuggestionPerCategory) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(ash::features::kPickerGrid);
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
@@ -274,7 +274,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsRequestsAndReturnsSuggestionsPerCategory) {
   base::test::ScopedFeatureList feature_list(ash::features::kPickerGrid);
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
@@ -328,7 +328,7 @@ TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
       QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a", /*icon=*/{}),
       QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b", /*icon=*/{}),
   };
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults)
       .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_links)));
   PickerSuggestionsController controller;
@@ -348,7 +348,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
       QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
                                  /*file_path=*/{}),
   };
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetRecentDriveFileResults)
       .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_files)));
   PickerSuggestionsController controller;
@@ -366,7 +366,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
       QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
       QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
   };
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetRecentLocalFileResults)
       .WillRepeatedly(WithArg<2>(RunCallbackArgWith(suggested_files)));
   PickerSuggestionsController controller;
@@ -380,7 +380,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForDatesCategoryReturnsSomeResults) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -392,7 +392,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForMathsCategoryReturnsSomeResults) {
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -413,7 +413,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(RunCallbackArgWith(
           std::vector<ClipboardHistoryItem>{clipboard_item}));
-  NiceMock<MockPickerClient> client;
+  NiceMock<MockQuickInsertClient> client;
   PickerSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;

@@ -324,9 +324,8 @@ class ColorProviderTest
   static std::string ColorSchemeToString(ui::NativeTheme::ColorScheme scheme) {
     switch (scheme) {
       case ui::NativeTheme::ColorScheme::kDefault:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Cannot unit test kDefault as it depends on machine state.";
-        return "InvalidColorScheme";
       case ui::NativeTheme::ColorScheme::kLight:
         return "kLight";
       case ui::NativeTheme::ColorScheme::kDark:

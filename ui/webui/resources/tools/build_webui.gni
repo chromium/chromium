@@ -23,7 +23,7 @@ if (use_blink) {
   import("//chrome/common/features.gni")
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   # Folders hosting Ash-only WebUIs. Should be kept in sync with
   # //tools/typescript/path_utils.py. This is used later in this file to choose
   # a CrOS-specific default TS config file for some targets.
@@ -362,7 +362,7 @@ template("build_webui") {
 
         # Detect whether the target corresponds to an Ash-only WebUI and use
         # tsconfig_base_polymer_cros.json instead in such cases.
-        if (is_chromeos_ash) {
+        if (is_chromeos) {
           is_ash_webui = false
           target_dir = get_label_info(":build_ts", "dir")
 

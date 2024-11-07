@@ -86,11 +86,12 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
   if (!scroll_marker || scroll_marker == selected_marker_) {
     return;
   }
+  // parentElement is ::column for column scroll marker and
+  // ultimate originating element for regular scroll marker.
   mojom::blink::ScrollIntoViewParamsPtr params =
       scroll_into_view_util::CreateScrollIntoViewParams(
-          *scroll_marker->UltimateOriginatingElement()->GetComputedStyle());
-  scroll_marker->UltimateOriginatingElement()->ScrollIntoViewNoVisualUpdate(
-      std::move(params));
+          *scroll_marker->parentElement()->GetComputedStyle());
+  scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
   GetDocument().SetFocusedElement(scroll_marker,
                                   FocusParams(SelectionBehaviorOnFocus::kNone,
                                               mojom::blink::FocusType::kNone,

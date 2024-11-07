@@ -228,6 +228,12 @@ PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     ChildDialogObserverHelper(PictureInPictureBrowserFrameView* pip_frame)
     : pip_frame_(pip_frame), pip_widget_(pip_frame->GetWidget()) {
   pip_widget_observation_.Observe(pip_widget_);
+  // The bounds might not be set yet, depending on the platform, but that's
+  // okay.  We'll get a callback later if not.  CrOS likes to set these
+  // initially and not call us back unless the user resizes, so it's important
+  // to grab the bounds now else we'll believe that the user's most recently
+  // desired size is (0,0)-0x0.
+  latest_user_desired_bounds_ = pip_widget_->GetWindowBoundsInScreen();
 }
 
 PictureInPictureBrowserFrameView::ChildDialogObserverHelper::

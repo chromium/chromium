@@ -302,13 +302,13 @@ std::string UnmaskCardRequest::GetRequestContent() {
 
       std::string_view cvc_position = "CVC_POSITION_UNKNOWN";
       switch (request_details_.selected_challenge_option->cvc_position) {
-        case autofill::CvcPosition::kFrontOfCard:
+        case CvcPosition::kFrontOfCard:
           cvc_position = "CVC_POSITION_FRONT";
           break;
-        case autofill::CvcPosition::kBackOfCard:
+        case CvcPosition::kBackOfCard:
           cvc_position = "CVC_POSITION_BACK";
           break;
-        case autofill::CvcPosition::kUnknown:
+        case CvcPosition::kUnknown:
           NOTREACHED();
       }
       challenge_option.Set("cvc_position", cvc_position);

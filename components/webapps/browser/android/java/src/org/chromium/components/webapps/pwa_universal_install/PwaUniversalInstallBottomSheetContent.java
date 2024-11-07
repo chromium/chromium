@@ -4,8 +4,10 @@
 
 package org.chromium.components.webapps.pwa_universal_install;
 
+import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -97,8 +99,8 @@ public class PwaUniversalInstallBottomSheetContent implements BottomSheetContent
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.pwa_uni_bottom_sheet_accessibility;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.pwa_uni_bottom_sheet_accessibility);
     }
 
     @Override

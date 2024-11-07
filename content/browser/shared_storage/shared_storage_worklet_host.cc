@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -23,7 +24,6 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
-#include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -1584,13 +1584,14 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
           mojo::PendingRemote<blink::mojom::PrivateAggregationHost>(),
           private_aggregation_config->filtering_id_max_bytes);
 
-  std::optional<base::TimeDelta> timeout =
-      (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) &&
-       private_aggregation_config->context_id)
-          ? std::optional<base::TimeDelta>(base::Seconds(5))
-          : std::nullopt;
+  std::optional<base::TimeDelta> timeout;
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) &&
+      PrivateAggregationManager::ShouldSendReportDeterministically(
+          private_aggregation_config->context_id,
+          private_aggregation_config->filtering_id_max_bytes)) {
+    timeout = base::Seconds(5);
+  }
 
-  // TODO(crbug.com/330744610): Allow filtering ID byte size to be set.
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
       PrivateAggregationCallerApi::kSharedStorage,

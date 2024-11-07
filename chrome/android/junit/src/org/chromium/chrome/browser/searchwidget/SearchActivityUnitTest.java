@@ -55,7 +55,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
@@ -78,6 +77,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.R
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -802,7 +802,7 @@ public class SearchActivityUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void finishNativeInitialization_setHubSearchBoxUrlBarElements() {
         LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
         UrlBarCoordinator urlBarCoordinator = mock(UrlBarCoordinator.class);

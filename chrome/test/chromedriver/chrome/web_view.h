@@ -44,6 +44,9 @@ class WebView {
   // Return the id for this WebView.
   virtual std::string GetId() = 0;
 
+  // Return the id for the session used by the WebView
+  virtual std::string GetSessionId() = 0;
+
   // Return true if the web view was crashed.
   virtual bool WasCrashed() = 0;
 

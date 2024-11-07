@@ -105,7 +105,7 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
@@ -225,7 +225,7 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       }
    }

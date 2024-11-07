@@ -26,14 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AttributionDestinationRateLimitResult">
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Disallowed (global limit)"/>
-  <int value="2" label="Disallowed (reporting site limit)"/>
-  <int value="3" label="Disallowed (both limits)"/>
-  <int value="4" label="Internal error"/>
-</enum>
-
 <!-- LINT.IfChange(AttributionSourceDestinationLimitResult) -->
 
 <enum name="AttributionSourceDestinationLimitResult">
@@ -217,6 +209,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Deduplicated"/>
   <int value="12" label="Report window has passed"/>
   <int value="13" label="Excessive reports"/>
+  <int value="14" label="Insufficient aggregatable named budget"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_result.mojom:AggregatableResult) -->
@@ -628,6 +621,7 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="source-destination-per-day-rate-limit"/>
   <int value="38" label="source-scopes-channel-capacity-limit"/>
   <int value="39" label="source-max-event-states-limit"/>
+  <int value="40" label="trigger-aggregate-insufficient-named-budget"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/debug_types.mojom:DebugDataType) -->

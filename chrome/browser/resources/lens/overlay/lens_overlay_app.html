@@ -240,8 +240,10 @@
     transition: width 200ms ease;
   }
 
+  :host(:not([is-lens-overlay-contextual-searchbox-visible])) #searchboxContainer,
   :host([search-box-hidden]) #searchboxContainer {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
   }
 
   cr-searchbox-ghost-loader {
@@ -256,7 +258,7 @@
    * Show the ghost loader when the searchbox is focused and the searchbox
    * dropdown isn't showing (no results available).
    */
-  :host([is-searchbox-focused]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+   :host([is-ghost-loader-enabled][is-searchbox-focused]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
     display: block;
   }
 </style>
@@ -298,16 +300,12 @@
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
-  <template is="dom-if" if="[[isLensOverlayContextualSearchboxVisible]]">
-    <div id="searchboxContainer">
-      <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
-          on-blur="handleSearchboxBlurred">
-      </cr-searchbox>
-      <template is="dom-if" if="[[isGhostLoaderEnabled]]">
-        <cr-searchbox-ghost-loader></cr-searchbox-ghost-loader>
-      </template>
-    </div>
-  </template>
+  <div id="searchboxContainer">
+    <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
+        on-blur="handleSearchboxBlurred">
+    </cr-searchbox>
+    <cr-searchbox-ghost-loader id="searchboxGhostLoader"></cr-searchbox-ghost-loader>
+  </div>
   <div id="translateButtonContainer" class="button-container">
     <translate-button id="translateButton"
       is-lens-overlay-contextual-searchbox-enabled="[[isLensOverlayContextualSearchboxEnabled]]">

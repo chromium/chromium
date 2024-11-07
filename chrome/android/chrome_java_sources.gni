@@ -986,6 +986,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/searchwidget/SearchActivityUtils.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchBoxDataProvider.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchWidgetProvider.java",
+  "java/src/org/chromium/chrome/browser/searchwidget/WidgetMetrics.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionController.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/DiscountsActionProvider.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/PriceInsightsActionProvider.java",

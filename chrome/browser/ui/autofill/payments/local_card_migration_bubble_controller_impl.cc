@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -35,7 +36,12 @@ LocalCardMigrationBubbleControllerImpl::LocalCardMigrationBubbleControllerImpl(
           *web_contents) {}
 
 LocalCardMigrationBubbleControllerImpl::
-    ~LocalCardMigrationBubbleControllerImpl() = default;
+    ~LocalCardMigrationBubbleControllerImpl() {
+  observer_list_.Notify(
+      &LocalCardMigrationControllerObserver::OnSourceDestruction,
+      LocalCardMigrationControllerObserver::LocalCardMigrationControllerSource::
+          kBubbleController);
+}
 
 void LocalCardMigrationBubbleControllerImpl::ShowBubble(
     base::OnceClosure local_card_migration_bubble_closure) {
@@ -68,6 +74,11 @@ void LocalCardMigrationBubbleControllerImpl::ReshowBubble() {
 void LocalCardMigrationBubbleControllerImpl::AddObserver(
     LocalCardMigrationControllerObserver* observer) {
   observer_list_.AddObserver(observer);
+}
+
+void LocalCardMigrationBubbleControllerImpl::RemoveObserver(
+    LocalCardMigrationControllerObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 AutofillBubbleBase*

@@ -14,15 +14,17 @@ static_library("user_session_activity") {
     "user_session_activity_reporter_delegate.h",
   ]
 
-  public_deps = [ "//chrome/browser/profiles" ]
+  public_deps = [
+    "//chrome/browser/ash/power/ml",
+    "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
+    "//chrome/browser/profiles",
+  ]
 
   deps = [
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting",
     "//chrome/browser/ash/policy/status_collector",
-    "//chrome/browser/ash/power/ml",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
     "//chromeos/ash/components/settings",
     "//components/viz/host",
   ]

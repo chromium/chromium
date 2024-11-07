@@ -63,6 +63,7 @@ FakeUploader::FakeUploader(
                              metadata,
                              file_path,
                              file_size,
+                             false,
                              traffic_annotation,
                              base::DoNothing()),
       base_url_(base_url),
@@ -90,6 +91,7 @@ class FakeUploaderFactory : public ConnectorUploadRequestFactory {
       BinaryUploadService::Result get_data_result,
       const base::FilePath& file_path,
       uint64_t file_size,
+      bool is_obfuscated,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override;
   std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
@@ -122,6 +124,7 @@ std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreateFileRequest(
     BinaryUploadService::Result get_data_result,
     const base::FilePath& file_path,
     uint64_t file_size,
+    bool is_obfuscated,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ConnectorUploadRequest::Callback callback) {
   EXPECT_FALSE(uploader_);

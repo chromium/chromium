@@ -82,7 +82,7 @@ constexpr char kIsSharedStorageAllowedHistogram[] =
 constexpr char kIsSharedStorageSelectURLAllowedHistogram[] =
     "PrivacySandbox.IsSharedStorageSelectURLAllowed";
 constexpr char kIsFencedStorageReadAllowedHistogram[] =
-    "PrivacySandbox.IsLocalUnpartitionedDataAccessAllowed";
+    "PrivacySandbox.IsFencedStorageReadAllowed";
 constexpr char kIsPrivateAggregationAllowedHistogram[] =
     "PrivacySandbox.IsPrivateAggregationAllowed";
 

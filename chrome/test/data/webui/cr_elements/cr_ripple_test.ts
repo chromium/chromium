@@ -26,6 +26,11 @@ suite('CrRipple', function() {
         new PointerEvent('pointerup', {pointerId: 1}));
   }
 
+  function pointercancel() {
+    ripple.parentElement!.dispatchEvent(
+        new PointerEvent('pointercancel', {pointerId: 1}));
+  }
+
   function keydown(key: string) {
     ripple.parentElement!.dispatchEvent(
         new KeyboardEvent('keydown', {key, cancelable: true}));
@@ -106,10 +111,17 @@ suite('CrRipple', function() {
     });
   });
 
-  test('RippleShown_PointerEvents', function() {
+  test('RippleShown_PointerDownUp', function() {
     return assertRipplesShown(1, () => {
       pointerdown();
       pointerup();
+    });
+  });
+
+  test('RippleShown_PointerDownCancel', function() {
+    return assertRipplesShown(1, () => {
+      pointerdown();
+      pointercancel();
     });
   });
 

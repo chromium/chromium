@@ -154,13 +154,13 @@ void PickerSearchController::LoadEmojiLanguages(PrefService* prefs) {
 }
 
 void PickerSearchController::StartSearch(
-    PickerClient* client,
+    QuickInsertClient* client,
     std::u16string_view query,
     std::optional<QuickInsertCategory> category,
     base::span<const QuickInsertCategory> available_categories,
     bool caps_lock_state_to_search,
     bool search_case_transforms,
-    PickerViewDelegate::SearchResultsCallback callback) {
+    QuickInsertViewDelegate::SearchResultsCallback callback) {
   StopSearch();
   aggregator_ = std::make_unique<QuickInsertSearchAggregator>(
       burn_in_period_, std::move(callback));
@@ -187,7 +187,7 @@ void PickerSearchController::StopSearch() {
 void PickerSearchController::StartEmojiSearch(
     PrefService* prefs,
     std::u16string_view query,
-    PickerViewDelegate::EmojiSearchResultsCallback callback) {
+    QuickInsertViewDelegate::EmojiSearchResultsCallback callback) {
   const base::TimeTicks search_start = base::TimeTicks::Now();
 
   emoji::EmojiSearchResult results = emoji_search_.SearchEmoji(

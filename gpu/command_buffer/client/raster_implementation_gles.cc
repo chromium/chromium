@@ -182,7 +182,7 @@ void RasterImplementationGLES::CopySharedImage(
   memcpy(mailboxes + sizeof(source_mailbox.name), dest_mailbox.name,
          sizeof(dest_mailbox.name));
   gl_->CopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height,
-                               unpack_flip_y, mailboxes);
+                               mailboxes);
 }
 
 void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,

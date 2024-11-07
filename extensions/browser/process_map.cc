@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/types/optional_util.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"

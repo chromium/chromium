@@ -15,8 +15,8 @@ PaymentLinkValidator::PaymentLinkValidator()
           // eWallet push payment project.
           // dd: bit.ly/html-payment-link-dd (Payment Link Examples section and
           // Security section)
-          "duitnow://shopeepay.com.my", "duitnow://tngdigital.com.my",
-          "shopeepay://shopeepay.com.my", "tngd://tngdigital.com.my"} {}
+          "duitnow://paynet.com.my", "shopeepay://shopeepay.com.my",
+          "tngd://tngdigital.com.my"} {}
 
 PaymentLinkValidator::~PaymentLinkValidator() = default;
 

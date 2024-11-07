@@ -357,6 +357,7 @@
   E_CPONLY(kColorListItemFolderIconForeground) \
   E_CPONLY(kColorListItemUrlFaviconBackground) \
   E_CPONLY(kColorLiveCaptionBubbleBackgroundDefault) \
+  E_CPONLY(kColorLiveCaptionBubbleButtonBackground) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIcon) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIconDisabled) \
   E_CPONLY(kColorLiveCaptionBubbleForegroundDefault) \

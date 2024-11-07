@@ -25,11 +25,13 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/oop_video_decoder.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
+#include "media/gpu/chromeos/registered_frame_converter.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
@@ -271,8 +273,9 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForARC(
 
   auto* pipeline = new VideoDecoderPipeline(
       workarounds, std::move(client_task_runner), std::move(frame_pool),
-      /*frame_converter=*/nullptr, std::move(renderable_fourccs),
-      std::move(media_log), std::move(create_decoder_function_cb),
+      RegisteredFrameConverter::Create(base::MakeRefCounted<FrameRegistry>()),
+      std::move(renderable_fourccs), std::move(media_log),
+      std::move(create_decoder_function_cb),
       /*uses_oop_video_decoder=*/false,
       // TODO(b/195769334): Set this properly once OOP-VD is enabled for ARC.
       /*in_video_decoder_process=*/false);

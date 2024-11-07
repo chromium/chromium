@@ -852,6 +852,18 @@ TEST_P(UnifiedSystemTrayTest, NoBubbleAndNoDetailedViewInKioskMode) {
   EXPECT_FALSE(IsBubbleShown());
 }
 
+TEST_P(UnifiedSystemTrayTest, BubbleViewAccessibleName) {
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  EXPECT_TRUE(IsBubbleShown());
+  auto* bubble_view = tray->GetBubbleView();
+
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            tray->GetAccessibleNameForBubble());
+}
+
 class PowerTrayViewTest : public UnifiedSystemTrayTest {
  public:
   FakePowerStatus* GetFakePowerStatus() {

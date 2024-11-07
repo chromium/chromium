@@ -352,8 +352,7 @@ void BackgroundLoaderOffliner::StartSnapshot() {
         break;
       default:
         // We should've already checked for Success before entering here.
-        NOTREACHED_IN_MIGRATION();
-        status = Offliner::RequestStatus::LOADING_FAILED;
+        NOTREACHED();
     }
 
     std::move(completion_callback_).Run(request, status);

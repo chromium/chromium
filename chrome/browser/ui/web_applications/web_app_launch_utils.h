@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"

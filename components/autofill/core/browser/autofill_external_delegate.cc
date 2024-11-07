@@ -881,7 +881,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         delegate->OpenCompose(
             manager_->driver(), query_field_.renderer_form_id(),
             query_field_.global_id(),
-            autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
+            AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
       }
       break;
     case SuggestionType::kComposeDisable:

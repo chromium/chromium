@@ -288,5 +288,5 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // This feature is global for the process and thus should not be enabled by
   // WebView.
   aw_feature_overrides.DisableFeature(
-      base::features::kPartitionAllocPermissiveMte);
+      base::features::kPartitionAllocMemoryTagging);
 }

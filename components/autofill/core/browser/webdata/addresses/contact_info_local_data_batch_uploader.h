@@ -68,8 +68,7 @@ class ContactInfoLocalDataBatchUploader
 
   // Do not use these members directly. Use `GetAddressDataManager()` to use
   // the `AddressDataManager` instance.
-  base::RepeatingCallback<autofill::AddressDataManager*()>
-      address_data_manager_callback_;
+  base::RepeatingCallback<AddressDataManager*()> address_data_manager_callback_;
 };
 
 }  // namespace autofill

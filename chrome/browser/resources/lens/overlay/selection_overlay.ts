@@ -1085,6 +1085,15 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.onImageRendered();
   }
 
+  /**
+   * Returns the bounding rect of the selection overlay. This is preferred over
+   * using getBoundingClientRect() because it is a cached DOM property which
+   * doesn't need to be recalculated every time.
+   */
+  getBoundingRect() {
+    return this.selectionOverlayRect;
+  }
+
   fetchNewScreenshotForTesting() {
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
         this.screenshotDataReceived.bind(this));

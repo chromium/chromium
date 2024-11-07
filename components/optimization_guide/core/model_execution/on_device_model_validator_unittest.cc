@@ -17,8 +17,7 @@ namespace {
 class OnDeviceModelValidatorTest : public testing::Test {
  public:
   OnDeviceModelValidatorTest() {
-    service_ = std::make_unique<on_device_model::FakeOnDeviceModelService>(
-        service_remote_.BindNewPipeAndPassReceiver(), &fake_settings_);
+    fake_launcher_.LaunchFn().Run(service_remote_.BindNewPipeAndPassReceiver());
     service_remote_->LoadModel(on_device_model::mojom::LoadModelParams::New(),
                                model_remote_.BindNewPipeAndPassReceiver(),
                                base::DoNothing());
@@ -43,7 +42,7 @@ class OnDeviceModelValidatorTest : public testing::Test {
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
-  std::unique_ptr<on_device_model::FakeOnDeviceModelService> service_;
+  on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
 };
 
 TEST_F(OnDeviceModelValidatorTest, Succeeds) {

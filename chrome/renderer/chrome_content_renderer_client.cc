@@ -92,6 +92,7 @@
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
 #include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history_clusters/core/config.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
@@ -1049,8 +1050,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
     };
     switch (status) {
       case chrome::mojom::PluginStatus::kNotFound: {
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
       case chrome::mojom::PluginStatus::kAllowed:
       case chrome::mojom::PluginStatus::kPlayImportantContent: {
@@ -1357,9 +1357,8 @@ void ChromeContentRendererClient::ReportNaClAppType(
       }
     } else {
       // We found an extension that is not covered by any metric
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid NaCl usage in extension. Extension name: "
-          << extension->name() << ", type: " << extension->GetType();
+      NOTREACHED() << "Invalid NaCl usage in extension. Extension name: "
+                   << extension->name() << ", type: " << extension->GetType();
     }
   }
 

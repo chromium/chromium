@@ -6397,6 +6397,10 @@ domain Network
       # The cookie's name/value pair size exceeded the size limit defined in
       # RFC6265bis.
       NameValuePairExceedsMaxSize
+      # The cookie's source port value does not match the request origin's port.
+      PortMismatch
+      # The cookie's source scheme value does not match the request origin's scheme.
+      SchemeMismatch
 
   # Types of reasons why a cookie should have been blocked by 3PCD but is exempted for the request.
   experimental type CookieExemptionReason extends string
@@ -9397,7 +9401,8 @@ domain Page
       # Default dialog prompt.
       optional string defaultPrompt
 
-  # Fired for top level page lifecycle events such as navigation, load, paint, etc.
+  # Fired for lifecycle events (navigation, load, paint, etc) in the current
+  # target (including local frames).
   event lifecycleEvent
     parameters
       # Id of the frame.
@@ -10859,6 +10864,7 @@ experimental domain Storage
       excessiveReportingOrigins
       noHistograms
       insufficientBudget
+      insufficientNamedBudget
       noMatchingSourceFilterData
       notRegistered
       prohibitedByBrowserPolicy

@@ -74,8 +74,7 @@ void PopulateSuccessReason(
       ukm->SetSuccessHeuristic(1);
       break;
     case DecisionSuccessReason::MAX:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -161,8 +160,7 @@ void PopulateFailureReason(
       ukm->SetFailureLivePictureInPicture(1);
       break;
     case DecisionFailureReason::MAX:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

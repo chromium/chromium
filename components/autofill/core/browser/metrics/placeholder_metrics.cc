@@ -39,7 +39,7 @@ int GetFieldTypeAutofillPreFilledFieldsStatus(
 
 void LogPreFilledFieldStatus(std::string_view form_type_name,
                              std::optional<bool> initial_value_changed,
-                             autofill::FieldType field_type) {
+                             FieldType field_type) {
   const AutofillPreFilledFieldStatus prefilled_status =
       initial_value_changed.has_value()
           ? AutofillPreFilledFieldStatus::kPreFilledOnPageLoad

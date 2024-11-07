@@ -187,6 +187,7 @@ source_set("application_delegate_internal") {
     "//components/previous_session_info",
     "//components/ukm/ios:ukm_reporting_ios_util",
     "//ios/chrome/app",
+    "//ios/chrome/app:task_names",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/startup",
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",

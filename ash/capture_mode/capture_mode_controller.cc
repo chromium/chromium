@@ -27,6 +27,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -526,7 +527,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
       CHECK(features::IsGameDashboardEnabled());
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      DCHECK(features::CanStartSunfishSession());
+      DCHECK(CanStartSunfishSession());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
@@ -675,13 +676,15 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/true);
   registry->RegisterBooleanPref(kSunfishEnabledPrefName,
                                 /*default_value=*/true);
+  // TODO(b/367882127): Set to default to true when consent disclaimer is
+  // required for the general launch.
   registry->RegisterBooleanPref(kSunfishConsentDisclaimerAccepted,
-                                /*default_value=*/false);
+                                /*default_value=*/true);
 }
 
 // static
 bool CaptureModeController::IsSunfishAllowedAndEnabled() {
-  return features::CanStartSunfishSession() &&
+  return CanStartSunfishSession() &&
          // When `AppListControllerImpl` is initialised and indirectly calls
          // this function, the active user session has not been started yet.
          // Gracefully handle this case.
@@ -698,6 +701,12 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
 
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                                                    GURL url) {
+  // A session must be active when the panel is first loaded, because it is used
+  // to determine the panel bounds. If the user ends the session before the
+  // panel loads, it will not be shown.
+  if (!IsActive()) {
+    return;
+  }
   DCHECK(features::IsSunfishFeatureEnabled());
   if (!search_results_panel_widget_) {
     const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
@@ -710,8 +719,8 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
   auto* search_results_panel = GetSearchResultsPanel();
   search_results_panel->SetSearchBoxImage(image);
   search_results_panel->search_results_view()->Navigate(url);
-  if (IsActive() && capture_mode_session_->active_behavior()
-                        ->ShouldEndSessionOnShowingSearchResults()) {
+  if (capture_mode_session_->active_behavior()
+          ->ShouldEndSessionOnShowingSearchResults()) {
     Stop();
   }
 }
@@ -766,6 +775,14 @@ bool CaptureModeController::IsEventOnSearchResultsPanel(
   return search_results_panel_widget_ &&
          search_results_panel_widget_->GetWindowBoundsInScreen().Contains(
              screen_location);
+}
+
+bool CaptureModeController::IsSearchResultsPanelInteractable() const {
+  // TODO(b/377594071): See if we can hide the panel instead of setting its
+  // opacity.
+  return search_results_panel_widget_ &&
+         search_results_panel_widget_->IsVisible() &&
+         search_results_panel_widget_->GetLayer()->GetTargetOpacity() == 1.f;
 }
 
 bool CaptureModeController::SupportsBehaviorChange(
@@ -859,7 +876,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 }
 
 void CaptureModeController::StartSunfishSession() {
-  DCHECK(features::CanStartSunfishSession());
+  DCHECK(CanStartSunfishSession());
   if (!GetActiveUserPrefService()->GetBoolean(kSunfishEnabledPrefName)) {
     return;
   }
@@ -1866,6 +1883,17 @@ void CaptureModeController::OnImageCapturedForSearch(
   }
 
   if (ShouldFetchScannerActions(capture_type)) {
+    if (capture_type == PerformCaptureType::kSunfish) {
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::
+              kSunfishScreenInitialScreenCaptureSentToScannerServer);
+    }
+    if (capture_type == PerformCaptureType::kScanner) {
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::
+              kScreenCaptureModeInitialScreenCaptureSentToScannerServer);
+    }
+
     Shell::Get()->scanner_controller()->FetchActionsForImage(
         jpeg_bytes,
         base::BindOnce(&CaptureModeController::OnScannerActionsFetched,

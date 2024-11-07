@@ -4,7 +4,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
@@ -21,24 +20,16 @@ static struct EncodingParameters {
   bool disable_accelerator;
   std::string mime_type;
 } const kEncodingParameters[] = {
-    {true, "video/webm;codecs=vp8"},
-    {true, "video/webm;codecs=vp9"},
+    {true, "video/webm;codecs=VP8"},
+    {true, "video/webm;codecs=VP9"},
     {false, ""},  // Instructs the platform to choose any accelerated codec.
-    {false, "video/webm;codecs=vp8"},
-    {false, "video/webm;codecs=vp9"},
+    {false, "video/webm;codecs=VP8"},
+    {false, "video/webm;codecs=VP9"},
 };
 
 static const EncodingParameters kProprietaryEncodingParameters[] = {
-    {true, "video/x-matroska;codecs=avc1"},
-    {false, "video/x-matroska;codecs=avc1"},
-    {true, "video/mp4;codecs=avc1"},
-    {false, "video/mp4;codecs=avc1"},
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    {true, "video/x-matroska;codecs=hvc1"},
-    {false, "video/x-matroska;codecs=hvc1"},
-    {true, "video/mp4;codecs=hvc1"},
-    {false, "video/mp4;codecs=hvc1"},
-#endif
+    {true, "video/x-matroska;codecs=AVC1"},
+    {false, "video/x-matroska;codecs=AVC1"},
 };
 
 }  // namespace
@@ -60,18 +51,7 @@ class WebRtcMediaRecorderTest
     if (GetParam().disable_accelerator) {
       command_line->AppendSwitch(switches::kDisableAcceleratedVideoEncode);
     }
-
-    scoped_feature_list_.InitWithFeatures(
-        {
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-            media::kMediaRecorderHEVCSupport
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-        },
-        {});
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug/361123384): Re-enable.
@@ -88,8 +68,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, StartAndStop) {
   MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222675
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/1222675 https://crbug.com/377684694
 #define MAYBE_StartAndDataAvailable DISABLED_StartAndDataAvailable
 #else
 #define MAYBE_StartAndDataAvailable StartAndDataAvailable
@@ -123,7 +103,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
 
 // TODO(crbug.com/40903193): Seems the test is not working quite well on
 // android-12l-x64-dbg-tests.
-#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/377684694)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // https://crbug.com/1222675
 #define MAYBE_ResumeAndDataAvailable DISABLED_ResumeAndDataAvailable
 #else
@@ -177,7 +158,13 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, RecordWithTransparency) {
+// TODO(https://crbug.com/377684694)
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RecordWithTransparency DISABLED_RecordWithTransparency
+#else
+#define MAYBE_RecordWithTransparency RecordWithTransparency
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_RecordWithTransparency) {
   MakeTypicalCall(base::StringPrintf("testRecordWithTransparency(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);

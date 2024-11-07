@@ -112,12 +112,9 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
   content::WebContents* web_contents = tab_android_->web_contents();
   AssertHasWindowAndCompositor(web_contents);
 
-  if (progress > 1.f) {
-    // TODO(crbug.com/41483519): Happens in fling. Should figure out why
-    // before launch. Cap the progress at 1.f for now.
-    LOG(ERROR) << "TabOnBackGestureHandler::OnBackProgressed " << progress;
-    progress = 1.f;
-  }
+  // The OS can give us incorrect progress values.
+  progress = std::clamp(progress, 0.f, 1.f);
+
   ui::BackGestureEvent back_gesture(progress);
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureProgressed(
       back_gesture);

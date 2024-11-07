@@ -66,8 +66,8 @@ TEST_F(QuickInsertMainContainerViewTest, LayoutWithContentsBelowSearchField) {
   auto* container =
       widget->SetContentsView(std::make_unique<PickerMainContainerView>());
 
-  auto* search_field =
-      container->AddSearchFieldView(std::make_unique<PickerSearchFieldView>(
+  auto* search_field = container->AddSearchFieldView(
+      std::make_unique<QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   PickerContentsView* contents = container->AddContentsView(
       PickerLayoutType::kMainResultsBelowSearchField);
@@ -84,8 +84,8 @@ TEST_F(QuickInsertMainContainerViewTest, LayoutWithContentsAboveSearchField) {
   auto* container =
       widget->SetContentsView(std::make_unique<PickerMainContainerView>());
 
-  auto* search_field =
-      container->AddSearchFieldView(std::make_unique<PickerSearchFieldView>(
+  auto* search_field = container->AddSearchFieldView(
+      std::make_unique<QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   PickerContentsView* contents = container->AddContentsView(
       PickerLayoutType::kMainResultsAboveSearchField);

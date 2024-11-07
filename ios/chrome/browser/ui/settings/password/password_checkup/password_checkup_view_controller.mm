@@ -228,7 +228,7 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(updateUIOnTraitChange)];
   }

@@ -27,6 +27,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -458,6 +459,20 @@ TEST_P(NotificationCenterTrayTest, PrivacyIndicatorsVisibility) {
   task_environment()->FastForwardBy(
       PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(privacy_indicators_view->GetVisible());
+}
+
+// Tests that the TrayBubbleView instance has the correct name in the
+// accessibility cache.
+TEST_P(NotificationCenterTrayTest, BubbleViewAccessibleName) {
+  test_api()->AddNotification();
+  test_api()->ToggleBubble();
+  EXPECT_TRUE(test_api()->IsBubbleShown());
+
+  TrayBubbleView* bubble_view = test_api()->GetBubble()->GetBubbleView();
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            test_api()->GetTray()->GetAccessibleNameForBubble());
 }
 
 // Test fixture that disables notification popups.

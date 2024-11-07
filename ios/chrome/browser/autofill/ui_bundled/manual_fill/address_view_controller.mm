@@ -87,7 +87,7 @@ enum ManualFallbackItemType : NSInteger {
   }
 
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     _addresses = (NSArray<TableViewItem*>*)addresses;
     [self presentItems];
   } else {

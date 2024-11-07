@@ -170,7 +170,6 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -1085,6 +1084,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 }
 
 void BrowserView::ToggleCompactModeUI() {
+  if (!browser()->is_type_normal()) {
+    return;
+  }
+
   bool is_compact_mode = chrome::ShouldUseCompactMode(GetProfile());
   GetBrowserViewLayout()->set_compact_mode(is_compact_mode);
   InvalidateLayout();
@@ -5291,7 +5294,8 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
   return ShowEyeDropper(frame, listener);
 }
 
-BrowserFeaturePromoController* BrowserView::GetFeaturePromoControllerImpl() {
+user_education::FeaturePromoControllerCommon*
+BrowserView::GetFeaturePromoControllerImpl() {
   return feature_promo_controller_.get();
 }
 
@@ -5377,8 +5381,11 @@ void BrowserView::NotifyAdditionalConditionEvent(const char* event_name) {
   if (!feature_promo_controller_) {
     return;
   }
-  feature_promo_controller_->feature_engagement_tracker()->NotifyEvent(
-      event_name);
+  if (auto* const tracker =
+          feature_engagement::TrackerFactory::GetForBrowserContext(
+              GetProfile())) {
+    tracker->NotifyEvent(event_name);
+  }
 }
 
 user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(

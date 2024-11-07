@@ -13,3 +13,8 @@ export const isAppV2Enabled = (): boolean => {
 export const isTrustedReportsFirmwareEnabled = (): boolean => {
   return loadTimeData.getBoolean('isUpstreamTrustedReportsFirmwareEnabled');
 };
+
+// Return whether Flex firmware updates are enabled.
+export const IsFlexFirmwareUpdateEnabled = (): boolean => {
+  return loadTimeData.getBoolean('IsFlexFirmwareUpdateEnabled');
+};

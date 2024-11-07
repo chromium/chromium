@@ -2031,10 +2031,6 @@ def get_bindgen_flags(args: List[str]) -> List[str]:
       break
     bindgen_flags.append("--" + arg)
 
-  if len(bindgen_flags) == 0:
-    raise ValueError(
-        f"Found --bindgen-flags in bindgen args but no flags were found! args: {args}"
-    )
   return bindgen_flags
 
 

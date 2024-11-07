@@ -5,6 +5,7 @@
 package org.chromium.components.webapps.pwa_universal_install;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 
@@ -68,9 +69,10 @@ public final class PwaUniversalInstallBottomSheetContentTest {
         Assert.assertTrue(pwaUniversalInstallBottomSheetContent.swipeToDismissEnabled());
 
         int accessibilityId = R.string.pwa_uni_bottom_sheet_accessibility;
+        Context context = pwaUniversalInstallBottomSheetContent.getContentView().getContext();
         Assert.assertEquals(
-                accessibilityId,
-                pwaUniversalInstallBottomSheetContent.getSheetContentDescriptionStringId());
+                context.getString(accessibilityId),
+                pwaUniversalInstallBottomSheetContent.getSheetContentDescription(context));
         Assert.assertEquals(
                 accessibilityId,
                 pwaUniversalInstallBottomSheetContent.getSheetHalfHeightAccessibilityStringId());

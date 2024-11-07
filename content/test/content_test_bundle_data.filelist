@@ -381,6 +381,8 @@ data/accessibility/aria/annotation-roles-expected-win.txt
 data/accessibility/aria/annotation-roles.html
 data/accessibility/aria/aria-actions-expected-auralinux.txt
 data/accessibility/aria/aria-actions-expected-blink.txt
+data/accessibility/aria/aria-actions-expected-uia-win.txt
+data/accessibility/aria/aria-actions-expected-win.txt
 data/accessibility/aria/aria-actions-reference-target-expected-blink.txt
 data/accessibility/aria/aria-actions-reference-target.html
 data/accessibility/aria/aria-actions-target-id-change-expected-blink.txt
@@ -5544,6 +5546,8 @@ data/accessibility/mac/description/aria-description-in-axcustomcontent-expected.
 data/accessibility/mac/description/aria-description-in-axcustomcontent.html
 data/accessibility/mac/methods/accessibility-column-header-ui-elements-expected.txt
 data/accessibility/mac/methods/accessibility-column-header-ui-elements.html
+data/accessibility/mac/methods/accessibility-column-index-range-expected.txt
+data/accessibility/mac/methods/accessibility-column-index-range.html
 data/accessibility/mac/methods/accessibility-custom-content-expected-mac-before-11.txt
 data/accessibility/mac/methods/accessibility-custom-content-expected.txt
 data/accessibility/mac/methods/accessibility-custom-content.html
@@ -5561,6 +5565,8 @@ data/accessibility/mac/methods/accessibility-placeholder-value-expected.txt
 data/accessibility/mac/methods/accessibility-placeholder-value.html
 data/accessibility/mac/methods/accessibility-role-description-expected.txt
 data/accessibility/mac/methods/accessibility-role-description.html
+data/accessibility/mac/methods/accessibility-row-index-range-expected.txt
+data/accessibility/mac/methods/accessibility-row-index-range.html
 data/accessibility/mac/methods/accessibility-rows-expected.txt
 data/accessibility/mac/methods/accessibility-rows.html
 data/accessibility/mac/methods/accessibility-selected-expected.txt
@@ -5969,8 +5975,6 @@ data/attribution_reporting/aggregatable_report_goldens/version_0.1/report_gcp_8.
 data/attribution_reporting/aggregatable_report_goldens/version_0.1/report_gcp_8_cleartext_payloads.json
 data/attribution_reporting/aggregatable_report_goldens/version_0.1/report_gcp_9.json
 data/attribution_reporting/aggregatable_report_goldens/version_0.1/report_gcp_9_cleartext_payloads.json
-data/attribution_reporting/databases/version_51.sql
-data/attribution_reporting/databases/version_52.sql
 data/attribution_reporting/databases/version_53.sql
 data/attribution_reporting/databases/version_54.sql
 data/attribution_reporting/databases/version_55.sql
@@ -5993,6 +5997,8 @@ data/attribution_reporting/interop/aggregatable_debug_reports_limits.json
 data/attribution_reporting/interop/aggregatable_debug_reports_with_filtering_ids.json
 data/attribution_reporting/interop/aggregatable_dedup_key.json
 data/attribution_reporting/interop/aggregatable_large_key.json
+data/attribution_reporting/interop/aggregatable_named_budgets.json
+data/attribution_reporting/interop/aggregatable_named_budgets_parsing_failures.json
 data/attribution_reporting/interop/aggregatable_report_source_registration_time.json
 data/attribution_reporting/interop/aggregatable_report_trigger_context_id.json
 data/attribution_reporting/interop/aggregatable_report_window.json
@@ -8108,6 +8114,8 @@ data/web_ui_dedicated_worker.js
 data/web_ui_managed_interface_test.html
 data/web_ui_managed_interface_test.test-mojom
 data/web_ui_managed_interface_test.ts
+data/web_ui_mojo_conformance_test.html
+data/web_ui_mojo_conformance_test.ts
 data/web_ui_mojo_native.html
 data/web_ui_mojo_native.js
 data/web_ui_mojo_test.html

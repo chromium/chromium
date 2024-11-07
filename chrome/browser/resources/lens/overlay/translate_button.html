@@ -233,6 +233,12 @@
     min-width: 250px;
   }
 
+  :host([should-hide-language-picker]) #languagePicker {
+    animation: fadeInOut 400ms cubic-bezier(0.2, 0.0, 0, 1.0) 0s reverse;
+    opacity: 0;
+    pointer-events: none;
+  }
+
   #languagePickerMenuStarsIcon {
     background-color: var(--color-scrim);
     display: block;
@@ -305,7 +311,7 @@
 
   #translateDisableButton {
     background-color: var(--color-surface-container-highest-dark);
-    gap: 0px;
+    gap: 0;
     height: 38px;
     min-width: 0px;
     opacity: 0;
@@ -460,7 +466,7 @@
       <span id="starsIcon" slot="prefix-icon"></span>
       <span id="sourceLanguageLabel"
           class="button-label language-picker-label">
-        [[getSourceLanguageDisplayName(translateLanguageList,
+        [[getSourceLanguageDisplayName(sourceLanguageList,
             sourceLanguage, contentLanguage)]]
       </span>
     </cr-button>
@@ -501,7 +507,7 @@
         <div id="menuDetectedLanguage"
             class="language-picker-menu-detected-language">
           [[getContentLanguageDisplayName(
-              translateLanguageList, contentLanguage)]]
+              sourceLanguageList, contentLanguage)]]
         </div>
         <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
       </cr-button>
@@ -511,7 +517,7 @@
         $i18n{allLanguages}
       </h3>
       <template id="sourceLanguagePickerContainer" is="dom-repeat"
-          items="[[translateLanguageList]]" as="language">
+          items="[[sourceLanguageList]]" as="language">
         <cr-button class="button language-picker-menu-button"
             on-click="onSourceLanguageMenuItemClick">
           <cr-icon icon="cr:check" slot="prefix-icon"
@@ -542,7 +548,7 @@
         $i18n{allLanguages}
       </h3>
       <template id="targetLanguagePickerContainer" is="dom-repeat"
-          items="[[translateLanguageList]]" as="language">
+          items="[[targetLanguageList]]" as="language">
         <cr-button class="button language-picker-menu-button"
             on-click="onTargetLanguageMenuItemClick">
           <cr-icon icon="cr:check" slot="prefix-icon"

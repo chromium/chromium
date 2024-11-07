@@ -1775,14 +1775,14 @@ reviewer.
         summary="IsAttributionReportingAllowed"/>
     <variant name="IsAttributionReportingEverAllowed"
         summary="IsAttributionReportingEverAllowed"/>
+    <variant name="IsFencedStorageReadAllowed"
+        summary="IsFencedStorageReadAllowed"/>
     <variant name="IsFledgeBuyAllowed" summary="IsFledgeBuyAllowed"/>
     <variant name="IsFledgeJoinAllowed" summary="IsFledgeJoinAllowed"/>
     <variant name="IsFledgeLeaveAllowed" summary="IsFledgeLeaveAllowed"/>
     <variant name="IsFledgeReadAllowed" summary="IsFledgeReadAllowed"/>
     <variant name="IsFledgeSellAllowed" summary="IsFledgeSellAllowed"/>
     <variant name="IsFledgeUpdateAllowed" summary="IsFledgeUpdateAllowed"/>
-    <variant name="IsLocalUnpartitionedDataAccessAllowed"
-        summary="IsLocalUnpartitionedDataAccessAllowed"/>
     <variant name="IsPrivacySandboxReportingDestinationAttested"
         summary="IsPrivacySandboxReportingDestinationAttested"/>
     <variant name="IsPrivateAggregationAllowed"

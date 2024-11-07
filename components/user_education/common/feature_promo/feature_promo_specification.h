@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/user_education_metadata.h"
@@ -32,7 +33,7 @@ namespace user_education {
 class FeaturePromoHandle;
 
 // Specifies the parameters for a feature promo and its associated bubble.
-class FeaturePromoSpecification {
+class FeaturePromoSpecification : public AnchorElementProviderCommon {
  public:
   // Represents additional conditions that can affect when a promo can show.
   class AdditionalConditions {
@@ -114,13 +115,6 @@ class FeaturePromoSpecification {
       std::u16string,
       // Specify a number of items in a singular/plural string.
       int>;
-
-  // Optional method that filters a set of potential `elements` to choose and
-  // return the anchor element, or null if none of the inputs is appropriate.
-  // This method can return an element different from the input list, or null
-  // if no valid element is found (this will cause the IPH not to run).
-  using AnchorElementFilter = base::RepeatingCallback<ui::TrackedElement*(
-      const ui::ElementTracker::ElementList& elements)>;
 
   // The callback type when creating a custom action IPH. The parameters are
   // `context`, which provides the context of the window in which the promo was
@@ -249,7 +243,7 @@ class FeaturePromoSpecification {
   FeaturePromoSpecification(FeaturePromoSpecification&& other) noexcept;
   FeaturePromoSpecification& operator=(
       FeaturePromoSpecification&& other) noexcept;
-  ~FeaturePromoSpecification();
+  ~FeaturePromoSpecification() override;
 
   // Format a localized string with ID `string_id` based on the given
   // `format_params`.
@@ -344,6 +338,15 @@ class FeaturePromoSpecification {
       ui::ElementIdentifier anchor_element_id,
       int body_text_string_id);
 
+  // Creates an arbitrary promo with minimal information for testing purposes.
+  // Use this only for testing low-level User Education infrastructure.
+  static FeaturePromoSpecification CreateForTesting(
+      const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
+      int body_text_string_id,
+      PromoType type = PromoType::kToast,
+      PromoSubtype subtype = PromoSubtype::kNormal);
+
   // Set the optional bubble title. This text appears above the body text in a
   // slightly larger font.
   FeaturePromoSpecification& SetBubbleTitleText(int title_text_string_id);
@@ -404,16 +407,12 @@ class FeaturePromoSpecification {
   // `anchor_element_filter`, and `context`.
   //
   // For rotating promos, call this method on the specific sub-promo.
-  ui::TrackedElement* GetAnchorElement(ui::ElementContext context) const;
+  ui::TrackedElement* GetAnchorElement(
+      ui::ElementContext context) const override;
 
   const base::Feature* feature() const { return feature_; }
   PromoType promo_type() const { return promo_type_; }
   PromoSubtype promo_subtype() const { return promo_subtype_; }
-  ui::ElementIdentifier anchor_element_id() const { return anchor_element_id_; }
-  const AnchorElementFilter& anchor_element_filter() const {
-    return anchor_element_filter_;
-  }
-  bool in_any_context() const { return in_any_context_; }
   int bubble_body_string_id() const { return bubble_body_string_id_; }
   int bubble_title_string_id() const { return bubble_title_string_id_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
@@ -510,20 +509,9 @@ class FeaturePromoSpecification {
   // The subtype of the promo.
   PromoSubtype promo_subtype_ = PromoSubtype::kNormal;
 
-  // The element identifier of the element to attach the promo to.
-  ui::ElementIdentifier anchor_element_id_;
-
-  // Whether we are allowed to search for the anchor element in any context.
-  bool in_any_context_ = false;
-
   // Whether and how many times the promo can reshow.
   std::optional<base::TimeDelta> reshow_delay_;
   std::optional<int> max_show_count_;
-
-  // The filter to use if there is more than one matching element, or
-  // additional processing is needed (default is to always use the first
-  // matching element).
-  AnchorElementFilter anchor_element_filter_;
 
   // Text to be displayed in the promo bubble body. Should not be zero for
   // valid bubbles. We keep the string ID around because we can specify format

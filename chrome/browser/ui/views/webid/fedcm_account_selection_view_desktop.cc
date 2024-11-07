@@ -1023,7 +1023,13 @@ bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {
 }
 
 void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {
-  if (!GetDialogWidget() || GetDialogType() == DialogType::MODAL) {
+  if (!GetDialogWidget()) {
+    return;
+  }
+
+  // Use default dialog positioning behavior for modals.
+  if (GetDialogType() == DialogType::MODAL) {
+    account_selection_view_->UpdateDialogPosition();
     return;
   }
 

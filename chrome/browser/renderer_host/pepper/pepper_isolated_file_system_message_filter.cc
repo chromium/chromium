@@ -132,10 +132,7 @@ int32_t PepperIsolatedFileSystemMessageFilter::OnOpenFileSystem(
     case PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX:
       return OpenCrxFileSystem(context);
   }
-  NOTREACHED_IN_MIGRATION();
-  context->reply_msg =
-      PpapiPluginMsg_IsolatedFileSystem_BrowserOpenReply(std::string());
-  return PP_ERROR_FAILED;
+  NOTREACHED();
 }
 
 int32_t PepperIsolatedFileSystemMessageFilter::OpenCrxFileSystem(

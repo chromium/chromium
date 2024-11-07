@@ -23,11 +23,11 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /**
  * An exposed Activity that allows launching an Incognito Tab.
@@ -115,9 +115,7 @@ public class IncognitoTabLauncher extends Activity {
         String sendersPackageName =
                 intent.getStringExtra(IncognitoTabLauncher.EXTRA_SENDERS_PACKAGE_NAME);
         return !TextUtils.isEmpty(sendersPackageName)
-                && ChromeApplicationImpl.getComponent()
-                        .resolveExternalAuthUtils()
-                        .isGoogleSigned(sendersPackageName);
+                && ExternalAuthUtils.getInstance().isGoogleSigned(sendersPackageName);
     }
 
     /** Records UMA that a new incognito tab has been launched as a result of this Activity. */

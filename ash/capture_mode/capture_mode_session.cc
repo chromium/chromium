@@ -34,11 +34,13 @@
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -1423,6 +1425,8 @@ ActionButtonView* CaptureModeSession::AddActionButton(
 
 void CaptureModeSession::OnTextDetected() {
   if (active_behavior_->CanShowSmartActionsButton()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
     // TODO(crbug.com/375967525): Finalize and translate the smart actions
     // button accessible name.
     ActionButtonView* action_button = AddActionButton(
@@ -1566,9 +1570,10 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  // If the results panel is visible and focused, let it handle key events.
-  if (auto* search_results_panel = controller_->GetSearchResultsPanel();
-      search_results_panel && search_results_panel->HasFocus()) {
+  // If the results panel is visible, focused, and interactable, let it handle
+  // key events.
+  if (controller_->IsSearchResultsPanelInteractable() &&
+      controller_->GetSearchResultsPanel()->HasFocus()) {
     return;
   }
 
@@ -2173,19 +2178,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
   wm::ConvertPointToScreen(event_target, &screen_location);
 
-  // Allow all events located on the results panel (if present) to go through.
-  // See `CaptureModeController::IsEventOnSearchResultsPanel()`.
-  // TODO(b/377019438): Block all events that aren't targeting the panel from
-  // reaching other UI elements underneath.
-  // This must be done before running `deferred_cursor_updater` to allow the
-  // panel to update the cursor type.
-  if (controller_->IsEventOnSearchResultsPanel(screen_location)) {
-    if (cursor_setter_) {
-      cursor_setter_->ResetCursor();
-    }
-    return;
-  }
-
   // For fullscreen/window mode, change the root window as soon as we detect the
   // cursor on a new display. For region mode, wait until the user taps down to
   // try to select a new region on the new display.
@@ -2229,6 +2221,21 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   MaybeUpdateCaptureUisOpacity(screen_location);
+
+  // Allow all events located on the results panel (if present) to go through.
+  // See `CaptureModeController::IsEventOnSearchResultsPanel()`.
+  // TODO(b/377019438): Block all events that aren't targeting the panel from
+  // reaching other UI elements underneath.
+  // This must be done after `MaybeUpdateCaptureUisOpacity()` which will hide
+  // the panel if a drag is in progress and before running
+  // `deferred_cursor_updater` to allow the panel to update the cursor type.
+  if (controller_->IsEventOnSearchResultsPanel(screen_location) &&
+      controller_->IsSearchResultsPanelInteractable()) {
+    if (cursor_setter_) {
+      cursor_setter_->ResetCursor();
+    }
+    return;
+  }
 
   // Update the value of `should_pass_located_event_to_camera_preview_` here
   // before calling `UpdateCursor` which uses it.
@@ -3244,7 +3251,7 @@ void CaptureModeSession::RemoveAllActionButtons() {
 }
 
 void CaptureModeSession::UpdateFeedbackButtonWidget() {
-  if (!features::CanStartSunfishSession()) {
+  if (!CanStartSunfishSession()) {
     return;
   }
 

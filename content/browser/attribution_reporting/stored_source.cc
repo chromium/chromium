@@ -49,11 +49,11 @@ bool AreFieldsValid(int remaining_aggregatable_attribution_budget,
   static_assert(attribution_reporting::kMaxAggregatableValue <=
                 std::numeric_limits<int>::max() / 2);
 
-  return attribution_reporting::IsRemainingAggregatableBudgetInRange(
+  return attribution_reporting::IsAggregatableBudgetInRange(
              remaining_aggregatable_attribution_budget) &&
-         attribution_reporting::IsRemainingAggregatableBudgetInRange(
+         attribution_reporting::IsAggregatableBudgetInRange(
              remaining_aggregatable_debug_budget) &&
-         attribution_reporting::IsRemainingAggregatableBudgetInRange(
+         attribution_reporting::IsAggregatableBudgetInRange(
              remaining_aggregatable_attribution_budget +
              remaining_aggregatable_debug_budget) &&
          randomized_response_rate >= 0 && randomized_response_rate <= 1 &&

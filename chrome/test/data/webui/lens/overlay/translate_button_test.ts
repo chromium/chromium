@@ -9,10 +9,11 @@ import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/language
 import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {ShimmerControlRequester} from 'chrome-untrusted://lens-overlay/selection_utils.js';
+import type {Language} from 'chrome-untrusted://lens-overlay/translate.mojom-webui.js';
 import type {TranslateButtonElement} from 'chrome-untrusted://lens-overlay/translate_button.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -21,6 +22,42 @@ import {eventToPromise, isVisible} from 'chrome-untrusted://webui-test/test_util
 import {TestLanguageBrowserProxy} from './test_language_browser_proxy.js';
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
+const TEST_FETCH_LANGUAGES = [
+  {
+    languageCode: 'es',
+    name: 'Spanish',
+  },
+  {
+    languageCode: 'fr',
+    name: 'French',
+  },
+];
+const TEST_FETCH_LANGUAGES_OTHER = [
+  {
+    languageCode: 'ar',
+    name: 'Arabic',
+  },
+  {
+    languageCode: 'pt',
+    name: 'Portuguese',
+  },
+];
+
+// Remove CSS transitions to prevent race conditions due to an element not
+// being visible.
+function disableCssTransitions(element: TranslateButtonElement) {
+  const sheet = new CSSStyleSheet();
+  sheet.insertRule('* { transition: none !important; }');
+  const shadow = element.shadowRoot!;
+  shadow.adoptedStyleSheets = [sheet];
+}
+
+// Check if the element is rendered by checking if it is visible and its
+// opacity is not hiding it.
+function isRendered(el: HTMLElement) {
+  return isVisible(el) && getComputedStyle(el).opacity !== '0';
+}
+
 suite('OverlayTranslateButton', function() {
   let callbackRouterRemote: LensPageRemote;
   let overlayTranslateButtonElement: TranslateButtonElement;
@@ -28,25 +65,10 @@ suite('OverlayTranslateButton', function() {
   let testLanguageBrowserProxy: TestLanguageBrowserProxy;
   let metrics: MetricsTracker;
 
-  // Remove CSS transitions to prevent race conditions due to an element not
-  // being visible.
-  function disableCssTransitions(element: TranslateButtonElement) {
-    const sheet = new CSSStyleSheet();
-    sheet.insertRule('* { transition: none !important; }');
-    const shadow = element.shadowRoot!;
-    shadow.adoptedStyleSheets = [sheet];
-  }
-
-  // Check if the element is rendered by checking if it is visible and its
-  // opacity is not hiding it.
-  function isRendered(el: HTMLElement) {
-    return isVisible(el) && getComputedStyle(el).opacity !== '0';
-  }
-
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
-    // guarantee that any singleton instances don't change while any UI is still
-    // attached to the DOM.
+    // guarantee that any singleton instances don't change while any UI is
+    // still attached to the DOM.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestLensOverlayBrowserProxy();
@@ -166,8 +188,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The source language button should be visible but the language picker menu
-    // should not be visible.
+    // The source language button should be visible but the language picker
+    // menu should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
@@ -190,8 +212,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The target language button should be visible but the language picker menu
-    // should not be visible.
+    // The target language button should be visible but the language picker
+    // menu should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
@@ -214,8 +236,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The source language button should be visible but the language picker menu
-    // should not be visible.
+    // The source language button should be visible but the language picker
+    // menu should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
@@ -306,8 +328,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The target language button should be visible but the language picker menu
-    // should not be visible.
+    // The target language button should be visible but the language picker
+    // menu should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
@@ -418,7 +440,8 @@ suite('OverlayTranslateButton', function() {
     assertTrue(
         isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
 
-    // Language buttons should have languages set according to setTranslateMode.
+    // Language buttons should have languages set according to
+    // setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         loadTimeData.getString('detectLanguage'));
@@ -447,7 +470,8 @@ suite('OverlayTranslateButton', function() {
         secondSourceLanguage, secondTargetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
 
-    // Language buttons should have languages set according to setTranslateMode.
+    // Language buttons should have languages set according to
+    // setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         'Swahili');
@@ -508,7 +532,8 @@ suite('OverlayTranslateButton', function() {
     assertTrue(
         isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
 
-    // Language buttons should have languages set according to setTranslateMode.
+    // Language buttons should have languages set according to
+    // setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         'English');
@@ -582,7 +607,8 @@ suite('OverlayTranslateButton', function() {
     assertTrue(
         isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
 
-    // Language buttons should have languages set according to setTranslateMode.
+    // Language buttons should have languages set according to
+    // setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         loadTimeData.getString('detectLanguage'));
@@ -598,7 +624,8 @@ suite('OverlayTranslateButton', function() {
     callbackRouterRemote.setTranslateMode(sourceLanguage, targetLanguage);
     await waitAfterNextRender(overlayTranslateButtonElement);
 
-    // Language buttons should have languages set according to setTranslateMode.
+    // Language buttons should have languages set according to
+    // setTranslateMode.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         loadTimeData.getString('detectLanguage'));
@@ -670,8 +697,8 @@ suite('OverlayTranslateButton', function() {
         overlayTranslateButtonElement.shadowRoot!.activeElement,
         overlayTranslateButtonElement.$.sourceLanguagePickerBackButton);
 
-    // Clicking the back button should close the picker menu and return focus to
-    // the source language button.
+    // Clicking the back button should close the picker menu and return focus
+    // to the source language button.
     overlayTranslateButtonElement.$.sourceLanguagePickerBackButton.click();
     await waitAfterNextRender(overlayTranslateButtonElement);
     assertEquals(
@@ -707,8 +734,8 @@ suite('OverlayTranslateButton', function() {
         overlayTranslateButtonElement.shadowRoot!.activeElement,
         overlayTranslateButtonElement.$.targetLanguagePickerBackButton);
 
-    // Clicking the back button should close the picker menu and return focus to
-    // the target language button.
+    // Clicking the back button should close the picker menu and return focus
+    // to the target language button.
     overlayTranslateButtonElement.$.targetLanguagePickerBackButton.click();
     await waitAfterNextRender(overlayTranslateButtonElement);
     assertEquals(
@@ -758,8 +785,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The source language button should be visible but the language picker menu
-    // should not be visible.
+    // The source language button should be visible but the language picker
+    // menu should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
@@ -805,8 +832,8 @@ suite('OverlayTranslateButton', function() {
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
 
-    // The target language button should be visible but the language picker menu
-    // should not be visible.
+    // The target language button should be visible but the language picker
+    // menu should not be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
@@ -842,5 +869,384 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         swahiliMenuItem,
         overlayTranslateButtonElement.shadowRoot!.activeElement);
+  });
+});
+
+suite('OverlayTranslateButtonContextualSearchbox', function() {
+  let overlayTranslateButtonElement: TranslateButtonElement;
+  let testBrowserProxy: TestLensOverlayBrowserProxy;
+  let testLanguageBrowserProxy: TestLanguageBrowserProxy;
+
+  setup(async () => {
+    // Resetting the HTML needs to be the first thing we do in setup to
+    // guarantee that any singleton instances don't change while any UI is
+    // still attached to the DOM.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testBrowserProxy = new TestLensOverlayBrowserProxy();
+    BrowserProxyImpl.setInstance(testBrowserProxy);
+
+    // Set a test browser proxy so we can mock out the language setting calls.
+    testLanguageBrowserProxy = new TestLanguageBrowserProxy();
+    LanguageBrowserProxyImpl.setInstance(testLanguageBrowserProxy);
+
+    overlayTranslateButtonElement = document.createElement('translate-button');
+    overlayTranslateButtonElement.setContextualSearchboxEnabledForTesting(true);
+    document.body.appendChild(overlayTranslateButtonElement);
+    disableCssTransitions(overlayTranslateButtonElement);
+    await flushTasks();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+  });
+
+  test('LanguagePickerHidesAndShowsHover', async () => {
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+
+    let translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+    let translateModeStateChangeEvent = await translateModeStateChangePromise;
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    // Translate mode state change event should have been fired.
+    assertTrue(translateModeStateChangeEvent.detail.shouldHideSearchbox);
+    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+
+    const translateContainer =
+        overlayTranslateButtonElement.$.translateContainer;
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
+    translateContainer.dispatchEvent(new CustomEvent('mouseleave'));
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(translateModeStateChangeEvent.detail.shouldHideSearchbox);
+    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+
+    const disableButton =
+        overlayTranslateButtonElement.$.translateDisableButton;
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
+    disableButton.dispatchEvent(new CustomEvent('mouseover'));
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    // Translate mode state change event should have been fired.
+    assertTrue(translateModeStateChangeEvent.detail.shouldHideSearchbox);
+    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+  });
+
+  test('LanguagePickerHidesAndShowsFocus', async () => {
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+
+    let translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+    let translateModeStateChangeEvent = await translateModeStateChangePromise;
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    // Translate mode state change event should have been fired.
+    assertTrue(translateModeStateChangeEvent.detail.shouldHideSearchbox);
+    assertTrue(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+
+    const translateContainer =
+        overlayTranslateButtonElement.$.translateContainer;
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
+    translateContainer.dispatchEvent(new CustomEvent('mouseleave'));
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(translateModeStateChangeEvent.detail.shouldHideSearchbox);
+    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+
+    const disableButton =
+        overlayTranslateButtonElement.$.translateDisableButton;
+    translateModeStateChangePromise =
+        eventToPromise('translate-mode-state-changed', document.body);
+    disableButton.focus();
+    translateModeStateChangeEvent = await translateModeStateChangePromise;
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    // Translate mode state change event should have been fired.
+    assertTrue(translateModeStateChangeEvent.detail.shouldHideSearchbox);
+    assertFalse(translateModeStateChangeEvent.detail.shouldUnselectWords);
+    assertTrue(translateModeStateChangeEvent.detail.translateModeEnabled);
+  });
+});
+
+suite('OverlayTranslateButtonLanguages', function() {
+  let overlayTranslateButtonElement: TranslateButtonElement;
+  let testBrowserProxy: TestLensOverlayBrowserProxy;
+  let testLanguageBrowserProxy: TestLanguageBrowserProxy;
+
+  // Helper function for adding the translate button element. Needed so we can
+  // modify the browser proxy response per unit test since the languages are
+  // fetched whenever this element is ready / rendered.
+  async function addTranslateButtonElement() {
+    overlayTranslateButtonElement = document.createElement('translate-button');
+    document.body.appendChild(overlayTranslateButtonElement);
+    disableCssTransitions(overlayTranslateButtonElement);
+    await flushTasks();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+  }
+
+  setup(async () => {
+    // Resetting the HTML needs to be the first thing we do in setup to
+    // guarantee that any singleton instances don't change while any UI is still
+    // attached to the DOM.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      'shouldFetchSupportedLanguages': true,
+      'translateSourceLanguages': 'ar,en,es,fr,pt,sw',
+      'translateTargetLanguages':
+          '',  // source languages are added to target languages.
+      'languagesCacheTimeout': 604800000,  // a week in milliseconds
+    });
+
+    testBrowserProxy = new TestLensOverlayBrowserProxy();
+    BrowserProxyImpl.setInstance(testBrowserProxy);
+
+    // Set a test browser proxy so we can mock out the language setting calls.
+    testLanguageBrowserProxy = new TestLanguageBrowserProxy();
+    LanguageBrowserProxyImpl.setInstance(testLanguageBrowserProxy);
+
+    // Clear window localStorage.
+    window.localStorage.clear();
+  });
+
+  test('UseServerLanguageListOnSuccess', async () => {
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+
+    assertEquals(testLanguageBrowserProxy.getStoredLocale(), 'en-US');
+    assertDeepEquals(
+        testLanguageBrowserProxy.getStoredSourceLanguages(),
+        TEST_FETCH_LANGUAGES);
+    assertDeepEquals(
+        testLanguageBrowserProxy.getStoredTargetLanguages(),
+        TEST_FETCH_LANGUAGES);
+
+    const clientLanguageNames =
+        (await testLanguageBrowserProxy.getClientLanguageList())
+            .map((lang: Language) => lang.name);
+    const serverLanguageNames =
+        TEST_FETCH_LANGUAGES.map((lang: Language) => lang.name);
+
+    // Check the language picker list as it should be using the server language
+    // list.
+    const sourceLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>(
+                           'cr-button:not(#sourceAutoDetectButton)'));
+    assertTrue(sourceLanguageMenuItems !== null);
+    assertTrue(sourceLanguageMenuItems.length > 0);
+    sourceLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(serverLanguageNames.includes(button.innerText.trim()));
+      assertFalse(clientLanguageNames.includes(button.innerText.trim()));
+    });
+
+    const targetLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>('cr-button'));
+    assertTrue(targetLanguageMenuItems !== null);
+    assertTrue(targetLanguageMenuItems.length > 0);
+    targetLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(serverLanguageNames.includes(button.innerText.trim()));
+      assertFalse(clientLanguageNames.includes(button.innerText.trim()));
+    });
+
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('fetchSupportedLanguages'));
+  });
+
+  test('TestServerLanguageFilters', async () => {
+    loadTimeData.overrideValues(
+        {'translateSourceLanguages': 'es', 'translateTargetLanguages': 'fr'});
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+
+    assertEquals(testLanguageBrowserProxy.getStoredLocale(), 'en-US');
+    assertDeepEquals(
+        testLanguageBrowserProxy.getStoredSourceLanguages(),
+        TEST_FETCH_LANGUAGES);
+    assertDeepEquals(
+        testLanguageBrowserProxy.getStoredTargetLanguages(),
+        TEST_FETCH_LANGUAGES);
+
+    const serverLanguageNames =
+        TEST_FETCH_LANGUAGES.map((lang: Language) => lang.name);
+
+    // Check the language picker list as it should be using the server language
+    // list. Make sure it only uses the correct filtered languages.
+    const sourceLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>(
+                           'cr-button:not(#sourceAutoDetectButton)'));
+    assertTrue(sourceLanguageMenuItems !== null);
+    assertEquals(sourceLanguageMenuItems.length, 1);
+    sourceLanguageMenuItems.map((button: CrButtonElement) => {
+      assertEquals(button.innerText.trim(), 'Spanish');
+    });
+
+    const targetLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>('cr-button'));
+    assertTrue(targetLanguageMenuItems !== null);
+    assertEquals(targetLanguageMenuItems.length, 2);
+    targetLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(serverLanguageNames.includes(button.innerText.trim()));
+    });
+
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('fetchSupportedLanguages'));
+  });
+
+  test('TestClientLanguageFilters', async () => {
+    loadTimeData.overrideValues(
+        {'translateSourceLanguages': 'sw', 'translateTargetLanguages': 'en'});
+    testBrowserProxy.handler.setLanguagesToFetchForTesting([], []);
+    await addTranslateButtonElement();
+
+    // If the fetch fails, it will return empty language lists. In this case,
+    // the localStorageProxy will not have stored anything.
+    assertEquals(testLanguageBrowserProxy.getStoredLocale(), '');
+    assertEquals(testLanguageBrowserProxy.getStoredSourceLanguages().length, 0);
+    assertEquals(testLanguageBrowserProxy.getStoredTargetLanguages().length, 0);
+
+    const clientLanguageNames =
+        (await testLanguageBrowserProxy.getClientLanguageList())
+            .map((lang: Language) => lang.name);
+
+    // Check the language picker list as it should be using the client language
+    // list since a server language list could not be fetched. Make sure it only
+    // uses the correct filtered languages.
+    const sourceLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>(
+                           'cr-button:not(#sourceAutoDetectButton)'));
+    assertTrue(sourceLanguageMenuItems !== null);
+    assertEquals(sourceLanguageMenuItems.length, 1);
+    sourceLanguageMenuItems.map((button: CrButtonElement) => {
+      assertEquals(button.innerText.trim(), 'Swahili');
+    });
+
+    const targetLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>('cr-button'));
+    assertTrue(targetLanguageMenuItems !== null);
+    assertEquals(targetLanguageMenuItems.length, 2);
+    targetLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(clientLanguageNames.includes(button.innerText.trim()));
+    });
+
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('fetchSupportedLanguages'));
+  });
+
+  test('UseClientLanguageListIfFetchFails', async () => {
+    testBrowserProxy.handler.setLanguagesToFetchForTesting([], []);
+    await addTranslateButtonElement();
+
+    // If the fetch fails, it will return empty language lists. In this case,
+    // the localStorageProxy will not have stored anything.
+    assertEquals(testLanguageBrowserProxy.getStoredLocale(), '');
+    assertEquals(testLanguageBrowserProxy.getStoredSourceLanguages().length, 0);
+    assertEquals(testLanguageBrowserProxy.getStoredTargetLanguages().length, 0);
+
+    const clientLanguageNames =
+        (await testLanguageBrowserProxy.getClientLanguageList())
+            .map((lang: Language) => lang.name);
+
+    // Check the language picker list as it should be using the client language
+    // list since a server language list could not be fetched.
+    const sourceLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>(
+                           'cr-button:not(#sourceAutoDetectButton)'));
+    assertTrue(sourceLanguageMenuItems !== null);
+    assertTrue(sourceLanguageMenuItems.length > 0);
+    sourceLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(clientLanguageNames.includes(button.innerText.trim()));
+    });
+
+    const targetLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>('cr-button'));
+    assertTrue(targetLanguageMenuItems !== null);
+    assertTrue(targetLanguageMenuItems.length > 0);
+    targetLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(clientLanguageNames.includes(button.innerText.trim()));
+    });
+
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('fetchSupportedLanguages'));
+  });
+
+  test('CacheTimeoutCausesFetchLanguageCall', async () => {
+    loadTimeData.overrideValues({'languagesCacheTimeout': 1});
+    // Do a fake store to test if languages are changed due to timeout.
+    testLanguageBrowserProxy.storeLanguages(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        TEST_FETCH_LANGUAGES_OTHER, TEST_FETCH_LANGUAGES_OTHER);
+    await new Promise(
+        resolve => setTimeout(resolve, 2));  // Advance time by 2ms for testing.
+    await addTranslateButtonElement();
+
+    // The local storage proxy should have stored the newly fetched languages.
+    assertEquals(testLanguageBrowserProxy.getStoredLocale(), 'en-US');
+    assertDeepEquals(
+        testLanguageBrowserProxy.getStoredSourceLanguages(),
+        TEST_FETCH_LANGUAGES_OTHER);
+    assertDeepEquals(
+        testLanguageBrowserProxy.getStoredTargetLanguages(),
+        TEST_FETCH_LANGUAGES_OTHER);
+
+    const oldLanguageNames =
+        TEST_FETCH_LANGUAGES.map((lang: Language) => lang.name);
+    const newLanguageNames =
+        TEST_FETCH_LANGUAGES_OTHER.map((lang: Language) => lang.name);
+
+    // Check the language picker list as it should be using the server language
+    // list.
+    const sourceLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>(
+                           'cr-button:not(#sourceAutoDetectButton)'));
+    assertTrue(sourceLanguageMenuItems !== null);
+    assertTrue(sourceLanguageMenuItems.length > 0);
+    sourceLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(newLanguageNames.includes(button.innerText.trim()));
+      assertFalse(oldLanguageNames.includes(button.innerText.trim()));
+    });
+
+    const targetLanguageMenuItems =
+        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+                       .querySelectorAll<CrButtonElement>('cr-button'));
+    assertTrue(targetLanguageMenuItems !== null);
+    assertTrue(targetLanguageMenuItems.length > 0);
+    targetLanguageMenuItems.map((button: CrButtonElement) => {
+      assertTrue(newLanguageNames.includes(button.innerText.trim()));
+      assertFalse(oldLanguageNames.includes(button.innerText.trim()));
+    });
+
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('fetchSupportedLanguages'));
   });
 });

@@ -1468,16 +1468,6 @@ TEST_F(ArcVmClientAdapterTest, TestCreateArcVmClientAdapter) {
   CreateArcVmClientAdapter();
 }
 
-TEST_F(ArcVmClientAdapterTest, DefaultBlockSize) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kUseDefaultBlockSize, true /* use */);
-
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_EQ(
-      0u, GetTestConciergeClient()->start_arc_vm_request().rootfs_block_size());
-}
-
 TEST_F(ArcVmClientAdapterTest, SpecifyBlockSize) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
@@ -1631,39 +1621,6 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_LvmSupported) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(arc::kLvmApplicationContainers);
-
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.use_virtio_blk_data = true;
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
-
-  // CreateDiskImage() should NOT be called.
-  EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 0);
-
-  // StartArcVmRequest should contain the LVM-provided disk path.
-  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(req.enable_virtio_blk_data());
-  const std::string expected_lvm_disk_path =
-      base::StringPrintf("/dev/mapper/vm/dmcrypt-%s-arcvm",
-                         std::string(kUserIdHash).substr(0, 8).c_str());
-  const auto& disks = req.disks();
-  auto it =
-      base::ranges::find_if(disks, [&expected_lvm_disk_path](const auto& disk) {
-        return disk.path() == expected_lvm_disk_path;
-      });
-  EXPECT_NE(it, disks.end());
-  // O_DIRECT option should always be enabled on LVM-provided disk images.
-  EXPECT_TRUE(it->o_direct());
-}
-
-TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_OverrideUseLvm) {
-  // ArcVirtioBlkDataConfigOverride:use_lvm/true should override
-  // ArcLvmApplicationContainers flag.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{arc::kVirtioBlkDataConfigOverride,
-                             {{"use_lvm", "true"}}}},
-      /*disabled_features=*/{arc::kLvmApplicationContainers});
 
   StartParams start_params(GetPopulatedStartParams());
   start_params.use_virtio_blk_data = true;

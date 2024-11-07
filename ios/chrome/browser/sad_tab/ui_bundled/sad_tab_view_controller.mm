@@ -73,7 +73,7 @@
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self ]);
+        @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(updateOverscrollActionsState)];
   }

@@ -82,7 +82,6 @@ class PlusAddressBottomSheetViewControllerTest : public PlatformTest {
 // Ensure that tapping confirm button on bottom sheet confirms plus_address
 // and collects relevant metrics.
 TEST_F(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
-  OCMExpect([delegate_ reservePlusAddress]);
   [view_controller_ loadViewIfNeeded];
 
   OCMExpect([delegate_ confirmPlusAddress]);
@@ -99,8 +98,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalShown, 1),
-                 base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1)));
+      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
           PlusAddressModalCompletionStatus::kModalConfirmed,
@@ -121,7 +119,6 @@ TEST_F(PlusAddressBottomSheetViewControllerTest,
       plus_addresses::features::kPlusAddressUserOnboardingEnabled};
   OCMStub([delegate_ shouldShowNotice]).andReturn(YES);
 
-  OCMExpect([delegate_ reservePlusAddress]);
   [view_controller_ loadViewIfNeeded];
 
   OCMExpect([delegate_ confirmPlusAddress]);
@@ -139,8 +136,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest,
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(
           kPlusAddressModalWithNoticeEventHistogram),
-      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalShown, 1),
-                 base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1)));
+      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
           PlusAddressModalCompletionStatus::kModalConfirmed,
@@ -156,7 +152,6 @@ TEST_F(PlusAddressBottomSheetViewControllerTest,
 // Ensure that tapping cancel button dismisses bottom sheet
 // and collects relevant metrics.
 TEST_F(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
-  OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
   [view_controller_ loadViewIfNeeded];
 
@@ -172,8 +167,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalShown, 1),
-                 base::Bucket(PlusAddressModalEvent::kModalCanceled, 1)));
+      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
           PlusAddressModalCompletionStatus::kModalCanceled,
@@ -189,7 +183,6 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
 // Simulate a swipe to dismisses bottom sheet and ensure that
 // relevant metrics are collected.
 TEST_F(PlusAddressBottomSheetViewControllerTest, SwipeToDismiss) {
-  OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
   [view_controller_ loadViewIfNeeded];
 
@@ -206,8 +199,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, SwipeToDismiss) {
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalShown, 1),
-                 base::Bucket(PlusAddressModalEvent::kModalCanceled, 1)));
+      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
           PlusAddressModalCompletionStatus::kModalCanceled,
@@ -223,7 +215,6 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, SwipeToDismiss) {
 // Ensure that when confirmation error occurs, user can tap cancel button to
 // dismiss the bottom sheet and metric for the confirmation error is collected.
 TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
-  OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
 
   [view_controller_ loadViewIfNeeded];
@@ -246,8 +237,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalShown, 1),
-                 base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1),
+      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1),
                  base::Bucket(PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
@@ -264,7 +254,6 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
 // Ensure that when reservation error occurs, user can tap cancel button to
 // dismiss the bottom sheet and metric for the reservation error is collected.
 TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
-  OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
 
   [view_controller_ loadViewIfNeeded];
@@ -281,8 +270,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalShown, 1),
-                 base::Bucket(PlusAddressModalEvent::kModalCanceled, 1)));
+      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
           PlusAddressModalCompletionStatus::kReservePlusAddressError,
@@ -298,7 +286,6 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
 // Ensure that when confirmation error occurs, user swipe to dismiss the bottom
 // sheet and metric for the confirmation error is collected.
 TEST_F(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
-  OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
 
   [view_controller_ loadViewIfNeeded];
@@ -326,8 +313,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalShown, 1),
-                 base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1),
+      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1),
                  base::Bucket(PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
@@ -345,7 +331,6 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
 // logs appopriate metrics.
 TEST_F(PlusAddressBottomSheetViewControllerTest,
        RefreshAndConfirmButtonTapped) {
-  OCMExpect([delegate_ reservePlusAddress]);
   [view_controller_ loadViewIfNeeded];
 
   OCMExpect([delegate_ confirmPlusAddress]);
@@ -365,8 +350,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest,
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalShown, 1),
-                 base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1)));
+      BucketsAre(base::Bucket(PlusAddressModalEvent::kModalConfirmed, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
           PlusAddressModalCompletionStatus::kModalConfirmed,

@@ -290,8 +290,7 @@ class NearbyShareCertificateManagerImplTest
               std::max(max_not_after_your_devices, cert.not_after());
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
       // Verify metadata.

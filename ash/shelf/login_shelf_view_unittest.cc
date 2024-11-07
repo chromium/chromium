@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
@@ -44,7 +43,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/manager/display_configurator.h"
@@ -1375,10 +1373,7 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
 
 class LoginShelfViewWithKioskLicenseTest : public LoginShelfViewTest {
  public:
-  LoginShelfViewWithKioskLicenseTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kEnableKioskLoginScreen);
-  }
+  LoginShelfViewWithKioskLicenseTest() = default;
   LoginShelfViewWithKioskLicenseTest(
       const LoginShelfViewWithKioskLicenseTest&) = delete;
   LoginShelfViewWithKioskLicenseTest& operator=(
@@ -1398,9 +1393,6 @@ class LoginShelfViewWithKioskLicenseTest : public LoginShelfViewTest {
   void SetKioskLicenseModeForTesting(bool is_kiosk_license_mode) {
     login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks that kiosk app button and kiosk instruction appears if device is with

@@ -68,6 +68,7 @@ struct DetachedWebContents {
                       std::unique_ptr<tabs::TabModel> tab,
                       content::WebContents* contents,
                       TabStripModelChange::RemoveReason remove_reason,
+                      tabs::TabInterface::DetachReason tab_detach_reason,
                       std::optional<SessionID> id);
   DetachedWebContents(const DetachedWebContents&) = delete;
   DetachedWebContents& operator=(const DetachedWebContents&) = delete;
@@ -93,7 +94,11 @@ struct DetachedWebContents {
   // removed tabs in this batch.
   const int index_at_time_of_removal;
 
+  // Reasons for detaching a WebContents. These may differ, for e.g. when a
+  // WebContents is detached for re-insertion into a browser of different type,
+  // in which case the TabModel is destroyed but the WebContents is retained.
   TabStripModelChange::RemoveReason remove_reason;
+  tabs::TabInterface::DetachReason tab_detach_reason;
 
   // The |contents| associated optional SessionID, used as key for
   // ClosedTabCache. We only cache |contents| if |remove_reason| is kCached.
@@ -258,6 +263,22 @@ class TabStripModel : public TabGroupController {
   // Detaches the tab at the specified index for reinsertion into another tab
   // strip. Returns the detached tab.
   std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(int index);
+
+  // Detaches the WebContents at the specified index for re-insertion into
+  // another browser of a different type, destroying the owning TabModel in the
+  // process.
+  //
+  // This works as follows:
+  //   - the contents is extracted from the source browser and the owning tab is
+  //     destroyed (performed by DetachWebContentsAtForInsertion())
+  //   - the contents is added to the new browser, creating a new tab model
+  //
+  // TODO(crbug.com/334281979): This is done to avoid TabFeatures having to deal
+  // with changing browser types during tab moves. This should no longer be
+  // necessary once non-normal browser windows do not use Browser, TabStripModel
+  // or TabModel.
+  std::unique_ptr<content::WebContents> DetachWebContentsAtForInsertion(
+      int index);
 
   // Detaches the WebContents at the specified index and immediately deletes it.
   void DetachAndDeleteWebContentsAt(int index);
@@ -701,13 +722,17 @@ class TabStripModel : public TabGroupController {
   void OnChange(const TabStripModelChange& change,
                 const TabStripSelectionChange& selection);
 
-  // Detaches the WebContents at the specified |index| from this strip. |reason|
-  // is used to indicate to observers what is going to happen to the WebContents
-  // (i.e. deleted or reinserted into another tab strip). Returns the detached
-  // WebContents.
+  // Detaches the WebContents at the specified |index| from this strip.
+  // |web_contents_remove_reason| is used to indicate to observers what is going
+  // to happen to the WebContents (i.e. deleted or reinserted into another tab
+  // strip). |tab_detach_reason| is used to indicate to observers what is going
+  // to happen to the TabModel owning the WebContents. These reasons may not
+  // always match (a WebContents may be retained for re-insertion while its
+  // owning TabModel may be destroyed).
   std::unique_ptr<DetachedWebContents> DetachWebContentsWithReasonAt(
       int index,
-      TabStripModelChange::RemoveReason reason);
+      TabStripModelChange::RemoveReason web_contents_remove_reason,
+      tabs::TabInterface::DetachReason tab_detach_reason);
 
   // Performs all the work to detach a WebContents instance but avoids sending
   // most notifications. TabClosingAt() and TabDetachedAt() are sent because
@@ -717,7 +742,8 @@ class TabStripModel : public TabGroupController {
       int index_before_any_removals,
       int index_at_time_of_removal,
       bool create_historical_tab,
-      TabStripModelChange::RemoveReason reason);
+      TabStripModelChange::RemoveReason web_contents_remove_reason,
+      tabs::TabInterface::DetachReason tab_detach_reason);
 
   // We batch send notifications. This has two benefits:
   //   1) This allows us to send the minimal number of necessary notifications.

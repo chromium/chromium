@@ -169,8 +169,7 @@ ChromePermissionsClient::GetChooserContext(
       return BluetoothChooserContextFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

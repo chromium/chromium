@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"

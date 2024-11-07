@@ -341,6 +341,12 @@ void SimpleMenuModel::SetLabel(size_t index, const std::u16string& label) {
   MenuItemsChanged();
 }
 
+void SimpleMenuModel::SetAcceleratorAt(size_t index,
+                                       const ui::Accelerator& accelerator) {
+  items_[ValidateItemIndex(index)].accelerator = accelerator;
+  MenuItemsChanged();
+}
+
 void SimpleMenuModel::SetMinorText(size_t index,
                                    const std::u16string& minor_text) {
   items_[ValidateItemIndex(index)].minor_text = minor_text;
@@ -455,8 +461,15 @@ bool SimpleMenuModel::IsItemDynamicAt(size_t index) const {
 
 bool SimpleMenuModel::GetAcceleratorAt(size_t index,
                                        ui::Accelerator* accelerator) const {
-  return delegate_ && delegate_->GetAcceleratorForCommandId(
-                          GetCommandIdAt(index), accelerator);
+  bool has_accelerator = false;
+  if (delegate_) {
+    has_accelerator = delegate_->GetAcceleratorForCommandId(
+        GetCommandIdAt(index), accelerator);
+  }
+  if (!has_accelerator) {
+    *accelerator = items_[ValidateItemIndex(index)].accelerator;
+  }
+  return !accelerator->IsEmpty();
 }
 
 bool SimpleMenuModel::IsItemCheckedAt(size_t index) const {

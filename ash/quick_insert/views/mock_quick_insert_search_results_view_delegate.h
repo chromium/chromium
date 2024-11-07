@@ -11,11 +11,11 @@
 
 namespace ash {
 
-class ASH_EXPORT MockPickerSearchResultsViewDelegate
-    : public PickerSearchResultsViewDelegate {
+class ASH_EXPORT MockQuickInsertSearchResultsViewDelegate
+    : public QuickInsertSearchResultsViewDelegate {
  public:
-  MockPickerSearchResultsViewDelegate();
-  ~MockPickerSearchResultsViewDelegate();
+  MockQuickInsertSearchResultsViewDelegate();
+  ~MockQuickInsertSearchResultsViewDelegate();
 
   MOCK_METHOD(void, SelectMoreResults, (QuickInsertSectionType), (override));
   MOCK_METHOD(void,

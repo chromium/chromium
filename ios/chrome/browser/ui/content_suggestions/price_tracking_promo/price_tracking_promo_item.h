@@ -18,6 +18,9 @@
 // Serialized image data for the most recent price tracked product image.
 @property(nonatomic, strong) NSData* productImageData;
 
+// The favicon image of the product if any.
+@property(nonatomic, strong) UIImage* faviconImage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_PRICE_TRACKING_PROMO_ITEM_H_

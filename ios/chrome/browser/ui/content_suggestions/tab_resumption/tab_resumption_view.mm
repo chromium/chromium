@@ -170,7 +170,7 @@ void SetFallbackImageToImageView(UIImageView* image_view,
     [accessibilityLabel addObject:_reasonLabel.text];
     if (@available(iOS 17, *)) {
       [self
-          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateCornerRadius)];
     }
   }

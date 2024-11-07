@@ -104,7 +104,8 @@ void ConnectorDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
 std::unique_ptr<ConnectorDataPipeGetter>
 ConnectorDataPipeGetter::CreateMultipartPipeGetter(const std::string& boundary,
                                                    const std::string& metadata,
-                                                   base::File file) {
+                                                   base::File file,
+                                                   bool is_obfuscated) {
   if (!file.IsValid()) {
     return nullptr;
   }
@@ -114,8 +115,8 @@ ConnectorDataPipeGetter::CreateMultipartPipeGetter(const std::string& boundary,
     return nullptr;
   }
 
-  return std::make_unique<ConnectorDataPipeGetter>(boundary, metadata,
-                                                   std::move(mm_file));
+  return std::make_unique<ConnectorDataPipeGetter>(
+      boundary, metadata, std::move(mm_file), is_obfuscated);
 }
 
 // static
@@ -139,7 +140,8 @@ ConnectorDataPipeGetter::CreateMultipartPipeGetter(
 
 // static
 std::unique_ptr<ConnectorDataPipeGetter>
-ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File file) {
+ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File file,
+                                                   bool is_obfuscated) {
   if (!file.IsValid()) {
     return nullptr;
   }
@@ -149,9 +151,9 @@ ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File file) {
     return nullptr;
   }
 
-  return std::make_unique<ConnectorDataPipeGetter>(/*boundary*/ std::string(),
-                                                   /*metadata*/ std::string(),
-                                                   std::move(mm_file));
+  return std::make_unique<ConnectorDataPipeGetter>(
+      /*boundary*/ std::string(),
+      /*metadata*/ std::string(), std::move(mm_file), is_obfuscated);
 }
 
 // static
@@ -173,7 +175,8 @@ ConnectorDataPipeGetter::CreateResumablePipeGetter(
 ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
-    std::unique_ptr<InternalMemoryMappedFile> file)
+    std::unique_ptr<InternalMemoryMappedFile> file,
+    bool is_obfuscated)
     : ConnectorDataPipeGetter(boundary,
                               metadata,
                               std::move(file),
@@ -181,7 +184,7 @@ ConnectorDataPipeGetter::ConnectorDataPipeGetter(
   file_data_pipe_ = true;
   CHECK(file_->IsValid());
 
-  if (enterprise_obfuscation::IsFileObfuscationEnabled()) {
+  if (is_obfuscated) {
     deobfuscator_ =
         std::make_unique<enterprise_obfuscation::DownloadObfuscator>();
   }

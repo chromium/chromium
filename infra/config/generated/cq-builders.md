@@ -462,6 +462,16 @@ builder.
   * [`//ui/accessibility/.+`](https://cs.chromium.org/chromium/src/ui/accessibility/)
   * [`//ui/views/accessibility/.+`](https://cs.chromium.org/chromium/src/ui/views/accessibility/)
 
+* [linux-cast-arm-rel](https://ci.chromium.org/p/chromium/builders/try/linux-cast-arm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-cast-arm-rel""))
+
+  Location filters:
+  * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
+  * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
+  * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)
+  * [`//components/cast_streaming/.+`](https://cs.chromium.org/chromium/src/components/cast_streaming/)
+  * [`//third_party/cast_core/.+`](https://cs.chromium.org/chromium/src/third_party/cast_core/)
+  * [`//third_party/openscreen/.+`](https://cs.chromium.org/chromium/src/third_party/openscreen/)
+
 * [linux-cast-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/linux-cast-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-cast-arm64-rel""))
 
   Location filters:

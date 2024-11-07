@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.html.js';
 import './ink_brush_selector.js';
 import './ink_color_selector.js';
@@ -18,15 +19,15 @@ export function getHtml(this: ViewerBottomToolbarElement) {
     <ink-brush-selector .currentType="${this.currentType}">
     </ink-brush-selector>
     <span id="vertical-separator"></span>
-    <viewer-bottom-toolbar-dropdown id="size"
-        button-icon="${this.getSizeIcon_()}">
-      <ink-size-selector .currentSize="${this.currentSize}"
+    <viewer-bottom-toolbar-dropdown id="size">
+      <cr-icon slot="icon" icon="${this.getSizeIcon_()}"></cr-icon>
+      <ink-size-selector slot="menu" .currentSize="${this.currentSize}"
           .currentType="${this.currentType}"></ink-size-selector>
     </viewer-bottom-toolbar-dropdown>
     ${this.shouldShowColorOptions_() ? html`
-      <!-- TODO(crbug.com/369653190): Use actual button icons. -->
-      <viewer-bottom-toolbar-dropdown id="color" button-icon="pdf:pen-size-3">
-        <ink-color-selector .currentColor="${this.currentColor}"
+      <viewer-bottom-toolbar-dropdown id="color">
+        <div slot="icon" id="color-chip"></div>
+        <ink-color-selector slot="menu" .currentColor="${this.currentColor}"
             .currentType="${this.currentType}"></ink-color-selector>
       </viewer-bottom-toolbar-dropdown>` : ''}
   `;

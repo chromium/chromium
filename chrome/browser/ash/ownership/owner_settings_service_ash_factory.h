@@ -56,7 +56,7 @@ class OwnerSettingsServiceAshFactory : public ProfileKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory overrides:
   bool ServiceIsCreatedWithBrowserContext() const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
 
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;

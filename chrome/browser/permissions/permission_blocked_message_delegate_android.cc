@@ -50,7 +50,7 @@ PermissionBlockedMessageDelegate::PermissionBlockedMessageDelegate(
       icon = IDR_ANDROID_MESSAGE_LOCATION_OFF;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   message_->SetTitle(l10n_util::GetStringUTF16(title));
 

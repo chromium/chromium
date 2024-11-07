@@ -59,10 +59,12 @@ class GenerateAndroidBpTest(unittest.TestCase):
         gen_android_bp.get_bindgen_flags(["--bindgen-flags", "flag1", "flag2"]),
         ["--flag1", "--flag2"])
 
-  def test_get_bindgen_flags_empty_should_throw(self):
-    with self.assertRaisesRegex(ValueError, "no flags were found"):
+  def test_get_bindgen_flags_empty_should_not_throw(self):
+    try:
       gen_android_bp.get_bindgen_flags(
           ["--bindgen-flags", "--some_non_bindgen_flag"])
+    except Exception:
+      self.fail("Empty bindgen flags should not raise")
 
   def test_get_bindgen_source_stem(self):
     self.assertEqual(

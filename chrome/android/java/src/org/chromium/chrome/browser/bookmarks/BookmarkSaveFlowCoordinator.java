@@ -289,8 +289,8 @@ public class BookmarkSaveFlowCoordinator {
         }
 
         @Override
-        public int getSheetContentDescriptionStringId() {
-            return R.string.bookmarks_save_flow_content_description;
+        public @NonNull String getSheetContentDescription(Context context) {
+            return context.getString(R.string.bookmarks_save_flow_content_description);
         }
 
         @Override

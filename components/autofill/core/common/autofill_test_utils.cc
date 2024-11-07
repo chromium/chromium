@@ -328,7 +328,7 @@ FormData CreateTestPasswordFormData() {
 }
 
 [[nodiscard]] FormData CreateTestSignupFormData() {
-  FormData form = autofill::test::CreateTestPasswordFormData();
+  FormData form = CreateTestPasswordFormData();
   std::vector<FormFieldData> fields = form.ExtractFields();
   fields.push_back(CreateTestFormField(
       /*label=*/"Password (confirm)", /*name=*/"password_2",

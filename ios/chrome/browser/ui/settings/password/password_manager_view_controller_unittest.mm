@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_item.h"
@@ -162,12 +162,12 @@ class PasswordManagerViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
-    ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
     return [[PasswordManagerViewController alloc]
-        initWithChromeAccountManagerService:account_manager_service
-                                prefService:profile_.get()->GetPrefs()
-                     shouldOpenInSearchMode:NO];
+        initWithIdentityManager:identity_manager
+                    prefService:profile_.get()->GetPrefs()
+         shouldOpenInSearchMode:NO];
   }
 
   PasswordManagerViewController* GetPasswordManagerViewController() {
@@ -175,13 +175,13 @@ class PasswordManagerViewControllerTest
   }
 
   PasswordManagerViewController* CreateControllerForPasswordSearch() {
-    ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
     PasswordManagerViewController* passwords_controller =
         [[PasswordManagerViewController alloc]
-            initWithChromeAccountManagerService:account_manager_service
-                                    prefService:profile_.get()->GetPrefs()
-                         shouldOpenInSearchMode:YES];
+            initWithIdentityManager:identity_manager
+                        prefService:profile_.get()->GetPrefs()
+             shouldOpenInSearchMode:YES];
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
     passwords_controller.handler = passwords_settings_commands_strict_mock_;

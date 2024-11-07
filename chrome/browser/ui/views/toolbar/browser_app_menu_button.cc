@@ -12,7 +12,6 @@
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"

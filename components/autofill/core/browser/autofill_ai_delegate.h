@@ -30,7 +30,7 @@ class AutofillAiDelegate {
 
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
-                                   autofill::AutofillSuggestionTriggerSource)>;
+                                   AutofillSuggestionTriggerSource)>;
 
   virtual ~AutofillAiDelegate() = default;
 
@@ -81,8 +81,8 @@ class AutofillAiDelegate {
   // true; this is to avoid conflicting import bubbles. The call happens
   // synchronously or asynchronously.
   virtual void MaybeImportForm(
-      std::unique_ptr<autofill::FormStructure> form_structure,
-      base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
+      std::unique_ptr<FormStructure> form_structure,
+      base::OnceCallback<void(std::unique_ptr<FormStructure> form,
                               bool autofill_ai_shows_bubble)>
           autofill_callback) = 0;
 
@@ -108,11 +108,11 @@ class AutofillAiDelegate {
 
   virtual void OnFormSeen(const FormStructure& form) = 0;
 
-  virtual void OnDidFillSuggestion(autofill::FormGlobalId form_id) = 0;
+  virtual void OnDidFillSuggestion(FormGlobalId form_id) = 0;
 
   // Called when the user manually edits a field that was filled using
   // prediction improvements.
-  virtual void OnEditedAutofilledField(autofill::FormGlobalId form_id) = 0;
+  virtual void OnEditedAutofilledField(FormGlobalId form_id) = 0;
 };
 
 }  // namespace autofill

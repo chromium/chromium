@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -83,8 +84,8 @@ class TouchToFillView extends TouchToFillViewBase {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.touch_to_fill_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.touch_to_fill_content_description);
     }
 
     @Override

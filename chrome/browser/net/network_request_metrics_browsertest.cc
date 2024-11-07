@@ -136,9 +136,8 @@ class NetworkRequestMetricsBrowserTest
         return base::StringPrintf("<script src='%s'></script>",
                                   subresource_path.c_str());
       case RequestType::kMainFrame:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return std::string();
   }
 
   void StartNavigatingAndWaitForRequest() {

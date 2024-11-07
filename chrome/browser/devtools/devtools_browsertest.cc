@@ -2091,6 +2091,10 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
         "<html><head><script src='devtools.js'></script></head></html>");
     dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
                   base::StringPrintf(R"(
+        Object.defineProperty(URL.prototype, "protocol", {
+          get: function() { return "http:"; }
+        });
+
         chrome.devtools.inspectedWindow.getResources((resources) => {
           const hasFile = !!resources.find(r => r.url.startsWith('file:'));
           setInterval(() => {
@@ -2518,7 +2522,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
   RunTestWithPanel("network");
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, AutoAttachToWindowOpen) {
+// Very flaky on Linux only.  http://crbug.com/1216219
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AutoAttachToWindowOpen DISABLED_AutoAttachToWindowOpen
+#else
+#define MAYBE_AutoAttachToWindowOpen AutoAttachToWindowOpen
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_AutoAttachToWindowOpen) {
   OpenDevToolsWindow(kWindowOpenTestPage, false);
   DevToolsWindowTesting::Get(window_)->SetOpenNewWindowForPopups(true);
   DevToolsWindowCreationObserver observer;
@@ -3687,8 +3697,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, NoJavascriptUrlOnDevtools) {
   EXPECT_EQ(false, content::EvalJs(wc, "!!window.xss"));
 }
 
+// According to DevToolsTest.AutoAttachToWindowOpen, using
+// `waitForDebuggerPaused()` is flaky on Linux.
+// TODO(crbug.com/40770357): Enable the test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PauseWhenSameOriginDebuggerAlreadyAttached \
+  DISABLED_PauseWhenSameOriginDebuggerAlreadyAttached
+#else
+#define MAYBE_PauseWhenSameOriginDebuggerAlreadyAttached \
+  PauseWhenSameOriginDebuggerAlreadyAttached
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       PauseWhenSameOriginDebuggerAlreadyAttached) {
+                       MAYBE_PauseWhenSameOriginDebuggerAlreadyAttached) {
   base::HistogramTester histograms;
 
   const GURL hello_url =
@@ -3711,7 +3731,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
       "DevTools.IsSameOriginDebuggerAttachedInAnotherRenderer", true, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, PauseWhenSameOriginDebuggerAlreadyPaused) {
+// According to DevToolsTest.AutoAttachToWindowOpen, using
+// `waitForDebuggerPaused()` is flaky on Linux.
+// TODO(crbug.com/40770357): Enable the test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PauseWhenSameOriginDebuggerAlreadyPaused \
+  DISABLED_PauseWhenSameOriginDebuggerAlreadyPaused
+#else
+#define MAYBE_PauseWhenSameOriginDebuggerAlreadyPaused \
+  PauseWhenSameOriginDebuggerAlreadyPaused
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
+                       MAYBE_PauseWhenSameOriginDebuggerAlreadyPaused) {
   base::HistogramTester histograms;
 
   const GURL pause_url = embedded_test_server()->GetURL(

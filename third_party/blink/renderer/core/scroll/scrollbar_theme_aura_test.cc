@@ -6,6 +6,8 @@
 
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
@@ -31,8 +33,30 @@ class ScrollbarThemeAuraButtonOverride final : public ScrollbarThemeAura {
                               scrollbar.CSSScrollbarWidth());
   }
 
+  void PaintTrackBackground(GraphicsContext&,
+                            const Scrollbar&,
+                            const gfx::Rect& rect) override {
+    last_painted_track_rect = rect;
+  }
+  void PaintButton(GraphicsContext&,
+                   const Scrollbar&,
+                   const gfx::Rect& rect,
+                   ScrollbarPart part) override {
+    if (part == kBackButtonStartPart) {
+      last_painted_back_button_rect = rect;
+    } else {
+      CHECK_EQ(part, kForwardButtonEndPart);
+      last_painted_forward_button_rect = rect;
+    }
+  }
+
+  gfx::Rect last_painted_track_rect;
+  gfx::Rect last_painted_back_button_rect;
+  gfx::Rect last_painted_forward_button_rect;
+
   using ScrollbarThemeAura::NinePatchTrackAndButtonsAperture;
   using ScrollbarThemeAura::NinePatchTrackAndButtonsCanvasSize;
+  using ScrollbarThemeAura::PaintTrackBackgroundAndButtons;
   using ScrollbarThemeAura::UsesNinePatchTrackAndButtonsResource;
 
  private:
@@ -299,6 +323,32 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchAperture) {
     expected_rect.set_width(2);
   }
   EXPECT_EQ(expected_rect, theme.NinePatchTrackAndButtonsAperture(*scrollbar));
+}
+
+TEST_P(ScrollbarThemeAuraTest, NinePatchTrackWithoutButtons) {
+  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
+    GTEST_SKIP();
+  }
+
+  ScrollbarThemeAuraButtonOverride theme;
+  ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
+  theme.SetHasScrollbarButtons(false);
+  MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
+  Scrollbar* scrollbar = Scrollbar::CreateForTesting(
+      mock_scrollable_area, kVerticalScrollbar, &theme);
+  scrollbar->SetFrameRect(gfx::Rect(12, 34, 15, 100));
+  EXPECT_EQ(gfx::Size(1, 1),
+            theme.NinePatchTrackAndButtonsCanvasSize(*scrollbar));
+  EXPECT_EQ(gfx::Rect(1, 1),
+            theme.NinePatchTrackAndButtonsAperture(*scrollbar));
+
+  PaintController paint_controller;
+  paint_controller.UpdateCurrentPaintChunkProperties(PropertyTreeState::Root());
+  GraphicsContext context(paint_controller);
+  theme.PaintTrackBackgroundAndButtons(context, *scrollbar, gfx::Rect(1, 1));
+  EXPECT_EQ(gfx::Rect(1, 1), theme.last_painted_track_rect);
+  EXPECT_EQ(gfx::Rect(), theme.last_painted_back_button_rect);
+  EXPECT_EQ(gfx::Rect(), theme.last_painted_forward_button_rect);
 }
 
 // Verifies that resizing the scrollbar doesn't generate unnecessary paint

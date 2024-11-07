@@ -158,8 +158,7 @@ Availability GetDevToolsAvailability(const PrefService* pref_sevice) {
     // only set by DeveloperToolsPolicyHandler which validates the value range.
     // If it is not set, it will have its default value which is also valid, see
     // |RegisterProfilePrefs|.
-    NOTREACHED_IN_MIGRATION();
-    return Availability::kAllowed;
+    NOTREACHED();
   }
 
   return static_cast<Availability>(value);

@@ -159,7 +159,7 @@ bool CheckFileSystemAccessWriteRequest::IsAllowlistedByPolicy() const {
 
 void CheckFileSystemAccessWriteRequest::LogDeepScanningPrompt(
     bool did_prompt) const {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace safe_browsing

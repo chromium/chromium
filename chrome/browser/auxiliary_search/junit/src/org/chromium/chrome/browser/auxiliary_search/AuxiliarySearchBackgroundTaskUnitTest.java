@@ -257,4 +257,11 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
         verify(mTaskFinishedCallback).taskFinished(eq(false));
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testOnTaskFinished() {
+        mTask.onTaskFinished(mTaskFinishedCallback);
+
+        verify(mTaskFinishedCallback).taskFinished(eq(false));
+    }
 }

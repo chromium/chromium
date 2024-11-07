@@ -57,8 +57,8 @@ final class SigninPromoProperties {
 
     static PropertyModel createModel(
             DisplayableProfileData profileData,
-            View.OnClickListener onAcceptClicked,
-            View.OnClickListener onDeclineClicked,
+            Runnable onAcceptClicked,
+            Runnable onDeclineClicked,
             String titleString,
             String descriptionString,
             String primaryButtonString,
@@ -67,8 +67,8 @@ final class SigninPromoProperties {
             boolean shouldHideDismissButton) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(PROFILE_DATA, profileData)
-                .with(ON_PRIMARY_BUTTON_CLICKED, onAcceptClicked)
-                .with(ON_SECONDARY_BUTTON_CLICKED, onDeclineClicked)
+                .with(ON_PRIMARY_BUTTON_CLICKED, (unusedView) -> onAcceptClicked.run())
+                .with(ON_SECONDARY_BUTTON_CLICKED, (unusedView) -> onDeclineClicked.run())
                 .with(TITLE_TEXT, titleString)
                 .with(DESCRIPTION_TEXT, descriptionString)
                 .with(PRIMARY_BUTTON_TEXT, primaryButtonString)

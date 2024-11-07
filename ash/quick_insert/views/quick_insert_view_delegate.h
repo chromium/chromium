@@ -24,8 +24,8 @@ class PickerAssetFetcher;
 class QuickInsertSearchResultsSection;
 class PickerSessionMetrics;
 
-// Delegate for `PickerView`.
-class ASH_EXPORT PickerViewDelegate {
+// Delegate for `QuickInsertView`.
+class ASH_EXPORT QuickInsertViewDelegate {
  public:
   using SearchResultsCallback = base::RepeatingCallback<void(
       std::vector<QuickInsertSearchResultsSection> results)>;
@@ -36,7 +36,7 @@ class ASH_EXPORT PickerViewDelegate {
   using SuggestedResultsCallback = base::RepeatingCallback<void(
       std::vector<QuickInsertSearchResult> results)>;
 
-  virtual ~PickerViewDelegate() {}
+  virtual ~QuickInsertViewDelegate() {}
 
   virtual std::vector<QuickInsertCategory> GetAvailableCategories() = 0;
 

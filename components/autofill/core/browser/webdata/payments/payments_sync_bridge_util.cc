@@ -30,8 +30,8 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/sync/protocol/entity_data.h"
 
-using autofill::data_util::TruncateUTF8;
-using sync_pb::AutofillWalletSpecifics;
+using ::autofill::data_util::TruncateUTF8;
+using ::sync_pb::AutofillWalletSpecifics;
 
 namespace autofill {
 namespace {
@@ -210,7 +210,7 @@ std::vector<CreditCardBenefit> CreditCardBenefitsFromCardSpecifics(
   // access to the terms and conditions.
   if (!card_specifics.has_product_terms_url() ||
       !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefitsSync)) {
+          features::kAutofillEnableCardBenefitsSync)) {
     return benefits_from_specifics;
   }
 
@@ -306,8 +306,7 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   result.set_product_description(base::UTF8ToUTF16(card.product_description()));
 
   if (card.has_product_terms_url() &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefitsSync)) {
+      base::FeatureList::IsEnabled(features::kAutofillEnableCardBenefitsSync)) {
     result.set_product_terms_url(GURL(card.product_terms_url()));
   }
 

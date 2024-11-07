@@ -1253,7 +1253,12 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
                 ],
                 swarming = targets.swarming(
-                    shards = 15,
+                    shards = 30,
+                ),
+            ),
+            "bf_cache_android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
                 ),
             ),
         },

@@ -263,7 +263,7 @@
 #include "components/lens/buildflags.h"
 #include "components/live_caption/caption_util.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
+#include "components/media_router/browser/presentation/controller_presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/receiver_presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/metrics/client_info.h"
@@ -1012,7 +1012,7 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
              switches::autoplay::kDocumentUserActivationRequiredPolicy) {
     result = blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1678,6 +1678,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 #endif
 
   registry->RegisterBooleanPref(prefs::kWebAudioOutputBufferingEnabled, false);
+  registry->RegisterBooleanPref(prefs::kSharedWorkerBlobURLFixEnabled, true);
 }
 
 // static
@@ -3278,6 +3279,13 @@ bool ChromeContentBrowserClient::AllowCompressionDictionaryTransport(
       prefs::kCompressionDictionaryTransportEnabled);
 }
 
+bool ChromeContentBrowserClient::AllowSharedWorkerBlobURLFix(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile->GetPrefs()->GetBoolean(prefs::kSharedWorkerBlobURLFixEnabled);
+}
+
 void ChromeContentBrowserClient::RequestFilesAccess(
     const std::vector<base::FilePath>& files,
     const GURL& destination_url,
@@ -3791,8 +3799,7 @@ void ChromeContentBrowserClient::OnTrustAnchorUsed(
       policy::PolicyCertServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
   if (!service) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   service->SetUsedPolicyCertificates();
 }
@@ -5316,7 +5323,7 @@ content::ControllerPresentationServiceDelegate*
 ChromeContentBrowserClient::GetControllerPresentationServiceDelegate(
     content::WebContents* web_contents) {
   if (media_router::MediaRouterEnabled(web_contents->GetBrowserContext())) {
-    return media_router::PresentationServiceDelegateImpl::
+    return media_router::ControllerPresentationServiceDelegateImpl::
         GetOrCreateForWebContents(web_contents);
   }
   return nullptr;
@@ -6970,9 +6977,7 @@ bool ChromeContentBrowserClient::ShouldForceDownloadResource(
     Profile* profile = Profile::FromBrowserContext(browser_context);
     bool force_download = profile->GetPrefs()->GetBoolean(
         quickoffice::kQuickOfficeForceFileDownloadEnabled);
-
-    if (base::FeatureList::IsEnabled(features::kQuickOfficeForceFileDownload) &&
-        force_download) {
+    if (force_download) {
       std::string extension_id =
           PluginUtils::GetExtensionIdForMimeType(browser_context, mime_type);
 
@@ -8506,8 +8511,7 @@ std::string ChromeContentBrowserClient::GetChildProcessSuffix(int child_flags) {
       base::to_underlying(ChildProcessHostFlags::kChildProcessHelperAlerts)) {
     return chrome::kMacHelperSuffixAlerts;
   }
-  NOTREACHED_IN_MIGRATION() << "Unsupported child process flags!";
-  return {};
+  NOTREACHED() << "Unsupported child process flags!";
 }
 #endif  // BUILDFLAG(IS_MAC)
 

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -301,8 +303,8 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.signin_account_picker_bottom_sheet_subtitle;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.signin_account_picker_bottom_sheet_subtitle);
     }
 
     @Override

@@ -61,3 +61,7 @@
 
 # crbug.com/1392774
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover*
+
+# crbug.com/377699617
+-org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
+

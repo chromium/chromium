@@ -68,6 +68,11 @@ class TestUserAnnotationsService : public UserAnnotationsService {
     return last_received_remove_annotations_in_range_;
   }
 
+  void SaveAutofillProfile(
+      const autofill::AutofillProfile& autofill_profile,
+      base::OnceCallback<void(UserAnnotationsExecutionResult)> callback)
+      override;
+
  private:
   // An in-memory representation of the "database" of user annotation entries.
   std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_;

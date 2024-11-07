@@ -369,7 +369,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
     Recorded when an unauthenticated Family Link user tries to navigate to a
     blocked website in the main frame, prompting a re-authentication
     interstitial. It records the different sign-in states of the user provided
-    by the interestitial.
+    by the interstitial.
   </summary>
 </histogram>
 
@@ -456,6 +456,19 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
     Categorizes the current user based on Family Link user type. Recorded for
     all supervised platforms except ChromeOS which uses
     ChromeOS.FamilyLinkUser.LogSegment.
+  </summary>
+</histogram>
+
+<histogram name="FamilyLinkUser.SubframeYoutubeReauthenticationInterstitial"
+    enum="FamilyLinkUserLocalWebApprovalResult" expires_after="2025-03-09">
+  <owner>anthie@google.com</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Recorded when an unauthenticated Family Link user is shown the
+    re-authentication interstitial for a subframe with YouTube content. It
+    records the different sign-in states of the user provided by the
+    interestitial.
   </summary>
 </histogram>
 

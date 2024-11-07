@@ -17,6 +17,7 @@
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/net/pipe_builder.h"
 #include "chrome/test/chromedriver/net/test_http_server.h"
+#include "chrome/test/chromedriver/session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 testing::AssertionResult StatusOk(const Status& status);
@@ -26,6 +27,7 @@ class IntegrationTest : public ::testing::Test {
   IntegrationTest();
   ~IntegrationTest() override;
 
+  static void SetUpTestSuite();
   void SetUp() override;
   void TearDown() override;
 
@@ -38,6 +40,7 @@ class IntegrationTest : public ::testing::Test {
   PipeBuilder pipe_builder_;
   std::unique_ptr<DevToolsClientImpl> browser_client_;
   BrowserInfo browser_info_;
+  Session session_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_TEST_INTEGRATION_TEST_H_

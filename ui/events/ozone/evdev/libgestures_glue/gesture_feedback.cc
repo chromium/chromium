@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_property_provider.h"
 
 namespace ui {
@@ -221,13 +220,13 @@ void DumpTouchEventLog(
     if (converter->HasTouchscreen()) {
       std::string touch_evdev_log_filename = GenerateEventLogName(
           out_dir, "evdev_input_events_", now, converter->id());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       converter->DumpTouchEventLog(touch_evdev_log_filename.c_str());
 #else
       converter->DumpTouchEventLog(kInputEventsLogFile);
       base::Move(base::FilePath(kInputEventsLogFile),
                  base::FilePath(touch_evdev_log_filename));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       log_paths.push_back(base::FilePath(touch_evdev_log_filename));
     }
   }

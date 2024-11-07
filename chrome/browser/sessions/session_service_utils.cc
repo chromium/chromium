@@ -27,8 +27,7 @@ sessions::SessionWindow::WindowType WindowTypeForBrowserType(
       return sessions::SessionWindow::TYPE_CUSTOM_TAB;
 #endif
   }
-  NOTREACHED_IN_MIGRATION();
-  return sessions::SessionWindow::TYPE_NORMAL;
+  NOTREACHED();
 }
 
 Browser::Type BrowserTypeForWindowType(
@@ -49,6 +48,5 @@ Browser::Type BrowserTypeForWindowType(
       return Browser::TYPE_CUSTOM_TAB;
 #endif
   }
-  NOTREACHED_IN_MIGRATION();
-  return Browser::TYPE_NORMAL;
+  NOTREACHED();
 }

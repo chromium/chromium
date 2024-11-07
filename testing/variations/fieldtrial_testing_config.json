@@ -56,6 +56,21 @@
             ]
         }
     ],
+    "AblateSearchProviderWarmupRequests": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AblateSearchProviderWarmup"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityIncludeLongClickAction": [
         {
             "platforms": [
@@ -1442,6 +1457,24 @@
             ]
         }
     ],
+    "AutofillAiTeamfood": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAi"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillCreditCardUserPerceptionSurvey": [
         {
             "platforms": [
@@ -1548,8 +1581,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillEnableCardBenefitsForAmericanExpress",
-                        "AutofillEnableCardBenefitsSync"
+                        "AutofillEnableCardBenefitsForAmericanExpress"
                     ]
                 }
             ]
@@ -1591,6 +1623,21 @@
             ]
         }
     ],
+    "AutofillEnableCardBenefitsSync": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableCardBenefitsSync"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableCvcStorage": [
         {
             "platforms": [
@@ -1622,29 +1669,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillAndroidDisableSuggestionsOnJSFocus"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableEmailHeuristicOnlyAddressForms": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AutocompleteAll",
-                    "params": {
-                        "autocomplete_email": "false"
-                    },
-                    "enable_features": [
-                        "AutofillEnableEmailHeuristicOnlyAddressForms"
                     ]
                 }
             ]
@@ -2305,6 +2329,21 @@
             ]
         }
     ],
+    "AutofillPaymentsSheetV2Ios": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillPaymentsSheetV2Ios"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillPopupDontAcceptNonVisibleEnoughSuggestion": [
         {
             "platforms": [
@@ -2357,24 +2396,6 @@
                     "enable_features": [
                         "AutofillOverwritePlaceholdersOnly",
                         "AutofillSkipPreFilledFields"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillPredictionImprovementsTeamfood": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPredictionImprovements"
                     ]
                 }
             ]
@@ -3412,24 +3433,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BrowserControlsEarlyResize"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BrowserSwitcherNoneIsGreylist": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowserSwitcherNoneIsGreylist"
                     ]
                 }
             ]
@@ -6136,26 +6139,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ConditionalImageResize"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ConditionallySkipGpuChannelFlush": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ConditionallySkipGpuChannelFlush"
                     ]
                 }
             ]
@@ -11965,6 +11948,21 @@
             ]
         }
     ],
+    "IOSReactivationNotifications": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSReactivationNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSaveToPhotosImprovements": [
         {
             "platforms": [
@@ -12038,6 +12036,24 @@
                     },
                     "enable_features": [
                         "StartSurface"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSStartTimeStartupRemediations": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSaveNTPWebState",
+                    "params": {
+                        "ios-startup-remediations-save-ntp-web-state": "true"
+                    },
+                    "enable_features": [
+                        "IOSStartTimeStartupRemediations"
                     ]
                 }
             ]
@@ -13444,6 +13460,27 @@
                     },
                     "enable_features": [
                         "LowPriorityAsyncScriptExecution"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MHTML_Improvements": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MHTML_Improvements"
                     ]
                 }
             ]
@@ -16671,6 +16708,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
                         "ExpandedPrefetchRange",
@@ -16700,6 +16738,7 @@
                     },
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
@@ -16726,6 +16765,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
@@ -16748,6 +16788,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
@@ -16769,6 +16810,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "ConditionallySkipGpuChannelFlush",
                         "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
@@ -17039,8 +17081,6 @@
                         "PlusAddressAndroidOpenGmsCoreManagementPage",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressGlobalToggle",
-                        "PlusAddressIOSErrorAndLoadingStatesEnabled",
-                        "PlusAddressIOSManualFallbackEnabled",
                         "PlusAddressOfferCreationIfPasswordFieldIsNotVisible",
                         "PlusAddressOfferCreationOnSingleUsernameForms",
                         "PlusAddressPreallocation",
@@ -18526,6 +18566,25 @@
                     },
                     "enable_features": [
                         "FledgeSellerWorkletThreadPool"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProtectedAudienceNoWasmLazyCompilationStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeNoWasmLazyCompilation"
                     ]
                 }
             ]
@@ -23398,8 +23457,6 @@
     "TransportSecurityFileWriterSchedule": [
         {
             "platforms": [
-                "android",
-                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
@@ -23407,7 +23464,25 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled1Minute_20240626",
+                    "name": "Enabled10Minutes_20241105",
+                    "params": {
+                        "commit_interval": "10m"
+                    },
+                    "enable_features": [
+                        "TransportSecurityFileWriterSchedule"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TransportSecurityFileWriterScheduleAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1Minute_20241105",
                     "params": {
                         "commit_interval": "1m"
                     },
@@ -24887,76 +24962,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8UpdateLimitAfterLoading"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8WasmMoreAggressiveCodeCaching": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "1_ReducedThreshold",
-                    "params": {
-                        "WebAssemblyCodeCachingThreshold": "200"
-                    },
-                    "enable_features": [
-                        "WebAssemblyMoreAggressiveCodeCaching"
-                    ]
-                },
-                {
-                    "name": "2_IncreasedThreshold",
-                    "params": {
-                        "WebAssemblyCodeCachingThreshold": "10000"
-                    },
-                    "enable_features": [
-                        "WebAssemblyMoreAggressiveCodeCaching"
-                    ]
-                },
-                {
-                    "name": "3_ReducedHardThreshold",
-                    "params": {
-                        "WebAssemblyCodeCachingHardThreshold": "200000"
-                    },
-                    "enable_features": [
-                        "WebAssemblyMoreAggressiveCodeCaching"
-                    ]
-                },
-                {
-                    "name": "4_IncreasedHardThreshold",
-                    "params": {
-                        "WebAssemblyCodeCachingHardThreshold": "10000000"
-                    },
-                    "enable_features": [
-                        "WebAssemblyMoreAggressiveCodeCaching"
-                    ]
-                },
-                {
-                    "name": "5_ReducedTimeout",
-                    "params": {
-                        "WebAssemblyCodeCachingTimeoutMs": "500"
-                    },
-                    "enable_features": [
-                        "WebAssemblyMoreAggressiveCodeCaching"
-                    ]
-                },
-                {
-                    "name": "6_IncreasedTimeout",
-                    "params": {
-                        "WebAssemblyCodeCachingTimeoutMs": "10000"
-                    },
-                    "enable_features": [
-                        "WebAssemblyMoreAggressiveCodeCaching"
                     ]
                 }
             ]
@@ -26616,19 +26621,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_300ms_FromLastRequest",
+                    "name": "Enabled_300ms_FromLastRun",
                     "params": {
                         "ZeroSuggestPrefetchDebounceDelay": "300",
-                        "ZeroSuggestPrefetchDebounceFromLastRun": "false"
-                    },
-                    "enable_features": [
-                        "ZeroSuggestPrefetchDebouncing"
-                    ]
-                },
-                {
-                    "name": "Enabled_900ms_FromLastRun",
-                    "params": {
-                        "ZeroSuggestPrefetchDebounceDelay": "900",
                         "ZeroSuggestPrefetchDebounceFromLastRun": "true"
                     },
                     "enable_features": [
@@ -26645,55 +26640,28 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_300ms_FromLastRequest",
+                    "name": "Enabled_300ms_FromLastRun",
                     "params": {
                         "ZeroSuggestPrefetchDebounceDelay": "300",
-                        "ZeroSuggestPrefetchDebounceFromLastRun": "false"
-                    },
-                    "enable_features": [
-                        "AblateSearchProviderWarmup",
-                        "ZeroSuggestPrefetchDebouncing"
-                    ]
-                },
-                {
-                    "name": "Enabled_900ms_FromLastRun",
-                    "params": {
-                        "ZeroSuggestPrefetchDebounceDelay": "900",
                         "ZeroSuggestPrefetchDebounceFromLastRun": "true"
                     },
                     "enable_features": [
-                        "AblateSearchProviderWarmup",
                         "ZeroSuggestPrefetchDebouncing"
                     ]
                 }
             ]
         }
     ],
-    "ZPSPrefetchOnSRPWithDebouncingAndroid": [
+    "ZPSPrefetchOnSRPWithAblationAndroid": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_300ms_FromLastRequest",
+                    "name": "Enabled_Prefetching_Warmup_Ablation_Debouncing",
                     "params": {
                         "ZeroSuggestPrefetchDebounceDelay": "300",
-                        "ZeroSuggestPrefetchDebounceFromLastRun": "false"
-                    },
-                    "enable_features": [
-                        "AblateSearchProviderWarmup",
-                        "ZeroSuggestPrefetchDebouncing",
-                        "ZeroSuggestPrefetchingOnSRP"
-                    ],
-                    "disable_features": [
-                        "ZeroSuggestPrefetchingOnWeb"
-                    ]
-                },
-                {
-                    "name": "Enabled_900ms_FromLastRun",
-                    "params": {
-                        "ZeroSuggestPrefetchDebounceDelay": "900",
                         "ZeroSuggestPrefetchDebounceFromLastRun": "true"
                     },
                     "enable_features": [
@@ -26706,12 +26674,23 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Prefetching_Only",
+                    "name": "Enabled_Prefetching_Warmup_Ablation",
                     "enable_features": [
                         "AblateSearchProviderWarmup",
                         "ZeroSuggestPrefetchingOnSRP"
                     ],
                     "disable_features": [
+                        "ZeroSuggestPrefetchDebouncing",
+                        "ZeroSuggestPrefetchingOnWeb"
+                    ]
+                },
+                {
+                    "name": "Enabled_Prefetching_Only",
+                    "enable_features": [
+                        "ZeroSuggestPrefetchingOnSRP"
+                    ],
+                    "disable_features": [
+                        "AblateSearchProviderWarmup",
                         "ZeroSuggestPrefetchDebouncing",
                         "ZeroSuggestPrefetchingOnWeb"
                     ]

@@ -125,7 +125,6 @@ suite('<os-apps-page> available settings rows', () => {
 
   setup(() => {
     loadTimeData.overrideValues({
-      showOsSettingsAppNotificationsRow: true,
       isPlayStoreAvailable: true,
     });
     Router.getInstance().navigateTo(routes.APPS);
@@ -209,7 +208,6 @@ suite('<os-apps-page> Subpage trigger focusing', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       androidAppsVisible: true,
-      showOsSettingsAppNotificationsRow: true,
     });
 
     // Reinitialize Router and routes based on load time data
@@ -322,7 +320,6 @@ suite('AppsPageTests', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      showOsSettingsAppNotificationsRow: true,
       isPlayStoreAvailable: true,
       androidAppsVisible: true,
       showManageIsolatedWebAppsRow: true,

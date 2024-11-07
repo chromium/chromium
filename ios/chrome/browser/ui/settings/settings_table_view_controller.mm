@@ -24,8 +24,6 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
@@ -291,7 +289,6 @@ struct EnhancedSafeBrowsingActivePromoData
   TableViewDetailIconItem* _autoFillProfileDetailItem;
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
-  TableViewDetailIconItem* _plusAddressesItem;
   TableViewDetailIconItem* _defaultBrowserCellItem;
   TableViewItem* _syncItem;
 
@@ -519,15 +516,6 @@ struct EnhancedSafeBrowsingActivePromoData
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
   [model addItem:[self autoFillProfileDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      !base::FeatureList::IsEnabled(
-          plus_addresses::features::
-              kPlusAddressIOSErrorAndLoadingStatesEnabled)) {
-    _plusAddressesItem = [self plusAddressesItem];
-    [model addItem:_plusAddressesItem
-        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
-  }
 
   // Advanced Section
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -1000,22 +988,6 @@ struct EnhancedSafeBrowsingActivePromoData
                            symbol:DefaultSettingsRootSymbol(kBellSymbol)
             symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
           accessibilityIdentifier:kSettingsNotificationsId];
-}
-
-- (TableViewDetailIconItem*)plusAddressesItem {
-  NSString* title = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
-
-  return [self
-           detailItemWithType:SettingsItemTypePlusAddresses
-                         text:title
-                   detailText:nil
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-                       symbol:CustomSettingsRootSymbol(kGooglePlusAddressSymbol)
-#else
-                       symbol:nil
-#endif
-        symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
-      accessibilityIdentifier:kSettingsPlusAddressesId];
 }
 
 - (TableViewItem*)privacyDetailItem {
@@ -1530,16 +1502,6 @@ struct EnhancedSafeBrowsingActivePromoData
           pushViewController:[[TableCellCatalogViewController alloc] init]
                     animated:YES];
       break;
-    case SettingsItemTypePlusAddresses: {
-      base::RecordAction(base::UserMetricsAction("Settings.PlusAddresses"));
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:
-              GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
-      id<ApplicationCommands> handler = HandlerForProtocol(
-          _browser->GetCommandDispatcher(), ApplicationCommands);
-      [handler closePresentedViewsAndOpenURL:command];
-      break;
-    }
     case SettingsItemTypeSwitchProfile:
       [self showSwitchProfileSettings];
       break;

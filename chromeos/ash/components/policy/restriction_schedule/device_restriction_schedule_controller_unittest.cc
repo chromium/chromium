@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
@@ -592,6 +593,70 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
     Mock::VerifyAndClearExpectations(&observer_);
     EXPECT_EQ(u"today", controller_->RestrictionScheduleEndDay());
   }
+}
+
+class DeviceRestrictionScheduleControllerTestTimeTampering
+    : public DeviceRestrictionScheduleControllerTest {
+ public:
+  // Manually driven in tests.
+  void SetUp() override {}
+};
+
+// Verify saving highest seen time works.
+TEST_F(DeviceRestrictionScheduleControllerTestTimeTampering,
+       SavingHighestSeentime) {
+  DeviceRestrictionScheduleControllerTest::SetUp();
+
+  const char* time_str = "Tue 29 Oct 2024 14:00";
+  SetTime(time_str);
+  // Enable the policy so we remember the time.
+  UpdatePolicyPref(kPolicyJson);
+
+  // Run any pending timers.
+  AdvanceTime(base::TimeDelta());
+
+  EXPECT_EQ(TimeFromString(time_str),
+            local_state_.GetTime(
+                chromeos::prefs::kDeviceRestrictionScheduleHighestSeenTime));
+}
+
+// Verify that the time tampering mechanism doesn't go off if the highest seen
+// time wasn't set.
+TEST_F(DeviceRestrictionScheduleControllerTestTimeTampering,
+       TimeTampering_False) {
+  DeviceRestrictionScheduleControllerTest::SetUp();
+
+  SetTime("Tue 29 Oct 2024 14:00");
+
+  // We're outside a restriction schedule and it shouldn't be enabled because
+  // there's no tampering with time.
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false)).Times(1);
+  UpdatePolicyPref(kPolicyJson);
+
+  // Run any pending timers and verify expectations.
+  AdvanceTime(base::TimeDelta());
+  Mock::VerifyAndClearExpectations(&observer_);
+}
+
+// Verify that the time tampering mechanism goes off if the highest seen time is
+// more than one day in the future.
+TEST_F(DeviceRestrictionScheduleControllerTestTimeTampering,
+       TimeTampering_True) {
+  local_state_.SetTime(
+      chromeos::prefs::kDeviceRestrictionScheduleHighestSeenTime,
+      TimeFromString("Thu 31 Oct 2024 14:00"));
+  DeviceRestrictionScheduleControllerTest::SetUp();
+
+  SetTime("Tue 29 Oct 2024 14:00");
+
+  // We're outside a restriction schedule, but it should be enabled anyway
+  // because we detected tampering with time.
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true)).Times(1);
+  UpdatePolicyPref(kPolicyJson);
+
+  // Run any pending timers and verify expectations.
+  AdvanceTime(base::TimeDelta());
+  Mock::VerifyAndClearExpectations(&observer_);
 }
 
 }  // namespace policy

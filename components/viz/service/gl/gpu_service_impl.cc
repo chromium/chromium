@@ -551,6 +551,7 @@ void GpuServiceImpl::InitializeWithHost(
     mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
     gpu::GpuProcessShmCount use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
+    mojom::GpuServiceCreationParamsPtr creation_params,
 #if BUILDFLAG(IS_ANDROID)
     gpu::SyncPointManager* sync_point_manager,
     gpu::SharedImageManager* shared_image_manager,
@@ -598,6 +599,10 @@ void GpuServiceImpl::InitializeWithHost(
     bool thread_safe_manager = true;
     owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
         thread_safe_manager, display_context_on_another_thread);
+#if BUILDFLAG(IS_OZONE)
+    owned_shared_image_manager_->SetSupportsOverlays(
+        creation_params->supports_overlays);
+#endif
     shared_image_manager = owned_shared_image_manager_.get();
   }
 

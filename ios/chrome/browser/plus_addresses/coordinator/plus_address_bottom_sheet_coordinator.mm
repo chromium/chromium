@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/plus_addresses/features.h"
 #import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
@@ -104,13 +103,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                                         animated:YES
                                       completion:nil];
 
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::
-              kPlusAddressIOSErrorAndLoadingStatesEnabled)) {
-    // Ensure that the bottom sheet is presented so that it can be dismissed
-    // before presenting the alert for error during reserve.
-    [_mediator reservePlusAddress];
-  }
+  // Ensure that the bottom sheet is presented so that it can be dismissed
+  // before presenting the alert for error during reserve.
+  [_mediator reservePlusAddress];
 }
 
 - (void)stop {

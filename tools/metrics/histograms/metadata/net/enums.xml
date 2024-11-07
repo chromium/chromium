@@ -550,6 +550,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CryptoConnectFailedAsync"/>
 </enum>
 
+<!-- LINT.IfChange(MultiplexedSessionCreationInitiator) -->
+
+<enum name="MultiplexedSessionCreationInitiator">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kPreconnect"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/spdy/multiplexed_session_creation_initiator.h:MultiplexedSessionCreationInitiator) -->
+
 <enum name="MultiPortStatusOnMigration">
   <int value="0" label="Not validated"/>
   <int value="1" label="Pending refresh validation"/>

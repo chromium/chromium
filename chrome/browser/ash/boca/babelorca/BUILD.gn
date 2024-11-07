@@ -10,6 +10,8 @@ static_library("babelorca") {
   sources = [
     "babel_orca_speech_recognizer_impl.cc",
     "babel_orca_speech_recognizer_impl.h",
+    "babel_orca_translation_dispatcher_impl.cc",
+    "babel_orca_translation_dispatcher_impl.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -19,5 +21,6 @@ static_library("babelorca") {
     "//chromeos/ash/components/boca/babelorca",
     "//components/live_caption",
     "//components/live_caption:constants",
+    "//components/live_caption:live_translate",
   ]
 }

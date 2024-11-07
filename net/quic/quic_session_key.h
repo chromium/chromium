@@ -47,6 +47,9 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn);
   QuicSessionKey(const QuicSessionKey& other);
+  QuicSessionKey(QuicSessionKey&& other);
+  QuicSessionKey& operator=(const QuicSessionKey& other);
+  QuicSessionKey& operator=(QuicSessionKey&& other);
   ~QuicSessionKey() = default;
 
   // Needed to be an element of std::set.

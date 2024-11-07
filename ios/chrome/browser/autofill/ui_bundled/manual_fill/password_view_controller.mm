@@ -185,7 +185,7 @@ enum ManualFallbackItemType : NSInteger {
 
   if (!self.searchController &&
       base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     _credentials = credentials;
     [self presentItems];
   } else {

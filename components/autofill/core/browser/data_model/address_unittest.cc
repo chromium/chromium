@@ -18,10 +18,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
-using base::ASCIIToUTF16;
-
 namespace autofill {
+namespace {
+
+using ::autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
+using ::base::ASCIIToUTF16;
 
 class AddressTest : public testing::Test {
  public:
@@ -780,4 +781,5 @@ TEST_F(AddressTest, TestSynthesizedNodesGeneration) {
             u"Swamy temple");
 }
 
+}  // namespace
 }  // namespace autofill

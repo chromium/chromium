@@ -29,7 +29,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Arrays;
@@ -43,7 +44,7 @@ public class InstalledWebappBroadcastReceiverTest {
     @Mock public Context mContext;
     @Mock public InstalledWebappDataRegister mDataRegister;
     @Mock public InstalledWebappBroadcastReceiver.ClearDataStrategy mMockStrategy;
-    @Mock public PermissionUpdater mPermissionUpdater;
+    @Mock public InstalledWebappPermissionStore mStore;
 
     private InstalledWebappBroadcastReceiver mReceiver;
 
@@ -51,9 +52,9 @@ public class InstalledWebappBroadcastReceiverTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mReceiver =
-                new InstalledWebappBroadcastReceiver(
-                        mMockStrategy, mDataRegister, mPermissionUpdater);
+        WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
+
+        mReceiver = new InstalledWebappBroadcastReceiver(mMockStrategy, mDataRegister);
         mContext = RuntimeEnvironment.application;
     }
 
@@ -84,7 +85,7 @@ public class InstalledWebappBroadcastReceiverTest {
     public void chromeHoldsNoData() {
         mReceiver.onReceive(mContext, createMockIntent(12, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mMockStrategy, never()).execute(any(), any(), any(), anyInt(), anyBoolean());
+        verify(mMockStrategy, never()).execute(any(), any(), anyInt(), anyBoolean());
     }
 
     /** Tests the basic flow. */
@@ -100,7 +101,7 @@ public class InstalledWebappBroadcastReceiverTest {
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mMockStrategy).execute(any(), any(), any(), eq(id), eq(true));
+        verify(mMockStrategy).execute(any(), any(), eq(id), eq(true));
     }
 
     /** Tests we plumb the correct information to the {@link ClearDataDialogActivity}. */
@@ -109,9 +110,7 @@ public class InstalledWebappBroadcastReceiverTest {
     public void execute_ValidIntent() {
         mReceiver =
                 new InstalledWebappBroadcastReceiver(
-                        new InstalledWebappBroadcastReceiver.ClearDataStrategy(),
-                        mDataRegister,
-                        mPermissionUpdater);
+                        new InstalledWebappBroadcastReceiver.ClearDataStrategy(), mDataRegister);
 
         int id = 67;
         String appName = "App Name 3";
@@ -139,9 +138,7 @@ public class InstalledWebappBroadcastReceiverTest {
     public void execute_UpdatePermissions() {
         mReceiver =
                 new InstalledWebappBroadcastReceiver(
-                        new InstalledWebappBroadcastReceiver.ClearDataStrategy(),
-                        mDataRegister,
-                        mPermissionUpdater);
+                        new InstalledWebappBroadcastReceiver.ClearDataStrategy(), mDataRegister);
 
         int id = 67;
         String appName = "App Name 3";
@@ -155,8 +152,8 @@ public class InstalledWebappBroadcastReceiverTest {
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mPermissionUpdater).onClientAppUninstalled(origin1);
-        verify(mPermissionUpdater).onClientAppUninstalled(origin2);
+        verify(mStore).resetPermission(eq(origin1), anyInt());
+        verify(mStore).resetPermission(eq(origin2), anyInt());
     }
 
     /** Tests we differentiate between app uninstalled and data cleared. */
@@ -171,6 +168,6 @@ public class InstalledWebappBroadcastReceiverTest {
         addToRegister(id, appName, domains);
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_DATA_CLEARED));
-        verify(mMockStrategy).execute(any(), any(), any(), eq(id), eq(false));
+        verify(mMockStrategy).execute(any(), any(), eq(id), eq(false));
     }
 }

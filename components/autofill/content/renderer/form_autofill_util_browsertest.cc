@@ -43,17 +43,17 @@
 namespace autofill::form_util {
 namespace {
 
-using autofill::mojom::ButtonTitleType;
-using blink::WebDocument;
-using blink::WebElement;
-using blink::WebElementCollection;
-using blink::WebFormControlElement;
-using blink::WebFormElement;
-using blink::WebInputElement;
-using blink::WebLocalFrame;
-using blink::WebNode;
-using blink::WebString;
-using blink::WebVector;
+using ::autofill::mojom::ButtonTitleType;
+using ::blink::WebDocument;
+using ::blink::WebElement;
+using ::blink::WebElementCollection;
+using ::blink::WebFormControlElement;
+using ::blink::WebFormElement;
+using ::blink::WebInputElement;
+using ::blink::WebLocalFrame;
+using ::blink::WebNode;
+using ::blink::WebString;
+using ::blink::WebVector;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -575,9 +575,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
   ButtonTitlesCache cache;
 
-  autofill::ButtonTitleList actual = GetButtonTitles(form_target, &cache);
+  ButtonTitleList actual = GetButtonTitles(form_target, &cache);
 
-  autofill::ButtonTitleList expected = {
+  ButtonTitleList expected = {
       {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE}};
   EXPECT_EQ(expected, actual);
 
@@ -598,7 +598,7 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
   ButtonTitlesCache cache;
 
-  autofill::ButtonTitleList actual = GetButtonTitles(form_target, &cache);
+  ButtonTitleList actual = GetButtonTitles(form_target, &cache);
 
   int total_length = 0;
   for (const auto& [title, title_type] : actual) {
@@ -626,9 +626,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_NoCache) {
   LoadHTML(kHtml);
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
 
-  autofill::ButtonTitleList expected = {
+  ButtonTitleList expected = {
       {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE}};
-  autofill::ButtonTitleList actual =
+  ButtonTitleList actual =
       GetButtonTitles(form_target, /*button_titles_cache=*/nullptr);
   EXPECT_EQ(expected, actual);
 }

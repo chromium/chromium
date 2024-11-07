@@ -122,6 +122,7 @@ enum {
   kSharingVapidKey = 76,
   kFirstPlusAddressCreationTime = 77,
   kLastPlusAddressFillingTime = 78,
+  kSafeBrowsingEnhanced = 79,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -311,6 +312,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
         {plus_addresses::prefs::kLastPlusAddressFillingTime,
          {syncable_prefs_ids::kLastPlusAddressFillingTime, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {prefs::kSafeBrowsingEnhanced,
+         {syncable_prefs_ids::kSafeBrowsingEnhanced, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
 #if BUILDFLAG(IS_ANDROID)
         {autofill::prefs::kFacilitatedPaymentsPix,

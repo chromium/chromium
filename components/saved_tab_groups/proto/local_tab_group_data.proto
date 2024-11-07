@@ -22,4 +22,8 @@ message LocalTabGroupData {
 
   // Timestamp of last explicit user interaction with the tab group.
   optional int64 last_user_interaction_time_windows_epoch_micros = 4;
+
+  // Indicates whether a tab is pending sanitization. This field is only
+  // applicable to tabs, instead of tab groups.
+  optional bool is_tab_pending_sanitization = 5;
 }

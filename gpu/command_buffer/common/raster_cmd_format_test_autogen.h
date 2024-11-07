@@ -342,10 +342,10 @@ TEST_F(RasterFormatTest, CopySharedImageINTERNALImmediate) {
   };
   cmds::CopySharedImageINTERNALImmediate& cmd =
       *GetBufferAs<cmds::CopySharedImageINTERNALImmediate>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
-                           static_cast<GLint>(13), static_cast<GLint>(14),
-                           static_cast<GLsizei>(15), static_cast<GLsizei>(16),
-                           static_cast<GLboolean>(17), data);
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
+              static_cast<GLint>(13), static_cast<GLint>(14),
+              static_cast<GLsizei>(15), static_cast<GLsizei>(16), data);
   EXPECT_EQ(
       static_cast<uint32_t>(cmds::CopySharedImageINTERNALImmediate::kCmdId),
       cmd.header.command);
@@ -357,7 +357,6 @@ TEST_F(RasterFormatTest, CopySharedImageINTERNALImmediate) {
   EXPECT_EQ(static_cast<GLint>(14), cmd.y);
   EXPECT_EQ(static_cast<GLsizei>(15), cmd.width);
   EXPECT_EQ(static_cast<GLsizei>(16), cmd.height);
-  EXPECT_EQ(static_cast<GLboolean>(17), cmd.unpack_flip_y);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

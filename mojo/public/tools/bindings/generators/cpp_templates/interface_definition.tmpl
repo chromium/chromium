@@ -93,7 +93,7 @@ constexpr base::Token {{class_name}}::Uuid_;
 {#--- Constants #}
 {%-  for constant in interface.constants %}
 {%-   if constant.kind|is_string_kind %}
-const char {{interface.name}}::{{constant.name}}[] = {{constant|constant_value}};
+const char {{interface.name}}::{{constant.name}}[{{constant|constant_length}}] = {{constant|constant_value}};
 {%-   else %}
 constexpr {{constant.kind|cpp_pod_type}} {{interface.name}}::{{constant.name}};
 {%-   endif %}

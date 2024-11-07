@@ -132,6 +132,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, EcheIconActivatesCallback);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, TrayPressedMetrics);
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, BubbleViewAccessibleName);
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;

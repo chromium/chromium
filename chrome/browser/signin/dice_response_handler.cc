@@ -313,10 +313,9 @@ void DiceResponseHandler::ProcessDiceHeader(
       ProcessDiceSignoutHeader(dice_params.signout_info->account_infos);
       return;
     case signin::DiceAction::NONE:
-      NOTREACHED_IN_MIGRATION() << "Invalid Dice response parameters.";
-      return;
+      NOTREACHED() << "Invalid Dice response parameters.";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 size_t DiceResponseHandler::GetPendingDiceTokenFetchersCountForTesting() const {

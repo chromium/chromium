@@ -124,7 +124,7 @@ APIBindingHooks::RequestResult AppHooksDelegate::HandleRequest(
             binding::ResultModifierFunction());
     GetInstallState(script_context, request_details.request_id);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return result;

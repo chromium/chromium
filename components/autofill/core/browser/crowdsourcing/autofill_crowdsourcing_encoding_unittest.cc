@@ -121,9 +121,9 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
 }
 
 void AddFieldOverrideToForm(
-    autofill::FormFieldData field_data,
+    FormFieldData field_data,
     FieldType field_type,
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
+    AutofillQueryResponse_FormSuggestion* form_suggestion) {
   AddFieldPredictionsToForm(
       field_data,
       {CreateFieldPrediction(field_type, FieldPrediction::SOURCE_OVERRIDE)},
@@ -237,8 +237,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
       std::make_unique<FormStructure>(form);
   form_structure->set_submission_event(
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
-  for (const std::unique_ptr<autofill::AutofillField>& fs_field :
-       *form_structure) {
+  for (const std::unique_ptr<AutofillField>& fs_field : *form_structure) {
     fs_field->set_host_form_signature(form_structure->form_signature());
   }
 
@@ -541,8 +540,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
-  for (const std::unique_ptr<autofill::AutofillField>& fs_field :
-       *form_structure) {
+  for (const std::unique_ptr<AutofillField>& fs_field : *form_structure) {
     fs_field->set_host_form_signature(form_structure->form_signature());
   }
 
@@ -597,8 +595,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
-  for (const std::unique_ptr<autofill::AutofillField>& fs_field :
-       *form_structure) {
+  for (const std::unique_ptr<AutofillField>& fs_field : *form_structure) {
     fs_field->set_host_form_signature(form_structure->form_signature());
   }
 

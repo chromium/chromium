@@ -11,6 +11,7 @@
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 
 class PrefService;
+@protocol SnackbarCommands;
 
 namespace web {
 class WebState;
@@ -23,6 +24,9 @@ class WebState;
 @interface AutofillAgent : NSObject <AutofillClientIOSBridge,
                                      AutofillDriverIOSBridge,
                                      FormSuggestionProvider>
+
+// Used to show a snackbar.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
 // Designated initializer. Arguments |prefService| and |webState| should not be
 // null.

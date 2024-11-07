@@ -24,8 +24,7 @@ bool NativeInit(base::android::LibraryProcessType library_process_type) {
       return base::android::OnJNIOnLoadInit();
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

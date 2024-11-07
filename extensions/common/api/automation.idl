@@ -382,7 +382,8 @@
     required,
     richlyEditable,
     vertical,
-    visited
+    visited,
+    hasActions
   };
 
   // All possible actions that can be performed on automation nodes.

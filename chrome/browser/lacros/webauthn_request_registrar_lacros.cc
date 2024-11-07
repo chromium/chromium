@@ -42,6 +42,5 @@ WebAuthnRequestRegistrarLacros::GetRegisterCallback(aura::Window* window) {
 // where we summon the dialog.
 aura::Window* WebAuthnRequestRegistrarLacros::GetWindowForRequestId(
     std::string request_id) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }

@@ -14,6 +14,8 @@ namespace ash {
 
 namespace {
 
+using enum ScannerFeatureUserState;
+
 class ScannerMetricsTest
     : public AshTestBase,
       public testing::WithParamInterface<ScannerFeatureUserState> {};
@@ -22,30 +24,33 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ScannerMetricsTest,
     testing::ValuesIn<ScannerFeatureUserState>({
-        ScannerFeatureUserState::kConsentDisclaimerAccepted,
-        ScannerFeatureUserState::kConsentDisclaimerRejected,
-        ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut,
-        ScannerFeatureUserState::
-            kSunfishScreenInitialScreenCaptureSentToScannerServer,
-        ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown,
-        ScannerFeatureUserState::
-            kScreenCaptureModeInitialScreenCaptureSentToScannerServer,
-        ScannerFeatureUserState::kNoActionsDetected,
-        ScannerFeatureUserState::kNewCalendarEventActionDetected,
-        ScannerFeatureUserState::kNewCalendarEventActionFinishedSuccessfully,
-        ScannerFeatureUserState::kNewCalendarEventActionFailed,
-        ScannerFeatureUserState::kNewContactActionDetected,
-        ScannerFeatureUserState::kNewContactActionFinishedSuccessfully,
-        ScannerFeatureUserState::kNewContactActionFailed,
-        ScannerFeatureUserState::kNewGoogleSheetActionDetected,
-        ScannerFeatureUserState::kNewGoogleSheetActionFinishedSuccessfully,
-        ScannerFeatureUserState::kNewGoogleSheetActionFailed,
-        ScannerFeatureUserState::kNewGoogleDocActionDetected,
-        ScannerFeatureUserState::kNewGoogleDocActionFinishedSuccessfully,
-        ScannerFeatureUserState::kNewGoogleDocActionFailed,
-        ScannerFeatureUserState::kCopyToClipboardActionDetected,
-        ScannerFeatureUserState::kCopyToClipboardActionFinishedSuccessfully,
-        ScannerFeatureUserState::kCopyToClipboardActionFailed,
+        kConsentDisclaimerAccepted,
+        kConsentDisclaimerRejected,
+        kSunfishScreenEnteredViaShortcut,
+        kSunfishScreenInitialScreenCaptureSentToScannerServer,
+        kScreenCaptureModeScannerButtonShown,
+        kScreenCaptureModeInitialScreenCaptureSentToScannerServer,
+        kNoActionsDetected,
+        kNewCalendarEventActionDetected,
+        kNewCalendarEventActionFinishedSuccessfully,
+        kNewCalendarEventActionPopulationFailed,
+        kNewContactActionDetected,
+        kNewContactActionFinishedSuccessfully,
+        kNewContactActionPopulationFailed,
+        kNewGoogleSheetActionDetected,
+        kNewGoogleSheetActionFinishedSuccessfully,
+        kNewGoogleSheetActionPopulationFailed,
+        kNewGoogleDocActionDetected,
+        kNewGoogleDocActionFinishedSuccessfully,
+        kNewGoogleDocActionPopulationFailed,
+        kCopyToClipboardActionDetected,
+        kCopyToClipboardActionFinishedSuccessfully,
+        kCopyToClipboardActionPopulationFailed,
+        kNewCalendarEventPopulatedActionExecutionFailed,
+        kNewContactPopulatedActionExecutionFailed,
+        kNewGoogleSheetPopulatedActionExecutionFailed,
+        kNewGoogleDocPopulatedActionExecutionFailed,
+        kCopyToClipboardPopulatedActionExecutionFailed,
     }));
 
 TEST_P(ScannerMetricsTest, Record) {

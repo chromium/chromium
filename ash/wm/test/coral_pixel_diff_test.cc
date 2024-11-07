@@ -16,9 +16,7 @@
 #include "ash/wm/coral/coral_test_util.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
-#include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "base/test/scoped_feature_list.h"
-#include "ui/views/controls/scroll_view.h"
 
 namespace ash {
 
@@ -69,15 +67,8 @@ TEST_F(CoralPixelDiffTest, CoralSelectorView) {
   UpdateDisplay("1600x1000");
 
   TabAppSelectionHost* menu = ShowAndGetSelectorMenu(GetEventGenerator());
-
-  // TODO(conniekxu|sammiequon): Compare the whole menu once the experimental
-  // features view is finished.
-  views::View* scroll_view =
-      views::AsViewClass<TabAppSelectionView>(menu->GetContentsView())
-          ->scroll_view_.get();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "coral_selector_view",
-      /*revision_number=*/2, scroll_view));
+      "coral_selector_view", /*revision_number=*/3, menu));
 }
 
 }  // namespace ash

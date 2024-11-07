@@ -21,16 +21,14 @@
           on-click="onClickAppManagement_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-      <template is="dom-if" if="[[showAppNotificationsRow_]]">
-        <cr-link-row id="appNotificationsRow" class="settings-box"
-            start-icon="[[rowIcons_.notifications]]"
-            label="$i18n{appNotificationsTitle}"
-            on-click="onClickAppNotifications_"
-            role-description="$i18n{subpageArrowRoleDescription}"
-            sub-label="[[getAppNotificationsRowSublabel_(
-                appsWithNotifications_.*, isDndEnabled_)]]">
-        </cr-link-row>
-      </template>
+      <cr-link-row id="appNotificationsRow" class="settings-box"
+          start-icon="[[rowIcons_.notifications]]"
+          label="$i18n{appNotificationsTitle}"
+          on-click="onClickAppNotifications_"
+          role-description="$i18n{subpageArrowRoleDescription}"
+          sub-label="[[getAppNotificationsRowSublabel_(
+              appsWithNotifications_.*, isDndEnabled_)]]">
+      </cr-link-row>
       <template is="dom-if" if="[[isAppParentalControlsFeatureAvailable_]]">
         <div id="appParentalControls"
             class="settings-box"

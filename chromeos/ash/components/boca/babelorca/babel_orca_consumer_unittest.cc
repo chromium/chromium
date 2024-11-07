@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_request_data_provider.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_token_manager.h"
+#include "chromeos/ash/components/boca/babelorca/fakes/fake_translation_dispatcher.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
@@ -43,6 +44,7 @@ const std::string kApplicationLocale = "en-US";
 const std::string kGaiaId = "gaia-id";
 const std::string kSessionId = "session_id";
 const std::string kEmail = "test@school.edu";
+const std::string kTranslationTargetLocale = "de-DE";
 
 const std::string kCaptionsTextSize = "20%";
 const std::string kCaptionsTextFont = "aerial";
@@ -69,7 +71,12 @@ void RegisterPrefs(TestingPrefServiceSimple* pref_service) {
   pref_service->registry()->RegisterIntegerPref(
       prefs::kAccessibilityCaptionsBackgroundOpacity,
       kCaptionsBackgroundOpacity);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kUserMicrophoneCaptionLanguageCode, kApplicationLocale);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kLiveTranslateTargetLanguageCode, kTranslationTargetLocale);
 }
+
 class BabelOrcaConsumerTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -88,6 +95,9 @@ class BabelOrcaConsumerTest : public testing::Test {
     auto caption_controller = std::make_unique<CaptionController>(
         /*caption_bubble_context=*/nullptr, &pref_service_, kApplicationLocale,
         std::move(caption_controller_delegate));
+    auto fake_translation_dispatcher =
+        std::make_unique<FakeBabelOrcaTranslationDispatcher>();
+    fake_translation_dispatcher_ = fake_translation_dispatcher->GetWeakPtr();
 
     consumer_ = std::make_unique<BabelOrcaConsumer>(
         url_loader_factory_.GetSafeWeakWrapper(),
@@ -102,7 +112,10 @@ class BabelOrcaConsumerTest : public testing::Test {
               on_message_cb_ = std::move(on_message_callback);
               streaming_client_waiter_.GetCallback().Run();
               return std::make_unique<FakeTachyonAuthedClient>();
-            }));
+            }),
+        std::make_unique<BabelOrcaCaptionTranslator>(
+            std::move(fake_translation_dispatcher)),
+        &pref_service_);
   }
 
   std::string url() {
@@ -139,6 +152,8 @@ class BabelOrcaConsumerTest : public testing::Test {
   std::unique_ptr<BabelOrcaConsumer> consumer_;
   base::test::RepeatingTestFuture<void> streaming_client_waiter_;
   raw_ptr<FakeCaptionControllerDelegate> caption_controller_delegate_;
+  base::WeakPtr<FakeBabelOrcaTranslationDispatcher>
+      fake_translation_dispatcher_;
 };
 
 TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledNotSignedIn) {
@@ -146,7 +161,8 @@ TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledNotSignedIn) {
       kSessionId, /*tachyon_token=*/std::nullopt, "group_id", kEmail);
   CreateConsumer();
   consumer_->OnSessionStarted();
-  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           false);
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
 
   // Signin to tachyon.
@@ -181,7 +197,8 @@ TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledNotSignedIn) {
   CreateConsumer();
   consumer_->OnSessionStarted();
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
-  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/false);
 
   // Signin to tachyon.
   base::OnceCallback<void(bool)> signin_cb =
@@ -214,7 +231,8 @@ TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledSignedIn) {
       kSessionId, "tachyon-token", "group_id", kEmail);
   CreateConsumer();
   consumer_->OnSessionStarted();
-  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/false);
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
 
   // Join Tachyon group.
@@ -242,7 +260,8 @@ TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledSignedIn) {
   CreateConsumer();
   consumer_->OnSessionStarted();
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
-  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/false);
 
   // Join Tachyon group.
   url_loader_factory_.AddResponse(url(), "");
@@ -261,6 +280,7 @@ TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledSignedIn) {
               testing::SizeIs(1));
   EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
             transcript);
+  EXPECT_EQ(fake_translation_dispatcher_->GetNumGetTranslationCalls(), 0);
 }
 
 TEST_F(BabelOrcaConsumerTest, OnSessionEnded) {
@@ -269,7 +289,8 @@ TEST_F(BabelOrcaConsumerTest, OnSessionEnded) {
   CreateConsumer();
   consumer_->OnSessionStarted();
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
-  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/false);
 
   // Join Tachyon group.
   url_loader_factory_.AddResponse(url(), "");
@@ -289,7 +310,8 @@ TEST_F(BabelOrcaConsumerTest, DisableSessionCaptions) {
   CreateConsumer();
   consumer_->OnSessionStarted();
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
-  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/false);
 
   // Join Tachyon group.
   url_loader_factory_.AddResponse(url(), "");
@@ -299,7 +321,8 @@ TEST_F(BabelOrcaConsumerTest, DisableSessionCaptions) {
   ASSERT_TRUE(streaming_client_waiter_.Wait());
   EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
 
-  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/false);
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/false,
+                                           /*translations_enabled=*/false);
   EXPECT_FALSE(caption_controller_delegate_->IsCaptionBubbleAlive());
 }
 
@@ -309,7 +332,8 @@ TEST_F(BabelOrcaConsumerTest, DisableLocalCaptions) {
   CreateConsumer();
   consumer_->OnSessionStarted();
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
-  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true);
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/false);
 
   // Join Tachyon group.
   url_loader_factory_.AddResponse(url(), "");
@@ -321,6 +345,35 @@ TEST_F(BabelOrcaConsumerTest, DisableLocalCaptions) {
 
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/false);
   EXPECT_FALSE(caption_controller_delegate_->IsCaptionBubbleAlive());
+}
+
+TEST_F(BabelOrcaConsumerTest, EnableTranslations) {
+  request_data_provider_ = std::make_unique<FakeTachyonRequestDataProvider>(
+      kSessionId, "tachyon-token", "group_id", kEmail);
+  CreateConsumer();
+  consumer_->OnSessionStarted();
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/true);
+  consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
+
+  // Join Tachyon group.
+  url_loader_factory_.AddResponse(url(), "");
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "oauth_token", base::Time::Max());
+  ASSERT_TRUE(streaming_client_waiter_.Wait());
+
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
+  ASSERT_FALSE(on_message_cb_.is_null());
+  mojom::BabelOrcaMessagePtr message = CreateMessage();
+  media::SpeechRecognitionResult transcript(
+      message->current_transcript->text, message->current_transcript->is_final);
+  on_message_cb_.Run(std::move(message));
+
+  ASSERT_THAT(caption_controller_delegate_->GetTranscriptions(),
+              testing::SizeIs(1));
+  EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
+            transcript);
+  EXPECT_EQ(fake_translation_dispatcher_->GetNumGetTranslationCalls(), 1);
 }
 
 }  // namespace

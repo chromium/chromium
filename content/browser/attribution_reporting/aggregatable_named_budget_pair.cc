@@ -15,9 +15,8 @@ namespace content {
 namespace {
 
 bool IsValid(int original_budget, int remaining_budget) {
-  return attribution_reporting::IsAggregatableValueInRange(original_budget) &&
-         attribution_reporting::IsRemainingAggregatableBudgetInRange(
-             remaining_budget) &&
+  return attribution_reporting::IsAggregatableBudgetInRange(original_budget) &&
+         attribution_reporting::IsAggregatableBudgetInRange(remaining_budget) &&
          remaining_budget <= original_budget;
 }
 

@@ -16,6 +16,7 @@
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 using ::testing::_;
 
@@ -53,6 +54,10 @@ class MediaTrayTest : public AshTestBase {
 
   TrayBubbleWrapper* GetBubbleWrapper() {
     return media_tray_->tray_bubble_wrapper_for_testing();
+  }
+
+  std::u16string GetAccessibleNameForBubble() {
+    return media_tray_->GetAccessibleNameForBubble();
   }
 
   StatusAreaWidget* status_area_widget() {
@@ -252,6 +257,17 @@ TEST_F(MediaTrayTest, CloseBubbleIsNoopWhenNoBubble) {
   // `OnBubbleClosing()` should not be called when there is no bubble to close.
   EXPECT_CALL(*provider(), OnBubbleClosing).Times(0);
   media_tray()->CloseBubble();
+}
+
+TEST_F(MediaTrayTest, BubbleViewAccessibleName) {
+  media_tray()->ShowBubble();
+  ASSERT_TRUE(media_tray()->GetBubbleView());
+
+  ui::AXNodeData node_data;
+  media_tray()->GetBubbleView()->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetAccessibleNameForBubble());
 }
 
 }  // namespace ash

@@ -256,10 +256,7 @@ class TestPrintRenderFrame
   }
 
   // mojom::PrintRenderFrameInterceptorForTesting
-  mojom::PrintRenderFrame* GetForwardingInterface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  mojom::PrintRenderFrame* GetForwardingInterface() override { NOTREACHED(); }
   void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
                          PrintFrameContentCallback callback) override {
     // Sends the printed result back.

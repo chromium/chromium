@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DocumentTypes">
+  <variant name="Pdf"/>
+  <variant name="Unspecified"/>
+  <variant name="Web"/>
+</variants>
+
 <variants name="FirstInteractionType">
   <variant name="LensMenu"/>
   <variant name="Permission"/>
@@ -96,6 +102,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.ByDocumentType.{DocumentType}.Invoked"
+    enum="Boolean" expires_after="2025-05-06">
+  <owner>stanfield@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is invoked, sliced by document
+    type.
+  </summary>
+  <token key="DocumentType" variants="DocumentTypes"/>
+</histogram>
+
 <histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.InvocationResultedInSearch"
     enum="Boolean" expires_after="2025-05-06">
@@ -148,6 +166,27 @@ chromium-metrics-reviews@google.com.
     logged when the user enters through the image context menu.
   </summary>
   <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByDocumentType.{DocumentType}.Shown"
+    enum="BooleanShown" expires_after="2025-05-06">
+  <owner>stanfield@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the contextual search box is shown, sliced by document
+    type.
+  </summary>
+  <token key="DocumentType" variants="DocumentTypes"/>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextualSearchBox.Shown" enum="BooleanShown"
+    expires_after="2025-05-06">
+  <owner>stanfield@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>Recorded once when the contextual search box is shown.</summary>
 </histogram>
 
 <histogram name="Lens.Overlay.Dismissed" enum="LensOverlayDismissalSource"

@@ -56,6 +56,7 @@ import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -177,9 +178,12 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     public void testStatusViewHoverActions() {
+        doReturn(PageClassification.NTP_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(false);
+
         // Tooltip and hover highlight should be set when StatusViewIcon is visible.
         mMediator.setStatusIconShown(true);
-        StatusViewBinder.applyStatusIconAndTooltipProperties(mModel, mStatusView);
         Assert.assertEquals(
                 R.string.accessibility_menu_info,
                 mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
@@ -189,7 +193,6 @@ public final class StatusMediatorUnitTest {
 
         // Tooltip and hover highlight should NOT be set when StatusViewIcon is gone.
         mMediator.setStatusIconShown(false);
-        StatusViewBinder.applyStatusIconAndTooltipProperties(mModel, mStatusView);
         Assert.assertEquals(
                 Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
         Assert.assertEquals(
@@ -457,6 +460,10 @@ public final class StatusMediatorUnitTest {
                 mContext.getColor(R.color.locationbar_status_preview_color_dark),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
 
+        Assert.assertEquals(
+                R.drawable.status_view_verbose_ripple,
+                mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
+
         // When only offline is enabled, it should be shown.
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, false);
         mMediator.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
@@ -554,6 +561,67 @@ public final class StatusMediatorUnitTest {
         // Simulate that we need to switch back to the default icon.
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
         Assert.assertFalse(mMediator.isStoreIconShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void testStatusIconAccessibility_hubSearch() {
+        // Test default behaviour first.
+        doReturn(PageClassification.NTP_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(false);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+        Assert.assertEquals(
+                R.string.accessibility_toolbar_view_site_info,
+                mModel.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
+
+        doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(false);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertEquals(
+                R.string.hub_search_status_view_back_button_icon_description,
+                mModel.get(StatusProperties.STATUS_ICON_DESCRIPTION_RES));
+        Assert.assertEquals(
+                Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
+        Assert.assertEquals(
+                Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
+        Assert.assertEquals(
+                R.string.accessibility_toolbar_exit_hub_search,
+                mModel.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetTooltipText() {
+        doReturn(PageClassification.NTP_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(false);
+
+        mModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+        mMediator.setTooltipText(Resources.ID_NULL);
+        // Assert that the below accessibility string is always set when #setTooltipText is called.
+        Assert.assertEquals(
+                R.string.accessibility_menu_info,
+                mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetHoverHighlight() {
+        doReturn(PageClassification.NTP_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(false);
+
+        mModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+        mMediator.setHoverHighlight(Resources.ID_NULL);
+        // Assert that the below non verbose drawable is always set when #setHoverHighlight is
+        // called.
+        Assert.assertEquals(
+                R.drawable.status_view_ripple,
+                mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
     }
 
     @Test

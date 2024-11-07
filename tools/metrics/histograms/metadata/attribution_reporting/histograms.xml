@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-11-30">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-03">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -499,7 +499,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-10">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-03">
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -585,17 +585,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.DestinationRateLimitResult"
-    enum="AttributionDestinationRateLimitResult" expires_after="2024-06-30">
-  <owner>csharrison@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    For every successfully parsed attribution source that is also allowed by
-    browser policy, records the result of the time-based destination limit,
-    which governs whether a source can proceed to the storage layer.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ExtraReportDelay2" units="ms"
     expires_after="2025-04-20">
   <owner>apaseltiner@chromium.org</owner>
@@ -650,7 +639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.HasAttributionHeaderInAttributionSrcResponse"
-    enum="Boolean" expires_after="2024-12-20">
+    enum="Boolean" expires_after="2025-05-03">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -781,7 +770,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.NavigationSourceScopesLimitOutcome"
     enum="ConversionNavigationSourceScopesLimitOutcome"
-    expires_after="2024-12-08">
+    expires_after="2025-05-03">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1511,7 +1500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.{Type}RegistrationRegistrarIssue"
-    enum="ConversionRegistrationRegistrarIssue" expires_after="2024-12-27">
+    enum="ConversionRegistrationRegistrarIssue" expires_after="2025-05-03">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

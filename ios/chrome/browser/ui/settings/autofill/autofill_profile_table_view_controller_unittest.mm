@@ -152,7 +152,7 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
 TEST_F(AutofillProfileTableViewControllerTest, TestPlusAddressSection) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled);
+      plus_addresses::features::kPlusAddressesEnabled);
 
   SignIn();
 

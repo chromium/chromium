@@ -516,14 +516,6 @@ import {WebviewEventManager} from './webview_event_manager.js';
     }
 
     /**
-     * Check whether the given |password| is in the scraped passwords.
-     * @return {boolean} True if the |password| is found.
-     */
-    verifyConfirmedPassword(password) {
-      return this.getConsolidatedScrapedPasswords_().indexOf(password) >= 0;
-    }
-
-    /**
      * Check that last navigation was aborted intentionally. It will be
      * continued later, so the abort event can be ignored.
      * @return {boolean}

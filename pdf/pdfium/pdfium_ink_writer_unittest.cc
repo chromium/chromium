@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/cfi_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "pdf/pdf_ink_brush.h"
@@ -82,7 +83,13 @@ std::unique_ptr<PdfInkBrush> CreateTestBrush() {
 
 using PDFiumInkWriterTest = PDFiumTestBase;
 
-TEST_P(PDFiumInkWriterTest, BasicWriteAndRead) {
+// TODO(crbug.com/377704081): Enable test for CFI.
+#if BUILDFLAG(CFI_ICALL_CHECK)
+#define MAYBE_BasicWriteAndRead DISABLED_BasicWriteAndRead
+#else
+#define MAYBE_BasicWriteAndRead BasicWriteAndRead
+#endif
+TEST_P(PDFiumInkWriterTest, MAYBE_BasicWriteAndRead) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));

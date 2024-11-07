@@ -112,9 +112,7 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
       std::move(close_pip_cb).Run();
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION() << " AutoPiP unknown effective content setting";
-      std::move(close_pip_cb).Run();
-      return nullptr;
+      NOTREACHED() << " AutoPiP unknown effective content setting";
   }
 }
 

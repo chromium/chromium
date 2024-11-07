@@ -68,6 +68,9 @@ class ASH_EXPORT SummaryOutlinesElucidationSection
   raw_ptr<views::AnimatedImageView>
       summary_or_elucidation_loading_animated_image_ = nullptr;
   raw_ptr<views::AnimatedImageView> outlines_loading_animated_image_ = nullptr;
+  // Label that indicates whether the result is a summary or an elucidation.
+  raw_ptr<views::Label> indicator_label_ = nullptr;
+  // Label that hosts the summary or elucidation result.
   raw_ptr<views::Label> summary_or_elucidation_label_ = nullptr;
   raw_ptr<views::View> outlines_container_ = nullptr;
 

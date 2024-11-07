@@ -83,9 +83,7 @@ void OOMKillsMonitor::Initialize(PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (monitoring_started_) {
-    NOTREACHED_IN_MIGRATION()
-        << "OOM kiils monitor should only be initialized once";
-    return;
+    NOTREACHED() << "OOM kiils monitor should only be initialized once";
   }
 
   monitoring_started_ = true;

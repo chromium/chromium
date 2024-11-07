@@ -89,6 +89,22 @@ export class FirmwareConfirmationDialogElement extends
         'confirmationTitle', mojoString16ToString(this.update.deviceName));
   }
 
+  protected computeDisclaimer(): string {
+    if (this.update.needsReboot) {
+      return this.i18n('confirmationDisclaimerForUEFI');
+    } else {
+      return this.i18n('confirmationDisclaimer');
+    }
+  }
+
+  protected computeDialog(): string {
+    if (this.update.needsReboot) {
+      return this.i18n('updatingInfoForUEFI');
+    } else {
+      return this.i18n('updatingInfo');
+    }
+  }
+
   /** Event callback for 'open-confirmation-dialog'. */
   private onOpenConfirmationDialog(
       event: CustomEvent<OpenConfirmationDialogEventDetail>): void {

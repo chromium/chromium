@@ -91,6 +91,7 @@ BinaryUploadService::Request::Data::operator=(
   size = other.size;
   mime_type = other.mime_type;
   page = other.page.Duplicate();
+  is_obfuscated = other.is_obfuscated;
   return *this;
 }
 

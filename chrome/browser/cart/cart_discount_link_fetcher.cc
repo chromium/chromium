@@ -40,7 +40,7 @@ static std::string GeneratePostData(
 
   // RuleDiscount
   if (!cart_discount_proto.rule_discount_info_size()) {
-    NOTREACHED_IN_MIGRATION() << "discount_info should not be empty";
+    NOTREACHED() << "discount_info should not be empty";
   }
   base::Value::List rule_discounts_list;
   for (int i = 0; i < cart_discount_proto.rule_discount_info_size(); i++) {
@@ -144,9 +144,7 @@ static void OnLinkFetched(
       base::JSONReader::Read(responses->response);
 
   if (!value || !value->is_dict() || !value->GetDict().FindString("url")) {
-    NOTREACHED_IN_MIGRATION() << "empty response or wrong format";
-    std::move(callback).Run(GURL());
-    return;
+    NOTREACHED() << "empty response or wrong format";
   }
   std::move(callback).Run(GURL(*value->GetDict().FindString("url")));
 }

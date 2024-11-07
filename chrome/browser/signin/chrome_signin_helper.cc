@@ -410,10 +410,8 @@ void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
   }
 
   if (is_off_the_record) {
-    NOTREACHED_IN_MIGRATION()
-        << "Gaia should not send the X-Chrome-Manage-Accounts header "
-        << "in incognito.";
-    return;
+    NOTREACHED() << "Gaia should not send the X-Chrome-Manage-Accounts header "
+                    "in incognito.";
   }
 
   ManageAccountsParams params = BuildManageAccountsParams(*header_value);

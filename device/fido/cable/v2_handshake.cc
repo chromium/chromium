@@ -437,8 +437,7 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
 
   qr_contents.emplace(3, static_cast<int64_t>(base::Time::Now().ToTimeT()));
 
-  qr_contents.emplace(
-      4, base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking));
+  qr_contents.emplace(4, ShouldOfferLinking(request_type));
 
   qr_contents.emplace(5, RequestTypeToString(request_type));
 
@@ -675,6 +674,19 @@ std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
          &num_padding_bytes16, sizeof(num_padding_bytes16));
 
   return *cbor_bytes;
+}
+
+bool ShouldOfferLinking(RequestType request_type) {
+  return absl::visit(
+      base::Overloaded{[](const FidoRequestType&) {
+                         return base::FeatureList::IsEnabled(
+                             device::kWebAuthnHybridLinking);
+                       },
+                       [](const CredentialRequestType&) {
+                         return base::FeatureList::IsEnabled(
+                             device::kDigitalCredentialsHybridLinking);
+                       }},
+      request_type);
 }
 
 namespace {

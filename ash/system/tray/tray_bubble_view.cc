@@ -397,6 +397,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   Shell::Get()->display_manager()->AddDisplayObserver(this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
+  UpdateAccessibleName();
   UpdateAccessibleIgnoredState();
 }
 
@@ -415,6 +416,7 @@ TrayBubbleView::~TrayBubbleView() {
 void TrayBubbleView::InitializeAndShowBubble() {
   GetWidget()->Show();
   UpdateBubble();
+  UpdateAccessibleName();
   UpdateAccessibleIgnoredState();
 
   // Manually sets the shadow position since `CreateShadowOnTextureLayer` only
@@ -477,6 +479,7 @@ void TrayBubbleView::ResetDelegate() {
 
   delegate_ = nullptr;
   UpdateAccessibleIgnoredState();
+  GetViewAccessibility().SetName(std::u16string());
 }
 
 void TrayBubbleView::ChangeAnchorView(views::View* anchor_view) {
@@ -632,12 +635,6 @@ void TrayBubbleView::OnMouseExited(const ui::MouseEvent& event) {
   }
 }
 
-void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (delegate_ && CanActivate()) {
-    node_data->SetNameChecked(delegate_->GetAccessibleNameForBubble());
-  }
-}
-
 void TrayBubbleView::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
   if (params_.transparent) {
@@ -745,6 +742,16 @@ void TrayBubbleView::CloseBubbleView() {
   }
 
   delegate_->HideBubble(this);
+}
+
+void TrayBubbleView::UpdateAccessibleName() {
+  if (delegate_->GetAccessibleNameForBubble().empty()) {
+    GetViewAccessibility().SetName(
+        delegate_->GetAccessibleNameForBubble(),
+        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(delegate_->GetAccessibleNameForBubble());
+  }
 }
 
 void TrayBubbleView::ChildPreferredSizeChanged(View* child) {

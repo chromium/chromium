@@ -45,6 +45,13 @@ enum CustomContextMenuItemType {
   kSubMenu
 };
 
+// Container for information about a context menu item shortcut
+struct Accelerator {
+  uint16 key_code;
+  int32 modifiers;
+};
+
+
 // Container for information about the form renderer id from where the context
 // menu was triggered.
 // autofill::FormRendererId
@@ -65,6 +72,7 @@ struct FieldRendererId {
 // popup_menu.mojom.
 struct CustomContextMenuItem {
   mojo_base.mojom.String16 label;
+  Accelerator? accelerator;
   mojo_base.mojom.String16 icon;
   mojo_base.mojom.String16 tool_tip;
   CustomContextMenuItemType type;

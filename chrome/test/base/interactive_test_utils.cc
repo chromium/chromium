@@ -225,8 +225,7 @@ display::Display GetSecondaryDisplay(display::Screen* screen) {
       return iter;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return display::Display();
+  NOTREACHED();
 }
 
 std::pair<display::Display, display::Display> GetDisplays(

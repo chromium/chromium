@@ -114,10 +114,10 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
     return;
   }
 
-  bool abort = !extension ||
-               // The extension might be force-disabled by policy.
-               system->management_policy()->MustRemainDisabled(
-                   extension, nullptr, nullptr);
+  bool abort =
+      !extension ||
+      // The extension might be force-disabled by policy.
+      system->management_policy()->MustRemainDisabled(extension, nullptr);
   if (abort) {
     delegate_->ExtensionEnableFlowAborted(
         /*user_initiated=*/false);  // |delegate_| may delete us.

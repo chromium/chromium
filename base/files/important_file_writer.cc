@@ -18,7 +18,7 @@
 #include <string_view>
 #include <utility>
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/critical_closure.h"
 #include "base/debug/alias.h"
 #include "base/files/file.h"
@@ -47,14 +47,67 @@ namespace base {
 namespace {
 
 constexpr auto kDefaultCommitInterval = Seconds(10);
+
 #if BUILDFLAG(IS_WIN)
 // This is how many times we will retry ReplaceFile on Windows.
 constexpr int kReplaceRetries = 5;
-// This is the result code recorded if ReplaceFile still fails.
-// It should stay constant even if we change kReplaceRetries.
+
+// This is the result code recorded to ImportantFile.FileReplaceRetryCount if
+// ReplaceFile still fails. It should stay constant even if we change
+// kReplaceRetries.
 constexpr int kReplaceRetryFailure = 10;
 static_assert(kReplaceRetryFailure > kReplaceRetries, "No overlap allowed");
+
 constexpr auto kReplacePauseInterval = Milliseconds(100);
+
+// Alternate representation of ReplaceFile results, recorded to
+// ImportantFile.FileReplaceResult.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ReplaceResult {
+  // ReplaceFile succeeded on the first try.
+  kSuccessWithoutRetry = 0,
+  // ReplaceFile succeeded after one or more retries.
+  kSuccessWithRetry = 1,
+  // ReplaceFile never succeeded, even after retries.
+  kFailure = 2,
+  kMaxValue = kFailure
+};
+
+void UmaHistogramRetryCountWithSuffix(std::string_view histogram_suffix,
+                                      int retry_count,
+                                      bool success) {
+  constexpr char kCountHistogramName[] = "ImportantFile.FileReplaceRetryCount2";
+  constexpr char kResultHistogramName[] = "ImportantFile.FileReplaceResult";
+  CHECK_LE(retry_count, kReplaceRetries);
+  auto result = success
+                    ? (retry_count > 0 ? ReplaceResult::kSuccessWithRetry
+                                       : ReplaceResult::kSuccessWithoutRetry)
+                    : ReplaceResult::kFailure;
+
+  // Log with the given suffix and the aggregated ".All" suffix.
+  if (histogram_suffix.empty()) {
+    UmaHistogramEnumeration(kResultHistogramName, result);
+  } else {
+    UmaHistogramEnumeration(
+        base::JoinString({kResultHistogramName, histogram_suffix}, "."),
+        result);
+  }
+  UmaHistogramEnumeration(base::JoinString({kResultHistogramName, "All"}, "."),
+                          result);
+  if (retry_count > 0) {
+    if (histogram_suffix.empty()) {
+      UmaHistogramExactLinear(kCountHistogramName, retry_count,
+                              kReplaceRetries + 1);
+    } else {
+      UmaHistogramExactLinear(
+          base::JoinString({kCountHistogramName, histogram_suffix}, "."),
+          retry_count, kReplaceRetries + 1);
+    }
+    UmaHistogramExactLinear(base::JoinString({kCountHistogramName, "All"}, "."),
+                            retry_count, kReplaceRetries + 1);
+  }
+}
 #endif
 
 void UmaHistogramTimesWithSuffix(const char* histogram_name,
@@ -255,7 +308,11 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
   }
 
   // Log how many times we had to retry the ReplaceFile operation before it
-  // succeeded. If we never succeeded then return a special value.
+  // succeeded.
+  UmaHistogramRetryCountWithSuffix(histogram_suffix, retry_count, result);
+
+  // Log to an unsuffixed histogram as well. If we never succeeded then return a
+  // special value.
   if (!result) {
     retry_count = kReplaceRetryFailure;
   }

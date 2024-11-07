@@ -3373,7 +3373,7 @@ CSSValue* ComputedStyleUtils::ValueForSVGResource(
 namespace {
 
 void PopulateNonRepeaterGapColorData(CSSValueList* list,
-                                     const GapColorData& gap_data,
+                                     const GapData& gap_data,
                                      const ComputedStyle& style,
                                      CSSValuePhase value_phase) {
   const CSSValue* color = ComputedStyleUtils::CurrentColorOrValidColor(
@@ -3382,7 +3382,7 @@ void PopulateNonRepeaterGapColorData(CSSValueList* list,
 }
 
 void PopulateRepeaterGapColorData(CSSValueList* list,
-                                  const GapColorData& gap_data,
+                                  const GapData& gap_data,
                                   const ComputedStyle& style,
                                   CSSValuePhase value_phase) {
   CSSPrimitiveValue* repetitions = nullptr;
@@ -3410,7 +3410,7 @@ void PopulateRepeaterGapColorData(CSSValueList* list,
 }  // namespace
 
 const CSSValue* ComputedStyleUtils::ValueForGapColorDataList(
-    const GapColorDataList& gap_color_list,
+    const GapDataList& gap_color_list,
     const ComputedStyle& style,
     CSSValuePhase value_phase) {
   // The CSS Gap Decorations API [1] can take more than one color. When

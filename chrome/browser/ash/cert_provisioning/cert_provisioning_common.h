@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
@@ -300,6 +301,9 @@ std::string MakeInvalidationListenerType(
 // Returns true if workers should only progress when they receive an
 // invalidation (not on timeout).
 bool ShouldOnlyUseInvalidations();
+
+// Returns GCP number for cert provisioning invalidations.
+std::string_view GetCertProvisioningInvalidationProjectNumber();
 
 }  // namespace cert_provisioning
 }  // namespace ash

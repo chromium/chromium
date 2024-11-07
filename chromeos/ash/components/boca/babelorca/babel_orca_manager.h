@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_registrar.h"
@@ -17,6 +18,8 @@
 #include "chromeos/ash/components/boca/babelorca/token_manager_impl.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "components/live_caption/translation_dispatcher.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash::babelorca {
 class BabelOrcaController;
@@ -54,7 +57,6 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
           babelorca::TachyonRequestDataProvider*)>;
 
   static std::unique_ptr<BabelOrcaManager> CreateAsProducer(
-      std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       ::captions::LiveCaptionController* live_caption_controller,
@@ -62,11 +64,12 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer);
 
   static std::unique_ptr<BabelOrcaManager> CreateAsConsumer(
-      std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<babelorca::CaptionController> caption_controller,
-      const std::string& gaia_id);
+      const std::string& gaia_id,
+      std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
+      PrefService* pref_service);
 
   BabelOrcaManager(
       signin::IdentityManager* identity_manager,

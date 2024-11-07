@@ -66,6 +66,11 @@ class CONTENT_EXPORT TtsControllerImpl
       UpdateLanguageStatusDelegate* delegate) override;
   void RemoveUpdateLanguageStatusDelegate(
       UpdateLanguageStatusDelegate* delegate) override;
+  void UninstallLanguageRequest(content::BrowserContext* browser_context,
+                                const std::string& lang,
+                                const std::string& client_id,
+                                int source,
+                                bool uninstall_immediately) override;
   void InstallLanguageRequest(BrowserContext* browser_context,
                               const std::string& lang,
                               const std::string& client_id,

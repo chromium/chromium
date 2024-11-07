@@ -10,6 +10,7 @@
 namespace metrics::dwa::prefs {
 
 // Preference which stores serialized DWA logs to be uploaded.
+COMPONENT_EXPORT(DWA)
 extern const char kUnsentLogStoreName[];
 
 // Client ID which changes daily. Note that this is a local state pref which is

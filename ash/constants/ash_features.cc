@@ -227,6 +227,23 @@ BASE_FEATURE(kBoca, "Boca", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables Boca consumer user experience on ChromeOS.
 BASE_FEATURE(kBocaConsumer, "BocaConsumer", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Boca custom polling interval on ChromeOS.
+BASE_FEATURE(kBocaCustomPolling,
+             "kBocaCustomPolling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Time interval to do indefinite session polling.
+constexpr base::FeatureParam<base::TimeDelta>
+    kBocaIndefinitePeriodicJobIntervalInSeconds{
+        &kBocaCustomPolling, "IndefinitePollingIntervalInSeconds",
+        base::Seconds(60)};
+
+// Time interval to do session polling within session
+constexpr base::FeatureParam<base::TimeDelta>
+    kBocaInSessionPeriodicJobIntervalInSeconds{
+        &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
+        base::Seconds(60)};
+
 // Enables or disables Boca extension consumer experience on ChromeOS.
 BASE_FEATURE(kBocaExtensionConsumer,
              "BocaExtensionConsumer",
@@ -618,11 +635,6 @@ BASE_FEATURE(kDriveFsChromeNetworking,
              "DriveFsChromeNetworking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables DriveFS' bulk pinning functionality.
-BASE_FEATURE(kDriveFsBulkPinning,
-             "DriveFsBulkPinning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Carries DriveFS' bulk-pinning experimental parameters.
 BASE_FEATURE(kDriveFsBulkPinningExperiment,
              "DriveFsBulkPinningExperiment",
@@ -681,11 +693,6 @@ BASE_FEATURE(kEcheSWAProcessAndroidAccessibilityTree,
              "EcheSWAProcessAndroidAccessibilityTree",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables metrics revamp for Eche.
-BASE_FEATURE(kEcheMetricsRevamp,
-             "EcheMetricsRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.
@@ -728,11 +735,6 @@ BASE_FEATURE(kEnableLazyLoginWebUILoading,
 BASE_FEATURE(kEnableOAuthIpp,
              "EnableOAuthIpp",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables Kiosk UI in Login screen.
-BASE_FEATURE(kEnableKioskLoginScreen,
-             "EnableKioskLoginScreen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
@@ -1818,6 +1820,11 @@ BASE_FEATURE(kLobsterDogfood,
              "LobsterDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables lobster right click menu entry point.
+BASE_FEATURE(kLobsterRightClickMenu,
+             "LobsterRightClickMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables / Disables the lobster feature from the feature management module.
 BASE_FEATURE(kFeatureManagementLobster,
              "FeatureManagementLobster",
@@ -2312,11 +2319,6 @@ BASE_FEATURE(kOrcaResizingSupport,
 // Enables or disables Orca on Demo mode.
 BASE_FEATURE(kOrcaSupportDemoMode,
              "OrcaSupportDemoMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, a new App Notifications subpage will appear in CrOS Apps section.
-BASE_FEATURE(kOsSettingsAppNotificationsPage,
-             "OsSettingsAppNotificationsPage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, OsSyncConsent Revamp will be shown.
@@ -3462,10 +3464,6 @@ bool IsApnRevampAndPoliciesEnabled() {
   return IsApnRevampEnabled() && chromeos::features::IsApnPoliciesEnabled();
 }
 
-bool IsAppNotificationsPageEnabled() {
-  return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
-}
-
 bool IsAutoNightLightEnabled() {
   return base::FeatureList::IsEnabled(kAutoNightLight);
 }
@@ -3514,6 +3512,10 @@ bool IsBocaConsumerEnabled() {
 
 bool IsBocaExtensionConsumerEnabled() {
   return base::FeatureList::IsEnabled(kBocaExtensionConsumer);
+}
+
+bool IsBocaCustomPollingEnabled() {
+  return base::FeatureList::IsEnabled(kBocaCustomPolling);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
@@ -3674,10 +3676,6 @@ bool IsEcheSWADebugModeEnabled() {
 
 bool IsEcheSWAMeasureLatencyEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWAMeasureLatency);
-}
-
-bool IsEcheMetricsRevampEnabled() {
-  return base::FeatureList::IsEnabled(kEcheMetricsRevamp);
 }
 
 bool IsEOLIncentiveEnabled() {
@@ -4300,10 +4298,6 @@ bool AreOngoingProcessesEnabled() {
 
 bool IsOobeGaiaInfoScreenEnabled() {
   return base::FeatureList::IsEnabled(kOobeGaiaInfoScreen);
-}
-
-bool IsKioskLoginScreenEnabled() {
-  return base::FeatureList::IsEnabled(kEnableKioskLoginScreen);
 }
 
 bool IsOobeJellyEnabled() {
@@ -4976,13 +4970,6 @@ bool UseMixedFileLauncherContinueSection() {
           base::GetFieldTrialParamByFeatureAsBool(
               features::kLauncherContinueSectionWithRecentsRollout,
               "mix_local_and_drive", false));
-}
-
-bool CanStartSunfishSession() {
-  // Returns true if sunfish session can be started, which is true if either the
-  // the Sunfish or Scanner feature flag is enabled. Note Scanner operations
-  // will only be available if the secret key is matched.
-  return IsSunfishFeatureEnabled() || IsScannerEnabled();
 }
 
 }  // namespace ash::features

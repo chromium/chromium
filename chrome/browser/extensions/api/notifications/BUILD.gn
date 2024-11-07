@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+source_set("notifications") {
+  sources = [
+    "extension_notification_display_helper.cc",
+    "extension_notification_display_helper.h",
+    "extension_notification_display_helper_factory.cc",
+    "extension_notification_display_helper_factory.h",
+    "extension_notification_handler.cc",
+    "extension_notification_handler.h",
+    "notifications_api.cc",
+    "notifications_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
+    "//components/keyed_service/core",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/message_center/public/cpp",
+  ]
+
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/common/extensions",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+    "//extensions/common:common_constants",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry:geometry_skia",
+    "//url",
+  ]
+}

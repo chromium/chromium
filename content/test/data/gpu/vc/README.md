@@ -57,12 +57,15 @@ videos_mxn.html?codec=vp8
 webgpu_videos_mxn.html?codec=vp8
 ```
 
-For webgl_videos_mxn.html, webgl2_videos_mxn.html and webgpu_videos_mxn.html:
 To remove the UI icons. Use `ui=none`.
+```
+videos_mxn.html?ui=none
+```
 ```
 webgpu_videos_mxn.html?ui=none
 ```
 
+For webgl_videos_mxn.html, webgl2_videos_mxn.html and webgpu_videos_mxn.html:
 To remove the FPS panels. Use `fps=none`.
 ```
 webgpu_videos_mxn.html?fps=none

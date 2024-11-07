@@ -57,6 +57,7 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -873,6 +874,14 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // When document is fetched from service worker, we keep track of the body
   // size for reporting in Navigation Timing encodedBodySize/decodedBodySize.
   int64_t total_body_size_from_service_worker_ = 0;
+
+  // Map of permission statuses, snapshotting and propagated from browser before
+  // committing a navigation.
+  // Note: the permission statues will be only used as initial states of
+  // `CachedPermissionStatus`
+  std::optional<
+      HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>>
+      initial_permission_statuses_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

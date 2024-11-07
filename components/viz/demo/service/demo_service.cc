@@ -65,10 +65,11 @@ DemoService::DemoService(
     mojo::PendingRemote<viz::mojom::GpuHost> gpu_host_proxy;
     std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
 
-    gpu_service_->InitializeWithHost(std::move(gpu_host_proxy),
-                                     gpu::GpuProcessShmCount(),
-                                     gl::init::CreateOffscreenGLSurface(
-                                         gl::GetDefaultDisplay(), gfx::Size()));
+    gpu_service_->InitializeWithHost(
+        std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
+        gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                           gfx::Size()),
+        viz::mojom::GpuServiceCreationParams::New());
   }
 
   runner_->CreateFrameSinkManager(std::move(params), gpu_service_.get());

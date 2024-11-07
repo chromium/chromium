@@ -48,6 +48,7 @@
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/fast_app_terminate_buildflags.h"
 #import "ios/chrome/app/features.h"
@@ -98,6 +99,8 @@
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/profile/model/constants.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
@@ -171,10 +174,6 @@ BASE_FEATURE(kFastApplicationWillTerminate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
-// Constants for deferring resetting the startup attempt count (to give the app
-// a little while to make sure it says alive).
-NSString* const kStartupAttemptReset = @"StartupAttemptReset";
-
 // Constants for deferring memory debugging tools startup.
 NSString* const kMemoryDebuggingToolsStartup = @"MemoryDebuggingToolsStartup";
 
@@ -230,6 +229,10 @@ NSString* const kFaviconsCleanup = @"FaviconsCleanup";
 
 // Constant for deffered memory experimentation.
 NSString* const kMemoryExperimentation = @"BeginMemoryExperimentation";
+
+// Constants for deferred initilization of reading list download service.
+NSString* const kInitializeReadingListDownloadService =
+    @"InitializeReadingListDownloadService";
 
 // The minimum amount of time (2 weeks) between calculating and
 // logging metrics about the amount of device storage space used by Chrome.
@@ -953,6 +956,10 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   _profileControllers.clear();
 
+  // Cancel any pending deferred startup tasks (the application is shutting
+  // down, so there is no point in running them).
+  [_appState.deferredRunner cancelAllBlocks];
+
 #if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
   // _chromeMain.reset() is a blocking call that regularly causes
   // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
@@ -1034,7 +1041,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
 - (void)sendQueuedFeedback {
   if (ios::provider::IsUserFeedbackSupported()) {
-    [[DeferredInitializationRunner sharedInstance]
+    [_appState.deferredRunner
         enqueueBlockNamed:kSendQueuedFeedback
                     block:^{
                       ios::provider::UploadAllPendingUserFeedback();
@@ -1059,11 +1066,10 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
 - (void)schedulePrefObserverInitialization {
   __weak MainController* weakSelf = self;
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kPrefObserverInit
-                  block:^{
-                    [weakSelf initializePrefObservers];
-                  }];
+  [_appState.deferredRunner enqueueBlockNamed:kStartupInitPrefObservers
+                                        block:^{
+                                          [weakSelf initializePrefObservers];
+                                        }];
 }
 
 - (void)initializePrefObservers {
@@ -1104,50 +1110,58 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)scheduleAppDistributionPings {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kSendInstallPingIfNecessary
-                  block:^{
-                    [self pingDistributionServices];
-                  }];
+  __weak MainController* weakSelf = self;
+  [_appState.deferredRunner enqueueBlockNamed:kSendInstallPingIfNecessary
+                                        block:^{
+                                          [weakSelf pingDistributionServices];
+                                        }];
 }
 
 - (void)scheduleStartupAttemptReset {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kStartupAttemptReset
+  [_appState.deferredRunner
+      enqueueBlockNamed:kStartupResetAttemptCount
                   block:^{
                     crash_util::ResetFailedStartupAttemptCount();
                   }];
 }
 
 - (void)scheduleCrashReportUpload {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kUploadCrashReports
-                  block:^{
-                    crash_helper::UploadCrashReports();
-                  }];
+  [_appState.deferredRunner enqueueBlockNamed:kUploadCrashReports
+                                        block:^{
+                                          crash_helper::UploadCrashReports();
+                                        }];
 }
 
 - (void)scheduleDiscardedSessionsCleanup {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kCleanupDiscardedSessions
-                  block:^{
-                    [self cleanupDiscardedSessions];
-                  }];
+  __weak MainController* weakSelf = self;
+  [_appState.deferredRunner enqueueBlockNamed:kCleanupDiscardedSessions
+                                        block:^{
+                                          [weakSelf cleanupDiscardedSessions];
+                                        }];
 }
 
 - (void)scheduleSnapshotsCleanup {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kCleanupSnapshots
-                  block:^{
-                    [self cleanupSnapshots];
-                  }];
+  __weak MainController* weakSelf = self;
+  [_appState.deferredRunner enqueueBlockNamed:kCleanupSnapshots
+                                        block:^{
+                                          [weakSelf cleanupSnapshots];
+                                        }];
 }
 
 - (void)scheduleSessionStateCacheCleanup {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kPurgeWebSessionStates
+  __weak MainController* weakSelf = self;
+  [_appState.deferredRunner enqueueBlockNamed:kPurgeWebSessionStates
+                                        block:^{
+                                          [weakSelf cleanupSessionStateCache];
+                                        }];
+}
+
+- (void)scheduleReadingListDownloadServiceInitialization {
+  __weak MainController* weakSelf = self;
+  [_appState.deferredRunner
+      enqueueBlockNamed:kInitializeReadingListDownloadService
                   block:^{
-                    [self cleanupSessionStateCache];
+                    [weakSelf initializeReadListDownloadService];
                   }];
 }
 
@@ -1180,7 +1194,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 - (void)scheduleMemoryDebuggingTools {
   if (experimental_flags::IsMemoryDebuggingEnabled()) {
     __weak MainController* weakSelf = self;
-    [[DeferredInitializationRunner sharedInstance]
+    [_appState.deferredRunner
         enqueueBlockNamed:kMemoryDebuggingToolsStartup
                     block:^{
                       [weakSelf initializedMemoryDebuggingTools];
@@ -1197,10 +1211,11 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)initializeMailtoHandling {
-  [[DeferredInitializationRunner sharedInstance]
+  __weak MainController* weakSelf = self;
+  [_appState.deferredRunner
       enqueueBlockNamed:kMailtoHandlingInitialization
                   block:^{
-                    [self createMailtoHandlerServices];
+                    [weakSelf createMailtoHandlerServices];
                   }];
 }
 
@@ -1215,7 +1230,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 // execution. Externals can be extensions or 1st party apps.
 - (void)scheduleSaveFieldTrialValuesForExternals {
   __weak __typeof(self) weakSelf = self;
-  [[DeferredInitializationRunner sharedInstance]
+  [_appState.deferredRunner
       enqueueBlockNamed:kSaveFieldTrialValues
                   block:^{
                     [weakSelf saveFieldTrialValuesForExtensions];
@@ -1266,10 +1281,11 @@ SEQUENCE_CHECKER(_sequenceChecker);
 // Schedules a call to `logIfEnterpriseManagedDevice` for deferred
 // execution.
 - (void)scheduleEnterpriseManagedDeviceCheck {
-  [[DeferredInitializationRunner sharedInstance]
+  __weak MainController* weakSelf = self;
+  [_appState.deferredRunner
       enqueueBlockNamed:kEnterpriseManagedDeviceCheck
                   block:^{
-                    [self logIfEnterpriseManagedDevice];
+                    [weakSelf logIfEnterpriseManagedDevice];
                   }];
 }
 
@@ -1292,8 +1308,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   // Deferred tasks.
   [self scheduleMemoryDebuggingTools];
-  [StartupTasks
-      scheduleDeferredProfileInitialization:self.appState.mainProfile.profile];
+  [self scheduleReadingListDownloadServiceInitialization];
   [self sendQueuedFeedback];
   [self scheduleSpotlightResync];
   [self scheduleDeleteTempDownloadsDirectory];
@@ -1330,23 +1345,21 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)scheduleDeleteTempDownloadsDirectory {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kDeleteDownloads
-                  block:^{
-                    DeleteTempDownloadsDirectory();
-                  }];
+  [_appState.deferredRunner enqueueBlockNamed:kDeleteDownloads
+                                        block:^{
+                                          DeleteTempDownloadsDirectory();
+                                        }];
 }
 
 - (void)scheduleDeleteTempChooseFileDirectory {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kDeleteChooseFile
-                  block:^{
-                    DeleteTempChooseFileDirectory();
-                  }];
+  [_appState.deferredRunner enqueueBlockNamed:kDeleteChooseFile
+                                        block:^{
+                                          DeleteTempChooseFileDirectory();
+                                        }];
 }
 
 - (void)scheduleDeleteTempPasswordsDirectory {
-  [[DeferredInitializationRunner sharedInstance]
+  [_appState.deferredRunner
       enqueueBlockNamed:kDeleteTempPasswords
                   block:^{
                     password_manager::DeletePasswordsDirectory();
@@ -1354,7 +1367,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)scheduleMemoryExperimentation {
-  [[DeferredInitializationRunner sharedInstance]
+  [_appState.deferredRunner
       enqueueBlockNamed:kMemoryExperimentation
                   block:^{
                     BeginMemoryExperimentationAfterDelay();
@@ -1363,20 +1376,18 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
 - (void)scheduleLogSiriShortcuts {
   __weak StartupTasks* startupTasks = _startupTasks;
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kLogSiriShortcuts
-                  block:^{
-                    [startupTasks logSiriShortcuts];
-                  }];
+  [_appState.deferredRunner enqueueBlockNamed:kLogSiriShortcuts
+                                        block:^{
+                                          [startupTasks logSiriShortcuts];
+                                        }];
 }
 
 - (void)scheduleSpotlightResync {
   __weak MainController* weakSelf = self;
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kStartSpotlightBookmarksIndexing
-                  block:^{
-                    [weakSelf resyncIndex];
-                  }];
+  [_appState.deferredRunner enqueueBlockNamed:kStartSpotlightBookmarksIndexing
+                                        block:^{
+                                          [weakSelf resyncIndex];
+                                        }];
 }
 
 - (void)resyncIndex {
@@ -1388,11 +1399,10 @@ SEQUENCE_CHECKER(_sequenceChecker);
 - (void)scheduleFaviconsCleanup {
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   __weak MainController* weakSelf = self;
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kFaviconsCleanup
-                  block:^{
-                    [weakSelf performFaviconsCleanup];
-                  }];
+  [_appState.deferredRunner enqueueBlockNamed:kFaviconsCleanup
+                                        block:^{
+                                          [weakSelf performFaviconsCleanup];
+                                        }];
 #endif
 }
 
@@ -1551,6 +1561,13 @@ SEQUENCE_CHECKER(_sequenceChecker);
   }
 
   std::move(concurrent).Done(std::move(closure));
+}
+
+- (void)initializeReadListDownloadService {
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    ReadingListDownloadServiceFactory::GetForProfile(profile)->Initialize();
+  }
 }
 
 - (void)pingDistributionServices {

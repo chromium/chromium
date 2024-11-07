@@ -31,12 +31,20 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_MENU_ITEM_INFO_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_CONTEXT_MENU_DATA_MENU_ITEM_INFO_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/i18n/rtl.h"
 
 namespace blink {
+
+struct AcceleratorContainer {
+  AcceleratorContainer() = default;
+
+  int key_code{0};
+  int modifiers{0};
+};
 
 struct MenuItemInfo {
   enum Type { kOption, kCheckableOption, kGroup, kSeparator, kSubMenu };
@@ -50,6 +58,7 @@ struct MenuItemInfo {
         checked(false) {}
 
   std::u16string label;
+  std::optional<AcceleratorContainer> accelerator;
   bool is_experimental_feature = false;
   std::u16string tool_tip;
   Type type;

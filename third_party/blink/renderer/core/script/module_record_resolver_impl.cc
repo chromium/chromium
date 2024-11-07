@@ -57,8 +57,7 @@ const ModuleScript* ModuleRecordResolverImpl::GetModuleScriptFromModuleRecord(
   return it->value.Get();
 }
 
-// <specdef
-// href="https://html.spec.whatwg.org/C/#hostresolveimportedmodule(referencingscriptormodule,-specifier)">
+// <specdef href="https://html.spec.whatwg.org/C/#hostloadimportedmodule">
 v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
     const ModuleRequest& module_request,
     v8::Local<v8::Module> referrer,

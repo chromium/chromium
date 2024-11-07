@@ -1599,8 +1599,11 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   net::cookie_util::AddOrRemoveStorageAccessApiOverride(
       redirect_info.new_url, storage_access_api_status_,
       url_request_->initiator(), url_request_->cookie_setting_overrides());
-  url_request_->cookie_setting_overrides().Remove(
-      net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
+  if (!url::Origin::Create(url_request_->url())
+           .IsSameOriginWith(redirect_info.new_url)) {
+    url_request_->cookie_setting_overrides().Remove(
+        net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
+  }
 
   // Note: There are some ordering dependencies here.
   // `CalculateStorageAccessStatus` depends on

@@ -31,8 +31,7 @@ MultitaskMenuNudgeDelegateLacros::~MultitaskMenuNudgeDelegateLacros() = default;
 
 int MultitaskMenuNudgeDelegateLacros::GetTabletNudgeYOffset() const {
   // Tablet nudge is handled by ash.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void MultitaskMenuNudgeDelegateLacros::GetNudgePreferences(

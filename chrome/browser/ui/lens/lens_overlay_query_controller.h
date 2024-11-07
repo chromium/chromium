@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
@@ -45,14 +46,6 @@ class VariationsClient;
 }  // namespace variations
 
 namespace lens {
-
-// The possible page content types for a contextual query.
-enum class PageContentMimeType {
-  kNone = 0,
-  kPdf = 1,
-  kHtml = 2,
-  kPlainText = 3,
-};
 
 // Callback type alias for the lens overlay full image response.
 using LensOverlayFullImageResponseCallback =
@@ -181,7 +174,8 @@ class LensOverlayQueryController {
 
   // Sends a latency Gen204 ping if enabled.
   virtual void SendLatencyGen204IfEnabled(base::TimeDelta full_image_latency,
-                                          bool is_translate_query);
+                                          bool is_translate_query,
+                                          std::string vit_query_param_value);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -324,6 +318,9 @@ class LensOverlayQueryController {
   // are not expecting a response.
   void PerformPageContentRequest(lens::LensOverlayServerRequest request,
                                  std::vector<std::string> headers);
+
+  // Handles the endpoint fetch response for the page content request.
+  void PageContentResponseHandler(std::unique_ptr<EndpointResponse> response);
 
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.

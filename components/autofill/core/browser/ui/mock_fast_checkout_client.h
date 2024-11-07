@@ -19,9 +19,9 @@ class MockFastCheckoutClient : public FastCheckoutClient {
   MOCK_METHOD(bool,
               TryToStart,
               (const GURL& url,
-               const autofill::FormData& form,
-               const autofill::FormFieldData& field,
-               base::WeakPtr<autofill::AutofillManager> autofill_manager),
+               const FormData& form,
+               const FormFieldData& field,
+               base::WeakPtr<AutofillManager> autofill_manager),
               (override));
   MOCK_METHOD(void, Stop, (bool allow_further_runs), (override));
   MOCK_METHOD(bool, IsRunning, (), (const override));
@@ -30,11 +30,9 @@ class MockFastCheckoutClient : public FastCheckoutClient {
               OnNavigation,
               (const GURL& url, bool is_cart_or_checkout_url),
               (override));
-  MOCK_METHOD(autofill::FastCheckoutTriggerOutcome,
+  MOCK_METHOD(FastCheckoutTriggerOutcome,
               CanRun,
-              (const autofill::FormData&,
-               const autofill::FormFieldData&,
-               const autofill::AutofillManager&),
+              (const FormData&, const FormFieldData&, const AutofillManager&),
               (const override));
   MOCK_METHOD(bool, IsNotShownYet, (), (const override));
 };

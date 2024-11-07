@@ -1772,7 +1772,7 @@ void BrowserAutofillManager::
                        std::make_move_iterator(suggestion_list.end()));
   }
 
-  auto GetSuggestionPriority = [](autofill::FillingProduct product) {
+  auto GetSuggestionPriority = [](FillingProduct product) {
     return product == FillingProduct::kPlusAddresses ? 1 : 2;
   };
 

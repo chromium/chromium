@@ -40,6 +40,7 @@ constexpr char kEncodedAnalyticsIdParameter[] = "cad";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kSemanticEventTimestampParameter[] = "zx";
 constexpr char kLatencyRequestTypeQueryParameter[] = "rt";
+constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kUserActionParameter[] = "uact";
 // Event id param used for both semantic events and task completions.
 constexpr char kEventIdParameter[] = "rcid";
@@ -76,8 +77,8 @@ class LensOverlayGen204ControllerTest : public testing::Test {
  public:
   std::optional<lens::mojom::UserAction> GetTaskCompletionIdFromUrl(GURL url) {
     std::string event_id_param;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kEventIdParameter,
-                                           &event_id_param));
+    EXPECT_TRUE(
+        net::GetValueForKeyInQuery(url, kEventIdParameter, &event_id_param));
     int event_id;
     base::StringToInt(event_id_param, &event_id);
     switch (event_id) {
@@ -103,8 +104,8 @@ class LensOverlayGen204ControllerTest : public testing::Test {
 
   std::optional<lens::mojom::SemanticEvent> GetSemanticEventFromUrl(GURL url) {
     std::string event_id_param;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kEventIdParameter,
-                                           &event_id_param));
+    EXPECT_TRUE(
+        net::GetValueForKeyInQuery(url, kEventIdParameter, &event_id_param));
     int event_id;
     base::StringToInt(event_id_param, &event_id);
     switch (event_id) {
@@ -141,7 +142,7 @@ TEST_F(LensOverlayGen204ControllerTest,
   gen204_controller->OnQueryFlowStart(kInvocationSource, profile(), kGen204Id);
   gen204_controller->SendLatencyGen204IfEnabled(
       kRequestLatency, /*cluster_info_latency=*/std::nullopt,
-      /*is_translate_query=*/false);
+      /*is_translate_query=*/false, /*vit_query_param_value=*/"image");
 
   auto url = gen204_controller->last_url_sent_;
 
@@ -156,12 +157,18 @@ TEST_F(LensOverlayGen204ControllerTest,
                                          &request_type_param));
   ASSERT_EQ(request_type_param, "fpof.100");
 
+  // Check that the visual input type param is present.
+  std::string visual_input_type_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, kVisualInputTypeQueryParameter,
+                                         &visual_input_type_param));
+  ASSERT_EQ(visual_input_type_param, "image");
+
   ASSERT_EQ(gen204_controller->num_gen204s_sent_, 1);
 
   // Send a translate query.
   gen204_controller->SendLatencyGen204IfEnabled(
       kRequestLatency, /*cluster_info_latency=*/std::nullopt,
-      /*is_translate_query=*/true);
+      /*is_translate_query=*/true, /*vit_query_param_value=*/"pdf");
 
   // Check that the new request type param is present and contains the latency.
   EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
@@ -169,19 +176,30 @@ TEST_F(LensOverlayGen204ControllerTest,
                                          &request_type_param));
   ASSERT_EQ(request_type_param, "fptf.100");
 
+  // Check that the visual input type param is present.
+  EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
+                                         kVisualInputTypeQueryParameter,
+                                         &visual_input_type_param));
+  ASSERT_EQ(visual_input_type_param, "pdf");
+
   ASSERT_EQ(gen204_controller->num_gen204s_sent_, 2);
 
   // Send an objects query with cluster info.
   gen204_controller->SendLatencyGen204IfEnabled(
-      kRequestLatency,
-      std::make_optional<base::TimeDelta>(kClusterInfoLatency),
-      /*is_translate_query=*/false);
+      kRequestLatency, std::make_optional<base::TimeDelta>(kClusterInfoLatency),
+      /*is_translate_query=*/false, /*vit_query_param_value=*/"wp");
 
   // Check that the new request type param is present and contains the latency.
   EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
                                          kLatencyRequestTypeQueryParameter,
                                          &request_type_param));
   ASSERT_EQ(request_type_param, "fpof.100,sct.200");
+
+  // Check that the visual input type param is present.
+  EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
+                                         kVisualInputTypeQueryParameter,
+                                         &visual_input_type_param));
+  ASSERT_EQ(visual_input_type_param, "wp");
 
   ASSERT_EQ(gen204_controller->num_gen204s_sent_, 3);
 }

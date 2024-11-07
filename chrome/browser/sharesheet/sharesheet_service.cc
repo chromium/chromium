@@ -516,7 +516,7 @@ void SharesheetService::RecordTargetCountMetrics(
       case TargetType::kAction:
         break;
       case TargetType::kUnknown:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   SharesheetMetrics::RecordSharesheetArcAppCount(arc_app_count);

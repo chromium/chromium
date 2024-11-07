@@ -15,7 +15,11 @@ ProtobufHttpRequestConfig::ProtobufHttpRequestConfig(
 ProtobufHttpRequestConfig::~ProtobufHttpRequestConfig() = default;
 
 void ProtobufHttpRequestConfig::Validate() const {
-  DCHECK(request_message);
+  // If the method is GET or HEAD, |request_message| must not be set. For any
+  // other method, |request_message| must be valid.
+  DCHECK((request_message != nullptr) ==
+         (method != net::HttpRequestHeaders::kGetMethod &&
+          method != net::HttpRequestHeaders::kHeadMethod));
   DCHECK(!path.empty());
 }
 

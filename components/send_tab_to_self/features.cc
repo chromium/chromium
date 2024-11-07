@@ -25,6 +25,18 @@ BASE_FEATURE(kSendTabToSelfIOSPushNotifications,
              "SendTabToSelfIOSPushNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kSendTabIOSPushNotificationsURLImageParam[] =
+    "variant_with_URL_image";
+
+bool IsSendTabIOSPushNotificationsEnabledWithURLImage() {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfIOSPushNotifications)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kSendTabToSelfIOSPushNotifications,
+        kSendTabIOSPushNotificationsURLImageParam, false);
+  }
+  return false;
+}
+
 #if BUILDFLAG(IS_IOS)
 const char kSendTabIOSPushNotificationsWithMagicStackCardParam[] =
     "variant_with_magic_stack_card";

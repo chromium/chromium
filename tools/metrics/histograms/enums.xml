@@ -398,6 +398,17 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="13" label="User stopped"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidWidgetType) -->
+
+<enum name="AndroidWidgetType">
+  <int value="0" label="Search"/>
+  <int value="1" label="Shortcuts"/>
+  <int value="2" label="Dino"/>
+  <int value="3" label="Bookmarks"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/searchwidget/WidgetMetrics.java:AndroidWidgetType) -->
+
 <enum name="AnrSkippedReason">
   <int value="0" label="Filesystem Read Failure"/>
   <int value="1" label="Filesystem Write Failure"/>
@@ -16425,6 +16436,7 @@ from previous Chrome versions.
   <int value="-1536242739" label="security-chip"/>
   <int value="-1535758690" label="AutoplayIgnoreWebAudio:disabled"/>
   <int value="-1535694535" label="PageInfoPerformanceHints:enabled"/>
+  <int value="-1535690979" label="PartitionAllocMemoryTagging:disabled"/>
   <int value="-1535608870" label="JourneysLabel:enabled"/>
   <int value="-1534970225" label="FilesArchivemount:disabled"/>
   <int value="-1534702850" label="RenderPassDrawnRect:disabled"/>
@@ -20554,6 +20566,7 @@ from previous Chrome versions.
   <int value="134124472" label="NearbySharingWifiDirect:enabled"/>
   <int value="134136822" label="VcDlcUi:enabled"/>
   <int value="135017596" label="OverlayScrollbarsOSSetting:disabled"/>
+  <int value="136557248" label="PartitionAllocMemoryTagging:enabled"/>
   <int value="136924140" label="OfflineIndicatorV2:enabled"/>
   <int value="137866995" label="ImeKoreanModeSwitchDebug:enabled"/>
   <int value="138020994" label="LacrosProfileMigrationForAnyUser:enabled"/>
@@ -23605,6 +23618,7 @@ from previous Chrome versions.
   <int value="1376139800" label="SeaPen:enabled"/>
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
   <int value="1376437124" label="show-cert-link"/>
+  <int value="1376758377" label="StaticStorageQuota:disabled"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>
   <int value="1377802847" label="ViewTransition:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
@@ -25338,6 +25352,7 @@ from previous Chrome versions.
   <int value="2063238104" label="ContextMenuPopupForAllScreenSizes:enabled"/>
   <int value="2063329599"
       label="AutofillEnableAndroidNKeyForFidoAuthentication:disabled"/>
+  <int value="2063330973" label="StaticStorageQuota:enabled"/>
   <int value="2063420769" label="SharedHighlightingV2:disabled"/>
   <int value="2064964530" label="RippleForEnhancedProtection:enabled"/>
   <int value="2065833330" label="CanvasContextLostInBackground:enabled"/>
@@ -33805,6 +33820,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="162" label="Rlh"/>
   <int value="163" label="Nesting"/>
   <int value="164" label="NthChildOf"/>
+  <int value="165" label="ForcedColors"/>
+  <int value="166" label="WhiteSpaceCollapse"/>
+  <int value="167" label="ImageOrientation"/>
+  <int value="168" label="LogicalProperties"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

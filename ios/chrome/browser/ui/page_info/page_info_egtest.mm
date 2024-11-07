@@ -535,7 +535,9 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests if the Last Visited UIs, i.e. the Last Visited page and Last Visited
 // row, are correctly updated when history entries get deleted.
-- (void)testLastVisitedUpdatesOnDeletion {
+//
+// TODO(crbug.com/377674245): Flaky on iphone-device.
+- (void)DISABLED_testLastVisitedUpdatesOnDeletion {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on `URL`.

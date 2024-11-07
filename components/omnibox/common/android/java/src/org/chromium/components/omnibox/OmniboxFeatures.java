@@ -59,16 +59,20 @@ public class OmniboxFeatures {
     private static Boolean sIsLowMemoryDevice;
 
     public static final CachedFlag sOmniboxAnswerActions =
-            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, /* defaultValue= */ false);
 
     public static final CachedFlag sAnimateSuggestionsListAppearance =
-            newFlag(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
+            newFlag(
+                    OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE,
+                    /* defaultValue= */ false);
 
     public static final CachedFlag sTouchDownTriggerForPrefetch =
-            newFlag(OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
+                    /* defaultValue= */ false);
 
     public static final CachedFlag sRichInlineAutocomplete =
-            newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, false);
+            newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, /* defaultValue= */ false);
 
     /**
      * Whether GeolocationHeader should use {@link
@@ -76,21 +80,24 @@ public class OmniboxFeatures {
      * in omnibox requests.
      */
     public static final CachedFlag sUseFusedLocationProvider =
-            newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, false);
+            newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, /* defaultValue= */ false);
 
     public static final CachedFlag sAsyncViewInflation =
-            newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, /* defaultValue= */ false);
 
     public static final CachedFlag sElegantTextHeight =
-            newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, /* defaultValue= */ false);
 
     public static final CachedFlag sJumpStartOmnibox =
-            newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, false);
+            newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, /* defaultValue= */ false);
 
     /** See {@link #shouldRetainOmniboxOnFocus()}. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final CachedFlag sRetainOmniboxOnFocus =
-            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, false);
+            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, /* defaultValue= */ false);
+
+    public static final CachedFlag sAndroidHubSearch =
+            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, /* defaultValue= */ false);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);

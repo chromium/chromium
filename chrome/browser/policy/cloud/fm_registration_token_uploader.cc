@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/core/common/cloud/signing_service.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -154,7 +155,7 @@ FmRegistrationTokenUploader::FmRegistrationTokenUploader(
          "accounts";
   LOG_POLICY(WARNING, REMOTE_COMMANDS)
       << "Starting FmRegistrationTokenUploader for " << ToString(scope_)
-      << " scope";
+      << " scope, " << invalidation_listener_->project_number() << " project";
   invalidation_listener_->Start(this);
 }
 
@@ -217,7 +218,10 @@ void FmRegistrationTokenUploader::DoUploadRegistrationToken(
   request.set_protocol_version(
       invalidation::InvalidationListener::kInvalidationProtocolVersion);
   request.set_token_type(ScopeToTokenType(scope_));
-  request.set_project_number(invalidation_listener_->project_number());
+  int64_t project_number = 0;
+  CHECK(base::StringToInt64(invalidation_listener_->project_number(),
+                            &project_number));
+  request.set_project_number(project_number);
   request.set_expiration_timestamp_ms(
       token_data.token_end_of_life.InMillisecondsSinceUnixEpoch());
 
@@ -248,8 +252,9 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
 
   if (!result.IsSuccess()) {
     LOG_POLICY(ERROR, REMOTE_COMMANDS)
-        << "Upload failed for " << ToString(scope_)
-        << " scope: " << result.GetDMServerError();
+        << "Upload failed for " << ToString(scope_) << " scope, "
+        << invalidation_listener_->project_number()
+        << " project: " << result.GetDMServerError();
 
     invalidation_listener_->SetRegistrationUploadStatus(
         invalidation::InvalidationListener::RegistrationTokenUploadStatus::
@@ -264,7 +269,8 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
   }
 
   LOG_POLICY(ERROR, REMOTE_COMMANDS)
-      << "Registration token uploaded for " << ToString(scope_) << " scope";
+      << "Registration token uploaded for " << ToString(scope_) << " scope, "
+      << invalidation_listener_->project_number() << " project";
 
   invalidation_listener_->SetRegistrationUploadStatus(
       invalidation::InvalidationListener::RegistrationTokenUploadStatus::

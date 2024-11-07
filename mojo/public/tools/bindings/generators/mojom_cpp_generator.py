@@ -374,6 +374,7 @@ class Generator(generator.Generator):
         "append_space_if_nonempty": self._AppendSpaceIfNonEmpty,
         "all_enum_values": AllEnumValues,
         "constant_value": self._ConstantValue,
+        "constant_length": self._ConstantLength,
         "contains_handles_or_interfaces": mojom.ContainsHandlesOrInterfaces,
         "contains_move_only_members": self._ContainsMoveOnlyMembers,
         "cpp_data_view_type": self._GetCppDataViewType,
@@ -548,6 +549,10 @@ class Generator(generator.Generator):
   def _ConstantValue(self, constant):
     return self._ExpressionToText(constant.value, kind=constant.kind)
 
+  def _ConstantLength(self, constant):
+    # The length of the string value, removing the quotes, but preserving the null-terminator.
+    return f"{len(constant.value) - 1}"
+
   def _UnderToCamel(self, value, digits_split=False):
     # There are some mojom files that don't use snake_cased names, so we try to
     # fix that to get more consistent output.
@@ -661,13 +666,13 @@ class Generator(generator.Generator):
   def _FormatConstantDeclaration(self, constant, nested=False):
     if mojom.IsStringKind(constant.kind):
       if nested:
-        return "const char %s[]" % constant.name
-      return "%sextern const char %s[]" % \
+        return "const char %s[%s]" % (constant.name,
+                                      self._ConstantLength(constant))
+      return "%sextern const char %s[%s]" % \
           ((self.export_attribute + " ") if self.export_attribute else "",
-           constant.name)
-    return "constexpr %s %s = %s" % (
-        GetCppPodType(constant.kind), constant.name,
-        self._ConstantValue(constant))
+           constant.name, self._ConstantLength(constant))
+    return "constexpr %s %s = %s" % (GetCppPodType(
+        constant.kind), constant.name, self._ConstantValue(constant))
 
   # Constants that go in module.h.
   def _FormatEnumConstantDeclaration(self, constant):

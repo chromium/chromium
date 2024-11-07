@@ -10,6 +10,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill::data_logs {
+
 namespace {
 // Time limit within which the last autofill event is considered related to the
 // feedback report.
@@ -76,7 +77,7 @@ base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
   for (const auto& [form_id, form] : manager->form_structures()) {
     for (const auto& field : form->fields()) {
       for (const auto& field_log_event : field->field_log_events()) {
-        if (const autofill::TriggerFillFieldLogEvent* trigger_event =
+        if (const TriggerFillFieldLogEvent* trigger_event =
                 absl::get_if<TriggerFillFieldLogEvent>(&field_log_event)) {
           had_trigger_event = true;
           if (trigger_event->timestamp > last_autofill_event_timestamp) {

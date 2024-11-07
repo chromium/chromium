@@ -2309,6 +2309,28 @@ TEST(SpanTest, IteratorConversions) {
       "Error: const iterator should not be convertible to iterator");
 }
 
+TEST(SpanTest, Indexing) {
+  int arr[] = {1, 2, 3};
+  auto fixed_span = base::span<int, 3u>(arr);
+  auto dyn_span = base::span<int>(arr);
+
+  EXPECT_EQ(&fixed_span[0u], &arr[0u]);
+  EXPECT_EQ(&fixed_span[2u], &arr[2u]);
+  EXPECT_CHECK_DEATH(debug::Alias(&fixed_span[3u]));
+
+  EXPECT_EQ(&dyn_span[0u], &arr[0u]);
+  EXPECT_EQ(&dyn_span[2u], &arr[2u]);
+  EXPECT_CHECK_DEATH(debug::Alias(&dyn_span[3u]));
+
+  EXPECT_EQ(fixed_span.get_at(0u), &arr[0u]);
+  EXPECT_EQ(fixed_span.get_at(2u), &arr[2u]);
+  EXPECT_CHECK_DEATH(debug::Alias(fixed_span.get_at(3u)));
+
+  EXPECT_EQ(dyn_span.get_at(0u), &arr[0u]);
+  EXPECT_EQ(dyn_span.get_at(2u), &arr[2u]);
+  EXPECT_CHECK_DEATH(debug::Alias(dyn_span.get_at(3u)));
+}
+
 TEST(SpanTest, CopyFrom) {
   int arr[] = {1, 2, 3};
   span<int, 0> empty_static_span;
@@ -2328,10 +2350,10 @@ TEST(SpanTest, CopyFrom) {
   EXPECT_THAT(vec, ElementsAre(4, 5, 6));
 
   // Test too small destinations.
-  EXPECT_DEATH_IF_SUPPORTED(empty_static_span.copy_from(dynamic_span), "");
-  EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(static_span), "");
-  EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(dynamic_span), "");
-  EXPECT_DEATH_IF_SUPPORTED(dynamic_span.last(2u).copy_from(static_span), "");
+  EXPECT_CHECK_DEATH(empty_static_span.copy_from(dynamic_span));
+  EXPECT_CHECK_DEATH(empty_dynamic_span.copy_from(static_span));
+  EXPECT_CHECK_DEATH(empty_dynamic_span.copy_from(dynamic_span));
+  EXPECT_CHECK_DEATH(dynamic_span.last(2u).copy_from(static_span));
 
   std::vector<int> source = {7, 8, 9};
 

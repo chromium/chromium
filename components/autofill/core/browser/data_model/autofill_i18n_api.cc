@@ -36,8 +36,7 @@ using i18n_model_definition::kAutofillParsingRulesMap;
 // which are children of X.
 using TreeDefinition = base::flat_map<FieldType, base::span<const FieldType>>;
 
-using TreeEdgesList =
-    base::span<const autofill::i18n_model_definition::FieldTypeDescription>;
+using TreeEdgesList = base::span<const FieldTypeDescription>;
 
 // Address lines are currently the only computed types. These are are shared by
 // all countries.
@@ -78,7 +77,7 @@ std::u16string GetFormattingExpressionOverrides(
 // Note that nodes do not own their children, rather pointers to them. All
 // `AddressComponent` nodes are owned by the `AddressComponentsStore`.
 std::unique_ptr<AddressComponent> BuildTreeNode(
-    autofill::FieldType type,
+    FieldType type,
     std::vector<AddressComponent*> children) {
   switch (type) {
     case ADDRESS_HOME_ADDRESS:

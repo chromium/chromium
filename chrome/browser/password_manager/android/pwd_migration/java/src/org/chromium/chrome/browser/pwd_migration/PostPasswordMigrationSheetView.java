@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.DialogTitle;
@@ -151,8 +152,8 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.password_migration_warning_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.password_migration_warning_content_description);
     }
 
     @Override

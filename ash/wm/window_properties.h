@@ -23,6 +23,10 @@ class WindowState;
 
 // Alphabetical sort.
 
+// A property key to indicate whether the window shadow will be disabled when
+// resizing is available.
+ASH_EXPORT extern const aura::WindowProperty<bool>* const kDisableResizeShadow;
+
 // A property key to indicate whether this window is temporarily hidden because
 // of the window dragging.
 ASH_EXPORT extern const aura::WindowProperty<bool>* const

@@ -101,7 +101,7 @@ std::vector<AutofillAddressUIComponent> ConvertAddressUiComponents(
               .literal = component.literal,
           };
         }
-        autofill::FieldType field = i18n::TypeForField(component.field);
+        FieldType field = i18n::TypeForField(component.field);
         return AutofillAddressUIComponent{
             .field = field,
             .name = component.name,

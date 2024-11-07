@@ -21,7 +21,6 @@
 namespace drive::util {
 namespace {
 
-using ash::features::kDriveFsBulkPinning;
 using ash::features::kFeatureManagementDriveFsBulkPinning;
 using base::test::ScopedFeatureList;
 
@@ -81,8 +80,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
 
   {
     ScopedFeatureList features;
-    features.InitWithFeatures(
-        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable());
@@ -90,17 +88,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
 
   {
     ScopedFeatureList features;
-    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning},
-                              {kDriveFsBulkPinning});
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable());
-  }
-
-  {
-    ScopedFeatureList features;
-    features.InitWithFeatures({kDriveFsBulkPinning},
-                              {kFeatureManagementDriveFsBulkPinning});
+    features.InitWithFeatures({}, {kFeatureManagementDriveFsBulkPinning});
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable());
@@ -110,8 +98,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
 
   {
     ScopedFeatureList features;
-    features.InitWithFeatures(
-        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
@@ -120,8 +107,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
 
   {
     ScopedFeatureList features;
-    features.InitWithFeatures(
-        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
@@ -129,8 +115,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
   // Test for Googler account.
   {
     ScopedFeatureList features;
-    features.InitWithFeatures({kDriveFsBulkPinning},
-                              {kFeatureManagementDriveFsBulkPinning});
+    features.InitWithFeatures({}, {kFeatureManagementDriveFsBulkPinning});
 
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));

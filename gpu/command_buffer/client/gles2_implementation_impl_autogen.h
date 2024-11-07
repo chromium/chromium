@@ -3563,13 +3563,11 @@ void GLES2Implementation::CopySharedImageINTERNAL(GLint xoffset,
                                                   GLint y,
                                                   GLsizei width,
                                                   GLsizei height,
-                                                  GLboolean unpack_flip_y,
                                                   const GLbyte* mailboxes) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCopySharedImageINTERNAL("
                      << xoffset << ", " << yoffset << ", " << x << ", " << y
                      << ", " << width << ", " << height << ", "
-                     << GLES2Util::GetStringBool(unpack_flip_y) << ", "
                      << static_cast<const void*>(mailboxes) << ")");
   uint32_t count = 32;
   for (uint32_t ii = 0; ii < count; ++ii) {
@@ -3584,7 +3582,7 @@ void GLES2Implementation::CopySharedImageINTERNAL(GLint xoffset,
     return;
   }
   helper_->CopySharedImageINTERNALImmediate(xoffset, yoffset, x, y, width,
-                                            height, unpack_flip_y, mailboxes);
+                                            height, mailboxes);
   CheckGLError();
 }
 

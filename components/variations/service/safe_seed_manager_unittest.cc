@@ -47,10 +47,10 @@ class FakeSeedStore : public VariationsSeedStore {
                             /*signature_verification_enabled=*/true,
                             std::make_unique<VariationsSafeSeedStoreLocalState>(
                                 local_state,
-                                version_info::Channel::UNKNOWN,
                                 /*seed_file_dir=*/base::FilePath()),
                             version_info::Channel::UNKNOWN,
-                            /*seed_file_dir=*/base::FilePath()) {
+                            /*seed_file_dir=*/base::FilePath(),
+                            /*entropy_provider=*/nullptr) {
     VariationsSeedStore::RegisterPrefs(local_state->registry());
   }
 

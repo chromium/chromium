@@ -155,6 +155,35 @@ StoreSeedResult Uncompress(const std::string& compressed, std::string* result) {
     return StoreSeedResult::kFailedEmptyGzipContents;
   return StoreSeedResult::kSuccess;
 }
+
+// Returns true if the client is eligible to participate in the seed file trial.
+bool IsEligibleForSeedFileTrial(
+    version_info::Channel channel,
+    const base::FilePath& seed_file_dir,
+    const variations::EntropyProviders* entropy_providers) {
+  // Note platforms that should not participate in the experiment will
+  // deliberately pass an empty |seed_file_dir| and null |entropy_provider|.
+  if (seed_file_dir.empty() || entropy_providers == nullptr) {
+    return false;
+  }
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV ||
+         channel == version_info::Channel::BETA;
+}
+
+// Sets up the seed file experiment which only some clients are eligible for
+// (see IsEligibleForSeedFileTrial()).
+void SetUpSeedFileTrial(
+    const base::FieldTrial::EntropyProvider& entropy_provider) {
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          kSeedFileTrial, /*total_probability=*/100, kDefaultGroup,
+          entropy_provider));
+
+  trial->AppendGroup(kControlGroup, /*group_probability=*/50);
+  trial->AppendGroup(kSeedFilesGroup, /*group_probability=*/50);
+}
+
 }  // namespace
 
 ValidatedSeed::ValidatedSeed() = default;
@@ -169,6 +198,7 @@ VariationsSeedStore::VariationsSeedStore(
     std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
     version_info::Channel channel,
     const base::FilePath& seed_file_dir,
+    const variations::EntropyProviders* entropy_providers,
     bool use_first_run_prefs)
     : local_state_(local_state),
       safe_seed_store_(std::move(safe_seed_store)),
@@ -178,8 +208,10 @@ VariationsSeedStore::VariationsSeedStore(
           local_state,
           seed_file_dir,
           kSeedFilename,
-          channel,
           prefs::kVariationsCompressedSeed)) {
+  if (IsEligibleForSeedFileTrial(channel, seed_file_dir, entropy_providers)) {
+    SetUpSeedFileTrial(entropy_providers->default_entropy());
+  }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (initial_seed)
     ImportInitialSeed(std::move(initial_seed));

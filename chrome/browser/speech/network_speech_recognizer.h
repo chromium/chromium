@@ -24,7 +24,6 @@ class NetworkSpeechRecognizer : public SpeechRecognizer {
       const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory,
-      const std::string& accept_language,
       const std::string& locale);
   ~NetworkSpeechRecognizer() override;
   NetworkSpeechRecognizer(const NetworkSpeechRecognizer&) = delete;

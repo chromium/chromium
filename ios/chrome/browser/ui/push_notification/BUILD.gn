@@ -14,6 +14,7 @@ source_set("opt_in_alert_coordinator") {
   ]
   deps = [
     ":metrics",
+    ":prominence_notification_setting_alert",
     "//components/sync_device_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
@@ -26,6 +27,7 @@ source_set("opt_in_alert_coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ui/base",
   ]
@@ -86,6 +88,21 @@ source_set("notifications_opt_in_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+}
+
+source_set("prominence_notification_setting_alert") {
+  sources = [
+    "prominence_notification_setting_alert_coordinator.h",
+    "prominence_notification_setting_alert_coordinator.mm",
+    "prominence_notification_setting_alert_coordinator_delegate.h",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/alert_view/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/push_notification/resources",
     "//ui/base",
   ]
 }

@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -524,7 +523,7 @@ void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
 
   gfx::Rect menu_anchor_bounds = GetAnchorBoundsInScreen();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // A window won't overlap between displays on ChromeOS.
   // Use the left bound of the display on which
   // the menu button exists.

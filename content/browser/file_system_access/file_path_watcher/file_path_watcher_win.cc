@@ -33,6 +33,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/types/id_type.h"
 #include "base/win/object_watcher.h"
@@ -237,6 +238,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
  private:
   friend CompletionIOPortThread;
 
+  // TODO(crbug.com/343961295): The delay in processing delete event is needed
+  // in order to coalesce deleted and created events, in case of an overwrite.
+  // Adjust the delay time based on testing.
+  static constexpr base::TimeDelta kDeletedChangeDelay =
+      base::Milliseconds(500);
+
   // Decrements the `upcoming_batch_count_` on destruction unless `Cancel` is
   // called.
   class UpcomingBatchCountDecrementer {
@@ -277,6 +284,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   int DecrementAndGetUpcomingBatchCount();
 
+  void RunCallbackOnPendingDelete();
+
   // Incremented by the `CompletionIOPortThread` to indicate if there is another
   // batch for this `FilePathWatcherImpl` queued to process. Decremented by this
   // `FilePathWatcherImpl` every time a batch is processed.
@@ -294,6 +303,9 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   bool report_modified_path_ = false;
 
   std::optional<FilePathWatcherChangeTracker> change_tracker_;
+
+  // Timer to delay processing a pending delete change.
+  base::OneShotTimer pending_delete_timer_;
 
   base::WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 };
@@ -548,17 +560,25 @@ base::Lock& FilePathWatcherImpl::GetWatchThreadLockForTest() {
 }
 
 void FilePathWatcherImpl::BufferOverflowed() {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+
   DecrementAndGetUpcomingBatchCount();
+
+  // Do not send a pendeing delete, which may not have been coalesced.
+  // Consider it as lost in the buffer overflowed batch.
+  pending_delete_timer_.Stop();
+
+  change_tracker_->MayHaveMissedChanges();
 
   // `this` may be deleted after `callback_` is run.
   callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
-
-  change_tracker_->MayHaveMissedChanges();
 }
 
 void FilePathWatcherImpl::WatchedDirectoryDeleted(
     base::FilePath watched_path,
     base::HeapArray<uint8_t> notification_batch) {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+
   WatchWithChangeInfoResult result = SetupWatchHandleForTarget();
 
   UpcomingBatchCountDecrementer upcoming_batch_count_decrementer(
@@ -587,6 +607,12 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
     }
   }
 
+  // The pending delete can be sent, without having to wait for coalescing
+  // since the watched directory is deleted.
+  if (pending_delete_timer_.IsRunning()) {
+    pending_delete_timer_.FireNow();
+  }
+
   if (target_was_deleted || change_tracker_->KnowTargetExists()) {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(
@@ -603,6 +629,11 @@ void FilePathWatcherImpl::ProcessNotificationBatch(
     base::HeapArray<uint8_t> notification_batch) {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
   CHECK(!notification_batch.empty());
+
+  // When a new batch arrives, cancel the timer to send a pending delete since
+  // it may be coalesced if any matching event is found from the new batch in
+  // the change tracker.
+  pending_delete_timer_.Stop();
 
   auto self = weak_factory_.GetWeakPtr();
 
@@ -627,6 +658,15 @@ void FilePathWatcherImpl::ProcessNotificationBatch(
   }
 
   bool next_change_soon = DecrementAndGetUpcomingBatchCount() > 0;
+
+  // Check for any pending delete, and start a timer to be sent later,
+  // in order to give it a chance to be coalesced.
+  if (!next_change_soon && change_tracker_->HasPendingDelete()) {
+    pending_delete_timer_.Start(
+        FROM_HERE, kDeletedChangeDelay,
+        base::BindOnce(&FilePathWatcherImpl::RunCallbackOnPendingDelete,
+                       weak_factory_.GetWeakPtr()));
+  }
 
   for (auto& change : change_tracker_->PopChanges(next_change_soon)) {
     // `this` may be deleted after `callback_` is run.
@@ -727,6 +767,22 @@ int FilePathWatcherImpl::DecrementAndGetUpcomingBatchCount() {
   int upcoming_batch_count = --upcoming_batch_count_;
   CHECK(upcoming_batch_count >= 0);
   return upcoming_batch_count;
+}
+
+void FilePathWatcherImpl::RunCallbackOnPendingDelete() {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+
+  if (callback_.is_null()) {
+    return;
+  }
+
+  std::optional<FilePathWatcher::ChangeInfo> opt_pending_delete =
+      change_tracker_->TakePendingDelete();
+  CHECK(opt_pending_delete.has_value());
+  FilePathWatcher::ChangeInfo change = *std::move(opt_pending_delete);
+  // `this` may be deleted after `callback_` is run.
+  callback_.Run(std::move(change), GetReportedPath(change.modified_path),
+                /*error=*/false);
 }
 
 }  // namespace

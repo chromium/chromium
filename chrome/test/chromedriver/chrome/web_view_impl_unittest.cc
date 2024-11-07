@@ -36,6 +36,7 @@ const char kElementKey[] = "ELEMENT";
 const char kElementKeyW3C[] = "element-6066-11e4-a52e-4f735466cecf";
 const char kShadowRootKey[] = "shadow-6066-11e4-a52e-4f735466cecf";
 const int kNonExistingBackendNodeId = 1000'000'001;
+const GURL kDefaultUrl = GURL("http://url/");
 
 using testing::Eq;
 using testing::Optional;
@@ -256,49 +257,6 @@ void AssertEvalFails(const base::Value::Dict& command_result) {
   ASSERT_TRUE(result.empty());
 }
 
-class SyncWebSocketWrapper : public SyncWebSocket {
- public:
-  explicit SyncWebSocketWrapper(SyncWebSocket* socket) : socket_(socket) {}
-  ~SyncWebSocketWrapper() override = default;
-
-  bool IsConnected() override { return socket_->IsConnected(); }
-
-  bool Connect(const GURL& url) override { return socket_->Connect(url); }
-
-  bool Send(const std::string& message) override {
-    return socket_->Send(message);
-  }
-
-  SyncWebSocket::StatusCode ReceiveNextMessage(
-      std::string* message,
-      const Timeout& timeout) override {
-    return socket_->ReceiveNextMessage(message, timeout);
-  }
-
-  bool HasNextMessage() override { return socket_->HasNextMessage(); }
-
- private:
-  raw_ptr<SyncWebSocket> socket_;
-};
-
-template <typename TSocket>
-class SocketHolder {
- public:
-  template <typename... Args>
-  explicit SocketHolder(Args&&... args) : socket_{args...} {}
-
-  std::unique_ptr<SyncWebSocket> Wrapper() {
-    return std::unique_ptr<SyncWebSocket>(new SyncWebSocketWrapper(&socket_));
-  }
-
-  TSocket& Socket() { return socket_; }
-
-  bool ConnectSocket() { return socket_.Connect(GURL("http://url/")); }
-
- private:
-  TSocket socket_;
-};
-
 }  // namespace
 
 TEST(EvaluateScript, CommandError) {
@@ -472,7 +430,8 @@ class MockSyncWebSocket : public SyncWebSocket {
 }  // namespace
 
 TEST(CreateChild, MultiLevel) {
-  SocketHolder<MockSyncWebSocket> socket_holder{SyncWebSocket::StatusCode::kOk};
+  std::unique_ptr<MockSyncWebSocket> socket_uptr =
+      std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
       std::make_unique<DevToolsClientImpl>("id", "");
@@ -481,8 +440,8 @@ TEST(CreateChild, MultiLevel) {
   WebViewImpl level1(client_ptr->GetId(), true, nullptr, &browser_info,
                      std::move(client_uptr), std::nullopt,
                      PageLoadStrategy::kEager, true);
-  EXPECT_TRUE(socket_holder.ConnectSocket());
-  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
+  EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> level2 =
       std::unique_ptr<WebViewImpl>(level1.CreateChild(sessionid, "1234"));
@@ -498,7 +457,8 @@ TEST(CreateChild, MultiLevel) {
 }
 
 TEST(CreateChild, IsNonBlocking_NoErrors) {
-  SocketHolder<MockSyncWebSocket> socket_holder{SyncWebSocket::StatusCode::kOk};
+  std::unique_ptr<MockSyncWebSocket> socket_uptr =
+      std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
       std::make_unique<DevToolsClientImpl>("id", "");
@@ -507,8 +467,8 @@ TEST(CreateChild, IsNonBlocking_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kEager, true);
-  EXPECT_TRUE(socket_holder.ConnectSocket());
-  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
+  EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
   ASSERT_FALSE(parent_view.IsNonBlocking());
 
   std::string sessionid = "2";
@@ -520,7 +480,8 @@ TEST(CreateChild, IsNonBlocking_NoErrors) {
 }
 
 TEST(CreateChild, Load_NoErrors) {
-  SocketHolder<MockSyncWebSocket> socket_holder{SyncWebSocket::StatusCode::kOk};
+  std::unique_ptr<MockSyncWebSocket> socket_uptr =
+      std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
       std::make_unique<DevToolsClientImpl>("id", "");
@@ -529,8 +490,8 @@ TEST(CreateChild, Load_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNone, true);
-  EXPECT_TRUE(socket_holder.ConnectSocket());
-  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
+  EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
@@ -540,7 +501,9 @@ TEST(CreateChild, Load_NoErrors) {
 }
 
 TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
-  SocketHolder<MockSyncWebSocket> socket_holder{SyncWebSocket::StatusCode::kOk};
+  std::unique_ptr<MockSyncWebSocket> socket_uptr =
+      std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
+  MockSyncWebSocket* socket = socket_uptr.get();
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
       std::make_unique<DevToolsClientImpl>("id", "");
@@ -549,21 +512,22 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNone, true);
-  EXPECT_TRUE(socket_holder.ConnectSocket());
-  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
+  EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
   child_view->AttachTo(client_ptr);
 
   // child_view gets no socket...
-  socket_holder.Socket().SetNexStatusCode(SyncWebSocket::StatusCode::kTimeout);
+  socket->SetNexStatusCode(SyncWebSocket::StatusCode::kTimeout);
   ASSERT_NO_FATAL_FAILURE(child_view->WaitForPendingNavigations(
       "1234", Timeout(base::Milliseconds(10)), true));
 }
 
 TEST(CreateChild, IsPendingNavigation_NoErrors) {
-  SocketHolder<MockSyncWebSocket> socket_holder{SyncWebSocket::StatusCode::kOk};
+  std::unique_ptr<MockSyncWebSocket> socket_uptr =
+      std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
       std::make_unique<DevToolsClientImpl>("id", "");
@@ -572,8 +536,8 @@ TEST(CreateChild, IsPendingNavigation_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNormal, true);
-  EXPECT_TRUE(socket_holder.ConnectSocket());
-  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
+  EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
@@ -1234,7 +1198,9 @@ class WaitForPendingNavigations : public testing::TestWithParam<std::string> {
 };
 
 TEST_P(WaitForPendingNavigations, NavigationDetection) {
-  SocketHolder<StubSyncWebSocket> socket_holder;
+  std::unique_ptr<StubSyncWebSocket> socket_uptr =
+      std::make_unique<StubSyncWebSocket>();
+  StubSyncWebSocket* socket = socket_uptr.get();
   std::unique_ptr<DevToolsClientImpl> client_uptr =
       std::make_unique<DevToolsClientImpl>("", "");
   DevToolsClientImpl* client_ptr = client_uptr.get();
@@ -1242,13 +1208,13 @@ TEST_P(WaitForPendingNavigations, NavigationDetection) {
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kNormal, true);
-  EXPECT_TRUE(socket_holder.ConnectSocket());
-  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
+  EXPECT_TRUE(socket->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
 
   Timeout timeout{base::Milliseconds(100)};
   // Pretend waiting for new responses after 3 handled commands.
-  socket_holder.Socket().SetResponseLimit(3);
-  socket_holder.Socket().AddCommandHandler(
+  socket->SetResponseLimit(3);
+  socket->AddCommandHandler(
       "Runtime.evaluate", base::BindRepeating(&ReturnError, -32000, Message()));
   Status status = view.WaitForPendingNavigations("", timeout, false);
   EXPECT_EQ(kTimeout, status.code());

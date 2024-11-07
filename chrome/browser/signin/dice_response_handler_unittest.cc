@@ -236,8 +236,7 @@ class DiceResponseHandlerTest : public testing::Test,
         dice_params.signout_info->account_infos.push_back(account_info);
         break;
       case DiceAction::NONE:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return dice_params;
   }

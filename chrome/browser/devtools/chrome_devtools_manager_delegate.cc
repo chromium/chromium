@@ -160,8 +160,7 @@ policy::DeveloperToolsPolicyHandler::Availability GetDevToolsAvailability(
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS disable dev tools for captive portal signin windows to prevent
   // them from being used for general navigation.
-  if (chromeos::features::IsCaptivePortalPopupWindowEnabled() &&
-      availability != Availability::kDisallowed) {
+  if (availability != Availability::kDisallowed) {
     const PrefService::Preference* const captive_portal_pref =
         profile->GetPrefs()->FindPreference(
             chromeos::prefs::kCaptivePortalSignin);
@@ -260,8 +259,7 @@ void ChromeDevToolsManagerDelegate::HandleCommand(
     std::move(callback).Run(message);
     // This should not happen, but happens. NOTREACHED tries to get
     // a repro in some test.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   it->second->HandleCommand(message, std::move(callback));
 }
@@ -391,8 +389,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
       }
       return true;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown developer tools policy";
-      return true;
+      NOTREACHED() << "Unknown developer tools policy";
   }
 }
 
@@ -420,8 +417,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
       return true;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown developer tools policy";
-      return true;
+      NOTREACHED() << "Unknown developer tools policy";
   }
 }
 

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -52,6 +53,7 @@ source_set("impl") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/file_system_access",
     "//components/content_settings/core/browser",
+    "//components/guest_view/buildflags",
     "//components/pdf/common:util",
   ]
   if (safe_browsing_mode != 0) {

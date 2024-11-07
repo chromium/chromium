@@ -140,6 +140,7 @@ BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
 BASE_DECLARE_FEATURE(kRetainOmniboxOnFocus);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);
 BASE_DECLARE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices);
+BASE_DECLARE_FEATURE(kAndroidHubSearch);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // `ShortcutsProvider` features.

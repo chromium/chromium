@@ -7,12 +7,16 @@ import("//build/config/ui.gni")
 
 source_set("common") {
   sources = [
+    "anchor_element_provider.cc",
+    "anchor_element_provider.h",
     "feature_promo/feature_promo_controller.cc",
     "feature_promo/feature_promo_controller.h",
     "feature_promo/feature_promo_handle.cc",
     "feature_promo/feature_promo_handle.h",
     "feature_promo/feature_promo_lifecycle.cc",
     "feature_promo/feature_promo_lifecycle.h",
+    "feature_promo/feature_promo_precondition.cc",
+    "feature_promo/feature_promo_precondition.h",
     "feature_promo/feature_promo_registry.cc",
     "feature_promo/feature_promo_registry.h",
     "feature_promo/feature_promo_result.cc",
@@ -21,6 +25,14 @@ source_set("common") {
     "feature_promo/feature_promo_session_policy.h",
     "feature_promo/feature_promo_specification.cc",
     "feature_promo/feature_promo_specification.h",
+    "feature_promo/impl/common_preconditions.cc",
+    "feature_promo/impl/common_preconditions.h",
+    "feature_promo/impl/feature_promo_controller_20.cc",
+    "feature_promo/impl/feature_promo_controller_20.h",
+    "feature_promo/impl/feature_promo_controller_25.cc",
+    "feature_promo/impl/feature_promo_controller_25.h",
+    "feature_promo/impl/precondition_list_provider.cc",
+    "feature_promo/impl/precondition_list_provider.h",
     "help_bubble/help_bubble.cc",
     "help_bubble/help_bubble.h",
     "help_bubble/help_bubble_factory.h",
@@ -95,9 +107,13 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "anchor_element_provider_unittest.cc",
     "feature_promo/feature_promo_controller_unittest.cc",
     "feature_promo/feature_promo_lifecycle_unittest.cc",
+    "feature_promo/feature_promo_precondition_unittest.cc",
     "feature_promo/feature_promo_specification_unittest.cc",
+    "feature_promo/impl/common_preconditions_unittest.cc",
+    "feature_promo/impl/precondition_list_provider_unittest.cc",
     "help_bubble/help_bubble_factory_registry_unittest.cc",
     "new_badge/new_badge_controller_unittest.cc",
     "product_messaging_controller_unittest.cc",

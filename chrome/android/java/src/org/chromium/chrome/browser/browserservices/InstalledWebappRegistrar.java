@@ -19,16 +19,13 @@ import javax.inject.Inject;
  * been verified.
  */
 public class InstalledWebappRegistrar {
-    private final PermissionUpdater mPermissionUpdater;
     private final Lazy<InstalledWebappDataRecorder> mDataRecorder;
 
     // These origins have already been registered so we don't need to do so again.
     private final Set<Origin> mRegisteredOrigins = new HashSet<>();
 
     @Inject
-    public InstalledWebappRegistrar(
-            PermissionUpdater permissionUpdater, Lazy<InstalledWebappDataRecorder> dataRecorder) {
-        mPermissionUpdater = permissionUpdater;
+    public InstalledWebappRegistrar(Lazy<InstalledWebappDataRecorder> dataRecorder) {
         mDataRecorder = dataRecorder;
     }
 
@@ -58,7 +55,7 @@ public class InstalledWebappRegistrar {
         mDataRecorder.get().register(packageName, origin);
         // Register that we trust the client app to handle permission for this origin and update
         // Chrome's permission for the origin.
-        mPermissionUpdater.onOriginVerified(origin, pageUrl, packageName);
+        PermissionUpdater.onOriginVerified(origin, pageUrl, packageName);
 
         mRegisteredOrigins.add(origin);
     }

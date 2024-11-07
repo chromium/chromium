@@ -53,9 +53,8 @@ ProfileErrorType ProfileErrorFromWebDataServiceWrapperError(
       return ProfileErrorType::DB_WEB_DATA;
 
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown WebDataServiceWrapper::ErrorType: " << error_type;
-      return ProfileErrorType::DB_WEB_DATA;
+      NOTREACHED() << "Unknown WebDataServiceWrapper::ErrorType: "
+                   << error_type;
   }
 }
 

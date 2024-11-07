@@ -23,6 +23,11 @@ namespace ui {
 
 namespace {
 
+AXNode* GetNodeFromTree(AXTreeID tree_id, AXNodeID node_id) {
+  CHECK(AXTreeManagerBase::GetManager(tree_id) != nullptr) << "Invalid Tree ID";
+  return AXTreeManagerBase::GetManager(tree_id)->GetNode(node_id);
+}
+
 class AXTreeManagerBaseTest : public ::testing::Test {
  public:
   AXTreeManagerBaseTest();
@@ -252,16 +257,14 @@ TEST_F(AXTreeManagerBaseTest, ReleaseTree) {
 }
 
 TEST_F(AXTreeManagerBaseTest, GetNode) {
-  EXPECT_EQ(simple_manager_.GetRoot(), AXTreeManagerBase::GetNodeFromTree(
-                                           simple_tree_id_, /* AXNodeID */ 1));
-  EXPECT_EQ(
-      complex_manager_.GetRoot(),
-      AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, /* AXNodeID */ 1));
+  EXPECT_EQ(simple_manager_.GetRoot(),
+            GetNodeFromTree(simple_tree_id_, /* AXNodeID */ 1));
+  EXPECT_EQ(complex_manager_.GetRoot(),
+            GetNodeFromTree(complex_tree_id_, /* AXNodeID */ 1));
   EXPECT_EQ(simple_manager_.GetRoot(),
             simple_manager_.GetNode(/* AXNodeID */ 1));
 
-  AXNode* iframe =
-      AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, kIframeID);
+  AXNode* iframe = GetNodeFromTree(complex_tree_id_, kIframeID);
   ASSERT_NE(nullptr, iframe);
   EXPECT_EQ(kIframeID, iframe->id());
 }
@@ -270,8 +273,7 @@ TEST_F(AXTreeManagerBaseTest, ParentChildTreeRelationship) {
   EXPECT_EQ(nullptr, empty_manager_.GetRoot());
   EXPECT_EQ(nullptr, empty_manager_.GetHostNode());
 
-  AXNode* iframe =
-      AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, kIframeID);
+  AXNode* iframe = GetNodeFromTree(complex_tree_id_, kIframeID);
   ASSERT_NE(nullptr, iframe);
   const AXNode* simple_manager_root = simple_manager_.GetTree()->root();
   ASSERT_NE(nullptr, simple_manager_root);
@@ -287,8 +289,7 @@ TEST_F(AXTreeManagerBaseTest, ParentChildTreeRelationship) {
 }
 
 TEST_F(AXTreeManagerBaseTest, AttachingAndDetachingChildTrees) {
-  AXNode* iframe =
-      AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, kIframeID);
+  AXNode* iframe = GetNodeFromTree(complex_tree_id_, kIframeID);
   ASSERT_NE(nullptr, iframe);
   AXNode* root = complex_manager_.GetTree()->root();
   ASSERT_NE(nullptr, root);

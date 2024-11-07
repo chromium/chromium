@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_SETTINGS_PUBLIC_CONSTANTS_ROUTES_UTIL_H_
 #define ASH_WEBUI_SETTINGS_PUBLIC_CONSTANTS_ROUTES_UTIL_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 
@@ -13,7 +13,7 @@ namespace chromeos::settings {
 
 // Returns true if the sub-page is one defined in `routes.mojom`.
 COMPONENT_EXPORT(ASH_WEBUI_SETTINGS_PUBLIC_CONSTANTS)
-bool IsOSSettingsSubPage(const std::string& sub_page);
+bool IsOSSettingsSubPage(std::string_view sub_page);
 
 }  // namespace chromeos::settings
 

@@ -638,19 +638,11 @@ std::string_view FormControlTypeToString(FormControlType type);
 
 // Consider using the FormControlType enum instead.
 //
-// The fallback value is returned if `type_string` has no corresponding enum
-// value in `FormControlType`. Regular use-cases should not need to pass a
-// fallback value because `FormControlType` reflects all autofillable form
-// control types.
-//
-// An exception where a fallback is needed is deserialization code. For legacy
-// reasons, form control types are serialized as strings. The fallback value
-// handles cases where the serialized data is corrupted or perhaps refers to an
-// old form control type that has been removed from the HTML spec or from
-// Autofill since.
-FormControlType StringToFormControlTypeDiscouraged(
-    std::string_view type_string,
-    std::optional<FormControlType> fallback = std::nullopt);
+// Callers may have to handle `std::nullopt` in case the `type_string` they
+// handle may be an invalid type string, e.g., when the function is called in
+// deserializiation code.
+std::optional<FormControlType> StringToFormControlTypeDiscouraged(
+    std::string_view type_string);
 
 // Serialize and deserialize FormFieldData. These are used when FormData objects
 // are serialized and deserialized.

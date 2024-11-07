@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
@@ -70,8 +72,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.autofill_virtual_card_enroll_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.autofill_virtual_card_enroll_content_description);
     }
 
     @Override

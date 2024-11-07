@@ -60,6 +60,8 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   void AddConsoleWarning(ExecutionContext* execution_context,
                          const char* message);
 
+  GPUAdapterInfo* CreateAdapterInfoForAdapter();
+
   bool isXRCompatible() const { return is_xr_compatible_; }
 
  private:

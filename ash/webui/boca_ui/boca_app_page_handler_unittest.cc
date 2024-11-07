@@ -393,7 +393,9 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
 
   // Verify local events dispatched
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
 
   boca_app_handler()->CreateSession(config->Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -438,7 +440,9 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
             request->callback().Run(std::make_unique<::boca::Session>());
           })));
 
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
 
   // Verify local events not dispatched
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(0);
@@ -516,7 +520,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
         request->callback().Run(std::move(session));
       })));
 
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(NotNull(), false))
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
       .Times(1);
 
   boca_app_handler()->GetSession(future_1.GetCallback());
@@ -575,7 +580,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
         request->callback().Run(std::move(session));
       })));
 
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(NotNull(), false))
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
       .Times(1);
 
   boca_app_handler()->GetSession(future_1.GetCallback());
@@ -599,7 +605,9 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithHTTPError) {
             base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
       })));
 
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, false)).Times(0);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(0);
   boca_app_handler()->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
@@ -619,7 +627,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
       .WillOnce(WithArg<0>(Invoke(
           [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
 
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(IsNull(), false))
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(IsNull(), /*dispatch_event=*/true))
       .Times(1);
 
   boca_app_handler()->GetSession(future_1.GetCallback());
@@ -642,7 +651,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNonActiveSessionTest) {
         request->callback().Run(std::make_unique<::boca::Session>());
       })));
 
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(IsNull(), false))
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(IsNull(), /*dispatch_event=*/true))
       .Times(1);
 
   boca_app_handler()->GetSession(future_1.GetCallback());
@@ -667,7 +677,8 @@ TEST_F(BocaAppPageHandlerTest,
         session->set_session_state(::boca::Session::ACTIVE);
         request->callback().Run(std::move(session));
       })));
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(NotNull(), false))
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(NotNull(), /*dispatch_event=*/true))
       .Times(1);
 
   boca_app_handler()->GetSession(future_1.GetCallback());
@@ -683,7 +694,9 @@ TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {
 
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(session.get()));
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
 
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -777,7 +790,9 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithNonActiveResponse) {
 
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
   auto session = GetCommonActiveSessionProto();
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
 
@@ -906,7 +921,9 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithNonActiveSession) {
 
 TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
   auto session = GetCommonActiveSessionProto();
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
@@ -1011,7 +1028,9 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
 TEST_F(BocaAppPageHandlerTest,
        UpdateOnTaskConfigWithPendingCaptionConfigShouldNotOverride) {
   auto session = GetCommonActiveSessionProto();
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(2);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(2);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(2)
       .WillRepeatedly(Return(&session));
@@ -1067,7 +1086,9 @@ TEST_F(BocaAppPageHandlerTest,
 TEST_F(BocaAppPageHandlerTest,
        UpdateCaptionConfigWithPendingOnTaskConfigShouldNotOverride) {
   auto session = GetCommonActiveSessionProto();
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(2);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(2);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(2)
       .WillRepeatedly(Return(&session));
@@ -1121,7 +1142,9 @@ TEST_F(BocaAppPageHandlerTest,
 TEST_F(BocaAppPageHandlerTest,
        UpdateOnTaskConfigWithFailedCaptionConfigShouldUseSessionData) {
   auto session = GetCommonActiveSessionProto();
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(3)
       .WillRepeatedly(Return(&session));
@@ -1182,7 +1205,9 @@ TEST_F(BocaAppPageHandlerTest,
 TEST_F(BocaAppPageHandlerTest,
        UpdateCaptionConfigWithFailedOnTaskConfigShouldUseSessionData) {
   auto session = GetCommonActiveSessionProto();
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(3)
       .WillRepeatedly(Return(&session));
@@ -1460,7 +1485,9 @@ TEST_F(BocaAppPageHandlerTest, OnSessionRosterUpdatedSucceed) {
 }
 
 TEST_F(BocaAppPageHandlerTest, JoinSessionSucceeded) {
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(1);
 
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -1486,7 +1513,9 @@ TEST_F(BocaAppPageHandlerTest, JoinSessionSucceeded) {
 }
 
 TEST_F(BocaAppPageHandlerTest, JoinSessionFailed) {
-  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(0);
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(0);
 
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,

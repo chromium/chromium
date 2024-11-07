@@ -1041,8 +1041,7 @@ void CheckOutput(
       return;
     }
     case (OutputKey::kIsFencedStorageReadAllowedMetric): {
-      SCOPED_TRACE(
-          "Check Output: PrivacySandbox.IsLocalUnpartitionedDataAccessAllowed");
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsFencedStorageReadAllowed");
       base::HistogramTester histogram_tester;
       auto top_frame_origin =
           GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
@@ -1053,8 +1052,7 @@ void CheckOutput(
           /*console_frame=*/nullptr);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsLocalUnpartitionedDataAccessAllowed",
-          histogram_value, 1);
+          "PrivacySandbox.IsFencedStorageReadAllowed", histogram_value, 1);
       return;
     }
   }

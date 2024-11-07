@@ -309,7 +309,8 @@ TEST_F(FormStructureRationalizerTest, RationalizePhoneNumberTrunkTypes) {
 
 // Tests that a form that has only one address predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization.
-TEST_F(FormStructureRationalizerTest, RationalizeRepeatedFields_OneAddress) {
+TEST_F(FormStructureRationalizerTest,
+       RationalizeRepeatedStreetAddressFields_OneAddress) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           {"Full Name", "fullName", NAME_FULL},
@@ -325,7 +326,8 @@ TEST_F(FormStructureRationalizerTest, RationalizeRepeatedFields_OneAddress) {
 // Tests that a form that has two address predicted as
 // ADDRESS_HOME_STREET_ADDRESS is modified by the address rationalization to be
 // ADDRESS_HOME_LINE1 and ADDRESS_HOME_LINE2 instead.
-TEST_F(FormStructureRationalizerTest, RationalizeRepreatedFields_TwoAddresses) {
+TEST_F(FormStructureRationalizerTest,
+       RationalizeRepeatedStreetAddressFields_TwoAddresses) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           {"Full Name", "fullName", NAME_FULL},
@@ -343,7 +345,7 @@ TEST_F(FormStructureRationalizerTest, RationalizeRepreatedFields_TwoAddresses) {
 // ADDRESS_HOME_STREET_ADDRESS is modified by the address rationalization to be
 // ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2 and ADDRESS_HOME_LINE3 instead.
 TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_ThreeAddresses) {
+       RationalizeRepeatedStreetAddressFields_ThreeAddresses) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           {"Full Name", "fullName", NAME_FULL},
@@ -363,7 +365,7 @@ TEST_F(FormStructureRationalizerTest,
 // This doesn't happen in real world, because four address lines mean multiple
 // sections according to the heuristics.
 TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_FourAddresses) {
+       RationalizeRepeatedStreetAddressFields_FourAddresses) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           {"Full Name", "fullName", NAME_FULL},
@@ -384,7 +386,7 @@ TEST_F(FormStructureRationalizerTest,
 // Tests that a form that has only one address in each section predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization.
 TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_OneAddressEachSection) {
+       RationalizeRepeatedStreetAddressFields_OneAddressEachSection) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           // Billing
@@ -411,7 +413,7 @@ TEST_F(FormStructureRationalizerTest,
 // heuristics, and is only made for testing.
 TEST_F(
     FormStructureRationalizerTest,
-    RationalizeRepreatedFields_SectionTwoAddress_SectionThreeAddress_SectionFourAddresses) {
+    RationalizeRepeatedStreetAddressFields_SectionTwoAddress_SectionThreeAddress_SectionFourAddresses) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           // Shipping.
@@ -451,8 +453,9 @@ TEST_F(
 // Tests that a form that has only one address in each section predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization,
 // while the sections are previously determined by the heuristics.
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_MultipleSectionsByHeuristics_OneAddressEach) {
+TEST_F(
+    FormStructureRationalizerTest,
+    RationalizeRepeatedStreetAddressFields_MultipleSectionsByHeuristics_OneAddressEach) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           // Billing.
@@ -478,7 +481,7 @@ TEST_F(FormStructureRationalizerTest,
 // identified by heuristics.
 TEST_F(
     FormStructureRationalizerTest,
-    RationalizeRepreatedFields_MultipleSectionsByHeuristics_TwoAddress_ThreeAddress) {
+    RationalizeRepeatedStreetAddressFields_MultipleSectionsByHeuristics_TwoAddress_ThreeAddress) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           // Shipping
@@ -1060,7 +1063,7 @@ class RationalizePhoneNumberFieldsTest : public testing::Test {
  public:
   struct FieldTemplate {
     // Description of the field passed to the rationalization.
-    autofill::FieldType type;
+    FieldType type;
     // Expectation of field after rationalization.
     bool only_fill_when_focused;
   };

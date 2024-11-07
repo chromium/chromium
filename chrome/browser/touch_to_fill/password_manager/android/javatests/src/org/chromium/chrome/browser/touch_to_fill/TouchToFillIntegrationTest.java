@@ -19,9 +19,11 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
@@ -348,8 +350,9 @@ public class TouchToFillIntegrationTest {
                                         }
 
                                         @Override
-                                        public int getSheetContentDescriptionStringId() {
-                                            return 0;
+                                        public @NonNull String getSheetContentDescription(
+                                                Context context) {
+                                            return "";
                                         }
 
                                         @Override

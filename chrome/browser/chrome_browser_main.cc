@@ -1883,7 +1883,7 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
 #if BUILDFLAG(IS_ANDROID)
   // Chrome on Android does not use default MessageLoop. It has its own
   // Android specific MessageLoop
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
   DCHECK(base::CurrentUIThread::IsSet());
 
@@ -1923,7 +1923,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 #if BUILDFLAG(IS_ANDROID)
   // Chrome on Android does not use default MessageLoop. It has its own
   // Android specific MessageLoop
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
   // Shutdown the UpgradeDetector here before `ChromeBrowserMainPartsAsh`
   // disconnects DBus services in its PostDestroyThreads.
@@ -1972,7 +1972,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 #if BUILDFLAG(IS_ANDROID)
   // On Android, there is no quit/exit. So the browser's main message loop will
   // not finish.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
 
   for (auto& chrome_extra_part : chrome_extra_parts_) {

@@ -43,6 +43,7 @@ std::unique_ptr<BabelOrcaController> BabelOrcaProducer::Create(
       request_data_provider);
 }
 
+// TODO(373880912): implement translations for producer.
 BabelOrcaProducer::BabelOrcaProducer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer,
@@ -75,12 +76,19 @@ void BabelOrcaProducer::OnSessionEnded() {
 }
 
 void BabelOrcaProducer::OnSessionCaptionConfigUpdated(
-    bool session_captions_enabled) {
+    bool session_captions_enabled,
+    bool translations_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!in_session_) {
     LOG(ERROR) << "Session caption config event called out of session.";
     return;
   }
+  // Producer currently does not process translations. If the captions enabled
+  // state hasn't changed, return fast.
+  if (session_captions_enabled_ == session_captions_enabled) {
+    return;
+  }
+
   session_captions_enabled_ = session_captions_enabled;
   if (!session_captions_enabled_ && !local_captions_enabled_) {
     StopRecognition();

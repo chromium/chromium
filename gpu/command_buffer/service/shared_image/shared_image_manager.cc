@@ -613,9 +613,7 @@ bool SharedImageManager::SupportsScanoutImages() {
   // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
   if (base::FeatureList::IsEnabled(
           features::kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported)) {
-    return ui::OzonePlatform::GetInstance()
-        ->GetSurfaceFactoryOzone()
-        ->SupportsOverlays();
+    return supports_overlays_on_ozone_;
   } else {
     return ui::OzonePlatform::GetInstance()
         ->GetPlatformRuntimeProperties()

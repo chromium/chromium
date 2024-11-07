@@ -46,6 +46,8 @@ source_set("ui") {
     "password_note_footer_view.mm",
     "saving_enterprise_disabled_view_controller.h",
     "saving_enterprise_disabled_view_controller.mm",
+    "signed_out_user_view_controller.h",
+    "signed_out_user_view_controller.mm",
     "stale_credentials_view_controller.h",
     "stale_credentials_view_controller.mm",
     "ui_util.h",

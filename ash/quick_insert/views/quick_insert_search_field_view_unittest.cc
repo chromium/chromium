@@ -58,8 +58,8 @@ class QuickInsertSearchFieldViewTest : public views::ViewsTestBase {
 TEST_F(QuickInsertSearchFieldViewTest, HasTextFieldRole) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                                  &key_event_handler, &metrics);
 
   EXPECT_EQ(view.textfield_for_testing().GetAccessibleRole(),
             ax::mojom::Role::kTextField);
@@ -68,8 +68,8 @@ TEST_F(QuickInsertSearchFieldViewTest, HasTextFieldRole) {
 TEST_F(QuickInsertSearchFieldViewTest, ClearButtonHasTooltip) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                                  &key_event_handler, &metrics);
 
   EXPECT_EQ(view.clear_button_for_testing().GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_APP_LIST_CLEAR_SEARCHBOX));
@@ -78,8 +78,8 @@ TEST_F(QuickInsertSearchFieldViewTest, ClearButtonHasTooltip) {
 TEST_F(QuickInsertSearchFieldViewTest, BackButtonHasTooltip) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                                  &key_event_handler, &metrics);
 
   EXPECT_EQ(view.back_button_for_testing().GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
@@ -89,8 +89,9 @@ TEST_F(QuickInsertSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(future.GetRepeatingCallback(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(future.GetRepeatingCallback(),
+                                  base::DoNothing(), &key_event_handler,
+                                  &metrics);
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -101,9 +102,10 @@ TEST_F(QuickInsertSearchFieldViewTest, TriggersSearchOnContentsChange) {
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      future.GetRepeatingCallback(), base::DoNothing(), &key_event_handler,
-      &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          future.GetRepeatingCallback(), base::DoNothing(), &key_event_handler,
+          &metrics));
 
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
@@ -114,8 +116,8 @@ TEST_F(QuickInsertSearchFieldViewTest, TriggersSearchOnContentsChange) {
 TEST_F(QuickInsertSearchFieldViewTest, SetPlaceholderText) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                                  &key_event_handler, &metrics);
 
   view.SetPlaceholderText(u"hello");
 
@@ -125,8 +127,8 @@ TEST_F(QuickInsertSearchFieldViewTest, SetPlaceholderText) {
 TEST_F(QuickInsertSearchFieldViewTest, SetQueryText) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                                  &key_event_handler, &metrics);
 
   view.SetQueryText(u"test");
 
@@ -137,8 +139,9 @@ TEST_F(QuickInsertSearchFieldViewTest, SetQueryTextDoesNotTriggerSearch) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   base::test::TestFuture<const std::u16string&> future;
-  PickerSearchFieldView view(future.GetRepeatingCallback(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(future.GetRepeatingCallback(),
+                                  base::DoNothing(), &key_event_handler,
+                                  &metrics);
 
   view.SetQueryText(u"test");
 
@@ -148,8 +151,8 @@ TEST_F(QuickInsertSearchFieldViewTest, SetQueryTextDoesNotTriggerSearch) {
 TEST_F(QuickInsertSearchFieldViewTest, DoesNotShowClearButtonInitially) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                                  &key_event_handler, &metrics);
 
   EXPECT_FALSE(view.clear_button_for_testing().GetVisible());
 }
@@ -157,8 +160,8 @@ TEST_F(QuickInsertSearchFieldViewTest, DoesNotShowClearButtonInitially) {
 TEST_F(QuickInsertSearchFieldViewTest, DoesNotShowBackButtonInitially) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
-                             &key_event_handler, &metrics);
+  QuickInsertSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                                  &key_event_handler, &metrics);
 
   EXPECT_FALSE(view.back_button_for_testing().GetVisible());
 }
@@ -168,8 +171,9 @@ TEST_F(QuickInsertSearchFieldViewTest, ShowsClearButtonWithQuery) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
 
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
@@ -182,8 +186,9 @@ TEST_F(QuickInsertSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
 
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
@@ -201,8 +206,9 @@ TEST_F(QuickInsertSearchFieldViewTest, ShowsClearButtonWithSetQueryText) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
 
   view->SetQueryText(u"a");
 
@@ -214,8 +220,9 @@ TEST_F(QuickInsertSearchFieldViewTest, HidesClearButtonWithEmptySetQueryText) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
 
   view->SetQueryText(u"a");
   view->SetQueryText(u"");
@@ -231,9 +238,10 @@ TEST_F(QuickInsertSearchFieldViewTest,
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      future.GetRepeatingCallback(), base::DoNothing(), &key_event_handler,
-      &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          future.GetRepeatingCallback(), base::DoNothing(), &key_event_handler,
+          &metrics));
   view->SetPlaceholderText(u"placeholder");
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
@@ -254,9 +262,10 @@ TEST_F(QuickInsertSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
   base::test::TestFuture<void> future;
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), future.GetRepeatingCallback(), &key_event_handler,
-      &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), future.GetRepeatingCallback(), &key_event_handler,
+          &metrics));
   view->SetPlaceholderText(u"placeholder");
   view->SetBackButtonVisible(true);
 
@@ -271,8 +280,9 @@ TEST_F(QuickInsertSearchFieldViewTest, GetsViewLeftOfBackButton) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetBackButtonVisible(true);
 
   EXPECT_EQ(view->GetViewLeftOf(&view->back_button_for_testing()), nullptr);
@@ -285,8 +295,9 @@ TEST_F(QuickInsertSearchFieldViewTest, GetsViewLeftOfClearButton) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetQueryText(u"query");
 
   EXPECT_EQ(view->GetViewLeftOf(&view->textfield_for_testing()), nullptr);
@@ -299,8 +310,9 @@ TEST_F(QuickInsertSearchFieldViewTest, GetsViewRightOfBackButton) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetBackButtonVisible(true);
 
   EXPECT_EQ(view->GetViewRightOf(&view->back_button_for_testing()),
@@ -313,8 +325,9 @@ TEST_F(QuickInsertSearchFieldViewTest, GetsViewRightOfClearButton) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetQueryText(u"query");
 
   EXPECT_EQ(view->GetViewRightOf(&view->textfield_for_testing()),
@@ -328,8 +341,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetQueryText(u"query");
   view->textfield_for_testing().SetSelectedRange(gfx::Range(2));
 
@@ -342,8 +356,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetBackButtonVisible(true);
   view->SetQueryText(u"query");
   view->textfield_for_testing().SetSelectedRange(gfx::Range(0));
@@ -357,8 +372,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetQueryText(u"query");
   view->textfield_for_testing().SetSelectedRange(gfx::Range(5));
 
@@ -371,8 +387,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetQueryText(u"query");
   view->textfield_for_testing().SetSelectedRange(gfx::Range(2));
 
@@ -385,8 +402,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetBackButtonVisible(true);
   view->SetQueryText(u"query");
   view->textfield_for_testing().SetSelectedRange(gfx::Range(0));
@@ -400,8 +418,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetQueryText(u"query");
   view->textfield_for_testing().SetSelectedRange(gfx::Range(5));
 
@@ -416,8 +435,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
   widget->Show();
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetPlaceholderText(u"placeholder");
   view->RequestFocus();
   views::View descendant;
@@ -429,7 +449,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
 
   task_environment()->FastForwardBy(
-      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+      QuickInsertSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
             descendant.GetViewAccessibility().GetUniqueId());
@@ -443,8 +463,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
   widget->Show();
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   views::View descendant;
 
   views::test::AXEventCounter counter(views::AXEventManager::Get());
@@ -461,8 +482,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
   widget->Show();
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetPlaceholderText(u"placeholder");
   views::View descendant;
   view->SetTextfieldActiveDescendant(&descendant);
@@ -474,7 +496,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
 
   task_environment()->FastForwardBy(
-      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+      QuickInsertSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
             descendant.GetViewAccessibility().GetUniqueId());
@@ -488,8 +510,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
   widget->Show();
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetPlaceholderText(u"placeholder");
   views::View descendant;
 
@@ -500,7 +523,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
 
   task_environment()->FastForwardBy(
-      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+      QuickInsertSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
@@ -513,8 +536,9 @@ TEST_F(QuickInsertSearchFieldViewTest,
   widget->Show();
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   view->SetPlaceholderText(u"placeholder");
   views::View descendant1, descendant2;
   view->SetTextfieldActiveDescendant(&descendant1);
@@ -523,7 +547,7 @@ TEST_F(QuickInsertSearchFieldViewTest,
   view->RequestFocus();
   view->SetTextfieldActiveDescendant(&descendant2);
   task_environment()->FastForwardBy(
-      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+      QuickInsertSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
             descendant2.GetViewAccessibility().GetUniqueId());

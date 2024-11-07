@@ -485,7 +485,7 @@ ScopedCFTypeRef<SecRequirementRef> ProcessRequirement::AsSecRequirement()
 
   if (team_identifier_.size()) {
     clauses.push_back(
-        StrCat({"certificate leaf[subject.OU] = ", team_identifier_}));
+        StrCat({"certificate leaf[subject.OU] = \"", team_identifier_, "\""}));
   }
 
   clauses.push_back(

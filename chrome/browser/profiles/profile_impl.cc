@@ -1476,8 +1476,7 @@ void ProfileImpl::EnsureSessionServiceCreated() {
 void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
                                   AppLocaleChangedVia via) {
   if (new_locale.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
@@ -1558,8 +1557,7 @@ void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
       break;
     }
     case APP_LOCALE_CHANGED_VIA_UNKNOWN: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
   if (do_update_pref)

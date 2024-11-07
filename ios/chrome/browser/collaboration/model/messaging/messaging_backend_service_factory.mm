@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 
 #import "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
+#import "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
@@ -49,9 +50,12 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   auto* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  auto tab_group_change_notifier =
+      std::make_unique<TabGroupChangeNotifierImpl>(tab_group_sync_service);
 
-  return std::make_unique<MessagingBackendServiceImpl>(tab_group_sync_service,
-                                                       data_sharing_service);
+  return std::make_unique<MessagingBackendServiceImpl>(
+      std::move(tab_group_change_notifier), tab_group_sync_service,
+      data_sharing_service);
 }
 
 }  // namespace collaboration::messaging

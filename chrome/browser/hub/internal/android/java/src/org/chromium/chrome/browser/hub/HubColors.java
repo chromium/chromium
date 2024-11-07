@@ -217,7 +217,7 @@ public final class HubColors {
         @ColorRes int backgroundColorRes;
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                backgroundColorRes = R.color.color_primary_with_alpha_15;
+                backgroundColorRes = R.color.color_primary_with_alpha_10;
                 break;
             case HubColorScheme.INCOGNITO:
                 backgroundColorRes = R.color.baseline_neutral_20;

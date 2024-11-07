@@ -794,46 +794,11 @@ void FormStructureRationalizer::RationalizePhoneNumbersForFilling() {
   }
 }
 
-void FormStructureRationalizer::ApplyRationalizationsToFieldAndLog(
-    AutofillField& field,
-    FieldType new_type,
-    FormSignature form_signature,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  auto old_type = field.Type().GetStorableType();
-  field.SetTypeTo(AutofillType(new_type));
-  if (form_interactions_ukm_logger) {
-    form_interactions_ukm_logger->LogRepeatedServerTypePredictionRationalized(
-        form_signature, field, old_type);
-  }
-}
-
-void FormStructureRationalizer::RationalizeAddressLineFields(
-    const std::vector<AutofillField*>& fields,
+void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
     FormSignature form_signature,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
-  if (fields.size() != 2 && fields.size() != 3) {
-    return;
-  }
-
-  constexpr std::array<FieldType, 3> kAddressLineTypes = {
-      ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
-  auto next_type = kAddressLineTypes.begin();
-  for (AutofillField* field : fields) {
-    LOG_AF(log_manager)
-        << LoggingScope::kRationalization << LogMessage::kRationalization
-        << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to "
-        << FieldTypeToString(*next_type);
-    ApplyRationalizationsToFieldAndLog(*field, *next_type, form_signature,
-                                       form_interactions_ukm_logger);
-    ++next_type;
-  }
-}
-
-void FormStructureRationalizer::RationalizeRepeatedFields(
-    FormSignature form_signature,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    LogManager* log_manager) {
+  // Group ADDRESS_HOME_STREET_ADDRESS `fields_` by section.
   std::map<Section, std::vector<AutofillField*>> street_address_fields;
   for (const std::unique_ptr<AutofillField>& field : *fields_) {
     if (field->IsFocusable() &&
@@ -841,20 +806,43 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
       street_address_fields[field->section()].push_back(field.get());
     }
   }
+
+  constexpr std::array<FieldType, 3> kAddressLineTypes = {
+      ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
+  // Rationalise the street address fields in every section.
   for (auto& [section, fields] : street_address_fields) {
-    RationalizeAddressLineFields(fields, form_signature,
-                                 form_interactions_ukm_logger, log_manager);
+    if (fields.size() != 2 && fields.size() != 3) {
+      continue;
+    }
+    auto next_type = kAddressLineTypes.begin();
+    for (AutofillField* field : fields) {
+      LOG_AF(log_manager)
+          << LoggingScope::kRationalization << LogMessage::kRationalization
+          << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to "
+          << FieldTypeToString(*next_type);
+      field->SetTypeTo(AutofillType(*next_type));
+      if (form_interactions_ukm_logger) {
+        form_interactions_ukm_logger
+            ->LogRepeatedServerTypePredictionRationalized(
+                form_signature, *field, ADDRESS_HOME_STREET_ADDRESS);
+      }
+      ++next_type;
+    }
   }
 }
 
 void FormStructureRationalizer::RationalizeFieldTypePredictions(
     const url::Origin& main_origin,
+    FormSignature form_signature,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const GeoIpCountryCode& client_country,
     const LanguageCode& language_code,
     LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
   RationalizeCreditCardNumberOffsets(log_manager);
+  RationalizeRepeatedStreetAddressFields(
+      form_signature, form_interactions_ukm_logger, log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizeBetweenStreetFields(log_manager);
   RationalizePhoneNumberTrunkTypes(log_manager);

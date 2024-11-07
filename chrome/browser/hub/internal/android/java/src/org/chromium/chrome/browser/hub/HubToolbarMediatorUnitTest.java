@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
@@ -331,7 +332,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testSearchBoxSetup_FlagEnabled() {
         new HubToolbarMediator(
                 Robolectric.buildActivity(Activity.class).get(),
@@ -346,7 +347,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     @Config(qualifiers = "sw600dp")
     public void testSearchBoxSetup_FlagEnabled_Tablet() {
         new HubToolbarMediator(
@@ -362,7 +363,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testSearchBoxSetup_FlagNotEnabled() {
         new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));

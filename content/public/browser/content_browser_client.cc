@@ -479,6 +479,11 @@ bool ContentBrowserClient::AllowCompressionDictionaryTransport(
   return true;
 }
 
+bool ContentBrowserClient::AllowSharedWorkerBlobURLFix(
+    BrowserContext* context) {
+  return true;
+}
+
 bool ContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {

@@ -40,6 +40,7 @@
 #include "gin/gin_features.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
+#include "third_party/blink/public/common/features.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-function.h"
@@ -65,8 +66,15 @@ void InitV8() {
   gin::V8Initializer::LoadV8Snapshot();
 #endif
 
+  std::string js_command_line_flags = "";
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeNoWasmLazyCompilation)) {
+    js_command_line_flags = "--no-wasm-lazy-compilation";
+  }
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
-                                 gin::ArrayBufferAllocator::SharedInstance());
+                                 gin::ArrayBufferAllocator::SharedInstance(),
+                                 /*reference_table=*/nullptr,
+                                 js_command_line_flags);
 }
 
 // Helper class to notify debugger of context creation/destruction.

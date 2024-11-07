@@ -16,11 +16,11 @@
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/autofill_test_utils.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -41,7 +41,6 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -50,6 +49,7 @@
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -57,6 +57,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
@@ -68,7 +69,8 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
-#include "components/feature_engagement/test/mock_tracker.h"  // nogncheck
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/test_browser_window.h"
 #endif
 
 namespace autofill {
@@ -556,17 +558,42 @@ TEST_F(ChromeAutofillClientTest,
   testing::Mock::VerifyAndClearExpectations(autofill_field_promo_controller());
 }
 
-TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_NotifyFeatureUsed) {
-  feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-      profile(), base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-        return std::make_unique<feature_engagement::test::MockTracker>();
-      }));
+class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
+ public:
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    // Create the first tab so that `web_contents()` exists.
+    AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
 
+    static_cast<TestBrowserWindow*>(window())->SetFeaturePromoController(
+        std::make_unique<MockFeaturePromoController>());
+  }
+
+  MockFeaturePromoController* feature_promo_controller() {
+    return static_cast<MockFeaturePromoController*>(
+        static_cast<TestBrowserWindow*>(window())
+            ->GetFeaturePromoControllerForTesting());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  TestChromeAutofillClient* client() {
+    return test_autofill_client_injector_[web_contents()];
+  }
+
+ private:
+  TestAutofillClientInjector<TestChromeAutofillClient>
+      test_autofill_client_injector_;
+};
+
+TEST_F(ChromeAutofillClientTestWithWindow,
+       AutofillManualFallbackIPH_NotifyFeatureUsed) {
   EXPECT_CALL(
-      *static_cast<feature_engagement::test::MockTracker*>(
-          feature_engagement::TrackerFactory::GetForBrowserContext(profile())),
-      NotifyUsedEvent);
+      *feature_promo_controller(),
+      EndPromo(Ref(feature_engagement::kIPHAutofillManualFallbackFeature),
+               user_education::EndFeaturePromoReason::kFeatureEngaged));
   client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kManualFallback);
 }
 #endif

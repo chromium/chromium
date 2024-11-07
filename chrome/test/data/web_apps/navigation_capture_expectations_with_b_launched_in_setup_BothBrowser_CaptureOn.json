@@ -32,7 +32,7 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "NavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
@@ -71,7 +71,7 @@
                   } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       }
    }

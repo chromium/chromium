@@ -1,0 +1,21 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "worker.shared_worker_blob_url_fix_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

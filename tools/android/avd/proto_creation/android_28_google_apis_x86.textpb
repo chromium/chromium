@@ -30,9 +30,12 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
-  # Tests can run into low memory issue with the default ram size 1536MB
-  # Incease to 2048MB, which is the same as that on other emulators
+  # Incrase ram to 2048MB, and vm heap size to 512MB to avoid low memory issue.
   ram_size: 2048
+  avd_properties {
+    key: "vm.heapSize"
+    value: "512"
+  }
 }
 avd_variants {
   key: "swarming"

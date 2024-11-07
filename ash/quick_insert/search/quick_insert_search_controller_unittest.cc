@@ -85,10 +85,10 @@ MATCHER_P(LastElement, matcher, "") {
 }
 
 using MockSearchResultsCallback =
-    ::testing::MockFunction<PickerViewDelegate::SearchResultsCallback>;
+    ::testing::MockFunction<QuickInsertViewDelegate::SearchResultsCallback>;
 
-using MockEmojiSearchResultsCallback =
-    ::testing::MockFunction<PickerViewDelegate::EmojiSearchResultsCallback>;
+using MockEmojiSearchResultsCallback = ::testing::MockFunction<
+    QuickInsertViewDelegate::EmojiSearchResultsCallback>;
 
 class QuickInsertSearchControllerTest : public testing::Test {
  protected:
@@ -100,14 +100,14 @@ class QuickInsertSearchControllerTest : public testing::Test {
     return task_environment_;
   }
 
-  MockSearchPickerClient& client() { return client_; }
+  MockSearchQuickInsertClient& client() { return client_; }
 
   TestingPrefServiceSimple& prefs_service() { return prefs_service_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  NiceMock<MockSearchPickerClient> client_;
+  NiceMock<MockSearchQuickInsertClient> client_;
   TestingPrefServiceSimple prefs_service_;
 };
 
@@ -222,14 +222,15 @@ TEST_F(QuickInsertSearchControllerTest,
     search_started = false;
   });
   ON_CALL(client(), StartCrosSearch)
-      .WillByDefault([&search_started, this](
-                         const std::u16string& query,
-                         std::optional<QuickInsertCategory> category,
-                         PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillByDefault(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   // Function only used for the below `EXPECT_CALL` to ensure that we don't call
   // the search callback with an empty callback after the initial state.
   testing::MockFunction<void()> after_start_search;
@@ -331,14 +332,15 @@ TEST_F(QuickInsertSearchControllerTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
@@ -367,14 +369,15 @@ TEST_F(QuickInsertSearchControllerTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
@@ -410,14 +413,15 @@ TEST_F(
         search_started = false;
       });
   EXPECT_CALL(client(), StartCrosSearch)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
@@ -510,14 +514,15 @@ TEST_F(QuickInsertSearchControllerTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
@@ -546,14 +551,15 @@ TEST_F(QuickInsertSearchControllerTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
@@ -647,14 +653,15 @@ TEST_F(QuickInsertSearchControllerTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
@@ -683,14 +690,15 @@ TEST_F(QuickInsertSearchControllerTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   PickerSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(

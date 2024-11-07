@@ -19,9 +19,6 @@ bool IsUserAnnotationsEnabled();
 // Returns the set of hosts that are allowed for forms annotations.
 std::vector<std::string> GetAllowedHostsForFormsAnnotations();
 
-// Whether the user annotations should be persisted in database.
-bool ShouldPersistUserAnnotations();
-
 bool ShouldExtractAXTreeForFormsAnnotations();
 
 // Returns the completion timeout for the entirety of forms submission stages.

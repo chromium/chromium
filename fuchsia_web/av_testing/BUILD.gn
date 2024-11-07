@@ -7,7 +7,10 @@ import("//build/config/python.gni")
 python_library("av_sync_tests") {
   testonly = true
   pydeps_file = "av_sync_tests.pydeps"
-  deps = [ "//build/fuchsia/test:version" ]
+  deps = [
+    "//build/fuchsia/test:gs_util_wrapper",
+    "//build/fuchsia/test:version",
+  ]
   data_deps = [
     "//build/config/fuchsia:deployment_resources",
     "//build/fuchsia/cipd:strip_chromedriver_binary",

@@ -29,6 +29,14 @@ BASE_DECLARE_FEATURE(kSendTabToSelfV2);
 // notifications as a push notification to their target iOS device.
 BASE_DECLARE_FEATURE(kSendTabToSelfIOSPushNotifications);
 
+// Param for whether or not to include the URL image in the push notification
+// for the kSendTabToSelfIOSPushNotifications feature.
+extern const char kSendTabIOSPushNotificationsURLImageParam[];
+
+// Convenience method for determining when SendTabIOSPushNotifications is
+// enabled with a URL image in the notification.
+bool IsSendTabIOSPushNotificationsEnabledWithURLImage();
+
 #if BUILDFLAG(IS_IOS)
 // Param for the iOS Magic Stack Card variant for the
 // kSendTabToSelfIOSPushNotifications feature.

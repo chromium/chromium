@@ -37,13 +37,13 @@ class ASH_EXPORT QuickInsertSearchAggregator {
   // again (i.e. all search results have been returned).
   explicit QuickInsertSearchAggregator(
       base::TimeDelta burn_in_period,
-      PickerViewDelegate::SearchResultsCallback callback);
+      QuickInsertViewDelegate::SearchResultsCallback callback);
   QuickInsertSearchAggregator(const QuickInsertSearchAggregator&) = delete;
   QuickInsertSearchAggregator& operator=(const QuickInsertSearchAggregator&) =
       delete;
   ~QuickInsertSearchAggregator();
 
-  void HandleSearchSourceResults(PickerSearchSource source,
+  void HandleSearchSourceResults(QuickInsertSearchSource source,
                                  std::vector<QuickInsertSearchResult> results,
                                  bool has_more_results);
   void HandleNoMoreResults(bool interrupted);
@@ -73,7 +73,7 @@ class ASH_EXPORT QuickInsertSearchAggregator {
 
   base::OneShotTimer burn_in_timer_;
 
-  PickerViewDelegate::SearchResultsCallback current_callback_;
+  QuickInsertViewDelegate::SearchResultsCallback current_callback_;
 
   static constexpr size_t kNumSections =
       base::to_underlying(QuickInsertSectionType::kMaxValue) + 1;

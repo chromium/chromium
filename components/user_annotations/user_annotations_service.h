@@ -31,7 +31,6 @@ namespace optimization_guide {
 class OptimizationGuideDecider;
 namespace proto {
 class AXTreeUpdate;
-class UserAnnotationsEntry;
 }  // namespace proto
 }  // namespace optimization_guide
 
@@ -44,7 +43,6 @@ namespace user_annotations {
 
 class FormSubmissionHandler;
 class UserAnnotationsDatabase;
-struct Entry;
 
 class UserAnnotationsService : public KeyedService {
  public:
@@ -108,7 +106,7 @@ class UserAnnotationsService : public KeyedService {
   void Shutdown() override;
 
   // Saves `autofill_profile` to the database, then runs `callback`.
-  void SaveAutofillProfile(
+  virtual void SaveAutofillProfile(
       const autofill::AutofillProfile& autofill_profile,
       base::OnceCallback<void(UserAnnotationsExecutionResult)> callback);
 
@@ -123,6 +121,10 @@ class UserAnnotationsService : public KeyedService {
   void OnOsCryptAsyncReady(const base::FilePath& storage_dir,
                            os_crypt_async::Encryptor encryptor,
                            bool success);
+
+  void InitializeFormsAnnotationsFromCommandLine(
+      const optimization_guide::proto::FormsAnnotationsResponse&
+          manual_entries);
 
   // Returns whether the database initialization is complete.
   bool IsDatabaseReady();
@@ -141,14 +143,7 @@ class UserAnnotationsService : public KeyedService {
     return model_executor_;
   }
 
-  // An in-memory representation of the "database" of user annotation entries.
-  // Used only when `ShouldPersistUserAnnotations()` is false.
-  std::vector<Entry> entries_;
-
-  int64_t entry_id_counter_ = 0;
-
   // Database used to persist the user annotation entries.
-  // Used only when `ShouldPersistUserAnnotations()` is true.
   base::SequenceBound<UserAnnotationsDatabase> user_annotations_database_;
 
   // Maintains the subscription for `OSCryptAsync` and cancels upon destruction.

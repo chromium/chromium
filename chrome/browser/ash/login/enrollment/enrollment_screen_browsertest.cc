@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -542,6 +543,31 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TokenBasedEnrollmentSuccess) {
   enrollment_screen()->Show(&context);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EnrollmentScreenTest,
+    TokenBasedEnrollmentOobeConfigSkipEnrollmentSuccessScreen) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+  enrollment_config.mode =
+      policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+  enrollment_config.enrollment_token = kTestEnrollmentToken;
+
+  enrollment_helper_.ExpectEnrollmentTokenConfig(kTestEnrollmentToken);
+  enrollment_helper_.ExpectTokenBasedEnrollmentSuccess();
+  enrollment_helper_.DisableAttributePromptUpdate();
+  enrollment_helper_.SetupClearAuth();
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+
+  WizardContext context;
+  context.configuration.Set(configuration::kSkipEnrollmentSuccessScreen, true);
+  enrollment_screen()->Show(&context);
+
+  enrollment_ui_.WaitForScreenExit();
 
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }

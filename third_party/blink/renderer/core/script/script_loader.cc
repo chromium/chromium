@@ -993,37 +993,42 @@ PendingScript* ScriptLoader::PrepareScript(
 
       // <spec step="32.2.C">"importmap"</spec>
       case ScriptTypeAtPrepare::kImportMap: {
-        // <spec step="32.2.C.1">If el's relevant global object's import maps
-        // allowed is false, then queue an element task on the DOM manipulation
-        // task source given el to fire an event named error at el, and
-        // return.</spec>
-        Modulator* modulator = Modulator::From(script_state);
-        auto aquiring_state = modulator->GetAcquiringImportMapsState();
-        switch (aquiring_state) {
-          case Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad:
-          case Modulator::AcquiringImportMapsState::kMultipleImportMaps:
-            element_document.AddConsoleMessage(
-                MakeGarbageCollected<ConsoleMessage>(
-                    mojom::blink::ConsoleMessageSource::kJavaScript,
-                    mojom::blink::ConsoleMessageLevel::kError,
-                    aquiring_state == Modulator::AcquiringImportMapsState::
-                                          kAfterModuleScriptLoad
-                        ? "An import map is added after module script load was "
-                          "triggered."
-                        : "Multiple import maps are not yet supported. "
-                          "https://crbug.com/927119"));
-            element_document.GetTaskRunner(TaskType::kDOMManipulation)
-                ->PostTask(FROM_HERE,
-                           WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                         WrapPersistent(element_.Get())));
-            return nullptr;
+        if (!RuntimeEnabledFeatures::MultipleImportMapsEnabled()) {
+          // TODO(crbug.com/365578430): Remove this logic once the
+          // MultipleImportMaps flag is removed.
+          //
+          // <spec step="32.2.C.1">If el's relevant global object's import maps
+          // allowed is false, then queue an element task on the DOM
+          // manipulation task source given el to fire an event named error at
+          // el, and return.</spec>
+          Modulator* modulator = Modulator::From(script_state);
+          auto acquiring_state = modulator->GetAcquiringImportMapsState();
+          switch (acquiring_state) {
+            case Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad:
+            case Modulator::AcquiringImportMapsState::kMultipleImportMaps:
+              element_document.AddConsoleMessage(MakeGarbageCollected<
+                                                 ConsoleMessage>(
+                  mojom::blink::ConsoleMessageSource::kJavaScript,
+                  mojom::blink::ConsoleMessageLevel::kError,
+                  acquiring_state == Modulator::AcquiringImportMapsState::
+                                         kAfterModuleScriptLoad
+                      ? "An import map is added after module script load was "
+                        "triggered."
+                      : "Multiple import maps are not yet supported. "
+                        "https://crbug.com/927119"));
+              element_document.GetTaskRunner(TaskType::kDOMManipulation)
+                  ->PostTask(
+                      FROM_HERE,
+                      WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                    WrapPersistent(element_.Get())));
+              return nullptr;
 
-          case Modulator::AcquiringImportMapsState::kAcquiring:
-            // <spec step="32.2.C.2">Set el's relevant global object's import
-            // maps allowed to false.</spec>
-            modulator->SetAcquiringImportMapsState(
-                Modulator::AcquiringImportMapsState::kMultipleImportMaps);
-            break;
+            case Modulator::AcquiringImportMapsState::kAcquiring:
+              modulator->SetAcquiringImportMapsState(
+                  Modulator::AcquiringImportMapsState::kMultipleImportMaps);
+
+              break;
+          }
         }
         UseCounter::Count(*context_window, WebFeature::kImportMap);
 
@@ -1124,10 +1129,9 @@ PendingScript* ScriptLoader::PrepareScript(
         }
         Modulator* modulator = Modulator::From(script_state);
 
-        // <spec label="fetch-an-inline-module-script-graph" step="1">Let script
+        // <spec label="fetch-an-inline-module-script-graph" step="2">Let script
         // be the result of creating a JavaScript module script using source
         // text, settings object, base URL, and options.</spec>
-
         ModuleScriptCreationParams params(
             source_url, base_url, ScriptSourceLocationType::kInline,
             ModuleType::kJavaScript, ParkableString(source_text.Impl()),
@@ -1135,7 +1139,8 @@ PendingScript* ScriptLoader::PrepareScript(
         ModuleScript* module_script =
             JSModuleScript::Create(params, modulator, options, position);
 
-        // <spec label="fetch-an-inline-module-script-graph" step="2">If script
+        // TODO(crbug.com/364904756) - This spec step no longer exists.
+        // <spec label="fetch-an-inline-module-script-graph" step="?">If script
         // is null, asynchronously complete this algorithm with null, and
         // return.</spec>
         if (!module_script) {
@@ -1145,15 +1150,17 @@ PendingScript* ScriptLoader::PrepareScript(
         if (RuntimeEnabledFeatures::RenderBlockingInlineModuleScriptEnabled() &&
             potentially_render_blocking &&
             element_document.GetRenderBlockingResourceManager()) {
-          // After https://github.com/whatwg/html/pull/10035:
-          // <spec label="fetch-an-inline-module-script-graph" step="3">If el is
+          // TODO(crbug.com/364904756) - This spec step does not exist. The PR
+          // below has landed, but doesn't contain it. After
+          // https://github.com/whatwg/html/pull/10035: <spec
+          // label="fetch-an-inline-module-script-graph" step="?">If el is
           // potentially render-blocking, then block rendering on el and set
           // options's  render-blocking  to true.</spec>
           element_document.GetRenderBlockingResourceManager()->AddPendingScript(
               *element_);
         }
 
-        // <spec label="fetch-an-inline-module-script-graph" step="4">Fetch the
+        // <spec label="fetch-an-inline-module-script-graph" step="3">Fetch the
         // descendants of and link script, given settings object, the
         // destination "script", and visited set. When this asynchronously
         // completes with final result, asynchronously complete this algorithm

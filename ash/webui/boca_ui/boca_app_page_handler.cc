@@ -217,7 +217,8 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
                   // Load current session into memory;
                   BocaAppClient::Get()
                       ->GetSessionManager()
-                      ->UpdateCurrentSession(std::move(result.value()), true);
+                      ->UpdateCurrentSession(std::move(result.value()),
+                                             /*dispatch_event=*/true);
                   std::move(callback).Run(true);
                 }
               },
@@ -270,7 +271,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                   mojom::GetSessionError::kEmpty));
               // Load current session into memory;
               BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-                  nullptr, false);
+                  nullptr, /*dispatch_event=*/true);
               return;
             }
             auto session = std::move(result.value());
@@ -280,7 +281,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
 
             // Load current session into memory;
             BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-                std::move(session), false);
+                std::move(session), /*dispatch_event=*/true);
           },
           std::move(callback)));
   session_client_impl_->GetSession(std::move(get_session_request));
@@ -566,7 +567,7 @@ void BocaAppHandler::OnUpdatedOnTaskConfig(
   std::move(callback).Run(std::nullopt);
   // Trigger a session reload from session response.
   BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-      std::move(result.value()), true);
+      std::move(result.value()), /*dispatch_event=*/true);
 }
 
 void BocaAppHandler::OnUpdatedCaptionConfig(
@@ -589,7 +590,7 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
   std::move(callback).Run(std::nullopt);
   // Trigger a session reload from session response.
   BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-      std::move(result.value()), true);
+      std::move(result.value()), /*dispatch_event=*/true);
 }
 
 void BocaAppHandler::OnStudentRemoved(

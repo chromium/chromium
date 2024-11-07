@@ -72,9 +72,6 @@ class InvalidationListener {
  public:
   // Application id for the `GCMDriver` used by invalidations.
   static constexpr char kFmAppId[] = "com.google.chrome.fcm.invalidations";
-  // The pantheon project number was decided by the serverside team.
-  // The number is used to deliver invalidations with FCM.
-  static constexpr char kProjectNumberEnterprise[] = "1013309121859";
 
   // Represents version of the format of the invalidation messages that is
   // parsed by the listener.
@@ -115,7 +112,7 @@ class InvalidationListener {
   //
   // `project_number` is a pantheon project number, e.g.
   //   - `1013309121859` for DMServer invalidations, see the comment for
-  // `kProjectNumberEnterprise`.
+  // `kCriticalInvalidationsProjectNumber`.
   //
   // `log_prefix` is a string that will be added in the beginning of each
   // emitted log. The string should be wrapped with square brackets, e.g.

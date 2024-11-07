@@ -68,8 +68,6 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
-using ::autofill::test::AutofillTestingPrefService;
-
 namespace autofill {
 
 // This class is for easier writing of tests. There are two instances of the
@@ -146,14 +144,14 @@ class TestAutofillClientTemplate : public T {
     return plus_address_delegate_.get();
   }
 
-  AutofillTestingPrefService* GetPrefs() override {
+  test::AutofillTestingPrefService* GetPrefs() override {
     if (!prefs_) {
       prefs_ = autofill::test::PrefServiceForTesting();
     }
     return prefs_.get();
   }
 
-  const AutofillTestingPrefService* GetPrefs() const override {
+  const test::AutofillTestingPrefService* GetPrefs() const override {
     return const_cast<TestAutofillClientTemplate*>(this)->GetPrefs();
   }
 
@@ -386,7 +384,7 @@ class TestAutofillClientTemplate : public T {
     return test_addresses_;
   }
 
-  void SetPrefs(std::unique_ptr<AutofillTestingPrefService> prefs) {
+  void SetPrefs(std::unique_ptr<test::AutofillTestingPrefService> prefs) {
     prefs_ = std::move(prefs);
   }
 
@@ -516,7 +514,7 @@ class TestAutofillClientTemplate : public T {
 #endif
 
   // NULL by default.
-  std::unique_ptr<AutofillTestingPrefService> prefs_;
+  std::unique_ptr<test::AutofillTestingPrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;

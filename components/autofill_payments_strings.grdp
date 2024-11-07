@@ -247,6 +247,9 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for save card bubble in loading state showing a throbber.">
     Saving card info
   </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for save IBAN bubble in loading state showing a throbber.">
+    Saving IBAN info
+  </message>
 
   <!-- Autofill Local card migration bubble or dialog -->
   <if expr="not is_ios and not is_android">

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/boca/babelorca/fakes/fake_translation_dispatcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,33 +30,6 @@ constexpr char kTranscriptionPartial[] =
     "The red fox jumped over the lazy brown dog.";
 constexpr char kTranscriptionFullFinal[] =
     "The red fox jumped over the lazy brown dog. Hello there! ";
-
-class FakeBabelOrcaTranslationDispatcher
-    : public BabelOrcaTranslationDipsatcher {
- public:
-  FakeBabelOrcaTranslationDispatcher() = default;
-  ~FakeBabelOrcaTranslationDispatcher() override = default;
-
-  void GetTranslation(const std::string& result,
-                      std::string source_language,
-                      std::string target_language,
-                      captions::OnTranslateEventCallback callback) override {
-    ++num_translation_calls_;
-    std::move(callback).Run(result);
-  }
-
-  int GetNumGetTranslationCalls() { return num_translation_calls_; }
-
-  base::WeakPtr<FakeBabelOrcaTranslationDispatcher> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  int num_translation_calls_;
-  base::WeakPtrFactory<FakeBabelOrcaTranslationDispatcher> weak_ptr_factory_{
-      this};
-};
-
 }  // namespace
 
 class BabelOrcaCaptionTranslatorTest : public testing::Test {

@@ -382,26 +382,26 @@ TEST_F(LazilyDeallocatedDequeTest, RingCanPush) {
 TEST_F(LazilyDeallocatedDequeTest, RingPushPopPushPop) {
   LazilyDeallocatedDeque<int>::Ring r(4);
 
-  EXPECT_FALSE(r.CanPop());
+  EXPECT_TRUE(r.empty());
   EXPECT_TRUE(r.CanPush());
   r.push_back(1);
-  EXPECT_TRUE(r.CanPop());
+  EXPECT_FALSE(r.empty());
   EXPECT_TRUE(r.CanPush());
   r.push_back(2);
   EXPECT_TRUE(r.CanPush());
   r.push_back(3);
   EXPECT_FALSE(r.CanPush());
 
-  EXPECT_TRUE(r.CanPop());
+  EXPECT_FALSE(r.empty());
   EXPECT_EQ(1, r.front());
   r.pop_front();
-  EXPECT_TRUE(r.CanPop());
+  EXPECT_FALSE(r.empty());
   EXPECT_EQ(2, r.front());
   r.pop_front();
-  EXPECT_TRUE(r.CanPop());
+  EXPECT_FALSE(r.empty());
   EXPECT_EQ(3, r.front());
   r.pop_front();
-  EXPECT_FALSE(r.CanPop());
+  EXPECT_TRUE(r.empty());
 
   EXPECT_TRUE(r.CanPush());
   r.push_back(10);
@@ -411,17 +411,17 @@ TEST_F(LazilyDeallocatedDequeTest, RingPushPopPushPop) {
   r.push_back(30);
   EXPECT_FALSE(r.CanPush());
 
-  EXPECT_TRUE(r.CanPop());
+  EXPECT_FALSE(r.empty());
   EXPECT_EQ(10, r.front());
   r.pop_front();
-  EXPECT_TRUE(r.CanPop());
+  EXPECT_FALSE(r.empty());
   EXPECT_EQ(20, r.front());
   r.pop_front();
-  EXPECT_TRUE(r.CanPop());
+  EXPECT_FALSE(r.empty());
   EXPECT_EQ(30, r.front());
   r.pop_front();
 
-  EXPECT_FALSE(r.CanPop());
+  EXPECT_TRUE(r.empty());
 }
 
 TEST_F(LazilyDeallocatedDequeTest, PushAndIterate) {

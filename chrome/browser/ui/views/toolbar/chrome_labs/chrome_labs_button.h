@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"

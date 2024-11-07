@@ -88,8 +88,7 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return DownloadCheckResult::UNKNOWN;
+  NOTREACHED();
 }
 
 void ResponseToDownloadCheckResult(
@@ -205,8 +204,7 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return EventResult::UNKNOWN;
+      NOTREACHED();
   }
 }
 
@@ -251,10 +249,8 @@ EventResult GetEventResult(DownloadCheckResult download_result,
       return EventResult::BLOCKED;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Should never be final result";
-      break;
+      NOTREACHED() << "Should never be final result";
   }
-  return EventResult::UNKNOWN;
 }
 
 std::string GetTriggerName(DeepScanTrigger trigger) {
@@ -685,7 +681,7 @@ void DeepScanningRequest::OnScanComplete(
   } else if (IsEnterpriseTriggered()) {
     OnEnterpriseScanComplete(current_path, result, response);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

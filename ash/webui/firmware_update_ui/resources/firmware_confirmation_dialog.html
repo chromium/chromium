@@ -50,11 +50,11 @@
           <div id="disclaimer-icon" aria-label="[[i18n('confirmationDisclaimerIconAriaLabel')]]">
             <iron-icon icon="firmware-updates:warning" aria-hidden="true"></iron-icon>
           </div>
-          <div id="disclaimer-text">[[i18n('confirmationDisclaimer')]]</div>
+          <div id="disclaimer-text">[[computeDisclaimer()]]</div>
         </div>
       </template>
       <div id="updateDialogBody">
-        [[i18n('updatingInfo')]]
+        [[computeDialog()]]
       </div>
       <div id="proceedText">
         [[i18n('proceedConfirmationText')]]

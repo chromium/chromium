@@ -41,6 +41,7 @@
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -477,6 +478,22 @@ TEST_F(PaletteTrayTestWithInternalStylus, PaletteBubbleShownOnEject) {
   InsertStylus();
   EXPECT_FALSE(test_api_->palette_tool_manager()->IsToolActive(
       PaletteToolId::LASER_POINTER));
+}
+
+// Verify that palette bubble is shown/hidden on stylus eject/insert iff the
+// auto open palette setting is true.
+TEST_F(PaletteTrayTestWithInternalStylus, PaletteBubbleViewAccessibleName) {
+  active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, true);
+
+  // Removing the stylus shows the bubble.
+  EjectStylus();
+  ASSERT_TRUE(palette_tray_->GetBubbleView());
+
+  ui::AXNodeData node_data;
+  palette_tray_->GetBubbleView()->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            test_api_->GetAccessibleNameForBubble());
 }
 
 // Base class for tests that need to simulate an internal stylus, and need to

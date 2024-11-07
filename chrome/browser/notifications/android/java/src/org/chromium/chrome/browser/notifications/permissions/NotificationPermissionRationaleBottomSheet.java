@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationRationaleResult;
@@ -199,8 +201,8 @@ public class NotificationPermissionRationaleBottomSheet
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.notification_permission_rationale_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.notification_permission_rationale_content_description);
     }
 
     @Override

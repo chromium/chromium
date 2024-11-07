@@ -13,6 +13,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -22,6 +23,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
@@ -35,6 +37,7 @@ import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
 import {PerformanceTracker} from './performance_tracker.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
+import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {TranslateButtonElement} from './translate_button.js';
 
 export let INVOCATION_SOURCE: string = 'Unknown';
@@ -47,6 +50,9 @@ export interface LensOverlayAppElement {
     initialGradient: InitialGradientElement,
     moreOptionsButton: CrIconButtonElement,
     moreOptionsMenu: HTMLElement,
+    searchbox: SearchboxElement,
+    searchboxContainer: HTMLElement,
+    searchboxGhostLoader: SearchboxGhostLoaderElement,
     selectionOverlay: SelectionOverlayElement,
     toast: CrToastElement,
     translateButton: TranslateButtonElement,
@@ -129,6 +135,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       },
       isGhostLoaderEnabled: {
         type: Boolean,
+        reflectToAttribute: true,
         value: () =>
             loadTimeData.getBoolean('showContextualSearchboxGhostLoader'),
       },
@@ -181,6 +188,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private listenerIds: number[];
   private invocationTime: number = loadTimeData.getValue('invocationTime');
 
+  private searchboxBoundingClientRectObserver: ResizeObserver =
+      new ResizeObserver(this.focusShimmerOnSearchbox.bind(this));
+
   // The ID returned by requestAnimationFrame for the updateCursorPosition
   // function.
   private updateCursorPositionRequestId?: number;
@@ -217,7 +227,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         document, 'translate-mode-state-changed', (e: CustomEvent) => {
           this.isTranslateModeActive = e.detail.translateModeEnabled;
           this.searchBoxHidden =
-              this.isTranslateModeActive || this.sidePanelOpened;
+              e.detail.shouldHideSearchbox || this.sidePanelOpened;
         });
     this.eventTracker_.add(document, 'text-copied', () => {
       this.showToast(this.i18n('copyToastMessage'));
@@ -286,11 +296,59 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private handleSearchboxFocused() {
     this.isSearchboxFocused = true;
     this.$.translateButtonContainer.classList.remove('searchbox-unfocused');
+
+    this.focusShimmerOnSearchbox();
+
+    // Setup a listener on the suggestions container to change the shimmer when
+    // the searchbox changes sizes or the selection overlay changes size.
+    this.searchboxBoundingClientRectObserver.observe(
+        this.$.searchbox.getSuggestionsElement());
+    this.searchboxBoundingClientRectObserver.observe(this.$.selectionOverlay);
+  }
+
+  private focusShimmerOnSearchbox() {
+    const suggestionsContainer = this.$.searchbox.getSuggestionsElement();
+    const areSuggestionsShowing =
+        suggestionsContainer.offsetWidth * suggestionsContainer.offsetHeight >
+        0;
+    // If no suggestions are showing, default to the ghost loader size. If ghost
+    // loader is not showing, default to the searchbox bounds.
+    const newSearchboxWidth = areSuggestionsShowing ?
+        suggestionsContainer.offsetWidth :
+        (this.$.searchboxGhostLoader.offsetWidth > 0 ?
+        this.$.searchboxGhostLoader.offsetWidth:
+        this.$.searchbox.offsetWidth);
+    const newSearchboxHeight = areSuggestionsShowing ?
+        suggestionsContainer.offsetHeight :
+        (this.$.searchboxGhostLoader.offsetHeight > 0 ?
+          this.$.searchboxGhostLoader.offsetHeight:
+          this.$.searchbox.offsetHeight);
+
+    // Get the top and left position of the searchbox relative to the selection
+    // overlay.
+    const selectionOverlayRect = this.$.selectionOverlay.getBoundingRect();
+    const newTop =
+        this.$.searchboxContainer.offsetTop - selectionOverlayRect.top;
+    const newLeft =
+        this.$.searchboxContainer.offsetLeft - selectionOverlayRect.left;
+
+    focusShimmerOnRegion(
+        this, newTop / selectionOverlayRect.height,
+        newLeft / selectionOverlayRect.width,
+        newSearchboxWidth / selectionOverlayRect.width,
+        newSearchboxHeight / selectionOverlayRect.height,
+        ShimmerControlRequester.SEARCHBOX);
   }
 
   private handleSearchboxBlurred() {
     this.isSearchboxFocused = false;
     this.$.translateButtonContainer.classList.add('searchbox-unfocused');
+
+    // Unfocus the shimmer.
+    unfocusShimmer(this, ShimmerControlRequester.SEARCHBOX);
+
+    // Disconnect the ResizeObserver.
+    this.searchboxBoundingClientRectObserver.disconnect();
   }
 
   private handleLanguagePickersOpened() {

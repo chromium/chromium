@@ -1889,6 +1889,7 @@ if (!is_android) {
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
+      "//chrome/browser/battery",
       "//chrome/browser/bitmap_fetcher:browser_tests",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
@@ -1898,6 +1899,7 @@ if (!is_android) {
       "//chrome/browser/content_settings:browser_tests",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/content_settings:content_settings_util",
+      "//chrome/browser/data_saver",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/dips:browser_tests",
@@ -1943,6 +1945,7 @@ if (!is_android) {
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:browser_tests",
       "//chrome/browser/prefs:util",
+      "//chrome/browser/preloading:prefs",
       "//chrome/browser/preloading/prefetch:browser_tests",
       "//chrome/browser/preloading/prerender:browser_tests",
       "//chrome/browser/preloading/preview:browser_tests",
@@ -4474,8 +4477,8 @@ if (!is_android) {
         "../browser/ui/views/location_bar/location_bar_view_browsertest.cc",
         "../browser/ui/views/location_bar/location_icon_view_browsertest.cc",
         "../browser/ui/views/location_bar/zoom_bubble_view_browsertest.cc",
-        "../browser/ui/views/media_router/cast_dialog_view_browsertest.cc",
         "../browser/ui/views/media_router/cast_browser_controller_browsertest.cc",
+        "../browser/ui/views/media_router/cast_dialog_view_browsertest.cc",
         "../browser/ui/views/media_router/media_router_ui_browsertest.cc",
         "../browser/ui/views/media_router/presentation_receiver_window_view_browsertest.cc",
         "../browser/ui/views/omnibox/omnibox_popup_view_views_browsertest.cc",
@@ -5774,7 +5777,7 @@ test("unit_tests") {
     "../browser/media/media_engagement_service_unittest.cc",
     "../browser/media/media_engagement_session_unittest.cc",
     "../browser/media/media_storage_id_salt_unittest.cc",
-    "../browser/media/router/presentation/presentation_service_delegate_impl_unittest.cc",
+    "../browser/media/router/presentation/controller_presentation_service_delegate_impl_unittest.cc",
     "../browser/media/webrtc/capture_policy_utils_unittest.cc",
     "../browser/media/webrtc/media_device_salt_service_factory_unittest.cc",
     "../browser/media/webrtc/media_stream_device_permission_context_unittest.cc",
@@ -6093,6 +6096,7 @@ test("unit_tests") {
       "../browser/net/server_certificate_database_test_util.h",
       "../browser/net/server_certificate_database_unittest.cc",
       "../browser/ui/webui/certificate_manager/client_cert_sources_unittest.cc",
+      "../browser/ui/webui/certificate_manager/user_cert_sources_unittest.cc",
     ]
     if (is_chromeos) {
       sources += [
@@ -6216,6 +6220,7 @@ test("unit_tests") {
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/autofill",
+    "//chrome/browser/battery",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bitmap_fetcher:unit_tests",
     "//chrome/browser/breadcrumbs",
@@ -6228,6 +6233,7 @@ test("unit_tests") {
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/crash_upload_list:unit_tests",
+    "//chrome/browser/data_saver",
     "//chrome/browser/devtools",
     "//chrome/browser/dips:unit_tests",
     "//chrome/browser/download",
@@ -6266,6 +6272,7 @@ test("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:unit_tests",
     "//chrome/browser/prefs:util",
+    "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading/prerender:unit_tests",
     "//chrome/browser/privacy_budget:unit_tests",
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
@@ -7892,6 +7899,7 @@ test("unit_tests") {
       "//components/endpoint_fetcher:test_support",
       "//components/enterprise",
       "//components/enterprise:test_support",
+      "//components/favicon/content",
       "//components/feature_engagement/test:test_support",
       "//components/fullscreen_control",
       "//components/global_media_controls:test_support",
@@ -9757,7 +9765,7 @@ test("unit_tests") {
       "../browser/ui/window_name_prompt/window_name_prompt_unittest.cc",
     ]
     if (!is_chrome_for_testing) {
-      sources += [ "../browser/ui/views/user_education/browser_feature_promo_controller_unittest.cc" ]
+      sources += [ "../browser/ui/views/user_education/impl/browser_feature_promo_controller_20_unittest.cc" ]
     }
     if (is_linux) {
       sources += [
@@ -10877,7 +10885,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
         "../browser/ui/views/translate/translate_bubble_view_interactive_uitest.cc",
         "../browser/ui/views/translate/translate_icon_view_interactive_uitest.cc",
-        "../browser/ui/views/user_education/browser_feature_promo_controller_interactive_uitest.cc",
         "../browser/ui/views/user_education/browser_user_education_service_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_dialog_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_lifecycle_interactive_uitest.cc",
@@ -10886,6 +10893,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/user_education/help_bubble_factory_webui_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_handler_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_view_interactive_uitest.cc",
+        "../browser/ui/views/user_education/impl/browser_feature_promo_controller_20_interactive_uitest.cc",
         "../browser/ui/views/user_education/product_messaging_controller_interactive_uitest.cc",
         "../browser/ui/views/user_education/tutorial_interactive_uitest.cc",
         "interaction/interaction_sequence_interactive_uitest.cc",

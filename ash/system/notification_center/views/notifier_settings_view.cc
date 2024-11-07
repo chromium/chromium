@@ -131,7 +131,6 @@ class NotifierButtonWrapperView : public views::View {
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
@@ -140,11 +139,39 @@ class NotifierButtonWrapperView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override;
   void OnBlur() override;
 
+  void SubscribeCallbacksForAccessibility();
+
  private:
   std::unique_ptr<views::Painter> focus_painter_;
 
   // NotifierButton to wrap.
   raw_ptr<views::View> contents_;
+
+  // Callback functions to update the a11y cache when `contents_`'s a11y cache
+  // gets updated. This view's accessibility attributes must mirror all
+  // attributes of `contents_`.
+  void OnAccessibleRoleChangedCallback(ax::mojom::Role role);
+  void OnAccessibleNameChangedCallback(ax::mojom::StringAttribute attribute,
+                                       const std::optional<std::string>& name);
+  void OnAccessibleCheckedStateChangedCallback(
+      ax::mojom::IntAttribute attribute,
+      std::optional<int> value);
+  void OnAccessibleIsDefaultChangedCallback(ax::mojom::State state,
+                                            bool is_default);
+  void OnAccessibleIsEnabledChangedCallback(ax::mojom::IntAttribute attribute,
+                                            std::optional<int> value);
+  void OnAccessibleHoveredChangedCallback(ax::mojom::State state, bool value);
+  void OnAccessibleDefaultActionVerbChangedCallback(
+      ax::mojom::IntAttribute attribute,
+      std::optional<int> value);
+
+  base::CallbackListSubscription role_changed_subscription_;
+  base::CallbackListSubscription name_changed_subscription_;
+  base::CallbackListSubscription checked_state_changed_subscription_;
+  base::CallbackListSubscription is_default_changed_subscription_;
+  base::CallbackListSubscription is_enabled_changed_subscription_;
+  base::CallbackListSubscription hovered_changed_subscription_;
+  base::CallbackListSubscription default_action_verb_changed_subscription_;
 };
 
 BEGIN_METADATA(NotifierButtonWrapperView)
@@ -154,6 +181,27 @@ NotifierButtonWrapperView::NotifierButtonWrapperView(views::View* contents)
     : focus_painter_(TrayPopupUtils::CreateFocusPainter()),
       contents_(contents) {
   AddChildView(contents);
+
+  // We add callbacks so that whenever the a11y attributes of `contents_`
+  // change, we update the a11y attributes for `this`.
+  SubscribeCallbacksForAccessibility();
+  GetViewAccessibility().SetRole(
+      contents_->GetViewAccessibility().GetCachedRole());
+  !contents_->GetViewAccessibility().GetCachedName().empty()
+      ? GetViewAccessibility().SetName(
+            contents_->GetViewAccessibility().GetCachedName())
+      : GetViewAccessibility().SetName(
+            std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  GetViewAccessibility().SetCheckedState(
+      contents_->GetViewAccessibility().GetCheckedState());
+  GetViewAccessibility().SetIsDefault(
+      contents_->GetViewAccessibility().GetIsDefault());
+  GetViewAccessibility().SetIsEnabled(
+      contents_->GetViewAccessibility().GetIsEnabled());
+  GetViewAccessibility().SetIsHovered(
+      contents_->GetViewAccessibility().GetIsHovered());
+  GetViewAccessibility().SetDefaultActionVerb(
+      contents_->GetViewAccessibility().GetDefaultActionVerb());
 }
 
 NotifierButtonWrapperView::~NotifierButtonWrapperView() = default;
@@ -171,11 +219,6 @@ void NotifierButtonWrapperView::Layout(PassKey) {
 gfx::Size NotifierButtonWrapperView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(kWidth, kNotifierButtonWrapperHeight);
-}
-
-void NotifierButtonWrapperView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  contents_->GetViewAccessibility().GetAccessibleNodeData(node_data);
 }
 
 void NotifierButtonWrapperView::OnFocus() {
@@ -210,6 +253,109 @@ void NotifierButtonWrapperView::OnBlur() {
   View::OnBlur();
   // We render differently when focused.
   SchedulePaint();
+}
+
+void NotifierButtonWrapperView::SubscribeCallbacksForAccessibility() {
+  role_changed_subscription_ =
+      contents_->GetViewAccessibility().AddRoleChangedCallback(
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleRoleChangedCallback,
+              base::Unretained(this)));
+  name_changed_subscription_ =
+      contents_->GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleNameChangedCallback,
+              base::Unretained(this)));
+  checked_state_changed_subscription_ =
+      contents_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kCheckedState,
+          base::BindRepeating(&NotifierButtonWrapperView::
+                                  OnAccessibleCheckedStateChangedCallback,
+                              base::Unretained(this)));
+  is_default_changed_subscription_ =
+      contents_->GetViewAccessibility().AddStateChangedCallback(
+          ax::mojom::State::kDefault,
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleIsDefaultChangedCallback,
+              base::Unretained(this)));
+  is_enabled_changed_subscription_ =
+      contents_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kRestriction,
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleIsEnabledChangedCallback,
+              base::Unretained(this)));
+  hovered_changed_subscription_ =
+      contents_->GetViewAccessibility().AddStateChangedCallback(
+          ax::mojom::State::kHovered,
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleHoveredChangedCallback,
+              base::Unretained(this)));
+  default_action_verb_changed_subscription_ =
+      contents_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kDefaultActionVerb,
+          base::BindRepeating(&NotifierButtonWrapperView::
+                                  OnAccessibleDefaultActionVerbChangedCallback,
+                              base::Unretained(this)));
+}
+
+void NotifierButtonWrapperView::OnAccessibleRoleChangedCallback(
+    ax::mojom::Role role) {
+  GetViewAccessibility().SetRole(role);
+}
+
+void NotifierButtonWrapperView::OnAccessibleNameChangedCallback(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  if (name.has_value()) {
+    GetViewAccessibility().SetName(name.value());
+  } else {
+    GetViewAccessibility().RemoveName();
+  }
+}
+
+void NotifierButtonWrapperView::OnAccessibleCheckedStateChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    std::optional<int> value) {
+  if (value.has_value()) {
+    GetViewAccessibility().SetCheckedState(
+        static_cast<ax::mojom::CheckedState>(value.value()));
+  } else {
+    GetViewAccessibility().RemoveCheckedState();
+  }
+}
+
+void NotifierButtonWrapperView::OnAccessibleIsDefaultChangedCallback(
+    ax::mojom::State state,
+    bool is_default) {
+  GetViewAccessibility().SetIsDefault(is_default);
+}
+
+void NotifierButtonWrapperView::OnAccessibleIsEnabledChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    std::optional<int> value) {
+  if (value.has_value()) {
+    bool is_disabled = static_cast<ax::mojom::Restriction>(value.value()) ==
+                       ax::mojom::Restriction::kDisabled;
+    GetViewAccessibility().SetIsEnabled(!is_disabled);
+  }
+}
+
+void NotifierButtonWrapperView::OnAccessibleHoveredChangedCallback(
+    ax::mojom::State state,
+    bool value) {
+  GetViewAccessibility().SetIsHovered(value);
+}
+
+void NotifierButtonWrapperView::OnAccessibleDefaultActionVerbChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    std::optional<int> value) {
+  if (value.has_value()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        static_cast<ax::mojom::DefaultActionVerb>(value.value()));
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+  }
 }
 
 // ScrollContentsView ----------------------------------------------------------
@@ -458,6 +604,24 @@ NotifierSettingsView::NotifierButton::NotifierButton(
   icon_view_ = AddChildView(std::move(icon_view));
   name_view_ = AddChildView(std::move(name_view));
 
+  // We add callbacks so that whenever the a11y attributes of `checkbox_`
+  // change, we update the a11y attributes for `this`.
+  SubscribeCallbacksForAccessibility();
+  GetViewAccessibility().SetRole(
+      checkbox_->GetViewAccessibility().GetCachedRole());
+  GetViewAccessibility().SetName(
+      checkbox_->GetViewAccessibility().GetCachedName());
+  GetViewAccessibility().SetCheckedState(
+      checkbox_->GetViewAccessibility().GetCheckedState());
+  GetViewAccessibility().SetIsDefault(
+      checkbox_->GetViewAccessibility().GetIsDefault());
+  GetViewAccessibility().SetIsEnabled(
+      checkbox_->GetViewAccessibility().GetIsEnabled());
+  GetViewAccessibility().SetIsHovered(
+      checkbox_->GetViewAccessibility().GetIsHovered());
+  GetViewAccessibility().SetDefaultActionVerb(
+      checkbox_->GetViewAccessibility().GetDefaultActionVerb());
+
   UpdateIconImage(notifier.icon);
 }
 
@@ -485,11 +649,109 @@ bool NotifierSettingsView::NotifierButton::GetChecked() const {
   return checkbox_->GetChecked();
 }
 
-void NotifierSettingsView::NotifierButton::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  static_cast<views::View*>(checkbox_)
-      ->GetViewAccessibility()
-      .GetAccessibleNodeData(node_data);
+void NotifierSettingsView::NotifierButton::OnAccessibleRoleChangedCallback(
+    ax::mojom::Role role) {
+  GetViewAccessibility().SetRole(role);
+}
+
+void NotifierSettingsView::NotifierButton::OnAccessibleNameChangedCallback(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  if (name.has_value()) {
+    GetViewAccessibility().SetName(name.value());
+  } else {
+    GetViewAccessibility().RemoveName();
+  }
+}
+
+void NotifierSettingsView::NotifierButton::
+    OnAccessibleCheckedStateChangedCallback(ax::mojom::IntAttribute attribute,
+                                            std::optional<int> value) {
+  if (value.has_value()) {
+    GetViewAccessibility().SetCheckedState(
+        static_cast<ax::mojom::CheckedState>(value.value()));
+  } else {
+    GetViewAccessibility().RemoveCheckedState();
+  }
+}
+
+void NotifierSettingsView::NotifierButton::OnAccessibleIsDefaultChangedCallback(
+    ax::mojom::State state,
+    bool is_default) {
+  GetViewAccessibility().SetIsDefault(is_default);
+}
+
+void NotifierSettingsView::NotifierButton::OnAccessibleIsEnabledChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    std::optional<int> value) {
+  if (value.has_value()) {
+    bool is_disabled = static_cast<ax::mojom::Restriction>(value.value()) ==
+                       ax::mojom::Restriction::kDisabled;
+    GetViewAccessibility().SetIsEnabled(!is_disabled);
+  }
+}
+
+void NotifierSettingsView::NotifierButton::OnAccessibleHoveredChangedCallback(
+    ax::mojom::State state,
+    bool value) {
+  GetViewAccessibility().SetIsHovered(value);
+}
+
+void NotifierSettingsView::NotifierButton::
+    OnAccessibleDefaultActionVerbChangedCallback(
+        ax::mojom::IntAttribute attribute,
+        std::optional<int> value) {
+  if (value.has_value()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        static_cast<ax::mojom::DefaultActionVerb>(value.value()));
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+  }
+}
+
+void NotifierSettingsView::NotifierButton::
+    SubscribeCallbacksForAccessibility() {
+  role_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddRoleChangedCallback(
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleRoleChangedCallback,
+                              base::Unretained(this)));
+  name_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleNameChangedCallback,
+                              base::Unretained(this)));
+  checked_state_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kCheckedState,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleCheckedStateChangedCallback,
+                              base::Unretained(this)));
+  is_default_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddStateChangedCallback(
+          ax::mojom::State::kDefault,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleIsDefaultChangedCallback,
+                              base::Unretained(this)));
+  is_enabled_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kRestriction,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleIsEnabledChangedCallback,
+                              base::Unretained(this)));
+  hovered_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddStateChangedCallback(
+          ax::mojom::State::kHovered,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleHoveredChangedCallback,
+                              base::Unretained(this)));
+  default_action_verb_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kDefaultActionVerb,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleDefaultActionVerbChangedCallback,
+                              base::Unretained(this)));
 }
 
 void NotifierSettingsView::NotifierButton::GridChanged() {

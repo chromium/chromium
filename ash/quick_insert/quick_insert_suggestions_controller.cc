@@ -37,7 +37,7 @@ std::vector<QuickInsertSearchResult> GetMostRecentResults(
   return results;
 }
 
-void PickerSuggestionsController::GetSuggestions(PickerClient& client,
+void PickerSuggestionsController::GetSuggestions(QuickInsertClient& client,
                                                  const QuickInsertModel& model,
                                                  SuggestionsCallback callback) {
   if (model.GetMode() == PickerModeType::kUnfocused) {
@@ -123,7 +123,7 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
 }
 
 void PickerSuggestionsController::GetSuggestionsForCategory(
-    PickerClient& client,
+    QuickInsertClient& client,
     QuickInsertCategory category,
     SuggestionsCallback callback) {
   switch (category) {

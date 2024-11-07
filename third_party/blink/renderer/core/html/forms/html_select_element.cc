@@ -1915,7 +1915,7 @@ void HTMLSelectElement::SelectAutofillPreviewElement::Trace(
 }
 
 HTMLSelectedOptionElement* HTMLSelectElement::selectedOptionElement() const {
-  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::SelectedoptionelementAttributeEnabled());
   return DynamicTo<HTMLSelectedOptionElement>(
       GetElementAttribute(html_names::kSelectedoptionelementAttr));
 }

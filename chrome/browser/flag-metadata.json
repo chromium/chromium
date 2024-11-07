@@ -847,6 +847,16 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-throttle-doc-form-scans",
+    "owners": ["vincb@google.com", "tmartino@google.com", "bling-transactions@google.com"],
+    "expiry_milestone": 136
+  },
+  {
+    "name": "autofill-throttle-filtered-doc-form-scan",
+    "owners": ["vincb@google.com", "tmartino@google.com", "bling-transactions@google.com"],
+    "expiry_milestone": 136
+  },
+  {
     "name": "autofill-unmask-card-request-timeout",
     "owners": ["junhuihe@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 135
@@ -5333,6 +5343,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "ios-new-feed-positioning",
+    "owners": [ "ginnyhuang@chromium.org", "thegreenfrog@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "ios-page-info-last-visited",
     "owners": [
       "fsenra@google.com",
@@ -6705,11 +6720,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "os-settings-app-notifications-page",
-    "owners": ["hsuregan@chromium.org"],
-    "expiry_milestone": 99
-  },
-  {
     "name": "os-settings-revamp-wayfinding",
     "owners": [ "wesokuhara@google.com", "cros-settings@google.com" ],
     "expiry_milestone": 134
@@ -6988,6 +6998,11 @@
     "name": "power-bookmark-backend",
     "owners": [ "wylieb@chromium.org", "skym@chromium.org" ],
     "expiry_milestone": 125
+  },
+  {
+    "name": "predictable-reported-quota",
+    "owners": ["reemaaa@chromium.org"],
+    "expiry_milestone": 150
   },
   {
     "name": "prefer-constant-frame-rate",
@@ -7420,11 +7435,6 @@
   {
     "name": "quick-share-v2",
     "owners": [ "brandosocarras@google.com", "chromeos-cross-device-eng@google.com"],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "quickoffice-force-file-download",
-    "owners": ["simmonsjosh@google.com"],
     "expiry_milestone": 133
   },
   {

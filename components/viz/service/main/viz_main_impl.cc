@@ -171,7 +171,8 @@ void VizMainImpl::CreateGpuService(
     mojo::PendingRemote<
         discardable_memory::mojom::DiscardableSharedMemoryManager>
         discardable_memory_manager,
-    base::UnsafeSharedMemoryRegion use_shader_cache_shm_region) {
+    base::UnsafeSharedMemoryRegion use_shader_cache_shm_region,
+    mojom::GpuServiceCreationParamsPtr params) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
 
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
@@ -203,7 +204,7 @@ void VizMainImpl::CreateGpuService(
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),
       gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
-      gpu_init_->TakeDefaultOffscreenSurface(),
+      gpu_init_->TakeDefaultOffscreenSurface(), std::move(params),
 #if BUILDFLAG(IS_ANDROID)
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
       dependencies_.scheduler,

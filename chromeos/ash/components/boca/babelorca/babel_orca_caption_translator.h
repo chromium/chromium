@@ -21,7 +21,6 @@ class BabelOrcaCaptionTranslator {
   using OnTranslationCallback = base::RepeatingCallback<void(
       const std::optional<media::SpeechRecognitionResult>&)>;
 
-  // TODO inject Live Caption Controller dispatcher here.
   explicit BabelOrcaCaptionTranslator(
       std::unique_ptr<BabelOrcaTranslationDipsatcher> translation_dispatcher);
   ~BabelOrcaCaptionTranslator();
@@ -45,6 +44,10 @@ class BabelOrcaCaptionTranslator {
       const std::optional<media::SpeechRecognitionResult>& recognition_result);
 
  private:
+  // Utility for ensuring we're only comparing the language components of
+  // locales.
+  static std::string GetLanguageComponentFromLocale(const std::string& locale);
+
   // Unwraps and formats output from the translation dispatcher, then passes
   // the result, if successful, to the callback.  Otherwise passes a nullopt
   // to indicate an error.
@@ -57,6 +60,7 @@ class BabelOrcaCaptionTranslator {
       const std::string& result);
 
   bool IsNonIdeographicSourceOrIdeographicTarget();
+  bool AreLanguagesTheSame();
 
   std::string source_language_;
   std::string target_language_;

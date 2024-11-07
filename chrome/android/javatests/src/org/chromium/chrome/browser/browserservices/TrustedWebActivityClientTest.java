@@ -32,8 +32,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
-import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.StandardNotificationBuilder;
 import org.chromium.chrome.test.R;
@@ -79,7 +78,6 @@ public class TrustedWebActivityClientTest {
 
     private ResponseHandler mResponseHandler;
 
-    private TrustedWebActivityClient mClient;
     private Context mTargetContext;
     private StandardNotificationBuilder mBuilder;
 
@@ -133,11 +131,8 @@ public class TrustedWebActivityClientTest {
         mTargetContext = ApplicationProvider.getApplicationContext();
         mBuilder = new StandardNotificationBuilder(mTargetContext);
 
-        ChromeAppComponent component = ChromeApplicationImpl.getComponent();
-        mClient = component.resolveTrustedWebActivityClient();
-
         // TestTrustedWebActivityService is in the test support apk.
-        component.resolvePermissionManager().addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
+        InstalledWebappPermissionManager.addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
 
         // The MessengerService lives in the same package as the TestTrustedWebActivityService.
         // We use it as a side channel to verify what the TestTrustedWebActivityService does.
@@ -183,12 +178,13 @@ public class TrustedWebActivityClientTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mClient.notifyNotification(
-                            SCOPE,
-                            NOTIFICATION_TAG,
-                            NOTIFICATION_ID,
-                            mBuilder,
-                            NotificationUmaTracker.getInstance());
+                    TrustedWebActivityClient.getInstance()
+                            .notifyNotification(
+                                    SCOPE,
+                                    NOTIFICATION_TAG,
+                                    NOTIFICATION_ID,
+                                    mBuilder,
+                                    NotificationUmaTracker.getInstance());
                 });
 
         mResponseHandler.mNotifyNotification.waitForOnly();
@@ -203,7 +199,9 @@ public class TrustedWebActivityClientTest {
     public void testCancelNotification() throws TimeoutException {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () -> mClient.cancelNotification(SCOPE, NOTIFICATION_TAG, NOTIFICATION_ID));
+                () ->
+                        TrustedWebActivityClient.getInstance()
+                                .cancelNotification(SCOPE, NOTIFICATION_TAG, NOTIFICATION_ID));
 
         mResponseHandler.mCancelNotification.waitForOnly();
 
@@ -235,7 +233,10 @@ public class TrustedWebActivityClientTest {
                 };
 
         PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT, () -> mClient.checkNotificationPermission(scope, callback));
+                TaskTraits.UI_DEFAULT,
+                () ->
+                        TrustedWebActivityClient.getInstance()
+                                .checkNotificationPermission(scope, callback));
 
         noTwaFound.waitForOnly();
     }
@@ -249,15 +250,17 @@ public class TrustedWebActivityClientTest {
 
         // This should return null because there are no ResolveInfos.
         Assert.assertNull(
-                TrustedWebActivityClient.createLaunchIntentForTwa(
-                        context, SCOPE.toString(), Collections.emptyList()));
+                TrustedWebActivityClient.getInstance()
+                        .createLaunchIntentForTwa(
+                                context, SCOPE.toString(), Collections.emptyList()));
 
         ResolveInfo resolveInfo = new ResolveInfo();
 
         // This should return null because there are no ResolveInfos with ActivityInfos.
         Assert.assertNull(
-                TrustedWebActivityClient.createLaunchIntentForTwa(
-                        context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
+                TrustedWebActivityClient.getInstance()
+                        .createLaunchIntentForTwa(
+                                context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
 
         ActivityInfo activityInfo = new ActivityInfo();
         activityInfo.packageName = targetPackageName;
@@ -267,15 +270,15 @@ public class TrustedWebActivityClientTest {
 
         // This should return null because the given ResolveInfo is not for a verified app.
         Assert.assertNull(
-                TrustedWebActivityClient.createLaunchIntentForTwa(
-                        context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
+                TrustedWebActivityClient.getInstance()
+                        .createLaunchIntentForTwa(
+                                context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
 
-        ChromeApplicationImpl.getComponent()
-                .resolvePermissionManager()
-                .addDelegateApp(Origin.create(SCOPE), targetPackageName);
+        InstalledWebappPermissionManager.addDelegateApp(Origin.create(SCOPE), targetPackageName);
 
         Assert.assertNotNull(
-                TrustedWebActivityClient.createLaunchIntentForTwa(
-                        context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
+                TrustedWebActivityClient.getInstance()
+                        .createLaunchIntentForTwa(
+                                context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
     }
 }

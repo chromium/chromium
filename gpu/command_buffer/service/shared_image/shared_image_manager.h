@@ -47,6 +47,12 @@ class GPU_GLES2_EXPORT SharedImageManager
 
   ~SharedImageManager() override;
 
+#if BUILDFLAG(IS_OZONE)
+  void SetSupportsOverlays(bool supports_overlays) {
+    supports_overlays_on_ozone_ = supports_overlays;
+  }
+#endif
+
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
@@ -143,7 +149,7 @@ class GPU_GLES2_EXPORT SharedImageManager
     return display_context_on_another_thread_;
   }
 
-  static bool SupportsScanoutImages();
+  bool SupportsScanoutImages();
 
   // Returns the NativePixmap backing |mailbox|. Returns null if the SharedImage
   // doesn't exist or is not backed by a NativePixmap. The caller is not
@@ -172,6 +178,10 @@ class GPU_GLES2_EXPORT SharedImageManager
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+  bool supports_overlays_on_ozone_ = false;
 #endif
 
   THREAD_CHECKER(thread_checker_);

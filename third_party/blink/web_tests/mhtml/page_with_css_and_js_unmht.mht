@@ -23,7 +23,7 @@ ss"></link>
 <base href=3D"http://localhost/"></base></head><body onload=3D"onLoad()">
 This page tests that CSS and JavaScript resources are retrieved correctly=
  for MHTML files.<br><br>
-There should be only 2 red squares below:
+There should be only 1 red square below:
 <div id=3D"firstDiv">
 <img src=3D"resources/red_square.png"><br><br>
 </div>
@@ -32,8 +32,7 @@ The red square below should be hidden by way of CSS.<br>
 <img src=3D"resources/red_square.png"><br><br>
 </div>
 <div id=3D"thirdDiv">
-The red square below should be hidden by way of JavaScript (with JS disab=
-led in MHTML, it still should show).<br>
+The red square below should be hidden by way of JavaScript.<br>
 <img src=3D"resources/red_square.png"><br><br>
 </div>
 

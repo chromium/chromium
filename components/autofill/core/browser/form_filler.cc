@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -90,7 +91,7 @@ std::string_view GetSkipFieldFillLogMessage(
 }
 
 std::string FetchCountryCodeFromProfile(const AutofillProfile* profile) {
-  return base::UTF16ToUTF8(profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+  return base::UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_COUNTRY));
 }
 
 // Returns how many fields with type |field_type| may be filled in a form at
@@ -118,9 +119,8 @@ std::string_view ActionPersistenceToString(
 
 // Returns true iff `field` should be skipped during filling because its
 // non-empty initial value is considered to be meaningful.
-bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(
-    const autofill::AutofillField& field,
-    bool is_trigger_field) {
+bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
+                                                    bool is_trigger_field) {
   // Assume that the trigger field can always be overwritten.
   if (is_trigger_field) {
     return false;
@@ -662,16 +662,11 @@ void FormFiller::FillOrPreviewForm(
   bool could_attempt_refill = filling_context != nullptr &&
                               !filling_context->attempted_refill && !is_refill;
 
-  // Contains those fields that FormFiller can and wants to fill.
-  // This is used for logging in CreditCardFormEventLogger.
-  base::flat_set<FieldGlobalId> newly_filled_field_ids;
-  newly_filled_field_ids.reserve(form_structure->field_count());
-
   // Log events on the field which triggers the Autofill suggestion.
   std::optional<FillEventId> fill_event_id;
   if (action_persistence == mojom::ActionPersistence::kFill) {
     std::string country_code;
-    if (const autofill::AutofillProfile** address =
+    if (const AutofillProfile** address =
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       country_code = FetchCountryCodeFromProfile(*address);
     }
@@ -772,7 +767,6 @@ void FormFiller::FillOrPreviewForm(
         form.fields()[i].is_autofilled() && result_fields[i].is_autofilled() &&
         form.fields()[i].value() == result_fields[i].value();
     if (is_newly_autofilled && !autofilled_value_did_not_change) {
-      newly_filled_field_ids.insert(result_fields[i].global_id());
       // For credit card fields, override the autofilled field value if the
       // field is autofilled.
       if (AllowPaymentSwapping(*autofill_trigger_field, *autofill_field,
@@ -839,86 +833,66 @@ void FormFiller::FillOrPreviewForm(
                   return !skip_reasons[field.global_id()].empty() ||
                          !form_structure->GetFieldById(field.global_id());
                 });
-  base::flat_set<FieldGlobalId> safe_fields =
+  base::flat_set<FieldGlobalId> safe_filled_field_ids =
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
           autofill_trigger_field->origin(), field_types);
 
-  // This will hold the fields (and autofill_fields) in the intersection of
-  // safe_fields and newly_filled_fields_id.
+  // This will hold the subset of fields of `result_fields` whose ids are in
+  // `safe_filled_field_ids`
   struct {
     std::vector<const FormFieldData*> old_values;
     std::vector<const FormFieldData*> new_values;
     std::vector<const AutofillField*> cached;
-  } safe_newly_filled_fields;
+  } safe_filled_fields;
 
-  for (FieldGlobalId newly_filled_field_id : newly_filled_field_ids) {
-    if (safe_fields.contains(newly_filled_field_id)) {
+  for (const FormFieldData& field : result_fields) {
+    const FieldGlobalId field_id = field.global_id();
+    AutofillField& cached_field =
+        CHECK_DEREF(form_structure->GetFieldById(field_id));
+
+    if (fill_event_id && !IsCheckable(cached_field.check_status())) {
+      // The field's last field log event should be a type of
+      // FillFieldLogEvent. Record in this object whether this field was
+      // actually filled after checking the iframe security policy.
+      base::optional_ref<AutofillField::FieldLogEventType>
+          last_field_log_event = cached_field.last_field_log_event();
+      CHECK(last_field_log_event.has_value());
+      CHECK(absl::holds_alternative<FillFieldLogEvent>(*last_field_log_event));
+      absl::get<FillFieldLogEvent>(*last_field_log_event)
+          .filling_prevented_by_iframe_security_policy =
+          safe_filled_field_ids.contains(field_id) ? OptionalBoolean::kFalse
+                                                   : OptionalBoolean::kTrue;
+    }
+
+    if (safe_filled_field_ids.contains(field_id)) {
       // A safe field was filled. Both functions will not return a nullptr
       // because they passed the `FieldFillingSkipReason::kFormChanged`
       // condition.
-      safe_newly_filled_fields.old_values.push_back(
-          form.FindFieldByGlobalId(newly_filled_field_id));
-      safe_newly_filled_fields.new_values.push_back([&] {
-        auto fields_it = base::ranges::find(
-            result_fields, newly_filled_field_id, &FormFieldData::global_id);
+      safe_filled_fields.old_values.push_back(
+          form.FindFieldByGlobalId(field_id));
+      safe_filled_fields.new_values.push_back([&] {
+        auto fields_it = base::ranges::find(result_fields, field_id,
+                                            &FormFieldData::global_id);
         return fields_it != result_fields.end() ? &*fields_it : nullptr;
       }());
-      AutofillField* newly_filled_field =
-          form_structure->GetFieldById(newly_filled_field_id);
-      CHECK(newly_filled_field);
-      safe_newly_filled_fields.cached.push_back(newly_filled_field);
-
-      if (fill_event_id && !IsCheckable(newly_filled_field->check_status())) {
-        // The field's last field log event should be a type of
-        // FillFieldLogEvent. Record in this FillFieldLogEvent object that this
-        // newly filled field was actually filled after checking the iframe
-        // security policy.
-        base::optional_ref<AutofillField::FieldLogEventType>
-            last_field_log_event = newly_filled_field->last_field_log_event();
-        CHECK(last_field_log_event.has_value());
-        CHECK(
-            absl::holds_alternative<FillFieldLogEvent>(*last_field_log_event));
-        absl::get<FillFieldLogEvent>(*last_field_log_event)
-            .filling_prevented_by_iframe_security_policy =
-            OptionalBoolean::kFalse;
-      }
-      continue;
-    }
-    // Find and report index of fields that were not filled due to the iframe
-    // security policy.
-    auto it = base::ranges::find(result_fields, newly_filled_field_id,
-                                 &FormFieldData::global_id);
-    if (it != result_fields.end()) {
-      size_t index = it - result_fields.begin();
-      std::string field_number = base::StringPrintf("Field %zu", index);
+      safe_filled_fields.cached.push_back(&cached_field);
+    } else {
+      auto it = base::ranges::find(form.fields(), field_id,
+                                   &FormFieldData::global_id);
+      CHECK(it != result_fields.end());
+      std::string field_number =
+          base::StringPrintf("Field %zu", it - result_fields.begin());
       LOG_AF(buffer) << Tr{} << field_number
                      << "Actually did not fill field because of the iframe "
                         "security policy.";
-
-      // Record in this AutofillField object's last FillFieldLogEvent object
-      // that this field was actually not filled due to the iframe security
-      // policy.
-      AutofillField* not_filled_field =
-          form_structure->GetFieldById(it->global_id());
-      CHECK(not_filled_field);
-      if (fill_event_id && !IsCheckable(not_filled_field->check_status())) {
-        base::optional_ref<AutofillField::FieldLogEventType>
-            last_field_log_event = not_filled_field->last_field_log_event();
-        CHECK(last_field_log_event.has_value());
-        CHECK(
-            absl::holds_alternative<FillFieldLogEvent>(*last_field_log_event));
-        absl::get<FillFieldLogEvent>(*last_field_log_event)
-            .filling_prevented_by_iframe_security_policy =
-            OptionalBoolean::kTrue;
-      }
     }
   }
 
   // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::ActionPersistence::kFill) {
-    form_autofill_history_.AddFormFillEntry(safe_newly_filled_fields.old_values,
-                                            safe_newly_filled_fields.cached,
+    form_autofill_history_.AddFormFillEntry(safe_filled_fields.old_values,
+                                            safe_filled_fields.cached,
                                             filling_product, is_refill);
   }
 
@@ -934,9 +908,11 @@ void FormFiller::FillOrPreviewForm(
 
   manager_->OnDidFillOrPreviewForm(
       action_persistence, *form_structure, *autofill_trigger_field,
-      safe_newly_filled_fields.new_values, safe_newly_filled_fields.cached,
-      newly_filled_field_ids, safe_fields, profile_or_credit_card,
-      trigger_details, is_refill);
+      safe_filled_fields.new_values, safe_filled_fields.cached,
+      base::MakeFlatSet<FieldGlobalId>(result_fields, {},
+                                       &FormFieldData::global_id),
+      safe_filled_field_ids, profile_or_credit_card, trigger_details,
+      is_refill);
 }
 
 bool FormFiller::ShouldTriggerRefill(

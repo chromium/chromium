@@ -172,11 +172,13 @@ TEST_F(ManifestV2ExperimentManagerWarningUnitTest, MV2ExtensionsAreAffected) {
             .Build();
     EXPECT_TRUE(experiment_manager()->IsExtensionAffected(*mv2_extension));
     // Even though the MV2 extension is affected by the experiment, it should
-    // *not* be blocked from installation in the warning phase.
+    // *not* be blocked from installation or enablement in the warning phase.
     EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
         mv2_extension->id(), mv2_extension->manifest_version(),
         mv2_extension->GetType(), mv2_extension->location(),
         mv2_extension->hashed_id()));
+    EXPECT_FALSE(
+        experiment_manager()->ShouldBlockExtensionEnable(*mv2_extension));
 
     scoped_refptr<const Extension> mv3_extension =
         ExtensionBuilder(test_case.name)
@@ -188,6 +190,8 @@ TEST_F(ManifestV2ExperimentManagerWarningUnitTest, MV2ExtensionsAreAffected) {
         mv3_extension->id(), mv3_extension->manifest_version(),
         mv3_extension->GetType(), mv3_extension->location(),
         mv3_extension->hashed_id()));
+    EXPECT_FALSE(
+        experiment_manager()->ShouldBlockExtensionEnable(*mv3_extension));
   }
 }
 
@@ -257,6 +261,8 @@ TEST_F(ManifestV2ExperimentManagerDisabledUnitTest, NoExtensionsAreAffected) {
         mv2_extension->id(), mv2_extension->manifest_version(),
         mv2_extension->GetType(), mv2_extension->location(),
         mv2_extension->hashed_id()));
+    EXPECT_FALSE(
+        experiment_manager()->ShouldBlockExtensionEnable(*mv2_extension));
 
     scoped_refptr<const Extension> mv3_extension =
         ExtensionBuilder(test_case.name)
@@ -268,6 +274,8 @@ TEST_F(ManifestV2ExperimentManagerDisabledUnitTest, NoExtensionsAreAffected) {
         mv3_extension->id(), mv3_extension->manifest_version(),
         mv3_extension->GetType(), mv3_extension->location(),
         mv3_extension->hashed_id()));
+    EXPECT_FALSE(
+        experiment_manager()->ShouldBlockExtensionEnable(*mv3_extension));
   }
 }
 
@@ -367,13 +375,21 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
-    ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
 
-    EXPECT_EQ(
-        test_case.should_block_install,
-        experiment_manager()->ShouldBlockExtensionInstallation(
-            extension_id, test_case.manifest_version, Manifest::TYPE_EXTENSION,
-            test_case.manifest_location, HashedExtensionId(extension_id)));
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder(test_case.name)
+            .SetManifestVersion(test_case.manifest_version)
+            .SetLocation(test_case.manifest_location)
+            .Build();
+
+    EXPECT_EQ(test_case.should_block_install,
+              experiment_manager()->ShouldBlockExtensionInstallation(
+                  extension->id(), extension->manifest_version(),
+                  extension->GetType(), extension->location(),
+                  extension->hashed_id()));
+
+    // During this stage, extension *enablement* should never be blocked.
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionEnable(*extension));
   }
 }
 
@@ -395,13 +411,20 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
-    ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
+
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder(test_case.name)
+            .SetManifestVersion(test_case.manifest_version)
+            .SetLocation(test_case.manifest_location)
+            .Build();
 
     // Component extensions are built-in parts of Chrome that are extensions as
-    // an implementation detail. They should always be allowed to install.
+    // an implementation detail. They should always be allowed to install and
+    // remain enabled.
     EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
-        extension_id, test_case.manifest_version, Manifest::TYPE_EXTENSION,
-        test_case.manifest_location, HashedExtensionId(extension_id)));
+        extension->id(), extension->manifest_version(), extension->GetType(),
+        extension->location(), extension->hashed_id()));
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionEnable(*extension));
   }
 }
 
@@ -654,11 +677,18 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
-    ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder(test_case.name)
+            .SetManifestVersion(2)
+            .SetLocation(test_case.manifest_location)
+            .Build();
 
+    // If MV2 is allowed by policy, all extensions should be allowed to install
+    // and be enabled.
     EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
-        extension_id, /*manifest_version=*/2, Manifest::TYPE_EXTENSION,
-        test_case.manifest_location, HashedExtensionId(extension_id)));
+        extension->id(), extension->manifest_version(), extension->GetType(),
+        extension->location(), extension->hashed_id()));
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionEnable(*extension));
   }
 }
 
@@ -801,6 +831,73 @@ TEST_F(ManifestV2ExperimentManagerUnsupportedUnitTest,
        ExperimentStageIsSetToUnsupported) {
   EXPECT_EQ(MV2ExperimentStage::kUnsupported,
             experiment_manager()->GetCurrentExperimentStage());
+}
+
+// Tests that MV2 extensions cannot be re-enabled in the "unsupported"
+// experiment phase.
+TEST_F(ManifestV2ExperimentManagerUnsupportedUnitTest,
+       MV2ExtensionsCannotBeEnabled) {
+  constexpr bool kEnableShouldBeBlocked = true;
+  constexpr bool kEnableShouldBeAllowed = false;
+  struct {
+    mojom::ManifestLocation manifest_location;
+    int manifest_version;
+    const char* name;
+    bool should_block_enable;
+  } test_cases[] = {
+      // The vast majority of extensions should be not be enable-able if they
+      // are MV2.
+      {mojom::ManifestLocation::kUnpacked, 2, "unpacked - mv2",
+       kEnableShouldBeBlocked},
+      {mojom::ManifestLocation::kUnpacked, 3, "unpacked - mv3",
+       kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kCommandLine, 2, "command line - mv2",
+       kEnableShouldBeBlocked},
+      {mojom::ManifestLocation::kCommandLine, 3, "command line - mv3",
+       kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kInternal, 2, "internal - mv2",
+       kEnableShouldBeBlocked},
+      {mojom::ManifestLocation::kInternal, 3, "internal - mv3",
+       kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalPref, 2, "external pref - mv2",
+       kEnableShouldBeBlocked},
+      {mojom::ManifestLocation::kExternalPref, 3, "external pref - mv3",
+       kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalPref, 2, "external registry - mv2",
+       kEnableShouldBeBlocked},
+      {mojom::ManifestLocation::kExternalRegistry, 3, "external registry - mv3",
+       kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalPrefDownload, 2,
+       "external download - mv2", kEnableShouldBeBlocked},
+      {mojom::ManifestLocation::kExternalPrefDownload, 3,
+       "external download - mv3", kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalPolicy, 2, "external policy - mv2",
+       kEnableShouldBeBlocked},
+      {mojom::ManifestLocation::kExternalPolicy, 3, "external policy - mv3",
+       kEnableShouldBeAllowed},
+
+      {mojom::ManifestLocation::kComponent, 2, "component - mv2",
+       kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kComponent, 3, "component - mv3",
+       kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalComponent, 2, "component - mv2",
+       kEnableShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalComponent, 3, "component - mv3",
+       kEnableShouldBeAllowed},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder(test_case.name)
+            .SetManifestVersion(test_case.manifest_version)
+            .SetLocation(test_case.manifest_location)
+            .Build();
+
+    EXPECT_EQ(test_case.should_block_enable,
+              experiment_manager()->ShouldBlockExtensionEnable(*extension));
+  }
 }
 
 }  // namespace extensions

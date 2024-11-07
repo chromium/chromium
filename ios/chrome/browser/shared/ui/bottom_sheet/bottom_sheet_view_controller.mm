@@ -33,7 +33,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [self setUpBottomSheetPresentationController];
   [self setUpBottomSheetDetents];
   if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(setCustomDetent)];
   }
 }

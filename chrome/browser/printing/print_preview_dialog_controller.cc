@@ -109,8 +109,7 @@ PrintPreviewDialogDelegate::~PrintPreviewDialogDelegate() = default;
 
 ui::mojom::ModalType PrintPreviewDialogDelegate::GetDialogModalType() const {
   // Not used, returning dummy value.
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::ModalType::kWindow;
+  NOTREACHED();
 }
 
 std::u16string PrintPreviewDialogDelegate::GetDialogTitle() const {
@@ -367,8 +366,7 @@ void PrintPreviewDialogController::RenderProcessGone(
 void PrintPreviewDialogController::WebContentsDestroyed(WebContents* contents) {
   WebContents* preview_dialog = GetPrintPreviewForContents(contents);
   if (!preview_dialog) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (contents == preview_dialog)
@@ -387,8 +385,7 @@ void PrintPreviewDialogController::DidFinishNavigation(
 
   WebContents* preview_dialog = GetPrintPreviewForContents(contents);
   if (!preview_dialog) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (contents != preview_dialog)

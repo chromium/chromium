@@ -110,7 +110,7 @@ class SingleClientSavedTabGroupsSyncTest
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   bool ContainsUuidInFakeServer(base::Uuid uuid) {

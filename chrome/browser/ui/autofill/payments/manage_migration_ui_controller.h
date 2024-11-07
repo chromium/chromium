@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_controller_impl.h"
@@ -88,6 +89,7 @@ class ManageMigrationUiController
   // LocalCardMigrationControllerObserver:
   void OnMigrationNoLongerAvailable() override;
   void OnMigrationStarted() override;
+  void OnSourceDestruction(LocalCardMigrationControllerSource source) override;
 
  protected:
   explicit ManageMigrationUiController(content::WebContents* web_contents);
@@ -113,6 +115,13 @@ class ManageMigrationUiController
   // This indicates if we should show error dialog or normal feedback dialog
   // after users click the credit card icon.
   bool show_error_dialog_ = false;
+
+  base::ScopedObservation<LocalCardMigrationBubbleControllerImpl,
+                          ManageMigrationUiController>
+      bubble_controller_observation_{this};
+  base::ScopedObservation<LocalCardMigrationDialogControllerImpl,
+                          ManageMigrationUiController>
+      dialog_controller_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

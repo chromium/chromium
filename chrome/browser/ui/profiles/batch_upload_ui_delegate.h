@@ -20,6 +20,7 @@ class BatchUploadUIDelegate : public BatchUploadDelegate {
   void ShowBatchUploadDialog(
       Browser* browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
+      BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback) override;
 
  private:
@@ -29,6 +30,7 @@ class BatchUploadUIDelegate : public BatchUploadDelegate {
   void ShowBatchUploadDialogInternal(
       Browser& browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
+      BatchUploadService::EntryPoint entry_point,
       BatchUploadSelectedDataTypeItemsCallback complete_callback);
 };
 

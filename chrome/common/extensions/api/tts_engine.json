@@ -35,6 +35,17 @@
         "enum": ["male", "female"]
       },
       {
+        "id": "LanguageUninstallOptions",
+        "type": "object",
+        "description": "Options for uninstalling a given language.",
+        "properties": {
+          "uninstallImmediately": {
+            "type": "boolean",
+            "description": "True if the TTS client wants the language to be immediately uninstalled. The engine may choose whether or when to uninstall the language, based on this parameter and the requestor information. If false, it may use other criteria, such as recent usage, to determine when to uninstall."
+          }
+        }
+      },
+      {
         "id": "LanguageInstallStatus",
         "type": "string",
         "enum": ["notInstalled", "installing", "installed", "failed"],
@@ -310,6 +321,27 @@
             "name": "lang",
             "type": "string",
             "description": "Language string to be installed in the form language code-region code, where the region may be omitted. Examples are en, en-AU, zh-CH."
+          }
+        ]
+      },
+      {
+        "name": "onUninstallLanguageRequest",
+        "type": "function",
+        "description": "Fired when a TTS client indicates a language is no longer needed.",
+        "parameters": [
+          {
+            "name": "requestor",
+            "$ref": "TtsClient",
+            "description": "Client requesting language removal."
+          },
+          {
+            "name": "lang",
+            "type": "string"
+          },
+          {
+            "name": "uninstallOptions",
+            "$ref": "LanguageUninstallOptions",
+            "description": "Options for the language removal."
           }
         ]
       },

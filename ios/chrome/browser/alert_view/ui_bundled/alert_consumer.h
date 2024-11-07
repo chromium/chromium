@@ -24,6 +24,11 @@
 - (void)setTextFieldConfigurations:
     (NSArray<TextFieldConfiguration*>*)textFieldConfigurations;
 
+// Sets the name of the Lottie light-mode `imageLottieName` and
+// `imageDarkModeLottieName` for this alert.
+- (void)setImageLottieName:(NSString*)imageLottieName
+        darkModeLottieName:imageDarkModeLottieName;
+
 // Sets the actions for this alert. The double array of actions would be
 // represented visually with each sub-array being a row of buttons, unless the
 // sum of the button text widths cannot fit into a single row.

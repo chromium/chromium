@@ -41,7 +41,7 @@ TranslateUIDelegate::TranslateUIDelegate(
 
   translate_ui_languages_manager_ =
       std::make_unique<TranslateUILanguagesManager>(
-          translate_manager, language_codes, source_language, target_language);
+          language_codes, source_language, target_language);
 
   if (base::FeatureList::IsEnabled(
           language::kContentLanguagesInLanguagePicker)) {

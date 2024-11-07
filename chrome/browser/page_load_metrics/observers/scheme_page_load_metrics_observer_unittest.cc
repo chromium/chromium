@@ -83,8 +83,7 @@ class SchemePageLoadMetricsObserverTest
         return bucket.min;
       }
     }
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   void CheckHistograms(int expected_count,

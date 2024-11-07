@@ -135,6 +135,7 @@ GetFileDataBlocking(const base::FilePath& path,
     auto overhead = obfuscator.CalculateDeobfuscationOverhead(file);
     if (overhead.has_value()) {
       file_data.size -= overhead.value();
+      file_data.is_obfuscated = true;
     }
   }
 

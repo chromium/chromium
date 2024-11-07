@@ -54,7 +54,8 @@ class BabelOrcaProducer : public BabelOrcaController {
   // BabelOrcaController:
   void OnSessionStarted() override;
   void OnSessionEnded() override;
-  void OnSessionCaptionConfigUpdated(bool session_captions_enabled) override;
+  void OnSessionCaptionConfigUpdated(bool session_captions_enabled,
+                                     bool translations_enabled) override;
   void OnLocalCaptionConfigUpdated(bool local_captions_enabled) override;
 
  private:

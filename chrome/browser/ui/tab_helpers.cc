@@ -555,10 +555,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
   }
   HttpErrorTabHelper::CreateForWebContents(web_contents);
-  sync_sessions::SyncSessionsRouterTabHelper::CreateForWebContents(
-      web_contents,
-      sync_sessions::SyncSessionsWebContentsRouterFactory::GetForProfile(
-          profile));
   TabUIHelper::CreateForWebContents(web_contents);
   tasks::TaskTabHelper::CreateForWebContents(web_contents);
   tpcd::metadata::TpcdMetadataDevtoolsObserver::CreateForWebContents(

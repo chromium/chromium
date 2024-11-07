@@ -35,6 +35,11 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kLocationProviderManager);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kUsbDeviceLinuxOpenCrashKey);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
+    kBatteryStatusManagerBroadcastReceiverInBackground);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const DEVICE_FEATURES_EXPORT
     base::FeatureParam<device::mojom::LocationProviderManagerMode>
         kLocationProviderManagerParam;

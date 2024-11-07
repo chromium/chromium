@@ -7,9 +7,6 @@
 NSString* const kPlusAddressSheetDescriptionAccessibilityIdentifier =
     @"PlusAddressSheetDescriptionAXID";
 
-NSString* const kPlusAddressSheetErrorMessageAccessibilityIdentifier =
-    @"PlusAddressSheetErrorMessageAXID";
-
 NSString* const kPlusAddressSheetNoticeMessageAccessibilityIdentifier =
     @"PlusAddressSheetNoticeMessageAXID";
 

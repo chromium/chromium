@@ -446,16 +446,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     SetV8FlagsFormatted("--no-efficiency-mode-for-tiering-heuristics");
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebAssemblyMoreAggressiveCodeCaching)) {
-    SetV8FlagsFormatted(
-        "--wasm-caching-threshold=%d --wasm-caching-hard-threshold=%d "
-        "--wasm-caching-timeout-ms=%d",
-        features::kWebAssemblyMoreAggressiveCodeCachingThreshold.Get(),
-        features::kWebAssemblyMoreAggressiveCodeCachingHardThreshold.Get(),
-        features::kWebAssemblyMoreAggressiveCodeCachingTimeoutMs.Get());
-  }
-
   // Make sure aliases of kV8SlowHistograms only enable the feature to
   // avoid contradicting settings between multiple finch experiments.
   bool any_slow_histograms_alias =

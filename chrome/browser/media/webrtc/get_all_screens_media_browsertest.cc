@@ -799,7 +799,7 @@ class MultiCaptureNotificationTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
     return true;
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   }
 

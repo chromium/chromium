@@ -12,7 +12,7 @@
 
 StubWebView::StubWebView(const std::string& id) : id_(id) {}
 
-StubWebView::~StubWebView() {}
+StubWebView::~StubWebView() = default;
 
 bool StubWebView::IsServiceWorker() const {
   return false;
@@ -20,6 +20,10 @@ bool StubWebView::IsServiceWorker() const {
 
 std::string StubWebView::GetId() {
   return id_;
+}
+
+std::string StubWebView::GetSessionId() {
+  return session_id_;
 }
 
 bool StubWebView::WasCrashed() {

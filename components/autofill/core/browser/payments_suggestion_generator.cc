@@ -1297,9 +1297,9 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
       bool acceptable = IsCardSuggestionAcceptable(
           credit_card, client, /*is_manual_fallback= */ false);
       suggestion.acceptability =
-          acceptable ? autofill::Suggestion::Acceptability::kAcceptable
-                     : autofill::Suggestion::Acceptability::
-                           kUnacceptableWithDeactivatedStyle;
+          acceptable
+              ? Suggestion::Acceptability::kAcceptable
+              : Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
       suggestion.labels.push_back(std::vector<Suggestion::Text>{
           Suggestion::Text(l10n_util::GetStringUTF16(
               acceptable

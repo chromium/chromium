@@ -91,6 +91,7 @@ class MockReadAnythingUntrustedPageHandler
               InstallVoicePack,
               (const std::string& language),
               (override));
+  MOCK_METHOD(void, UninstallVoice, (const std::string& language), (override));
   MOCK_METHOD(void,
               OnLinkClicked,
               (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),

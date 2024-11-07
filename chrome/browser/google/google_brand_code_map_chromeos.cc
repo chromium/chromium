@@ -768,8 +768,7 @@ std::string_view GetRlzBrandCode(
       // treat it as enterprise enrolled.
       return entry.enterprise_enrolled_brand_code;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_brand_code;
+  NOTREACHED();
 }
 
 }  // namespace chromeos

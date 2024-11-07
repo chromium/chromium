@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -105,7 +106,8 @@ void IbanBubbleControllerImpl::ReshowBubble() {
       current_bubble_type_ == IbanBubbleType::kUploadSave) {
     CHECK(!save_iban_prompt_callback_.is_null());
   } else {
-    CHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban);
+    CHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban ||
+          current_bubble_type_ == IbanBubbleType::kUploadInProgress);
   }
   Show();
 }
@@ -114,7 +116,7 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
     bool iban_saved,
     bool hit_max_strikes) {
   // Hide the current bubble if still showing.
-  set_bubble_view(nullptr);
+  HideBubble();
 
   is_reshow_ = false;
   current_bubble_type_ = IbanBubbleType::kUploadCompleted;
@@ -146,6 +148,7 @@ std::u16string IbanBubbleControllerImpl::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_LOCAL);
     case IbanBubbleType::kUploadSave:
+    case IbanBubbleType::kUploadInProgress:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER);
     case IbanBubbleType::kManageSavedIban:
@@ -172,6 +175,8 @@ std::u16string IbanBubbleControllerImpl::GetAcceptButtonText() const {
           IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_ACCEPT);
     case IbanBubbleType::kManageSavedIban:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_DONE);
+    case IbanBubbleType::kUploadInProgress:
+      return std::u16string();
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
       NOTREACHED();
@@ -184,6 +189,8 @@ std::u16string IbanBubbleControllerImpl::GetDeclineButtonText() const {
     case IbanBubbleType::kUploadSave:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_NO_THANKS);
+    case IbanBubbleType::kUploadInProgress:
+      return std::u16string();
     case IbanBubbleType::kManageSavedIban:
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
@@ -244,6 +251,10 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
       autofill_metrics::LogSaveIbanPromptResultSavedWithNicknameMetric(
           !nickname.empty(), /*is_upload_save=*/true);
       iban_.set_nickname(nickname);
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+        current_bubble_type_ = IbanBubbleType::kUploadInProgress;
+      }
       std::move(save_iban_prompt_callback_)
           .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
                    kAccepted,
@@ -251,6 +262,7 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
       return;
     case IbanBubbleType::kManageSavedIban:
       return;
+    case IbanBubbleType::kUploadInProgress:
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
       NOTREACHED();
@@ -360,6 +372,7 @@ std::u16string IbanBubbleControllerImpl::GetSavePaymentIconTooltipText() const {
     case IbanBubbleType::kUploadSave:
     case IbanBubbleType::kManageSavedIban:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_IBAN);
+    case IbanBubbleType::kUploadInProgress:
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
       return std::u16string();
@@ -427,6 +440,8 @@ void IbanBubbleControllerImpl::DoShowBubble() {
     case IbanBubbleType::kManageSavedIban:
       // TODO(crbug.com/40233611): Add metrics for manage saved IBAN mode.
       break;
+    case IbanBubbleType::kUploadInProgress:
+      break;
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
       NOTREACHED();
@@ -471,6 +486,7 @@ void IbanBubbleControllerImpl::ShowIconOnly() {
       break;
     case IbanBubbleType::kManageSavedIban:
     case IbanBubbleType::kUploadCompleted:
+    case IbanBubbleType::kUploadInProgress:
       break;
     case IbanBubbleType::kInactive:
       NOTREACHED();

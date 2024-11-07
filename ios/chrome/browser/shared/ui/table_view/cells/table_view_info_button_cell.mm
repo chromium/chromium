@@ -262,7 +262,7 @@ const CGFloat kInfoSymbolSize = 22;
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.self ]);
+          @[ UITraitPreferredContentSizeCategory.class ]);
       __weak __typeof(self) weakSelf = self;
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                        UITraitCollection* previousCollection) {

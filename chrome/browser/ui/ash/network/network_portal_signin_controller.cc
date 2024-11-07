@@ -57,29 +57,6 @@ bool ProxyActive(Profile* profile) {
   return true;
 }
 
-Profile* GetOTROrActiveProfile() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
-
-  // In Guest mode, the active profile is OTR. Since we do not support creating
-  // an OTR profile from another OTR profile we use the active profile for
-  // captive portal signin.
-  if (profile->IsOffTheRecord()) {
-    return profile;
-  }
-
-  // When not in Guest mode we use a separate signin OTR profile to avoid
-  // passing existing OTR cookies to the captive portal signin page, see
-  // b/245578628 for details.
-  static base::NoDestructor<Profile::OTRProfileID> otr_profile_id(
-      Profile::OTRProfileID::CreateUniqueForCaptivePortal());
-  Profile* otr_profile =
-      profile->GetOffTheRecordProfile(*otr_profile_id,
-                                      /*create_if_needed=*/true);
-  DCHECK(otr_profile);
-  return otr_profile;
-}
-
 class SigninWebDialogDelegate : public ui::WebDialogDelegate {
  public:
   explicit SigninWebDialogDelegate(GURL url) {
@@ -157,20 +134,12 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       ShowSigninDialog(url);
       break;
     case SigninMode::kNormalTab:
-      if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
-        ShowActiveProfileTab(url);
-      } else {
-        ShowTab(ProfileManager::GetActiveUserProfile(), url);
-      }
+      ShowActiveProfileTab(url);
       break;
     case SigninMode::kSigninDefault: {
-      if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
-        // An OTR profile will be used with extensions enabled and all proxies
-        // disabled by the proxy service.
-        ShowSigninWindow(url);
-      } else {
-        ShowTab(GetOTROrActiveProfile(), url);
-      }
+      // An OTR profile will be used with extensions enabled and all proxies
+      // disabled by the proxy service.
+      ShowSigninWindow(url);
       break;
     }
     case SigninMode::kIncognitoDisabledByPolicy:

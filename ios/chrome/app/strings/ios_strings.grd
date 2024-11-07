@@ -4178,6 +4178,27 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PROGRESS_BAR_ACCESSIBILITY" desc="Text read by voice over to inform the user about the progress of the page load. [Read by Text To Speech].">
         Page load progress bar, <ph name="EMAIL">$1<ex>20%</ex></ph> loaded.
       </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_ALERT_DECRIPTION" desc="Description of alert informing users that notifications are being delivered silently. [iOS only]">
+        Get notifications on your Lock Screen and as Banners to never miss what matters to you
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_ALERT_TITLE" desc="Title of alert informing users that notifications are being delivered silently. [iOS only]">
+        Your notifications are being delivered quietly
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_BANNERS_TEXT" desc="Text in contextual image of prominent notification settings alert matching the 'Banners' selection in the app notification settings page. [iOS only]">
+        Banners
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_LOCK_SCREEN_TEXT" desc="Text in contextual image of prominent notification settings alert matching the 'Lock Screen' selection in the app notification settings page. [iOS only]">
+        Lock Screen
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_NOTIFICATION_CENTER_TEXT" desc="Text in contextual image of prominent notification settings alert matching the 'Notification Center' selection in the app notification settings page. [iOS only]">
+        Notification Center
+      </message>
+            <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_OPEN_SETTINGS_BUTTON" desc="Button text in prominence notification alert that takes users to the app's notification setting. [iOS only]">
+            Go to Settings...
+      </message>
+            <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_NO_THANKS_BUTTON" desc="Button text in prominence notification alert for the user to say 'No thanks'. [iOS only]">
+            No thanks
+      </message>
       <message name="IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_CANCEL_BUTTON_TEXT" desc="The default text for the cancel button alert promo. [iOS only]">
         Cancel
       </message>

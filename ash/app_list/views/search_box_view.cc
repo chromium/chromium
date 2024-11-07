@@ -33,6 +33,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
@@ -555,7 +556,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
 
   CreateEndButtonContainer();
 
-  if (features::CanStartSunfishSession()) {
+  if (CanStartSunfishSession()) {
     views::ImageButton* sunfish_button =
         CreateSunfishButton(base::BindRepeating(
             &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
@@ -811,7 +812,7 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
-  if (features::CanStartSunfishSession()) {
+  if (CanStartSunfishSession()) {
     sunfish_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
@@ -1247,7 +1248,10 @@ void SearchBoxView::AssistantButtonPressed() {
 }
 
 void SearchBoxView::SunfishButtonPressed() {
-  view_delegate_->DismissAppList();
+  if (is_app_list_bubble_) {
+    // Only hide the launcher bubble in clamshell mode.
+    view_delegate_->DismissAppList();
+  }
   CaptureModeController::Get()->StartSunfishSession();
 }
 

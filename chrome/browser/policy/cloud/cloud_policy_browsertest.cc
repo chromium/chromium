@@ -374,7 +374,8 @@ class CloudPolicyTest : public PlatformBrowserTest,
         // must be sent to the correct project id.
         invalidation::ProfileInvalidationProviderFactory::GetInstance()
             ->GetForProfile(profile())
-            ->GetInvalidationServiceOrListener(GetInvalidationProjectNumber()));
+            ->GetInvalidationServiceOrListener(
+                std::string(GetPolicyInvalidationProjectNumber())));
   }
 
   void SetServerPolicy(const em::CloudPolicySettings& settings,

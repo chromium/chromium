@@ -128,6 +128,9 @@ class OnDeviceModelComponentStateManager
   // Called after the installer is successfully registered.
   void InstallerRegistered();
 
+  // Returns true if the installer is registered.
+  bool IsInstallerRegistered();
+
   // Returns the current OnDeviceModelStatus.
   OnDeviceModelStatus GetOnDeviceModelStatus();
 

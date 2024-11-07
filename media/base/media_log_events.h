@@ -87,6 +87,9 @@ enum class MediaLogEvent {
   // Triggered whenever WMPI handles a track change.
   kAudioTrackChange,
   kVideoTrackChange,
+
+  // Triggered when the media element starts and finishes fetching media data.
+  kHlsSegmentFetch,
 };
 
 // Sometimes URLs can have encoded data that can be exteremly large.
@@ -115,6 +118,11 @@ MEDIA_LOG_EVENT_NAMED_DATA(kMediaLogCreated, base::Time, "created");
 MEDIA_LOG_EVENT_NAMED_DATA(kVideoOcclusionState,
                            std::string,
                            "video_occlusion_state");
+
+MEDIA_LOG_EVENT_NAMED_DATA_OP(kHlsSegmentFetch,
+                              std::string,
+                              "hls_segment_url",
+                              TruncateUrlString);
 
 // Each type of buffering state gets a different name.
 MEDIA_LOG_EVENT_NAMED_DATA(

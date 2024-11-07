@@ -182,7 +182,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   // change.
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:@[
-      UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
     ]
                        withAction:@selector(updateViews:
                                       previousTraitCollection:)];

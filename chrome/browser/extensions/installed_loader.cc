@@ -331,7 +331,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     // Update the extension prefs to reflect if the extension is no longer
     // blocked due to admin policy.
     if ((disable_reasons & disable_reason::DISABLE_BLOCKED_BY_POLICY) &&
-        !policy->MustRemainDisabled(extension.get(), nullptr, nullptr)) {
+        !policy->MustRemainDisabled(extension.get(), nullptr)) {
       disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
       extension_prefs_->ReplaceDisableReasons(extension->id(), disable_reasons);
       if (disable_reasons == disable_reason::DISABLE_NONE)
@@ -366,7 +366,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     // Extension is enabled. Check management policy to verify if it should
     // remain so.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-    if (policy->MustRemainDisabled(extension.get(), &disable_reason, nullptr)) {
+    if (policy->MustRemainDisabled(extension.get(), &disable_reason)) {
       extension_prefs_->SetExtensionDisabled(extension->id(), disable_reason);
     }
   }

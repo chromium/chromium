@@ -288,8 +288,7 @@ const std::vector<FieldValue> kDefaultAddress{
       return fields;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return fields;
+  NOTREACHED();
 }
 
 // A generic "map" function, intended to lift values `args...` to a matcher
@@ -2381,7 +2380,7 @@ class AutofillInteractiveFencedFrameTest
         return cross_frame;
       }
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

@@ -44,7 +44,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
@@ -52,6 +51,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.Arrays;
@@ -61,7 +61,7 @@ import java.util.concurrent.ExecutionException;
 /** Tests for search in the tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+@EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
     private static final String URL_PREFIX = "127.0.0.1:" + SERVER_PORT;

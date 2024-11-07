@@ -75,8 +75,7 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   bool UserMayLoad(const Extension* extension,
                    std::u16string* error) const override;
   bool MustRemainDisabled(const Extension* extension,
-                          disable_reason::DisableReason* reason,
-                          std::u16string* error) const override;
+                          disable_reason::DisableReason* reason) const override;
 
   // extensions::ExtensionRegistryObserver overrides:
   void OnExtensionInstalled(content::BrowserContext* browser_context,

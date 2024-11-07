@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, CertsChangedNotificationFromAsh) {
       generate_key_result;
   keystore_crosapi->GenerateKey(
       crosapi::mojom::KeystoreType::kUser,
-      crosapi::keystore_service_util::MakeRsaKeystoreSigningAlgorithm(
+      crosapi::keystore_service_util::MakeRsassaPkcs1v15KeystoreAlgorithm(
           /*modulus_length=*/2048, /*sw_backed=*/false),
       generate_key_result.GetCallback());
   ASSERT_FALSE(generate_key_result.Get()->is_error());

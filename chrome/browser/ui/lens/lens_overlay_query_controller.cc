@@ -76,6 +76,7 @@ constexpr char kHtmlMimeType[] = "text/html";
 constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
 constexpr char kPdfVisualInputTypeQueryParameterValue[] = "pdf";
 constexpr char kWebpageVisualInputTypeQueryParameterValue[] = "wp";
+constexpr char kImageVisualInputTypeQueryParameterValue[] = "img";
 constexpr char kContextualVisualInputTypeQueryParameterValue[] = "video";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
@@ -189,22 +190,22 @@ std::map<std::string, std::string> AddStartTimeQueryParam(
 
 std::map<std::string, std::string> AddVisualInputTypeQueryParam(
     std::map<std::string, std::string> additional_search_query_params,
-    PageContentMimeType content_type) {
+    lens::PageContentMimeType content_type) {
   // Default contextual visual input type.
   std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
   switch (content_type) {
-    case PageContentMimeType::kPdf:
+    case lens::PageContentMimeType::kPdf:
       if (lens::features::UsePdfVitParam()) {
         vitValue = kPdfVisualInputTypeQueryParameterValue;
       }
       break;
-    case PageContentMimeType::kHtml:
-    case PageContentMimeType::kPlainText:
+    case lens::PageContentMimeType::kHtml:
+    case lens::PageContentMimeType::kPlainText:
       if (lens::features::UseWebpageVitParam()) {
         vitValue = kWebpageVisualInputTypeQueryParameterValue;
       }
       break;
-    case PageContentMimeType::kNone:
+    case lens::PageContentMimeType::kNone:
       break;
   }
   additional_search_query_params.insert(
@@ -212,34 +213,34 @@ std::map<std::string, std::string> AddVisualInputTypeQueryParam(
   return additional_search_query_params;
 }
 
-std::string ContentTypeToString(PageContentMimeType content_type) {
+std::string ContentTypeToString(lens::PageContentMimeType content_type) {
   switch (content_type) {
-    case PageContentMimeType::kPdf:
+    case lens::PageContentMimeType::kPdf:
       return kPdfMimeType;
-    case PageContentMimeType::kHtml:
+    case lens::PageContentMimeType::kHtml:
       return kHtmlMimeType;
-    case PageContentMimeType::kPlainText:
+    case lens::PageContentMimeType::kPlainText:
       return kPlainTextMimeType;
-    case PageContentMimeType::kNone:
+    case lens::PageContentMimeType::kNone:
       return "";
   }
 }
 
 lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
-    PageContentMimeType content_type) {
+    lens::PageContentMimeType content_type) {
   switch (content_type) {
-    case PageContentMimeType::kPdf:
+    case lens::PageContentMimeType::kPdf:
       if (lens::features::UsePdfInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
       }
       break;
-    case PageContentMimeType::kHtml:
-    case PageContentMimeType::kPlainText:
+    case lens::PageContentMimeType::kHtml:
+    case lens::PageContentMimeType::kPlainText:
       if (lens::features::UseWebpageInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
       }
       break;
-    case PageContentMimeType::kNone:
+    case lens::PageContentMimeType::kNone:
       break;
   }
   return lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY;
@@ -306,7 +307,7 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
-    PageContentMimeType underlying_content_type,
+    lens::PageContentMimeType underlying_content_type,
     float ui_scale_factor) {
   original_screenshot_ = screenshot;
   page_url_ = page_url;
@@ -522,15 +523,17 @@ LensOverlayQueryController::CreateEndpointFetcher(
       /*request_params=*/
       EndpointFetcher::RequestParams::Builder()
           .SetCredentialsMode(CredentialsMode::kInclude)
+          .SetSetSiteForCookies(true)
           .Build());
 }
 
 void LensOverlayQueryController::SendLatencyGen204IfEnabled(
     base::TimeDelta full_image_latency,
-    bool is_translate_query) {
+    bool is_translate_query,
+    std::string vit_query_param_value) {
   gen204_controller_->SendLatencyGen204IfEnabled(
-      full_image_latency, cluster_info_fetch_response_time_,
-      is_translate_query);
+      full_image_latency, cluster_info_fetch_response_time_, is_translate_query,
+      vit_query_param_value);
   cluster_info_fetch_response_time_.reset();
 }
 
@@ -858,7 +861,8 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   base::TimeDelta elapsed_time =
       base::TimeTicks::Now() -
       latest_full_image_request_data_->query_start_time_;
-  SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value());
+  SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value(),
+                             kImageVisualInputTypeQueryParameterValue);
 
   if (!cluster_info_.has_value()) {
     cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
@@ -950,7 +954,23 @@ void LensOverlayQueryController::PerformPageContentRequest(
       base::BindOnce(
           &LensOverlayQueryController::OnPageContentEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
-      base::DoNothing());
+      base::BindOnce(&LensOverlayQueryController::PageContentResponseHandler,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LensOverlayQueryController::PageContentResponseHandler(
+    std::unique_ptr<EndpointResponse> response) {
+  page_content_endpoint_fetcher_.reset();
+
+  base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() -
+      latest_full_image_request_data_->query_start_time_;
+  std::string vit_param_value =
+      underlying_content_type_ == lens::PageContentMimeType::kPdf
+          ? kPdfVisualInputTypeQueryParameterValue
+          : kWebpageVisualInputTypeQueryParameterValue;
+  SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value(),
+                             vit_param_value);
 }
 
 void LensOverlayQueryController::SendInteraction(

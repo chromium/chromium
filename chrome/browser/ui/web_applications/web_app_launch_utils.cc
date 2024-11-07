@@ -27,6 +27,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -53,15 +54,15 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_information_forwarder.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
-#include "chrome/browser/web_applications/navigation_capturing_information_forwarder.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
-#include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -276,7 +277,8 @@ bool ShouldEnqueueNavigationHandlingInfoForRedirects(
 void MaybePopulateNavigationHandlingInfoForRedirects(
     base::WeakPtr<content::NavigationHandle> navigation_handle,
     content::WebContents* web_contents,
-    const web_app::NavigationCapturingRedirectionInfo& redirection_info) {
+    const web_app::NavigationCapturingRedirectionInfo& redirection_info,
+    std::optional<webapps::AppId> launched_app_id) {
   CHECK(web_contents);
   if (!ShouldEnqueueNavigationHandlingInfoForRedirects(
           redirection_info.initial_nav_handling_result())) {
@@ -285,10 +287,11 @@ void MaybePopulateNavigationHandlingInfoForRedirects(
 
   if (navigation_handle) {
     web_app::NavigationCapturingNavigationHandleUserData::
-        CreateForNavigationHandle(*navigation_handle, redirection_info);
+        CreateForNavigationHandle(*navigation_handle, redirection_info,
+                                  std::move(launched_app_id));
   } else {
     web_app::NavigationCapturingInformationForwarder::CreateForWebContents(
-        web_contents, redirection_info);
+        web_contents, redirection_info, std::move(launched_app_id));
   }
 }
 
@@ -648,10 +651,8 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
     web_contents->UpdateWindowControlsOverlay(gfx::Rect());
   }
 
-  std::unique_ptr<tabs::TabModel> tab_model =
-      source_tabstrip->DetachTabAtForInsertion(found_tab_index.value());
   std::unique_ptr<content::WebContents> contents_move =
-      tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
+      source_tabstrip->DetachWebContentsAtForInsertion(found_tab_index.value());
   int location = target_browser->tab_strip_model()->count();
   int add_types = (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE);
   if (insert_as_first_tab) {
@@ -1412,9 +1413,9 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   // triggered before, but synchronously before (and navigations are async), so
   // this should not have updated to the new url that will be navigated to.
   std::optional<webapps::AppId> source_contents_app_id =
-      source_contents
-          ? WebAppTabHelper::FromWebContents(params.source_contents)->app_id()
-          : std::nullopt;
+      source_contents ? base::OptionalFromPtr(
+                            WebAppTabHelper::GetAppId(params.source_contents))
+                      : std::nullopt;
 
   std::optional<webapps::AppId> referrer_app_id =
       params.referrer.url.is_valid()
@@ -1678,7 +1679,10 @@ void OnWebAppNavigationAfterWebContentsCreation(
       app_navigation_result.redirection_info().first_navigation_app_id();
   MaybePopulateNavigationHandlingInfoForRedirects(
       navigation_handle, params.navigated_or_inserted_contents,
-      app_navigation_result.redirection_info());
+      app_navigation_result.redirection_info(),
+      app_navigation_result.browser_tab_override().has_value()
+          ? first_navigation_app_id
+          : std::nullopt);
 
   base::Value::Dict debug_value = app_navigation_result.TakeDebugData();
   web_app::WebAppProvider* provider =
@@ -1699,36 +1703,11 @@ void OnWebAppNavigationAfterWebContentsCreation(
   }
   CHECK(params.browser);
 
-  std::tuple<Browser*, int> browser_tab_override =
-      *app_navigation_result.browser_tab_override();
   debug_value.Set("handled_by_app", true);
   debug_value.Set("params.navigated_or_inserted_contents",
                   base::ToString(params.navigated_or_inserted_contents));
   provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
       base::Value(std::move(debug_value)));
-
-  // Enqueue launch params and show the IPH bubble denoting that an app has
-  // handled the navigation.
-  if (app_navigation_result.perform_app_handling_tasks_in_web_contents()) {
-    CHECK(first_navigation_app_id);
-    EnqueueLaunchParams(params.navigated_or_inserted_contents,
-                        *first_navigation_app_id, params.url,
-                        /*wait_for_navigation_to_complete=*/true);
-
-    apps::LaunchContainer container =
-        std::get<Browser*>(browser_tab_override)->app_controller()
-            ? apps::LaunchContainer::kLaunchContainerWindow
-            : apps::LaunchContainer::kLaunchContainerTab;
-    RecordLaunchMetrics(*first_navigation_app_id, container,
-                        apps::LaunchSource::kFromNavigationCapturing,
-                        params.url, params.navigated_or_inserted_contents);
-
-    // TODO(crbug.com/336371044): Support IPH in browser tabs.
-    if (params.browser->app_controller()) {
-      MaybeShowNavigationCaptureIph(*first_navigation_app_id,
-                                    params.initiating_profile, params.browser);
-    }
-  }
 }
 
 }  // namespace web_app

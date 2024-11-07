@@ -654,6 +654,7 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSValue*)columnIndexRange {
+  // Note: keep in sync with accessibilityColumnIndexRange.
   if (![self instanceActive])
     return nil;
 
@@ -1186,6 +1187,7 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSValue*)rowIndexRange {
+  // Note: keep in sync with accessibilityRowIndexRange.
   if (![self instanceActive])
     return nil;
 
@@ -1647,6 +1649,13 @@ bool ui::IsNSRange(id value) {
                "attribute=", base::SysNSStringToUTF8(attribute));
   if (![self instanceActive])
     return nil;
+
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    // TODO(crbug.com/376723178): We should be able to add a NOTREACHED()
+    // here, but at the moment, test infrastructure still directly calls this
+    // api endpoint.
+    return nil;
+  }
 
   SEL selector = NSSelectorFromString([self methodNameForAttribute:attribute]);
   if (selector)

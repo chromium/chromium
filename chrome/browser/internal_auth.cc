@@ -169,13 +169,11 @@ void CreatePassport(const std::string& domain,
   unsigned char* hmac_data = reinterpret_cast<unsigned char*>(
       base::WriteInto(&hmac, kHMACSizeInBytes + 1));
   if (!engine->Sign(blob, hmac_data, kHMACSizeInBytes)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   std::string hmac_base64 = base::Base64Encode(hmac);
   if (hmac_base64.size() != BASE64_PER_RAW(kHMACSizeInBytes)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   DCHECK(hmac_base64.size() < result.size());
   base::ranges::copy(hmac_base64, result.begin());
@@ -352,8 +350,7 @@ class InternalAuthGenerationService : public base::ThreadChecker {
   int64_t GetUnusedTick(const std::string& domain) {
     DCHECK(CalledOnValidThread());
     if (engine_ == nullptr) {
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     }
     if (!IsDomainSane(domain))
       return 0;
@@ -388,8 +385,7 @@ class InternalAuthGenerationService : public base::ThreadChecker {
         return tick;
       }
     }
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   std::string GeneratePassport(const std::string& domain,

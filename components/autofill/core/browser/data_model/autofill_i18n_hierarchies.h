@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {
+
 // Field types for country AU.
 inline constexpr FieldType kFieldTypeChildren_AU_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER};
 inline constexpr FieldType kFieldTypeChildren_AU_ADDRESS_HOME_APT[] = {ADDRESS_HOME_APT_TYPE, ADDRESS_HOME_APT_NUM};

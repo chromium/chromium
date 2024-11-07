@@ -716,8 +716,7 @@ void AutomationV8Bindings::AddV8Routes() {
       "GetIsSelectionBackward",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
-        const AXNode* anchor = tree_wrapper->GetNodeFromTree(
-            tree_wrapper->GetTreeID(),
+        const AXNode* anchor = tree_wrapper->GetNode(
             tree_wrapper->GetUnignoredSelection().anchor_object_id);
         if (!anchor)
           return;

@@ -35,12 +35,14 @@ public class ClearDataDialogResultRecorderTest {
     @Mock TrustedWebActivityUmaRecorder mUmaRecorder;
     @Captor ArgumentCaptor<Runnable> mTaskOnNativeInitCaptor;
 
-    private ClearDataDialogResultRecorder mRecorder;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        restartApp();
+        ChromeBrowserInitializer.setForTesting(mBrowserInitializer);
+        when(mBrowserInitializer.isFullBrowserInitialized()).thenReturn(false);
+        doNothing()
+                .when(mBrowserInitializer)
+                .runNowOrAfterFullBrowserStarted(mTaskOnNativeInitCaptor.capture());
     }
 
     @Test
@@ -50,7 +52,7 @@ public class ClearDataDialogResultRecorderTest {
                         .expectBooleanRecord(
                                 "TrustedWebActivity.ClearDataDialogOnUninstallAccepted", true)
                         .build();
-        mRecorder.handleDialogResult(true, true);
+        ClearDataDialogResultRecorder.handleDialogResult(true, true);
         finishNativeInit();
         histogramWatcher.assertExpected();
     }
@@ -63,7 +65,7 @@ public class ClearDataDialogResultRecorderTest {
                                 "TrustedWebActivity.ClearDataDialogOnUninstallAccepted", true)
                         .build();
         finishNativeInit();
-        mRecorder.handleDialogResult(true, true);
+        ClearDataDialogResultRecorder.handleDialogResult(true, true);
         histogramWatcher.assertExpected();
     }
 
@@ -75,7 +77,7 @@ public class ClearDataDialogResultRecorderTest {
                                 "TrustedWebActivity.ClearDataDialogOnUninstallAccepted", false)
                         .build();
         finishNativeInit();
-        mRecorder.handleDialogResult(false, true);
+        ClearDataDialogResultRecorder.handleDialogResult(false, true);
         histogramWatcher.assertExpected();
     }
 
@@ -86,7 +88,7 @@ public class ClearDataDialogResultRecorderTest {
                         .expectNoRecords("TrustedWebActivity.ClearDataDialogOnUninstallAccepted")
                         .expectNoRecords("TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted")
                         .build();
-        mRecorder.handleDialogResult(false, true);
+        ClearDataDialogResultRecorder.handleDialogResult(false, true);
         histogramWatcher.assertExpected();
     }
 
@@ -99,39 +101,26 @@ public class ClearDataDialogResultRecorderTest {
                         .expectBooleanRecord(
                                 "TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted", false)
                         .build();
-        mRecorder.handleDialogResult(false, true);
-        restartApp();
-        mRecorder.handleDialogResult(false, true);
-        restartApp();
-        mRecorder.handleDialogResult(false, false);
-        restartApp();
+        ClearDataDialogResultRecorder.handleDialogResult(false, true);
+        ClearDataDialogResultRecorder.handleDialogResult(false, true);
+        ClearDataDialogResultRecorder.handleDialogResult(false, false);
 
-        mRecorder.makeDeferredRecordings();
+        ClearDataDialogResultRecorder.makeDeferredRecordings();
         histogramWatcher.assertExpected();
     }
 
     @Test
     public void doesntMakeDeferredRecordingTwice() {
-        mRecorder.handleDialogResult(false, true);
-        restartApp();
-        mRecorder.makeDeferredRecordings();
-        restartApp();
+        ClearDataDialogResultRecorder.handleDialogResult(false, true);
+        ClearDataDialogResultRecorder.makeDeferredRecordings();
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("TrustedWebActivity.ClearDataDialogOnUninstallAccepted")
                         .expectNoRecords("TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted")
                         .build();
-        mRecorder.makeDeferredRecordings();
+        ClearDataDialogResultRecorder.makeDeferredRecordings();
         histogramWatcher.assertExpected();
-    }
-
-    private void restartApp() {
-        when(mBrowserInitializer.isFullBrowserInitialized()).thenReturn(false);
-        doNothing()
-                .when(mBrowserInitializer)
-                .runNowOrAfterFullBrowserStarted(mTaskOnNativeInitCaptor.capture());
-        mRecorder = new ClearDataDialogResultRecorder(() -> mPrefsManager, mBrowserInitializer);
     }
 
     private void finishNativeInit() {

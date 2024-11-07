@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -92,9 +93,9 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public @NonNull String getSheetContentDescription(Context context) {
         // TODO(crbug.com/366158726): Make the string configurable.
-        return R.string.pwd_access_loss_warning_content_description;
+        return context.getString(R.string.pwd_access_loss_warning_content_description);
     }
 
     @Override

@@ -1758,7 +1758,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }
@@ -3192,7 +3192,7 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
           EXPECT_EQ(win_button_it->icon, kSmartphoneIcon);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }
@@ -3249,7 +3249,7 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_MakeCredential) {
         EXPECT_EQ(win_button_it->icon, kUsbSecurityKeyIcon);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

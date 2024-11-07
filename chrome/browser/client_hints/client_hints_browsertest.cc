@@ -1303,7 +1303,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
       } else if (expected_ect == net::EFFECTIVE_CONNECTION_TYPE_3G) {
         EXPECT_NEAR(450, rtt_value, 90);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
 
       // Effective connection type is forced to 2G using command line in these
@@ -1314,7 +1314,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
       } else if (expected_ect == net::EFFECTIVE_CONNECTION_TYPE_3G) {
         EXPECT_NEAR(0.4, mbps_value, 0.1);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
 
       EXPECT_EQ(expected_ect == net::EFFECTIVE_CONNECTION_TYPE_2G ? "2g" : "3g",
@@ -4573,7 +4573,7 @@ class ThirdPartyUaReductionBrowserTest : public UaReductionBrowserTest {
     if (value != nullptr) {
       last_user_agent_ = *value;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

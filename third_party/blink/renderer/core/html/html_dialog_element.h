@@ -38,6 +38,12 @@ namespace blink {
 class Document;
 class ExceptionState;
 
+enum class ClosedByState {
+  kAny,
+  kCloseRequest,
+  kNone,
+};
+
 class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -61,6 +67,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
     return_value_ = return_value;
   }
 
+  ClosedByState ClosedBy() const;
   String closedBy() const;
   void setClosedBy(const String& return_value);
 
@@ -95,8 +102,11 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 
- private:
+  void AttributeChanged(const AttributeModificationParams&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
+
+ private:
+  void CreateCloseWatcher();
 
   void SetIsModal(bool is_modal);
   void ScheduleCloseEvent();

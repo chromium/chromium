@@ -32,9 +32,9 @@ using ::testing::Truly;
 
 constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 0, 10);
 
-class FakePickerViewDelegate : public PickerViewDelegate {
+class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
  public:
-  // PickerViewDelegate:
+  // QuickInsertViewDelegate:
   std::vector<QuickInsertCategory> GetAvailableCategories() override {
     return {};
   }
@@ -80,28 +80,29 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 using QuickInsertWidgetTest = AshTestBase;
 
 TEST_F(QuickInsertWidgetTest, CreateWidgetHasCorrectHierarchy) {
-  FakePickerViewDelegate delegate;
+  FakeQuickInsertViewDelegate delegate;
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
 
   // Widget should contain a NonClientView, which has a NonClientFrameView for
-  // borders and shadows, and a ClientView with a sole child of the PickerView.
+  // borders and shadows, and a ClientView with a sole child of the
+  // QuickInsertView.
   ASSERT_TRUE(widget);
   ASSERT_TRUE(widget->non_client_view());
   ASSERT_TRUE(widget->non_client_view()->frame_view());
   ASSERT_TRUE(widget->non_client_view()->client_view());
   EXPECT_THAT(widget->non_client_view()->client_view()->children(),
-              ElementsAre(Truly(views::IsViewClass<PickerView>)));
+              ElementsAre(Truly(views::IsViewClass<QuickInsertView>)));
 }
 
 TEST_F(QuickInsertWidgetTest, CreateWidgetHasCorrectBorder) {
-  FakePickerViewDelegate delegate;
+  FakeQuickInsertViewDelegate delegate;
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
 
   EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
 }
 
 TEST_F(QuickInsertWidgetTest, ClickingOutsideClosesQuickInsertWidget) {
-  FakePickerViewDelegate delegate;
+  FakeQuickInsertViewDelegate delegate;
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
@@ -119,7 +120,7 @@ TEST_F(QuickInsertWidgetTest, LosingFocusClosesQuickInsertWidget) {
   window->Show();
 
   // Create the fake picker and make sure it has focus.
-  FakePickerViewDelegate delegate;
+  FakeQuickInsertViewDelegate delegate;
   auto quick_insert_widget =
       QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   quick_insert_widget->Show();
@@ -140,7 +141,7 @@ TEST_F(QuickInsertWidgetTest, PreviewBubbleDoesNotStealFocusQuickInsertWidget) {
   anchor_widget->SetContentsView(std::make_unique<views::View>());
 
   // Create the QuickInsertWidget and make sure it has focus.
-  FakePickerViewDelegate delegate;
+  FakeQuickInsertViewDelegate delegate;
   auto quick_insert_widget =
       QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   quick_insert_widget->Show();
@@ -156,7 +157,7 @@ TEST_F(QuickInsertWidgetTest, PreviewBubbleDoesNotStealFocusQuickInsertWidget) {
 }
 
 TEST_F(QuickInsertWidgetTest, CreatesCenteredWidget) {
-  FakePickerViewDelegate delegate;
+  FakeQuickInsertViewDelegate delegate;
   auto widget =
       QuickInsertWidget::CreateCentered(&delegate, gfx::Rect(10, 10, 10, 10));
   widget->Show();

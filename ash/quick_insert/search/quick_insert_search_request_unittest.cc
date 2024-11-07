@@ -80,12 +80,12 @@ class QuickInsertSearchRequestTest : public testing::Test {
     return task_environment_;
   }
 
-  MockSearchPickerClient& client() { return client_; }
+  MockSearchQuickInsertClient& client() { return client_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  NiceMock<MockSearchPickerClient> client_;
+  NiceMock<MockSearchQuickInsertClient> client_;
 };
 
 TEST_F(QuickInsertSearchRequestTest, SendsQueryToCrosSearchImmediately) {
@@ -130,7 +130,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromOmniboxSearch) {
   // for more details.
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kOmnibox,
+              Call(QuickInsertSearchSource::kOmnibox,
                    ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(
                        Field("url", &QuickInsertBrowsingHistoryResult::url,
                              Property("spec", &GURL::spec,
@@ -157,7 +157,7 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesOmniboxResults) {
   EXPECT_CALL(
       search_results_callback,
       Call(
-          PickerSearchSource::kOmnibox,
+          QuickInsertSearchSource::kOmnibox,
           ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                           "text", &QuickInsertTextResult::primary_text, u"1")),
                       VariantWith<QuickInsertTextResult>(Field(
@@ -185,7 +185,7 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
   EXPECT_CALL(
       search_results_callback,
       Call(
-          PickerSearchSource::kOmnibox,
+          QuickInsertSearchSource::kOmnibox,
           ElementsAre(VariantWith<QuickInsertTextResult>(Field(
                           "text", &QuickInsertTextResult::primary_text, u"1")),
                       VariantWith<QuickInsertTextResult>(Field(
@@ -212,11 +212,11 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
 TEST_F(QuickInsertSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback,
-              Call(Ne(PickerSearchSource::kOmnibox), _, _))
+              Call(Ne(QuickInsertSearchSource::kOmnibox), _, _))
       .Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kOmnibox,
+      Call(QuickInsertSearchSource::kOmnibox,
            ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(
                            Field("url", &QuickInsertBrowsingHistoryResult::url,
                                  GURL("https://example.com"))),
@@ -280,23 +280,24 @@ TEST_F(QuickInsertSearchRequestTest,
     search_started = false;
   });
   ON_CALL(client(), StartCrosSearch)
-      .WillByDefault([&search_started, this](
-                         const std::u16string& query,
-                         std::optional<QuickInsertCategory> category,
-                         PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillByDefault(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
   // Function only used for the below `EXPECT_CALL` to ensure that we don't call
   // the search callback with an empty callback after the initial state.
   testing::MockFunction<void()> after_start_search;
   testing::Expectation after_start_search_call =
       EXPECT_CALL(after_start_search, Call).Times(1);
   EXPECT_CALL(first_search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      first_search_results_callback,
-      Call(PickerSearchSource::kOmnibox, IsEmpty(), /*has_more_results=*/_))
+  EXPECT_CALL(first_search_results_callback,
+              Call(QuickInsertSearchSource::kOmnibox, IsEmpty(),
+                   /*has_more_results=*/_))
       .Times(0)
       .After(after_start_search_call);
 
@@ -349,14 +350,15 @@ TEST_F(QuickInsertSearchRequestTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
 
   {
     QuickInsertSearchRequest request(
@@ -385,14 +387,15 @@ TEST_F(QuickInsertSearchRequestTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
 
   {
     QuickInsertSearchRequest request(
@@ -428,14 +431,15 @@ TEST_F(
     search_started = false;
   });
   ON_CALL(client(), StartCrosSearch)
-      .WillByDefault([&search_started, this](
-                         const std::u16string& query,
-                         std::optional<QuickInsertCategory> category,
-                         PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillByDefault(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
 
   {
     QuickInsertSearchRequest request(
@@ -457,7 +461,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kLocalFile,
+              Call(QuickInsertSearchSource::kLocalFile,
                    ElementsAre(VariantWith<QuickInsertTextResult>(
                        Field("text", &QuickInsertTextResult::primary_text,
                              u"monorail_cat.jpg"))),
@@ -479,7 +483,7 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromFileSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kLocalFile,
+      Call(QuickInsertSearchSource::kLocalFile,
            ElementsAre(
                VariantWith<QuickInsertTextResult>(Field(
                    "text", &QuickInsertTextResult::primary_text, u"1.jpg")),
@@ -508,7 +512,7 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kLocalFile,
+      Call(QuickInsertSearchSource::kLocalFile,
            ElementsAre(
                VariantWith<QuickInsertTextResult>(Field(
                    "text", &QuickInsertTextResult::primary_text, u"1.jpg")),
@@ -567,14 +571,15 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
 
   {
     QuickInsertSearchRequest request(
@@ -603,14 +608,15 @@ TEST_F(QuickInsertSearchRequestTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
 
   {
     QuickInsertSearchRequest request(
@@ -632,7 +638,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromDriveSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kDrive,
+              Call(QuickInsertSearchSource::kDrive,
                    ElementsAre(VariantWith<QuickInsertTextResult>(
                        Field("text", &QuickInsertTextResult::primary_text,
                              u"catrbug_135117.jpg"))),
@@ -654,7 +660,7 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromDriveSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kDrive,
+      Call(QuickInsertSearchSource::kDrive,
            ElementsAre(
                VariantWith<QuickInsertTextResult>(Field(
                    "text", &QuickInsertTextResult::primary_text, u"1.jpg")),
@@ -685,7 +691,7 @@ TEST_F(QuickInsertSearchRequestTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kDrive,
+      Call(QuickInsertSearchSource::kDrive,
            ElementsAre(
                VariantWith<QuickInsertTextResult>(Field(
                    "text", &QuickInsertTextResult::primary_text, u"1.jpg")),
@@ -746,14 +752,15 @@ TEST_F(QuickInsertSearchRequestTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
 
   {
     QuickInsertSearchRequest request(
@@ -782,14 +789,15 @@ TEST_F(QuickInsertSearchRequestTest,
       });
   EXPECT_CALL(client(), StartCrosSearch)
       .Times(1)
-      .WillRepeatedly([&search_started, this](
-                          const std::u16string& query,
-                          std::optional<QuickInsertCategory> category,
-                          PickerClient::CrosSearchResultsCallback callback) {
-        client().StopCrosQuery();
-        search_started = true;
-        client().cros_search_callback() = std::move(callback);
-      });
+      .WillRepeatedly(
+          [&search_started, this](
+              const std::u16string& query,
+              std::optional<QuickInsertCategory> category,
+              QuickInsertClient::CrosSearchResultsCallback callback) {
+            client().StopCrosQuery();
+            search_started = true;
+            client().cros_search_callback() = std::move(callback);
+          });
 
   {
     QuickInsertSearchRequest request(
@@ -811,7 +819,7 @@ TEST_F(QuickInsertSearchRequestTest, PublishesDateResultsOnlyOnce) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kDate, _, /*has_more_results=*/_))
+              Call(QuickInsertSearchSource::kDate, _, /*has_more_results=*/_))
       .Times(1);
   // Fast forward the clock to a Sunday (day_of_week = 0).
   base::Time::Exploded exploded;
@@ -853,7 +861,7 @@ TEST_F(QuickInsertSearchRequestTest,
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kDate, _, /*has_more_results=*/_))
+              Call(QuickInsertSearchSource::kDate, _, /*has_more_results=*/_))
       .Times(1);
   // Fast forward the clock to a Sunday (day_of_week = 0).
   base::Time::Exploded exploded;
@@ -873,7 +881,7 @@ TEST_F(QuickInsertSearchRequestTest, PublishesMathResultsOnlyOnce) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kMath, _, /*has_more_results=*/_))
+              Call(QuickInsertSearchSource::kMath, _, /*has_more_results=*/_))
       .Times(1);
 
   QuickInsertSearchRequest request(
@@ -888,7 +896,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsMathMetricsOnlyOnce) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kMath, _, /*has_more_results=*/_))
+              Call(QuickInsertSearchSource::kMath, _, /*has_more_results=*/_))
       .Times(1);
 
   {
@@ -907,7 +915,7 @@ TEST_F(QuickInsertSearchRequestTest,
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kMath, _, /*has_more_results=*/_))
+              Call(QuickInsertSearchSource::kMath, _, /*has_more_results=*/_))
       .Times(1);
 
   QuickInsertSearchRequest request(
@@ -963,7 +971,7 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromClipboardSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kClipboard,
+      Call(QuickInsertSearchSource::kClipboard,
            ElementsAre(VariantWith<QuickInsertClipboardResult>(
                FieldsAre(_, QuickInsertClipboardResult::DisplayFormat::kText,
                          /*file_count=*/0, u"cat", std::nullopt, true))),
@@ -1002,7 +1010,7 @@ TEST_F(QuickInsertSearchRequestTest, RecordsClipboardMetrics) {
 class QuickInsertSearchRequestEditorTest
     : public QuickInsertSearchRequestTest,
       public testing::WithParamInterface<
-          std::pair<QuickInsertCategory, PickerSearchSource>> {};
+          std::pair<QuickInsertCategory, QuickInsertSearchSource>> {};
 
 TEST_P(QuickInsertSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
   const auto& [category, source] = GetParam();
@@ -1052,14 +1060,14 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     QuickInsertSearchRequestEditorTest,
     testing::Values(std::make_pair(QuickInsertCategory::kEditorWrite,
-                                   PickerSearchSource::kEditorWrite),
+                                   QuickInsertSearchSource::kEditorWrite),
                     std::make_pair(QuickInsertCategory::kEditorRewrite,
-                                   PickerSearchSource::kEditorRewrite)));
+                                   QuickInsertSearchSource::kEditorRewrite)));
 
 class QuickInsertSearchRequestLobsterTest
     : public QuickInsertSearchRequestTest,
       public testing::WithParamInterface<
-          std::pair<QuickInsertCategory, PickerSearchSource>> {};
+          std::pair<QuickInsertCategory, QuickInsertSearchSource>> {};
 
 TEST_P(QuickInsertSearchRequestLobsterTest, ShowsResultsFromLobsterSearch) {
   const auto& [category, source] = GetParam();
@@ -1110,9 +1118,9 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     QuickInsertSearchRequestLobsterTest,
     testing::Values(std::make_pair(QuickInsertCategory::kLobster,
-                                   PickerSearchSource::kLobster),
+                                   QuickInsertSearchSource::kLobster),
                     std::make_pair(QuickInsertCategory::kLobster,
-                                   PickerSearchSource::kLobster)));
+                                   QuickInsertSearchSource::kLobster)));
 
 TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
   // This actually calls category search.
@@ -1133,9 +1141,11 @@ TEST_F(QuickInsertSearchRequestTest,
        DoneClosureCalledImmediatelyWhenSynchronous) {
   // This actually calls category search.
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kAction, _, _))
+  EXPECT_CALL(search_results_callback,
+              Call(QuickInsertSearchSource::kAction, _, _))
       .Times(AnyNumber());
-  EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kMath, _, _))
+  EXPECT_CALL(search_results_callback,
+              Call(QuickInsertSearchSource::kMath, _, _))
       .Times(1);
   base::test::TestFuture<bool> done_callback;
 

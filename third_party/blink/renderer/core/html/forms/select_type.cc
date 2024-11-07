@@ -133,7 +133,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
       if (option_to_focus) {
         option_to_focus->Focus(FocusParams(FocusTrigger::kScript));
       }
-      select->PseudoStateChanged(CSSSelector::kPseudoOpen);
       if (AXObjectCache* cache =
               select->GetDocument().ExistingAXObjectCache()) {
         cache->DidShowMenuListPopup(select);
@@ -160,7 +159,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
         element_to_focus->Focus(FocusParams(FocusTrigger::kScript));
       }
 
-      select->PseudoStateChanged(CSSSelector::kPseudoOpen);
       if (AXObjectCache* cache =
               select->GetDocument().ExistingAXObjectCache()) {
         cache->DidHideMenuListPopup(select);
@@ -617,7 +615,6 @@ void MenuListSelectType::ManuallyAssignSlots() {
     // case which would require switching appearance values after the user has
     // opened the select.
     if (popover_->IsInTopLayer()) {
-      CHECK(IsAppearanceBasePicker());
       popover_options_slot_->Assign(all_children_except_first_button);
       option_slot_->Assign(nullptr);
     } else {

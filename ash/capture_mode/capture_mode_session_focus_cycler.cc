@@ -873,9 +873,11 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
       for (auto* button :
            {bar_view->settings_button(), bar_view->close_button()}) {
-        auto* highlight_helper = HighlightHelper::Get(button);
-        DCHECK(highlight_helper);
-        items.push_back(highlight_helper);
+        if (button && button->GetEnabled()) {
+          auto* highlight_helper = HighlightHelper::Get(button);
+          DCHECK(highlight_helper);
+          items.push_back(highlight_helper);
+        }
       }
       break;
     }

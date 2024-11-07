@@ -75,8 +75,7 @@ SyncStartupTracker::GetServiceStartupState(syncer::SyncService* sync_service) {
 
   switch (sync_service->GetTransportState()) {
     case syncer::SyncService::TransportState::DISABLED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case syncer::SyncService::TransportState::START_DEFERRED:
     case syncer::SyncService::TransportState::INITIALIZING:
       // No error detected yet, but the sync engine hasn't started up yet, so
@@ -92,8 +91,7 @@ SyncStartupTracker::GetServiceStartupState(syncer::SyncService* sync_service) {
       return ServiceStartupState::kComplete;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ServiceStartupState::kError;
+  NOTREACHED();
 }
 
 namespace testing {

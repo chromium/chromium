@@ -133,8 +133,7 @@ MonitoredProcessType GetMonitoredProcessTypeForNonRendererChildProcess(
     case content::PROCESS_TYPE_BROWSER:
     case content::PROCESS_TYPE_RENDERER:
       // Not a non-renderer child process.
-      NOTREACHED_IN_MIGRATION();
-      return kCount;
+      NOTREACHED();
     case content::PROCESS_TYPE_GPU:
       return MonitoredProcessType::kGpu;
     case content::PROCESS_TYPE_UTILITY: {

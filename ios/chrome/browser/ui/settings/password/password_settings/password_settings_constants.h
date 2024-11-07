@@ -37,4 +37,8 @@ extern NSString* const kPasswordSettingsOnDeviceEncryptionLearnMoreId;
 extern NSString* const kPasswordSettingsOnDeviceEncryptionOptedInTextId;
 extern NSString* const kPasswordSettingsOnDeviceEncryptionSetUpId;
 
+// Accessibility IDs of change PIN elements.
+extern NSString* const kPasswordSettingsChangePinButtonId;
+extern NSString* const kPasswordSettingsChangePinDescriptionId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSTANTS_H_

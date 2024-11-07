@@ -121,7 +121,7 @@ const CGFloat kGooglePayBadgeHeight = 16;
 
     if (@available(iOS 17, *)) {
       [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                        @[ UITraitUserInterfaceStyle.self ])
+                                        @[ UITraitUserInterfaceStyle.class ])
                          withAction:@selector(userInterfaceStyleDidChange)];
     }
   }

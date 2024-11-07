@@ -123,6 +123,7 @@ class ASH_EXPORT CoralController {
   // Used as the callback of mojom::CoralService::Group.
   void HandleGroupResult(CoralSource source,
                          CoralResponseCallback callback,
+                         const base::TimeTicks& request_time,
                          coral::mojom::GroupResultPtr result);
 
   // Used as the callback of mojom::CoralService::CacheEmbeddings. `callback` is

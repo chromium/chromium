@@ -57,6 +57,7 @@ class ConnectorUploadRequest {
       const std::string& metadata,
       const base::FilePath& path,
       uint64_t file_size,
+      bool is_obfuscated,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -113,6 +114,9 @@ class ConnectorUploadRequest {
   // Size of the file or page region.
   uint64_t data_size_ = 0;
 
+  // Whether the file has been obfuscated. Only populated for FILE requests.
+  bool is_obfuscated_ = false;
+
   // Data pipe getter used to stream a file or a page. Only populated for the
   // corresponding requests.
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter_;
@@ -145,6 +149,7 @@ class ConnectorUploadRequestFactory {
       BinaryUploadService::Result get_data_result,
       const base::FilePath& path,
       uint64_t file_size,
+      bool is_obfuscated,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) = 0;
   virtual std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(

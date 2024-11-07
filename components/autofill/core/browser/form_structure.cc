@@ -226,17 +226,8 @@ void FormStructure::DetermineHeuristicTypes(
 
   UpdateAutofillCount();
   AssignSections(fields_);
-
-  FormStructureRationalizer rationalizer(&fields_);
-  rationalizer.RationalizeContentEditables(log_manager);
-  rationalizer.RationalizeAutocompleteAttributes(log_manager);
-  if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
-    rationalizer.RationalizeRepeatedFields(
-        form_signature_, form_interactions_ukm_logger, log_manager);
-  }
-  rationalizer.RationalizeFieldTypePredictions(
-      main_frame_origin_, client_country_, current_page_language_, log_manager);
-  rationalizer.RationalizePhoneNumbersForFilling();
+  RationalizeFormStructure(form_interactions_ukm_logger, log_manager);
+  RationalizePhoneNumberFieldsForFilling();
 
   // Log the field type predicted by rationalization.
   // The sections are mapped to consecutive natural numbers starting at 1.
@@ -329,7 +320,7 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
 std::vector<FieldGlobalId> FormStructure::FindFieldsEligibleForManualFilling(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   std::vector<FieldGlobalId> fields_eligible_for_manual_filling;
-  for (const autofill::FormStructure* form : forms) {
+  for (const FormStructure* form : forms) {
     for (const auto& field : form->fields_) {
       FieldTypeGroup field_type_group =
           GroupTypeOfFieldType(field->server_type());
@@ -891,11 +882,9 @@ void FormStructure::RationalizeFormStructure(
   FormStructureRationalizer rationalizer(&fields_);
   rationalizer.RationalizeContentEditables(log_manager);
   rationalizer.RationalizeAutocompleteAttributes(log_manager);
-  rationalizer.RationalizeRepeatedFields(
-      form_signature(), form_interactions_ukm_logger, log_manager);
   rationalizer.RationalizeFieldTypePredictions(
-      main_frame_origin(), client_country(), current_page_language(),
-      log_manager);
+      main_frame_origin(), form_signature(), form_interactions_ukm_logger,
+      client_country(), current_page_language(), log_manager);
 }
 
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {

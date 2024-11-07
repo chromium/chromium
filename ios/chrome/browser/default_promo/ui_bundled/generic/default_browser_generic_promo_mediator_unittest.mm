@@ -8,12 +8,12 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_consumer.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_test_utils.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -41,18 +41,13 @@ class DefaultBrowserGenericPromoMediatorTest : public PlatformTest {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     DeviceSwitcherResultDispatcher::RegisterProfilePrefs(prefs_->registry());
     device_info_tracker_ = std::make_unique<FakeDeviceInfoTracker>();
-    consumer_mock_ =
-        OCMStrictProtocolMock(@protocol(DefaultBrowserGenericPromoConsumer));
   }
 
   void TearDown() override {
-    EXPECT_OCMOCK_VERIFY((id)consumer_mock_);
     PlatformTest::TearDown();
     scoped_feature_list_.Reset();
-    mediator_to_test_.consumer = nil;
     [mediator_to_test_ disconnect];
     mediator_to_test_ = nil;
-    consumer_mock_ = nil;
   }
 
   void SetUpMediatorTest(DefaultBrowserUserSegment label,
@@ -84,10 +79,8 @@ class DefaultBrowserGenericPromoMediatorTest : public PlatformTest {
   }
 
   void ExpectTextForSegment(DefaultBrowserUserSegment label) {
-    OCMExpect([consumer_mock_
-        setPromoTitle:GetNSString(
-                          GetDefaultBrowserGenericPromoTitleStringID(label))]);
-    mediator_to_test_.consumer = consumer_mock_;
+    EXPECT_NSEQ([mediator_to_test_ promoTitle],
+                GetNSString(GetDefaultBrowserGenericPromoTitleStringID(label)));
   }
 
  protected:
@@ -99,7 +92,6 @@ class DefaultBrowserGenericPromoMediatorTest : public PlatformTest {
   NiceMock<MockSegmentationPlatformService> segmentation_platform_service_;
   NiceMock<MockFieldTrialRegister> field_trial_register_;
   DefaultBrowserGenericPromoMediator* mediator_to_test_;
-  id<DefaultBrowserGenericPromoConsumer> consumer_mock_;
 };
 
 #pragma mark - Unit Tests

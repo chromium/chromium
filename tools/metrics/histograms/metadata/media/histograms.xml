@@ -5298,16 +5298,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.RTCVideoDecoderStream.Error.OnFrameReady"
-    enum="MediaStatusCode" expires_after="2021-08-15">
-  <owner>liberato@chromium.org</owner>
-  <owner>webrtc-video@google.com</owner>
-  <summary>
-    This records the media::StatusCode from the RTCVideoDecoderStreamAdapter. It
-    is emitted when the adapter encounters an error during decoding.
-  </summary>
-</histogram>
-
 <histogram name="Media.RTCVideoEncoder.Initialize" units="ms"
     expires_after="2024-09-30">
   <owner>hiroh@chromium.org</owner>
@@ -5994,7 +5984,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2024-12-15">
+    enum="VideoPixelFormatUnion" expires_after="2025-12-15">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <owner>bryantchandler@chromium.org</owner>
@@ -6003,7 +5993,7 @@ chromium-metrics-reviews@google.com.
     Counts each pixel format an enumerated video capture device supports. This
     is recorded during the first device enumeration per Capture process launch.
     (This is usually once per launch of Chrome unless the Capture process
-    crashes.) NOTE: This metric originally expired on 2023-03-19.
+    crashes.)
   </summary>
 </histogram>
 

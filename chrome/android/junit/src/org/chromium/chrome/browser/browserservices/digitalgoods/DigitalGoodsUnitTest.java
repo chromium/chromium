@@ -15,6 +15,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.url.GURL;
 
@@ -40,8 +41,8 @@ public class DigitalGoodsUnitTest {
 
     @Before
     public void setUp() {
-        mDigitalGoods =
-                new DigitalGoodsImpl(new DigitalGoodsAdapter(mClient.getClient()), mDelegate);
+        TrustedWebActivityClient.setInstanceForTesting(mClient.getClient());
+        mDigitalGoods = new DigitalGoodsImpl(mDelegate);
     }
 
     @Test

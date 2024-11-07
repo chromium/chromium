@@ -36,7 +36,7 @@ bool IsValid(const AggregatableNamedBudgetDefs::BudgetMap& budgets) {
   return budgets.size() <= kMaxAggregatableNamedBudgetsPerSource &&
          base::ranges::all_of(budgets, [](const auto& budget) {
            return AggregatableNamedBudgetKeyHasValidLength(budget.first) &&
-                  IsAggregatableValueInRange(budget.second);
+                  IsAggregatableBudgetInRange(budget.second);
          });
 }
 
@@ -73,9 +73,14 @@ AggregatableNamedBudgetDefs::FromJSON(const base::Value* v) {
           SourceRegistrationError::kAggregatableNamedBudgetsKeyTooLong);
     }
 
-    ASSIGN_OR_RETURN(int budget, ParseAggregatableValue(value), [](ParseError) {
+    ASSIGN_OR_RETURN(int budget, ParseInt(value), [](ParseError) {
       return SourceRegistrationError::kAggregatableNamedBudgetsValueInvalid;
     });
+
+    if (!IsAggregatableBudgetInRange(budget)) {
+      return base::unexpected(
+          SourceRegistrationError::kAggregatableNamedBudgetsValueInvalid);
+    }
 
     budgets.emplace_back(key, budget);
   }

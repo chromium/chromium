@@ -7,8 +7,9 @@
 
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
-#include "components/autofill/core/common/unique_ids.h"
+#import "base/functional/callback_forward.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 class AutofillSuggestionDelegate;
@@ -26,6 +27,11 @@ struct Suggestion;
 
 // Checks whether the qurrent query is the most recent one.
 - (bool)isLastQueriedField:(autofill::FieldGlobalId)fieldId;
+
+// Shows a snackbar that offers a user to undo filling a plus address as part of
+// address form filling.
+- (void)showPlusAddressEmailOverrideNotification:
+    (base::OnceClosure)emailOverrideUndoCallback;
 
 @end
 

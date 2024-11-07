@@ -103,6 +103,7 @@ export class TraceReportElement extends CrLitElement {
       'Not anonymized',
       'Scenario quota exceeded',
       'Upload timed out',
+      'Local scenario',
     ];
 
     return skipReasonMap[this.trace.skipReason] ??
@@ -261,7 +262,7 @@ export class TraceReportElement extends CrLitElement {
   protected getStateText_(): string {
     switch (this.trace.uploadState) {
       case ReportUploadState.kNotUploaded:
-        return `Skip reason: ${this.getSkipReason_()}`;
+        return `Upload skipped: ${this.getSkipReason_()}`;
       case ReportUploadState.kPending:
         return 'Pending upload';
       case ReportUploadState.kPending_UserRequested:

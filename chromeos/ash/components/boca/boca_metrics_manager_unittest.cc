@@ -17,9 +17,6 @@
 using ::testing::_;
 
 namespace ash::boca {
-
-constexpr base::TimeDelta fast_forward_timeskip =
-    BocaSessionManager::kIndefinitePollingInterval + base::Seconds(1);
 constexpr char kTestUrl1[] = "https://www.test1.com";
 constexpr char kTestUrl2[] = "https://www.test2.com";
 constexpr char kTestEmail1[] = "test1@gmail.com";
@@ -28,6 +25,8 @@ constexpr char kTestEmail3[] = "test3@gmail.com";
 
 class BocaMetricsManagerTest : public testing::Test {
  protected:
+  const base::TimeDelta fast_forward_timeskip =
+      base::Seconds(60) + base::Seconds(1);
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };

@@ -115,8 +115,7 @@ Profile* TwoClientWebAppsIntegrationTestBase::GetProfileClient(
     case ProfileClient::kClient2:
       return GetProfile(1);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void TwoClientWebAppsIntegrationTestBase::SetUp() {

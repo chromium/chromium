@@ -140,9 +140,7 @@ std::wstring GetLocalizedString(int base_message_id) {
   DEBUG_ALIAS_FOR_WCHARCSTR(selected_translation,
                             language_selector.selected_translation().c_str(),
                             16);
-  NOTREACHED_IN_MIGRATION() << "Unable to find resource id " << message_id;
-
-  return std::wstring();
+  NOTREACHED() << "Unable to find resource id " << message_id;
 }
 
 std::wstring GetLocalizedStringF(int base_message_id,

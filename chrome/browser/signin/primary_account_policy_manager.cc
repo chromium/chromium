@@ -155,10 +155,8 @@ class PrimaryAccountPolicyManager::DeleteProfileDialogManager
         HandleUserConfirmedProfileDeletionAndDie();
         break;
       case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_DEFERRED:
-        NOTREACHED_IN_MIGRATION()
-            << "Message box must not return deferred result when run "
-               "synchronously";
-        break;
+        NOTREACHED() << "Message box must not return deferred result when run "
+                        "synchronously";
     }
   }
 

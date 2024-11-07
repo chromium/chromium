@@ -217,9 +217,9 @@ constexpr CGFloat kSpace = 8;
   [self configureBottomToolbar];
 
   if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
+    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                        withAction:@selector(updateGridInsets)];
-    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.self ]
+    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
                        withAction:@selector(updateGridInsets)];
   }
 }

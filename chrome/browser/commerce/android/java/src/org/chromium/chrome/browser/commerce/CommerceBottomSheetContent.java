@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -73,8 +75,8 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.commerce_bottom_sheet_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.commerce_bottom_sheet_content_description);
     }
 
     @Override

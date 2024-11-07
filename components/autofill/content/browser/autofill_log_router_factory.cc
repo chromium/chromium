@@ -33,9 +33,10 @@ AutofillLogRouterFactory::AutofillLogRouterFactory()
 
 AutofillLogRouterFactory::~AutofillLogRouterFactory() = default;
 
-KeyedService* AutofillLogRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutofillLogRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* /* context */) const {
-  return new LogRouter();
+  return std::make_unique<LogRouter>();
 }
 
 }  // namespace autofill

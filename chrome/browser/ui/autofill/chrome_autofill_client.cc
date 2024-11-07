@@ -29,7 +29,6 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -58,6 +57,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
@@ -88,7 +88,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/password_form_classification_util.h"
@@ -856,9 +855,13 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
   // user has used the `feature`. If the user is aware of it, then they
   // shouldn't be spammed with IPHs. The IPH code cannot know if the feature was
   // used or not unless explicitly notified.
-  feature_engagement::TrackerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext())
-      ->NotifyUsedEvent(GetFeature(feature));
+  if (auto* interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_contents())) {
+    interface->NotifyFeaturePromoFeatureUsed(
+        GetFeature(feature),
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

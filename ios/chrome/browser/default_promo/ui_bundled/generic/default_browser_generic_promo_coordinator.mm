@@ -11,8 +11,8 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -33,7 +34,7 @@ using base::UserMetricsAction;
 
 @implementation DefaultBrowserGenericPromoCoordinator {
   // Main view controller for this coordinator.
-  DefaultBrowserGenericPromoViewController* _viewController;
+  DefaultBrowserInstructionsViewController* _viewController;
   // Default browser promo command handler.
   id<DefaultBrowserGenericPromoCommands> _defaultBrowserPromoHandler;
   // Feature engagement tracker reference.
@@ -79,8 +80,7 @@ using base::UserMetricsAction;
     }];
   } else {
     _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
-    _viewController = [[DefaultBrowserGenericPromoViewController alloc] init];
-    _mediator.consumer = _viewController;
+    [self createViewControllerWithTitle:nil];
     [self showPromo];
   }
 }
@@ -98,7 +98,6 @@ using base::UserMetricsAction;
 
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
-  _mediator.consumer = nil;
   [_mediator disconnect];
   _mediator = nil;
   _promoStats = nil;
@@ -189,9 +188,21 @@ using base::UserMetricsAction;
 - (void)didRetrieveUserSegment {
   [_transparentView removeFromSuperview];
   _transparentView = nil;
-  _viewController = [[DefaultBrowserGenericPromoViewController alloc] init];
-  _mediator.consumer = _viewController;
+  [self createViewControllerWithTitle:[_mediator promoTitle]];
   [self showPromo];
+}
+
+- (void)createViewControllerWithTitle:(NSString*)promoTitle {
+  BOOL hasRemindMeLater =
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
+      !_promoWasFromRemindMeLater;
+  _viewController = [[DefaultBrowserInstructionsViewController alloc]
+      initWithDismissButton:YES
+           hasRemindMeLater:hasRemindMeLater
+                   hasSteps:NO
+              actionHandler:self
+                  titleText:promoTitle];
 }
 
 - (void)showPromo {
@@ -199,12 +210,6 @@ using base::UserMetricsAction;
   CHECK(!_transparentView);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
-  _viewController.actionHandler = self;
-  BOOL hasRemindMeLater =
-      base::FeatureList::IsEnabled(
-          feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
-      !_promoWasFromRemindMeLater;
-  _viewController.hasRemindMeLater = hasRemindMeLater;
   _viewController.presentationController.delegate = self;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES

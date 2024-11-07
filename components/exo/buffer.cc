@@ -36,8 +36,10 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/media_switches.h"
 #include "ui/aura/env.h"
@@ -309,7 +311,19 @@ Buffer::Texture::Texture(
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  if (is_overlay_candidate) {
+
+  bool add_scanout_usage = is_overlay_candidate;
+
+  // Scanout usage should be added only if scanout of SharedImages is supported.
+  // However, historically this was not checked.
+  // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
+  if (base::FeatureList::IsEnabled(
+          features::kExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+    add_scanout_usage = add_scanout_usage &&
+                        sii->GetCapabilities().supports_scanout_shared_images;
+  }
+
+  if (add_scanout_usage) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 

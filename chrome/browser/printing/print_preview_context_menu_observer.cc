@@ -44,7 +44,6 @@ bool PrintPreviewContextMenuObserver::IsCommandIdEnabled(int command_id) {
       return false;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }

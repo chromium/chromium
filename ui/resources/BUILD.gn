@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//ui/webui/webui_features.gni")
@@ -153,14 +152,14 @@ repack("repack_ui_test_pak_100_percent") {
   }
 
   if (is_chromeos) {
-    sources +=
-        [ "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak" ]
-    deps += [ "//ui/chromeos/strings" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak" ]
-    deps += [ "//ui/chromeos/resources" ]
+    sources += [
+      "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak",
+      "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak",
+    ]
+    deps += [
+      "//ui/chromeos/resources",
+      "//ui/chromeos/strings",
+    ]
   }
 
   if (toolkit_views) {

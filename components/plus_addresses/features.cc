@@ -80,20 +80,6 @@ BASE_FEATURE(kPlusAddressInlineCreation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_IOS)
-// When enabled, plus address creation bottom sheet shows enhanced UI for
-// different error states as well as loading states on iOS.
-BASE_FEATURE(kPlusAddressIOSErrorAndLoadingStatesEnabled,
-             "PlusAddressIOSErrorAndLoadingStatesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, mobile manual fallbacks for addresses and passwords show plus
-// address filling information.
-BASE_FEATURE(kPlusAddressIOSManualFallbackEnabled,
-             "PlusAddressIOSManualFallbackEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
-
 // When enabled, plus address creation is offered also on login forms if the
 // password field is not visible.
 BASE_FEATURE(kPlusAddressOfferCreationIfPasswordFieldIsNotVisible,

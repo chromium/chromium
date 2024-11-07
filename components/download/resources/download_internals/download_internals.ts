@@ -4,22 +4,16 @@
 
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
-
 // </if>
+
+import 'chrome://resources/js/jstemplate_compiled.js';
+import './download_internals_visuals.js';
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {DownloadInternalsBrowserProxy, ServiceEntry, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
 import {DownloadInternalsBrowserProxyImpl, ServiceEntryState} from './download_internals_browser_proxy.js';
-
-declare global {
-  class JsEvalContext {
-    constructor(data: any);
-  }
-
-  function jstProcess(context: JsEvalContext, template: HTMLElement): void;
-}
 
 const browserProxy: DownloadInternalsBrowserProxy =
     DownloadInternalsBrowserProxyImpl.getInstance();

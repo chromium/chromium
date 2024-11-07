@@ -209,4 +209,79 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SiteEngagementScores) {
   EXPECT_GE(ai_data()->site_engagement().entries()[0].score(), 0);
 }
 
+class AiDataKeyedServiceBrowserTestWithBlocklistedExtensions
+    : public AiDataKeyedServiceBrowserTest {
+ public:
+  ~AiDataKeyedServiceBrowserTestWithBlocklistedExtensions() override = default;
+  AiDataKeyedServiceBrowserTestWithBlocklistedExtensions() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        AiDataKeyedService::GetAllowlistedAiDataExtensionsFeatureForTesting(),
+        {{"blocked_extension_ids", "hpkopmikdojpadgmioifjjodbmnjjjca"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithBlocklistedExtensions,
+                       BlockedExtensionList) {
+  std::vector<std::string> expected_allowlisted_extensions = {
+      "nfdaijodggdcjengofmbibbkcnopmikg"};
+
+  EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
+            expected_allowlisted_extensions);
+}
+
+class AiDataKeyedServiceBrowserTestWithRemotelyAllowlistedExtensions
+    : public AiDataKeyedServiceBrowserTest {
+ public:
+  ~AiDataKeyedServiceBrowserTestWithRemotelyAllowlistedExtensions() override =
+      default;
+  AiDataKeyedServiceBrowserTestWithRemotelyAllowlistedExtensions() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        AiDataKeyedService::GetAllowlistedAiDataExtensionsFeatureForTesting(),
+        {{"allowlisted_extension_ids", "1234"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AiDataKeyedServiceBrowserTestWithRemotelyAllowlistedExtensions,
+    RemotelyAllowlistedExtensionList) {
+  std::vector<std::string> expected_allowlisted_extensions = {
+      "1234",
+      "hpkopmikdojpadgmioifjjodbmnjjjca",
+      "nfdaijodggdcjengofmbibbkcnopmikg",
+  };
+
+  EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
+            expected_allowlisted_extensions);
+}
+
+class AiDataKeyedServiceBrowserTestWithAllowAndBlock
+    : public AiDataKeyedServiceBrowserTest {
+ public:
+  ~AiDataKeyedServiceBrowserTestWithAllowAndBlock() override = default;
+  AiDataKeyedServiceBrowserTestWithAllowAndBlock() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        AiDataKeyedService::GetAllowlistedAiDataExtensionsFeatureForTesting(),
+        {{"allowlisted_extension_ids", "1234"},
+         {"blocked_extension_ids", "1234"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithAllowAndBlock,
+                       AllowAndBlock) {
+  std::vector<std::string> expected_allowlisted_extensions = {
+      "hpkopmikdojpadgmioifjjodbmnjjjca", "nfdaijodggdcjengofmbibbkcnopmikg"};
+
+  EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
+            expected_allowlisted_extensions);
+}
+
 }  // namespace

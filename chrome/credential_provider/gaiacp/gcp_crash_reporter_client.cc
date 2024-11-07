@@ -83,8 +83,7 @@ bool GcpCrashReporterClient::GetShouldDumpLargerDumps() {
 
 int GcpCrashReporterClient::GetResultCodeRespawnFailed() {
   // The restart dialog is never shown for GCPW.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool GcpCrashReporterClient::GetCrashDumpLocation(std::wstring* crash_dir) {
@@ -106,8 +105,7 @@ bool GcpCrashReporterClient::GetCollectStatsConsent() {
 bool GcpCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   // This function is only called on Linux which the GCPW does not support.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace credential_provider

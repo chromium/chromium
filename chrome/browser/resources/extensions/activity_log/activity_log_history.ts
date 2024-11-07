@@ -37,7 +37,7 @@ export interface ActivityLogDelegate {
   downloadActivities(rawActivityData: string, fileName: string): void;
 }
 
-class DummyActivityLogDelegate implements ActivityLogDelegate {
+export class DummyActivityLogDelegate implements ActivityLogDelegate {
   getExtensionActivityLog(_extensionId: string) {
     return Promise.resolve({activities: []});
   }

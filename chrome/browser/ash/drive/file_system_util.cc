@@ -183,13 +183,6 @@ bool IsDriveEnabledForProfile(const Profile* const profile) {
 }
 
 bool IsDriveFsBulkPinningAvailable(const Profile* const profile) {
-  // Check the "DriveFsBulkPinning" Chrome feature. If this feature is disabled,
-  // then it probably means that the kill switch has been activated, and the
-  // bulk-pinning feature should not be available.
-  if (!base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning)) {
-    return false;
-  }
-
   // Check the "drivefs.bulk_pinning.visible" boolean pref. If this pref is
   // false, then it probably means that it has been turned down by an enterprise
   // policy, and the bulk-pinning feature should not be available.

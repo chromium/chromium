@@ -124,8 +124,7 @@ void OmniboxPrerender::PrerenderMaybe(
     case AutocompleteActionPredictor::ACTION_NONE:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

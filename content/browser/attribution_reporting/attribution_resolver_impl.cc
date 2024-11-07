@@ -322,14 +322,9 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
-  RateLimitTable::DestinationRateLimitResult destination_rate_limit_result =
-      storage_.SourceAllowedForDestinationRateLimit(source, source_time);
-  base::UmaHistogramEnumeration("Conversions.DestinationRateLimitResult",
-                                destination_rate_limit_result);
-
   bool hit_global_destination_limit = false;
 
-  switch (destination_rate_limit_result) {
+  switch (storage_.SourceAllowedForDestinationRateLimit(source, source_time)) {
     case RateLimitTable::DestinationRateLimitResult::kAllowed:
       break;
     case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
@@ -1203,7 +1198,7 @@ AttributionResolverImpl::ProcessAggregatableDebugReport(
     std::optional<AttributionStorageSql::AggregatableDebugSourceData>
         source_data = storage_.GetAggregatableDebugSourceData(*source_id);
     if (!source_data.has_value() ||
-        !attribution_reporting::IsRemainingAggregatableBudgetInRange(
+        !attribution_reporting::IsAggregatableBudgetInRange(
             source_data->remaining_budget) ||
         source_data->num_reports < 0) {
       return make_result(ProcessAggregatableDebugReportStatus::kInternalError);
@@ -1228,7 +1223,7 @@ AttributionResolverImpl::ProcessAggregatableDebugReport(
   // maximum budget per source.
   int effective_remaining_budget =
       remaining_budget.value_or(attribution_reporting::kMaxAggregatableValue);
-  CHECK(attribution_reporting::IsRemainingAggregatableBudgetInRange(
+  CHECK(attribution_reporting::IsAggregatableBudgetInRange(
       effective_remaining_budget));
   if (report.BudgetRequired() > effective_remaining_budget) {
     return make_result(

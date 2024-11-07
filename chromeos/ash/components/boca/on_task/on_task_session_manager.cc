@@ -62,21 +62,17 @@ void OnTaskSessionManager::OnSessionStarted(
     const std::string& session_id,
     const ::boca::UserIdentity& producer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  active_session_id_ = session_id;
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
-    // Close all pre-existing SWA instances before we reopen a new one to set
-    // things up for OnTask. We should rarely get here because relevant
-    // notifiers ensure the SWA is closed at the onset of a session.
-    //
-    // TODO (b/354007279): Look out for and break from loop should window close
-    // fail more than once.
-    system_web_app_manager_->CloseSystemWebAppWindow(window_id);
-    OnSessionStarted(session_id, producer);
-    return;
+    // Prepare the pre-existing Boca SWA instance for OnTask.
+    system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(window_id);
+    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
+        window_id, {&active_tab_tracker_, this});
+  } else {
+    system_web_app_launch_helper_->LaunchBocaSWA();
   }
-  active_session_id_ = session_id;
-  system_web_app_launch_helper_->LaunchBocaSWA();
 }
 
 void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
@@ -221,6 +217,12 @@ void OnTaskSessionManager::OnAppReloaded() {
     // No active window found, so we return. We should rarely get here.
     return;
   }
+
+  // Only restore tabs and set up window tracker if there is an active session.
+  // This ensures we do not inadvertently block URLs.
+  if (!active_session_id_.has_value()) {
+    return;
+  }
   system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(window_id);
   system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
       window_id, {&active_tab_tracker_, this});
@@ -352,6 +354,10 @@ OnTaskSessionManager::SystemWebAppLaunchHelper::~SystemWebAppLaunchHelper() =
 
 void OnTaskSessionManager::SystemWebAppLaunchHelper::LaunchBocaSWA() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (launch_in_progress_) {
+    // Another Boca SWA launch is in progress. Return.
+    return;
+  }
   launch_in_progress_ = true;
   system_web_app_manager_->LaunchSystemWebAppAsync(
       base::BindOnce(&SystemWebAppLaunchHelper::OnBocaSWALaunched,

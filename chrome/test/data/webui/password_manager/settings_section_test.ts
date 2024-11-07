@@ -29,9 +29,7 @@ import {TestPasskeysBrowserProxy} from './test_passkeys_browser_proxy.js';
 // </if>
 
 // <if expr="not is_chromeos">
-import {TestPromoCardsProxy} from './test_promo_cards_browser_proxy.js';
-
-import {PromoCardsProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {BatchUploadPasswordsEntryPoint} from 'chrome://password-manager/password_manager.js';
 // </if>
 
 // clang-format on
@@ -60,9 +58,6 @@ suite('SettingsSectionTest', function() {
   // <if expr="is_win or is_macosx">
   let passkeysProxy: TestPasskeysBrowserProxy;
   // </if>
-  // <if expr="not is_chromeos">
-  let promoCardsProxy: TestPromoCardsProxy;
-  // </if>
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -72,10 +67,6 @@ suite('SettingsSectionTest', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     syncProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncProxy);
-    // <if expr="not is_chromeos">
-    promoCardsProxy = new TestPromoCardsProxy();
-    PromoCardsProxyImpl.setInstance(promoCardsProxy);
-    // </if>
 
     // <if expr="is_win or is_macosx">
     passkeysProxy = new TestPasskeysBrowserProxy();
@@ -644,7 +635,9 @@ suite('SettingsSectionTest', function() {
         movePasswordsButton!.click();
         await flushTasks();
 
-        await syncProxy.whenCalled('openBatchUpload');
+        const entryPoint = await syncProxy.whenCalled('openBatchUpload');
+        assertEquals(
+            BatchUploadPasswordsEntryPoint.PASSWORD_MANAGER, entryPoint);
       });
   // </if>
 

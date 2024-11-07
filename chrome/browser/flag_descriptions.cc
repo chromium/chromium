@@ -953,13 +953,6 @@ const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[] =
     "the user grants permission.";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kCaptivePortalPopupWindowName[] =
-    "Captive portal signin uses popup window.";
-const char kCaptivePortalPopupWindowDescription[] =
-    "Use a popup window with proxies disabled for captive portal signin.";
-#endif
-
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";
@@ -2839,12 +2832,6 @@ const char kOriginKeyedProcessesByDefaultDescription[] =
     "enabling this feature also enables 'Origin-keyed Agent Clusters by "
     "default'.";
 
-const char kOsSettingsAppNotificationsPageName[] =
-    "CrOS Settings App Notifications Page";
-const char kOsSettingsAppNotificationsPageDescription[] =
-    "If enabled, a new App Notifications subpage will appear in the "
-    "CrOS Settings Apps section.";
-
 const char kOverlayScrollbarsName[] = "Overlay Scrollbars";
 const char kOverlayScrollbarsDescription[] =
     "Enable the experimental overlay scrollbars implementation. You must also "
@@ -2928,6 +2915,9 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
+const char kPartitionAllocMemoryTaggingName[] = "PartitionAlloc Memory Tagging";
+const char kPartitionAllocMemoryTaggingDescription[] =
+    "Enable memory tagging in PartitionAlloc.";
 const char kPartitionAllocWithAdvancedChecksName[] =
     "PartitionAlloc with Advanced Checks";
 const char kPartitionAllocWithAdvancedChecksDescription[] =
@@ -4116,6 +4106,12 @@ const char kEnablePasswordSharingDescription[] =
 const char kEnableMantaServiceName[] = "Enable Manta Service";
 const char kEnableMantaServiceDescription[] =
     "Enables the profile keyed Manta service at startup.";
+
+const char kPredictableReportedQuotaName[] = "Predictable Reported Quota";
+const char kPredictableReportedQuotaDescription[] =
+    "Enables reporting of a predictable quota from the StorageManager's "
+    "estimate API. This flag is intended only for validating if this change "
+    "caused an unforseen bug.";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 const char kRunVideoCaptureServiceInBrowserProcessName[] =

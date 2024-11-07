@@ -45,6 +45,7 @@
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -2030,8 +2031,8 @@ using UserFeedbackDataCallback =
                [self.settingsNavigationController.viewControllers description]);
     return;
   }
-  [[DeferredInitializationRunner sharedInstance]
-      runBlockIfNecessary:kPrefObserverInit];
+  [_sceneState.profileState.appState.deferredRunner
+      runBlockNamed:kStartupInitPrefObservers];
 
   Browser* browser = self.mainInterface.browser;
 

@@ -244,7 +244,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
       const views::SizeBounds& available_size) const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   // views::MouseWatcherListener:
@@ -279,6 +278,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void NotifyTrayBubbleClosed();
 
   void CloseBubbleView();
+
+  void UpdateAccessibleName();
 
   views::BoxLayout* box_layout() { return layout_; }
   const views::BoxLayout* box_layout() const { return layout_; }

@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
@@ -165,6 +166,19 @@ typename Collector::ResultType IterateOverIdentities(
   return iterator.Result();
 }
 
+template <typename Collector, typename Filter>
+typename Collector::ResultType IterateOverAllIdentitiesOnDevice(
+    Collector collector,
+    Filter filter) {
+  using Iter = Iterator<Collector, Filter>;
+  Iter iterator(std::move(collector), std::move(filter));
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->IterateOverAllIdentitiesOnDevice(
+          base::BindRepeating(&Iter::Run, base::Unretained(&iterator)));
+  return iterator.Result();
+}
+
 // Returns the PatternAccountRestriction according to the given PrefService.
 PatternAccountRestriction PatternAccountRestrictionFromPreference(
     PrefService* local_state) {
@@ -202,6 +216,10 @@ ChromeAccountManagerService::~ChromeAccountManagerService() {
       this, profile_name_);
 }
 
+const std::string& ChromeAccountManagerService::GetProfileName() const {
+  return profile_name_;
+}
+
 bool ChromeAccountManagerService::HasIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
                                SkipRestricted{restriction_},
@@ -221,8 +239,9 @@ bool ChromeAccountManagerService::IsEmailRestricted(
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
     NSString* gaia_id) const {
   // Do not iterate if the gaia ID is invalid.
-  if (!gaia_id.length)
+  if (!gaia_id.length) {
     return nil;
+  }
 
   return IterateOverIdentities(
       FindFirstIdentity{},
@@ -234,8 +253,9 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
     std::string_view gaia_id) const {
   // Do not iterate if the gaia ID is invalid. This is duplicated here
   // to avoid allocating a NSString unnecessarily.
-  if (gaia_id.empty())
+  if (gaia_id.empty()) {
     return nil;
+  }
 
   // Use the NSString* overload to avoid duplicating implementation.
   return GetIdentityWithGaiaID(base::SysUTF8ToNSString(gaia_id));
@@ -283,6 +303,32 @@ void ChromeAccountManagerService::AddObserver(Observer* observer) {
 
 void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
+    std::string_view gaia_id) const {
+  return GetIdentityOnDeviceWithGaiaID(base::SysUTF8ToNSString(gaia_id));
+}
+
+id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
+    NSString* gaia_id) const {
+  return IterateOverAllIdentitiesOnDevice(
+      FindFirstIdentity{},
+      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}});
+}
+
+NSArray<id<SystemIdentity>>*
+ChromeAccountManagerService::GetIdentitiesOnDeviceWithGaiaIDs(
+    const std::vector<AccountInfo>& account_infos) const {
+  NSMutableArray<id<SystemIdentity>>* identities = [NSMutableArray array];
+  for (const AccountInfo& account_info : account_infos) {
+    NSString* gaia_id = base::SysUTF8ToNSString(account_info.gaia);
+    id<SystemIdentity> identity = GetIdentityOnDeviceWithGaiaID(gaia_id);
+    if (identity) {
+      [identities addObject:identity];
+    }
+  }
+  return identities;
 }
 
 void ChromeAccountManagerService::OnIdentityListChanged() {

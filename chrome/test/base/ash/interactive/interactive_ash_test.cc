@@ -932,7 +932,7 @@ InteractiveAshTest::SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
 
     if (!key_code.has_value()) {
       // Unsupported input.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     AddStep(steps, SendAccelerator(

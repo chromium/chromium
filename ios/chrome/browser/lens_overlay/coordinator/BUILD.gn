@@ -56,6 +56,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/lens_overlay/model:detents_manager",
     "//ios/chrome/browser/lens_overlay/model:entrypoint",
+    "//ios/chrome/browser/lens_overlay/model:metrics_recorder",
     "//ios/chrome/browser/lens_overlay/ui:protocols",
     "//ios/chrome/browser/lens_overlay/ui:view_controller",
     "//ios/chrome/browser/orchestrator/ui_bundled",

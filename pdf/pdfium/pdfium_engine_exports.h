@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "pdf/document_metadata.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -93,6 +94,9 @@ class PDFiumEngineExports {
 #endif  // BUILDFLAG(IS_WIN)
 
   // See the definition of RenderPDFPageToBitmap in pdf.cc for details.
+  bool RenderPDFPageToBitmap(FPDF_PAGE page,
+                             const RenderingSettings& settings,
+                             void* bitmap_buffer);
   bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
                              int page_index,
                              const RenderingSettings& settings,

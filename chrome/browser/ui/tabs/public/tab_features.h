@@ -15,10 +15,10 @@
 class ChromeAutofillAiClient;
 class FedCmAccountSelectionViewController;
 class LensOverlayController;
+class PinnedTranslateActionListener;
 class Profile;
 class ReadAnythingSidePanelController;
 class SidePanelRegistry;
-class PinnedTranslateActionListener;
 
 namespace commerce {
 class CommerceUiTabHelper;
@@ -27,6 +27,10 @@ class CommerceUiTabHelper;
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace contextual_cueing {
+class ContextualCueingHelper;
+}  // namespace contextual_cueing
 
 namespace customize_chrome {
 class SidePanelController;
@@ -48,9 +52,9 @@ namespace privacy_sandbox {
 class PrivacySandboxTabObserver;
 }  // namespace privacy_sandbox
 
-namespace contextual_cueing {
-class ContextualCueingHelper;
-}  // namespace contextual_cueing
+namespace sync_sessions {
+class SyncSessionsRouterTabHelper;
+}  // namespace sync_sessions
 
 namespace tabs {
 
@@ -190,6 +194,10 @@ class TabFeatures {
   // window-scoped extension side-panel manager.
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;
+
+  // Forwards tab-related events to sync.
+  std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
+      sync_sessions_router_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

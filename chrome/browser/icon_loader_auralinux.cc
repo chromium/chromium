@@ -36,7 +36,7 @@ void IconLoader::ReadIcon() {
       size_pixels = 48;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   gfx::Image image;

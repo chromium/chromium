@@ -30,7 +30,8 @@ class LensOverlayGen204Controller {
   void SendLatencyGen204IfEnabled(
       base::TimeDelta full_image_latency,
       std::optional<base::TimeDelta> cluster_info_latency,
-      bool is_translate_query);
+      bool is_translate_query,
+      std::string vit_query_param_value);
 
   // Sends a task completion gen204 request. The analytics id is the
   // latest Lens request analytics id from the query controller.

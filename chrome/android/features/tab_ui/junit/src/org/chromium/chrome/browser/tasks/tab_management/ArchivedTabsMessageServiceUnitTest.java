@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -201,10 +202,13 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Test
     public void testDestroy() {
         createArchivedTabsMessageService();
+        assertTrue(mTabCountSupplier.hasObservers());
+
         mArchivedTabsMessageService.destroy();
         verify(mTabArchiveSettings).removeObserver(mTabArchiveSettingsObserver.getValue());
         verify(mArchivedTabsDialogCoordinator).destroy();
         verify(mTabListCoordinator).removeTabListItemSizeChangedObserver(any());
+        assertFalse(mTabCountSupplier.hasObservers());
     }
 
     @Test

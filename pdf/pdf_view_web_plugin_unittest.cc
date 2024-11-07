@@ -87,6 +87,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/pdf_ink_module_client.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #endif
 
@@ -2508,6 +2509,13 @@ class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
 };
 
+TEST_F(PdfViewWebPluginInkTest, Invalidate) {
+  plugin_->set_in_paint_for_testing(true);
+  EXPECT_EQ(0u, plugin_->deferred_invalidates_for_testing().size());
+  SetUpWithTrivialInkStrokes();
+  EXPECT_EQ(2u, plugin_->deferred_invalidates_for_testing().size());
+}
+
 TEST_F(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
   SetUpWithTrivialInkStrokes();
 
@@ -2612,7 +2620,7 @@ TEST_F(PdfViewWebPluginInkTest, UpdateThumbnail) {
         EXPECT_FALSE(blob->empty());
       });
 
-  plugin_->UpdateThumbnail(/*page_index=*/0);
+  plugin_->ink_module_client_for_testing()->UpdateThumbnail(/*page_index=*/0);
 }
 
 TEST_F(PdfViewWebPluginInkTest, UpdateThumbnailWithNoStrokes) {
@@ -2620,7 +2628,7 @@ TEST_F(PdfViewWebPluginInkTest, UpdateThumbnailWithNoStrokes) {
       .WillByDefault(Return(gfx::Size(50, 25)));
 
   EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
-  plugin_->UpdateThumbnail(/*page_index=*/0);
+  plugin_->ink_module_client_for_testing()->UpdateThumbnail(/*page_index=*/0);
 }
 
 TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
@@ -2661,33 +2669,43 @@ TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
         return page_index >= 0 && page_index <= 1;
       });
 
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kScreenTopLeftCorner));
-  EXPECT_EQ(0, plugin_->VisiblePageIndexFromPoint(kPage0TopLeftCorner));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0OutsideTopLeftCorner));
-  EXPECT_EQ(0, plugin_->VisiblePageIndexFromPoint(kPage0BottomRightCorner));
+  PdfInkModuleClient* ink_module_client =
+      plugin_->ink_module_client_for_testing();
   EXPECT_EQ(-1,
-            plugin_->VisiblePageIndexFromPoint(kPage0OutsideBottomRightCorner));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0Page1Gap));
-  EXPECT_EQ(1, plugin_->VisiblePageIndexFromPoint(kPage1Top));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage12Middle));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage12Bottom));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPageBelowLast));
+            ink_module_client->VisiblePageIndexFromPoint(kScreenTopLeftCorner));
+  EXPECT_EQ(0,
+            ink_module_client->VisiblePageIndexFromPoint(kPage0TopLeftCorner));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(
+                    kPage0OutsideTopLeftCorner));
+  EXPECT_EQ(
+      0, ink_module_client->VisiblePageIndexFromPoint(kPage0BottomRightCorner));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(
+                    kPage0OutsideBottomRightCorner));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(kPage0Page1Gap));
+  EXPECT_EQ(1, ink_module_client->VisiblePageIndexFromPoint(kPage1Top));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(kPage12Middle));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(kPage12Bottom));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(kPageBelowLast));
 
   // Change the visible page to the last page.
   ON_CALL(*engine_ptr_, IsPageVisible)
       .WillByDefault([](int page_index) -> bool { return page_index == 12; });
 
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kScreenTopLeftCorner));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0TopLeftCorner));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0OutsideTopLeftCorner));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0BottomRightCorner));
   EXPECT_EQ(-1,
-            plugin_->VisiblePageIndexFromPoint(kPage0OutsideBottomRightCorner));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0Page1Gap));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage1Top));
-  EXPECT_EQ(12, plugin_->VisiblePageIndexFromPoint(kPage12Middle));
-  EXPECT_EQ(12, plugin_->VisiblePageIndexFromPoint(kPage12Bottom));
-  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPageBelowLast));
+            ink_module_client->VisiblePageIndexFromPoint(kScreenTopLeftCorner));
+  EXPECT_EQ(-1,
+            ink_module_client->VisiblePageIndexFromPoint(kPage0TopLeftCorner));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(
+                    kPage0OutsideTopLeftCorner));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(
+                    kPage0BottomRightCorner));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(
+                    kPage0OutsideBottomRightCorner));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(kPage0Page1Gap));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(kPage1Top));
+  EXPECT_EQ(12, ink_module_client->VisiblePageIndexFromPoint(kPage12Middle));
+  EXPECT_EQ(12, ink_module_client->VisiblePageIndexFromPoint(kPage12Bottom));
+  EXPECT_EQ(-1, ink_module_client->VisiblePageIndexFromPoint(kPageBelowLast));
 }
 
 TEST_F(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {

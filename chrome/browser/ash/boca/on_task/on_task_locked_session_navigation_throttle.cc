@@ -127,7 +127,10 @@ void OnTaskLockedSessionNavigationThrottle::MaybeShowBlockedURLToast() {
     LockedSessionWindowTracker* const window_tracker =
         LockedSessionWindowTrackerFactory::GetForBrowserContext(
             navigation_handle()->GetWebContents()->GetBrowserContext());
-    if (window_tracker) {
+
+    // TODO: b/377767192 - Add tests to for scenarios regarding tab browser
+    // instance changes
+    if (window_tracker && !IsOutsideOnTaskAppNavigation()) {
       window_tracker->ShowURLBlockedToast();
     }
   }
@@ -357,7 +360,13 @@ OnTaskLockedSessionNavigationThrottle::WillProcessResponse() {
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
-  if (should_redirects_pass_) {
+
+  // This check is needed other SWA launches during unlocked that needs to
+  // process navigation responses.
+  // TODO: b/377767192 - Add tests to for scenarios regarding tab browser
+  // instance changes
+
+  if (IsOutsideOnTaskAppNavigation() || should_redirects_pass_) {
     return PROCEED;
   }
   if (ShouldBlockSensitiveUrlNavigation() &&

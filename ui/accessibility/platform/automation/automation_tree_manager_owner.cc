@@ -115,8 +115,7 @@ void AutomationTreeManagerOwner::SendAutomationEvent(
 
   // If we don't explicitly recognize the event type, require a valid, unignored
   // node target.
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), event.id);
+  AXNode* node = tree_wrapper->GetNode(event.id);
   if (!fire_event && (!node || node->data().IsIgnored()))
     return;
 
@@ -172,8 +171,7 @@ AXNode* AutomationTreeManagerOwner::GetHostInParentTree(
 #endif
 
   for (int32_t host_node_id : host_node_ids) {
-    AXNode* host_node = parent_tree_wrapper->GetNodeFromTree(
-        parent_tree_wrapper->GetTreeID(), host_node_id);
+    AXNode* host_node = parent_tree_wrapper->GetNode(host_node_id);
     if (host_node) {
       DCHECK_EQ((*in_out_tree_wrapper)->GetTreeID(),
                 AXTreeID::FromString(host_node->GetStringAttribute(
@@ -246,8 +244,7 @@ void AutomationTreeManagerOwner::MaybeSendFocusAndBlur(
   AutomationAXTreeWrapper* old_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(focus_tree_id_);
   if (old_wrapper) {
-    old_node =
-        old_wrapper->GetNodeFromTree(old_wrapper->GetTreeID(), focus_id_);
+    old_node = old_wrapper->GetNode(focus_id_);
   }
 
   // Determine whether old focus was lost.
@@ -364,8 +361,7 @@ bool AutomationTreeManagerOwner::GetFocusInternal(
     AutomationAXTreeWrapper** out_tree_wrapper,
     AXNode** out_node) const {
   int focus_id = tree_wrapper->ax_tree()->data().focus_id;
-  AXNode* focus =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), focus_id);
+  AXNode* focus = tree_wrapper->GetNode(focus_id);
   if (!focus)
     return false;
 
@@ -420,8 +416,7 @@ bool AutomationTreeManagerOwner::GetFocusInternal(
     }
 
     int child_focus_id = child_tree_wrapper->ax_tree()->data().focus_id;
-    AXNode* child_focus = child_tree_wrapper->GetNodeFromTree(
-        child_tree_wrapper->GetTreeID(), child_focus_id);
+    AXNode* child_focus = child_tree_wrapper->GetNode(child_focus_id);
     if (!child_focus)
       break;
 
@@ -676,8 +671,7 @@ bool AutomationTreeManagerOwner::GetFocus(AXTreeID* focused_tree_id,
     if (!focused_wrapper)
       return false;
 
-    focused_node = focused_wrapper->GetNodeFromTree(
-        focused_wrapper->GetTreeID(), focus_id_);
+    focused_node = focused_wrapper->GetNode(focus_id_);
     if (!focused_node)
       return false;
   }
@@ -824,8 +818,7 @@ bool AutomationTreeManagerOwner::GetChildIDAtIndex(const AXTreeID& tree_id,
   if (!tree_wrapper)
     return false;
 
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  AXNode* node = tree_wrapper->GetNode(node_id);
   if (!node)
     return false;
 
@@ -953,8 +946,7 @@ bool AutomationTreeManagerOwner::CalculateNodeState(const AXTreeID& tree_id,
   if (!tree_wrapper)
     return false;
 
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  AXNode* node = tree_wrapper->GetNode(node_id);
   if (!node)
     return false;
 
@@ -1102,8 +1094,7 @@ void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
   if (!tree_wrapper) {
     return;
   }
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  AXNode* node = tree_wrapper->GetNode(node_id);
   if (!node) {
     return;
   }
@@ -1131,8 +1122,7 @@ void AutomationTreeManagerOwner::DispatchAccessibilityScrollChange(
   if (!tree_wrapper) {
     return;
   }
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  AXNode* node = tree_wrapper->GetNode(node_id);
   if (!node) {
     return;
   }
@@ -1158,12 +1148,12 @@ void AutomationTreeManagerOwner::DispatchActionResult(const AXActionData& data,
   GetAutomationV8Bindings()->SendActionResultEvent(data, result);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AutomationTreeManagerOwner::DispatchGetTextLocationResult(
     const AXActionData& data,
     const std::optional<gfx::Rect>& rect) {
   GetAutomationV8Bindings()->SendGetTextLocationResult(data, rect);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

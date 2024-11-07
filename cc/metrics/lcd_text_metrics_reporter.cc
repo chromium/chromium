@@ -30,10 +30,6 @@ constexpr char kMetricNameLCDTextKPixelsHighDPI[] =
     "Compositing.Renderer.LCDTextDisallowedReasonKPixels2.HighDPI";
 constexpr char kMetricNameLCDTextKPixelsLowDPI[] =
     "Compositing.Renderer.LCDTextDisallowedReasonKPixels2.LowDPI";
-constexpr char kMetricNameLCDTextLayersHighDPI[] =
-    "Compositing.Renderer.LCDTextDisallowedReasonLayers2.HighDPI";
-constexpr char kMetricNameLCDTextLayersLowDPI[] =
-    "Compositing.Renderer.LCDTextDisallowedReasonLayers2.LowDPI";
 
 void Report(const LayerTreeImpl* layer_tree,
             base::FunctionRef<void(int64_t text_pixels,
@@ -120,11 +116,9 @@ void LCDTextMetricsReporter::NotifyPauseFrameProduction() {
            if (is_high_dpi) {
              UMA_HISTOGRAM_SCALED_ENUMERATION(kMetricNameLCDTextKPixelsHighDPI,
                                               reason, text_pixels, 1000);
-             UMA_HISTOGRAM_ENUMERATION(kMetricNameLCDTextLayersHighDPI, reason);
            } else {
              UMA_HISTOGRAM_SCALED_ENUMERATION(kMetricNameLCDTextKPixelsLowDPI,
                                               reason, text_pixels, 1000);
-             UMA_HISTOGRAM_ENUMERATION(kMetricNameLCDTextLayersLowDPI, reason);
            }
          });
 }

@@ -135,6 +135,8 @@ export namespace mojo {
       interface Endpoint {}
 
       function getEndpointForReceiver(handle: MojoHandle|Endpoint): Endpoint;
+      function acceptBufferForTesting(endpoint: Endpoint, buffer: ArrayBuffer):
+          void;
 
       function bind(handle: Endpoint, name: string, scope: string): void;
 

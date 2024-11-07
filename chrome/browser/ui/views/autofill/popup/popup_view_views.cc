@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -684,19 +686,21 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
   SetRowWithOpenSubPopup(std::nullopt);
 
   CreateSuggestionViews();
-  DoUpdateBoundsAndRedrawPopup(prefer_prev_arrow_side);
+  // Updating bounds and redrawing popup can cause the popup to hide.
+  if (!DoUpdateBoundsAndRedrawPopup(prefer_prev_arrow_side)) {
+    return;
+  }
 
   // TODO(crbug.com/374715256): Prediction improvements suggestions are
   // generated asynchronously, after showing the "loading" popup. Testing on
   // the `kPredictionImprovementsFeedback` suggestion is a way to understand
   // that the suggestions are generated successfully and announce it. This
   // approach should be reconsidered in favor of something more reliable.
-  const auto& suggestions = this->controller()->GetSuggestions();
-  if (std::any_of(suggestions.begin(), suggestions.end(),
-                  [](const Suggestion& suggestion) {
-                    return suggestion.type ==
-                           SuggestionType::kPredictionImprovementsFeedback;
-                  })) {
+  CHECK(controller(), base::NotFatalUntil::M134);
+  if (controller() &&
+      base::Contains(controller()->GetSuggestions(),
+                     SuggestionType::kPredictionImprovementsFeedback,
+                     &Suggestion::type)) {
     a11y_announcer_.Run(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),

@@ -125,7 +125,9 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#include "base/memory/raw_ref.h"
 #include "pdf/pdf_ink_module.h"
+#include "pdf/pdf_ink_module_client.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #endif
 
@@ -260,17 +262,91 @@ bool IsSaveDataSizeValid(size_t size) {
   return size > 0 && size <= PdfViewWebPlugin::kMaximumSavedFileSize;
 }
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-std::unique_ptr<PdfInkModule> MaybeCreatePdfInkModule(
-    PdfInkModuleClient& client) {
-  if (!base::FeatureList::IsEnabled(features::kPdfInk2)) {
-    return nullptr;
-  }
-  return std::make_unique<PdfInkModule>(client);
-}
-#endif
-
 }  // namespace
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
+ public:
+  explicit PdfInkModuleClientImpl(PdfViewWebPlugin& plugin) : plugin_(plugin) {}
+  ~PdfInkModuleClientImpl() override = default;
+
+  // PdfInkModuleClient:
+  PageOrientation GetOrientation() const override {
+    return plugin_->engine_->GetCurrentOrientation();
+  }
+
+  gfx::Rect GetPageContentsRect(int index) override {
+    if (index < 0 || index >= plugin_->engine_->GetNumberOfPages()) {
+      return gfx::Rect();
+    }
+
+    return plugin_->engine_->GetPageContentsRect(index);
+  }
+
+  gfx::Vector2dF GetViewportOriginOffset() override {
+    return plugin_->available_area_.OffsetFromOrigin();
+  }
+
+  float GetZoom() const override { return plugin_->zoom_; }
+
+  void Invalidate(const gfx::Rect& rect) override {
+    return plugin_->Invalidate(rect);
+  }
+
+  bool IsPageVisible(int page_index) override {
+    return plugin_->engine_->IsPageVisible(page_index);
+  }
+
+  void OnAnnotationModeToggled(bool enable) override {
+    plugin_->engine_->SetFormHighlight(/*enable_form=*/!enable);
+    if (enable) {
+      plugin_->engine_->ClearTextSelection();
+    }
+  }
+
+  void PostMessage(base::Value::Dict message) override {
+    plugin_->client_->PostMessage(std::move(message));
+  }
+
+  void StrokeFinished() override {
+    base::Value::Dict message;
+    message.Set("type", "finishInkStroke");
+    plugin_->client_->PostMessage(std::move(message));
+  }
+
+  void UpdateInkCursorImage(SkBitmap bitmap) override {
+    gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
+    plugin_->cursor_ =
+        ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot));
+  }
+
+  void UpdateThumbnail(int page_index) override {
+    plugin_->GenerateAndSendInkThumbnail(
+        page_index,
+        plugin_->engine_->GetThumbnailSize(page_index, plugin_->device_scale_));
+  }
+
+  int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
+    for (int i = 0; i < plugin_->engine_->GetNumberOfPages(); ++i) {
+      if (!IsPageVisible(i)) {
+        continue;
+      }
+
+      // Explicitly construct a gfx::RectF from gfx::Rect, so the Contains()
+      // call below works with `point`, which has float values.
+      gfx::RectF rect(plugin_->engine_->GetPageContentsRect(i));
+      if (!rect.Contains(point)) {
+        continue;
+      }
+      return i;
+    }
+    return -1;
+  }
+
+ private:
+  const raw_ref<PdfViewWebPlugin> plugin_;
+};
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
     PDFiumEngineClient* client,
@@ -294,7 +370,8 @@ PdfViewWebPlugin::PdfViewWebPlugin(
     : client_(std::move(client)),
       pdf_host_(std::move(pdf_host)),
 #if BUILDFLAG(ENABLE_PDF_INK2)
-      ink_module_(MaybeCreatePdfInkModule(*this)),
+      ink_module_client_(MaybeCreatePdfInkModuleClient(*this)),
+      ink_module_(MaybeCreatePdfInkModule(ink_module_client_.get())),
 #endif
       initial_params_(std::move(params)) {
   DCHECK(pdf_host_);
@@ -2047,76 +2124,6 @@ SkBitmap PdfViewWebPlugin::GetImageForOcr(int32_t page_index,
   return engine_->GetImageForOcr(page_index, page_object_index);
 }
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-PageOrientation PdfViewWebPlugin::GetOrientation() const {
-  return engine_->GetCurrentOrientation();
-}
-
-gfx::Rect PdfViewWebPlugin::GetPageContentsRect(int index) {
-  if (index < 0 || index >= engine_->GetNumberOfPages()) {
-    return gfx::Rect();
-  }
-
-  return engine_->GetPageContentsRect(index);
-}
-
-gfx::Vector2dF PdfViewWebPlugin::GetViewportOriginOffset() {
-  return available_area_.OffsetFromOrigin();
-}
-
-float PdfViewWebPlugin::GetZoom() const {
-  return zoom_;
-}
-
-bool PdfViewWebPlugin::IsPageVisible(int page_index) {
-  return engine_->IsPageVisible(page_index);
-}
-
-void PdfViewWebPlugin::OnAnnotationModeToggled(bool enable) {
-  engine_->SetFormHighlight(/*enable_form=*/!enable);
-  if (enable) {
-    engine_->ClearTextSelection();
-  }
-}
-
-void PdfViewWebPlugin::PostMessage(base::Value::Dict message) {
-  client_->PostMessage(std::move(message));
-}
-
-void PdfViewWebPlugin::StrokeFinished() {
-  base::Value::Dict message;
-  message.Set("type", "finishInkStroke");
-  client_->PostMessage(std::move(message));
-}
-
-void PdfViewWebPlugin::UpdateInkCursorImage(SkBitmap bitmap) {
-  gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
-  cursor_ = ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot));
-}
-
-void PdfViewWebPlugin::UpdateThumbnail(int page_index) {
-  GenerateAndSendInkThumbnail(
-      page_index, engine_->GetThumbnailSize(page_index, device_scale_));
-}
-
-int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
-  for (int i = 0; i < engine_->GetNumberOfPages(); ++i) {
-    if (!IsPageVisible(i)) {
-      continue;
-    }
-
-    // Explicitly construct a gfx::RectF from gfx::Rect, so the Contains() call
-    // below works with `point`, which has float values.
-    gfx::RectF rect(engine_->GetPageContentsRect(i));
-    if (!rect.Contains(point)) {
-      continue;
-    }
-    return i;
-  }
-  return -1;
-}
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
-
 void PdfViewWebPlugin::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
   engine_->HandleAccessibilityAction(action_data);
@@ -2581,6 +2588,24 @@ void PdfViewWebPlugin::SendThumbnail(base::Value::Dict reply,
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+// static
+std::unique_ptr<PdfInkModuleClient>
+PdfViewWebPlugin::MaybeCreatePdfInkModuleClient(PdfViewWebPlugin& plugin) {
+  if (!base::FeatureList::IsEnabled(features::kPdfInk2)) {
+    return nullptr;
+  }
+  return std::make_unique<PdfInkModuleClientImpl>(plugin);
+}
+
+// static
+std::unique_ptr<PdfInkModule> PdfViewWebPlugin::MaybeCreatePdfInkModule(
+    PdfInkModuleClient* client) {
+  if (!base::FeatureList::IsEnabled(features::kPdfInk2)) {
+    return nullptr;
+  }
+  return std::make_unique<PdfInkModule>(*client);
+}
+
 void PdfViewWebPlugin::GenerateAndSendInkThumbnail(int page_index,
                                                    const gfx::Size& size) {
   CHECK(!size.IsEmpty());

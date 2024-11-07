@@ -32277,6 +32277,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.ReserveErrorCanceled">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User clicked on &quot;cancel&quot; in the plus address dialog or bottomsheet
+    after receiving a reserve error.
+  </description>
+</action>
+
 <action name="PPAPI.BrokerInfobarClickedAllow">
   <obsolete>Deprecated since the feature is deprecated.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

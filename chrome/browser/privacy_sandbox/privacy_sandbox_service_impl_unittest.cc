@@ -176,7 +176,7 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   // content::InterestGroupManager:
   void GetAllInterestGroupJoiningOrigins(
       base::OnceCallback<void(std::vector<url::Origin>)> callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void GetAllInterestGroupDataKeys(
       base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback)
@@ -185,7 +185,7 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   }
   void RemoveInterestGroupsByDataKey(InterestGroupDataKey data_key,
                                      base::OnceClosure callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
@@ -264,8 +264,7 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   }
 
-  NOTREACHED_IN_MIGRATION() << "Invalid topics settings consent state";
-  return {};
+  NOTREACHED() << "Invalid topics settings consent state";
 }
 
 std::vector<int> GetTopicsConfirmationStringIdentifiers() {

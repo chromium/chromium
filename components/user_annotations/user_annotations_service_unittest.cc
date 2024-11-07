@@ -61,8 +61,7 @@ class TestOptimizationGuideDecider
   }
 };
 
-class UserAnnotationsServiceTest : public testing::Test,
-                                   public testing::WithParamInterface<bool> {
+class UserAnnotationsServiceTest : public testing::Test {
  public:
   void SetUp() override {
     InitializeFeatureList();
@@ -81,15 +80,8 @@ class UserAnnotationsServiceTest : public testing::Test,
   }
 
   virtual void InitializeFeatureList() {
-    base::FieldTrialParams feature_parameters;
-    if (ShouldPersistAnnotations()) {
-      feature_parameters["persist_annotations"] = "true";
-    }
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        autofill_ai::kAutofillAi, feature_parameters);
+    scoped_feature_list_.InitAndEnableFeature(autofill_ai::kAutofillAi);
   }
-
-  bool ShouldPersistAnnotations() const { return GetParam(); }
 
   UserAnnotationsEntries AddAndImportFormSubmission(
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
@@ -155,13 +147,13 @@ class UserAnnotationsServiceTest : public testing::Test,
   std::unique_ptr<UserAnnotationsService> service_;
 };
 
-TEST_P(UserAnnotationsServiceTest, FormsAnnotationsTypeRegistered) {
+TEST_F(UserAnnotationsServiceTest, FormsAnnotationsTypeRegistered) {
   EXPECT_TRUE(base::Contains(
       optimization_guide_decider()->registered_optimization_types(),
       optimization_guide::proto::FORMS_ANNOTATIONS));
 }
 
-TEST_P(UserAnnotationsServiceTest, ShouldAddFormSubmissionForURL) {
+TEST_F(UserAnnotationsServiceTest, ShouldAddFormSubmissionForURL) {
   EXPECT_FALSE(service()->ShouldAddFormSubmissionForURL(
       GURL("https://notallowed.com/whatever")));
   EXPECT_TRUE(service()->ShouldAddFormSubmissionForURL(
@@ -171,7 +163,7 @@ TEST_P(UserAnnotationsServiceTest, ShouldAddFormSubmissionForURL) {
       GURL("http://allowed.com/whatever")));
 }
 
-TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
+TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
   auto entries = GetAllUserAnnotationsEntries();
   EXPECT_TRUE(entries.empty());
 }
@@ -227,7 +219,7 @@ FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest(
           GURL("example.com"), "title"};
 }
 
-TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
+TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
   {
     base::HistogramTester histogram_tester;
 
@@ -322,7 +314,7 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
   }
 }
 
-TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
+TEST_F(UserAnnotationsServiceTest, ExecuteFailed) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(
@@ -361,7 +353,7 @@ TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
   EXPECT_TRUE(logs_service()->uploaded_logs().empty());
 }
 
-TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
+TEST_F(UserAnnotationsServiceTest, UnexpectedResponseType) {
   base::HistogramTester histogram_tester;
 
   optimization_guide::proto::Any any;
@@ -394,7 +386,7 @@ TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
   EXPECT_TRUE(logs_service()->uploaded_logs().empty());
 }
 
-TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
+TEST_F(UserAnnotationsServiceTest, RemoveEntry) {
   base::HistogramTester histogram_tester;
   auto test_request = CreateSampleFormsAnnotationsTestRequest();
   EXPECT_CALL(
@@ -434,7 +426,7 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
-TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
+TEST_F(UserAnnotationsServiceTest, RemoveAllEntries) {
   base::HistogramTester histogram_tester;
   auto test_request = CreateSampleFormsAnnotationsTestRequest();
   EXPECT_CALL(
@@ -463,7 +455,7 @@ TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
-TEST_P(UserAnnotationsServiceTest, FormNotImported) {
+TEST_F(UserAnnotationsServiceTest, FormNotImported) {
   base::HistogramTester histogram_tester;
   auto test_request = CreateSampleFormsAnnotationsTestRequest();
   EXPECT_CALL(
@@ -492,7 +484,7 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
-TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
+TEST_F(UserAnnotationsServiceTest, ParallelFormSubmissions) {
   base::HistogramTester histogram_tester;
   auto first_test_request = CreateSampleFormsAnnotationsTestRequest();
   optimization_guide::OptimizationGuideModelExecutionResultCallback
@@ -588,28 +580,14 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
                                       2);
 
   entries = GetAllUserAnnotationsEntries();
-
-  if (ShouldPersistAnnotations()) {
-    EXPECT_EQ(2u, entries.size());
-    EXPECT_EQ(entries[0].key(), "label");
-    EXPECT_EQ(entries[0].value(), "new_value");
-    EXPECT_EQ(entries[1].key(), "nolabel");
-    EXPECT_EQ(entries[1].value(), "new_nolabel_value");
-  } else {
-    // In the in-memory entries case, the entries are always added.
-    EXPECT_EQ(4u, entries.size());
-    EXPECT_EQ(entries[0].key(), "label");
-    EXPECT_EQ(entries[0].value(), "whatever");
-    EXPECT_EQ(entries[1].key(), "nolabel");
-    EXPECT_EQ(entries[1].value(), "value");
-    EXPECT_EQ(entries[2].key(), "label");
-    EXPECT_EQ(entries[2].value(), "new_value");
-    EXPECT_EQ(entries[3].key(), "nolabel");
-    EXPECT_EQ(entries[3].value(), "new_nolabel_value");
-  }
+  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(entries[0].key(), "label");
+  EXPECT_EQ(entries[0].value(), "new_value");
+  EXPECT_EQ(entries[1].key(), "nolabel");
+  EXPECT_EQ(entries[1].value(), "new_nolabel_value");
 }
 
-TEST_P(UserAnnotationsServiceTest, SaveAutofillProfile) {
+TEST_F(UserAnnotationsServiceTest, SaveAutofillProfile) {
   autofill::AutofillProfile autofill_profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(&autofill_profile, "Jane", "J", "Doe",
                                  "jd@example.com", "", "123 Main St", "",
@@ -641,8 +619,6 @@ TEST_P(UserAnnotationsServiceTest, SaveAutofillProfile) {
   EXPECT_EQ(entries[9].value(), "123 Main St");
 }
 
-INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
-
 class UserAnnotationsServiceSeededAnnotationTest
     : public UserAnnotationsServiceTest {
  public:
@@ -671,13 +647,9 @@ class UserAnnotationsServiceSeededAnnotationTest
   }
 };
 
-TEST_P(UserAnnotationsServiceSeededAnnotationTest, SeedAnnotations) {
+TEST_F(UserAnnotationsServiceSeededAnnotationTest, SeedAnnotations) {
+  task_environment_.RunUntilIdle();
   auto entries = GetAllUserAnnotationsEntries();
-  if (ShouldPersistAnnotations()) {
-    // If persistence is on, no annotations are seeded.
-    EXPECT_EQ(0u, entries.size());
-    return;
-  }
   EXPECT_EQ(2u, entries.size());
   EXPECT_EQ(entries[0].key(), "label");
   EXPECT_EQ(entries[0].value(), "whatever");
@@ -685,8 +657,5 @@ TEST_P(UserAnnotationsServiceSeededAnnotationTest, SeedAnnotations) {
   EXPECT_EQ(entries[1].value(), "value");
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserAnnotationsServiceSeededAnnotationTest,
-                         ::testing::Bool());
 }  // namespace
 }  // namespace user_annotations

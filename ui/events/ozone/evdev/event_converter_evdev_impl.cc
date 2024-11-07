@@ -16,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -26,7 +25,7 @@
 #include "ui/events/ozone/evdev/numberpad_metrics.h"
 #include "ui/events/ozone/features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/ozone/evdev/numberpad_metrics.h"
 #endif
 
@@ -78,7 +77,7 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
       controller_(FROM_HERE),
       cursor_(cursor),
       dispatcher_(dispatcher) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (has_numberpad_)
     NumberpadMetricsRecorder::GetInstance()->AddDevice(input_device_);
 #endif
@@ -97,7 +96,7 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
 }
 
 EventConverterEvdevImpl::~EventConverterEvdevImpl() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (has_numberpad_)
     NumberpadMetricsRecorder::GetInstance()->RemoveDevice(input_device_);
 #endif
@@ -333,7 +332,7 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
 }
 
 void EventConverterEvdevImpl::GenerateKeyMetrics(unsigned int key, bool down) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!has_numberpad_)
     return;
   NumberpadMetricsRecorder::GetInstance()->ProcessKey(key, down, input_device_);

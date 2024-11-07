@@ -1629,11 +1629,9 @@ void DevToolsWindow::SetIsDocked(bool dock_requested) {
     // TODO(crbug.com/40773744): WebContents should be removed with a reason
     // other than kInsertedIntoOtherTabStrip, it's not getting reinserted into
     // another tab strip.
-    std::unique_ptr<tabs::TabModel> tab_model =
-        tab_strip_model->DetachTabAtForInsertion(
-            tab_strip_model->GetIndexOfWebContents(main_web_contents_));
     std::unique_ptr<WebContents> web_contents =
-        tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
+        tab_strip_model->DetachWebContentsAtForInsertion(
+            tab_strip_model->GetIndexOfWebContents(main_web_contents_));
     owned_main_web_contents_ =
         std::make_unique<OwnedMainWebContents>(std::move(web_contents));
   } else if (!dock_requested && was_docked) {
@@ -1899,8 +1897,7 @@ void DevToolsWindow::DoAction(const DevToolsToggleAction& action) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

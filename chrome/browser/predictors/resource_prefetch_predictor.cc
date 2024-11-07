@@ -317,9 +317,8 @@ bool ResourcePrefetchPredictor::TryEnsureRecordingPrecondition() {
   } else if (initialization_state_ == INITIALIZING) {
     return false;
   } else if (initialization_state_ != INITIALIZED) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected initialization_state_: " << initialization_state_;
-    return false;
+    NOTREACHED() << "Unexpected initialization_state_: "
+                 << initialization_state_;
   }
 
   CHECK(host_redirect_data_);

@@ -197,10 +197,6 @@ static_library("browser") {
     "background_sync/periodic_background_sync_permission_context.h",
     "bad_message.cc",
     "bad_message.h",
-    "battery/battery_metrics.cc",
-    "battery/battery_metrics.h",
-    "battery/battery_saver.cc",
-    "battery/battery_saver.h",
     "bluetooth/bluetooth_chooser_context_factory.cc",
     "bluetooth/bluetooth_chooser_context_factory.h",
     "bluetooth/chrome_bluetooth_delegate.cc",
@@ -360,8 +356,6 @@ static_library("browser") {
     "custom_handlers/chrome_protocol_handler_registry_delegate.h",
     "custom_handlers/protocol_handler_registry_factory.cc",
     "custom_handlers/protocol_handler_registry_factory.h",
-    "data_saver/data_saver.cc",
-    "data_saver/data_saver.h",
     "data_sharing/data_sharing_navigation_throttle.cc",
     "data_sharing/data_sharing_navigation_throttle.h",
     "data_sharing/data_sharing_service_factory.cc",
@@ -1204,8 +1198,6 @@ static_library("browser") {
     "preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h",
     "preloading/preloading_features.cc",
     "preloading/preloading_features.h",
-    "preloading/preloading_prefs.cc",
-    "preloading/preloading_prefs.h",
     "preloading/prerender/prerender_manager.cc",
     "preloading/prerender/prerender_manager.h",
     "preloading/prerender/prerender_utils.cc",
@@ -1854,6 +1846,7 @@ static_library("browser") {
     "//chrome/browser/ai",
     "//chrome/browser/ai:impl",
     "//chrome/browser/autofill",
+    "//chrome/browser/battery",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browsing_data:constants",
@@ -1869,6 +1862,7 @@ static_library("browser") {
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/content_settings:impl",
     "//chrome/browser/crash_upload_list",
+    "//chrome/browser/data_saver",
     "//chrome/browser/devtools",
     "//chrome/browser/download",
     "//chrome/browser/enterprise/platform_auth:features",
@@ -1910,6 +1904,7 @@ static_library("browser") {
     "//chrome/browser/prefs:impl",
     "//chrome/browser/prefs:util",
     "//chrome/browser/prefs:util_impl",
+    "//chrome/browser/preloading:prefs",
     "//chrome/browser/privacy_budget",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
@@ -2096,6 +2091,7 @@ static_library("browser") {
     "//components/fingerprinting_protection_filter/mojom",
     "//components/flags_ui",
     "//components/gcm_driver",
+    "//components/guest_view/buildflags",
     "//components/handoff",
     "//components/headless/select_file_dialog",
     "//components/heap_profiling/in_process",
@@ -2770,6 +2766,8 @@ static_library("browser") {
       "android/tab_browser_controls_constraints_helper.h",
       "android/tab_favicon.cc",
       "android/tab_favicon.h",
+      "android/tab_features_android.cc",
+      "android/tab_features_android.h",
       "android/tab_printer.cc",
       "android/tab_printer.h",
       "android/tab_web_contents_delegate_android.cc",
@@ -3828,6 +3826,8 @@ static_library("browser") {
       "new_tab_page/modules/safe_browsing/safe_browsing_handler.h",
       "new_tab_page/modules/safe_browsing/safe_browsing_prefs.cc",
       "new_tab_page/modules/safe_browsing/safe_browsing_prefs.h",
+      "new_tab_page/modules/v2/calendar/calendar_fake_data_helper.cc",
+      "new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h",
       "new_tab_page/modules/v2/calendar/google_calendar_page_handler.cc",
       "new_tab_page/modules/v2/calendar/google_calendar_page_handler.h",
       "new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc",
@@ -3896,6 +3896,7 @@ static_library("browser") {
       "performance_manager/policies/page_discarding_helper.h",
       "performance_manager/policies/urgent_page_discarding_policy.cc",
       "performance_manager/policies/urgent_page_discarding_policy.h",
+      "performance_manager/public/background_tab_loading_policy.h",
       "performance_manager/public/user_tuning/battery_saver_mode_manager.h",
       "performance_manager/public/user_tuning/performance_detection_manager.h",
       "performance_manager/public/user_tuning/user_performance_tuning_manager.h",
@@ -7051,8 +7052,6 @@ static_library("browser") {
   if (is_win || is_mac || is_linux) {
     sources += [
       "browser_switcher/alternative_browser_driver.h",
-      "browser_switcher/browser_switcher_features.cc",
-      "browser_switcher/browser_switcher_features.h",
       "browser_switcher/browser_switcher_navigation_throttle.cc",
       "browser_switcher/browser_switcher_navigation_throttle.h",
       "browser_switcher/browser_switcher_prefs.cc",
@@ -7737,11 +7736,18 @@ static_library("browser") {
 
       "//chrome/browser/extensions",
 
+      # Has dependencies on notification code in //chrome/browser.
+      "//chrome/browser/extensions/api/notifications",
+
       # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications/extensions",
     ]
     deps += [
       "//apps",
+
+      # This dependency should be removed when //chrome/browser/notifications
+      # is modularized.
+      "//chrome/browser/extensions/api/notifications",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/extensions/api",

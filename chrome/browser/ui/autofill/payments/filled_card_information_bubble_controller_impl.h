@@ -46,7 +46,7 @@ class FilledCardInformationBubbleControllerImpl
   std::u16string GetVirtualCardIndicatorLabel() const override;
   std::u16string GetLearnMoreLinkText() const override;
   std::u16string GetEducationalBodyLabel() const override;
-  std::u16string GetVirtualCardNumberFieldLabel() const override;
+  std::u16string GetCardNumberFieldLabel() const override;
   std::u16string GetExpirationDateFieldLabel() const override;
   std::u16string GetCardholderNameFieldLabel() const override;
   std::u16string GetCvcFieldLabel() const override;

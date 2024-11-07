@@ -47,7 +47,7 @@ UpdateRequestResult ToUpdateRequestResult(ItemActionStatus status) {
     case ItemActionStatus::STORE_ERROR:
       return UpdateRequestResult::STORE_FAILURE;
     case ItemActionStatus::ALREADY_EXISTS:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return UpdateRequestResult::STORE_FAILURE;
 }

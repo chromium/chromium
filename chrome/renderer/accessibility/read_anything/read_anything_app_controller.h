@@ -204,6 +204,7 @@ class ReadAnythingAppController
   // The results of these are sent back via UntrustedPage::OnGetVoicePackInfo.
   void SendGetVoicePackInfoRequest(const std::string& language) const;
   void SendInstallVoicePackRequest(const std::string& language) const;
+  void SendUninstallVoiceRequest(const std::string& language) const;
 
   bool ShouldBold(ui::AXNodeID ax_node_id) const;
   bool IsOverline(ui::AXNodeID ax_node_id) const;

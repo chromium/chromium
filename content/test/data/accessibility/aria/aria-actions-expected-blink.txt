@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++textField value='your-file-name.pdf EditOpenClose' actionsIds=button,button,button actions=setValue
+++++++textField hasActions value='your-file-name.pdf EditOpenClose' actionsIds=button,button,button actions=setValue
 ++++++++staticText name='your-file-name.pdf '
 ++++++++++inlineTextBox name='your-file-name.pdf '
 ++++++++button name='Edit'
@@ -20,7 +20,7 @@ rootWebArea
 rootWebArea name='change-aria-action-id'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++textField value='your-file-name.pdf EditOpenClose' actionsIds=button actions=setValue
+++++++textField hasActions value='your-file-name.pdf EditOpenClose' actionsIds=button actions=setValue
 ++++++++staticText name='your-file-name.pdf '
 ++++++++++inlineTextBox name='your-file-name.pdf '
 ++++++++button name='Edit'

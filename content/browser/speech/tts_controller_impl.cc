@@ -321,6 +321,20 @@ void TtsControllerImpl::Resume() {
   }
 }
 
+void TtsControllerImpl::UninstallLanguageRequest(
+    content::BrowserContext* browser_context,
+    const std::string& lang,
+    const std::string& client_id,
+    int source,
+    bool uninstall_immediately) {
+  if (!engine_delegate_) {
+    return;
+  }
+
+  engine_delegate_->UninstallLanguageRequest(browser_context, lang, client_id,
+                                             source, uninstall_immediately);
+}
+
 void TtsControllerImpl::InstallLanguageRequest(BrowserContext* browser_context,
                                                const std::string& lang,
                                                const std::string& client_id,

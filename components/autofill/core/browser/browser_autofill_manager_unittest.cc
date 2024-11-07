@@ -835,7 +835,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         std::make_unique<TestCreditCardSaveManager>(&autofill_client_);
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
     autofill_client_.set_test_form_data_importer(
-        std::make_unique<autofill::TestFormDataImporter>(
+        std::make_unique<TestFormDataImporter>(
             &autofill_client_, std::move(credit_card_save_manager),
             std::make_unique<IbanSaveManager>(&autofill_client_), "en-US"));
 
@@ -973,13 +973,17 @@ class BrowserAutofillManagerTest : public testing::Test {
       AutofillTriggerDetails trigger_details = {
           .trigger_source = AutofillTriggerSource::kPopup}) {
     std::vector<FormFieldData> filled_fields;
-    std::vector<FieldGlobalId> global_ids;
-    for (const auto& field : input_form.fields()) {
-      global_ids.push_back(field.global_id());
-    }
     EXPECT_CALL(*autofill_driver_, ApplyFormAction)
-        .WillOnce(
-            DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
+        .WillOnce([&filled_fields](
+                      mojom::FormActionType action_type,
+                      mojom::ActionPersistence action_persistence,
+                      base::span<const FormFieldData> data,
+                      const url::Origin& triggered_origin,
+                      const base::flat_map<FieldGlobalId, FieldType>&) {
+          filled_fields = std::vector<FormFieldData>(data.begin(), data.end());
+          return base::MakeFlatSet<FieldGlobalId>(data, {},
+                                                  &FormFieldData::global_id);
+        });
     FillAutofillFormData(input_form, input_field, guid, trigger_details);
     FormData result_form = input_form;
     // Copy the filled data into the form.
@@ -4700,10 +4704,10 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedAutocompleteEnabled) {
 TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
   struct ValuePatternTestCase {
     const char* value;
-    autofill::ValuePatternsMetric pattern;
+    ValuePatternsMetric pattern;
   } kTestCases[] = {
-      {"user@okaxis", autofill::ValuePatternsMetric::kUpiVpa},
-      {"IT60X0542811101000000123456", autofill::ValuePatternsMetric::kIban}};
+      {"user@okaxis", ValuePatternsMetric::kUpiVpa},
+      {"IT60X0542811101000000123456", ValuePatternsMetric::kIban}};
   for (const ValuePatternTestCase test_case : kTestCases) {
     // Set up our form data.
     FormData form;
@@ -7163,12 +7167,12 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsOnFocusWithoutClick) {
   FormsSeen({form});
 
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
-  EXPECT_CALL(compose_delegate,
-              GetSuggestion(_,
-                            Property(&FormFieldData::global_id,
-                                     Eq(form.fields()[3].global_id())),
-                            autofill::AutofillSuggestionTriggerSource::
-                                kTextareaFocusedWithoutClick))
+  EXPECT_CALL(
+      compose_delegate,
+      GetSuggestion(
+          _,
+          Property(&FormFieldData::global_id, Eq(form.fields()[3].global_id())),
+          AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick))
       .WillOnce(Return(
           Suggestion(u"Help me write", SuggestionType::kComposeResumeNudge)));
   GetAutofillSuggestions(
@@ -7198,7 +7202,7 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
       GetSuggestion(
           _,
           Property(&FormFieldData::global_id, Eq(form.fields()[0].global_id())),
-          autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange))
+          AutofillSuggestionTriggerSource::kTextFieldDidChange))
       .WillOnce(Return(
           Suggestion(u"Help me write", SuggestionType::kComposeResumeNudge)));
   GetAutofillSuggestions(form, form.fields()[0]);
@@ -7279,13 +7283,13 @@ TEST_F(BrowserAutofillManagerTest,
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
   EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce([](std::unique_ptr<autofill::FormStructure> form,
-                   base::OnceCallback<void(
-                       std::unique_ptr<autofill::FormStructure> form,
-                       bool autofill_ai_shows_bubble)> callback) {
-        std::move(callback).Run(std::move(form),
-                                /*autofill_ai_shows_bubble=*/true);
-      });
+      .WillOnce(
+          [](std::unique_ptr<FormStructure> form,
+             base::OnceCallback<void(std::unique_ptr<FormStructure> form,
+                                     bool autofill_ai_shows_bubble)> callback) {
+            std::move(callback).Run(std::move(form),
+                                    /*autofill_ai_shows_bubble=*/true);
+          });
   FormSubmitted(response_data);
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
@@ -7315,13 +7319,13 @@ TEST_F(BrowserAutofillManagerTest,
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
   EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce([](std::unique_ptr<autofill::FormStructure> form,
-                   base::OnceCallback<void(
-                       std::unique_ptr<autofill::FormStructure> form,
-                       bool autofill_ai_shows_bubble)> callback) {
-        std::move(callback).Run(std::move(form),
-                                /*autofill_ai_shows_bubble=*/false);
-      });
+      .WillOnce(
+          [](std::unique_ptr<FormStructure> form,
+             base::OnceCallback<void(std::unique_ptr<FormStructure> form,
+                                     bool autofill_ai_shows_bubble)> callback) {
+            std::move(callback).Run(std::move(form),
+                                    /*autofill_ai_shows_bubble=*/false);
+          });
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());
 }

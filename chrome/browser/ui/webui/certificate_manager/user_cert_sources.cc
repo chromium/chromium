@@ -6,14 +6,20 @@
 
 #include <vector>
 
+#include "base/containers/to_vector.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/net/server_certificate_database.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
 #include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
@@ -23,9 +29,11 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace {
 
@@ -155,6 +163,12 @@ UserCertSource::UserCertSource(
       profile_(profile),
       remote_client_(remote_client) {}
 
+UserCertSource::~UserCertSource() {
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
+
 void UserCertSource::GetCertificateInfos(
     CertificateManagerPageHandler::GetCertificatesCallback callback) {
   net::ServerCertificateDatabaseService* server_cert_service =
@@ -204,4 +218,109 @@ void UserCertSource::DeleteCertificate(
               IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_SERVER_CERT_DESCRIPTION),
           base::BindOnce(&GotDeleteConfirmation, sha256hash_hex,
                          std::move(callback), profile_->GetWeakPtr()));
+}
+
+void UserCertSource::ImportCertificate(
+    base::WeakPtr<content::WebContents> web_contents,
+    CertificateManagerPageHandler::ImportCertificateCallback callback) {
+  if (!web_contents || select_file_dialog_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  import_callback_ = std::move(callback);
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents.get()));
+
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  file_type_info.extensions = {
+      {FILE_PATH_LITERAL("der"), FILE_PATH_LITERAL("cer"),
+       FILE_PATH_LITERAL("crt"), FILE_PATH_LITERAL("pem"),
+       FILE_PATH_LITERAL("p7b"), FILE_PATH_LITERAL("p7c")}};
+  file_type_info.include_all_files = true;
+  select_file_dialog_->SelectFile(
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
+      base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("der"),
+      web_contents->GetTopLevelNativeWindow(), nullptr);
+}
+
+void UserCertSource::FileSelected(const ui::SelectedFileInfo& file, int index) {
+  select_file_dialog_ = nullptr;
+  // Use CONTINUE_ON_SHUTDOWN since this is only for reading a file, if it
+  // doesn't complete before shutdown the file still exists, and even if the
+  // browser blocked on completing this task, the import isn't actually done
+  // yet, so just blocking shutdown on the file read wouldn't accomplish
+  // anything. CONTINUE_ON_SHUTDOWN should be safe as base::ReadFileToBytes
+  // doesn't access any global state.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&base::ReadFileToBytes, file.path()),
+      base::BindOnce(&UserCertSource::FileRead,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+void UserCertSource::FileSelectionCanceled() {
+  select_file_dialog_ = nullptr;
+  std::move(import_callback_).Run(nullptr);
+}
+
+void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
+  if (!file_bytes) {
+    std::move(import_callback_)
+        .Run(certificate_manager_v2::mojom::ActionResult::NewError(
+            l10n_util::GetStringUTF8(
+                IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR)));
+    return;
+  }
+  net::CertificateList certs_to_import =
+      net::X509Certificate::CreateCertificateListFromBytes(
+          file_bytes.value(), net::X509Certificate::FORMAT_AUTO);
+
+  if (certs_to_import.size() != 1) {
+    if (certs_to_import.size() == 0) {
+      std::move(import_callback_)
+          .Run(certificate_manager_v2::mojom::ActionResult::NewError(
+              l10n_util::GetStringUTF8(
+                  IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR)));
+      return;
+    }
+    std::move(import_callback_)
+        .Run(certificate_manager_v2::mojom::ActionResult::NewError(
+            l10n_util::GetStringUTF8(
+                IDS_SETTINGS_CERTIFICATE_MANAGER_V2_MULTIPLE_CERT_ERROR)));
+    return;
+  }
+
+  scoped_refptr<net::X509Certificate> cert_to_import = certs_to_import[0];
+
+  net::ServerCertificateDatabaseService* server_cert_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          profile_);
+
+  net::ServerCertificateDatabase::CertInformation cert_info;
+  cert_info.sha256hash_hex = base::ToLowerASCII(
+      base::HexEncode(net::X509Certificate::CalculateFingerprint256(
+                          cert_to_import->cert_buffer())
+                          .data));
+  cert_info.cert_metadata.mutable_trust()->set_trust_type(trust_);
+  cert_info.der_cert = base::ToVector(cert_to_import->cert_span());
+
+  server_cert_service->AddOrUpdateUserCertificate(
+      std::move(cert_info),
+      base::BindOnce(&UserCertSource::ImportCertificateResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void UserCertSource::ImportCertificateResult(bool success) {
+  if (success) {
+    std::move(import_callback_)
+        .Run(certificate_manager_v2::mojom::ActionResult::NewSuccess(
+            certificate_manager_v2::mojom::SuccessResult::kSuccess));
+    return;
+  }
+  std::move(import_callback_)
+      .Run(certificate_manager_v2::mojom::ActionResult::NewError(
+          l10n_util::GetStringUTF8(
+              IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_ERROR_TITLE)));
 }

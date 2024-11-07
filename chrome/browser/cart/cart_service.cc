@@ -1213,12 +1213,10 @@ void CartService::CacheUsedDiscounts(
 
 void CartService::CleanUpDiscounts(cart_db::ChromeCartContentProto proto) {
   if (proto.merchant_cart_url().empty()) {
-    NOTREACHED_IN_MIGRATION() << "proto does not have merchant_cart_url";
-    return;
+    NOTREACHED() << "proto does not have merchant_cart_url";
   }
   if (!proto.has_discount_info()) {
-    NOTREACHED_IN_MIGRATION() << "proto does not have discount_info";
-    return;
+    NOTREACHED() << "proto does not have discount_info";
   }
 
   // Clean up the rule-based discounts.

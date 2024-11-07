@@ -12,7 +12,7 @@
 
 namespace ash {
 
-inline constexpr int kPickerViewWidth = 320;
+inline constexpr int kQuickInsertViewWidth = 320;
 
 inline constexpr int kPickerContainerBorderRadius = 12;
 inline constexpr ui::ColorId kPickerContainerBackgroundColor =

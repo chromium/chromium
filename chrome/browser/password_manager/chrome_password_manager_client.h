@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -40,6 +41,7 @@
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -249,8 +251,8 @@ class ChromePasswordManagerClient
                                    const GURL& frame_url) override;
 #endif
 
-  // Reporting these events is only supported on desktop platforms.
-#if !BUILDFLAG(IS_ANDROID)
+  // Reporting these events is only supported when extensions are enabled.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   void MaybeReportEnterpriseLoginEvent(
       const GURL& url,
       bool is_federated,

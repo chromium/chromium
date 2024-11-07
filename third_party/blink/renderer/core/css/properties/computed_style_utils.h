@@ -264,7 +264,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValue* ValueForSVGPaint(const SVGPaint&,
                                           const ComputedStyle&);
   static CSSValue* ValueForSVGResource(const StyleSVGResource*);
-  static const CSSValue* ValueForGapColorDataList(const GapColorDataList&,
+  static const CSSValue* ValueForGapColorDataList(const GapDataList&,
                                                   const ComputedStyle&,
                                                   CSSValuePhase);
   static CSSValue* ValueForShadowData(const ShadowData&,

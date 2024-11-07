@@ -214,8 +214,7 @@ const char* GetAsString(PointerType type) {
     case kPen:
       return "pen";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -511,8 +510,7 @@ std::unique_ptr<PageLoadStrategy> WebViewImpl::CreatePageLoadStrategy(
   } else if (strategy == PageLoadStrategy::kEager) {
     return std::make_unique<NavigationTracker>(client_.get(), this, true);
   } else {
-    NOTREACHED_IN_MIGRATION() << "invalid strategy '" << strategy << "'";
-    return nullptr;
+    NOTREACHED() << "invalid strategy '" << strategy << "'";
   }
 }
 
@@ -550,6 +548,10 @@ std::unique_ptr<WebViewImpl> WebViewImpl::CreateChild(
 
 std::string WebViewImpl::GetId() {
   return id_;
+}
+
+std::string WebViewImpl::GetSessionId() {
+  return client_->SessionId();
 }
 
 bool WebViewImpl::WasCrashed() {
@@ -1214,6 +1216,7 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
 Status WebViewImpl::DispatchMouseEvents(const std::vector<MouseEvent>& events,
                                         const std::string& frame,
                                         bool async_dispatch_events) {
+  WebViewImplHolder target_holder(this);
   if (mobile_emulation_override_manager_->IsEmulatingTouch())
     return DispatchTouchEventsForMouseEvents(events, frame);
 
@@ -1504,7 +1507,7 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
   while (keep_waiting) {
     status = client_->HandleEventsUntil(not_pending_navigation, timeout);
     keep_waiting = status.code() == kNoSuchExecutionContext ||
-                   status.code() == kNavigationDetectedByRemoteEnd;
+                   status.code() == kAbortedByNavigation;
   }
   if (status.code() == kTimeout && stop_load_on_timeout) {
     VLOG(0) << "Timed out. Stopping navigation...";
@@ -1521,7 +1524,7 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
           not_pending_navigation,
           Timeout(base::Seconds(kWaitForNavigationStopSeconds)));
       keep_waiting = status.code() == kNoSuchExecutionContext ||
-                     status.code() == kNavigationDetectedByRemoteEnd;
+                     status.code() == kAbortedByNavigation;
     }
     navigation_tracker_->set_timed_out(false);
     if (new_status.IsError())
@@ -2394,6 +2397,7 @@ WebViewImplHolder::~WebViewImplHolder() {
     if (!web_view->IsDetached()) {
       web_view->Unlock();
     } else if (web_view->GetParent() != nullptr) {
+      item.web_view = nullptr;
       web_view->GetParent()->GetFrameTracker()->DeleteTargetForFrame(
           web_view->GetId());
     }

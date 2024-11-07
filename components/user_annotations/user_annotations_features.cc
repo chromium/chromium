@@ -22,11 +22,6 @@ std::vector<std::string> GetAllowedHostsForFormsAnnotations() {
                            base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
-bool ShouldPersistUserAnnotations() {
-  return base::GetFieldTrialParamByFeatureAsBool(autofill_ai::kAutofillAi,
-                                                 "persist_annotations", false);
-}
-
 bool ShouldExtractAXTreeForFormsAnnotations() {
   return base::GetFieldTrialParamByFeatureAsBool(
       autofill_ai::kAutofillAi, "should_extract_ax_tree_for_forms_annotations",

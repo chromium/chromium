@@ -1900,6 +1900,9 @@ Storage::AttributionReportingAggregatableResult ToAggregatableResult(
     case AggregatableResult::kInsufficientBudget:
       return Storage::AttributionReportingAggregatableResultEnum::
           InsufficientBudget;
+    case AggregatableResult::kInsufficientNamedBudget:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          InsufficientNamedBudget;
     case AggregatableResult::kNoMatchingSourceFilterData:
       return Storage::AttributionReportingAggregatableResultEnum::
           NoMatchingSourceFilterData;

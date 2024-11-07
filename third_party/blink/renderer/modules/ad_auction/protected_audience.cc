@@ -79,9 +79,7 @@ ProtectedAudience::ProtectedAudience(ExecutionContext* execution_context)
 
 ScriptValue ProtectedAudience::queryFeatureSupport(ScriptState* script_state,
                                                    const String& feature_name) {
-  if (feature_name == "*" &&
-      RuntimeEnabledFeatures::FledgeFeatureDetectAllEnabled(
-          ExecutionContext::From(script_state))) {
+  if (feature_name == "*") {
     // Return all registered features if asked for '*'
     V8ObjectBuilder features_obj(script_state);
     for (const auto& kv : feature_status_) {

@@ -327,6 +327,9 @@ void ViewAccessibility::SetCharacterOffsets(
     const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
                             offsets);
+
+  OnIntListAttributeChanged(ax::mojom::IntListAttribute::kCharacterOffsets,
+                            offsets);
 }
 
 const std::vector<int32_t>& ViewAccessibility::GetCharacterOffsets() const {
@@ -336,6 +339,8 @@ const std::vector<int32_t>& ViewAccessibility::GetCharacterOffsets() const {
 
 void ViewAccessibility::SetWordStarts(const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts, offsets);
+
+  OnIntListAttributeChanged(ax::mojom::IntListAttribute::kWordStarts, offsets);
 }
 
 const std::vector<int32_t>& ViewAccessibility::GetWordStarts() const {
@@ -344,6 +349,8 @@ const std::vector<int32_t>& ViewAccessibility::GetWordStarts() const {
 
 void ViewAccessibility::SetWordEnds(const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, offsets);
+
+  OnIntListAttributeChanged(ax::mojom::IntListAttribute::kWordEnds, offsets);
 }
 
 const std::vector<int32_t>& ViewAccessibility::GetWordEnds() const {
@@ -354,15 +361,27 @@ void ViewAccessibility::ClearTextOffsets() {
   data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kWordStarts);
   data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kWordEnds);
+
+  OnIntListAttributeChanged(ax::mojom::IntListAttribute::kCharacterOffsets,
+                            std::nullopt);
+  OnIntListAttributeChanged(ax::mojom::IntListAttribute::kWordStarts,
+                            std::nullopt);
+  OnIntListAttributeChanged(ax::mojom::IntListAttribute::kWordEnds,
+                            std::nullopt);
 }
 
 void ViewAccessibility::SetClipsChildren(bool clips_children) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren,
                          clips_children);
+
+  OnBoolAttributeChanged(ax::mojom::BoolAttribute::kClipsChildren,
+                         clips_children);
 }
 
 void ViewAccessibility::SetClassName(const std::string& class_name) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kClassName, class_name);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kClassName, class_name);
 }
 
 void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
@@ -379,6 +398,8 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   data_.role = role;
   UpdateIgnoredState();
   UpdateInvisibleState();
+
+  OnRoleChanged(role);
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
@@ -428,6 +449,10 @@ void ViewAccessibility::SetName(std::u16string name,
   }
 
   view_->OnAccessibleNameChanged(name);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kName,
+                           base::UTF16ToUTF8(name));
+
   NotifyEvent(ax::mojom::Event::kTextChanged, true);
 }
 
@@ -478,6 +503,8 @@ void ViewAccessibility::SetName(View& naming_view) {
 void ViewAccessibility::RemoveName() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kNameFrom);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kName, std::nullopt);
 }
 
 std::u16string ViewAccessibility::GetCachedName() const {
@@ -506,6 +533,9 @@ void ViewAccessibility::SetRoleDescription(
   } else {
     RemoveRoleDescription();
   }
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kRoleDescription,
+                           base::UTF16ToUTF8(role_description));
 }
 
 void ViewAccessibility::SetRoleDescription(
@@ -520,6 +550,9 @@ std::u16string ViewAccessibility::GetRoleDescription() const {
 
 void ViewAccessibility::RemoveRoleDescription() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kRoleDescription);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kRoleDescription,
+                           std::nullopt);
 }
 
 void ViewAccessibility::SetIsEditable(bool editable) {
@@ -536,46 +569,68 @@ void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
 
 void ViewAccessibility::SetPosInSet(int pos_in_set) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, pos_in_set);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kPosInSet, pos_in_set);
 }
 
 void ViewAccessibility::SetSetSize(int set_size) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kSetSize, set_size);
 }
 
 void ViewAccessibility::ClearPosInSet() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kPosInSet);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kPosInSet, 0);
 }
 
 void ViewAccessibility::ClearSetSize() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kSetSize, 0);
 }
 
 void ViewAccessibility::SetScrollX(int scroll_x) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollX, scroll_x);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollX, scroll_x);
 }
 
 void ViewAccessibility::SetScrollXMin(int scroll_x_min) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin, scroll_x_min);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollXMin, scroll_x_min);
 }
 
 void ViewAccessibility::SetScrollXMax(int scroll_x_max) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMax, scroll_x_max);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollXMax, scroll_x_max);
 }
 
 void ViewAccessibility::SetScrollY(int scroll_y) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollY, scroll_y);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollY, scroll_y);
 }
 
 void ViewAccessibility::SetScrollYMin(int scroll_y_min) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollYMin, scroll_y_min);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollYMin, scroll_y_min);
 }
 
 void ViewAccessibility::SetScrollYMax(int scroll_y_max) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollYMax, scroll_y_max);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kScrollYMax, scroll_y_max);
 }
 
 void ViewAccessibility::SetIsScrollable(bool is_scrollable) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable, is_scrollable);
+
+  OnBoolAttributeChanged(ax::mojom::BoolAttribute::kScrollable, is_scrollable);
 }
 
 void ViewAccessibility::SetActiveDescendant(views::View& view) {
@@ -588,6 +643,9 @@ void ViewAccessibility::SetActiveDescendant(ui::AXPlatformNodeId id) {
     return;
   }
   data_.AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId, id);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kActivedescendantId, id);
+
   NotifyEvent(ax::mojom::Event::kActiveDescendantChanged, true);
 }
 
@@ -596,6 +654,10 @@ void ViewAccessibility::ClearActiveDescendant() {
     return;
   }
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kActivedescendantId,
+                        std::nullopt);
+
   NotifyEvent(ax::mojom::Event::kActiveDescendantChanged, true);
 }
 
@@ -608,6 +670,10 @@ void ViewAccessibility::SetIsDefault(bool is_default) {
     return;
   }
   SetState(ax::mojom::State::kDefault, is_default);
+}
+
+bool ViewAccessibility::GetIsDefault() const {
+  return data_.HasState(ax::mojom::State::kDefault);
 }
 
 void ViewAccessibility::SetIsEnabled(bool is_enabled) {
@@ -629,6 +695,9 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
 
   UpdateFocusableState();
 
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kRestriction,
+                        static_cast<int32_t>(data_.GetRestriction()));
+
   // TODO(crbug.com/40896388): We need a specific enabled-changed event for
   // this. Some platforms have specific state-changed events and this generic
   // event does not suggest what changed.
@@ -641,20 +710,33 @@ bool ViewAccessibility::GetIsEnabled() const {
 
 void ViewAccessibility::SetTableRowCount(int row_count) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount, row_count);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableRowCount, row_count);
 }
 
 void ViewAccessibility::SetTableColumnCount(int column_count) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount,
                         column_count);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableColumnCount,
+                        column_count);
 }
 
 void ViewAccessibility::ClearDescriptionAndDescriptionFrom() {
   data_.SetDescriptionExplicitlyEmpty();
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kDescription,
+                           std::nullopt);
 }
 
 void ViewAccessibility::RemoveDescription() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kDescription);
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kDescription,
+                           std::nullopt);
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kDescriptionFrom,
+                        std::nullopt);
 }
 
 void ViewAccessibility::SetDescription(
@@ -673,6 +755,11 @@ void ViewAccessibility::SetDescription(
 
   data_.SetDescriptionFrom(description_from);
   data_.SetDescription(description);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kDescription,
+                           description);
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kDescriptionFrom,
+                        static_cast<int>(description_from));
 }
 
 void ViewAccessibility::SetDescription(
@@ -691,9 +778,13 @@ void ViewAccessibility::SetDescription(View& describing_view) {
   DCHECK(!name.empty())
       << "The describing view must have an accessible name set.";
   SetDescription(name, ax::mojom::DescriptionFrom::kRelatedElement);
-  data_.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kDescribedbyIds,
-      {describing_view.GetViewAccessibility().GetUniqueId()});
+
+  std::vector<int32_t> ids = {
+      describing_view.GetViewAccessibility().GetUniqueId()};
+
+  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds, ids);
+
+  OnIntListAttributeChanged(ax::mojom::IntListAttribute::kDescribedbyIds, ids);
 }
 
 std::u16string ViewAccessibility::GetCachedDescription() const {
@@ -722,12 +813,22 @@ void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
     return;
   }
   data_.SetCheckedState(checked_state);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kCheckedState,
+                        static_cast<int>(checked_state));
+
   NotifyEvent(ax::mojom::Event::kCheckedStateChanged, true);
+}
+
+ax::mojom::CheckedState ViewAccessibility::GetCheckedState() const {
+  return data_.GetCheckedState();
 }
 
 void ViewAccessibility::RemoveCheckedState() {
   if (data_.HasCheckedState()) {
     data_.RemoveIntAttribute(ax::mojom::IntAttribute::kCheckedState);
+
+    OnIntAttributeChanged(ax::mojom::IntAttribute::kCheckedState, std::nullopt);
   }
 }
 
@@ -764,6 +865,8 @@ void ViewAccessibility::SetIsSelected(bool selected) {
   }
 
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
+
+  OnBoolAttributeChanged(ax::mojom::BoolAttribute::kSelected, selected);
 
   // We only want to send the notification if the view gets selected,
   // this is since the event serves to notify of a selection being made, not of
@@ -857,6 +960,9 @@ void ViewAccessibility::SetValue(const std::string& value) {
     return;
   }
   data_.AddStringAttribute(ax::mojom::StringAttribute::kValue, value);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, value);
+
   NotifyEvent(ax::mojom::Event::kValueChanged, true);
 }
 
@@ -869,6 +975,9 @@ void ViewAccessibility::RemoveValue() {
     return;
   }
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kValue);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, std::nullopt);
+
   NotifyEvent(ax::mojom::Event::kValueChanged, true);
 }
 
@@ -882,8 +991,15 @@ void ViewAccessibility::SetDefaultActionVerb(
   data_.SetDefaultActionVerb(default_action_verb);
 }
 
+ax::mojom::DefaultActionVerb ViewAccessibility::GetDefaultActionVerb() const {
+  return data_.GetDefaultActionVerb();
+}
+
 void ViewAccessibility::RemoveDefaultActionVerb() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kDefaultActionVerb,
+                        std::nullopt);
 }
 
 void ViewAccessibility::SetAutoComplete(const std::string& autocomplete) {
@@ -946,6 +1062,9 @@ void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
               .device_scale_factor();
       SetChildTreeScaleFactor(scale_factor);
     }
+
+    OnStringAttributeChanged(ax::mojom::StringAttribute::kChildTreeId,
+                             tree_id.ToString());
   }
 }
 
@@ -956,6 +1075,9 @@ ui::AXTreeID ViewAccessibility::GetChildTreeID() const {
 
 void ViewAccessibility::RemoveChildTreeID() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+
+  OnStringAttributeChanged(ax::mojom::StringAttribute::kChildTreeId,
+                           std::string());
 }
 
 void ViewAccessibility::SetChildTreeScaleFactor(float scale_factor) {
@@ -1207,6 +1329,86 @@ void ViewAccessibility::SetDataForClosedWidget(ui::AXNodeData* data) const {
   }
 }
 
+void ViewAccessibility::OnRoleChanged(ax::mojom::Role role) {
+  GetOrCreateAXAttributeChangedCallbacks()->NotifyRoleChanged(role);
+}
+
+base::CallbackListSubscription ViewAccessibility::AddRoleChangedCallback(
+    RoleCallbackList::CallbackType callback) {
+  return GetOrCreateAXAttributeChangedCallbacks()->AddRoleChangedCallback(
+      callback);
+}
+
+void ViewAccessibility::OnStringAttributeChanged(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& value) {
+  GetOrCreateAXAttributeChangedCallbacks()->NotifyStringAttributeChanged(
+      attribute, value);
+}
+
+base::CallbackListSubscription
+ViewAccessibility::AddStringAttributeChangedCallback(
+    ax::mojom::StringAttribute attribute,
+    StringAttributeCallbackList::CallbackType callback) {
+  return GetOrCreateAXAttributeChangedCallbacks()
+      ->AddStringAttributeChangedCallback(attribute, callback);
+}
+
+void ViewAccessibility::OnIntAttributeChanged(ax::mojom::IntAttribute attribute,
+                                              std::optional<int> value) {
+  GetOrCreateAXAttributeChangedCallbacks()->NotifyIntAttributeChanged(attribute,
+                                                                      value);
+}
+
+base::CallbackListSubscription
+ViewAccessibility::AddIntAttributeChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    IntAttributeCallbackList::CallbackType callback) {
+  return GetOrCreateAXAttributeChangedCallbacks()
+      ->AddIntAttributeChangedCallback(attribute, callback);
+}
+
+void ViewAccessibility::OnBoolAttributeChanged(
+    ax::mojom::BoolAttribute attribute,
+    std::optional<bool> value) {
+  GetOrCreateAXAttributeChangedCallbacks()->NotifyBoolAttributeChanged(
+      attribute, value);
+}
+
+base::CallbackListSubscription
+ViewAccessibility::AddBoolAttributeChangedCallback(
+    ax::mojom::BoolAttribute attribute,
+    BoolAttributeCallbackList::CallbackType callback) {
+  return GetOrCreateAXAttributeChangedCallbacks()
+      ->AddBoolAttributeChangedCallback(attribute, callback);
+}
+
+void ViewAccessibility::OnStateChanged(ax::mojom::State state, bool value) {
+  GetOrCreateAXAttributeChangedCallbacks()->NotifyStateChanged(state, value);
+}
+
+base::CallbackListSubscription ViewAccessibility::AddStateChangedCallback(
+    ax::mojom::State state,
+    StateCallbackList::CallbackType callback) {
+  return GetOrCreateAXAttributeChangedCallbacks()->AddStateChangedCallback(
+      state, callback);
+}
+
+void ViewAccessibility::OnIntListAttributeChanged(
+    ax::mojom::IntListAttribute attribute,
+    const std::optional<std::vector<int>>& value) {
+  GetOrCreateAXAttributeChangedCallbacks()->NotifyIntListAttributeChanged(
+      attribute, value);
+}
+
+base::CallbackListSubscription
+ViewAccessibility::AddIntListAttributeChangedCallback(
+    ax::mojom::IntListAttribute attribute,
+    IntListAttributeCallbackList::CallbackType callback) {
+  return GetOrCreateAXAttributeChangedCallbacks()
+      ->AddIntListAttributeChangedCallback(attribute, callback);
+}
+
 void ViewAccessibility::SetHierarchicalLevel(int hierarchical_level) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
                         hierarchical_level);
@@ -1218,6 +1420,8 @@ void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
   } else {
     data_.RemoveState(state);
   }
+
+  OnStateChanged(state, is_enabled);
 }
 
 void ViewAccessibility::SetBlockNotifyEvents(bool block) {
@@ -1363,6 +1567,16 @@ void ViewAccessibility::SetContainerLiveRelevant(
 void ViewAccessibility::RemoveContainerLiveRelevant() {
   data_.RemoveStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveRelevant);
+}
+
+ui::AXAttributeChangedCallbacks*
+ViewAccessibility::GetOrCreateAXAttributeChangedCallbacks() {
+  if (!attribute_changed_callbacks_) {
+    attribute_changed_callbacks_ =
+        std::make_unique<ui::AXAttributeChangedCallbacks>();
+  }
+
+  return attribute_changed_callbacks_.get();
 }
 
 }  // namespace views

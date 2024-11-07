@@ -5,13 +5,11 @@
 #include "ui/native_theme/native_theme_features.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace features {
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) ||    \
-    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 constexpr base::FeatureState kOverlayScrollbarFeatureState =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
@@ -25,7 +23,7 @@ BASE_FEATURE(kOverlayScrollbar,
              "OverlayScrollbar",
              kOverlayScrollbarFeatureState);
 // Enables the os settings of overlay scrollbars for ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kOverlayScrollbarsOSSetting,
              "OverlayScrollbarsOSSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);

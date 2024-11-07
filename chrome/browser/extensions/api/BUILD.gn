@@ -41,6 +41,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/mdns",
     "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/networking_private",
+    "//chrome/browser/extensions/api/notifications",
     "//chrome/browser/extensions/api/omnibox",
     "//chrome/browser/extensions/api/page_capture",
     "//chrome/browser/extensions/api/permissions",

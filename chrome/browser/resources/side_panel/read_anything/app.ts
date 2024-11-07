@@ -2153,6 +2153,11 @@ export class AppElement extends AppElementBase {
           convertLangOrLocaleForVoicePackManager(toggledLanguage);
       if (langCodeForVoicePackManager) {
         this.languagesForVoiceDownloads.delete(langCodeForVoicePackManager);
+        // Uninstall the Natural voice when a language is deselected.
+        if (chrome.readingMode.isLanguagePackDownloadingEnabled) {
+          chrome.readingMode.sendUninstallVoiceRequest(
+              langCodeForVoicePackManager);
+        }
       }
     }
     this.enabledLangs = currentlyEnabled ?

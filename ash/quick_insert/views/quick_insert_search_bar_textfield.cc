@@ -10,7 +10,7 @@
 namespace ash {
 
 PickerSearchBarTextfield::PickerSearchBarTextfield(
-    PickerSearchFieldView* search_field_view)
+    QuickInsertSearchFieldView* search_field_view)
     : search_field_view_(search_field_view) {}
 
 PickerSearchBarTextfield::~PickerSearchBarTextfield() = default;

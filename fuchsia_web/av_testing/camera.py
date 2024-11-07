@@ -15,9 +15,22 @@ from typing import Optional
 class Parameters:
     fps: Optional[int] = None
     output_path: str = '/tmp'
+    file: str = 'video'
     duration_sec: Optional[int] = None
     max_frames: Optional[int] = None
     serial_number: Optional[str] = None
+
+    @property
+    def video_file(self):
+        assert self.output_path
+        assert self.file
+        return os.path.join(self.output_path, f'{self.file}.mkv')
+
+    @property
+    def info_file(self):
+        assert self.output_path
+        assert self.file
+        return os.path.join(self.output_path, f'{self.file}.info.csv')
 
 
 def start(parameters: Parameters) -> None:
@@ -26,6 +39,7 @@ def start(parameters: Parameters) -> None:
     bad constructed mp4 file. If the recorder binary does not exist, the
     function returns immediately."""
     assert parameters.output_path
+    assert parameters.file
     BINARY = '/usr/local/cipd/av_sync_record/av_sync_record'
     if not os.path.isfile(BINARY):
         logging.warning(
@@ -34,8 +48,8 @@ def start(parameters: Parameters) -> None:
         return
     args = [
         BINARY, '--gid=', '--uid=',
-        f'--camera_info_path={parameters.output_path}/info.csv',
-        f'--video_output={parameters.output_path}/video.mp4'
+        f'--camera_info_path={parameters.info_file}',
+        f'--video_output={parameters.video_file}'
     ]
     if parameters.fps:
         args.append(f'--camera_fps={parameters.fps}')

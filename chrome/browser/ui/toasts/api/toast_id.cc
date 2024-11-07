@@ -18,8 +18,6 @@ std::string GetToastName(ToastId toast_id) {
       return "LinkToHighlightCopied";
     case ToastId::kAddedToReadingList:
       return "AddedToReadingList";
-    case ToastId::kLensOverlay:
-      return "LensOverlay";
     case ToastId::kNonMilestoneUpdate:
       return "NonMilestoneUpdate";
     case ToastId::kAddedToComparisonTable:
