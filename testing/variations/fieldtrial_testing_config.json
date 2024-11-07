@@ -5878,6 +5878,7 @@
                 {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
+                        "CompareConfirmationToast",
                         "ProductSpecifications",
                         "ProductSpecificationsMqlsLogging"
                     ]
@@ -5885,6 +5886,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "CompareConfirmationToast",
                         "ProductSpecifications",
                         "ProductSpecificationsMqlsLogging"
                     ]
