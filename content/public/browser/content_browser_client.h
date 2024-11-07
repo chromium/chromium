@@ -3054,7 +3054,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   virtual void BindAIManager(
       BrowserContext* browser_context,
-      std::variant<RenderFrameHost*, base::SupportsUserData*> host,
+      base::SupportsUserData* context_user_data,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)

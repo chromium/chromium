@@ -23,6 +23,10 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
 
+namespace base {
+class SupportsUserData;
+}  // namespace base
+
 // The browser-side implementation of `blink::mojom::AIManager`. There should
 // be one shared AIManagerKeyedService per BrowserContext.
 class AIManagerKeyedService : public KeyedService,
@@ -35,7 +39,7 @@ class AIManagerKeyedService : public KeyedService,
   ~AIManagerKeyedService() override;
 
   void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-                   AIContextBoundObjectSet::ReceiverContext host);
+                   base::SupportsUserData* context_user_data);
   void CreateAssistantForCloning(
       base::PassKey<AIAssistant> pass_key,
       blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
@@ -109,7 +113,8 @@ class AIManagerKeyedService : public KeyedService,
       const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
       AIContextBoundObjectSet& context_bound_object_set,
       base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
-      const std::optional<const AIAssistant::Context>& context = std::nullopt);
+      const std::optional<const AIAssistant::Context>& context = std::nullopt,
+      base::SupportsUserData* context_user_data = nullptr);
 
   void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
                                   uint64_t total_bytes);
@@ -117,8 +122,7 @@ class AIManagerKeyedService : public KeyedService,
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
 
-  mojo::ReceiverSet<blink::mojom::AIManager,
-                    AIContextBoundObjectSet::ReceiverContext>
+  mojo::ReceiverSet<blink::mojom::AIManager, base::SupportsUserData*>
       receivers_;
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;

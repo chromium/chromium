@@ -20,10 +20,10 @@
 // needed for the current context (e.g. the IPC connection is closed before the
 // `BucketContext` is destroyed).
 
-// The ownership chain of the relevant class is:
-// `BucketContext` (via `SupportsUserData` or `DocumentUserData`) --owns-->
-// `AIContextBoundObjectSet` --owns-->
-// `AIContextBoundObject` (implements some blink::mojom interface) --owns-->
+// The ownership chain of the relevant class is: `BucketContext` (via
+// `SupportsUserData` or `DocumentAssociatedData`) --owns-->
+// `AIContextBoundObjectSet` --owns--> `AIContextBoundObject` (implements some
+// blink::mojom interface) --owns-->
 // `mojo::Receiver<blink::mojom::SomeInterface>`
 class AIContextBoundObject {
  public:

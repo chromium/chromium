@@ -1111,11 +1111,19 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 #endif
 
   if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
+    // We take the `document_associated_data` when the callback runs because
+    // RenderFrameHosts live across multiple documents. Even though the current
+    // implementation of `document_associated_data` persists across documents,
+    // that is an implementation detail, without a guarantee.
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
-        &ContentBrowserClient::BindAIManager,
+        [](ContentBrowserClient* browser_client, RenderFrameHostImpl* host,
+           mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
+          browser_client->BindAIManager(host->GetBrowserContext(),
+                                        &host->document_associated_data(),
+                                        std::move(receiver));
+        },
         base::Unretained(GetContentClient()->browser()),
-        host->GetBrowserContext(),
-        base::Unretained(static_cast<RenderFrameHost*>(host))));
+        base::Unretained(host)));
   }
 }
 
@@ -1382,8 +1390,7 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &ContentBrowserClient::BindAIManager,
         base::Unretained(GetContentClient()->browser()),
-        host->GetProcessHost()->GetBrowserContext(),
-        base::Unretained(static_cast<base::SupportsUserData*>(host))));
+        host->GetProcessHost()->GetBrowserContext(), base::Unretained(host)));
   }
 }
 
@@ -1463,8 +1470,7 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &ContentBrowserClient::BindAIManager,
         base::Unretained(GetContentClient()->browser()),
-        host->GetProcessHost()->GetBrowserContext(),
-        base::Unretained(static_cast<base::SupportsUserData*>(host))));
+        host->GetProcessHost()->GetBrowserContext(), base::Unretained(host)));
   }
 
   // RenderProcessHost binders

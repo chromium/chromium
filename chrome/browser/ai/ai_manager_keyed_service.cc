@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/supports_user_data.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
@@ -130,18 +131,18 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
   static void CreateAndStart(
       content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
-      AIContextBoundObjectSet::ReceiverContext context,
+      base::SupportsUserData* context_user_data,
       CreateOptionsPtrType options,
       mojo::PendingRemote<ClientRemoteInterface> client) {
     auto task = std::make_unique<CreateContextBoundObjectTask>(
         base::PassKey<CreateContextBoundObjectTask>(), browser_context, feature,
-        context, std::move(options), std::move(client));
+        context_user_data, std::move(options), std::move(client));
     task->Start();
     if (task->IsPending()) {
       // Put `task` to AIContextBoundObjectSet to continue observing the model
       // availability.
-      AIContextBoundObjectSet::GetFromContext(context)->AddContextBoundObject(
-          std::move(task));
+      AIContextBoundObjectSet::GetFromContext(context_user_data)
+          ->AddContextBoundObject(std::move(task));
     }
   }
 
@@ -149,11 +150,11 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
       base::PassKey<CreateContextBoundObjectTask>,
       content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
-      AIContextBoundObjectSet::ReceiverContext context,
+      base::SupportsUserData* context_user_data,
       CreateOptionsPtrType options,
       mojo::PendingRemote<ClientRemoteInterface> client)
       : CreateOnDeviceSessionTask(browser_context, feature),
-        context_(AIContextBoundObjectSet::ToReceiverContextRawRef(context)),
+        owning_user_data_(*context_user_data),
         options_(std::move(options)),
         client_remote_(std::move(client)) {
     client_remote_.set_disconnect_handler(base::BindOnce(
@@ -173,8 +174,7 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
       return;
     }
     mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
-    AIContextBoundObjectSet::GetFromContext(
-        AIContextBoundObjectSet::ToReceiverContext(context_))
+    AIContextBoundObjectSet::GetFromContext(&owning_user_data_.get())
         ->AddContextBoundObject(std::make_unique<ContextBoundObjectType>(
             std::move(session), std::move(options_),
             pending_remote.InitWithNewPipeAndPassReceiver()));
@@ -182,7 +182,11 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
   }
 
  private:
-  const AIContextBoundObjectSet::ReceiverContextRawRef context_;
+  // If this came from RenderFrameHostImpl this will be the
+  // document_associate_data. If it's a worker, it will be the worker itself.
+  // When the RFHI's document changes or the worker is destroyed, it will cause
+  // `this` to be destroyed also, so it's safe to rely on this reference.
+  const raw_ref<base::SupportsUserData> owning_user_data_;
   CreateOptionsPtrType options_;
   mojo::Remote<ClientRemoteInterface> client_remote_;
 };
@@ -222,11 +226,11 @@ AIManagerKeyedService::~AIManagerKeyedService() = default;
 
 void AIManagerKeyedService::AddReceiver(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-    AIContextBoundObjectSet::ReceiverContext context) {
+    base::SupportsUserData* context_user_data) {
   mojo::ReceiverId receiver_id =
-      receivers_.Add(this, std::move(receiver), context);
+      receivers_.Add(this, std::move(receiver), context_user_data);
   AIContextBoundObjectSet* context_bound_object_set =
-      AIContextBoundObjectSet::GetFromContext(context);
+      AIContextBoundObjectSet::GetFromContext(context_user_data);
   context_bound_object_set->AddContextBoundObject(
       std::make_unique<AIManagerReceiverRemover>(
           base::BindOnce(&AIManagerKeyedService::RemoveReceiver,
@@ -244,7 +248,8 @@ AIManagerKeyedService::CreateAssistantInternal(
     const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
     AIContextBoundObjectSet& context_bound_object_set,
     base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
-    const std::optional<const AIAssistant::Context>& context) {
+    const std::optional<const AIAssistant::Context>& context,
+    base::SupportsUserData* context_user_data) {
   CHECK(browser_context_);
   auto task = std::make_unique<CreateAssistantOnDeviceSessionTask>(
       browser_context_.get(), sampling_params,
@@ -280,10 +285,9 @@ void AIManagerKeyedService::CreateAssistant(
 
   // Since this is a mojo IPC implementation, the context should be
   // non-null;
-  AIContextBoundObjectSet::ReceiverContext receiver_context =
-      receivers_.current_context();
+  base::SupportsUserData* context_user_data = receivers_.current_context();
   AIContextBoundObjectSet* context_bound_object_set =
-      AIContextBoundObjectSet::GetFromContext(receiver_context);
+      AIContextBoundObjectSet::GetFromContext(context_user_data);
   CHECK(context_bound_object_set);
 
   auto create_assistant_callback = base::BindOnce(
@@ -339,7 +343,7 @@ void AIManagerKeyedService::CreateAssistant(
   if (task->IsPending()) {
     // Put `task` to AIContextBoundObjectSet to continue observing the model
     // availability.
-    AIContextBoundObjectSet::GetFromContext(receiver_context)
+    AIContextBoundObjectSet::GetFromContext(context_user_data)
         ->AddContextBoundObject(std::move(task));
   }
 }
@@ -478,7 +482,8 @@ void AIManagerKeyedService::CreateAssistantForCloning(
   // should be provided.
   auto task =
       CreateAssistantInternal(sampling_params, context_bound_object_set,
-                              std::move(create_assistant_callback), context);
+                              std::move(create_assistant_callback), context,
+                              /*context_user_data=*/nullptr);
   // The on-device model must be available before the existing assistant was
   // created, so the `CreateAssistantOnDeviceSessionTask` should complete
   // without waiting for the on-device model availability changes.

@@ -1074,7 +1074,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void BindAIManager(
       content::BrowserContext* browser_context,
-      std::variant<content::RenderFrameHost*, base::SupportsUserData*> host,
+      base::SupportsUserData* context_user_data,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver) override;
 
 #if !BUILDFLAG(IS_ANDROID)

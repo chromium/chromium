@@ -30,9 +30,8 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
 
   ~EchoAIManagerImpl() override;
 
-  static void Create(
-      std::variant<RenderFrameHost*, base::SupportsUserData*> context,
-      mojo::PendingReceiver<blink::mojom::AIManager> receiver);
+  static void Create(base::SupportsUserData& context_user_data,
+                     mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
   friend base::NoDestructor<EchoAIManagerImpl>;

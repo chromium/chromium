@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
@@ -21,6 +22,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/ai/echo_ai_manager_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -1780,9 +1782,9 @@ bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
 
 void ContentBrowserClient::BindAIManager(
     BrowserContext* browser_context,
-    std::variant<RenderFrameHost*, base::SupportsUserData*> context,
+    base::SupportsUserData* context_user_data,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  EchoAIManagerImpl::Create(context, std::move(receiver));
+  EchoAIManagerImpl::Create(*context_user_data, std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
