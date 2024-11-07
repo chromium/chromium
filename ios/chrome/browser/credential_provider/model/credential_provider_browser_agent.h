@@ -26,6 +26,11 @@ class CredentialProviderBrowserAgent
  public:
   ~CredentialProviderBrowserAgent() override;
 
+  // Sets whether the infobar is allowed to be shown at this time. Only changes
+  // coming from the credential provider migrator should be allowed to show the
+  // infobar.
+  void SetInfobarAllowed(bool allowed);
+
  private:
   friend class BrowserUserData<CredentialProviderBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
@@ -56,6 +61,8 @@ class CredentialProviderBrowserAgent
   base::ScopedObservation<webauthn::PasskeyModel,
                           webauthn::PasskeyModel::Observer>
       model_observation_{this};
+
+  bool infobar_allowed_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_BROWSER_AGENT_H_

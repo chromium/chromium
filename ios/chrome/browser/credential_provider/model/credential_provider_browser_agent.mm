@@ -38,9 +38,13 @@ CredentialProviderBrowserAgent::CredentialProviderBrowserAgent(Browser* browser)
 
 CredentialProviderBrowserAgent::~CredentialProviderBrowserAgent() = default;
 
+void CredentialProviderBrowserAgent::SetInfobarAllowed(bool allowed) {
+  infobar_allowed_ = allowed;
+}
+
 void CredentialProviderBrowserAgent::DisplayInfoBar(
     const sync_pb::WebauthnCredentialSpecifics& passkey) {
-  if (!browser_) {
+  if (!browser_ || !infobar_allowed_) {
     return;
   }
 

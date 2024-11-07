@@ -46,6 +46,7 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
                              forProtocol:@protocol(SettingsCommands)];
     CredentialProviderBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = CredentialProviderBrowserAgent::FromBrowser(browser_.get());
+    agent_->SetInfobarAllowed(true);
     model_ = static_cast<webauthn::TestPasskeyModel*>(
         IOSPasskeyModelFactory::GetForProfile(
             browser_->GetProfile()->GetOriginalProfile()));

@@ -10,12 +10,15 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -66,6 +69,17 @@
 }
 
 #pragma mark - Private
+
+// Sets whether the passkey updates are allowed to show an infobar to the user.
+// This should normally only happen during the credential migration.
+- (void)allowInfobarForProfile:(ProfileIOS*)profile allowed:(BOOL)allowed {
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
+  for (Browser* browser :
+       browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
+    CredentialProviderBrowserAgent::FromBrowser(browser)->SetInfobarAllowed(
+        allowed);
+  }
+}
 
 // Performs the credential migration only for the specified passkey model.
 // If passkey_model is nil, the migration is performed for all passkey models.
@@ -127,6 +141,8 @@
                                                    passwordStore:storeToSave
                                                     passkeyStore:passkeyStore];
     [self.migratingTracker addObject:profilePathString];
+
+    [self allowInfobarForProfile:profile allowed:YES];
     __weak __typeof__(self) weakSelf = self;
     [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
       DCHECK(success) << error.localizedDescription;
@@ -135,6 +151,7 @@
         if (passkeyStore) {
           [weakSelf removeObserverForPasskeyModel:passkeyStore];
         }
+        [weakSelf allowInfobarForProfile:profile allowed:NO];
       }
     }];
   }
