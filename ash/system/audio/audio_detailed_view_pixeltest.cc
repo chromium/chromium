@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
 
@@ -72,15 +73,19 @@ TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
   // Setup for showing noise cancellation button.
   auto* client = FakeCrasAudioClient::Get();
   auto* audio_handler = CrasAudioHandler::Get();
-  auto internal_mic_node = AudioNode(
-      true, kInternalMicId, false, kInternalMicId, 0, "Fake Mic",
-      "INTERNAL_MIC", "Internal Mic", false /* is_active*/, 0 /* pluged_time */,
-      1, cras::EFFECT_TYPE_NOISE_CANCELLATION, 0);
+  auto internal_mic_node =
+      AudioNode(true, kInternalMicId, false, kInternalMicId, 0, "Fake Mic",
+                "INTERNAL_MIC", "Internal Mic", false /* is_active*/,
+                0 /* pluged_time */, 1, cras::EFFECT_TYPE_NONE, 0);
+  client->SetVoiceIsolationUIAppearance(
+      VoiceIsolationUIAppearance(cras::EFFECT_TYPE_NOISE_CANCELLATION,
+                                 cras::EFFECT_TYPE_NOISE_CANCELLATION, false));
   AudioNodeList node_list;
   node_list.push_back(internal_mic_node);
   client->SetAudioNodesAndNotifyObserversForTesting(node_list);
   client->SetNoiseCancellationSupported(true);
   audio_handler->RequestNoiseCancellationSupported(base::DoNothing());
+  audio_handler->RequestVoiceIsolationUIAppearance();
   audio_handler->SwitchToDevice(AudioDevice(internal_mic_node), true,
                                 DeviceActivateType::kActivateByUser);
 
