@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Test that Private Aggregation works after network cutoff.</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -10,6 +11,13 @@
 
 <body>
 <script>
+"use strict";
+
+const reportPoller = new ReportPoller(
+    '/.well-known/private-aggregation/report-protected-audience',
+    '/.well-known/private-aggregation/debug/report-protected-audience',
+    /*fullTimeoutMs=*/ 5000,
+);
 
 promise_test(async t => {
   const fencedframe = await attachFencedFrameContext({
@@ -22,9 +30,9 @@ promise_test(async t => {
     await window.fence.disableUntrustedNetwork();
     window.fence.reportEvent("aggregate");
   });
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-protected-audience');
-  assert_equals(reports.length, 1);
+
+  await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
 }, 'Private Aggregation events should send after network cutoff.');
 
 </script>
