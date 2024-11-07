@@ -533,6 +533,12 @@ const char kIOSDetectUsernameInUffName[] = "Detect username in UFF";
 const char kIOSDetectUsernameInUffDescription[] =
     "Detect the username in UFF for saving.";
 
+const char kIOSDisableParcelTrackingName[] = "Disable Parcel Tracking";
+const char kIOSDisableParcelTrackingDescription[] =
+    "Disables the parcel tracking feature; when set, users will not be offered "
+    "to track new parcels nor will they see Magic Stack cards for parcel "
+    "tracking.";
+
 const char kIOSDockingPromoName[] = "Docking Promo";
 const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "

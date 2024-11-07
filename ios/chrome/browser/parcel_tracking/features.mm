@@ -9,10 +9,15 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
+BASE_FEATURE(kIOSDisableParcelTracking,
+             "IOSDisableParcelTracking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsIOSParcelTrackingEnabled() {
   variations::VariationsService* variations_service =
       GetApplicationContext()->GetVariationsService();
-  return variations_service &&
+  return !base::FeatureList::IsEnabled(kIOSDisableParcelTracking) &&
+         variations_service &&
          variations_service->GetStoredPermanentCountry() == "us" &&
          GetApplicationContext()->GetLocalState()->GetBoolean(
              prefs::kIosParcelTrackingPolicyEnabled);

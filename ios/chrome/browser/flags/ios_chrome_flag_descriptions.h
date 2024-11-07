@@ -460,6 +460,10 @@ extern const char kIOSBrowserEditMenuMetricsDescription[];
 extern const char kIOSDetectUsernameInUffName[];
 extern const char kIOSDetectUsernameInUffDescription[];
 
+// Title and description for the flag to disable parcel tracking.
+extern const char kIOSDisableParcelTrackingName[];
+extern const char kIOSDisableParcelTrackingDescription[];
+
 // Title and description for the flag to enable the Docking Promo.
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];

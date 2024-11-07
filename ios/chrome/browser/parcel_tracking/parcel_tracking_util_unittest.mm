@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"
 #import "components/variations/synthetic_trial_registry.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -86,6 +88,16 @@ TEST_F(ParcelTrackingUtilTest, NotSignedIn) {
   shopping_service_->SetIsParcelTrackingEligible(false);
   IOSChromeScopedTestingVariationsService scoped_variations_service;
   scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
+  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
+      profile_->GetPrefs(), shopping_service_.get()));
+}
+
+// Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
+// feature is disabled.
+TEST_F(ParcelTrackingUtilTest, FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(kIOSDisableParcelTracking);
+  SignIn();
+  SetPromptDisplayedStatus(false);
   EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
       profile_->GetPrefs(), shopping_service_.get()));
 }

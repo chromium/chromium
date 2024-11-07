@@ -5288,6 +5288,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "ios-disable-parcel-tracking",
+    "owners": [ "smcgruer@google.com", "chrome-payments-team@google.com" ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "ios-docking-promo",
     "owners": ["bwwilliams@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 132
