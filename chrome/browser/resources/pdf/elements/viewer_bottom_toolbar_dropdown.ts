@@ -38,8 +38,8 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
     super.connectedCallback();
     this.tracker_.add(
         this.pluginController_.getEventTarget(),
-        PluginControllerEventType.FINISH_INK_STROKE,
-        this.handleFinishInkStroke_.bind(this));
+        PluginControllerEventType.CONTENT_FOCUSED,
+        this.handleContentFocused_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -67,10 +67,7 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
     this.toggleDropdown_();
   }
 
-  // TODO(crbug.com/369653190): Ideally, the dropdown should be toggled when the
-  // stroke starts, not when the stroke finishes. Exit out of the dropdown when
-  // the user draws an ink stroke.
-  private handleFinishInkStroke_() {
+  private handleContentFocused_() {
     if (this.showDropdown_) {
       this.toggleDropdown_();
     }

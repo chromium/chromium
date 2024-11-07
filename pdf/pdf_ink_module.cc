@@ -224,8 +224,14 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
   }
 
   switch (event.GetType()) {
-    case blink::WebInputEvent::Type::kMouseDown:
+    case blink::WebInputEvent::Type::kMouseDown: {
+      // TODO(crbug.com/353942909): Send a content focused message for certain
+      // non-mouse inputs, too.
+      base::Value::Dict message;
+      message.Set("type", "contentFocused");
+      client_->PostMessage(std::move(message));
       return OnMouseDown(static_cast<const blink::WebMouseEvent&>(event));
+    }
     case blink::WebInputEvent::Type::kMouseUp:
       return OnMouseUp(static_cast<const blink::WebMouseEvent&>(event));
     case blink::WebInputEvent::Type::kMouseMove:

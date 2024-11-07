@@ -49,7 +49,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testFinishInkStrokeClosesDropdown() {
+  async function testContentFocusedClosesDropdown() {
     const dropdown = createDropdown();
 
     // Open the dropdown.
@@ -58,9 +58,10 @@ chrome.test.runTests([
 
     chrome.test.assertTrue(!!getMenu(dropdown));
 
-    // Finish an ink stroke. The dropdown should not be visible.
+    // Mock a 'contentFocused' event from the PDF content. The dropdown should
+    // not be visible.
     PluginController.getInstance().getEventTarget().dispatchEvent(
-        new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+        new CustomEvent(PluginControllerEventType.CONTENT_FOCUSED));
     await microtasksFinished();
 
     chrome.test.assertTrue(!getMenu(dropdown));

@@ -606,6 +606,24 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
   ink_module().OnGeometryChanged();
 }
 
+TEST_F(PdfInkModuleTest, ContentFocusedPostMessage) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder().CreateLeftClickAtPosition(gfx::PointF()).Build();
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "contentFocused",
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  ink_module().HandleInputEvent(mouse_down_event);
+}
+
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {
  protected:
   // Mouse locations used for `RunStrokeCheckTest()`.
