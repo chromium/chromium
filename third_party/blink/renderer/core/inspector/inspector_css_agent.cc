@@ -746,6 +746,7 @@ void InspectorCSSAgent::Reset() {
   document_to_css_style_sheets_.clear();
   invalidated_documents_.clear();
   node_to_inspector_style_sheet_.clear();
+  notify_computed_style_updated_node_ids_.clear();
   ResetNonPersistentData();
 }
 
