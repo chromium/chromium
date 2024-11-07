@@ -271,15 +271,12 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   request.set_owner_id(user_id_hash);
   request.set_use_per_vm_core_scheduling(use_per_vm_core_scheduling);
 
-  const bool should_set_blocksize =
-      !base::FeatureList::IsEnabled(arc::kUseDefaultBlockSize);
   constexpr uint32_t kBlockSize = 4096;
 
   // Add rootfs as /dev/vda.
   request.set_rootfs_writable(file_system_status.is_host_rootfs_writable() &&
                               file_system_status.is_system_image_ext_format());
-  if (should_set_blocksize)
-    request.set_rootfs_block_size(kBlockSize);
+  request.set_rootfs_block_size(kBlockSize);
 
   // Enable O_DIRECT for ARC system image (rootfs) and vendor image if the
   // images are formatted with EROFS. (b/287383456)
@@ -298,8 +295,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   disk_image->set_writable(false);
   disk_image->set_do_mount(true);
   disk_image->set_o_direct(is_arc_erofs_enabled);
-  if (should_set_blocksize)
-    disk_image->set_block_size(kBlockSize);
+  disk_image->set_block_size(kBlockSize);
 
   // Add /run/imageloader/.../android_demo_apps.squash as /dev/block/vdc if
   // needed. If it's not needed we pass /dev/null so that /dev/block/vdc
@@ -310,8 +306,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   disk_image->set_do_mount(true);
   if (!demo_session_apps_path.empty()) {
     disk_image->set_path(demo_session_apps_path.value());
-    if (should_set_blocksize)
-      disk_image->set_block_size(kBlockSize);
+    disk_image->set_block_size(kBlockSize);
   } else {
     // This should never be mounted as it's only mounted if
     // ro.boot.arc_demo_mode is set.
@@ -343,9 +338,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     disk_image->set_multiple_workers(
         base::FeatureList::IsEnabled(kEnableVirtioBlkMultipleWorkers));
     disk_image->set_writable(true);
-    if (should_set_blocksize) {
-      disk_image->set_block_size(kBlockSize);
-    }
+    disk_image->set_block_size(kBlockSize);
     // Set the O_DIRECT option only when the disk image is backed by LVM
     // application container, because the option is invalidated on disk images
     // in ext4 crypto.

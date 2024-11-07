@@ -81,7 +81,6 @@ BASE_DECLARE_FEATURE(kSwitchToKeyMintOnT);
 BASE_DECLARE_FEATURE(kSwitchToKeyMintOnTOverride);
 BASE_DECLARE_FEATURE(kSyncInstallPriority);
 BASE_DECLARE_FEATURE(kUnthrottleOnActiveAudioV2);
-BASE_DECLARE_FEATURE(kUseDefaultBlockSize);
 BASE_DECLARE_FEATURE(kVideoDecoder);
 BASE_DECLARE_FEATURE(kVmMemoryPSIReports);
 extern const base::FeatureParam<int> kVmMemoryPSIReportsPeriod;

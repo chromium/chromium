@@ -364,12 +364,6 @@ BASE_FEATURE(kUnthrottleOnActiveAudioV2,
              "ArcUnthrottleOnActiveAudioV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the system/vendor images are mounted without specifying a
-// block size.
-BASE_FEATURE(kUseDefaultBlockSize,
-             "ArcVmUseDefaultBlockSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether ARC uses VideoDecoder-backed video decoding.
 // When enabled, GpuArcVideoDecodeAccelerator will use VdVideoDecodeAccelerator
 // to delegate decoding tasks to VideoDecoder implementations, instead of using
