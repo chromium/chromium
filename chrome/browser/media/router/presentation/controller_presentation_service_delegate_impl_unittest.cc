@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
+#include "components/media_router/browser/presentation/controller_presentation_service_delegate_impl.h"
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -84,8 +84,9 @@ class MockWebContentsPresentationObserver
   }
 
   ~MockWebContentsPresentationObserver() override {
-    if (presentation_manager_)
+    if (presentation_manager_) {
       presentation_manager_->RemoveObserver(this);
+    }
   }
 
   MOCK_METHOD1(OnPresentationsChanged, void(bool has_presentation));
@@ -141,12 +142,12 @@ std::unique_ptr<KeyedService> BuildMockLocalPresentationManager(
   return std::make_unique<NiceMock<MockLocalPresentationManager>>();
 }
 
-// TODO(crbug.com/40753746): move p_s_d_impl_unittest.cc to the same directory
-// as presentation_service_delegate_impl.* files.
-class PresentationServiceDelegateImplTest
+// TODO(crbug.com/40753746): move c_p_s_d_impl_unittest.cc to the same directory
+// as controller_presentation_service_delegate_impl.* files.
+class ControllerPresentationServiceDelegateImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  PresentationServiceDelegateImplTest()
+  ControllerPresentationServiceDelegateImplTest()
       : router_(nullptr),
         delegate_impl_(nullptr),
         presentation_url1_(kPresentationUrl1),
@@ -167,8 +168,9 @@ class PresentationServiceDelegateImplTest
             wc->GetBrowserContext(),
             base::BindRepeating(&MockMediaRouter::Create)));
     ASSERT_TRUE(wc);
-    PresentationServiceDelegateImpl::CreateForWebContents(wc);
-    delegate_impl_ = PresentationServiceDelegateImpl::FromWebContents(wc);
+    ControllerPresentationServiceDelegateImpl::CreateForWebContents(wc);
+    delegate_impl_ =
+        ControllerPresentationServiceDelegateImpl::FromWebContents(wc);
     SetMainFrame();
     presentation_request_ = std::make_unique<content::PresentationRequest>(
         content::GlobalRenderFrameHostId(main_frame_process_id_,
@@ -188,9 +190,10 @@ class PresentationServiceDelegateImplTest
   }
 
   void RunDefaultPresentationUrlCallbackTest() {
-    auto callback = base::BindRepeating(
-        &PresentationServiceDelegateImplTest::OnDefaultPresentationStarted,
-        base::Unretained(this));
+    auto callback =
+        base::BindRepeating(&ControllerPresentationServiceDelegateImplTest::
+                                OnDefaultPresentationStarted,
+                            base::Unretained(this));
     std::vector<std::string> urls({kPresentationUrl1});
     delegate_impl_->SetDefaultPresentationUrls(*presentation_request_,
                                                callback);
@@ -242,7 +245,8 @@ class PresentationServiceDelegateImplTest
   }
 
   raw_ptr<MockMediaRouter, DanglingUntriaged> router_;
-  raw_ptr<PresentationServiceDelegateImpl, DanglingUntriaged> delegate_impl_;
+  raw_ptr<ControllerPresentationServiceDelegateImpl, DanglingUntriaged>
+      delegate_impl_;
   const GURL presentation_url1_;
   const GURL presentation_url2_;
   std::vector<GURL> presentation_urls_;
@@ -268,7 +272,8 @@ class PresentationServiceDelegateImplTest
   std::unique_ptr<content::PresentationRequest> presentation_request_;
 };
 
-TEST_F(PresentationServiceDelegateImplTest, AddScreenAvailabilityListener) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       AddScreenAvailabilityListener) {
   EXPECT_CALL(*router_, RegisterMediaSinksObserver(_)).WillOnce(Return(true));
   EXPECT_TRUE(delegate_impl_->AddScreenAvailabilityListener(
       main_frame_process_id_, main_frame_routing_id_, &listener1_));
@@ -283,7 +288,8 @@ TEST_F(PresentationServiceDelegateImplTest, AddScreenAvailabilityListener) {
       main_frame_process_id_, main_frame_routing_id_, source1_.id()));
 }
 
-TEST_F(PresentationServiceDelegateImplTest, AddMultipleListenersToFrame) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       AddMultipleListenersToFrame) {
   ON_CALL(*router_, RegisterMediaSinksObserver(_)).WillByDefault(Return(true));
 
   EXPECT_CALL(*router_, RegisterMediaSinksObserver(_)).Times(2);
@@ -309,7 +315,7 @@ TEST_F(PresentationServiceDelegateImplTest, AddMultipleListenersToFrame) {
       main_frame_process_id_, main_frame_routing_id_, source2_.id()));
 }
 
-TEST_F(PresentationServiceDelegateImplTest, AddSameListenerTwice) {
+TEST_F(ControllerPresentationServiceDelegateImplTest, AddSameListenerTwice) {
   EXPECT_CALL(*router_, RegisterMediaSinksObserver(_)).WillOnce(Return(true));
   EXPECT_TRUE(delegate_impl_->AddScreenAvailabilityListener(
       main_frame_process_id_, main_frame_routing_id_, &listener1_));
@@ -325,7 +331,8 @@ TEST_F(PresentationServiceDelegateImplTest, AddSameListenerTwice) {
       main_frame_process_id_, main_frame_routing_id_, source1_.id()));
 }
 
-TEST_F(PresentationServiceDelegateImplTest, AddListenerForInvalidUrl) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       AddListenerForInvalidUrl) {
   MockScreenAvailabilityListener listener(GURL("unsupported-url://foo"));
   EXPECT_CALL(listener,
               OnScreenAvailabilityChanged(
@@ -335,15 +342,17 @@ TEST_F(PresentationServiceDelegateImplTest, AddListenerForInvalidUrl) {
   EXPECT_CALL(*router_, RegisterMediaSinksObserver(_)).Times(0);
 }
 
-TEST_F(PresentationServiceDelegateImplTest, SetDefaultPresentationUrl) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       SetDefaultPresentationUrl) {
   EXPECT_FALSE(delegate_impl_->HasDefaultPresentationRequest());
 
   content::WebContentsTester::For(GetWebContents())
       ->NavigateAndCommit(frame_url_);
 
-  auto callback = base::BindRepeating(
-      &PresentationServiceDelegateImplTest::OnDefaultPresentationStarted,
-      base::Unretained(this));
+  auto callback =
+      base::BindRepeating(&ControllerPresentationServiceDelegateImplTest::
+                              OnDefaultPresentationStarted,
+                          base::Unretained(this));
   delegate_impl_->SetDefaultPresentationUrls(*presentation_request_, callback);
   ASSERT_TRUE(delegate_impl_->HasDefaultPresentationRequest());
   const auto& request1 = delegate_impl_->GetDefaultPresentationRequest();
@@ -363,14 +372,17 @@ TEST_F(PresentationServiceDelegateImplTest, SetDefaultPresentationUrl) {
   EXPECT_FALSE(delegate_impl_->HasDefaultPresentationRequest());
 }
 
-TEST_F(PresentationServiceDelegateImplTest, DefaultPresentationUrlCallback) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       DefaultPresentationUrlCallback) {
   RunDefaultPresentationUrlCallbackTest();
 }
 
-TEST_F(PresentationServiceDelegateImplTest, NotifyDefaultPresentationChanged) {
-  auto callback = base::BindRepeating(
-      &PresentationServiceDelegateImplTest::OnDefaultPresentationStarted,
-      base::Unretained(this));
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       NotifyDefaultPresentationChanged) {
+  auto callback =
+      base::BindRepeating(&ControllerPresentationServiceDelegateImplTest::
+                              OnDefaultPresentationStarted,
+                          base::Unretained(this));
 
   StrictMock<MockWebContentsPresentationObserver> observer(GetWebContents());
 
@@ -404,7 +416,8 @@ TEST_F(PresentationServiceDelegateImplTest, NotifyDefaultPresentationChanged) {
                                              callback);
 }
 
-TEST_F(PresentationServiceDelegateImplTest, NotifyMediaRoutesChanged) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       NotifyMediaRoutesChanged) {
   const int render_process_id = 100;
   const int render_frame_id = 200;
   const GURL presentation_url3{kPresentationUrl3};
@@ -427,7 +440,8 @@ TEST_F(PresentationServiceDelegateImplTest, NotifyMediaRoutesChanged) {
                             kPresentationId);
 }
 
-TEST_F(PresentationServiceDelegateImplTest, ListenForConnectionStateChange) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       ListenForConnectionStateChange) {
   const MediaRoute::Id route_id("routeId");
   content::WebContentsTester::For(GetWebContents())
       ->NavigateAndCommit(frame_url_);
@@ -478,7 +492,7 @@ TEST_F(PresentationServiceDelegateImplTest, ListenForConnectionStateChange) {
       route_id, blink::mojom::PresentationConnectionState::TERMINATED);
 }
 
-TEST_F(PresentationServiceDelegateImplTest, GetMediaRoutes) {
+TEST_F(ControllerPresentationServiceDelegateImplTest, GetMediaRoutes) {
   EXPECT_TRUE(delegate_impl_->GetMediaRoutes().empty());
 
   // Start a session.
@@ -510,7 +524,7 @@ TEST_F(PresentationServiceDelegateImplTest, GetMediaRoutes) {
   EXPECT_TRUE(delegate_impl_->GetMediaRoutes().empty());
 }
 
-TEST_F(PresentationServiceDelegateImplTest, Reset) {
+TEST_F(ControllerPresentationServiceDelegateImplTest, Reset) {
   EXPECT_CALL(*router_, RegisterMediaSinksObserver(_))
       .WillRepeatedly(Return(true));
 
@@ -524,9 +538,9 @@ TEST_F(PresentationServiceDelegateImplTest, Reset) {
       main_frame_process_id_, main_frame_routing_id_, source1_.id()));
 }
 
-TEST_F(PresentationServiceDelegateImplTest, DelegateObservers) {
-  std::unique_ptr<PresentationServiceDelegateImpl> manager(
-      new PresentationServiceDelegateImpl(GetWebContents()));
+TEST_F(ControllerPresentationServiceDelegateImplTest, DelegateObservers) {
+  std::unique_ptr<ControllerPresentationServiceDelegateImpl> manager(
+      new ControllerPresentationServiceDelegateImpl(GetWebContents()));
 
   StrictMock<MockDelegateObserver> delegate_observer1;
   StrictMock<MockDelegateObserver> delegate_observer2;
@@ -541,7 +555,8 @@ TEST_F(PresentationServiceDelegateImplTest, DelegateObservers) {
   manager.reset();
 }
 
-TEST_F(PresentationServiceDelegateImplTest, SinksObserverCantRegister) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       SinksObserverCantRegister) {
   EXPECT_CALL(*router_, RegisterMediaSinksObserver(_)).WillOnce(Return(false));
   EXPECT_CALL(listener1_, OnScreenAvailabilityChanged(
                               blink::mojom::ScreenAvailability::DISABLED));
@@ -549,7 +564,7 @@ TEST_F(PresentationServiceDelegateImplTest, SinksObserverCantRegister) {
       main_frame_process_id_, main_frame_routing_id_, &listener1_));
 }
 
-TEST_F(PresentationServiceDelegateImplTest,
+TEST_F(ControllerPresentationServiceDelegateImplTest,
        TestCloseConnectionForLocalPresentation) {
   GURL presentation_url = GURL("http://www.example.com/presentation.html");
   PresentationInfo presentation_info(presentation_url, kPresentationId);
@@ -580,7 +595,7 @@ TEST_F(PresentationServiceDelegateImplTest,
                                   main_frame_routing_id_, kPresentationId);
 }
 
-TEST_F(PresentationServiceDelegateImplTest,
+TEST_F(ControllerPresentationServiceDelegateImplTest,
        TestReconnectPresentationForLocalPresentation) {
   MediaRoute media_route("route_id",
                          MediaSource::ForPresentationUrl(presentation_url1_),
@@ -607,7 +622,8 @@ TEST_F(PresentationServiceDelegateImplTest,
   delegate_impl_->Reset(main_frame_process_id_, main_frame_routing_id_);
 }
 
-TEST_F(PresentationServiceDelegateImplTest, ConnectToLocalPresentation) {
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       ConnectToLocalPresentation) {
   content::GlobalRenderFrameHostId rfh_id(main_frame_process_id_,
                                           main_frame_routing_id_);
   PresentationInfo presentation_info(presentation_url1_, kPresentationId);
@@ -672,7 +688,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToLocalPresentation) {
   delegate_impl_->Reset(main_frame_process_id_, main_frame_routing_id_);
 }
 
-TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
+TEST_F(ControllerPresentationServiceDelegateImplTest, ConnectToPresentation) {
   content::GlobalRenderFrameHostId rfh_id(main_frame_process_id_,
                                           main_frame_routing_id_);
   PresentationInfo presentation_info(presentation_url1_, kPresentationId);
@@ -695,7 +711,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
   EXPECT_CALL(*router_, RegisterPresentationConnectionMessageObserver(_))
       .WillOnce(::testing::SaveArg<0>(&proxy_message_observer));
   // Note: This specifically tests the messaging case where no mojo pipe is
-  // returned to PresentationServiceDelegateImpl and it is not a local
+  // returned to ControllerPresentationServiceDelegateImpl and it is not a local
   // presentation.  If a mojo PresentationConnection _were_ returned, the
   // following route message calls would not take place.
   delegate_impl_->OnStartPresentationSucceeded(
@@ -726,7 +742,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
+TEST_F(ControllerPresentationServiceDelegateImplTest, AutoJoinRequest) {
   std::string origin(frame_origin_.Serialize());
   content::WebContentsTester::For(GetWebContents())
       ->NavigateAndCommit(frame_url_);

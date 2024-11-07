@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_PRESENTATION_PRESENTATION_SERVICE_DELEGATE_IMPL_H_
-#define COMPONENTS_MEDIA_ROUTER_BROWSER_PRESENTATION_PRESENTATION_SERVICE_DELEGATE_IMPL_H_
+#ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_PRESENTATION_CONTROLLER_PRESENTATION_SERVICE_DELEGATE_IMPL_H_
+#define COMPONENTS_MEDIA_ROUTER_BROWSER_PRESENTATION_CONTROLLER_PRESENTATION_SERVICE_DELEGATE_IMPL_H_
 
 #include <memory>
 #include <optional>
@@ -48,23 +48,24 @@ class RouteRequestResult;
 // It is accessed through the WebContentsPresentationManager interface by
 // clients (e.g. the UI code) that is interested in the presentation status of
 // the WebContents, but not in other aspects such as the render frame.
-class PresentationServiceDelegateImpl
-    : public content::WebContentsUserData<PresentationServiceDelegateImpl>,
+class ControllerPresentationServiceDelegateImpl
+    : public content::WebContentsUserData<
+          ControllerPresentationServiceDelegateImpl>,
       public content::ControllerPresentationServiceDelegate,
       public WebContentsPresentationManager {
  public:
-  // Retrieves the instance of PresentationServiceDelegateImpl that was attached
-  // to the specified WebContents.  If no instance was attached, creates one,
-  // and attaches it to the specified WebContents.
-  static PresentationServiceDelegateImpl* GetOrCreateForWebContents(
+  // Retrieves the instance of ControllerPresentationServiceDelegateImpl that
+  // was attached to the specified WebContents.  If no instance was attached,
+  // creates one, and attaches it to the specified WebContents.
+  static ControllerPresentationServiceDelegateImpl* GetOrCreateForWebContents(
       content::WebContents* web_contents);
 
-  PresentationServiceDelegateImpl(const PresentationServiceDelegateImpl&) =
-      delete;
-  PresentationServiceDelegateImpl& operator=(
-      const PresentationServiceDelegateImpl&) = delete;
+  ControllerPresentationServiceDelegateImpl(
+      const ControllerPresentationServiceDelegateImpl&) = delete;
+  ControllerPresentationServiceDelegateImpl& operator=(
+      const ControllerPresentationServiceDelegateImpl&) = delete;
 
-  ~PresentationServiceDelegateImpl() override;
+  ~ControllerPresentationServiceDelegateImpl() override;
 
   // content::PresentationServiceDelegate implementation.
   void AddObserver(
@@ -137,23 +138,25 @@ class PresentationServiceDelegateImpl
   }
 
  private:
-  friend class content::WebContentsUserData<PresentationServiceDelegateImpl>;
-  FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
+  friend class content::WebContentsUserData<
+      ControllerPresentationServiceDelegateImpl>;
+  FRIEND_TEST_ALL_PREFIXES(ControllerPresentationServiceDelegateImplTest,
                            DelegateObservers);
-  FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
+  FRIEND_TEST_ALL_PREFIXES(ControllerPresentationServiceDelegateImplTest,
                            SetDefaultPresentationUrl);
-  FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
+  FRIEND_TEST_ALL_PREFIXES(ControllerPresentationServiceDelegateImplTest,
                            DefaultPresentationRequestObserver);
-  FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
+  FRIEND_TEST_ALL_PREFIXES(ControllerPresentationServiceDelegateImplTest,
                            DefaultPresentationUrlCallback);
-  FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
+  FRIEND_TEST_ALL_PREFIXES(ControllerPresentationServiceDelegateImplTest,
                            TestCloseConnectionForLocalPresentation);
-  FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
+  FRIEND_TEST_ALL_PREFIXES(ControllerPresentationServiceDelegateImplTest,
                            ConnectToLocalPresentation);
-  FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
+  FRIEND_TEST_ALL_PREFIXES(ControllerPresentationServiceDelegateImplTest,
                            ConnectToPresentation);
 
-  explicit PresentationServiceDelegateImpl(content::WebContents* web_contents);
+  explicit ControllerPresentationServiceDelegateImpl(
+      content::WebContents* web_contents);
 
   PresentationFrame* GetOrAddPresentationFrame(
       const content::GlobalRenderFrameHostId& render_frame_host_id);
@@ -250,11 +253,12 @@ class PresentationServiceDelegateImpl
 
   PresentationServiceDelegateObservers observers_;
 
-  base::WeakPtrFactory<PresentationServiceDelegateImpl> weak_factory_{this};
+  base::WeakPtrFactory<ControllerPresentationServiceDelegateImpl> weak_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace media_router
 
-#endif  // COMPONENTS_MEDIA_ROUTER_BROWSER_PRESENTATION_PRESENTATION_SERVICE_DELEGATE_IMPL_H_
+#endif  // COMPONENTS_MEDIA_ROUTER_BROWSER_PRESENTATION_CONTROLLER_PRESENTATION_SERVICE_DELEGATE_IMPL_H_
