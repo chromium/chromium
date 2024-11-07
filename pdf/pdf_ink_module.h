@@ -32,6 +32,7 @@ class SkCanvas;
 namespace blink {
 class WebInputEvent;
 class WebMouseEvent;
+class WebTouchEvent;
 }  // namespace blink
 
 namespace chrome_pdf {
@@ -225,6 +226,9 @@ class PdfInkModule {
   bool OnMouseDown(const blink::WebMouseEvent& event);
   bool OnMouseUp(const blink::WebMouseEvent& event);
   bool OnMouseMove(const blink::WebMouseEvent& event);
+  bool OnTouchStart(const blink::WebTouchEvent& event);
+  bool OnTouchEnd(const blink::WebTouchEvent& event);
+  bool OnTouchMove(const blink::WebTouchEvent& event);
 
   // Return values have the same semantics as OnMouse()* above.
   bool StartStroke(const gfx::PointF& position, base::TimeTicks timestamp);

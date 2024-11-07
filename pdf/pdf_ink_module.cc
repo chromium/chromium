@@ -35,6 +35,7 @@
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/intersects.h"
@@ -236,6 +237,12 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
       return OnMouseUp(static_cast<const blink::WebMouseEvent&>(event));
     case blink::WebInputEvent::Type::kMouseMove:
       return OnMouseMove(static_cast<const blink::WebMouseEvent&>(event));
+    case blink::WebInputEvent::Type::kTouchStart:
+      return OnTouchStart(static_cast<const blink::WebTouchEvent&>(event));
+    case blink::WebInputEvent::Type::kTouchEnd:
+      return OnTouchEnd(static_cast<const blink::WebTouchEvent&>(event));
+    case blink::WebInputEvent::Type::kTouchMove:
+      return OnTouchMove(static_cast<const blink::WebTouchEvent&>(event));
     default:
       return false;
   }
@@ -341,6 +348,42 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
   gfx::PointF position = event.PositionInWidget();
+  return is_drawing_stroke() ? ContinueStroke(position, event.TimeStamp())
+                             : ContinueEraseStroke(position);
+}
+
+bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
+  CHECK(enabled());
+
+  if (event.touches_length != 1) {
+    return false;
+  }
+
+  gfx::PointF position = event.touches[0].PositionInWidget();
+  return is_drawing_stroke() ? StartStroke(position, event.TimeStamp())
+                             : StartEraseStroke(position);
+}
+
+bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
+  CHECK(enabled());
+
+  if (event.touches_length != 1) {
+    return false;
+  }
+
+  gfx::PointF position = event.touches[0].PositionInWidget();
+  return is_drawing_stroke() ? FinishStroke(position, event.TimeStamp())
+                             : FinishEraseStroke(position);
+}
+
+bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
+  CHECK(enabled());
+
+  if (event.touches_length != 1) {
+    return false;
+  }
+
+  gfx::PointF position = event.touches[0].PositionInWidget();
   return is_drawing_stroke() ? ContinueStroke(position, event.TimeStamp())
                              : ContinueEraseStroke(position);
 }

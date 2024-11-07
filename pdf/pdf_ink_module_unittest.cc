@@ -6,6 +6,7 @@
 
 #include <array>
 #include <set>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -29,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/ink/src/ink/brush/type_matchers.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
@@ -156,6 +158,20 @@ base::Value::Dict CreateGetAnnotationBrushMessageForTesting(
     message.Set("brushType", brush_type);
   }
   return message;
+}
+
+blink::WebTouchEvent CreateTouchEvent(blink::WebInputEvent::Type type,
+                                      base::span<const gfx::PointF> points) {
+  CHECK_LE(points.size(), blink::WebTouchEvent::kTouchesLengthCap);
+
+  constexpr int kNoModifiers = 0;
+  blink::WebTouchEvent touch_event(
+      type, kNoModifiers, blink::WebInputEvent::GetStaticTimeStampForTests());
+  for (size_t i = 0; i < points.size(); ++i) {
+    touch_event.touches[i].SetPositionInWidget(points[i]);
+  }
+  touch_event.touches_length = points.size();
+  return touch_event;
 }
 
 class FakeClient : public PdfInkModuleClient {
@@ -627,6 +643,7 @@ TEST_F(PdfInkModuleTest, ContentFocusedPostMessage) {
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {
  protected:
   // Mouse locations used for `RunStrokeCheckTest()`.
+  // Touch events may use the same coordinates.
   static constexpr gfx::PointF kMouseDownPoint = gfx::PointF(10.0f, 15.0f);
   static constexpr gfx::PointF kMouseMovePoint = gfx::PointF(20.0f, 25.0f);
   static constexpr gfx::PointF kMouseUpPoint = gfx::PointF(30.0f, 17.0f);
@@ -691,6 +708,70 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     }
   }
 
+  void ApplyStrokeWithTouchAtPoints(
+      base::span<const gfx::PointF> touch_start_points,
+      std::vector<base::span<const gfx::PointF>> all_touch_move_points,
+      base::span<const gfx::PointF> touch_end_points) {
+    ApplyStrokeWithTouchAtPointsMaybeHandled(
+        touch_start_points, all_touch_move_points, touch_end_points,
+        /*expect_touch_events_handled=*/true);
+  }
+
+  // TODO(crbug.com/377733396): Consider refactoring to combine with
+  // RunStrokeCheckTest().
+  void RunStrokeTouchCheckTest(bool annotation_mode_enabled) {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
+
+    const std::vector<base::span<const gfx::PointF>> all_touch_move_points{
+        base::span_from_ref(kMouseMovePoint),
+    };
+    ApplyStrokeWithTouchAtPointsMaybeHandled(
+        base::span_from_ref(kMouseDownPoint), all_touch_move_points,
+        base::span_from_ref(kMouseUpPoint),
+        /*expect_touch_events_handled=*/annotation_mode_enabled);
+
+    const int expected_count = annotation_mode_enabled ? 1 : 0;
+    EXPECT_EQ(expected_count, client().stroke_finished_count());
+    const std::vector<int>& updated_thumbnail_page_indices =
+        client().updated_thumbnail_page_indices();
+    if (annotation_mode_enabled) {
+      EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
+    } else {
+      EXPECT_TRUE(updated_thumbnail_page_indices.empty());
+    }
+  }
+
+  // TODO(crbug.com/377733396): Consider refactoring to combine with
+  // RunStrokeCheckTest().
+  //
+  // Note that currently multi-touch is not handled, so the test expectations
+  // are different from the ones in RunStrokeTouchCheckTest().
+  void RunStrokeMultiTouchCheckTest(bool annotation_mode_enabled) {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
+
+    const std::vector<gfx::PointF> touch_start_points{kMouseDownPoint,
+                                                      kMouseDownPoint};
+    const std::vector<gfx::PointF> touch_move_points{kMouseMovePoint,
+                                                     kMouseMovePoint};
+    const std::vector<base::span<const gfx::PointF>> all_touch_move_points{
+        touch_move_points,
+    };
+    const std::vector<gfx::PointF> touch_end_points{kMouseUpPoint,
+                                                    kMouseUpPoint};
+    ApplyStrokeWithTouchAtPointsMaybeHandled(
+        touch_start_points, all_touch_move_points, touch_end_points,
+        /*expect_touch_events_handled=*/false);
+
+    EXPECT_EQ(0, client().stroke_finished_count());
+    const std::vector<int>& updated_thumbnail_page_indices =
+        client().updated_thumbnail_page_indices();
+    EXPECT_TRUE(updated_thumbnail_page_indices.empty());
+  }
+
   void SelectEraserToolOfSize(float size) {
     EXPECT_TRUE(ink_module().OnMessage(
         CreateSetAnnotationBrushMessageForTesting("eraser", size, nullptr)));
@@ -730,16 +811,58 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_up_event));
   }
+
+  void ApplyStrokeWithTouchAtPointsMaybeHandled(
+      base::span<const gfx::PointF> touch_start_points,
+      std::vector<base::span<const gfx::PointF>> all_touch_move_points,
+      base::span<const gfx::PointF> touch_end_points,
+      bool expect_touch_events_handled) {
+    blink::WebTouchEvent touch_start_event = CreateTouchEvent(
+        blink::WebInputEvent::Type::kTouchStart, touch_start_points);
+    EXPECT_EQ(expect_touch_events_handled,
+              ink_module().HandleInputEvent(touch_start_event));
+    for (const auto& touch_move_points : all_touch_move_points) {
+      blink::WebTouchEvent touch_move_event = CreateTouchEvent(
+          blink::WebInputEvent::Type::kTouchMove, touch_move_points);
+      EXPECT_EQ(expect_touch_events_handled,
+                ink_module().HandleInputEvent(touch_move_event));
+    }
+
+    blink::WebTouchEvent touch_end_event = CreateTouchEvent(
+        blink::WebInputEvent::Type::kTouchEnd, touch_end_points);
+    EXPECT_EQ(expect_touch_events_handled,
+              ink_module().HandleInputEvent(touch_end_event));
+  }
 };
 
-TEST_F(PdfInkModuleStrokeTest, NoAnnotationIfNotEnabled) {
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMouseIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
 }
 
-TEST_F(PdfInkModuleStrokeTest, AnnotationIfEnabled) {
+TEST_F(PdfInkModuleStrokeTest, AnnotationWithMouseIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+}
+
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithTouchIfNotEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/false);
+}
+
+TEST_F(PdfInkModuleStrokeTest, AnnotationWithTouchIfEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/true);
+}
+
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfNotEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeMultiTouchCheckTest(/*annotation_mode_enabled=*/false);
+}
+
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeMultiTouchCheckTest(/*annotation_mode_enabled=*/true);
 }
 
 TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
@@ -1104,6 +1227,56 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
                           kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing counts as another stroke action.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+}
+
+TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Check that there are now some visible strokes.
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
+  EXPECT_EQ(1, client().stroke_finished_count());
+  const std::vector<int>& updated_thumbnail_page_indices =
+      client().updated_thumbnail_page_indices();
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
+
+  // Stroke with the eraser tool.
+  SelectEraserToolOfSize(3.0f);
+  const std::vector<base::span<const gfx::PointF>> touch_move_points{
+      base::span_from_ref(kMouseMovePoint),
+  };
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
+                               touch_move_points,
+                               base::span_from_ref(kMouseDownPoint));
+
+  // Now there are no visible strokes left.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Erasing counts as another stroke action.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+
+  // Stroke again. The stroke that have already been erased should stay erased.
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
+                               touch_move_points,
+                               base::span_from_ref(kMouseDownPoint));
+
+  // Still no visible strokes.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Nothing got erased, so the count stays at 2.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+
+  // Stroke again with the mouse gets the same results.
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
+
+  // Still no visible strokes.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Nothing got erased, so the count stays at 2.
   EXPECT_EQ(2, client().stroke_finished_count());
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 }
