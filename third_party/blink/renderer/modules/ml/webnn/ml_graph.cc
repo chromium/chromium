@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -44,6 +45,17 @@ namespace {
     exception_state.ThrowTypeError(msg + error);                  \
     return ScriptPromise<MLComputeResult>();                      \
   });
+
+template <typename T>
+void AppendVectorOfNumbers(const std::vector<T>& vector,
+                           StringBuilder& builder) {
+  String delimiter = "";
+  for (const T& value : vector) {
+    builder.Append(delimiter);
+    builder.AppendNumber(value);
+    delimiter = ", ";
+  }
+}
 
 base::expected<void, String> ValidateNamedArrayBufferViews(
     const MLNamedArrayBufferViews& named_array_buffer_views,
@@ -112,10 +124,15 @@ base::expected<void, String> ValidateNamedMLTensors(
           V8MLOperandDataType(ToBlinkDataType(info->data_type())).AsCStr()));
     }
     if (tensor->Shape() != info->shape()) {
-      return base::unexpected(
-          String::Format("The shape of the MLTensor with name \"%s\" "
-                         "doesn't match the expected shape.",
-                         name.Utf8().c_str()));
+      StringBuilder message;
+      message.Append("The shape [");
+      AppendVectorOfNumbers(tensor->Shape(), message);
+      message.Append("], of the MLTensor with name \"");
+      message.Append(name);
+      message.Append("\" doesn't match the expected shape: [");
+      AppendVectorOfNumbers(info->shape(), message);
+      message.Append("]");
+      return base::unexpected(message.ToString());
     }
     if (tensor->context() != context) {
       return base::unexpected(String::Format(
