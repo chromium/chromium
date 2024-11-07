@@ -189,15 +189,17 @@ void BocaSessionManager::UpdateCurrentSession(
     std::unique_ptr<::boca::Session> session,
     bool dispatch_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (IsSessionTakeOver(current_session_.get(), session.get())) {
+    HandleTakeOver(dispatch_event, std::move(session));
+    return;
+  }
   previous_session_ = std::move(current_session_);
   current_session_ = std::move(session);
   last_session_load_ = base::TimeTicks::Now();
+
   if (dispatch_event) {
-    NotifySessionUpdate();
-    NotifyOnTaskUpdate();
-    NotifySessionCaptionConfigUpdate();
-    NotifyRosterUpdate();
-    NotifyConsumerActivityUpdate();
+    DispatchEvent();
   }
 }
 
@@ -315,8 +317,41 @@ bool BocaSessionManager::IsProfileActive() {
              account_id_;
 }
 
-bool BocaSessionManager::IsSessionActive(::boca::Session* session) {
-  return session && session->session_state() == ::boca::Session::ACTIVE;
+bool BocaSessionManager::IsSessionActive(const ::boca::Session* session) {
+  return session && session->session_state() == ::boca::Session::ACTIVE &&
+         !session->session_id().empty();
+}
+
+bool BocaSessionManager::IsSessionTakeOver(
+    const ::boca::Session* previous_session,
+    const ::boca::Session* current_session) {
+  if (!IsSessionActive(previous_session) || !IsSessionActive(current_session)) {
+    return false;
+  }
+  return previous_session->session_id() != current_session->session_id();
+}
+
+void BocaSessionManager::HandleTakeOver(
+    bool dispatch_event,
+    std::unique_ptr<::boca::Session> session) {
+  previous_session_ = std::move(current_session_);
+  current_session_ = nullptr;
+  if (dispatch_event) {
+    DispatchEvent();
+  }
+  previous_session_ = nullptr;
+  current_session_ = std::move(session);
+  if (dispatch_event) {
+    DispatchEvent();
+  }
+}
+
+void BocaSessionManager::DispatchEvent() {
+  NotifySessionUpdate();
+  NotifyOnTaskUpdate();
+  NotifySessionCaptionConfigUpdate();
+  NotifyRosterUpdate();
+  NotifyConsumerActivityUpdate();
 }
 
 void BocaSessionManager::NotifySessionUpdate() {

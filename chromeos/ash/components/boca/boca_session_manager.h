@@ -173,7 +173,12 @@ class BocaSessionManager
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
   bool IsProfileActive();
-  bool IsSessionActive(::boca::Session* session);
+  bool IsSessionActive(const ::boca::Session* session);
+  bool IsSessionTakeOver(const ::boca::Session* previous_session,
+                         const ::boca::Session* current_session);
+  void HandleTakeOver(bool dispatch_event,
+                      std::unique_ptr<::boca::Session> session);
+  void DispatchEvent();
   void NotifySessionUpdate();
   void NotifyOnTaskUpdate();
   void NotifySessionCaptionConfigUpdate();
