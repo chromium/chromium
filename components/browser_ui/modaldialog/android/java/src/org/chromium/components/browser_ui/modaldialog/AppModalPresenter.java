@@ -156,8 +156,10 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         }
 
         mDialog.setOnShowListener(
-                (dialogInterface) -> {
-                    mDialogView.onEnterAnimationStarted(ENTER_ANIMATION_ESTIMATION_MS);
+                (ignored) -> {
+                    if (mDialogView != null) {
+                        mDialogView.onEnterAnimationStarted(ENTER_ANIMATION_ESTIMATION_MS);
+                    }
                 });
 
         if (onDialogCreatedCallback != null) {
@@ -180,10 +182,15 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         }
 
         if (mDialog != null) {
+            if (mWindowInsetsListener != null) {
+                mWindowInsetsListener = null;
+                ViewCompat.setOnApplyWindowInsetsListener(
+                        getWindow().getDecorView().getRootView(), null);
+            }
             mDialog.dismiss();
             mDialog = null;
+            mDialogView = null;
             mModel = null;
-            mWindowInsetsListener = null;
         }
 
         if (mEdgeToEdgeStateSupplier != null) {

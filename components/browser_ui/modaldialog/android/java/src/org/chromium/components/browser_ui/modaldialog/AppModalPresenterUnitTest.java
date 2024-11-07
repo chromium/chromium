@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -174,6 +176,25 @@ public class AppModalPresenterUnitTest {
 
         // Verify dialog margins.
         verifyDialogMargins(25, 40);
+    }
+
+    @Test
+    public void testRemoveDialogView() {
+        setupWindow(
+                WINDOW_WIDTH,
+                WINDOW_HEIGHT,
+                /* leftInset= */ 25,
+                /* topInset= */ 40,
+                /* rightInset= */ 20,
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ true);
+
+        addDialogView();
+        mAppModalPresenter.removeDialogView(mModel);
+
+        // This will try to run #onEnterAnimationStarted on the dialog view, which is now null. Just
+        // need to make sure it doesn't crash.
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 
     @Test
