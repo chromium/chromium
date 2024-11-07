@@ -85,9 +85,17 @@ void ViewCertificateAsync(
       // Found the cert, open cert viewer dialog if able and return.
       // TODO (crbug.com/40928765): Allow modifying constraints through the
       // certificate viewer.
-      ShowCertificateDialog(
-          std::move(web_contents),
-          net::x509_util::CreateCryptoBuffer(cert_info.der_cert));
+      if (base::FeatureList::IsEnabled(
+              ::features::kEnableCertManagementUIV2EditCerts)) {
+        ShowCertificateDialog(
+            std::move(web_contents),
+            net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
+            cert_info.cert_metadata);
+      } else {
+        ShowCertificateDialog(
+            std::move(web_contents),
+            net::x509_util::CreateCryptoBuffer(cert_info.der_cert));
+      }
       return;
     }
   }
