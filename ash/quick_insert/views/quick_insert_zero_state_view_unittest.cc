@@ -502,10 +502,10 @@ TEST_F(QuickInsertZeroStateViewTest,
                            kPickerWidth, &asset_fetcher_, &submenu_controller_,
                            &preview_controller_);
 
-  EXPECT_THAT(view.primary_section_view_for_testing(), IsNull());
+  EXPECT_THAT(view.category_section_views_for_testing(), IsEmpty());
 }
 
-TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
+TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsListItem) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
       .WillOnce(
@@ -519,20 +519,22 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsItemWithSubMenu) {
                            &preview_controller_);
 
   EXPECT_THAT(
-      view.primary_section_view_for_testing(),
-      Pointee(AllOf(
-          Property("GetVisible", &views::View::GetVisible, true),
-          Property(
-              "item_views_for_testing",
-              &QuickInsertSectionView::item_views_for_testing,
-              ElementsAre(AsView<QuickInsertListItemView>(Property(
-                  &QuickInsertListItemView::GetPrimaryTextForTesting,
+      view.category_section_views_for_testing(),
+      ElementsAre(Pair(
+          QuickInsertCategoryType::kLobster,
+          Pointee(AllOf(
+              Property("GetVisible", &views::View::GetVisible, true),
+              Property("item_views_for_testing",
+                       &QuickInsertSectionView::item_views_for_testing,
+                       ElementsAre(AsView<QuickInsertListItemView>(Property(
+                           &QuickInsertListItemView::GetPrimaryTextForTesting,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                  l10n_util::GetStringUTF16(IDS_PICKER_LOBSTER_SELECTION_LABEL)
+                           l10n_util::GetStringUTF16(
+                               IDS_PICKER_LOBSTER_SELECTION_LABEL)
 #else
-                  u""
+                           u""
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                      )))))));
+                               )))))))));
 }
 
 TEST_F(QuickInsertZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
