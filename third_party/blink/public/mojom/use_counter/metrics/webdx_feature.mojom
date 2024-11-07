@@ -235,6 +235,9 @@ enum WebDXFeature {
   kTrigFunctions = 177,
   kGradientInterpolation = 178,
   kFontVariantPosition = 179,
+  kTextEmphasis = 180,
+  kTextWrap = 181,
+  kTextWrapStyle = 182,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

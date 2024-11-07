@@ -614,6 +614,9 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kBorderEndStartRadius, logical_properties},
           {CSSSampleId::kFontVariantPosition,
            WebDXFeature::kFontVariantPosition},
+          {CSSSampleId::kTextEmphasis, WebDXFeature::kTextEmphasis},
+          {CSSSampleId::kTextWrap, WebDXFeature::kTextWrap},
+          {CSSSampleId::kTextWrapStyle, WebDXFeature::kTextWrapStyle},
       }};
 
   return *kMap;

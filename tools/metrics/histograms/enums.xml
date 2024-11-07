@@ -33842,6 +33842,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="177" label="TrigFunctions"/>
   <int value="178" label="GradientInterpolation"/>
   <int value="179" label="FontVariantPosition"/>
+  <int value="180" label="TextEmphasis"/>
+  <int value="181" label="TextWrap"/>
+  <int value="182" label="TextWrapStyle"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
