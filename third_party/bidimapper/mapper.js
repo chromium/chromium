@@ -214,6 +214,7 @@
             EventNames["DomContentLoaded"] = "browsingContext.domContentLoaded";
             EventNames["DownloadWillBegin"] = "browsingContext.downloadWillBegin";
             EventNames["FragmentNavigated"] = "browsingContext.fragmentNavigated";
+            EventNames["HistoryUpdated"] = "browsingContext.historyUpdated";
             EventNames["Load"] = "browsingContext.load";
             EventNames["NavigationAborted"] = "browsingContext.navigationAborted";
             EventNames["NavigationFailed"] = "browsingContext.navigationFailed";
@@ -2167,23 +2168,45 @@
                 }
             } while (!last);
         }
+        async #getFrameOffset() {
+            // https://github.com/w3c/webdriver/pull/1847 proposes dispatching events from
+            // the top-level browsing context. This implementation dispatches it on the top-most
+            // same-target frame, which is not top-level one in case of OOPiF.
+            // TODO: switch to the top-level browsing context.
+            try {
+                const { backendNodeId } = await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getFrameOwner', { frameId: this.#context.id });
+                const { model: frameBoxModel } = await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getBoxModel', {
+                    backendNodeId,
+                });
+                return { x: frameBoxModel.content[0], y: frameBoxModel.content[1] };
+            }
+            catch (e) {
+                if (e.code === -32000 &&
+                    e.message === 'Frame with the given id does not belong to the target.') {
+                    // Heuristic to determine if the browsing context is top-level in the target session.
+                    return { x: 0, y: 0 };
+                }
+                throw e;
+            }
+        }
         async #getCoordinateFromOrigin(origin, offsetX, offsetY, startX, startY) {
             let targetX;
             let targetY;
+            const frameOffset = await this.#getFrameOffset();
             switch (origin) {
                 case 'viewport':
-                    targetX = offsetX;
-                    targetY = offsetY;
+                    targetX = offsetX + frameOffset.x;
+                    targetY = offsetY + frameOffset.y;
                     break;
                 case 'pointer':
-                    targetX = startX + offsetX;
-                    targetY = startY + offsetY;
+                    targetX = startX + offsetX + frameOffset.x;
+                    targetY = startY + offsetY + frameOffset.y;
                     break;
                 default: {
                     const { x: posX, y: posY } = await getElementCenter(this.#context, origin.element);
                     // SAFETY: These can never be special numbers.
-                    targetX = posX + offsetX;
-                    targetY = posY + offsetY;
+                    targetX = posX + offsetX + frameOffset.x;
+                    targetY = posY + offsetY + frameOffset.y;
                     break;
                 }
             }
@@ -2958,7 +2981,7 @@
                 contexts: params.contexts,
             });
             await Promise.all(this.#browsingContextStorage.getAllContexts().map((context) => {
-                return context.cdpTarget.toggleFetchIfNeeded();
+                return context.cdpTarget.toggleNetwork();
             }));
             return {
                 intercept,
@@ -3042,7 +3065,7 @@
         async removeIntercept(params) {
             this.#networkStorage.removeIntercept(params.intercept);
             await Promise.all(this.#browsingContextStorage.getAllContexts().map((context) => {
-                return context.cdpTarget.toggleFetchIfNeeded();
+                return context.cdpTarget.toggleNetwork();
             }));
             return {};
         }
@@ -3317,7 +3340,7 @@
         else {
             // Node (<=16) without
             // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
-            // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
             require('crypto').webcrypto.getRandomValues(randomValues);
         }
         // Set version (4) and variant (RFC4122) bits.
@@ -4972,7 +4995,9 @@
          */
         async stringifyObject(cdpRemoteObject) {
             const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
-                functionDeclaration: String((remoteObject) => String(remoteObject)),
+                functionDeclaration: String(
+                // eslint-disable-next-line @typescript-eslint/no-base-to-string
+                (remoteObject) => String(remoteObject)),
                 awaitPromise: false,
                 arguments: [cdpRemoteObject],
                 returnByValue: true,
@@ -5759,20 +5784,34 @@
                 if (this.id !== params.frameId) {
                     return;
                 }
+                if (params.navigationType === 'historyApi') {
+                    this.#url = params.url;
+                    this.#eventManager.registerEvent({
+                        type: 'event',
+                        method: 'browsingContext.historyUpdated',
+                        params: {
+                            context: this.id,
+                            url: this.#url,
+                        },
+                    }, this.id);
+                    return;
+                }
                 this.#pendingNavigationUrl = undefined;
                 const timestamp = _a$5.getTimestamp();
                 this.#url = params.url;
                 this.#navigation.withinDocument.resolve();
-                this.#eventManager.registerEvent({
-                    type: 'event',
-                    method: BrowsingContext$2.EventNames.FragmentNavigated,
-                    params: {
-                        context: this.id,
-                        navigation: this.#navigationId,
-                        timestamp,
-                        url: this.#url,
-                    },
-                }, this.id);
+                if (params.navigationType === 'fragment') {
+                    this.#eventManager.registerEvent({
+                        type: 'event',
+                        method: BrowsingContext$2.EventNames.FragmentNavigated,
+                        params: {
+                            context: this.id,
+                            navigation: this.#navigationId,
+                            timestamp,
+                            url: this.#url,
+                        },
+                    }, this.id);
+                }
             });
             this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
                 if (this.id !== params.frameId) {
@@ -5808,8 +5847,21 @@
                 if (this.id !== params.frameId) {
                     return;
                 }
-                // If there is a pending navigation, reject it.
-                this.#pendingCommandNavigation?.reject(new UnknownErrorException(`navigation canceled, as new navigation is requested by ${params.reason}`));
+                if (this.#pendingCommandNavigation !== undefined) {
+                    // The pending navigation was aborted by the new one.
+                    this.#eventManager.registerEvent({
+                        type: 'event',
+                        method: BrowsingContext$2.EventNames.NavigationAborted,
+                        params: {
+                            context: this.id,
+                            navigation: this.#navigationId,
+                            timestamp: _a$5.getTimestamp(),
+                            url: this.#url,
+                        },
+                    }, this.id);
+                    this.#pendingCommandNavigation.reject(BrowsingContext$2.EventNames.NavigationAborted);
+                    this.#pendingCommandNavigation = undefined;
+                }
                 this.#pendingNavigationUrl = params.url;
             });
             this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
@@ -6090,7 +6142,7 @@
             })();
             if (wait === "none" /* BrowsingContext.ReadinessState.None */) {
                 // Do not wait for the result of the navigation promise.
-                this.#pendingCommandNavigation.resolve();
+                this.#pendingCommandNavigation?.resolve();
                 this.#pendingCommandNavigation = undefined;
                 return {
                     navigation: navigationId,
@@ -6104,12 +6156,19 @@
                 this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
                 // Throw an error if the navigation is canceled.
                 this.#pendingCommandNavigation,
-            ]);
-            this.#pendingCommandNavigation.resolve();
+            ]).catch((e) => {
+                // Aborting navigation should not fail the original navigation command for now.
+                // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
+                if (e !== BrowsingContext$2.EventNames.NavigationAborted) {
+                    throw e;
+                }
+            });
+            // `#pendingCommandNavigation` can be already rejected and set to undefined.
+            this.#pendingCommandNavigation?.resolve();
             this.#pendingCommandNavigation = undefined;
             return {
                 navigation: navigationId,
-                // Url can change due to redirect get the latest one.
+                // Url can change due to redirect. Get the latest one.
                 url: this.#url,
             };
         }
@@ -6263,6 +6322,9 @@
             });
         }
         async print(params) {
+            if (!this.isTopLevelContext()) {
+                throw new UnsupportedOperationException('Printing of non-top level contexts is not supported');
+            }
             const cdpParams = {};
             if (params.background !== undefined) {
                 cdpParams.printBackground = params.background;
@@ -7390,7 +7452,22 @@
                 });
             }
             else {
-                await this.#cdpClient.sendCommand('Fetch.disable');
+                const blockedRequest = this.#networkStorage
+                    .getRequestsByTarget(this)
+                    .filter((request) => request.interceptPhase);
+                void Promise.allSettled(blockedRequest.map((request) => request.waitNextPhase))
+                    .then(async () => {
+                    const blockedRequest = this.#networkStorage
+                        .getRequestsByTarget(this)
+                        .filter((request) => request.interceptPhase);
+                    if (blockedRequest.length) {
+                        return await this.toggleFetchIfNeeded();
+                    }
+                    return await this.#cdpClient.sendCommand('Fetch.disable');
+                })
+                    .catch((error) => {
+                    this.#logger?.(LogType.bidi, 'Disable failed', error);
+                });
             }
         }
         /**
@@ -7483,6 +7560,82 @@
                     },
                 }, this.id);
             });
+        }
+        async #toggleNetwork(enable) {
+            this.#networkDomainEnabled = enable;
+            try {
+                await this.#cdpClient.sendCommand(enable ? 'Network.enable' : 'Network.disable');
+            }
+            catch {
+                this.#networkDomainEnabled = !enable;
+            }
+        }
+        async #enableFetch(stages) {
+            const patterns = [];
+            if (stages.request || stages.auth) {
+                // CDP quirk we need request interception when we intercept auth
+                patterns.push({
+                    urlPattern: '*',
+                    requestStage: 'Request',
+                });
+            }
+            if (stages.response) {
+                patterns.push({
+                    urlPattern: '*',
+                    requestStage: 'Response',
+                });
+            }
+            if (
+            // Only enable interception when Network is enabled
+            this.#networkDomainEnabled &&
+                patterns.length) {
+                const oldStages = this.#fetchDomainStages;
+                this.#fetchDomainStages = stages;
+                try {
+                    await this.#cdpClient.sendCommand('Fetch.enable', {
+                        patterns,
+                        handleAuthRequests: stages.auth,
+                    });
+                }
+                catch {
+                    this.#fetchDomainStages = oldStages;
+                }
+            }
+        }
+        async #disableFetch() {
+            const blockedRequest = this.#networkStorage
+                .getRequestsByTarget(this)
+                .filter((request) => request.interceptPhase);
+            if (blockedRequest.length === 0) {
+                this.#fetchDomainStages = {
+                    request: false,
+                    response: false,
+                    auth: false,
+                };
+                await this.#cdpClient.sendCommand('Fetch.disable');
+            }
+        }
+        async toggleNetwork() {
+            const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
+            const fetchEnable = Object.values(stages).some((value) => value);
+            const fetchChanged = this.#fetchDomainStages.request !== stages.request ||
+                this.#fetchDomainStages.response !== stages.response ||
+                this.#fetchDomainStages.auth !== stages.auth;
+            const networkEnable = this.isSubscribedTo(BiDiModule.Network);
+            const networkChanged = this.#networkDomainEnabled !== networkEnable;
+            this.#logger?.(LogType.debugInfo, 'Toggle Network', `Fetch (${fetchEnable}) ${fetchChanged}`, `Network (${networkEnable}) ${networkChanged}`);
+            if (networkEnable && networkChanged) {
+                await this.#toggleNetwork(true);
+            }
+            if (fetchEnable && fetchChanged) {
+                await this.#enableFetch(stages);
+            }
+            if (!fetchEnable && fetchChanged) {
+                await this.#disableFetch();
+            }
+            if (!networkEnable && networkChanged && !fetchEnable && !fetchChanged) {
+                await this.#toggleNetwork(false);
+            }
         }
         /**
          * All the ProxyChannels from all the preload scripts of the given
@@ -8380,6 +8533,9 @@
             });
             this.#interceptPhase = undefined;
         }
+        dispose() {
+            this.waitNextPhase.reject(new Error('waitNextPhase disposed'));
+        }
         async #continueWithAuth(authChallengeResponse) {
             assert(this.#fetchId, 'Network Interception not set-up.');
             await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
@@ -8728,6 +8884,7 @@
             for (const request of this.#requests.values()) {
                 if (request.cdpClient.sessionId === sessionId) {
                     this.#requests.delete(request.id);
+                    request.dispose();
                 }
             }
         }
@@ -8751,6 +8908,15 @@
                 throw new NoSuchInterceptException(`Intercept '${intercept}' does not exist.`);
             }
             this.#intercepts.delete(intercept);
+        }
+        getRequestsByTarget(target) {
+            const requests = [];
+            for (const request of this.#requests.values()) {
+                if (request.cdpTarget === target) {
+                    requests.push(request);
+                }
+            }
+            return requests;
         }
         getRequestById(id) {
             return this.#requests.get(id);
@@ -14695,6 +14861,7 @@
         BrowsingContext$1.DomContentLoadedSchema,
         BrowsingContext$1.DownloadWillBeginSchema,
         BrowsingContext$1.FragmentNavigatedSchema,
+        BrowsingContext$1.HistoryUpdatedSchema,
         BrowsingContext$1.LoadSchema,
         BrowsingContext$1.NavigationAbortedSchema,
         BrowsingContext$1.NavigationFailedSchema,
@@ -15058,6 +15225,18 @@
         BrowsingContext.FragmentNavigatedSchema = z.lazy(() => z.object({
             method: z.literal('browsingContext.fragmentNavigated'),
             params: BrowsingContext.NavigationInfoSchema,
+        }));
+    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
+    (function (BrowsingContext) {
+        BrowsingContext.HistoryUpdatedSchema = z.lazy(() => z.object({
+            method: z.literal('browsingContext.historyUpdated'),
+            params: BrowsingContext.HistoryUpdatedParametersSchema,
+        }));
+    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
+    (function (BrowsingContext) {
+        BrowsingContext.HistoryUpdatedParametersSchema = z.lazy(() => z.object({
+            context: BrowsingContext.BrowsingContextSchema,
+            url: z.string(),
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
@@ -16779,7 +16958,8 @@
     var Bluetooth;
     (function (Bluetooth) {
         function parseHandleRequestDevicePromptParams(params) {
-            return parseObject(params, Bluetooth$1.HandleRequestDevicePromptParametersSchema);
+            return parseObject(params, Bluetooth$1
+                .HandleRequestDevicePromptParametersSchema);
         }
         Bluetooth.parseHandleRequestDevicePromptParams = parseHandleRequestDevicePromptParams;
     })(Bluetooth || (Bluetooth = {}));

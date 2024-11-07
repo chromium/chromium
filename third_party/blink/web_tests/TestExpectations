@@ -2499,6 +2499,8 @@ external/wpt/webdriver/tests/bidi/input/set_files/set_files.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/invalid.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/get_cookies/invalid.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/browsing_context/close/prompt_unload.py [ Timeout ]
+# Flaky test
+crbug.com/377833124 external/wpt/webdriver/tests/bidi/browsing_context/navigate/error.py [ Failure Pass ]
 
 # unblock roll wpt
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
