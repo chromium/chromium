@@ -46,7 +46,7 @@ NoStatePrefetchHelper::MaybeCreateThrottle(
   if (!helper)
     return nullptr;
 
-  mojo::PendingRemote<mojom::PrerenderCanceler> canceler;
+  mojo::PendingRemote<mojom::NoStatePrefetchCanceler> canceler;
   render_frame->GetBrowserInterfaceBroker().GetInterface(
       canceler.InitWithNewPipeAndPassReceiver());
 
@@ -92,10 +92,10 @@ void NoStatePrefetchHelper::OnThrottleDestroyed() {
 void NoStatePrefetchHelper::SendPrefetchFinished() {
   DCHECK(prefetch_count_ == 0 && prefetch_finished_);
 
-  mojo::Remote<mojom::PrerenderCanceler> canceler;
+  mojo::Remote<mojom::NoStatePrefetchCanceler> canceler;
   render_frame()->GetBrowserInterfaceBroker().GetInterface(
       canceler.BindNewPipeAndPassReceiver());
-  canceler->CancelPrerenderForNoStatePrefetch();
+  canceler->CancelNoStatePrefetchAfterSubresourcesDiscovered();
 }
 
 }  // namespace prerender

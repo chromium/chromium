@@ -597,17 +597,18 @@ void NoStatePrefetchContents::MarkAsUsedForTesting() {
   NotifyPrefetchStop();
 }
 
-void NoStatePrefetchContents::CancelPrerenderForUnsupportedScheme() {
+void NoStatePrefetchContents::CancelNoStatePrefetchForUnsupportedScheme() {
   Destroy(FINAL_STATUS_UNSUPPORTED_SCHEME);
 }
 
-void NoStatePrefetchContents::CancelPrerenderForNoStatePrefetch() {
+void NoStatePrefetchContents::
+    CancelNoStatePrefetchAfterSubresourcesDiscovered() {
   Destroy(FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 }
 
-void NoStatePrefetchContents::AddPrerenderCancelerReceiver(
-    mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver) {
-  prerender_canceler_receiver_set_.Add(this, std::move(receiver));
+void NoStatePrefetchContents::AddNoStatePrefetchCancelerReceiver(
+    mojo::PendingReceiver<prerender::mojom::NoStatePrefetchCanceler> receiver) {
+  no_state_prefetch_canceler_receiver_set_.Add(this, std::move(receiver));
 }
 
 }  // namespace prerender

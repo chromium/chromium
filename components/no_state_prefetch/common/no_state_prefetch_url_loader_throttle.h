@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/timer/timer.h"
-#include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_canceler.mojom.h"
 #include "net/base/request_priority.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -16,8 +16,8 @@ namespace prerender {
 
 class NoStatePrefetchURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  NoStatePrefetchURLLoaderThrottle(
-      mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler);
+  explicit NoStatePrefetchURLLoaderThrottle(
+      mojo::PendingRemote<prerender::mojom::NoStatePrefetchCanceler> canceler);
   ~NoStatePrefetchURLLoaderThrottle() override;
 
   void set_destruction_closure(base::OnceClosure closure) {
@@ -43,7 +43,7 @@ class NoStatePrefetchURLLoaderThrottle : public blink::URLLoaderThrottle {
   bool deferred_ = false;
   network::mojom::RequestDestination request_destination_;
 
-  mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler_;
+  mojo::PendingRemote<prerender::mojom::NoStatePrefetchCanceler> canceler_;
 
   base::OnceClosure destruction_closure_;
 

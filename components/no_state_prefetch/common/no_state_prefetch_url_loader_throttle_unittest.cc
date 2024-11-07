@@ -9,7 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_canceler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,16 +31,16 @@ class NoStatePrefetchURLLoaderThrottleTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-class FakeCanceler : public prerender::mojom::PrerenderCanceler {
+class FakeCanceler : public prerender::mojom::NoStatePrefetchCanceler {
  public:
   FakeCanceler() = default;
   ~FakeCanceler() override = default;
-  void CancelPrerenderForUnsupportedScheme() override {}
-  void CancelPrerenderForNoStatePrefetch() override {}
+  void CancelNoStatePrefetchForUnsupportedScheme() override {}
+  void CancelNoStatePrefetchAfterSubresourcesDiscovered() override {}
 };
 
 TEST_F(NoStatePrefetchURLLoaderThrottleTest, DestructionClosure) {
-  mojo::PendingRemote<prerender::mojom::PrerenderCanceler> pending_remote;
+  mojo::PendingRemote<prerender::mojom::NoStatePrefetchCanceler> pending_remote;
   mojo::MakeSelfOwnedReceiver(std::make_unique<FakeCanceler>(),
                               pending_remote.InitWithNewPipeAndPassReceiver());
   std::unique_ptr<NoStatePrefetchURLLoaderThrottle> no_state_prefetch_throttle =
@@ -56,7 +56,7 @@ TEST_F(NoStatePrefetchURLLoaderThrottleTest, DestructionClosure) {
 
 TEST_F(NoStatePrefetchURLLoaderThrottleTest,
        DestructionClosureAfterDetachFromCurrentSequence) {
-  mojo::PendingRemote<prerender::mojom::PrerenderCanceler> pending_remote;
+  mojo::PendingRemote<prerender::mojom::NoStatePrefetchCanceler> pending_remote;
   mojo::MakeSelfOwnedReceiver(std::make_unique<FakeCanceler>(),
                               pending_remote.InitWithNewPipeAndPassReceiver());
   std::unique_ptr<NoStatePrefetchURLLoaderThrottle> no_state_prefetch_throttle =

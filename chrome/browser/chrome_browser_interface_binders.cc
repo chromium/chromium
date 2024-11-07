@@ -575,9 +575,9 @@ void BindDistillerJavaScriptService(
                                    std::move(receiver));
 }
 
-void BindPrerenderCanceler(
+void BindNoStatePrefetchCanceler(
     content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver) {
+    mojo::PendingReceiver<prerender::mojom::NoStatePrefetchCanceler> receiver) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
   if (!web_contents) {
     return;
@@ -589,7 +589,8 @@ void BindPrerenderCanceler(
   if (!no_state_prefetch_contents) {
     return;
   }
-  no_state_prefetch_contents->AddPrerenderCancelerReceiver(std::move(receiver));
+  no_state_prefetch_contents->AddNoStatePrefetchCancelerReceiver(
+      std::move(receiver));
 }
 
 void BindNoStatePrefetchProcessor(
@@ -773,8 +774,8 @@ void PopulateChromeFrameBinders(
   map->Add<dom_distiller::mojom::DistillerJavaScriptService>(
       base::BindRepeating(&BindDistillerJavaScriptService));
 
-  map->Add<prerender::mojom::PrerenderCanceler>(
-      base::BindRepeating(&BindPrerenderCanceler));
+  map->Add<prerender::mojom::NoStatePrefetchCanceler>(
+      base::BindRepeating(&BindNoStatePrefetchCanceler));
 
   map->Add<blink::mojom::NoStatePrefetchProcessor>(
       base::BindRepeating(&BindNoStatePrefetchProcessor));

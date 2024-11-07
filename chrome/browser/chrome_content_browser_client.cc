@@ -1104,12 +1104,14 @@ bool IsExtensionIdAllowedToUseIsolatedContext(std::string_view extension_id) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
+mojo::PendingRemote<prerender::mojom::NoStatePrefetchCanceler>
+GetNoStatePrefetchCanceler(
     base::OnceCallback<content::WebContents*()> wc_getter) {
-  mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler;
+  mojo::PendingRemote<prerender::mojom::NoStatePrefetchCanceler> canceler;
   prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
       std::move(wc_getter).Run())
-      ->AddPrerenderCancelerReceiver(canceler.InitWithNewPipeAndPassReceiver());
+      ->AddNoStatePrefetchCancelerReceiver(
+          canceler.InitWithNewPipeAndPassReceiver());
   return canceler;
 }
 
@@ -6155,7 +6157,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       chrome_navigation_ui_data->is_no_state_prefetching()) {
     result.push_back(
         std::make_unique<prerender::NoStatePrefetchURLLoaderThrottle>(
-            GetPrerenderCanceler(wc_getter)));
+            GetNoStatePrefetchCanceler(wc_getter)));
   }
 
 #if BUILDFLAG(IS_ANDROID)
