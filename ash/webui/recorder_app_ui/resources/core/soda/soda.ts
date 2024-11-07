@@ -130,7 +130,10 @@ export class SodaEventTransformer {
   // The last tokens from the PartialResult in SodaEvent with partial result.
   private partialResultTokens: TextToken[]|null = null;
 
-  constructor(private readonly speakerLabelEnabled: boolean) {}
+  // Speaker label will be dynamically toggled and impact on the final result.
+  // If speaker label is turned on/off in the middle of the sentence, the whole
+  // sentence will include/drop the speaker label.
+  constructor(public speakerLabelEnabled: boolean) {}
 
   getTranscription(language: LanguageCode, shouldFinalizeTranscription = false):
     Transcription {
@@ -158,10 +161,6 @@ export class SodaEventTransformer {
     ev: SpeakerLabelCorrectionEvent,
     offsetMs: number,
   ) {
-    if (!this.speakerLabelEnabled) {
-      // Don't handle speaker label correction event when it's not enabled.
-      return;
-    }
     const {hypothesisParts} = ev;
     for (const correctionPart of hypothesisParts) {
       const speakerLabel = correctionPart.speakerLabel ?? null;
@@ -187,7 +186,11 @@ export class SodaEventTransformer {
           // immutable update, or signal/proxy with nested change detection, or
           // have a clearer boundary on which values (especially object/array)
           // should be immutably updated for lit change detection.
-          token.speakerLabel = speakerLabel;
+          // Correct speaker label only if speaker label is enabled on the
+          // original transcription.
+          if (token.speakerLabel !== null) {
+            token.speakerLabel = speakerLabel;
+          }
           found = true;
           break;
         }

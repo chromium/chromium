@@ -10,6 +10,7 @@ import {PerfLogger} from './perf.js';
 import {ReadonlySignal, Signal} from './reactive/signal.js';
 import {LangPackInfo, LanguageCode} from './soda/language_info.js';
 import {SodaSession} from './soda/types.js';
+import {settings} from './state/settings.js';
 
 export abstract class PlatformHandler {
   /**
@@ -55,6 +56,18 @@ export abstract class PlatformHandler {
   abstract getLangPackInfo(language: LanguageCode): LangPackInfo;
 
   /**
+   * Returns information of the selected language.
+   *
+   * Returns null when no language is selected.
+   */
+  getSelectedLangPackInfo(): LangPackInfo|null {
+    const selectedLanguage = settings.value.transcriptionLanguage;
+    return selectedLanguage === null ? null :
+                                       this.getLangPackInfo(selectedLanguage);
+  }
+
+
+  /**
    * Requests installation of SODA library and language pack of given language.
    *
    * Installation state and error will be reported through the `sodaState`.
@@ -73,6 +86,7 @@ export abstract class PlatformHandler {
 
   /**
    * Returns the SODA installation state of the selected language.
+   *
    * Returns null when no language is selected.
    */
   abstract getSelectedLanguageState(): ReadonlySignal<ModelState>|null;

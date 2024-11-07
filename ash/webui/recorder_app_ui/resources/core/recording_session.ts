@@ -190,6 +190,10 @@ export class RecordingSession {
     }
   }
 
+  setSpeakerLabelEnabled(enabled: boolean): void {
+    this.sodaEventTransformer.speakerLabelEnabled = enabled;
+  }
+
   get everPaused(): boolean {
     return this.everPausedInternal;
   }

@@ -315,6 +315,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of the menu item to delete the ongoing recording." name="IDS_RECORDER_RECORD_MENU_DELETE_OPTION">
     Delete
   </message>
+  <message desc="Label of the menu item to toggle whether speaker label is enabled while recording." name="IDS_RECORDER_RECORD_MENU_TOGGLE_SPEAKER_LABEL_OPTION">
+    Speaker identification
+  </message>
   <message desc="Label of the menu item to toggle whether transcription is enabled while recording." name="IDS_RECORDER_RECORD_MENU_TOGGLE_TRANSCRIPTION_OPTION">
     Create transcript
   </message>

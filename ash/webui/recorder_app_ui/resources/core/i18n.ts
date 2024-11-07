@@ -101,6 +101,7 @@ const noArgStringNames = [
   'recordInfoDialogTitleLabel',
   'recordMenuButtonTooltip',
   'recordMenuDeleteOption',
+  'recordMenuToggleSpeakerLabelOption',
   'recordMenuToggleTranscriptionOption',
   'recordMuteButtonTooltip',
   'recordPauseButtonTooltip',

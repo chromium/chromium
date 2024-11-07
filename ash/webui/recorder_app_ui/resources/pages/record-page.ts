@@ -374,6 +374,16 @@ export class RecordPage extends ReactiveLitElement {
       settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED,
   );
 
+  // Speaker label state in the settings.
+  private readonly globalSpeakerLabelEnabled = computed(
+    () => this.platformHandler.canUseSpeakerLabel.value &&
+      settings.value.speakerLabelEnabled === SpeakerLabelEnableState.ENABLED,
+  );
+
+  // Speaker label state per-recording.
+  private readonly speakerLabelEnabled =
+    signal(this.globalSpeakerLabelEnabled.value);
+
   private readonly transcriptionAvailable = computed(
     () => this.platformHandler.isSodaAvailable(),
   );
@@ -410,14 +420,11 @@ export class RecordPage extends ReactiveLitElement {
       return;
     }
 
-    const speakerLabelEnabled = this.platformHandler.canUseSpeakerLabel.value &&
-      settings.value.speakerLabelEnabled === SpeakerLabelEnableState.ENABLED;
-
     const session = await RecordingSession.create({
       micId: assertExists(this.micId),
       includeSystemAudio: this.includeSystemAudio,
       platformHandler: this.platformHandler,
-      speakerLabelEnabled,
+      speakerLabelEnabled: this.speakerLabelEnabled.value,
       canCaptureSystemAudioWithLoopback:
         this.platformHandler.canCaptureSystemAudioWithLoopback.value,
     });
@@ -622,6 +629,13 @@ export class RecordPage extends ReactiveLitElement {
     }
   }
 
+  private toggleSpeakerLabelEnabled() {
+    this.speakerLabelEnabled.value = !this.speakerLabelEnabled.value;
+    this.recordingSession.value?.setSpeakerLabelEnabled(
+      this.speakerLabelEnabled.value,
+    );
+  }
+
   private get exitDialog(): CraDialog|null {
     const el = this.shadowRoot?.querySelector('#exit-dialog') ?? null;
     if (el === null) {
@@ -822,6 +836,30 @@ export class RecordPage extends ReactiveLitElement {
     </cra-dialog>`;
   }
 
+  private renderSpeakerLabelToggle() {
+    // Only show the toggle when speaker label is enabled before recording and
+    // the transcription is turned on.
+    if (this.transcriptionEnabled.value === false ||
+      this.globalSpeakerLabelEnabled.value === false) {
+      return nothing;
+    }
+
+    const langPackInfo = this.platformHandler.getSelectedLangPackInfo();
+    if (langPackInfo?.isSpeakerLabelSupported !== true) {
+      return nothing;
+    }
+
+    return html`
+      <cra-menu-item
+        headline=${i18n.recordMenuToggleSpeakerLabelOption}
+        itemEnd="switch"
+        .switchSelected=${live(this.speakerLabelEnabled.value)}
+        @cros-menu-item-triggered=${this.toggleSpeakerLabelEnabled}
+      >
+      </cra-menu-item>
+    `;
+  }
+
   private renderMenu() {
     const transcriptionMenuItem = html`
       <cra-menu-item
@@ -832,6 +870,7 @@ export class RecordPage extends ReactiveLitElement {
       >
       </cra-menu-item>
     `;
+
     return html`
       <cra-menu ${ref(this.menu)} anchor="show-menu">
         <cra-menu-item
@@ -840,6 +879,7 @@ export class RecordPage extends ReactiveLitElement {
         >
         </cra-menu-item>
         ${this.transcriptionAvailable.value ? transcriptionMenuItem : nothing}
+        ${this.renderSpeakerLabelToggle()}
       </cra-menu>
     `;
   }

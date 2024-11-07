@@ -151,6 +151,8 @@ const webui::LocalizedString kLocalizedStrings[] = {
     {"recordInfoDialogTitleLabel", IDS_RECORDER_RECORD_INFO_DIALOG_TITLE_LABEL},
     {"recordMenuButtonTooltip", IDS_RECORDER_RECORD_MENU_BUTTON_TOOLTIP},
     {"recordMenuDeleteOption", IDS_RECORDER_RECORD_MENU_DELETE_OPTION},
+    {"recordMenuToggleSpeakerLabelOption",
+     IDS_RECORDER_RECORD_MENU_TOGGLE_SPEAKER_LABEL_OPTION},
     {"recordMenuToggleTranscriptionOption",
      IDS_RECORDER_RECORD_MENU_TOGGLE_TRANSCRIPTION_OPTION},
     {"recordMuteButtonTooltip", IDS_RECORDER_RECORD_MUTE_BUTTON_TOOLTIP},
