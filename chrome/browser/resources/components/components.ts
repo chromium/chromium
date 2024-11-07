@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/js/jstemplate_compiled.js';
 import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
@@ -9,15 +10,6 @@ import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
-
-declare global {
-  class JsEvalContext {
-    constructor(data: any);
-  }
-  function jstProcess(context: JsEvalContext, template: HTMLElement): void;
-
-  const trustedTypes: {emptyHTML: string};
-}
 
 interface Component {
   id: string;
@@ -52,7 +44,7 @@ function renderTemplate(componentsData: ComponentsData) {
       document.body.querySelector<HTMLElement>(
                        '#component-template')!.cloneNode(true) as HTMLElement;
   getRequiredElement('component-placeholder').innerHTML =
-      trustedTypes.emptyHTML;
+      window.trustedTypes!.emptyHTML;
   getRequiredElement('component-placeholder').appendChild(output);
   jstProcess(input, output);
   output.removeAttribute('hidden');
