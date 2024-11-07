@@ -362,12 +362,18 @@ declare namespace chrome {
     // Sends an async request to get the status of a Natural voice pack for a
     // specific language. The response is sent back to the UI via
     // updateVoicePackStatus()
+    // TODO(crbug.com/377697173) Rename `VoicePack` to `Voice`
     function sendGetVoicePackInfoRequest(language: string): void;
 
-    // Sends an async request to install a  Natural voice pack for a
+    // Sends an async request to install a Natural voice pack for a
     // specific language. The response is sent back to the UI via
     // updateVoicePackStatus()
+    // TODO(crbug.com/377697173) Rename `VoicePack` to `Voice`
     function sendInstallVoicePackRequest(language: string): void;
+
+    // Sends an async request to uninstall a Natural voice for a specific
+    // language.
+    function sendUninstallVoiceRequest(language: string): void;
 
     // Log UmaHistogramCount
     function incrementMetricCount(metricName: string): void;

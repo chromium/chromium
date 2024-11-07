@@ -122,6 +122,9 @@ interface UntrustedPageHandler {
   // this call comes via UntrustedPage::OnGetVoicePackInfo.
   InstallVoicePack(string language);
 
+  // Called by the renderer to uninstall a natural voice.
+  UninstallVoice(string language);
+
   // Informs the browser controller that a user tried to copy text from the
   // WebUI. If the main page allows copy commands, then the current selection
   // on the main page will be copied to the user's clipboard. Note that even

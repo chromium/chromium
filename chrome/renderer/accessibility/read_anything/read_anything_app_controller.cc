@@ -954,6 +954,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
                  &ReadAnythingAppController::SendInstallVoicePackRequest)
+      .SetMethod("sendUninstallVoiceRequest",
+                 &ReadAnythingAppController::SendUninstallVoiceRequest)
       .SetMethod("getHighlightForCurrentSegmentIndex",
                  &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex)
       .SetMethod("getValidatedFontName",
@@ -1229,6 +1231,11 @@ void ReadAnythingAppController::OnGetVoicePackInfo(
 void ReadAnythingAppController::SendInstallVoicePackRequest(
     const std::string& language) const {
   page_handler_->InstallVoicePack(language);
+}
+
+void ReadAnythingAppController::SendUninstallVoiceRequest(
+    const std::string& language) const {
+  page_handler_->UninstallVoice(language);
 }
 
 std::string ReadAnythingAppController::GetAltText(

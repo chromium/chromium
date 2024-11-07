@@ -154,6 +154,7 @@ class ReadAnythingUntrustedPageHandler :
       GetDependencyParserModelCallback callback) override;
   void GetVoicePackInfo(const std::string& language) override;
   void InstallVoicePack(const std::string& language) override;
+  void UninstallVoice(const std::string& language) override;
   void OnCopy() override;
   void OnLineSpaceChange(
       read_anything::mojom::LineSpacing line_spacing) override;
