@@ -90,7 +90,6 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
-import org.chromium.chrome.browser.searchwidget.WidgetMetrics;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -420,7 +419,6 @@ public class ProcessInitializationHandler {
                 });
 
         SearchActivityPreferencesManager.onNativeLibraryReady();
-        WidgetMetrics.recordInstalledWidgetsHistograms();
         SearchWidgetProvider.initialize();
         QuickActionSearchWidgetProvider.initialize();
 

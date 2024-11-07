@@ -398,17 +398,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="13" label="User stopped"/>
 </enum>
 
-<!-- LINT.IfChange(AndroidWidgetType) -->
-
-<enum name="AndroidWidgetType">
-  <int value="0" label="Search"/>
-  <int value="1" label="Shortcuts"/>
-  <int value="2" label="Dino"/>
-  <int value="3" label="Bookmarks"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/searchwidget/WidgetMetrics.java:AndroidWidgetType) -->
-
 <enum name="AnrSkippedReason">
   <int value="0" label="Filesystem Read Failure"/>
   <int value="1" label="Filesystem Write Failure"/>
