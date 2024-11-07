@@ -308,7 +308,7 @@ public class HubToolbarViewUnitTest {
                 mSearchBoxText.getCurrentHintTextColor());
         assertEquals(
                 ColorStateList.valueOf(
-                        ContextCompat.getColor(mActivity, R.color.color_primary_with_alpha_15)),
+                        ContextCompat.getColor(mActivity, R.color.color_primary_with_alpha_10)),
                 backgroundDrawable.getColor());
     }
 }
