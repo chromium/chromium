@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
-
 #import "base/files/scoped_temp_dir.h"
 #import "base/memory/raw_ptr.h"
 #import "base/path_service.h"
@@ -33,8 +31,10 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/unified_consent/pref_names.h"
 #import "components/unified_consent/unified_consent_service.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -278,7 +278,9 @@ class SafeBrowsingServiceTest : public PlatformTest {
         /*token_fetcher=*/nullptr,
         base::BindRepeating([](bool) { return false; }),
         /*is_off_the_record=*/false,
-        /*variations_service=*/nullptr,
+        /*variations_service_getter=*/
+        base::BindRepeating(
+            []() -> variations::VariationsService* { return nullptr; }),
         /*referrer_chain_provider=*/nullptr,
         /*webui_delegate=*/nullptr);
     safe_browsing_client_.set_real_time_url_lookup_service(

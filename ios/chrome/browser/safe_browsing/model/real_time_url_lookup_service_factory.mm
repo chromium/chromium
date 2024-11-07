@@ -65,10 +65,17 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
                           SyncServiceFactory::GetForProfile(profile),
                           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(),
-      GetApplicationContext()->GetVariationsService(),
+      base::BindRepeating(
+          &RealTimeUrlLookupServiceFactory::GetVariationsService),
       // Referrer chain provider is currently not available on iOS. Once it
       // is implemented, inject it to enable referrer chain in real time
       // requests.
       /*referrer_chain_provider=*/nullptr,
       /*webui_delegate=*/nullptr);
+}
+
+// static
+variations::VariationsService*
+RealTimeUrlLookupServiceFactory::GetVariationsService() {
+  return GetApplicationContext()->GetVariationsService();
 }

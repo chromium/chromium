@@ -15,6 +15,10 @@ namespace safe_browsing {
 class RealTimeUrlLookupService;
 }
 
+namespace variations {
+class VariationsService;
+}
+
 namespace web {
 class BrowserState;
 }
@@ -37,6 +41,8 @@ class RealTimeUrlLookupServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* browser_state) const override;
+
+  static variations::VariationsService* GetVariationsService();
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_REAL_TIME_URL_LOOKUP_SERVICE_FACTORY_H_
