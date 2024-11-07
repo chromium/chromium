@@ -393,7 +393,7 @@ void ScrollableAreaPainter::PaintScrollCorner(
   } else if (scrollable_area_.VerticalScrollbar()) {
     theme = &scrollable_area_.VerticalScrollbar()->GetTheme();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   theme->PaintScrollCorner(context, scrollable_area_, client, visual_rect);

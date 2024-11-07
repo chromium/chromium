@@ -33,8 +33,7 @@ AtomicString ColorSchemeToString(
     case mojom::PreferredColorScheme::kDark:
       return preference_values::kDark;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 
@@ -49,8 +48,7 @@ AtomicString ContrastToString(mojom::blink::PreferredContrast contrast) {
     case mojom::PreferredContrast::kNoPreference:
       return preference_values::kNoPreference;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 
@@ -137,8 +135,7 @@ std::optional<AtomicString> PreferenceObject::override(
     return std::make_optional(reduced_data ? preference_values::kReduce
                                            : preference_values::kNoPreference);
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
 }
 
@@ -170,8 +167,7 @@ AtomicString PreferenceObject::value(ScriptState* script_state) {
     return prefers_reduced_data_ ? preference_values::kReduce
                                  : preference_values::kNoPreference;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return g_empty_atom;
+    NOTREACHED();
   }
 }
 
@@ -251,8 +247,7 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
     value_unchanged =
         (reduced_data.value() == media_values_->PrefersReducedData());
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   if (value_unchanged) {
     DispatchEvent(*Event::Create(event_type_names::kChange));
@@ -369,7 +364,7 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
     existing_value = prefers_reduced_data_ ? preference_values::kReduce
                                            : preference_values::kNoPreference;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (new_value.empty()) {
@@ -415,7 +410,7 @@ const FrozenArray<IDLString>& PreferenceObject::validValues() {
     valid_values.push_back(preference_values::kReduce);
     valid_values.push_back(preference_values::kNoPreference);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   valid_values_ =
       MakeGarbageCollected<FrozenArray<IDLString>>(std::move(valid_values));
@@ -454,8 +449,7 @@ void PreferenceObject::PreferenceMaybeChanged() {
       return;
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   preferred_color_scheme_ = media_values_->GetPreferredColorScheme();
   preferred_contrast_ = media_values_->GetPreferredContrast();

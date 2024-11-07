@@ -1202,8 +1202,7 @@ String Internals::ShadowRootMode(const Node* root,
     case ShadowRootMode::kClosed:
       return String("ClosedShadowRoot");
     default:
-      NOTREACHED_IN_MIGRATION();
-      return String("Unknown");
+      NOTREACHED();
   }
 }
 
@@ -3092,8 +3091,7 @@ static const char* CursorTypeToString(
       return "NorthWestSouthEastNoResize";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "UNKNOWN";
+  NOTREACHED();
 }
 
 String Internals::getCurrentCursorInfo() {

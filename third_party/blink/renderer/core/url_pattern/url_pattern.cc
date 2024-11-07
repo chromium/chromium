@@ -780,7 +780,7 @@ int URLPattern::compareComponent(const V8URLPatternComponent& component,
     case V8URLPatternComponent::Enum::kHash:
       return url_pattern::Component::Compare(*left->hash_, *right->hash_);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<SafeUrlPattern> URLPattern::ToSafeUrlPattern(

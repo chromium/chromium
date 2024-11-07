@@ -275,7 +275,7 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
       segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegUnknown:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (error_.Status() != SVGParseStatus::kNoError) [[unlikely]] {

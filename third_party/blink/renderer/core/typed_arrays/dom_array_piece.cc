@@ -34,8 +34,7 @@ DOMArrayPiece::DOMArrayPiece(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  InitNull();
+  NOTREACHED();
 }
 
 bool DOMArrayPiece::IsNull() const {

@@ -53,8 +53,7 @@ DOMMatrix* DOMMatrix::Create(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 DOMMatrix* DOMMatrix::Create(DOMMatrixReadOnly* other,

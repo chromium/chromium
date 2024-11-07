@@ -102,7 +102,7 @@ void SetBoundEdge(gfx::Rect selection_rect,
       bound.edge_end = selection_rect.bottom_left();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

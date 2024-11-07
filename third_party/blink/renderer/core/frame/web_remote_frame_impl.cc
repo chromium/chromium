@@ -180,13 +180,11 @@ bool WebRemoteFrameImpl::IsWebLocalFrame() const {
 }
 
 WebLocalFrame* WebRemoteFrameImpl::ToWebLocalFrame() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const WebLocalFrame* WebRemoteFrameImpl::ToWebLocalFrame() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool WebRemoteFrameImpl::IsWebRemoteFrame() const {

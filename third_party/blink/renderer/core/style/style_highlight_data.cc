@@ -61,8 +61,7 @@ const ComputedStyle* StyleHighlightData::Style(
     case kPseudoIdHighlight:
       return CustomHighlight(pseudo_argument);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

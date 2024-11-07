@@ -76,13 +76,10 @@ class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
   void WillRemoveHorizontalScrollbar(Scrollbar&) final;
   bool SetScrollbarsVisibleForTesting(bool) final { return true; }
   void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
-  void UpdateScrollerStyle() final { NOTREACHED_IN_MIGRATION(); }
-  bool ScrollbarPaintTimerIsActive() const final {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
-  void StartScrollbarPaintTimer() final { NOTREACHED_IN_MIGRATION(); }
-  void StopScrollbarPaintTimer() final { NOTREACHED_IN_MIGRATION(); }
+  void UpdateScrollerStyle() final { NOTREACHED(); }
+  bool ScrollbarPaintTimerIsActive() const final { NOTREACHED(); }
+  void StartScrollbarPaintTimer() final { NOTREACHED(); }
+  void StopScrollbarPaintTimer() final { NOTREACHED(); }
   void Dispose() final;
 
  private:

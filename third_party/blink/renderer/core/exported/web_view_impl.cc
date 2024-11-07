@@ -404,8 +404,7 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
     case kNavigationPolicyLinkPreview:
       NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected NavigationPolicy";
-  return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;
+  NOTREACHED() << "Unexpected NavigationPolicy";
 }
 
 // Records the queuing duration for activation IPC.
@@ -441,8 +440,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
       case gfx::FontRenderParams::HINTING_FULL:
         return SkFontHinting::kNormal;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return SkFontHinting::kNormal;
+        NOTREACHED();
     }
   }
 #endif
@@ -457,8 +455,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
     case gfx::FontRenderParams::HINTING_FULL:
       return SkFontHinting::kFull;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SkFontHinting::kNormal;
+      NOTREACHED();
   }
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)

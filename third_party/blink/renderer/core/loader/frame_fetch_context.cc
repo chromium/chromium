@@ -208,8 +208,7 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
     case WebFrameLoadType::kReloadBypassingCache:
       return mojom::FetchCacheMode::kBypassCache;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojom::FetchCacheMode::kDefault;
+  NOTREACHED();
 }
 
 bool ShouldSendClientHint(const PermissionsPolicy& policy,

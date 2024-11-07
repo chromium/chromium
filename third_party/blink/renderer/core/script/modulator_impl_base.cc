@@ -157,8 +157,7 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   if (!result) {
     switch (parsed_specifier.GetType()) {
       case ParsedSpecifier::Type::kInvalid:
-        NOTREACHED_IN_MIGRATION();
-        return KURL();
+        NOTREACHED();
 
       case ParsedSpecifier::Type::kBare:
         // Reject bare specifiers as specced by the pre-ImportMap spec.

@@ -147,8 +147,7 @@ void SVGShapePainter::PaintShape(const PaintInfo& paint_info) {
         PaintMarkers(paint_info);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

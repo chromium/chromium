@@ -51,10 +51,7 @@ class CORE_EXPORT DOMArrayBufferBase : public ScriptWrappable {
   }
 
   // ScriptWrappable overrides:
-  v8::Local<v8::Value> Wrap(ScriptState*) override {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Local<v8::Value>();
-  }
+  v8::Local<v8::Value> Wrap(ScriptState*) override { NOTREACHED(); }
 
  protected:
   explicit DOMArrayBufferBase(ArrayBufferContents contents)

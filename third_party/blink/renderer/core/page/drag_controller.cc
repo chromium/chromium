@@ -124,9 +124,7 @@ static bool DragTypeIsValid(DragSourceAction action) {
     case kDragSourceActionNone:
       return false;
   }
-  // Make sure MSVC doesn't complain that not all control paths return a value.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 #endif  // DCHECK_IS_ON()
 
@@ -1340,8 +1338,7 @@ bool DragController::StartDrag(LocalFrame* frame,
       return false;
   } else if (state.drag_type_ != kDragSourceActionSelection &&
              state.drag_type_ != kDragSourceActionDHTML) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   if (state.drag_type_ == kDragSourceActionLink)

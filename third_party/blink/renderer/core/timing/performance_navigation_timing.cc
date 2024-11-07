@@ -236,8 +236,7 @@ AtomicString PerformanceNavigationTiming::deliveryType() const {
     case NavigationDeliveryType::kNavigationalPrefetch:
       return delivery_type_names::kNavigationalPrefetch;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 

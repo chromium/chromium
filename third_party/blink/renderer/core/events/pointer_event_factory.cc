@@ -40,8 +40,7 @@ uint16_t ButtonToButtonsBitfield(WebPointerProperties::Button button) {
 
 #undef CASE_BUTTON_TO_BUTTONS
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const AtomicString& PointerEventNameForEventType(WebInputEvent::Type type) {
@@ -57,8 +56,7 @@ const AtomicString& PointerEventNameForEventType(WebInputEvent::Type type) {
     case WebInputEvent::Type::kPointerCancel:
       return event_type_names::kPointercancel;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 

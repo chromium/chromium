@@ -196,8 +196,7 @@ const DOMExceptionEntry* FindErrorEntry(DOMExceptionCode exception_code) {
     if (exception_code == entry.code)
       return &entry;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 uint16_t FindLegacyErrorCode(const String& name) {

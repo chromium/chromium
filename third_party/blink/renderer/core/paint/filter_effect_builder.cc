@@ -419,7 +419,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             filters.AppendHueRotateFilter(amount);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         break;
       }
@@ -428,8 +428,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       case FilterOperation::OperationType::kComponentTransfer:
       case FilterOperation::OperationType::kTurbulence:
         // These filter types only exist for Canvas filters.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FilterOperation::OperationType::kColorMatrix: {
         Vector<float> matrix_values =
             To<ColorMatrixFilterOperation>(*op).Values();
@@ -455,7 +454,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             filters.AppendContrastFilter(amount);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         break;
       }

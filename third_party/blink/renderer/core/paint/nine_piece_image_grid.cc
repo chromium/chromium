@@ -233,8 +233,7 @@ void NinePieceImageGrid::SetDrawInfoCorner(NinePieceDrawInfo& draw_info,
                              right_.width, bottom_.width));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -313,8 +312,7 @@ void NinePieceImageGrid::SetDrawInfoEdge(NinePieceDrawInfo& draw_info,
                         horizontal_tile_rule_);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

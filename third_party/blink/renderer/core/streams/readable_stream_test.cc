@@ -106,8 +106,7 @@ readAll(stream);
       // Allow Promises to resolve.
       scope.PerformMicrotaskCheckpoint();
     }
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
   test::TaskEnvironment task_environment_;
 };

@@ -330,8 +330,7 @@ void PendingScript::Trace(Visitor* visitor) const {
 bool PendingScript::IsControlledByScriptRunner() const {
   switch (scheduling_type_) {
     case ScriptSchedulingType::kNotSet:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
 
     case ScriptSchedulingType::kDefer:
     case ScriptSchedulingType::kParserBlocking:

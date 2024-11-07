@@ -261,8 +261,7 @@ void WorkerThreadDebugger::consoleClear(int context_group_id) {
 v8::MaybeLocal<v8::Value> WorkerThreadDebugger::memoryInfo(
     v8::Isolate*,
     v8::Local<v8::Context>) {
-  NOTREACHED_IN_MIGRATION();
-  return v8::MaybeLocal<v8::Value>();
+  NOTREACHED();
 }
 
 }  // namespace blink

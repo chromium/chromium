@@ -292,15 +292,14 @@ void FakeLocalFrameHost::CreateFencedFrame(
     mojom::blink::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
-  NOTREACHED_IN_MIGRATION() << "At the moment, FencedFrame is not used in any "
-                               "unit tests, so this path should not be hit";
+  NOTREACHED() << "At the moment, FencedFrame is not used in any unit tests, "
+                  "so this path should not be hit";
 }
 
 void FakeLocalFrameHost::ForwardFencedFrameEventAndUserActivationToEmbedder(
     const WTF::String& event_type) {
-  NOTREACHED_IN_MIGRATION()
-      << "ForwardFencedFrameEventToEmbedder is tested above the unit "
-         "test layer";
+  NOTREACHED() << "ForwardFencedFrameEventToEmbedder is tested above the unit "
+                  "test layer";
 }
 
 void FakeLocalFrameHost::StartDragging(

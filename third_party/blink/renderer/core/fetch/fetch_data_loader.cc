@@ -175,8 +175,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone: {
           DOMArrayBuffer* array_buffer = BuildArrayBuffer();
           if (!array_buffer) {
@@ -258,8 +257,7 @@ class FetchDataLoaderAsFailure final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone:
         case BytesConsumer::Result::kError:
           client_->DidFetchDataLoadFailed();
@@ -332,8 +330,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone:
           if (multipart_parser_->Finish()) {
             DCHECK(!multipart_parser_->IsCancelled());
@@ -493,8 +490,7 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone:
           builder_.Append(decoder_->Flush());
           client_->DidFetchDataLoadedString(builder_.ToString());
@@ -642,8 +638,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone:
           StopInternal();
           client_->DidFetchDataLoadedDataPipe();

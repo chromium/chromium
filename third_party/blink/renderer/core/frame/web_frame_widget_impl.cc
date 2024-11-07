@@ -1258,7 +1258,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
           frame->GetEventHandler().HandleGestureEvent(targeted_event);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   DidHandleGestureEvent(event);
   return event_result;
@@ -2219,7 +2219,7 @@ void WebFrameWidgetImpl::PointerLockMouseEvent(
       // because pointer lost messaging happens on separate mojo channel.
       return;
     default:
-      NOTREACHED_IN_MIGRATION() << input_event.GetType();
+      NOTREACHED() << input_event.GetType();
   }
 
   if (GetPage()) {
@@ -3164,7 +3164,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleCapturedMouseEvent(
       event_type = event_type_names::kMouseup;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   WebMouseEvent transformed_event =

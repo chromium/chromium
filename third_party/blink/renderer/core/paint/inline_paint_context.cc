@@ -146,11 +146,10 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
 #if DCHECK_IS_ON()
           ShowLayoutTree(layout_object);
 #endif
-          NOTREACHED_IN_MIGRATION()
-              << "size=" << decorations->size()
-              << ", parent=" << parent_decorations.size()
-              << ", TextDecorationLine="
-              << static_cast<int>(style->GetTextDecorationLine());
+          NOTREACHED() << "size=" << decorations->size()
+                       << ", parent=" << parent_decorations.size()
+                       << ", TextDecorationLine="
+                       << static_cast<int>(style->GetTextDecorationLine());
         }
 
         if (!IsA<LayoutInline>(parent)) [[unlikely]] {

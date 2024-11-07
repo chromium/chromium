@@ -124,8 +124,7 @@ Node* ShadowRoot::Clone(Document&,
                         NodeCloningData&,
                         ContainerNode*,
                         ExceptionState&) const {
-  NOTREACHED_IN_MIGRATION() << "ShadowRoot nodes are not clonable.";
-  return nullptr;
+  NOTREACHED() << "ShadowRoot nodes are not clonable.";
 }
 
 String ShadowRoot::innerHTML() const {

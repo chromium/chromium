@@ -161,8 +161,7 @@ bool SVGViewSpec::ParseViewSpecInternal(const CharType* ptr,
         transform_->Parse(ptr, end);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     if (!SkipExactly<CharType>(ptr, end, ')'))

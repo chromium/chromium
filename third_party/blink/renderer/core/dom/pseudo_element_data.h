@@ -193,7 +193,7 @@ inline void PseudoElementData::SetPseudoElement(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (previous_element)

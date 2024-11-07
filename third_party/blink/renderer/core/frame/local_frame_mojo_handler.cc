@@ -1278,7 +1278,7 @@ void LocalFrameMojoHandler::PluginActionAt(
           WebPlugin::RotationType::k90Counterclockwise);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LocalFrameMojoHandler::SetInitialFocus(bool reverse) {

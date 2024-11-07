@@ -55,8 +55,7 @@ String DataTransferItem::kind() const {
     case DataObjectItem::kFileKind:
       return kind_file;
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String DataTransferItem::type() const {

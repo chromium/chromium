@@ -558,8 +558,7 @@ bool EventTarget::addEventListener(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool EventTarget::addEventListener(const AtomicString& event_type,
@@ -796,8 +795,7 @@ bool EventTarget::removeEventListener(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool EventTarget::removeEventListener(const AtomicString& event_type,

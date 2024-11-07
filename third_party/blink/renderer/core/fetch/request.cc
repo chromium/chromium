@@ -944,8 +944,7 @@ Request* Request::Create(ScriptState* script_state,
                     exception_state);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 Request* Request::Create(ScriptState* script_state,

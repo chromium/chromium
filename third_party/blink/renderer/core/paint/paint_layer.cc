@@ -1034,8 +1034,7 @@ Node* PaintLayer::EnclosingNode() const {
     if (Node* e = r->GetNode())
       return e;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool PaintLayer::IsInTopOrViewTransitionLayer() const {

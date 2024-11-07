@@ -137,8 +137,7 @@ String FormSubmission::Attributes::MethodString(SubmitMethod method) {
     case kDialogMethod:
       return "dialog";
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 void FormSubmission::Attributes::CopyFrom(const Attributes& other) {

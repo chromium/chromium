@@ -1065,7 +1065,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollPositionAccess::kSyncScrollDoesNotAccessScrollOffset:
         return "100";
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::string GenerateMutation() {
@@ -1087,7 +1087,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollMutation::kSyncScrollMutatesNothing:
         return "";
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::string GenerateScrollHandler() {
@@ -1118,7 +1118,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollHandlerStrategy::kSyncScrollNoEventHandler:
         return "";
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>

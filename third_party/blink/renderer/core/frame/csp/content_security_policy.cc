@@ -119,8 +119,7 @@ bool CheckHeaderTypeMatches(
           return header_type == ContentSecurityPolicyType::kEnforce;
       }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int32_t HashAlgorithmsUsed(
@@ -232,10 +231,7 @@ static WebFeature GetUseCounterType(ContentSecurityPolicyType type) {
     case ContentSecurityPolicyType::kReport:
       return WebFeature::kContentSecurityPolicyReportOnly;
   }
-  NOTREACHED_IN_MIGRATION();
-  // Use kPageVisits here which is not a valid use counter, as this is never
-  // supposed to be reached.
-  return WebFeature::kPageVisits;
+  NOTREACHED();
 }
 
 ContentSecurityPolicy::ContentSecurityPolicy()
@@ -1506,12 +1502,10 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "worker-src";
 
     case CSPDirectiveName::Unknown:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {

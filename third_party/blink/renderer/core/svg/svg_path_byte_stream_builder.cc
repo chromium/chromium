@@ -114,7 +114,7 @@ void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
       buffer.WritePoint(segment.target_point);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -24,8 +24,7 @@ AtomicString FromPaintTypeToString(PerformancePaintTiming::PaintType type) {
       return kFirstContentfulPaint;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_atom;
+  NOTREACHED();
 }
 
 }  // namespace

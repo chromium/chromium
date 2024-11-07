@@ -84,8 +84,7 @@ float ViewportDescription::ResolveViewportLength(
   if (length.IsDeviceHeight())
     return initial_viewport_size.height();
 
-  NOTREACHED_IN_MIGRATION();
-  return ViewportDescription::kValueAuto;
+  NOTREACHED();
 }
 
 PageScaleConstraints ViewportDescription::Resolve(

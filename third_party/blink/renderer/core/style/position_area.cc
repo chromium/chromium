@@ -87,9 +87,7 @@ PositionAreaRegion ToPhysicalRegion(
   switch (region) {
     case PositionAreaRegion::kNone:
     case PositionAreaRegion::kAll:
-      NOTREACHED_IN_MIGRATION()
-          << "Should be handled directly in PositionArea::ToPhysical";
-      [[fallthrough]];
+      NOTREACHED() << "Should be handled directly in PositionArea::ToPhysical";
     case PositionAreaRegion::kCenter:
     case PositionAreaRegion::kTop:
     case PositionAreaRegion::kBottom:
@@ -228,11 +226,10 @@ std::optional<AnchorQuery> PositionArea::UsedTop() const {
       return AnchorTop();
     case PositionAreaRegion::kBottom:
       return AnchorBottom();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case PositionAreaRegion::kNone:
       return std::nullopt;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -244,11 +241,10 @@ std::optional<AnchorQuery> PositionArea::UsedBottom() const {
       return AnchorBottom();
     case PositionAreaRegion::kBottom:
       return std::nullopt;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case PositionAreaRegion::kNone:
       return std::nullopt;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -260,11 +256,10 @@ std::optional<AnchorQuery> PositionArea::UsedLeft() const {
       return AnchorLeft();
     case PositionAreaRegion::kRight:
       return AnchorRight();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case PositionAreaRegion::kNone:
       return std::nullopt;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -276,11 +271,10 @@ std::optional<AnchorQuery> PositionArea::UsedRight() const {
       return AnchorRight();
     case PositionAreaRegion::kRight:
       return std::nullopt;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case PositionAreaRegion::kNone:
       return std::nullopt;
+    default:
+      NOTREACHED();
   }
 }
 

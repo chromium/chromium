@@ -190,8 +190,7 @@ double UserTiming::GetTimeOrFindMarkTime(
           AtomicString(mark_or_time->GetAsString()), exception_state);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 base::TimeTicks UserTiming::GetPerformanceMarkUnsafeTimeForTraces(

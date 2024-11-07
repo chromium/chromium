@@ -463,9 +463,8 @@ class InspectorCSSAgent::ModifyRuleAction final
         return style_sheet_->SetScopeRuleText(new_range_, old_text_, nullptr,
                                               nullptr, exception_state);
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return false;
   }
 
   bool Redo(ExceptionState& exception_state) override {
@@ -503,7 +502,7 @@ class InspectorCSSAgent::ModifyRuleAction final
             old_range_, new_text_, &new_range_, &old_text_, exception_state);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return css_rule_ != nullptr;
   }

@@ -109,8 +109,7 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
              "This script element was modified without use of TrustedScript "
              "assignment and the 'default' policy failed to execute.";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 String GetSamplePrefix(const char* interface_name,
@@ -147,8 +146,7 @@ const char* GetElementName(const ScriptElementBase::Type type) {
     case ScriptElementBase::Type::kSVGScriptElement:
       return "SVGScriptElement";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 HeapVector<ScriptValue> GetDefaultCallbackArgs(
@@ -534,8 +532,7 @@ String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
       return value->GetAsTrustedScript()->toString();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String TrustedTypesCheckForScript(
@@ -565,8 +562,7 @@ String TrustedTypesCheckForScript(
       return value->GetAsTrustedScript()->toString();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String TrustedTypesCheckFor(SpecificTrustedType type,
@@ -591,8 +587,7 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
     case SpecificTrustedType::kNone:
       return trusted;
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 String CORE_EXPORT

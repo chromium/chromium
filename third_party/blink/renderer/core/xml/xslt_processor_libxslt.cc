@@ -202,8 +202,7 @@ static int WriteToStringBuilder(void* context, const char* buffer, int len) {
       &string_current, buffer + len, &buffer_u_char, buffer_u_char_end);
   if (result != WTF::unicode::kConversionOK &&
       result != WTF::unicode::kSourceExhausted) {
-    NOTREACHED_IN_MIGRATION();
-    return -1;
+    NOTREACHED();
   }
 
   int utf16_length =

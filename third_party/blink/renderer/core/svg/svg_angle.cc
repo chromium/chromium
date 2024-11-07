@@ -113,8 +113,7 @@ float SVGAngle::Value() const {
       return value_in_specified_units_;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void SVGAngle::SetValue(float value) {
@@ -274,8 +273,7 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
           break;
         case kSvgAngletypeTurn:
         case kSvgAngletypeUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case kSvgAngletypeRad:
@@ -293,8 +291,7 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
           break;
         case kSvgAngletypeRad:
         case kSvgAngletypeUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case kSvgAngletypeGrad:
@@ -311,8 +308,7 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
           break;
         case kSvgAngletypeGrad:
         case kSvgAngletypeUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case kSvgAngletypeUnspecified:
@@ -333,13 +329,11 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
         case kSvgAngletypeDeg:
           break;
         case kSvgAngletypeUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case kSvgAngletypeUnknown:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   unit_type_ = unit_type;

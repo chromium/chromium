@@ -11792,7 +11792,7 @@ class BlobRegistryForSaveImageFromDataURL : public mojom::blink::BlobRegistry {
       mojo::ScopedDataPipeConsumerHandle,
       mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>,
       RegisterFromStreamCallback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 

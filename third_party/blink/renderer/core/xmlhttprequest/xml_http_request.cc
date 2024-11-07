@@ -801,7 +801,7 @@ void XMLHttpRequest::send(const V8UnionDocumentOrXMLHttpRequestBodyInit* body,
       return send(body->GetAsUSVString(), exception_state);
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool XMLHttpRequest::AreMethodAndURLValidForSend() {
@@ -1880,11 +1880,9 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
     case V8XMLHttpRequestResponseType::Enum::kJson:
     case V8XMLHttpRequestResponseType::Enum::kBlob:
     case V8XMLHttpRequestResponseType::Enum::kArraybuffer:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void XMLHttpRequest::DidReceiveData(base::span<const char> data) {

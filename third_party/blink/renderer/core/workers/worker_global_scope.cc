@@ -536,9 +536,7 @@ void WorkerGlobalScope::RunWorkerScript() {
               is_success = false;
               break;
             case v8::Promise::kPending:
-              NOTREACHED_IN_MIGRATION();
-              is_success = false;
-              break;
+              NOTREACHED();
           }
         } else {
           is_success = result.GetResultType() ==

@@ -60,7 +60,7 @@ String HighlightTypeToString(HighlightLayerType type) {
       result.Append("selection");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return result.ToString();
 }
@@ -119,7 +119,7 @@ enum PseudoId HighlightLayer::PseudoId() const {
     case HighlightLayerType::kSelection:
       return kPseudoIdSelection;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

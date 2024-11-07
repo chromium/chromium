@@ -131,8 +131,7 @@ WebInputEventResult WidgetEventHandler::HandleInputEvent(
     case WebInputEvent::Type::kTouchEnd:
     case WebInputEvent::Type::kTouchCancel:
     case WebInputEvent::Type::kTouchScrollStarted:
-      NOTREACHED_IN_MIGRATION();
-      return WebInputEventResult::kNotHandled;
+      NOTREACHED();
 
     case WebInputEvent::Type::kGesturePinchBegin:
       // Gesture pinch events are handled entirely on the compositor.

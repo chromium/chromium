@@ -68,9 +68,8 @@ std::optional<TileParameters> ComputeTileParameters(
     case kStretchImageRule:
       return TileParameters{1, 0, 0};
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::nullopt;
 }
 
 bool ShouldTile(const NinePieceImageGrid::NinePieceDrawInfo& draw_info) {

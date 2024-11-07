@@ -557,7 +557,7 @@ String InspectorAnimationAgent::CreateCSSId(blink::Animation& animation) {
       css_property_names.push_back(CSSPropertyName(property));
     css_property_names.push_back(css_transition->TransitionCSSPropertyName());
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   Element* element = effect->EffectTarget();
@@ -807,7 +807,7 @@ void InspectorAnimationAgent::AnimationUpdated(blink::Animation* animation) {
         GetFrontend()->animationCanceled(animation_id);
         break;
       case V8AnimationPlayState::Enum::kPending:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

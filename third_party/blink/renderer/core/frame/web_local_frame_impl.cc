@@ -761,13 +761,11 @@ bool WebLocalFrameImpl::IsWebRemoteFrame() const {
 }
 
 WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void WebLocalFrameImpl::Close(DetachReason detach_reason) {

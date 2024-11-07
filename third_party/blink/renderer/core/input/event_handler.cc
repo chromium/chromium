@@ -2094,7 +2094,7 @@ void EventHandler::ApplyTouchAdjustment(WebGestureEvent* gesture_event,
           TouchAdjustmentCandidateType::kContextMenu;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   Node* adjusted_node = nullptr;

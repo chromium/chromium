@@ -94,8 +94,7 @@ protocol::Preload::SpeculationAction GetProtocolSpeculationAction(
     case mojom::blink::SpeculationAction::kPrefetch:
       return protocol::Preload::SpeculationActionEnum::Prefetch;
     case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 

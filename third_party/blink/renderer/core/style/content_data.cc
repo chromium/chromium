@@ -83,8 +83,7 @@ LayoutObject* AltTextContentData::CreateLayoutObject(
     LayoutObject& owner) const {
   // Does not require a layout object. Calling site should first check
   // IsAltContentData() before calling this method.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 LayoutObject* CounterContentData::CreateLayoutObject(
@@ -108,8 +107,7 @@ LayoutObject* QuoteContentData::CreateLayoutObject(LayoutObject& owner) const {
 }
 
 LayoutObject* NoneContentData::CreateLayoutObject(LayoutObject& owner) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace blink

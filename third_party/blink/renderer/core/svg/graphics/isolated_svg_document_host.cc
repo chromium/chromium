@@ -66,7 +66,7 @@ class IsolatedSVGDocumentHost::LocalFrameClient : public EmptyLocalFrameClient {
             [](const network::ResourceRequest& resource_request,
                mojo::PendingReceiver<network::mojom::URLLoader> receiver,
                mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-              NOTREACHED_IN_MIGRATION();
+              NOTREACHED();
             }));
   }
 

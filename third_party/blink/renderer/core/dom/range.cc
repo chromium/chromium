@@ -405,8 +405,7 @@ int16_t Range::compareBoundaryPoints(unsigned how,
       return compareBoundaryPoints(start_, source_range->end_, exception_state);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int16_t Range::compareBoundaryPoints(Node* container_a,
@@ -1080,8 +1079,7 @@ Node* Range::CheckNodeWOffset(Node* n,
       return child_before;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {

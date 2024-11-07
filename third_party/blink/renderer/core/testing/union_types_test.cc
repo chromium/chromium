@@ -26,8 +26,7 @@ UnionTypesTest::doubleOrStringOrStringSequenceAttribute() const {
       return MakeGarbageCollected<V8UnionDoubleOrStringOrStringSequence>(
           attribute_string_sequence_);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void UnionTypesTest::setDoubleOrStringOrStringSequenceAttribute(
@@ -62,8 +61,7 @@ String UnionTypesTest::doubleOrStringArg(V8UnionDoubleOrString* arg) {
       return "string is passed: " + arg->GetAsString();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String UnionTypesTest::doubleOrInternalEnumArg(
@@ -78,8 +76,7 @@ String UnionTypesTest::doubleOrInternalEnumArg(
       return "InternalEnum is passed: " + arg->GetAsInternalEnum().AsString();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String UnionTypesTest::doubleOrStringSequenceArg(
@@ -122,8 +119,7 @@ String UnionTypesTest::nodeListOrElementOrNullArg(
       return "nodelist is passed";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String UnionTypesTest::doubleOrStringOrStringSequenceArg(
@@ -153,8 +149,7 @@ String UnionTypesTest::doubleOrStringOrStringSequenceArg(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 }  // namespace blink

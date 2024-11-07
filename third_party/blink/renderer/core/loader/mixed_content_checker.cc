@@ -166,8 +166,7 @@ const char* RequestContextName(mojom::blink::RequestContextType context) {
     case mojom::blink::RequestContextType::XSLT:
       return "XSLT";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "resource";
+  NOTREACHED();
 }
 
 // Currently we have two slightly different versions, because
@@ -396,8 +395,7 @@ void MixedContentChecker::Count(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   UseCounter::Count(source->GetDocument(), feature);
 }
@@ -536,8 +534,7 @@ bool MixedContentChecker::ShouldBlockFetch(
         local_frame_host.DidDisplayInsecureContent();
       break;
     case mojom::blink::MixedContentContextType::kNotMixedContent:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   };
 
   // Skip mixed content check for private and local targets.
@@ -1036,7 +1033,7 @@ void MixedContentChecker::UpgradeInsecureRequest(
                 WebFeature::kUpgradeInsecureRequestsUpgradedRequestBlockable);
             break;
           case mojom::blink::MixedContentContextType::kNotMixedContent:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
       }
     }

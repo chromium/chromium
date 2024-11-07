@@ -128,8 +128,7 @@ std::ostream& operator<<(std::ostream& stream, OriginTrialTokenStatus status) {
     case OriginTrialTokenStatus::kUnknownTrial:
       return stream << "kUnknownTrial";
   }
-  NOTREACHED_IN_MIGRATION();
-  return stream;
+  NOTREACHED();
 #else
   return stream << (static_cast<int>(status));
 #endif  // ifndef NDEBUG

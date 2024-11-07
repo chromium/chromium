@@ -1939,8 +1939,7 @@ ETextAlign ComputedStyle::GetTextAlign(bool is_last_line) const {
       }
       return text_align;
   }
-  NOTREACHED_IN_MIGRATION();
-  return GetTextAlign();
+  NOTREACHED();
 }
 
 // Unicode 11 introduced Georgian capital letters (U+1C90 - U+1CBA,
@@ -2019,7 +2018,7 @@ String ComputedStyle::ApplyTextTransform(const String& text,
     case ETextTransform::kMathAuto:
       return ApplyMathAutoTransform(text, offset_map);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
@@ -2074,12 +2073,10 @@ const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
                  : open_sesame_string;
     }
     case TextEmphasisMark::kAuto:
-      NOTREACHED_IN_MIGRATION();
-      return g_null_atom;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return g_null_atom;
+  NOTREACHED();
 }
 
 LineLogicalSide ComputedStyle::GetTextEmphasisLineLogicalSide() const {
@@ -2120,8 +2117,7 @@ FontBaseline ComputedStyle::GetFontBaseline() const {
     case EDominantBaseline::kUseScript:
     case EDominantBaseline::kNoChange:
     case EDominantBaseline::kResetSize:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Vertical flow (except 'text-orientation: sideways') uses ideographic
@@ -2982,8 +2978,7 @@ FontOrientation ComputedStyleBuilder::ComputeFontOrientation() const {
     case ETextOrientation::kSideways:
       return FontOrientation::kVerticalRotated;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return FontOrientation::kVerticalMixed;
+      NOTREACHED();
   }
 }
 

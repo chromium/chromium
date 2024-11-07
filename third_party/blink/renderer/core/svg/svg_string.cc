@@ -24,7 +24,7 @@
 namespace blink {
 
 void SVGString::Add(const SVGPropertyBase*, const SVGElement*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SVGString::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
@@ -34,7 +34,7 @@ void SVGString::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                                        const SVGPropertyBase* to,
                                        const SVGPropertyBase*,
                                        const SVGElement*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 float SVGString::CalculateDistance(const SVGPropertyBase*,

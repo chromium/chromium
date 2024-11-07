@@ -55,8 +55,7 @@ const AtomicString& EventTypeForKeyboardEventType(WebInputEvent::Type type) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return event_type_names::kKeydown;
+  NOTREACHED();
 }
 
 KeyboardEvent::KeyLocationCode GetKeyLocationCode(const WebInputEvent& key) {

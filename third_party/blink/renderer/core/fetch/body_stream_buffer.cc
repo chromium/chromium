@@ -90,7 +90,7 @@ class BodyStreamBuffer::LoaderClient final
     client_->DidFetchDataLoadFailed();
   }
 
-  void Abort() override { NOTREACHED_IN_MIGRATION(); }
+  void Abort() override { NOTREACHED(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(buffer_);
@@ -599,8 +599,7 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         }
         break;
       case BytesConsumer::Result::kShouldWait:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case BytesConsumer::Result::kError:
         GetError();
         return;

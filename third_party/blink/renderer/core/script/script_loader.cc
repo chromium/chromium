@@ -578,8 +578,7 @@ network::mojom::CredentialsMode ScriptLoader::ModuleScriptCredentialsMode(
     case kCrossOriginAttributeUseCredentials:
       return network::mojom::CredentialsMode::kInclude;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::CredentialsMode::kOmit;
+  NOTREACHED();
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#prepare-the-script-element">
@@ -877,8 +876,7 @@ PendingScript* ScriptLoader::PrepareScript(
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
       case ScriptTypeAtPrepare::kImportMap:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
 
       case ScriptTypeAtPrepare::kSpeculationRules:
         // TODO(crbug.com/1182803): Implement external speculation rules.
@@ -988,8 +986,7 @@ PendingScript* ScriptLoader::PrepareScript(
 
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
 
       // <spec step="32.2.C">"importmap"</spec>
       case ScriptTypeAtPrepare::kImportMap: {
@@ -1312,8 +1309,7 @@ PendingScript* ScriptLoader::PrepareScript(
 
     case ScriptSchedulingType::kNotSet:
     case ScriptSchedulingType::kDeprecatedForceDefer:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

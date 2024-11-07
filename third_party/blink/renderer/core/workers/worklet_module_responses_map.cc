@@ -110,7 +110,7 @@ bool WorkletModuleResponsesMap::GetEntry(
                                      WrapPersistent(client)));
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Step 5: "Create an entry in cache with key url and value "fetching"."

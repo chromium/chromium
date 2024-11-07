@@ -1284,8 +1284,7 @@ SuddenTerminationDisablerTypeForEventType(const AtomicString& event_type) {
     return mojom::blink::SuddenTerminationDisablerType::
         kVisibilityChangeHandler;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojom::blink::SuddenTerminationDisablerType::kUnloadHandler;
+  NOTREACHED();
 }
 
 int NumberOfSuddenTerminationEventListeners(const EventTarget& event_target,

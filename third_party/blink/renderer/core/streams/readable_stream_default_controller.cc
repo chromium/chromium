@@ -109,8 +109,7 @@ void ReadableStreamDefaultController::close(ScriptState* script_state,
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
     exception_state.ThrowTypeError(errorDescription);

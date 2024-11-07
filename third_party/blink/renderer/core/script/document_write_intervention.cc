@@ -86,8 +86,7 @@ bool IsConnectionEffectively2G(WebEffectiveConnectionType effective_type) {
     case WebEffectiveConnectionType::kTypeOffline:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ShouldDisallowFetch(Settings* settings,

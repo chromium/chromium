@@ -81,9 +81,8 @@ String ToString(ArrayBufferContents raw_data,
     case FileReadType::kReadAsDataURL:
       return ToDataURL(std::move(raw_data), std::move(data_type));
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "";
 }
 
 }  // namespace

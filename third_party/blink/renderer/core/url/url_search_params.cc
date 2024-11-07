@@ -74,8 +74,7 @@ URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
       return URLSearchParams::Create(init->GetAsUSVStringUSVStringRecord(),
                                      exception_state);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,

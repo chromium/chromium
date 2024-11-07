@@ -178,7 +178,7 @@ void MainThreadDebugger::ExceptionThrown(ExecutionContext* context,
       return;
     script_state = scope->ScriptController()->GetScriptState();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   frame->Console().ReportMessageToClient(

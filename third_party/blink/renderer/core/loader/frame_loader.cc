@@ -613,8 +613,7 @@ DetermineRequestContextFromNavigationType(
     case kWebNavigationTypeRestore:
       return mojom::blink::RequestContextType::INTERNAL;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojom::blink::RequestContextType::HYPERLINK;
+  NOTREACHED();
 }
 
 static network::mojom::RequestDestination
@@ -632,8 +631,7 @@ DetermineRequestDestinationFromNavigationType(
     case kWebNavigationTypeRestore:
       return network::mojom::RequestDestination::kEmpty;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::RequestDestination::kDocument;
+  NOTREACHED();
 }
 
 void FrameLoader::StartNavigation(FrameLoadRequest& request,

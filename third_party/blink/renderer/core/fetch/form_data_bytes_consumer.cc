@@ -90,10 +90,7 @@ class DataOnlyBytesConsumer : public BytesConsumer {
     flatten_form_data_offset_ = 0;
   }
   PublicState GetPublicState() const override { return state_; }
-  Error GetError() const override {
-    NOTREACHED_IN_MIGRATION();
-    return Error();
-  }
+  Error GetError() const override { NOTREACHED(); }
   String DebugName() const override { return "DataOnlyBytesConsumer"; }
 
  private:
@@ -238,8 +235,7 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
       return Result::kOk;
     }
 
-    NOTREACHED_IN_MIGRATION() << "No consumer. BeginRead() was not called?";
-    return Result::kError;
+    NOTREACHED() << "No consumer. BeginRead() was not called?";
   }
 
   scoped_refptr<EncodedFormData> DrainAsFormData() override {

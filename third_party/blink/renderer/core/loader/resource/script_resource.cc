@@ -89,9 +89,7 @@ bool IsRequestContextSupported(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Incompatible request context type: " << request_context;
-  return false;
+  NOTREACHED() << "Incompatible request context type: " << request_context;
 }
 
 }  // namespace

@@ -1312,8 +1312,7 @@ void BoxPainterBase::PaintFillLayer(
         break;
       case EFillBox::kText:  // fall through
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

@@ -599,8 +599,7 @@ void ClassicPendingScript::AdvanceReadyState(ReadyState new_ready_state) {
       break;
     case kReady:
     case kErrorOccurred:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // All the ready states are marked not reachable above, so we can't have been

@@ -231,8 +231,9 @@ String DataObject::GetData(const String& type) const {
 
 void DataObject::SetData(const String& type, const String& data) {
   ClearData(type);
-  if (!Add(data, type))
-    NOTREACHED_IN_MIGRATION();
+  if (!Add(data, type)) {
+    NOTREACHED();
+  }
 }
 
 void DataObject::UrlAndTitle(String& url, String* title) const {
@@ -467,7 +468,7 @@ WebDragData DataObject::ToWebDragData() {
             string_item.data = file->name();
           }
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
         break;
       }

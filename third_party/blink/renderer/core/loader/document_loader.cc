@@ -967,8 +967,7 @@ WebHistoryCommitType LoadTypeToCommitType(WebFrameLoadType type) {
     case WebFrameLoadType::kReloadBypassingCache:
       return kWebHistoryInertCommit;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kWebHistoryInertCommit;
+  NOTREACHED();
 }
 
 void DocumentLoader::RunURLAndHistoryUpdateSteps(

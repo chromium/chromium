@@ -52,8 +52,7 @@ static BlendMode ToBlendMode(SVGFEBlendElement::Mode mode) {
     MAP_BLEND_MODE(Color);
     MAP_BLEND_MODE(Luminosity);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return BlendMode::kNormal;
+      NOTREACHED();
   }
 #undef MAP_BLEND_MODE
 }

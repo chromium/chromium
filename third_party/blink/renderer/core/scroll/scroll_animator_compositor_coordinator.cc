@@ -68,8 +68,7 @@ bool ScrollAnimatorCompositorCoordinator::HasAnimationThatRequiresService()
     case RunState::kWaitingToCancelOnCompositor:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ScrollAnimatorCompositorCoordinator::AddAnimation(
@@ -170,8 +169,7 @@ void ScrollAnimatorCompositorCoordinator::CompositorAnimationFinished(
     case RunState::kIdle:
     case RunState::kPostAnimationCleanup:
     case RunState::kRunningOnMainThread:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case RunState::kWaitingToSendToCompositor:
     case RunState::kWaitingToCancelOnCompositorButNewScroll:
       break;
@@ -344,8 +342,7 @@ String ScrollAnimatorCompositorCoordinator::RunStateAsText() const {
     case RunState::kRunningOnCompositorButNeedsAdjustment:
       return String("RunningOnCompositorButNeedsAdjustment");
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 }  // namespace blink

@@ -490,7 +490,7 @@ class CORE_EXPORT Node : public EventTarget {
   };
   virtual void NotifyLoadedSheetAndAllCriticalSubresources(
       LoadedSheetErrorStatus) {}
-  virtual void SetToPendingState() { NOTREACHED_IN_MIGRATION(); }
+  virtual void SetToPendingState() { NOTREACHED(); }
 
   bool HasName() const {
     DCHECK(!IsTextNode());

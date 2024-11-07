@@ -76,8 +76,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
           has_enqueued = true;
           break;
         case Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case Result::kDone:
           if (chunk) {
             destination1_->Enqueue(chunk);
@@ -177,8 +176,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
           ClearClient();
           return Result::kError;
       }
-      NOTREACHED_IN_MIGRATION();
-      return Result::kError;
+      NOTREACHED();
     }
 
     Result EndRead(size_t read) override {

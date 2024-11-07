@@ -119,8 +119,7 @@ uint64_t PerformanceResourceTiming::GetTransferSize(
     case mojom::blink::CacheState::kNone:
       return encoded_body_size + kHeaderSize;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool PerformanceResourceTiming::IsResponseFromCacheStorage() const {

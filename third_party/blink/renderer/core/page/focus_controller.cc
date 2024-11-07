@@ -1447,10 +1447,8 @@ bool FocusController::AdvanceFocus(
       // Fallthrough - SpatialNavigation should use
       // SpatialNavigationController.
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return false;
 }
 
 bool FocusController::AdvanceFocusAcrossFrames(

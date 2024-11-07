@@ -2210,11 +2210,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // side and add some defense in depth, we'll check against the entry realm
   // as well here.
   if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this)) {
-    // Trigger DCHECK() failure, while gracefully failing on release builds.
-    NOTREACHED_IN_MIGRATION();
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kWindowOpenRealmMismatch);
-    return nullptr;
+    NOTREACHED();
   }
 
   UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpen);
@@ -2388,11 +2384,7 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
   // side and add some defense in depth, we'll check against the entry realm
   // as well here.
   if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this)) {
-    // Trigger DCHECK() failure, while gracefully failing on release builds.
-    NOTREACHED_IN_MIGRATION();
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kWindowOpenRealmMismatch);
-    return nullptr;
+    NOTREACHED();
   }
 
   FrameLoadRequest frame_request(entered_window,

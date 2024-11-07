@@ -3038,7 +3038,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

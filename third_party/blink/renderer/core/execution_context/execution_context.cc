@@ -472,8 +472,7 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
     policy_is_valid = (SecurityPolicy::ReferrerPolicyFromString(
         policy, kSupportReferrerPolicyLegacyKeywords, &referrer_policy));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (policy_is_valid) {

@@ -72,8 +72,7 @@ network::mojom::blink::CSPHashAlgorithm ConvertHashAlgorithmToCSPHashAlgorithm(
     case IntegrityAlgorithm::kSha512:
       return network::mojom::blink::CSPHashAlgorithm::SHA512;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::blink::CSPHashAlgorithm::None;
+  NOTREACHED();
 }
 
 // IntegrityMetadata (from SRI) has base64-encoded digest values, but CSP uses
@@ -535,8 +534,7 @@ void ReportViolationForCheckSource(
     case CSPDirectiveName::TrustedTypes:
     case CSPDirectiveName::UpgradeInsecureRequests:
     case CSPDirectiveName::Unknown:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   String directive_name =

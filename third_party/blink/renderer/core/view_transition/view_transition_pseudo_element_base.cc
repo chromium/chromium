@@ -39,8 +39,7 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
     case kPseudoIdViewTransitionNew:
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

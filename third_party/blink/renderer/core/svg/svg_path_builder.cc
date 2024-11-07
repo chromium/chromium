@@ -177,7 +177,7 @@ void SVGPathBuilder::EmitSegment(const PathSegmentData& segment) {
                 segment.LargeArcFlag(), segment.SweepFlag());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   last_command_ = segment.command;

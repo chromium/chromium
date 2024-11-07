@@ -138,8 +138,7 @@ const char* UIElementTypeToString(ChromeClient::UIElementType ui_element_type) {
     case ChromeClient::UIElementType::kPopup:
       return "popup";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* DismissalTypeToString(Document::PageDismissalType dismissal_type) {
@@ -153,10 +152,9 @@ const char* DismissalTypeToString(Document::PageDismissalType dismissal_type) {
     case Document::kUnloadDismissal:
       return "unload";
     case Document::kNoDismissal:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 String TruncateDialogMessage(const String& message) {
@@ -760,11 +758,11 @@ ColorChooser* ChromeClientImpl::OpenColorChooser(
         frame, this, chooser_client);
   } else {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    NOTREACHED_IN_MIGRATION()
-        << "Page popups should be enabled on all but Android or iOS";
-#endif
+    NOTREACHED() << "Page popups should be enabled on all but Android or iOS";
+#else
     controller =
         MakeGarbageCollected<ColorChooserUIController>(frame, chooser_client);
+#endif
   }
   controller->OpenUI();
   return controller;

@@ -1876,8 +1876,7 @@ protocol::DOM::ShadowRootType InspectorDOMAgent::GetShadowRootType(
     case ShadowRootMode::kClosed:
       return protocol::DOM::ShadowRootTypeEnum::Closed;
   }
-  NOTREACHED_IN_MIGRATION();
-  return protocol::DOM::ShadowRootTypeEnum::UserAgent;
+  NOTREACHED();
 }
 
 // static
@@ -1891,8 +1890,7 @@ InspectorDOMAgent::GetDocumentCompatibilityMode(Document* document) {
     case Document::CompatibilityMode::kNoQuirksMode:
       return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
   }
-  NOTREACHED_IN_MIGRATION();
-  return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
+  NOTREACHED();
 }
 
 std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(

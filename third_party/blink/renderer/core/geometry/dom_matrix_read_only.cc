@@ -142,8 +142,7 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::Create(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::CreateForSerialization(

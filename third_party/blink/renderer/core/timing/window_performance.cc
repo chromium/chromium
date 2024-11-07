@@ -127,8 +127,7 @@ AtomicString GetFrameOwnerType(HTMLFrameOwnerElement* frame_owner) {
     case FrameOwnerElementType::kFencedframe:
       return html_names::kFencedframeTag.LocalName();
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_atom;
+  NOTREACHED();
 }
 
 AtomicString GetFrameSrc(HTMLFrameOwnerElement* frame_owner) {

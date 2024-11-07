@@ -151,9 +151,8 @@ mojom::blink::ViewTransitionPropertyId ToTranstionPropertyId(CSSPropertyID id) {
     case CSSPropertyID::kMask:
       return mojom::blink::ViewTransitionPropertyId::kMask;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown id " << static_cast<uint32_t>(id);
+      NOTREACHED() << "Unknown id " << static_cast<uint32_t>(id);
   }
-  return mojom::blink::ViewTransitionPropertyId::kMinValue;
 }
 
 CSSPropertyID FromTransitionPropertyId(
@@ -685,10 +684,8 @@ bool ViewTransitionStyleTracker::MatchForOnlyChild(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return false;
 }
 
 void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
@@ -1346,10 +1343,8 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return nullptr;
 }
 
 bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
@@ -1676,8 +1671,7 @@ PaintPropertyChangeType ViewTransitionStyleTracker::UpdateCaptureClip(
     }
     return element_data->clip_node->Update(*current_clip, std::move(state));
   }
-  NOTREACHED_IN_MIGRATION();
-  return PaintPropertyChangeType::kUnchanged;
+  NOTREACHED();
 }
 
 const ClipPaintPropertyNode* ViewTransitionStyleTracker::GetCaptureClip(
@@ -1690,8 +1684,7 @@ const ClipPaintPropertyNode* ViewTransitionStyleTracker::GetCaptureClip(
     DCHECK(element_data->clip_node);
     return element_data->clip_node.Get();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool ViewTransitionStyleTracker::IsTransitionElement(
@@ -1743,8 +1736,7 @@ StyleRequest::RulesToInclude ViewTransitionStyleTracker::StyleRulesToInclude()
       return StyleRequest::kAll;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return StyleRequest::kAll;
+  NOTREACHED();
 }
 
 namespace {
@@ -2350,8 +2342,7 @@ const char* ViewTransitionStyleTracker::StateToString(State state) {
     case State::kFinished:
       return "Finished";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "???";
+  NOTREACHED();
 }
 
 viz::ViewTransitionElementResourceId

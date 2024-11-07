@@ -66,27 +66,24 @@ const KURL& ShadowRealmGlobalScope::Url() const {
 }
 
 const KURL& ShadowRealmGlobalScope::BaseURL() const {
-  NOTREACHED_IN_MIGRATION();
-  return url_;
+  NOTREACHED();
 }
 
 KURL ShadowRealmGlobalScope::CompleteURL(const String& url) const {
-  NOTREACHED_IN_MIGRATION();
-  return url_;
+  NOTREACHED();
 }
 
 void ShadowRealmGlobalScope::DisableEval(const String& error_message) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ShadowRealmGlobalScope::SetWasmEvalErrorMessage(
     const String& error_message) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 String ShadowRealmGlobalScope::UserAgent() const {
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 HttpsState ShadowRealmGlobalScope::GetHttpsState() const {
@@ -94,16 +91,15 @@ HttpsState ShadowRealmGlobalScope::GetHttpsState() const {
 }
 
 ResourceFetcher* ShadowRealmGlobalScope::Fetcher() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ShadowRealmGlobalScope::ExceptionThrown(ErrorEvent* error_event) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ShadowRealmGlobalScope::AddInspectorIssue(AuditsIssue issue) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 EventTarget* ShadowRealmGlobalScope::ErrorEventTarget() {
@@ -123,13 +119,11 @@ bool ShadowRealmGlobalScope::IsIsolatedContext() const {
 }
 
 ukm::UkmRecorder* ShadowRealmGlobalScope::UkmRecorder() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 ukm::SourceId ShadowRealmGlobalScope::UkmSourceID() const {
-  NOTREACHED_IN_MIGRATION();
-  return ukm::kInvalidSourceId;
+  NOTREACHED();
 }
 
 ExecutionContextToken ShadowRealmGlobalScope::GetExecutionContextToken() const {
@@ -138,7 +132,7 @@ ExecutionContextToken ShadowRealmGlobalScope::GetExecutionContextToken() const {
 
 void ShadowRealmGlobalScope::AddConsoleMessageImpl(ConsoleMessage* message,
                                                    bool discard_duplicates) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace blink

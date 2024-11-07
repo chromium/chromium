@@ -617,8 +617,7 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
       case DocumentMarker::kGrammar:
       case DocumentMarker::kTextFragment:
       case DocumentMarker::kCustomHighlight:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -792,8 +791,7 @@ Vector<LayoutSelectionStatus> HighlightPainter::GetHighlights(
   const auto* text_node = DynamicTo<Text>(node_);
   switch (layer.type) {
     case HighlightLayerType::kOriginating:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case HighlightLayerType::kCustom: {
       DCHECK(text_node);
       const MarkerRangeMappingContext mapping_context(*text_node,
@@ -1095,8 +1093,7 @@ PseudoId HighlightPainter::PseudoFor(DocumentMarker::MarkerType type) {
     case DocumentMarker::kTextFragment:
       return kPseudoIdTargetText;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 
@@ -1107,8 +1104,7 @@ TextDecorationLine HighlightPainter::LineFor(DocumentMarker::MarkerType type) {
     case DocumentMarker::kGrammar:
       return TextDecorationLine::kGrammarError;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 
@@ -1119,8 +1115,7 @@ Color HighlightPainter::ColorFor(DocumentMarker::MarkerType type) {
     case DocumentMarker::kGrammar:
       return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 
