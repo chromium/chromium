@@ -69,13 +69,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "device/fido/win/authenticator.h"
-#include "device/fido/win/fake_webauthn_api.h"
-#include "device/fido/win/webauthn_api.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_MAC)
 #include "chrome/test/base/testing_profile.h"
 #include "device/fido/mac/authenticator_config.h"
@@ -299,10 +292,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
     device::FidoRequestType request_type;
     std::optional<device::ResidentKeyRequirement> resident_key_requirement;
     Result expected_result;
-    // expected_result_with_system_hybrid is the behaviour that should occur
-    // when the operating system supports hybrid itself. (I.e. recent versions
-    // of Windows.)
-    Result expected_result_with_system_hybrid;
   } kTests[] = {
       {
           "https://example.com",
@@ -310,7 +299,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           device::FidoRequestType::kGetAssertion,
           std::nullopt,
           Result::k3rdParty,
-          Result::kNone,
       },
       {
           // Extensions should be ignored on a 3rd-party site.
@@ -319,7 +307,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           device::FidoRequestType::kGetAssertion,
           std::nullopt,
           Result::k3rdParty,
-          Result::kNone,
       },
       {
           // Extensions should be ignored on a 3rd-party site.
@@ -328,7 +315,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           device::FidoRequestType::kGetAssertion,
           std::nullopt,
           Result::k3rdParty,
-          Result::kNone,
       },
       {
           // a.g.c should still be able to get 3rd-party caBLE
@@ -338,7 +324,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           device::FidoRequestType::kGetAssertion,
           std::nullopt,
           Result::k3rdParty,
-          Result::kNone,
       },
       {
           // ... but not for non-discoverable registration.
@@ -346,7 +331,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           {},
           device::FidoRequestType::kMakeCredential,
           device::ResidentKeyRequirement::kDiscouraged,
-          Result::kNone,
           Result::kNone,
       },
       {
@@ -356,7 +340,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           device::FidoRequestType::kMakeCredential,
           device::ResidentKeyRequirement::kPreferred,
           Result::k3rdParty,
-          Result::kNone,
       },
       {
           // ... or rk=required.
@@ -365,7 +348,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           device::FidoRequestType::kMakeCredential,
           device::ResidentKeyRequirement::kRequired,
           Result::k3rdParty,
-          Result::kNone,
       },
       {
           "https://accounts.google.com",
@@ -373,7 +355,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           device::FidoRequestType::kGetAssertion,
           std::nullopt,
           NONE_ON_LINUX(Result::kV1),
-          Result::kV1,
       },
       {
           "https://accounts.google.com",
@@ -381,51 +362,13 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           device::FidoRequestType::kGetAssertion,
           std::nullopt,
           Result::kServerLink,
-          Result::kServerLink,
       },
   };
 
-  // On Windows, all the tests are run twice. Once to check that, when Windows
-  // has hybrid support, it's not also configured in Chrome, and again to test
-  // the prior behaviour.
-
-#if BUILDFLAG(IS_WIN)
-  device::FakeWinWebAuthnApi fake_win_webauthn_api;
-  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
-      &fake_win_webauthn_api);
-#endif
-
-  enum WinHybridExpectation {
-    kNoWinHybrid,
-    kWinHybridPasskeySyncing,
-    kWinHybridNoPasskeySyncing,
-  };
-
-  for (const WinHybridExpectation windows_has_hybrid : {
-           kNoWinHybrid,
-#if BUILDFLAG(IS_WIN)
-           kWinHybridPasskeySyncing,
-           kWinHybridNoPasskeySyncing,
-#endif
-       }) {
     unsigned test_case = 0;
     for (const auto& test : kTests) {
       SCOPED_TRACE(test_case);
       test_case++;
-
-#if BUILDFLAG(IS_WIN)
-      fake_win_webauthn_api.set_version(windows_has_hybrid == kNoWinHybrid ? 4
-                                                                           : 7);
-      base::test::ScopedFeatureList scoped_feature_list;
-      if (windows_has_hybrid == kWinHybridNoPasskeySyncing) {
-        scoped_feature_list.InitWithFeatures(
-            {}, {syncer::kSyncWebauthnCredentials});
-      } else if (windows_has_hybrid == kWinHybridPasskeySyncing) {
-        scoped_feature_list.InitWithFeatures({syncer::kSyncWebauthnCredentials},
-                                             {});
-      }
-      SCOPED_TRACE(windows_has_hybrid);
-#endif
 
       MockCableDiscoveryFactory discovery_factory;
       ChromeAuthenticatorRequestDelegate delegate(main_rfh());
@@ -439,9 +382,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           /*user_name=*/std::nullopt, test.extensions,
           /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
-      switch (windows_has_hybrid == kWinHybridNoPasskeySyncing
-                  ? test.expected_result_with_system_hybrid
-                  : test.expected_result) {
+      switch (test.expected_result) {
         case Result::kNone:
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
           EXPECT_TRUE(discovery_factory.cable_data.empty());
@@ -471,7 +412,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           break;
       }
     }
-  }
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {

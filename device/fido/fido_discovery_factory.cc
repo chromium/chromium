@@ -71,7 +71,19 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
                            "self-responsible. Launch from Finder to fix.";
         return {};
       }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
+      {
+        device::WinWebAuthnApi* const webauthn_api =
+            device::WinWebAuthnApi::GetDefault();
+        if (webauthn_api && webauthn_api->SupportsHybrid() &&
+            base::FeatureList::IsEnabled(
+                device::kWebAuthnSkipHybridConfigIfSystemSupported)) {
+          FIDO_LOG(EVENT) << "Not starting hybrid because Windows handles it.";
+          return {};
+        }
+      }
+#endif  // BUILDFLAG(IS_WIN)
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
           (cable_data_.has_value() || qr_generator_key_.has_value())) {
         auto v1_discovery = std::make_unique<FidoCableDiscovery>(

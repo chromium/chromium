@@ -316,7 +316,11 @@ WinWebAuthnApi::WinWebAuthnApi() = default;
 WinWebAuthnApi::~WinWebAuthnApi() = default;
 
 bool WinWebAuthnApi::SupportsHybrid() {
-  return IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
+  const int min_version =
+      base::FeatureList::IsEnabled(kWebAuthnSkipHybridConfigIfSystemSupported)
+          ? WEBAUTHN_API_VERSION_7
+          : WEBAUTHN_API_VERSION_6;
+  return IsAvailable() && Version() >= min_version;
 }
 
 std::pair<MakeCredentialStatus,
