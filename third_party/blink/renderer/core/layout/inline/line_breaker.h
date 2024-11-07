@@ -207,6 +207,7 @@ class CORE_EXPORT LineBreaker {
   void SplitTrailingBidiPreservedSpace(LineInfo*);
   LayoutUnit TrailingCollapsibleSpaceWidth(LineInfo*);
   void ComputeTrailingCollapsibleSpace(LineInfo*);
+  bool ComputeTrailingCollapsibleSpaceHelper(LineInfo&);
   void RewindTrailingOpenTags(LineInfo*);
 
   void HandleControlItem(const InlineItem&, LineInfo*);
@@ -231,11 +232,13 @@ class CORE_EXPORT LineBreaker {
       const HeapVector<LineInfo, 1>& annotation_line_list) const;
   // `mode`: Must be kMaxContent or kContent.
   // `limit`: Must be non-negative or kIndefiniteSize, which means no auto-wrap.
-  LineInfo CreateSubLineInfo(InlineItemTextIndex start,
-                             wtf_size_t end_item_index,
-                             LineBreakerMode mode,
-                             LayoutUnit limit,
-                             WhitespaceState initial_whitespace_state);
+  LineInfo CreateSubLineInfo(
+      InlineItemTextIndex start,
+      wtf_size_t end_item_index,
+      LineBreakerMode mode,
+      LayoutUnit limit,
+      WhitespaceState initial_whitespace_state,
+      bool disable_trailing_whitespace_collapsing = false);
   InlineItemResult* AddRubyColumnResult(
       const InlineItem& item,
       const LineInfo& base_line_info,
@@ -327,6 +330,7 @@ class CORE_EXPORT LineBreaker {
 
   // |WhitespaceState| of the current end. When a line is broken, this indicates
   // the state of trailing whitespaces.
+  // This field is not used for sub-LineBreakers.
   WhitespaceState trailing_whitespace_ = WhitespaceState::kUnknown;
   // The state just after starting BreakLine(). This can be overridden by
   // SetInputRange().
@@ -377,6 +381,8 @@ class CORE_EXPORT LineBreaker {
 
   bool disable_score_line_break_ = false;
   bool disable_bisect_line_break_ = false;
+
+  bool disable_trailing_whitespace_collapsing_ = false;
 
   // True when the line should be non-empty if |IsLastLine|..
   bool force_non_empty_if_last_line_ = false;
@@ -440,6 +446,11 @@ class CORE_EXPORT LineBreaker {
    public:
     InlineItemResult* item_result;
     const ShapeResultView* collapsed_shape_result;
+    // Ancestors of `item_result`. ancestor_ruby_columns[0] is the parent of
+    // `item_result`, and ancestor_ruby_columns[n+1] is the parent of
+    // ancestor_ruby_columns[n]. This list is empty if `item_result` is not
+    // in a ruby column.
+    Vector<InlineItemResult*> ancestor_ruby_columns;
   };
   std::optional<TrailingCollapsibleSpace> trailing_collapsible_space_;
 
