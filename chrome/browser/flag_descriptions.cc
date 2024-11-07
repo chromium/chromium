@@ -2915,6 +2915,9 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
+const char kPartitionAllocMemoryTaggingName[] = "PartitionAlloc Memory Tagging";
+const char kPartitionAllocMemoryTaggingDescription[] =
+    "Enable memory tagging in PartitionAlloc.";
 const char kPartitionAllocWithAdvancedChecksName[] =
     "PartitionAlloc with Advanced Checks";
 const char kPartitionAllocWithAdvancedChecksDescription[] =
