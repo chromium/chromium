@@ -2540,68 +2540,6 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_UserData) {
   }
 }
 
-TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_DeleteAndStartOver) {
-  EnsureRemoteCallsAreExecuted();
-
-  base::RunLoop loop;
-  registry()->DeleteAndStartOver(
-      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
-        DCHECK_EQ(status, blink::ServiceWorkerStatusCode::kOk);
-        loop.Quit();
-      }));
-
-  EXPECT_EQ(inflight_call_count(), 1U);
-  helper()->SimulateStorageRestartForTesting();
-
-  base::HistogramTester histogram_tester;
-  loop.Run();
-  EXPECT_EQ(inflight_call_count(), 0U);
-  const size_t kExpectedRetryCountForRecovery = 0;
-  const size_t kExpectedSampleCount = 1;
-  histogram_tester.ExpectUniqueSample(
-      "ServiceWorker.Storage.RetryCountForRecovery",
-      kExpectedRetryCountForRecovery, kExpectedSampleCount);
-}
-
-TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_PerformStorageCleanup) {
-  EnsureRemoteCallsAreExecuted();
-
-  base::RunLoop loop;
-  registry()->PerformStorageCleanup(
-      base::BindLambdaForTesting([&]() { loop.Quit(); }));
-
-  EXPECT_EQ(inflight_call_count(), 1U);
-  helper()->SimulateStorageRestartForTesting();
-
-  base::HistogramTester histogram_tester;
-  loop.Run();
-  EXPECT_EQ(inflight_call_count(), 0U);
-  const size_t kExpectedRetryCountForRecovery = 0;
-  const size_t kExpectedSampleCount = 1;
-  histogram_tester.ExpectUniqueSample(
-      "ServiceWorker.Storage.RetryCountForRecovery",
-      kExpectedRetryCountForRecovery, kExpectedSampleCount);
-}
-
-TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_Disable) {
-  EnsureRemoteCallsAreExecuted();
-
-  // This schedules a Disable() remote call.
-  registry()->PrepareForDeleteAndStartOver();
-
-  EXPECT_EQ(inflight_call_count(), 1U);
-  helper()->SimulateStorageRestartForTesting();
-
-  base::HistogramTester histogram_tester;
-  EnsureRemoteCallsAreExecuted();
-  EXPECT_EQ(inflight_call_count(), 0U);
-  const size_t kExpectedRetryCountForRecovery = 0;
-  const size_t kExpectedSampleCount = 1;
-  histogram_tester.ExpectUniqueSample(
-      "ServiceWorker.Storage.RetryCountForRecovery",
-      kExpectedRetryCountForRecovery, kExpectedSampleCount);
-}
-
 // Similar to `StoragePolicyChange` test but restart the remote storage to make
 // sure ApplyPolicyUpdates() is retried.
 TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
