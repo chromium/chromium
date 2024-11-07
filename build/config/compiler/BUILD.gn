@@ -2306,9 +2306,9 @@ config("export_dynamic") {
 # 2. Remove the thin_archive config, so that the .a file actually contains all
 #    .o files, instead of just references to .o files in the build directoy
 config("thin_archive") {
-  if (is_apple && use_lld) {
+  if ((is_apple && use_lld) || (is_linux && !is_clang)) {
     # The macOS and iOS linker ld64.ldd doesn't support thin archive without
-    # symbol table.
+    # symbol table, gcc on linux also throws the error `archive has no index`.
     arflags = [
       "-T",
       "-s",
