@@ -357,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalConfirmed,
           /*refresh_count=*/0, /*notice_shown=*/false),
-      CheckUserAction("PlusAddresses.Refreshed", 0));
+      CheckUserAction("PlusAddresses.Refreshed", 0),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 1));
 }
 
 // An interactive UI test to exercise successful plus address user flow.
@@ -414,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalConfirmed,
           /*refresh_count=*/1, /*notice_shown=*/false),
-      CheckUserAction("PlusAddresses.Refreshed", 1));
+      CheckUserAction("PlusAddresses.Refreshed", 1),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 1));
 }
 
 // User opens the dialog and presses the "Cancel" button.
@@ -444,7 +446,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               /*notice_shown=*/false),
           1),
       CheckUserAction("PlusAddresses.ReserveErrorCanceled", 0),
-      CheckUserAction("PlusAddresses.CreateErrorCanceled", 0));
+      CheckUserAction("PlusAddresses.CreateErrorCanceled", 0),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 0));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
@@ -470,7 +473,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           }))),
 
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
-                                      /*canceled=*/0, /*notice_shown=*/false));
+                                      /*canceled=*/0, /*notice_shown=*/false),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 0));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
@@ -510,7 +514,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
         return future_.IsReady() && future_.Get() == kFakePlusAddress;
       }),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/0, /*notice_shown=*/false));
+                                      /*canceled=*/0, /*notice_shown=*/false),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 1));
 }
 
 // A test fixture that has the feature to show the onboarding notice turned on.
@@ -579,7 +584,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalCanceled,
           /*refresh_count=*/0, /*notice_shown=*/true),
-      CheckUserAction("PlusAddresses.Refreshed", 0));
+      CheckUserAction("PlusAddresses.Refreshed", 0),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 0));
 }
 
 // Tests that the notice is not shown if it has already been accepted.
@@ -618,7 +624,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
-                                      /*canceled=*/0, /*notice_shown=*/false));
+                                      /*canceled=*/0, /*notice_shown=*/false),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 1));
 }
 
 // Tests showing and accepting the creation dialog for a user that has not yet
@@ -655,7 +662,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalConfirmed,
           /*refresh_count=*/0, /*notice_shown=*/true),
-      CheckUserAction("PlusAddresses.Refreshed", 0));
+      CheckUserAction("PlusAddresses.Refreshed", 0),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 1));
 }
 
 // Tests that clicking the "learn more" link on the notice screen opens a new
@@ -826,7 +834,8 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
           /*refresh_count=*/0, /*notice_shown=*/true),
       CheckUserAction("PlusAddresses.Refreshed", 0),
       CheckUserAction("PlusAddresses.ReserveErrorCanceled", 1),
-      CheckUserAction("PlusAddresses.CreateErrorCanceled", 0));
+      CheckUserAction("PlusAddresses.CreateErrorCanceled", 0),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 0));
 }
 
 IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
@@ -881,7 +890,8 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
           /*refresh_count=*/0, /*notice_shown=*/true),
       CheckUserAction("PlusAddresses.Refreshed", 0),
       CheckUserAction("PlusAddresses.ReserveErrorCanceled", 0),
-      CheckUserAction("PlusAddresses.CreateErrorCanceled", 1));
+      CheckUserAction("PlusAddresses.CreateErrorCanceled", 1),
+      CheckUserAction("PlusAddresses.OfferedPlusAddressAccepted", 1));
 }
 
 INSTANTIATE_TEST_SUITE_P(

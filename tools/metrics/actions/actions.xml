@@ -32270,6 +32270,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.OfferedPlusAddressAccepted">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User accepted a plus address suggestion. Note that this does not mean that
+    the creation was successful - a server error may have occurred.
+  </description>
+</action>
+
 <action name="PlusAddresses.QuotaErrorAccepted">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>

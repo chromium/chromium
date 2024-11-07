@@ -129,6 +129,13 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
       PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
     base::RecordAction(
         base::UserMetricsAction("PlusAddresses.CreateErrorTryAgainClicked"));
+  } else {
+    // The only value that `modal_error_status_` can currently take are
+    // `kConfirmPlusAddressError` (handled above), `kReservePlusAddressError`
+    // (prevents confirming the dialog), and `std::nullopt`.
+    CHECK(!modal_error_status_.has_value());
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
   }
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed,
                             ShouldShowNotice());
