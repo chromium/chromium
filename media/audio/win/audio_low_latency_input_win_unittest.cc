@@ -271,7 +271,9 @@ class ScopedAudioInputStream {
   }
 
  private:
-  raw_ptr<AudioInputStream> stream_;
+  // TODO(crbug.com/377749732): Fix dangling pointer when used with
+  // `AudioInputStreamDataInterceptor`.
+  raw_ptr<AudioInputStream, DanglingUntriaged> stream_;
 };
 
 class WinAudioInputTest : public ::testing::Test,
