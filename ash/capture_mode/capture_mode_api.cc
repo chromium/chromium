@@ -19,13 +19,12 @@ void CaptureScreenshotsOfAllDisplays() {
 bool IsSunfishFeatureEnabledWithFeatureKey() {
   // Allow Google accounts to bypass the secret key check.
   if (Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
-      shell &&
+      shell && shell->session_controller() &&
       gaia::IsGoogleInternalAccountEmail(
           shell->session_controller()->GetActiveAccountId().GetUserEmail())) {
     return true;
   }
 
-  // `IsSunfishFeatureEnabled()` will check the feature key.
   return features::IsSunfishFeatureEnabled();
 }
 

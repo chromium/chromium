@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -504,7 +505,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
   if (!profile || image.empty() || region.IsEmpty()) {
     return;
   }
-  DCHECK(ash::features::IsSunfishFeatureEnabled());
+  DCHECK(ash::IsSunfishFeatureEnabledWithFeatureKey());
   if (!gen204_controller_) {
     gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
   }

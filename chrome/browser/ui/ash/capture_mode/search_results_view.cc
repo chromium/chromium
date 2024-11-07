@@ -6,6 +6,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -30,7 +31,7 @@ void OpenURLFromTabInternal(NavigateParams& new_tab_params) {
 }  // namespace
 
 SearchResultsView::SearchResultsView() : AshWebViewImpl(GetInitParams()) {
-  DCHECK(features::IsSunfishFeatureEnabled());
+  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
 }
 
 SearchResultsView::~SearchResultsView() = default;

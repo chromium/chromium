@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -123,7 +124,7 @@ BEGIN_METADATA(SunfishSearchBoxView)
 END_METADATA
 
 SearchResultsPanel::SearchResultsPanel() {
-  DCHECK(features::IsSunfishFeatureEnabled());
+  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)

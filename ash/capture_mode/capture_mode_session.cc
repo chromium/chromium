@@ -2600,7 +2600,7 @@ void CaptureModeSession::OnLocatedEventReleased(
   // TODO(b/367882127): May also need to check if the user has opted in.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
     DCHECK(action_container_widget_);
-    if (features::IsSunfishFeatureEnabled()) {
+    if (IsSunfishFeatureEnabledWithFeatureKey()) {
       // TODO(b/373896226): Update string and icon with UX specs.
       capture_mode_util::AddActionButton(
           base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,

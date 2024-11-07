@@ -553,7 +553,7 @@ bool ShouldFetchScannerActions(PerformCaptureType capture_type) {
 // Returns true if region search should be performed on a captured image with
 // the given `capture_type`.
 bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
-  return features::IsSunfishFeatureEnabled() &&
+  return IsSunfishFeatureEnabledWithFeatureKey() &&
          (capture_type == PerformCaptureType::kSunfish ||
           capture_type == PerformCaptureType::kSearch);
 }
@@ -707,7 +707,7 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
   if (!IsActive()) {
     return;
   }
-  DCHECK(features::IsSunfishFeatureEnabled());
+  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
   if (!search_results_panel_widget_) {
     const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
         capture_mode_session_->current_root(),
