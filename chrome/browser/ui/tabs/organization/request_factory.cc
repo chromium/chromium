@@ -132,7 +132,8 @@ void PerformTabOrganizationExecution(
 
     auto* tab = tab_organization_request.add_tabs();
     tab->set_tab_id(tab_data->tab_id());
-    tab->set_title(base::UTF16ToUTF8(tab_data->tab()->contents()->GetTitle()));
+    tab->set_title(
+        base::UTF16ToUTF8(tab_data->tab()->GetContents()->GetTitle()));
     tab->set_url(tab_data->original_url().spec());
   }
 
@@ -163,7 +164,7 @@ void PerformTabOrganizationExecution(
       auto* tab = group->add_tabs();
       tab->set_tab_id(tab_data->tab_id());
       tab->set_title(
-          base::UTF16ToUTF8(tab_data->tab()->contents()->GetTitle()));
+          base::UTF16ToUTF8(tab_data->tab()->GetContents()->GetTitle()));
       tab->set_url(tab_data->original_url().spec());
     }
   }

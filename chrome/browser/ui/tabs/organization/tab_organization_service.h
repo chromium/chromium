@@ -26,7 +26,7 @@ class BrowserContext;
 }
 
 namespace tabs {
-class TabModel;
+class TabInterface;
 }
 
 // Provides an interface for getting Organizations for tabs.
@@ -65,20 +65,20 @@ class TabOrganizationService
   TabOrganizationSession* CreateSessionForBrowser(
       const Browser* browser,
       const TabOrganizationEntryPoint entrypoint,
-      const tabs::TabModel* base_session_tab = nullptr);
+      const tabs::TabInterface* base_session_tab = nullptr);
 
   // If the session exists, destroys the session, calls CreateSessionForBrowser.
   TabOrganizationSession* ResetSessionForBrowser(
       const Browser* browser,
       const TabOrganizationEntryPoint entrypoint,
-      const tabs::TabModel* base_session_tab = nullptr);
+      const tabs::TabInterface* base_session_tab = nullptr);
 
   // Convenience method that resets the session, starts a request if not in the
   // first run experience, and opens the Organization UI.
   void RestartSessionAndShowUI(
       const Browser* browser,
       const TabOrganizationEntryPoint entrypoint,
-      const tabs::TabModel* base_session_tab = nullptr);
+      const tabs::TabInterface* base_session_tab = nullptr);
 
   // Allows for other User actions to open up the Organization UI.
   void OnUserInvokedFeature(const Browser* browser);

@@ -125,7 +125,7 @@ bool TestTabStripModelDelegate::IsNormalWindow() {
 }
 
 BrowserWindowInterface* TestTabStripModelDelegate::GetBrowserWindowInterface() {
-  return nullptr;
+  return browser_window_interface_;
 }
 
 void TestTabStripModelDelegate::OnGroupsDestruction(

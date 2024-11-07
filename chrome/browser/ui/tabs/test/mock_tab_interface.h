@@ -52,7 +52,7 @@ class MockTabInterface : public TabInterface {
               CreateAndShowTabScopedWidget,
               (views::WidgetDelegate*),
               (override));
-  MOCK_METHOD(uint32_t, GetTabHandle, (), (override));
+  MOCK_METHOD(uint32_t, GetTabHandle, (), (const override));
 };
 
 }  // namespace tabs

@@ -51,6 +51,8 @@ class TabModel final : public SupportsHandles<TabModel>,
   void OnRemovedFromModel();
 
   content::WebContents* contents() const { return contents_.get(); }
+  // TODO(376752361): Remove this in favor of
+  // TabInterface::GetBrowserWindowInterface().
   TabStripModel* owning_model() const { return owning_model_.get(); }
   tabs::TabModel* opener() const { return opener_; }
   bool reset_opener_on_active_tab_change() const {
@@ -151,7 +153,7 @@ class TabModel final : public SupportsHandles<TabModel>,
   tabs::TabFeatures* GetTabFeatures() override;
   std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
       views::WidgetDelegate* delegate) override;
-  uint32_t GetTabHandle() override;
+  uint32_t GetTabHandle() const override;
   void Close() override;
 
  private:

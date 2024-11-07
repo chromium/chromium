@@ -867,7 +867,7 @@ TEST_F(TabSearchPageHandlerTest, TabDataToMojo) {
       handler()->GetMojoForTabData(tab_data.get());
 
   EXPECT_EQ(mojo_tab_ptr->url,
-            tab_data->tab()->contents()->GetLastCommittedURL());
+            tab_data->tab()->GetContents()->GetLastCommittedURL());
   int tab_id =
       browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);

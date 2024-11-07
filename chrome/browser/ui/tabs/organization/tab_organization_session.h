@@ -18,7 +18,7 @@
 class Browser;
 
 namespace tabs {
-class TabModel;
+class TabInterface;
 }  // namespace tabs
 
 class TabOrganizationSession : public TabOrganization::Observer {
@@ -41,7 +41,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
   explicit TabOrganizationSession(
       std::unique_ptr<TabOrganizationRequest> request,
       TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::kNone,
-      const tabs::TabModel* base_session_tab = nullptr);
+      const tabs::TabInterface* base_session_tab = nullptr);
   ~TabOrganizationSession() override;
 
   const TabOrganizationRequest* request() const { return request_.get(); }
@@ -51,12 +51,14 @@ class TabOrganizationSession : public TabOrganization::Observer {
   ID session_id() const { return session_id_; }
   std::u16string feedback_id() const { return feedback_id_; }
   optimization_guide::proto::UserFeedback feedback() const { return feedback_; }
-  const tabs::TabModel* base_session_tab() const { return base_session_tab_; }
+  const tabs::TabInterface* base_session_tab() const {
+    return base_session_tab_;
+  }
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
       const Browser* browser,
       const TabOrganizationEntryPoint entrypoint,
-      const tabs::TabModel* base_session_tab = nullptr);
+      const tabs::TabInterface* base_session_tab = nullptr);
 
   const TabOrganization* GetNextTabOrganization() const;
   TabOrganization* GetNextTabOrganization();
@@ -111,7 +113,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
   TabOrganizationEntryPoint entrypoint_;
 
   // Active tab web contents tied to the session, if any.
-  raw_ptr<const tabs::TabModel> base_session_tab_;
+  raw_ptr<const tabs::TabInterface> base_session_tab_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 };

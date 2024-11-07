@@ -59,7 +59,7 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
     return url;
   }
 
-  tabs::TabModel* AddValidTabToBrowser(Browser* browser, int index) {
+  tabs::TabInterface* AddValidTabToBrowser(Browser* browser, int index) {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile_.get(),
                                                           nullptr);
@@ -209,8 +209,8 @@ TEST_F(TabOrganizationServiceTest,
   }
 
   // Add an invalid tab.
-  tabs::TabModel* invalid_tab = AddValidTabToBrowser(browser1, 0);
-  content::WebContentsTester::For(invalid_tab->contents())
+  tabs::TabInterface* invalid_tab = AddValidTabToBrowser(browser1, 0);
+  content::WebContentsTester::For(invalid_tab->GetContents())
       ->NavigateAndCommit(GURL(kInvalidURL));
 
   std::unique_ptr<TabOrganizationSession> session =
@@ -283,7 +283,7 @@ TEST_F(TabOrganizationServiceTest, SecondRequestAfterStartingDoesntCrash) {
 TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
   Browser* browser1 = AddBrowser();
 
-  tabs::TabModel* base_tab = AddValidTabToBrowser(browser1, 0);
+  tabs::TabInterface* base_tab = AddValidTabToBrowser(browser1, 0);
   for (int i = 0; i < 4; i++) {
     AddValidTabToBrowser(browser1, 0);
   }
@@ -320,7 +320,7 @@ TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
 
   service()->CreateSessionForBrowser(browser1,
                                      TabOrganizationEntryPoint::kNone);
-  tabs::TabModel* tab = AddValidTabToBrowser(browser1, 0);
+  tabs::TabInterface* tab = AddValidTabToBrowser(browser1, 0);
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 
   service()->CreateSessionForBrowser(browser1,

@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/logging_util.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
@@ -55,11 +57,24 @@ class TabOrganizationTest : public testing::Test {
   TabOrganizationTest()
       : profile_(new TestingProfile),
         delegate_(new TestTabStripModelDelegate),
-        tab_strip_model_(new TabStripModel(delegate(), profile())) {}
+        tab_strip_model_(new TabStripModel(delegate(), profile())),
+        browser_window_interface_(new MockBrowserWindowInterface()) {
+    ON_CALL(*browser_window_interface_, GetTabStripModel)
+        .WillByDefault(::testing::Return(tab_strip_model_.get()));
+    delegate_->SetBrowserWindowInterface(browser_window_interface_.get());
+  }
+
+  ~TabOrganizationTest() override {
+    // Break loop so we can deconstruct without dangling pointers.
+    delegate_->SetBrowserWindowInterface(nullptr);
+  }
 
   TestingProfile* profile() { return profile_.get(); }
   TestTabStripModelDelegate* delegate() { return delegate_.get(); }
   TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+  MockBrowserWindowInterface* browser_window_interface() {
+    return browser_window_interface_.get();
+  }
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
     return content::WebContentsTester::CreateTestWebContents(profile(),
@@ -73,8 +88,8 @@ class TabOrganizationTest : public testing::Test {
     return url;
   }
 
-  tabs::TabModel* AddTab(TabStripModel* tab_strip_model = nullptr,
-                         std::optional<GURL> url = std::nullopt) {
+  tabs::TabInterface* AddTab(TabStripModel* tab_strip_model = nullptr,
+                             std::optional<GURL> url = std::nullopt) {
     std::unique_ptr<content::WebContents> contents_unique_ptr =
         CreateWebContents();
     content::WebContentsTester::For(contents_unique_ptr.get())
@@ -91,7 +106,7 @@ class TabOrganizationTest : public testing::Test {
     // TabData is invalidated from new URL which are different from their
     // original URL. as long as the original URL was created via
     // GetUniqueTestURL this will invalidate.
-    content::WebContentsTester::For(tab_data->tab()->contents())
+    content::WebContentsTester::For(tab_data->tab()->GetContents())
         ->NavigateAndCommit(GetUniqueTestURL());
   }
 
@@ -148,6 +163,7 @@ class TabOrganizationTest : public testing::Test {
 
   const std::unique_ptr<TestTabStripModelDelegate> delegate_;
   const std::unique_ptr<TabStripModel> tab_strip_model_;
+  const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   tabs::PreventTabFeatureInitialization prevent_;
 };
 
@@ -184,10 +200,10 @@ class SessionObserver : public TabOrganizationSession::Observer {
 // The constructor that takes the webcontents and tabstrip model should
 // instantiate correctly.
 TEST_F(TabOrganizationTest, TabDataTabStripModelConstructor) {
-  tabs::TabModel* tab = AddTab();
+  tabs::TabInterface* tab = AddTab();
   TabData tab_data(tab);
   EXPECT_EQ(tab_strip_model(), tab_data.original_tab_strip_model());
-  EXPECT_EQ(tab->contents()->GetLastCommittedURL(), tab_data.original_url());
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), tab_data.original_url());
 
   // TODO(crbug.com/40070608) Add a check for TabID once TabStripModel::Tab has
   // the new handle.
@@ -195,22 +211,27 @@ TEST_F(TabOrganizationTest, TabDataTabStripModelConstructor) {
 
 // Check that TabData isn't updated when the tabstrip updates.
 TEST_F(TabOrganizationTest, TabDataTabStripTabUpdatingURL) {
-  tabs::TabModel* tab = AddTab();
+  tabs::TabInterface* tab = AddTab();
   GURL old_gurl = GURL(GetUniqueTestURL());
-  content::WebContentsTester::For(tab->contents())->NavigateAndCommit(old_gurl);
+  content::WebContentsTester::For(tab->GetContents())
+      ->NavigateAndCommit(old_gurl);
 
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
 
   // When updating tab URL, the TabData shouldn't update.
-  content::WebContentsTester::For(tab->contents())
+  content::WebContentsTester::For(tab->GetContents())
       ->NavigateAndCommit(GURL(GetUniqueTestURL()));
-  EXPECT_NE(tab_data->original_url(), tab->contents()->GetLastCommittedURL());
+  EXPECT_NE(tab_data->original_url(),
+            tab->GetContents()->GetLastCommittedURL());
 }
 
 TEST_F(TabOrganizationTest, TabDataOnTabStripModelDestroyed) {
   // Create a destroyable tabstripmodel.
   std::unique_ptr<TabStripModel> new_tab_strip_model =
       std::make_unique<TabStripModel>(delegate(), profile());
+
+  ON_CALL(*browser_window_interface(), GetTabStripModel)
+      .WillByDefault(::testing::Return(new_tab_strip_model.get()));
 
   // Create a tab data that should be listening to the tabstrip model.
   std::unique_ptr<TabData> tab_data =
@@ -224,7 +245,7 @@ TEST_F(TabOrganizationTest, TabDataOnTabStripModelDestroyed) {
 }
 
 TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsSetToNull) {
-  tabs::TabModel* tab = AddTab();
+  tabs::TabInterface* tab = AddTab();
 
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
 
@@ -234,8 +255,8 @@ TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsSetToNull) {
 }
 
 TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsReplaceUpdatesContents) {
-  tabs::TabModel* tab = AddTab();
-  content::WebContents* old_contents = tab->contents();
+  tabs::TabInterface* tab = AddTab();
+  content::WebContents* old_contents = tab->GetContents();
 
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
 
@@ -250,16 +271,17 @@ TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsReplaceUpdatesContents) {
 
   // Same tab, containing a different WebContents.
   EXPECT_EQ(tab_data->tab(), tab);
-  EXPECT_EQ(tab_data->tab()->contents(), new_contents_ptr);
+  EXPECT_EQ(tab_data->tab()->GetContents(), new_contents_ptr);
   // Should be observing the new WebContents.
   // N.B. this is calling `WebContentsObserver::web_contents()`.
   EXPECT_EQ(tab_data->web_contents(), new_contents_ptr);
 }
 
 TEST_F(TabOrganizationTest, TabDataURLChangeIsNotValidForOrganizing) {
-  tabs::TabModel* tab = AddTab();
+  tabs::TabInterface* tab = AddTab();
   GURL old_gurl = GURL(GetUniqueTestURL());
-  content::WebContentsTester::For(tab->contents())->NavigateAndCommit(old_gurl);
+  content::WebContentsTester::For(tab->GetContents())
+      ->NavigateAndCommit(old_gurl);
 
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
 
@@ -267,15 +289,16 @@ TEST_F(TabOrganizationTest, TabDataURLChangeIsNotValidForOrganizing) {
 
   // update the URL for the webcontents, expect the tab data to not be valid.
   // When updating tab URL, the TabData shouldn't update.
-  content::WebContentsTester::For(tab_data->tab()->contents())
+  content::WebContentsTester::For(tab_data->tab()->GetContents())
       ->NavigateAndCommit(GetUniqueTestURL());
   EXPECT_FALSE(tab_data->IsValidForOrganizing());
 }
 
 TEST_F(TabOrganizationTest, TabDataWebContentsDeletionIsNotValidForOrganizing) {
-  tabs::TabModel* tab = AddTab();
+  tabs::TabInterface* tab = AddTab();
   GURL old_gurl = GURL(GetUniqueTestURL());
-  content::WebContentsTester::For(tab->contents())->NavigateAndCommit(old_gurl);
+  content::WebContentsTester::For(tab->GetContents())
+      ->NavigateAndCommit(old_gurl);
 
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
   EXPECT_TRUE(tab_data->IsValidForOrganizing());
@@ -316,7 +339,7 @@ TEST_F(TabOrganizationTest, TabDataObserverTest) {
     raw_ptr<TabData> tab_data_;
   };
 
-  tabs::TabModel* old_tab = AddTab();
+  tabs::TabInterface* old_tab = AddTab();
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(old_tab);
 
   {
@@ -336,7 +359,7 @@ TEST_F(TabOrganizationTest, TabDataObserverTest) {
       tab_strip_model()->GetIndexOfTab(old_tab), std::move(new_contents));
   EXPECT_EQ(observer.update_call_count, 1);
 
-  content::WebContentsTester::For(tab_data->tab()->contents())
+  content::WebContentsTester::For(tab_data->tab()->GetContents())
       ->NavigateAndCommit(GetUniqueTestURL());
   EXPECT_EQ(observer.update_call_count, 2);
 
@@ -354,22 +377,24 @@ TEST_F(TabOrganizationTest, TabDataObserverTest) {
 
 TEST_F(TabOrganizationTest, TabDataHttpHttpsOnlyURLs) {
   {
-    tabs::TabModel* tab = AddTab(tab_strip_model(), GURL("http://zombo.com"));
+    tabs::TabInterface* tab =
+        AddTab(tab_strip_model(), GURL("http://zombo.com"));
     TabData tab_data(tab);
     EXPECT_TRUE(tab_data.IsValidForOrganizing());
   }
   {
-    tabs::TabModel* tab = AddTab(tab_strip_model(), GURL("https://zombo.com"));
+    tabs::TabInterface* tab =
+        AddTab(tab_strip_model(), GURL("https://zombo.com"));
     TabData tab_data(tab);
     EXPECT_TRUE(tab_data.IsValidForOrganizing());
   }
   {
-    tabs::TabModel* tab = AddTab(tab_strip_model(), GURL("chrome://page"));
+    tabs::TabInterface* tab = AddTab(tab_strip_model(), GURL("chrome://page"));
     TabData tab_data(tab);
     EXPECT_FALSE(tab_data.IsValidForOrganizing());
   }
   {
-    tabs::TabModel* tab =
+    tabs::TabInterface* tab =
         AddTab(tab_strip_model(), GURL("file://dangerous_file.exe"));
     TabData tab_data(tab);
     EXPECT_FALSE(tab_data.IsValidForOrganizing());
@@ -377,7 +402,7 @@ TEST_F(TabOrganizationTest, TabDataHttpHttpsOnlyURLs) {
 }
 
 TEST_F(TabOrganizationTest, TabDataPinnedTabsNotValid) {
-  tabs::TabModel* tab = AddTab();
+  tabs::TabInterface* tab = AddTab();
   {
     TabData tab_data(tab);
     EXPECT_TRUE(tab_data.IsValidForOrganizing());
@@ -401,7 +426,7 @@ TEST_F(TabOrganizationTest, TabOrganizationIDs) {
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
   TabOrganization organization({}, {u"default_name"});
   EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
-  tabs::TabModel* tab = AddTab();
+  tabs::TabInterface* tab = AddTab();
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
 
   organization.AddTabData(std::move(tab_data));
@@ -410,7 +435,7 @@ TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
 
 TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
   TabOrganization organization({}, {u"default_name"});
-  tabs::TabModel* tab = AddTab();
+  tabs::TabInterface* tab = AddTab();
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
   TabData::TabID tab_data_id = tab_data->tab_id();
   organization.AddTabData(std::move(tab_data));
@@ -463,13 +488,13 @@ TEST_F(TabOrganizationTest, TabOrganizationCHECKOnChangingUserChoiceTwice) {
 TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
   TabOrganization organization({}, {u"default_name"});
 
-  tabs::TabModel* tab_1 = AddTab();
+  tabs::TabInterface* tab_1 = AddTab();
   std::unique_ptr<TabData> tab_data_1 = std::make_unique<TabData>(tab_1);
   organization.AddTabData(std::move(tab_data_1));
 
   EXPECT_FALSE(organization.IsValidForOrganizing());
 
-  tabs::TabModel* tab_2 = AddTab();
+  tabs::TabInterface* tab_2 = AddTab();
   std::unique_ptr<TabData> tab_data_2 = std::make_unique<TabData>(tab_2);
   TabData* tab_data_2_ptr = tab_data_2.get();
   organization.AddTabData(std::move(tab_data_2));
@@ -480,26 +505,26 @@ TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
 
   // Organization has been force invalidated, so it should return false for
   // IsValidForOrganizing.
-  tabs::TabModel* tab_3 = AddTab();
+  tabs::TabInterface* tab_3 = AddTab();
   std::unique_ptr<TabData> tab_data_3 = std::make_unique<TabData>(tab_3);
   organization.AddTabData(std::move(tab_data_3));
   EXPECT_FALSE(organization.IsValidForOrganizing());
 
   TabOrganization pre_existing_organization({}, {u"default_name"}, 2);
 
-  tabs::TabModel* grouped_tab_1 = AddTab();
+  tabs::TabInterface* grouped_tab_1 = AddTab();
   std::unique_ptr<TabData> grouped_tab_data_1 =
       std::make_unique<TabData>(grouped_tab_1);
   pre_existing_organization.AddTabData(std::move(grouped_tab_data_1));
 
-  tabs::TabModel* grouped_tab_2 = AddTab();
+  tabs::TabInterface* grouped_tab_2 = AddTab();
   std::unique_ptr<TabData> grouped_tab_data_2 =
       std::make_unique<TabData>(grouped_tab_2);
   pre_existing_organization.AddTabData(std::move(grouped_tab_data_2));
   // The minimum number of tabs is met, but there are no tabs new to the group.
   EXPECT_FALSE(pre_existing_organization.IsValidForOrganizing());
 
-  tabs::TabModel* grouped_tab_3 = AddTab();
+  tabs::TabInterface* grouped_tab_3 = AddTab();
   std::unique_ptr<TabData> grouped_tab_data_3 =
       std::make_unique<TabData>(grouped_tab_3);
   pre_existing_organization.AddTabData(std::move(grouped_tab_data_3));
@@ -508,7 +533,7 @@ TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationNoUniqueTabDatas) {
-  tabs::TabModel* tab_1 = AddTab();
+  tabs::TabInterface* tab_1 = AddTab();
   TabOrganization::TabDatas duplicated_tab_datas;
   duplicated_tab_datas.emplace_back(std::make_unique<TabData>(tab_1));
   duplicated_tab_datas.emplace_back(std::make_unique<TabData>(tab_1));
@@ -534,13 +559,13 @@ TEST_F(TabOrganizationTest, TabOrganizationAcceptCreatesGroupToLeft) {
 TEST_F(TabOrganizationTest,
        TabOrganizationAcceptCreatesGroupToRightOfPinnedAndGrouped) {
   // Add some tabs before the future organized tabs.
-  tabs::TabModel* pinned_tab = AddTab();
+  tabs::TabInterface* pinned_tab = AddTab();
   tab_strip_model()->SetTabPinned(tab_strip_model()->GetIndexOfTab(pinned_tab),
                                   true);
 
   // Add another tab to group, organized groups should come after groups that
   // are to the left of any unorganized tabs.
-  tabs::TabModel* grouped_tab = AddTab();
+  tabs::TabInterface* grouped_tab = AddTab();
   tab_strip_model()->AddToNewGroup(
       {tab_strip_model()->GetIndexOfTab(grouped_tab)});
   std::optional<tab_groups::TabGroupId> non_organized_group_id =
@@ -662,7 +687,7 @@ TEST_F(TabOrganizationTest, TabOrganizationObserverTest) {
   observer.tab_organization_ = organization.get();
 
   // AddTabData to the organization.
-  tabs::TabModel* old_tab = AddTab(tab_strip_model());
+  tabs::TabInterface* old_tab = AddTab(tab_strip_model());
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(old_tab);
   organization->AddTabData(std::move(tab_data));
   EXPECT_EQ(observer.update_call_count, 1);
@@ -689,7 +714,7 @@ TEST_F(TabOrganizationTest, TabOrganizationForceInvalidation) {
   std::unique_ptr<TabOrganization> organization = CreateValidOrganization();
 
   content::WebContentsTester::For(
-      organization->tab_datas()[0]->tab()->contents())
+      organization->tab_datas()[0]->tab()->GetContents())
       ->NavigateAndCommit(GetUniqueTestURL());
   EXPECT_FALSE(organization->IsValidForOrganizing());
 }
@@ -841,7 +866,7 @@ TEST_F(TabOrganizationTest,
   std::vector<TabData::TabID> ids_to_group;
 
   for (int i = 0; i < kMinimumValidTabs; i++) {
-    tabs::TabModel* tab_to_group = AddTab();
+    tabs::TabInterface* tab_to_group = AddTab();
     TabData* tab_to_group_data =
         request->AddTabData(std::make_unique<TabData>(tab_to_group));
     ids_to_group.emplace_back(tab_to_group_data->tab_id());
@@ -882,7 +907,7 @@ TEST_F(TabOrganizationTest,
       std::make_unique<TabOrganizationRequest>();
 
   // Create a valid tab for the organization.
-  tabs::TabModel* valid_tab_1 = AddTab(tab_strip_model());
+  tabs::TabInterface* valid_tab_1 = AddTab(tab_strip_model());
   std::unique_ptr<TabData> tab_data_valid_1 =
       std::make_unique<TabData>(valid_tab_1);
   TabData::TabID valid_tab_data_id_1 = tab_data_valid_1->tab_id();
@@ -890,7 +915,7 @@ TEST_F(TabOrganizationTest,
 
   // Create another valid tab for the organization. (2 are needed to be a valid
   // organization)
-  tabs::TabModel* valid_tab_2 = AddTab(tab_strip_model());
+  tabs::TabInterface* valid_tab_2 = AddTab(tab_strip_model());
   std::unique_ptr<TabData> tab_data_valid_2 =
       std::make_unique<TabData>(valid_tab_2);
   TabData::TabID valid_tab_data_id_2 = tab_data_valid_2->tab_id();
@@ -940,7 +965,7 @@ TEST_F(TabOrganizationTest,
       std::make_unique<TabOrganizationRequest>();
 
   // Create a valid tab for the organization.
-  tabs::TabModel* valid_tab_1 = AddTab(tab_strip_model());
+  tabs::TabInterface* valid_tab_1 = AddTab(tab_strip_model());
   std::unique_ptr<TabData> tab_data_valid_1 =
       std::make_unique<TabData>(valid_tab_1);
   TabData::TabID valid_tab_data_id_1 = tab_data_valid_1->tab_id();
@@ -948,14 +973,14 @@ TEST_F(TabOrganizationTest,
 
   // Create another valid tab for the organization. (2 are needed to be a valid
   // organization)
-  tabs::TabModel* valid_tab_2 = AddTab(tab_strip_model());
+  tabs::TabInterface* valid_tab_2 = AddTab(tab_strip_model());
   std::unique_ptr<TabData> tab_data_valid_2 =
       std::make_unique<TabData>(valid_tab_2);
   TabData::TabID valid_tab_data_id_2 = tab_data_valid_2->tab_id();
   request->AddTabData(std::move(tab_data_valid_2));
 
   // Create an invalid tab for the organization.
-  tabs::TabModel* missing_tab = AddTab(tab_strip_model());
+  tabs::TabInterface* missing_tab = AddTab(tab_strip_model());
   std::unique_ptr<TabData> tab_data_missing =
       std::make_unique<TabData>(missing_tab);
   TabData::TabID missing_tab_data_id = tab_data_missing->tab_id();
@@ -1001,20 +1026,20 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
 
   // Add a couple tabs with different URLs.
   for (int i = 0; i < 5; i++) {
-    tabs::TabModel* tab = AddTab();
+    tabs::TabInterface* tab = AddTab();
     request->AddTabData(std::make_unique<TabData>(tab));
   }
 
   // Add 2 tabs that are grouped in the response.
-  tabs::TabModel* tab_to_group_1 = AddTab();
+  tabs::TabInterface* tab_to_group_1 = AddTab();
   TabData* tab_to_group_data_1 =
       request->AddTabData(std::make_unique<TabData>(tab_to_group_1));
 
-  tabs::TabModel* tab_to_group_2 = AddTab();
+  tabs::TabInterface* tab_to_group_2 = AddTab();
   TabData* tab_to_group_data_2 =
       request->AddTabData(std::make_unique<TabData>(tab_to_group_2));
 
-  tabs::TabModel* tab_to_not_group = AddTab();
+  tabs::TabInterface* tab_to_not_group = AddTab();
   request->AddTabData(std::make_unique<TabData>(tab_to_not_group));
 
   std::unique_ptr<TabOrganizationSession> session =
@@ -1106,20 +1131,20 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionObserverOrganizationUpdate) {
 
   // Add a couple tabs with different URLs.
   for (int i = 0; i < 5; i++) {
-    tabs::TabModel* tab = AddTab();
+    tabs::TabInterface* tab = AddTab();
     request->AddTabData(std::make_unique<TabData>(tab));
   }
 
   // Add 2 tabs that are grouped in the response.
-  tabs::TabModel* tab_to_group_1 = AddTab();
+  tabs::TabInterface* tab_to_group_1 = AddTab();
   TabData* tab_to_group_data_1 =
       request->AddTabData(std::make_unique<TabData>(tab_to_group_1));
 
-  tabs::TabModel* tab_to_group_2 = AddTab();
+  tabs::TabInterface* tab_to_group_2 = AddTab();
   TabData* tab_to_group_data_2 =
       request->AddTabData(std::make_unique<TabData>(tab_to_group_2));
 
-  tabs::TabModel* tab_to_not_group = AddTab();
+  tabs::TabInterface* tab_to_not_group = AddTab();
   request->AddTabData(std::make_unique<TabData>(tab_to_not_group));
 
   std::unique_ptr<TabOrganizationSession> session =
@@ -1154,7 +1179,7 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionRequestOnLogResultsCalled) {
   // Add 2 tabs for organization
   std::vector<TabData::TabID> ids_to_group;
   for (int i = 0; i < kMinimumValidTabs; i++) {
-    tabs::TabModel* tab_to_group = AddTab();
+    tabs::TabInterface* tab_to_group = AddTab();
     TabData* tab_to_group_data =
         request->AddTabData(std::make_unique<TabData>(tab_to_group));
     ids_to_group.emplace_back(tab_to_group_data->tab_id());
@@ -1200,7 +1225,7 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQuality) {
   // Add 2 tabs for organization
   std::vector<TabData::TabID> ids_to_group;
   for (int i = 0; i < kMinimumValidTabs; i++) {
-    tabs::TabModel* tab_to_group = AddTab();
+    tabs::TabInterface* tab_to_group = AddTab();
     TabData* tab_to_group_data =
         request->AddTabData(std::make_unique<TabData>(tab_to_group));
     ids_to_group.emplace_back(tab_to_group_data->tab_id());
@@ -1251,7 +1276,7 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQualityAccepted) {
     // Add 2 tabs for organization
     std::vector<TabData::TabID> ids_to_group;
     for (int i = 0; i < kMinimumValidTabs; i++) {
-      tabs::TabModel* tab_to_group = AddTab();
+      tabs::TabInterface* tab_to_group = AddTab();
       TabData* tab_to_group_data =
           request->AddTabData(std::make_unique<TabData>(tab_to_group));
       ids_to_group.emplace_back(tab_to_group_data->tab_id());
@@ -1265,7 +1290,7 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQualityAccepted) {
     // Add 2 tabs for organization
     std::vector<TabData::TabID> ids_to_group;
     for (int i = 0; i < kMinimumValidTabs; i++) {
-      tabs::TabModel* tab_to_group = AddTab();
+      tabs::TabInterface* tab_to_group = AddTab();
       TabData* tab_to_group_data =
           request->AddTabData(std::make_unique<TabData>(tab_to_group));
       ids_to_group.emplace_back(tab_to_group_data->tab_id());
@@ -1279,7 +1304,7 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQualityAccepted) {
     // Add 2 tabs for organization
     std::vector<TabData::TabID> ids_to_group;
     for (int i = 0; i < kMinimumValidTabs; i++) {
-      tabs::TabModel* tab_to_group = AddTab();
+      tabs::TabInterface* tab_to_group = AddTab();
       TabData* tab_to_group_data =
           request->AddTabData(std::make_unique<TabData>(tab_to_group));
       ids_to_group.emplace_back(tab_to_group_data->tab_id());

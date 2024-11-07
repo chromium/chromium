@@ -161,7 +161,7 @@ class TabInterface {
       views::WidgetDelegate* delegate) = 0;
 
   // An identifier that is guaranteed to be unique.
-  virtual uint32_t GetTabHandle() = 0;
+  virtual uint32_t GetTabHandle() const = 0;
 };
 
 }  // namespace tabs

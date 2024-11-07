@@ -82,7 +82,7 @@ TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
 TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
     const Browser* browser,
     const TabOrganizationEntryPoint entrypoint,
-    const tabs::TabModel* base_session_tab) {
+    const tabs::TabInterface* base_session_tab) {
   CHECK(!base::Contains(browser_session_map_, browser));
   CHECK(browser->tab_strip_model()->SupportsTabGroups());
   std::pair<BrowserSessionMap::iterator, bool> pair =
@@ -101,7 +101,7 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
 TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
     const Browser* browser,
     const TabOrganizationEntryPoint entrypoint,
-    const tabs::TabModel* base_session_tab) {
+    const tabs::TabInterface* base_session_tab) {
   browser->tab_strip_model()->RemoveObserver(this);
   if (base::Contains(browser_session_map_, browser)) {
     RemoveBrowserFromSessionMap(browser);
@@ -113,7 +113,7 @@ TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
 void TabOrganizationService::RestartSessionAndShowUI(
     const Browser* browser,
     const TabOrganizationEntryPoint entrypoint,
-    const tabs::TabModel* base_session_tab) {
+    const tabs::TabInterface* base_session_tab) {
   ResetSessionForBrowser(browser, entrypoint, base_session_tab);
   StartRequestIfNotFRE(browser, entrypoint);
   OnUserInvokedFeature(browser);

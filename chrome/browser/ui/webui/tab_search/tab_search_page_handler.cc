@@ -339,7 +339,7 @@ void TabSearchPageHandler::AcceptTabOrganization(
 
   std::vector<TabData::TabID> tab_ids_to_remove;
   for (const auto& tab_data : organization->tab_datas()) {
-    if (!tab_data->tab()->contents() ||
+    if (!tab_data->tab()->GetContents() ||
         !base::Contains(tabs_tab_ids, tab_data->tab_id())) {
       tab_ids_to_remove.emplace_back(tab_data->tab_id());
     }
@@ -715,7 +715,7 @@ void TabSearchPageHandler::RestartSession() {
   restarting_ = true;
   TabOrganizationSession* current_session =
       organization_service_->GetSessionForBrowser(browser);
-  const tabs::TabModel* base_session_tab =
+  const tabs::TabInterface* base_session_tab =
       current_session ? current_session->base_session_tab() : nullptr;
   // Don't notify observers to avoid a repaint
   TabOrganizationSession* session =
@@ -1389,9 +1389,9 @@ bool TabSearchPageHandler::IsWebContentsVisible() {
 tab_search::mojom::TabPtr TabSearchPageHandler::GetMojoForTabData(
     TabData* tab_data) const {
   return TabSearchPageHandler::GetTab(
-      tab_data->original_tab_strip_model(), tab_data->tab()->contents(),
+      tab_data->original_tab_strip_model(), tab_data->tab()->GetContents(),
       tab_data->original_tab_strip_model()->GetIndexOfWebContents(
-          tab_data->tab()->contents()));
+          tab_data->tab()->GetContents()));
 }
 
 tab_search::mojom::TabOrganizationPtr
@@ -1426,9 +1426,8 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
   mojo_session->session_id = session->session_id();
   mojo_session->error = tab_search::mojom::TabOrganizationError::kNone;
   mojo_session->active_tab_id =
-      session->base_session_tab()
-          ? session->base_session_tab()->GetHandle().raw_value()
-          : tabs::TabHandle::NullValue;
+      session->base_session_tab() ? session->base_session_tab()->GetTabHandle()
+                                  : tabs::TabHandle::NullValue;
   std::vector<tab_search::mojom::TabOrganizationPtr> organizations;
 
   TabOrganizationRequest::State state = session->request()->state();

@@ -28,7 +28,7 @@ TabOrganizationSession::TabOrganizationSession()
 TabOrganizationSession::TabOrganizationSession(
     std::unique_ptr<TabOrganizationRequest> request,
     TabOrganizationEntryPoint entrypoint,
-    const tabs::TabModel* base_session_tab)
+    const tabs::TabInterface* base_session_tab)
     : request_(std::move(request)),
       session_id_(kNextSessionID),
       entrypoint_(entrypoint),
@@ -123,7 +123,7 @@ std::unique_ptr<TabOrganizationSession>
 TabOrganizationSession::CreateSessionForBrowser(
     const Browser* browser,
     const TabOrganizationEntryPoint entrypoint,
-    const tabs::TabModel* base_session_tab) {
+    const tabs::TabInterface* base_session_tab) {
   std::unique_ptr<TabOrganizationRequest> request =
       TabOrganizationRequestFactory::GetForProfile(browser->profile())
           ->CreateRequest(browser->profile());
@@ -131,7 +131,7 @@ TabOrganizationSession::CreateSessionForBrowser(
   // iterate through the tabstripmodel building the tab data.
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   for (int index = 0; index < tab_strip_model->count(); index++) {
-    tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(index);
+    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(index);
     std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
     if (!tab_data->IsValidForOrganizing()) {
       continue;

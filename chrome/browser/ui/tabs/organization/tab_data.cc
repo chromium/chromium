@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -13,15 +14,12 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-TabData::TabData(tabs::TabModel* tab)
-    : WebContentsObserver(tab->contents()),
-      tab_(tab->GetHandle()),
-      original_url_(tab->contents()->GetLastCommittedURL()) {
-  CHECK(tab->owning_model());
-  CHECK(tab);
-  CHECK(tab->contents());
-
-  original_tab_strip_model_ = tab->owning_model();
+TabData::TabData(tabs::TabInterface* tab)
+    : WebContentsObserver(tab->GetContents()),
+      tab_(tabs::TabHandle(tab->GetTabHandle())),
+      original_url_(tab->GetContents()->GetLastCommittedURL()) {
+  original_tab_strip_model_ =
+      tab->GetBrowserWindowInterface()->GetTabStripModel();
   original_tab_strip_model_->AddObserver(this);
 
   tab_subscriptions_.push_back(tab->RegisterWillDetach(
@@ -29,7 +27,7 @@ TabData::TabData(tabs::TabModel* tab)
   tab_subscriptions_.push_back(
       tab->RegisterWillDiscardContents(base::BindRepeating(
           &TabData::OnTabWillDiscardContents, base::Unretained(this))));
-  Observe(tab->contents());
+  Observe(tab->GetContents());
 }
 
 TabData::~TabData() {

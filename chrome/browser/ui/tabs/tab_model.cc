@@ -220,7 +220,7 @@ std::unique_ptr<views::Widget> TabModel::CreateAndShowTabScopedWidget(
       constrained_window::ShowWebModalDialogViews(delegate, GetContents()));
 }
 
-uint32_t TabModel::GetTabHandle() {
+uint32_t TabModel::GetTabHandle() const {
   return GetHandle().raw_value();
 }
 
