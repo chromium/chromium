@@ -32,7 +32,9 @@ enum class PayflowExitedReason {
   kLandscapeScreenOrientation = 4,
   // The API Client is not available when the payflow was to be triggered.
   kApiClientNotAvailable = 5,
-  kMaxValue = kApiClientNotAvailable
+  // The risk data needed to send the server request is not available.
+  kRiskDataNotAvailable = 6,
+  kMaxValue = kRiskDataNotAvailable
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is

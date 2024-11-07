@@ -107,7 +107,7 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixPaymentPromptAccepted_TriggersLoadRiskData);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PaymentNotOfferedReason_RiskDataEmpty);
+                           PayflowExitedReason_RiskDataEmpty);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown);

@@ -225,7 +225,8 @@ INSTANTIATE_TEST_SUITE_P(
                     PayflowExitedReason::kUserOptedOut,
                     PayflowExitedReason::kNoLinkedAccount,
                     PayflowExitedReason::kLandscapeScreenOrientation,
-                    PayflowExitedReason::kApiClientNotAvailable));
+                    PayflowExitedReason::kApiClientNotAvailable,
+                    PayflowExitedReason::kRiskDataNotAvailable));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:

@@ -207,7 +207,7 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
                                   base::TimeTicks::Now() - start_time);
   if (risk_data.empty()) {
     client_->ShowErrorScreen();
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
+    LogPayflowExitedReason(PayflowExitedReason::kRiskDataNotAvailable);
     return;
   }
   initiate_payment_request_details_->risk_data_ = risk_data;

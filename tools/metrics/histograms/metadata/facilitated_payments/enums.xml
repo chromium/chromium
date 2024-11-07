@@ -33,6 +33,7 @@ reviewer.
       label="The device was in landscape orientation when the payflow was
              triggered"/>
   <int value="5" label="API client not available"/>
+  <int value="6" label="Risk data not available"/>
 </enum>
 
 <enum name="FacilitatedPayments.PaymentNotOfferedReason">

@@ -243,16 +243,16 @@ TEST_F(FacilitatedPaymentsManagerTest, RiskDataEmpty_HistogramsLogged) {
       /*expected_bucket_count=*/1);
 }
 
-// If the risk data is empty, then the PaymentNotOfferedReason histogram should
+// If the risk data is empty, then the PayflowExitedReason histogram should
 // be logged.
-TEST_F(FacilitatedPaymentsManagerTest, PaymentNotOfferedReason_RiskDataEmpty) {
+TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_RiskDataEmpty) {
   base::HistogramTester histogram_tester;
 
   manager_->OnRiskDataLoaded(base::TimeTicks::Now(), "");
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
-      /*sample=*/PaymentNotOfferedReason::kRiskDataEmpty,
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kRiskDataNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
