@@ -5,6 +5,7 @@
 #ifndef UI_GFX_MOJOM_DISPLAY_COLOR_SPACES_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_DISPLAY_COLOR_SPACES_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/display_color_spaces.h"

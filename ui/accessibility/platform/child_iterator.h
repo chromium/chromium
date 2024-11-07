@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_CHILD_ITERATOR_H_
 #define UI_ACCESSIBILITY_PLATFORM_CHILD_ITERATOR_H_
 
+#include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 namespace ui {

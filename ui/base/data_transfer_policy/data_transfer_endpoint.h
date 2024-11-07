@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "url/gurl.h"
 

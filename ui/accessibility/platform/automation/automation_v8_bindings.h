@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_V8_BINDINGS_H_
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_V8_BINDINGS_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"

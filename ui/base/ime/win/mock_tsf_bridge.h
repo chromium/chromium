@@ -8,6 +8,7 @@
 #include <msctf.h>
 #include <wrl/client.h>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_type.h"
