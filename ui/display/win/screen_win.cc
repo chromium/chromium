@@ -931,14 +931,16 @@ void ScreenWin::UpdateFromDisplayInfos(
   std::vector<int64_t> internal_display_ids;
   SetInternalDisplayIds(internal_display_ids);
 
+  // This primary information is used only to detect if another monitor has
+  // became the primary monitor.
   primary_monitor_ = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
 
   const std::optional<MONITORINFOEX> primary_monitor_info =
       MonitorInfoFromHMONITOR(primary_monitor_);
-  // Primary monitor should exist and has 0,0 origin. Guard the CHECK with kill
-  // switch in case this caused the problem in the field.
-  if (base::FeatureList::IsEnabled(features::kSkipEmptyDisplayHotplugEvent)) {
-    CHECK(primary_monitor_info);
+  // Primary monitor, if it exists, has 0,0 origin. Guard the CHECK with kill switch
+  // in case this caused the problem in the field.
+  if (primary_monitor_info &&
+      base::FeatureList::IsEnabled(features::kSkipEmptyDisplayHotplugEvent)) {
     CHECK(gfx::Rect(primary_monitor_info->rcMonitor).origin().IsOrigin());
   }
 
