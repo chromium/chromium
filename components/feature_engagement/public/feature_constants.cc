@@ -126,6 +126,9 @@ BASE_FEATURE(kIPHPasswordManagerShortcutFeature,
 BASE_FEATURE(kIPHPasswordSharingFeature,
              "IPH_PasswordSharingFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPdfSearchifyFeature,
+             "IPH_PdfSearchifyFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPerformanceInterventionDialogFeature,
              "IPH_PerformanceInterventionDialogFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

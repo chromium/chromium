@@ -195,6 +195,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPasswordsWebAppProfileSwitchFeature,
     &kIPHPasswordManagerShortcutFeature,
     &kIPHPasswordSharingFeature,
+    &kIPHPdfSearchifyFeature,
     &kIPHPerformanceInterventionDialogFeature,
     &kIPHPlusAddressFirstSaveFeature,
     &kIPHPowerBookmarksSidePanelFeature,

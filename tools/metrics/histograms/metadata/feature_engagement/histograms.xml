@@ -361,6 +361,8 @@ chromium-metrics-reviews@google.com.
       summary="the Autofill password suggestions on iOS"/>
   <variant name="IPH_PasswordsWebAppProfileSwitch"
       summary="profile switch in Password Manager web app"/>
+  <variant name="IPH_PdfSearchifyFeature"
+      summary="educating users about PDF searchify feature"/>
   <variant name="IPH_PerformanceInterventionDialog"
       summary="triggering the performance intervention dialog and toolbar
                button"/>

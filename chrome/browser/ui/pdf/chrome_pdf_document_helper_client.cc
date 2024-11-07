@@ -14,6 +14,11 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "pdf/pdf_features.h"
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
 namespace {
 
 content::WebContents* GetWebContentsToUse(
@@ -25,6 +30,16 @@ content::WebContents* GetWebContentsToUse(
   return guest_view
              ? guest_view->embedder_web_contents()
              : content::WebContents::FromRenderFrameHost(render_frame_host);
+}
+
+void MaybeShowFeaturePromo(content::WebContents* contents) {
+  BrowserUserEducationInterface* user_education_interface =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(contents);
+  if (user_education_interface) {
+    user_education_interface->MaybeShowFeaturePromo(
+        user_education::FeaturePromoParams(
+            feature_engagement::kIPHPdfSearchifyFeature));
+  }
 }
 
 }  // namespace
@@ -92,6 +107,11 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
 void ChromePDFDocumentHelperClient::OnSearchifyStateChange(
     bool busy,
     content::WebContents* contents) {
-  // TODO(crbug.com/360803943): Show promo and manage progress bubble.
+  if (busy) {
+    MaybeShowFeaturePromo(contents);
+  }
+
+  // TODO(crbug.com/360803943): Manage progress indicator. If it's done through
+  // WebUI, update this function and the call chain to only send promo trigger.
 }
 #endif

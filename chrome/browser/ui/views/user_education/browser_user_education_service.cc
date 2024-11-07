@@ -608,6 +608,17 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE)));
 
+  // kIPHPdfSearchifyFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHPdfSearchifyFeature, kTopContainerElementId,
+          IDS_PDF_SEARCHIFY_IPH_BODY, IDS_PDF_SEARCHIFY_IPH_BODY_SCREEN_READER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kNone)
+          .SetBubbleTitleText(IDS_PDF_SEARCHIFY_IPH_TITLE)
+          .SetMetadata(132, "rhalavati@chromium.org",
+                       "Triggered once when user opens a PDF with images.")));
+
   // kIPHLensOverlayFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForTutorialPromo(

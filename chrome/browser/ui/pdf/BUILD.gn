@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//pdf/features.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 assert(enable_pdf)
 
@@ -21,4 +22,7 @@ source_set("pdf") {
     "//pdf:features",
     "//services/screen_ai/buildflags",
   ]
+  if (enable_screen_ai_service) {
+    deps += [ "//chrome/browser/ui/user_education" ]
+  }
 }

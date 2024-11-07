@@ -18624,6 +18624,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
         You just deleted data in Chrome. We’d love to hear about your experience to improve Chrome.
       </message>
     </if>
+
+    <!-- PDF Searchify elements. -->
+    <message name="IDS_PDF_SEARCHIFY_IPH_TITLE" desc="Title of in product help to introduce PDF Searchify feature.">
+    Chrome makes PDFs better
+    </message>
+    <message name="IDS_PDF_SEARCHIFY_IPH_BODY" desc="Content of in product help to introduce PDF Searchify feature.">
+    PDFs automatically get converted so you can search and select text
+    </message>
+    <message name="IDS_PDF_SEARCHIFY_IPH_BODY_SCREEN_READER" desc="Content of in product help to introduce PDF Searchify feature for screen reader users.">
+    PDFs automatically get converted so you can search and select text
+    </message>
   </messages>
 </release>
 </grit>

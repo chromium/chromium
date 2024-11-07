@@ -59,6 +59,7 @@ BASE_DECLARE_FEATURE(kIPHPasswordsManagementBubbleDuringSigninFeature);
 BASE_DECLARE_FEATURE(kIPHPasswordsWebAppProfileSwitchFeature);
 BASE_DECLARE_FEATURE(kIPHPasswordManagerShortcutFeature);
 BASE_DECLARE_FEATURE(kIPHPasswordSharingFeature);
+BASE_DECLARE_FEATURE(kIPHPdfSearchifyFeature);
 BASE_DECLARE_FEATURE(kIPHPerformanceInterventionDialogFeature);
 BASE_DECLARE_FEATURE(kIPHPlusAddressFirstSaveFeature);
 BASE_DECLARE_FEATURE(kIPHPowerBookmarksSidePanelFeature);
