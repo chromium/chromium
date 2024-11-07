@@ -361,6 +361,11 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
     // rather than doing a tree traversal here every time OwnerSelectElement is
     // called, which may be a lot.
     for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+      if (IsA<HTMLOptionElement>(ancestor)) {
+        // Don't associate nested <option>s with <select>s. This matches the
+        // traversals in OptionList and HTMLOptionElement::InsertedInto.
+        return nullptr;
+      }
       if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
         return select;
       }
@@ -494,9 +499,13 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   // OptionInserted. Otherwise, if this option is being inserted into a <select>
   // ancestor, then we must call OptionInserted on it.
   bool passed_insertion_point = false;
-  for (Node* ancestor = parentNode(); ancestor;
-       ancestor = ancestor->parentNode()) {
-    if (ancestor == insertion_point) {
+  for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+    if (IsA<HTMLOptionElement>(ancestor)) {
+      // Don't call OptionInserted() on nested <option>s. This matches the
+      // traversals in OptionList and OwnerSelectElement.
+      break;
+    }
+    if (&ancestor == &insertion_point) {
       passed_insertion_point = true;
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
@@ -553,19 +562,22 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
     return;
   }
 
-  for (Node* ancestor = parentNode(); ancestor;
-       ancestor = ancestor->parentNode()) {
+  for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
     // If this option is still associated with a <select> inside the detached
     // subtree, then we should not call OptionRemoved() because we don't call
     // OptionInserted() in the corresponding attachment case. Also, APIs like
     // select.options should still work when the <select> is detached.
-    if (IsA<HTMLSelectElement>(ancestor)) {
+    // Nested options should not be associated with selects.
+    if (IsA<HTMLSelectElement>(ancestor) || IsA<HTMLOptionElement>(ancestor)) {
       return;
     }
   }
 
-  for (Node* ancestor = &insertion_point; ancestor;
-       ancestor = ancestor->parentNode()) {
+  for (Node& ancestor : NodeTraversal::InclusiveAncestorsOf(insertion_point)) {
+    if (IsA<HTMLOptionElement>(ancestor)) {
+      // Nested options should not be associated with selects.
+      return;
+    }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
       SetTextOnlyRendering(true);
       select->OptionRemoved(*this);

@@ -2106,8 +2106,8 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
           }
         }
       }
-    }
       return;
+    }
     case HTMLTag::kForm:
       if (!IsParsingTemplateContents()) {
         Element* node = tree_.TakeForm();

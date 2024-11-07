@@ -176,6 +176,10 @@ HTMLSelectElement* HTMLOptGroupElement::OwnerSelectElement() const {
     // rather than doing a tree traversal here every time OwnerSelectElement is
     // called, which may be a lot.
     for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+      if (IsA<HTMLOptGroupElement>(ancestor) ||
+          IsA<HTMLOptionElement>(ancestor)) {
+        return nullptr;
+      }
       if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
         return select;
       }
