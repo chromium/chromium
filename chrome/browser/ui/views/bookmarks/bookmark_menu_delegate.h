@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
@@ -149,7 +150,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
       NodeToMenuMap;
 
   struct DropParams {
-    raw_ptr<const bookmarks::BookmarkNode> drop_parent = nullptr;
+    BookmarkParentFolder drop_parent;
     size_t index_to_drop_at = 0;
   };
 
