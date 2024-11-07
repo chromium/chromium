@@ -50,6 +50,7 @@ UIColor* BackgroundColor() {
     ConfirmationAlertActionHandler,
     CredentialResponseHandler,
     PasskeyKeychainProviderBridgeDelegate,
+    PasskeyWelcomeScreenViewControllerDelegate,
     SuccessfulReauthTimeAccessor>
 
 // Interface for the persistent credential store.
@@ -504,6 +505,17 @@ UIColor* BackgroundColor() {
                                    primaryButtonAction:reauthenticateBlock];
 }
 
+#pragma mark - PasskeyWelcomeScreenViewControllerDelegate
+
+- (void)passkeyWelcomeScreenViewControllerShouldBeDismissed:
+    (id)passkeyWelcomeScreenViewController {
+  if (self.passkeyNavigationController.topViewController ==
+      passkeyWelcomeScreenViewController) {
+    [self.passkeyNavigationController popViewControllerAnimated:YES];
+  }
+  [self exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
+}
+
 #pragma mark - SuccessfulReauthTimeAccessor
 
 - (void)updateSuccessfulReauthTime {
@@ -942,6 +954,7 @@ UIColor* BackgroundColor() {
       [[PasskeyWelcomeScreenViewController alloc]
                    initForPurpose:purpose
           navigationItemTitleView:self.passkeyNavigationItemTitleView
+                         delegate:self
               primaryButtonAction:action];
   [self.passkeyNavigationController pushViewController:welcomeScreen
                                               animated:NO];

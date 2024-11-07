@@ -10,12 +10,23 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+@class PasskeyWelcomeScreenViewController;
+
 // Possible purposes for showing the passkey welcome screen.
 enum class PasskeyWelcomeScreenPurpose {
   kEnroll,
   kFixDegradedRecoverability,
   kReauthenticate,
 };
+
+// Delegate for the PasskeyWelcomeScreenViewController.
+@protocol PasskeyWelcomeScreenViewControllerDelegate
+
+// Dismisses the `passkeyWelcomeScreenViewController`.
+- (void)passkeyWelcomeScreenViewControllerShouldBeDismissed:
+    (PasskeyWelcomeScreenViewController*)passkeyWelcomeScreenViewController;
+
+@end
 
 // Screen shown to the user when they need to enroll or re-authenticate for
 // passkeys.
@@ -28,6 +39,8 @@ enum class PasskeyWelcomeScreenPurpose {
 // primary button displayed in the view is tapped.
 - (instancetype)initForPurpose:(PasskeyWelcomeScreenPurpose)purpose
        navigationItemTitleView:(UIView*)navigationItemTitleView
+                      delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
+                                   delegate
            primaryButtonAction:(ProceduralBlock)primaryButtonAction
     NS_DESIGNATED_INITIALIZER;
 

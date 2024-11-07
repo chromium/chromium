@@ -95,17 +95,24 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   // The view to be used as the navigation bar title view.
   UIView* _navigationItemTitleView;
 
+  // Delegate for this view controller.
+  __weak id<PasskeyWelcomeScreenViewControllerDelegate>
+      _passkeyWelcomeScreenViewControllerDelegate;
+
   // The block that should be executed when the primary button is tapped.
   ProceduralBlock _primaryButtonAction;
 }
 
 - (instancetype)initForPurpose:(PasskeyWelcomeScreenPurpose)purpose
        navigationItemTitleView:(UIView*)navigationItemTitleView
+                      delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
+                                   delegate
            primaryButtonAction:(ProceduralBlock)primaryButtonAction {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _purpose = purpose;
     _navigationItemTitleView = navigationItemTitleView;
+    _passkeyWelcomeScreenViewControllerDelegate = delegate;
     _primaryButtonAction = primaryButtonAction;
   }
   return self;
@@ -154,7 +161,8 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
 }
 
 - (void)didTapSecondaryActionButton {
-  // TODO(crbug.com/355042392): Handle taps on "Not now" button.
+  [_passkeyWelcomeScreenViewControllerDelegate
+      passkeyWelcomeScreenViewControllerShouldBeDismissed:self];
 }
 
 @end
