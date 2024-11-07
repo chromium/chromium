@@ -176,7 +176,7 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   // Step 13. If result is not null, then:
   // Step 13.1. Add module to resolved module set given settingsObject,
   // baseURLString, and normalizedSpecifier.
-  AddModuleToResolvedModuleSet(base_url,
+  AddModuleToResolvedModuleSet(base_url.GetString(),
                                parsed_specifier.GetImportMapKeyString());
 
   // Step 13.2. Return result.

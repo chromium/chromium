@@ -36,15 +36,15 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   // specifier map is an ordered map from strings to resolution results.</spec>
   //
   // An invalid KURL corresponds to a null resolution result in the spec.
-  using SpecifierMap = HashMap<String, KURL>;
+  using SpecifierMap = HashMap<AtomicString, KURL>;
 
   // <spec href="https://html.spec.whatwg.org/C#concept-import-map-scopes">an
   // ordered map of URLs to specifier maps.</spec>
   //
   // Since we don't have an ordered map, we're using a combination of a map and
   // a sorted vector.
-  using ScopesMap = HashMap<String, SpecifierMap>;
-  using ScopesVector = Vector<String>;
+  using ScopesMap = HashMap<AtomicString, SpecifierMap>;
+  using ScopesVector = Vector<AtomicString>;
 
   using IntegrityMap = HashMap<KURL, String>;
 
@@ -73,8 +73,9 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   // this call.
   void MergeExistingAndNewImportMaps(
       ImportMap* new_import_map,
-      const HashMap<String, HashSet<String>>& scoped_resolved_module_map,
-      const HashSet<String>& toplevel_resolved_module_set,
+      const HashMap<AtomicString, HashSet<AtomicString>>&
+          scoped_resolved_module_map,
+      const HashSet<AtomicString>& toplevel_resolved_module_set,
       ConsoleLogger&);
 
   String ToStringForTesting() const;

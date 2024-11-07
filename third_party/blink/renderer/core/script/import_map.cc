@@ -49,9 +49,9 @@ void AddIgnoredValueMessage(ConsoleLogger& logger,
 
 // <specdef
 // href="https://html.spec.whatwg.org/C#normalizing-a-specifier-key">
-String NormalizeSpecifierKey(const String& key_string,
-                             const KURL& base_url,
-                             ConsoleLogger& logger) {
+AtomicString NormalizeSpecifierKey(const String& key_string,
+                                   const KURL& base_url,
+                                   ConsoleLogger& logger) {
   // <spec step="1">If specifierKey is the empty string, then:</spec>
   if (key_string.empty()) {
     // <spec step="1.1">Report a warning to the console that specifier keys
@@ -60,7 +60,7 @@ String NormalizeSpecifierKey(const String& key_string,
                          "specifier keys cannot be the empty string.");
 
     // <spec step="1.2">Return null.</spec>
-    return String();
+    return g_empty_atom;
   }
 
   // <spec step="2">Let url be the result of parsing a URL-like import
@@ -71,7 +71,7 @@ String NormalizeSpecifierKey(const String& key_string,
     case ParsedSpecifier::Type::kInvalid:
     case ParsedSpecifier::Type::kBare:
       // <spec step="4">Return specifierKey.</spec>
-      return key_string;
+      return AtomicString(key_string);
 
     case ParsedSpecifier::Type::kURL:
       // <spec step="3">If url is not null, then return the serialization of
@@ -168,7 +168,7 @@ void SpecifierMapToStringForTesting(
       builder.Append(",");
     }
     is_first_key = false;
-    builder.Append(it.key.EncodeForDebugging());
+    builder.Append(it.key.GetString().EncodeForDebugging());
     builder.Append(":");
     if (it.value.IsValid()) {
       builder.Append(it.value.GetString().GetString().EncodeForDebugging());
@@ -422,7 +422,7 @@ ImportMap::SpecifierMap ImportMap::SortAndNormalizeSpecifierMap(
 
     // <spec step="2.1">Let normalizedSpecifierKey be the result of normalizing
     // a specifier key given specifierKey and baseURL.</spec>
-    const String normalized_specifier_key =
+    const AtomicString normalized_specifier_key =
         NormalizeSpecifierKey(entry.first, base_url, logger);
 
     // <spec step="2.2">If normalizedSpecifierKey is null, then continue.</spec>
@@ -562,7 +562,7 @@ std::optional<KURL> ImportMap::ResolveImportsMatch(
     const SpecifierMap& specifier_map,
     String* debug_message) const {
   DCHECK(debug_message);
-  const String key = parsed_specifier.GetImportMapKeyString();
+  const AtomicString key = parsed_specifier.GetImportMapKeyString();
 
   // <spec step="1.1">If specifierKey is normalizedSpecifier, then:</spec>
   MatchResult exact = specifier_map.find(key);
@@ -661,7 +661,7 @@ String ImportMap::ToStringForTesting() const {
       builder.Append(",");
     }
     is_first = false;
-    builder.Append(scope.EncodeForDebugging());
+    builder.Append(scope.GetString().EncodeForDebugging());
     builder.Append(":");
     SpecifierMapToStringForTesting(builder, specifier_map);
   }
@@ -696,8 +696,9 @@ String ImportMap::ResolveIntegrity(const KURL& module_url) const {
 // https://html.spec.whatwg.org/C/#merge-existing-and-new-import-maps
 void ImportMap::MergeExistingAndNewImportMaps(
     ImportMap* new_import_map,
-    const HashMap<String, HashSet<String>>& scoped_resolved_module_map,
-    const HashSet<String>& toplevel_resolved_module_set,
+    const HashMap<AtomicString, HashSet<AtomicString>>&
+        scoped_resolved_module_map,
+    const HashSet<AtomicString>& toplevel_resolved_module_set,
     ConsoleLogger& logger) {
   // 1. Let newImportMapScopes be a deep copy of newImportMap's scopes.
   // 2. Let newImportMapImports be a deep copy of newImportMap's imports.
@@ -732,7 +733,7 @@ void ImportMap::MergeExistingAndNewImportMaps(
     const auto& current_set_it = scoped_resolved_module_map.find(scope.key);
     if (current_set_it != scoped_resolved_module_map.end()) {
       const auto current_resolved_set = current_set_it->value;
-      Vector<String> specifiers_to_remove;
+      Vector<AtomicString> specifiers_to_remove;
       for (auto specifier : scope_imports.Keys()) {
         if (current_resolved_set.find(specifier) !=
             current_resolved_set.end()) {

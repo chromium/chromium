@@ -45,7 +45,7 @@ class ParsedSpecifier final {
   // Returns the string to be used as the key of import maps.
   // This is the bare specifier itself if type is kBare, or
   // serialized URL if type is kURL.
-  String GetImportMapKeyString() const;
+  AtomicString GetImportMapKeyString() const;
 
   // Returns the URL, if type is kURL, or an null URL otherwise.
   KURL GetUrl() const;

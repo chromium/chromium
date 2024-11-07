@@ -29,8 +29,9 @@ class DocumentModulatorImpl final : public ModulatorImplBase {
   void MergeExistingAndNewImportMaps(ImportMap* import_map) override;
 
   // https://html.spec.whatwg.org/C#add-module-to-resolved-module-set
-  void AddModuleToResolvedModuleSet(String referring_script_url,
-                                    String specifier) override;
+  void AddModuleToResolvedModuleSet(
+      std::optional<AtomicString> referring_script_url,
+      AtomicString specifier) override;
 
  private:
   // Implements ModulatorImplBase.
@@ -43,8 +44,8 @@ class DocumentModulatorImpl final : public ModulatorImplBase {
   // of prefixes resolved in them. That permits us to reduce the cost of merging
   // a new map, by performing more work at AddModuleToResolvedModuleSet time,
   // and by keeping more prefixes in memory.
-  HashSet<String> toplevel_resolved_module_set_;
-  HashMap<String, HashSet<String>> scoped_resolved_module_map_;
+  HashSet<AtomicString> toplevel_resolved_module_set_;
+  HashMap<AtomicString, HashSet<AtomicString>> scoped_resolved_module_map_;
 };
 
 }  // namespace blink

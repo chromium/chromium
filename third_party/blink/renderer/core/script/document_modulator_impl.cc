@@ -12,7 +12,7 @@
 namespace blink {
 
 namespace {
-Vector<String> FindPrefixes(String specifier) {
+Vector<AtomicString> FindUrlPrefixes(AtomicString specifier) {
   Vector<size_t> positions;
   constexpr char slash = '/';
   size_t position = specifier.find(slash);
@@ -22,9 +22,9 @@ Vector<String> FindPrefixes(String specifier) {
     position = specifier.find(slash, position);
   }
 
-  Vector<String> result;
+  Vector<AtomicString> result;
   for (size_t pos : positions) {
-    result.push_back(specifier.Substring(0, pos));
+    result.push_back(specifier.GetString().Substring(0, pos));
   }
 
   return result;
@@ -67,8 +67,8 @@ void DocumentModulatorImpl::MergeExistingAndNewImportMaps(
 
 // https://html.spec.whatwg.org/C#add-module-to-resolved-module-set
 void DocumentModulatorImpl::AddModuleToResolvedModuleSet(
-    String referring_script_url,
-    String specifier) {
+    std::optional<AtomicString> referring_script_url,
+    AtomicString specifier) {
   if (!RuntimeEnabledFeatures::MultipleImportMapsEnabled()) {
     return;
   }
@@ -87,25 +87,30 @@ void DocumentModulatorImpl::AddModuleToResolvedModuleSet(
   // prefixes to the sets of these referring prefixes in the
   // scoped_resolved_module_map.
   toplevel_resolved_module_set_.insert(specifier);
-  Vector<String> specifier_prefixes = FindPrefixes(specifier);
-  for (String specifier_prefix : specifier_prefixes) {
+  Vector<AtomicString> specifier_prefixes = FindUrlPrefixes(specifier);
+  for (auto specifier_prefix : specifier_prefixes) {
     toplevel_resolved_module_set_.insert(specifier_prefix);
   }
 
-  Vector<String> referring_script_prefixes = FindPrefixes(referring_script_url);
-  for (String referring_script_prefix : referring_script_prefixes) {
+  if (!referring_script_url) {
+    return;
+  }
+  Vector<AtomicString> referring_script_prefixes =
+      FindUrlPrefixes(referring_script_url.value());
+  for (auto referring_script_prefix : referring_script_prefixes) {
     const auto& current_set_it =
         scoped_resolved_module_map_.find(referring_script_prefix);
-    HashSet<String>* current_set = nullptr;
+    HashSet<AtomicString>* current_set = nullptr;
     if (current_set_it != scoped_resolved_module_map_.end()) {
       current_set = &current_set_it->value;
     } else {
-      current_set = &(scoped_resolved_module_map_
-                          .insert(referring_script_prefix, HashSet<String>())
-                          .stored_value->value);
+      current_set =
+          &(scoped_resolved_module_map_
+                .insert(referring_script_prefix, HashSet<AtomicString>())
+                .stored_value->value);
     }
     current_set->insert(specifier);
-    for (String specifier_prefix : specifier_prefixes) {
+    for (auto specifier_prefix : specifier_prefixes) {
       current_set->insert(specifier_prefix);
     }
   }
