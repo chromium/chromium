@@ -9,10 +9,9 @@
 
 #include <array>
 #include <set>
+#include <string>
 #include <string_view>
 #include <vector>
-
-
 
 namespace base {
 
@@ -138,6 +137,38 @@ void AsWritableBytesWithConstContainerDisallowed() {
 void ConstVectorDeducesAsConstSpan() {
   const std::vector<int> v;
   span<int> s = make_span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
+}
+
+// A span can only be constructed from a range rvalue when the element type is
+// read-only or the range is a borrowed range.
+void SpanFromNonConstRvalueRange() {
+  std::array<bool, 3> arr = {true, false, true};
+  [[maybe_unused]] auto a = span(std::move(arr));  // expected-error {{no matching conversion}}
+
+  std::string str = "ok";
+  [[maybe_unused]] auto b = span(std::move(str));  // expected-error {{no matching conversion}}
+
+  std::u16string str16 = u"ok";
+  [[maybe_unused]] auto c = span(std::move(str16));  // expected-error {{no matching conversion}}
+
+  std::vector<int> vec = {1, 2, 3, 4, 5};
+  [[maybe_unused]] auto d = span(std::move(vec));  // expected-error {{no matching conversion}}
+}
+
+// make_span can only be called on a range rvalue when the element type is
+// read-only or the range is a borrowed range.
+void MakeSpanFromNonConstRvalueRange() {
+  std::array<bool, 3> arr = {true, false, true};
+  [[maybe_unused]] auto a = make_span(std::move(arr));  // expected-error {{no matching function for call to 'make_span'}}
+
+  std::string str = "ok";
+  [[maybe_unused]] auto b = make_span(std::move(str));  // expected-error {{no matching function for call to 'make_span'}}
+
+  std::u16string str16 = u"ok";
+  [[maybe_unused]] auto c = make_span(std::move(str16));  // expected-error {{no matching function for call to 'make_span'}}
+
+  std::vector<int> vec = {1, 2, 3, 4, 5};
+  [[maybe_unused]] auto d = make_span(std::move(vec));  // expected-error {{no matching function for call to 'make_span'}}
 }
 
 void Dangling() {

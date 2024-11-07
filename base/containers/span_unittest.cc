@@ -129,9 +129,6 @@ namespace {
   static_assert(std::is_same_v<
                 decltype(span(std::declval<const std::array<bool, 3>&&>())),
                 span<const bool, 3>>);
-  static_assert(
-      std::is_same_v<decltype(span(std::declval<std::array<bool, 3>&&>())),
-                     span<const bool, 3>>);
 
   static_assert(
       std::is_same_v<decltype(span(std::declval<const std::string&>())),
@@ -141,8 +138,6 @@ namespace {
                      span<const char>>);
   static_assert(
       std::is_same_v<decltype(span(std::declval<std::string&>())), span<char>>);
-  static_assert(std::is_same_v<decltype(span(std::declval<std::string&&>())),
-                               span<const char>>);
   static_assert(
       std::is_same_v<decltype(span(std::declval<const std::u16string&>())),
                      span<const char16_t>>);
@@ -151,8 +146,6 @@ namespace {
                      span<const char16_t>>);
   static_assert(std::is_same_v<decltype(span(std::declval<std::u16string&>())),
                                span<char16_t>>);
-  static_assert(std::is_same_v<decltype(span(std::declval<std::u16string&&>())),
-                               span<const char16_t>>);
   static_assert(std::is_same_v<
                 decltype(span(std::declval<const std::array<float, 9>&>())),
                 span<const float, 9>>);
@@ -162,9 +155,6 @@ namespace {
   static_assert(
       std::is_same_v<decltype(span(std::declval<std::array<float, 9>&>())),
                      span<float, 9>>);
-  static_assert(
-      std::is_same_v<decltype(span(std::declval<std::array<float, 9>&&>())),
-                     span<const float, 9>>);
 }
 
 }  // namespace
@@ -2058,21 +2048,6 @@ TEST(SpanTest, MakeSpanFromContainer) {
   std::vector<int> vector = {-1, -2, -3, -4, -5};
   span<int> expected_span(vector);
   auto made_span = make_span(vector);
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent, "");
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeSpanFromRValueContainer) {
-  std::vector<int> vector = {-1, -2, -3, -4, -5};
-  span<const int> expected_span(vector);
-  // Note: While static_cast<T&&>(foo) is effectively just a fancy spelling of
-  // std::move(foo), make_span does not actually take ownership of the passed in
-  // container. Writing it this way makes it more obvious that we simply care
-  // about the right behavour when passing rvalues.
-  auto made_span = make_span(static_cast<std::vector<int>&&>(vector));
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
   static_assert(decltype(made_span)::extent == dynamic_extent, "");
