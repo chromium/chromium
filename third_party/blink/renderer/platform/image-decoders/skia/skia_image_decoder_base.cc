@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -32,6 +33,17 @@ ImageFrame::DisposalMethod ConvertDisposalMethod(
     default:
       return ImageFrame::kDisposeNotSpecified;
   }
+}
+
+ImageFrame::AlphaBlendSource ConvertAlphaBlendSource(
+    SkCodecAnimation::Blend blend) {
+  switch (blend) {
+    case SkCodecAnimation::Blend::kSrc:
+      return ImageFrame::kBlendAtopBgcolor;
+    case SkCodecAnimation::Blend::kSrcOver:
+      return ImageFrame::kBlendAtopPreviousFrame;
+  }
+  NOTREACHED();
 }
 
 }  // anonymous namespace
@@ -190,17 +202,11 @@ wtf_size_t SkiaImageDecoderBase::DecodeFrameCount() {
 void SkiaImageDecoderBase::InitializeNewFrame(wtf_size_t index) {
   DCHECK(codec_);
 
-  ImageFrame& frame = frame_buffer_cache_[index];
-  // SkCodec does not inform us if only a portion of the image was updated in
-  // the current frame. Because of this, rather than correctly filling in the
-  // frame rect, we set the frame rect to be the image's full size.
-  // The original frame rect is not used, anyway.
-  gfx::Size full_image_size = Size();
-  frame.SetOriginalFrameRect(gfx::Rect(full_image_size));
-
   SkCodec::FrameInfo frame_info;
   bool frame_info_received = codec_->getFrameInfo(index, &frame_info);
   DCHECK(frame_info_received);
+
+  ImageFrame& frame = frame_buffer_cache_[index];
   frame.SetDuration(base::Milliseconds(frame_info.fDuration));
   wtf_size_t required_previous_frame_index;
   if (frame_info.fRequiredFrame == SkCodec::kNoFrame) {
@@ -209,8 +215,10 @@ void SkiaImageDecoderBase::InitializeNewFrame(wtf_size_t index) {
     required_previous_frame_index =
         static_cast<wtf_size_t>(frame_info.fRequiredFrame);
   }
+  frame.SetOriginalFrameRect(gfx::SkIRectToRect(frame_info.fFrameRect));
   frame.SetRequiredPreviousFrameIndex(required_previous_frame_index);
   frame.SetDisposalMethod(ConvertDisposalMethod(frame_info.fDisposalMethod));
+  frame.SetAlphaBlendSource(ConvertAlphaBlendSource(frame_info.fBlend));
 }
 
 void SkiaImageDecoderBase::Decode(wtf_size_t index) {

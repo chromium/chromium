@@ -74,6 +74,7 @@ component("image_decoders") {
     "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/libyuv",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   if (enable_av1_decoder) {

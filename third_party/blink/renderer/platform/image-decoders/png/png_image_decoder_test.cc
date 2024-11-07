@@ -163,14 +163,8 @@ void CompareFrameWithExpectation(const PublicFrameInfo& expected,
 
   EXPECT_EQ(expected.duration, frame->Duration());
   EXPECT_EQ(expected.disposal_method, frame->GetDisposalMethod());
-
-  // TODO(https://crbug.com/377542069): Enable these test assertions for
-  // Rust-based decoder, once `SkiaImageDecoderBase` propagates the relevant
-  // frame metadata.
-  if (!skia::IsRustyPngEnabled()) {
-    EXPECT_EQ(expected.frame_rect, frame->OriginalFrameRect());
-    EXPECT_EQ(expected.alpha_blend, frame->GetAlphaBlendSource());
-  }
+  EXPECT_EQ(expected.frame_rect, frame->OriginalFrameRect());
+  EXPECT_EQ(expected.alpha_blend, frame->GetAlphaBlendSource());
 }
 
 // This function removes |length| bytes at |offset|, and then calls FrameCount.
@@ -1145,12 +1139,7 @@ TEST_P(AnimatedPNGTests, DecodeFromIndependentFrame) {
   frame = decoder->DecodeFrameBufferAtIndex(1);
   ASSERT_TRUE(frame);
   ASSERT_FALSE(decoder->Failed());
-  // TODO(https://crbug.com/377542069): Enable this test assertion for
-  // Rust-based decoder, once `SkiaImageDecoderBase` propagates the relevant
-  // frame metadata.
-  if (!skia::IsRustyPngEnabled()) {
-    ASSERT_NE(gfx::Rect(decoder->Size()), frame->OriginalFrameRect());
-  }
+  ASSERT_NE(gfx::Rect(decoder->Size()), frame->OriginalFrameRect());
   ASSERT_EQ(kNotFound, frame->RequiredPreviousFrameIndex());
 
   const auto hash = HashBitmap(frame->Bitmap());
