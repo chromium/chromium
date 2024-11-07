@@ -16362,6 +16362,21 @@
             ]
         }
     ],
+    "PartitionAllocPermissiveMte": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocPermissiveMte"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocUnretainedDanglingPtr": [
         {
             "platforms": [
