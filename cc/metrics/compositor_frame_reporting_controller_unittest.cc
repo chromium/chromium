@@ -22,6 +22,8 @@
 #include "base/time/time.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -125,9 +127,14 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     reporting_controller_.set_tick_clock(&test_tick_clock_);
     args_ = SimulateBeginFrameArgs(current_id_);
     reporting_controller_.SetDroppedFrameCounter(&dropped_counter_);
+    reporting_controller_.SetFrameSequenceTrackerCollection(
+        &frame_seq_tracker_collection_);
     dropped_counter_.set_total_counter(&total_frame_counter_);
   }
 
+  ~CompositorFrameReportingControllerTest() override {
+    reporting_controller_.SetFrameSequenceTrackerCollection(nullptr);
+  }
   // The following functions simulate the actions that would
   // occur for each phase of the reporting controller.
   void SimulateBeginImplFrame() {
@@ -339,6 +346,8 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   DroppedFrameCounter dropped_counter_;
   TotalFrameCounter total_frame_counter_;
   TestCompositorFrameReportingController reporting_controller_;
+  FrameSequenceTrackerCollection frame_seq_tracker_collection_{
+      /*is_single_threaded=*/false, &reporting_controller_};
   ::base::test::TracingEnvironment tracing_environment_;
 };
 

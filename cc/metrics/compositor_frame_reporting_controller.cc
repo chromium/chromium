@@ -891,15 +891,16 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
         viz::BeginFrameArgs::NORMAL);
     devtools_instrumentation::DidBeginFrame(
         layer_tree_host_id_, args.frame_time, args.frame_id.sequence_number);
-    // ThreadType::kUnknown is used here for scrolling thread, because the
-    // frames reported here could have a scroll interaction active at their
-    // start time, but they were skipped and history of scrolling thread might
-    // change in the diff of start time and report time.
+
+    // Set the scrolling thread based on the global frame sequence trackers
+    // rather than the `scrolling_thread_` member, because the scrolling thread
+    // might have changed for a skipped or backfilled frame.
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers_, args, should_report_histograms_,
         GetSmoothThreadAtTime(timestamp),
-        FrameInfo::SmoothEffectDrivingThread::kUnknown, layer_tree_host_id_,
-        global_trackers_);
+        global_trackers_.frame_sequence_trackers
+            ->GetSmoothEffectDrivingThread(),
+        layer_tree_host_id_, global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                          timestamp);

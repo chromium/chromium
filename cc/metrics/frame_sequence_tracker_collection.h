@@ -100,6 +100,8 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info);
 
+  FrameInfo::SmoothEffectDrivingThread GetSmoothEffectDrivingThread();
+
  private:
   friend class FrameSequenceTrackerTest;
 

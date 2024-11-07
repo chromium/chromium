@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
+#include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 
 namespace cc {
@@ -334,6 +335,16 @@ void FrameSequenceTrackerCollection::AddSortedFrame(
   }
 
   DestroyTrackers();
+}
+
+FrameInfo::SmoothEffectDrivingThread
+FrameSequenceTrackerCollection::GetSmoothEffectDrivingThread() {
+  for (auto const& tracker : frame_trackers_) {
+    if (IsScrollType(tracker.first.first)) {
+      return tracker.first.second;
+    }
+  }
+  return FrameInfo::SmoothEffectDrivingThread::kUnknown;
 }
 
 }  // namespace cc
