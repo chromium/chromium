@@ -32295,6 +32295,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.StandaloneFillSuggestionShown">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    The user was shown the option to fill a standalone plus address suggestion.
+  </description>
+</action>
+
 <action name="PPAPI.BrokerInfobarClickedAllow">
   <obsolete>Deprecated since the feature is deprecated.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

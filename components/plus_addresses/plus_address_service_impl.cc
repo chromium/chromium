@@ -533,6 +533,25 @@ bool PlusAddressServiceImpl::IsSupportedOrigin(
 void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
     SuggestionEvent suggestion_event) {
   metrics::RecordAutofillSuggestionEvent(suggestion_event);
+  using enum autofill::AutofillPlusAddressDelegate::SuggestionEvent;
+  switch (suggestion_event) {
+    case kRefreshPlusAddressInlineClicked:
+      base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
+      return;
+    case kExistingPlusAddressSuggested:
+      base::RecordAction(base::UserMetricsAction(
+          "PlusAddresses.StandaloneFillSuggestionShown"));
+      return;
+    case kCreateNewPlusAddressSuggested:
+    case kCreateNewPlusAddressInlineSuggested:
+    case kErrorDuringReserve:
+    case kExistingPlusAddressChosen:
+    case kCreateNewPlusAddressChosen:
+    case kCreateNewPlusAddressInlineChosen:
+    case kCreateNewPlusAddressInlineReserveLoadingStateShown:
+      return;
+  }
+  NOTREACHED();
 }
 
 void PlusAddressServiceImpl::OnPlusAddressSuggestionShown(
@@ -561,7 +580,6 @@ void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(
         update_suggestions_callback) {
   RecordAutofillSuggestionEvent(
       SuggestionEvent::kRefreshPlusAddressInlineClicked);
-  base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
   PlusAddressSuggestionGenerator(&setting_service_.get(),

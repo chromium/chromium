@@ -1356,6 +1356,7 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
 // focused field matches the prefix of an existing plus address.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   service().SavePlusProfile(profile);
@@ -1370,7 +1371,9 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 1);
-
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.StandaloneFillSuggestionShown"),
+            1);
   // If the user types a letter and it matches the plus address (after
   // normalization), the plus address continues to be offered.
   focused_field.set_value(u"P");
@@ -1382,7 +1385,9 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 2);
-
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.StandaloneFillSuggestionShown"),
+            2);
   // If the value does not match the prefix of the plus address, nothing is
   // shown.
   focused_field.set_value(u"pp");
@@ -1401,6 +1406,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
 TEST_F(PlusAddressSuggestionsTest,
        SuggestionsForExistingPlusAddressWithManualFallback) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   service().SavePlusProfile(profile);
@@ -1416,7 +1422,9 @@ TEST_F(PlusAddressSuggestionsTest,
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 1);
-
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.StandaloneFillSuggestionShown"),
+            1);
   // We also offer filling if the field is not empty and the prefix does not
   // match the address.
   focused_field.set_value(u"pp");
@@ -1429,6 +1437,9 @@ TEST_F(PlusAddressSuggestionsTest,
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 2);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.StandaloneFillSuggestionShown"),
+            2);
 }
 
 // Tests that a create plus address suggestion is offered if there is no
