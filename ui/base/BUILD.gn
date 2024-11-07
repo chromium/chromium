@@ -115,6 +115,8 @@ component("base") {
   output_name = "ui_base"
 
   sources = [
+    "accelerators/accelerator.cc",
+    "accelerators/accelerator.h",
     "class_property.cc",
     "class_property.h",
     "default_style.h",
@@ -357,8 +359,6 @@ component("base") {
 
   if (is_ios) {
     sources += [
-      "accelerators/accelerator.cc",
-      "accelerators/accelerator.h",
       "device_form_factor_ios.mm",
       "resource/resource_bundle_ios.mm",
     ]
@@ -372,8 +372,6 @@ component("base") {
 
   if (use_blink) {
     sources += [
-      "accelerators/accelerator.cc",
-      "accelerators/accelerator.h",
       "accelerators/accelerator_manager.cc",
       "accelerators/accelerator_manager.h",
       "accelerators/accelerator_map.h",
