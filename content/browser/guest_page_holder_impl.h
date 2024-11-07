@@ -11,6 +11,7 @@
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/guest_page_holder.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace content {
 
@@ -69,6 +70,8 @@ class GuestPageHolderImpl : public GuestPageHolder,
   ForwardingAudioStreamFactory* GetAudioStreamFactory();
   void SetAudioMutedFromWebContents(bool web_contents_muted);
 
+  const blink::RendererPreferences& GetRendererPrefs();
+
   // If the `render_frame_host` is within a guest, returns the guest's
   // associated GuestPageHolder. Will return null if `render_frame_host`
   // is not within a guest.
@@ -90,6 +93,8 @@ class GuestPageHolderImpl : public GuestPageHolder,
   FrameTree frame_tree_;
 
   bool audio_muted_ = false;
+
+  blink::RendererPreferences renderer_preferences_;
 };
 
 }  // namespace content

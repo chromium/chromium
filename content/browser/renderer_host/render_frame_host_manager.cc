@@ -5466,17 +5466,17 @@ void RenderFrameHostManager::ExecutePageBroadcastMethod(
     if (pair.second->site_instance_group() == group_to_skip) {
       continue;
     }
-    callback.Run(pair.second->GetRenderViewHost());
+    callback(pair.second->GetRenderViewHost());
   }
 
   if (speculative_render_frame_host_ &&
       speculative_render_frame_host_->GetSiteInstance()->group() !=
           group_to_skip) {
-    callback.Run(speculative_render_frame_host_->render_view_host());
+    callback(speculative_render_frame_host_->render_view_host());
   }
 
   if (render_frame_host_->GetSiteInstance()->group() != group_to_skip) {
-    callback.Run(render_frame_host_->render_view_host());
+    callback(render_frame_host_->render_view_host());
   }
 }
 

@@ -4620,13 +4620,13 @@ void NavigationControllerImpl::BroadcastHistoryOffsetAndLength() {
       "history_offset", GetLastCommittedEntryIndex(), "history_length",
       GetEntryCount());
 
-  auto callback = base::BindRepeating(
-      [](int history_offset, int history_length, RenderViewHostImpl* rvh) {
-        if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
-          broadcast->SetHistoryOffsetAndLength(history_offset, history_length);
-        }
-      },
-      GetLastCommittedEntryIndex(), GetEntryCount());
+  int history_offset = GetLastCommittedEntryIndex();
+  int history_length = GetEntryCount();
+  auto callback = [history_offset, history_length](RenderViewHostImpl* rvh) {
+    if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+      broadcast->SetHistoryOffsetAndLength(history_offset, history_length);
+    }
+  };
   frame_tree_->root()->render_manager()->ExecutePageBroadcastMethod(callback);
 }
 

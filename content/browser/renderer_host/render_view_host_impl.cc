@@ -449,8 +449,7 @@ bool RenderViewHostImpl::CreateRenderView(
 
   mojom::CreateViewParamsPtr params = mojom::CreateViewParams::New();
 
-  params->renderer_preferences = delegate_->GetRendererPrefs();
-  RenderViewHostImpl::GetPlatformSpecificPrefs(&params->renderer_preferences);
+  params->renderer_preferences = delegate_->GetRendererPrefs(this);
   params->web_preferences = delegate_->GetOrCreateWebPreferences();
   params->color_provider_colors = delegate_->GetColorProviderColorMaps();
   params->opener_frame_token = opener_frame_token;

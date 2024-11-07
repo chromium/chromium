@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_BROWSING_CONTEXT_STATE_H_
 
 #include "base/feature_list.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/safe_ref.h"
 #include "base/unguessable_token.h"
@@ -263,7 +264,7 @@ class CONTENT_EXPORT BrowsingContextState
       const blink::mojom::FrameOwnerProperties& properties);
 
   void ExecuteRemoteFramesBroadcastMethod(
-      base::RepeatingCallback<void(RenderFrameProxyHost*)> callback,
+      base::FunctionRef<void(RenderFrameProxyHost*)> callback,
       SiteInstanceGroup* group_to_skip,
       RenderFrameProxyHost* outer_delegate_proxy);
 

@@ -29,6 +29,7 @@ namespace content {
 
 class RenderViewHost;
 class RenderViewHostDelegateView;
+class RenderViewHostImpl;
 
 //
 // RenderViewHostDelegate
@@ -66,9 +67,10 @@ class RenderViewHostDelegate {
   // `blink::WebView` is going to be destroyed
   virtual void RenderViewDeleted(RenderViewHost* render_view_host) {}
 
-  // Return a dummy RendererPreferences object that will be used by the renderer
-  // associated with the owning RenderViewHost.
-  virtual const blink::RendererPreferences& GetRendererPrefs() const = 0;
+  // Returns a RendererPreferences object that will be used by the renderer
+  // associated with the given `render_view_host`.
+  virtual const blink::RendererPreferences& GetRendererPrefs(
+      RenderViewHostImpl* render_view_host) = 0;
 
   // Notification from the renderer host that blocked UI event occurred.
   // This happens when there are tab-modal dialogs. In this case, the

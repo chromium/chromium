@@ -176,14 +176,12 @@ void PageImpl::OnTextAutosizerPageInfoChanged(
   text_autosizer_page_info_.device_scale_adjustment =
       page_info->device_scale_adjustment;
 
-  auto remote_frames_broadcast_callback = base::BindRepeating(
-      [](const blink::mojom::TextAutosizerPageInfo& page_info,
-         RenderFrameProxyHost* proxy_host) {
+  auto remote_frames_broadcast_callback =
+      [this](RenderFrameProxyHost* proxy_host) {
         DCHECK(proxy_host);
         proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
-            page_info.Clone());
-      },
-      text_autosizer_page_info_);
+            text_autosizer_page_info_.Clone());
+      };
 
   main_document_->frame_tree()
       ->root()

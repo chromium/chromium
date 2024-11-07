@@ -692,15 +692,14 @@ void Navigator::DidNavigate(
   if (old_entry_count != controller_.GetEntryCount() ||
       details.previous_entry_index !=
           controller_.GetLastCommittedEntryIndex()) {
+    int history_offset = controller_.GetLastCommittedEntryIndex();
+    int history_count = controller_.GetEntryCount();
     frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(
-        base::BindRepeating(
-            [](int history_offset, int history_count, RenderViewHostImpl* rvh) {
-              if (auto& broadcast = rvh->GetAssociatedPageBroadcast())
-                broadcast->SetHistoryOffsetAndLength(history_offset,
-                                                     history_count);
-            },
-            controller_.GetLastCommittedEntryIndex(),
-            controller_.GetEntryCount()),
+        [history_offset, history_count](RenderViewHostImpl* rvh) {
+          if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+            broadcast->SetHistoryOffsetAndLength(history_offset, history_count);
+          }
+        },
         site_instance->group());
   }
 
@@ -718,14 +717,12 @@ void Navigator::DidNavigate(
         final_site_instance->browsing_instance_token(),
         final_site_instance->coop_related_group_token());
     frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(
-        base::BindRepeating(
-            [](const blink::BrowsingContextGroupInfo& info,
-               RenderViewHostImpl* rvh) {
-              if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
-                broadcast->UpdatePageBrowsingContextGroup(info);
-              }
-            },
-            browsing_context_group_info),
+        [&browsing_context_group_info](RenderViewHostImpl* rvh) {
+          if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+            broadcast->UpdatePageBrowsingContextGroup(
+                browsing_context_group_info);
+          }
+        },
         final_site_instance->group());
   }
 

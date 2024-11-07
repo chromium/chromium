@@ -82,7 +82,10 @@ void KeySystemSupportImpl::InitializePermissions() {
   auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
   is_protected_content_allowed_ =
-      web_contents->GetRendererPrefs().enable_encrypted_media;
+      web_contents
+          ->GetRendererPrefs(static_cast<RenderViewHostImpl*>(
+              render_frame_host().GetRenderViewHost()))
+          .enable_encrypted_media;
 
 // Initialize permissions for platforms that supports
 // PROTECTED_MEDIA_IDENTIFIER.

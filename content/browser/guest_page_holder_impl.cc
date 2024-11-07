@@ -63,11 +63,6 @@ GuestPageHolderImpl::GuestPageHolderImpl(
   if (owner_web_contents.IsAudioMuted()) {
     GetAudioStreamFactory()->SetMuted(true);
   }
-
-  // TODO(crbug.com/40202416): MPArch based guests need to override
-  // RendererPreferences from their embedder. Notably, we need to force
-  // `browser_handles_all_top_level_requests` off, otherwise renderer initiated
-  // navigation would be disabled in guests embedded in Chrome Apps.
 }
 
 GuestPageHolderImpl::~GuestPageHolderImpl() {
@@ -186,6 +181,24 @@ ForwardingAudioStreamFactory* GuestPageHolderImpl::GetAudioStreamFactory() {
   return audio_stream_factory_.get();
 }
 
+const blink::RendererPreferences& GuestPageHolderImpl::GetRendererPrefs() {
+  // Copy the renderer preferences of the primary main frame, then apply guest
+  // specific changes.
+  renderer_preferences_ = owner_web_contents_->GetRendererPrefs(
+      owner_web_contents_->GetRenderViewHost());
+
+  // Navigation is disabled in Chrome Apps. We want to make sure guest-initiated
+  // navigations still continue to function inside the app.
+  renderer_preferences_.browser_handles_all_top_level_requests = false;
+  // Also disable drag/drop navigations.
+  renderer_preferences_.can_accept_load_drops = false;
+
+  // TODO(crbug.com/40202416): Let the delegate make additional modifications.
+  // TODO(crbug.com/376085326): Apply user agent override.
+
+  return renderer_preferences_;
+}
+
 GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(
     RenderFrameHostImpl& render_frame_host) {
   // Escape fenced frames, looking at the outermost main frame (not escaping
@@ -195,12 +208,22 @@ GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(
   if (!frame_tree->is_guest()) {
     return nullptr;
   }
-  FrameTreeNode* frame_in_embedder =
-      frame_tree->root()->render_manager()->GetOuterDelegateNode();
-  CHECK(frame_in_embedder);
+
+  // Guest FrameTrees are only created with a GuestPageHolderImpl as the
+  // FrameTree delegate.
   GuestPageHolderImpl* holder =
-      frame_in_embedder->parent()->FindGuestPageHolder(frame_in_embedder);
+      static_cast<GuestPageHolderImpl*>(frame_tree->delegate());
   CHECK(holder);
+
+  // If the guest is attached, we can lookup the GuestPageHolderImpl via the
+  // embedder to validate the correctness of the above static_cast.
+  if (FrameTreeNode* frame_in_embedder =
+          frame_tree->root()->render_manager()->GetOuterDelegateNode()) {
+    GuestPageHolderImpl* holder_via_embedder =
+        frame_in_embedder->parent()->FindGuestPageHolder(frame_in_embedder);
+    CHECK_EQ(holder, holder_via_embedder);
+  }
+
   return holder;
 }
 
