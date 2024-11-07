@@ -39,8 +39,6 @@ using UkmSuggestionsShownType = ukm::builders::Autofill_SuggestionsShown;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using UkmLogHiddenRepresentationalFieldSkipDecisionType =
     ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision;
-using UkmLogRepeatedServerTypePredictionRationalized =
-    ukm::builders::Autofill_RepeatedServerTypePredictionRationalized;
 using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using UkmEditedAutofilledFieldAtSubmission =
     ukm::builders::Autofill_EditedAutofilledFieldAtSubmission;
@@ -162,105 +160,6 @@ TEST_F(FormInteractionsUkmLoggerTest,
          HtmlFieldMode::kNone},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kIsSkippedName,
          false}}});
-}
-
-// Test that we log the address line fields whose server types are rationalized
-TEST_F(FormInteractionsUkmLoggerTest, LogRepeatedAddressTypeRationalized) {
-  FormData form = CreateEmptyForm();
-
-  FieldSignature field_signature[2];
-
-  FormFieldData field;
-  field.set_form_control_type(FormControlType::kInputText);
-
-  field.set_label(u"fullname");
-  field.set_name(u"fullname");
-  test_api(form).Append(field);
-
-  field.set_label(u"Street 1");
-  field.set_name(u"street1");
-  test_api(form).Append(field);
-  field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
-
-  field.set_label(u"Street 2");
-  field.set_name(u"street2");
-  test_api(form).Append(field);
-  field_signature[1] = Collapse(CalculateFieldSignatureForField(field));
-
-  FormSignature form_signature = Collapse(CalculateFormSignature(form));
-
-  FormStructure form_structure(form);
-
-  std::vector<FieldType> field_types;
-  for (size_t i = 0; i < form_structure.field_count(); ++i) {
-    field_types.push_back(UNKNOWN_TYPE);
-  }
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  AddFieldPredictionToForm(form.fields()[0], NAME_FULL, form_suggestion);
-  AddFieldPredictionToForm(form.fields()[1], ADDRESS_HOME_STREET_ADDRESS,
-                           form_suggestion);
-  AddFieldPredictionToForm(form.fields()[2], ADDRESS_HOME_STREET_ADDRESS,
-                           form_suggestion);
-
-  std::string response_string = SerializeAndEncode(response);
-  ParseServerPredictionsQueryResponse(
-      response_string, {&form_structure},
-      test::GetEncodedSignatures({&form_structure}),
-      autofill_manager().form_interactions_ukm_logger(), nullptr);
-
-  ASSERT_EQ(test_ukm_recorder()
-                .GetEntriesByName(
-                    UkmLogRepeatedServerTypePredictionRationalized::kEntryName)
-                .size(),
-            (size_t)2);
-
-  VerifyUkm(
-      &test_ukm_recorder(), form,
-      UkmLogRepeatedServerTypePredictionRationalized::kEntryName,
-      {{{UkmLogRepeatedServerTypePredictionRationalized::kFormSignatureName,
-         form_signature.value()},
-        {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
-         field_signature[0].value()},
-        {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         static_cast<int64_t>(FieldTypeGroup::kAddress)},
-        {UkmLogRepeatedServerTypePredictionRationalized::
-             kFieldOldOverallTypeName,
-         ADDRESS_HOME_STREET_ADDRESS},
-        {UkmLogRepeatedServerTypePredictionRationalized::kHeuristicTypeName,
-         UNKNOWN_TYPE},
-        {UkmLogRepeatedServerTypePredictionRationalized::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmLogRepeatedServerTypePredictionRationalized::kHtmlFieldModeName,
-         HtmlFieldMode::kNone},
-        {UkmLogRepeatedServerTypePredictionRationalized::
-             kFieldNewOverallTypeName,
-         ADDRESS_HOME_LINE1},
-        {UkmLogRepeatedServerTypePredictionRationalized::kServerTypeName,
-         ADDRESS_HOME_STREET_ADDRESS}},
-       {{UkmLogRepeatedServerTypePredictionRationalized::kFormSignatureName,
-         form_signature.value()},
-        {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
-         field_signature[1].value()},
-        {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         static_cast<int64_t>(FieldTypeGroup::kAddress)},
-        {UkmLogRepeatedServerTypePredictionRationalized::
-             kFieldOldOverallTypeName,
-         ADDRESS_HOME_STREET_ADDRESS},
-        {UkmLogRepeatedServerTypePredictionRationalized::kHeuristicTypeName,
-         UNKNOWN_TYPE},
-        {UkmLogRepeatedServerTypePredictionRationalized::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmLogRepeatedServerTypePredictionRationalized::kHtmlFieldModeName,
-         HtmlFieldMode::kNone},
-        {UkmLogRepeatedServerTypePredictionRationalized::
-             kFieldNewOverallTypeName,
-         ADDRESS_HOME_LINE2},
-        {UkmLogRepeatedServerTypePredictionRationalized::kServerTypeName,
-         ADDRESS_HOME_STREET_ADDRESS}}});
 }
 
 // Verify that when submitting an autofillable form, the proper type of
@@ -645,8 +544,7 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
 
   auto form_structure = std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                          nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
   ASSERT_TRUE(
       test_api(autofill_manager())
           .mutable_form_structures()

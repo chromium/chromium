@@ -20,8 +20,7 @@ std::unique_ptr<FormStructure> GetFormStructure(
     const test::FormDescription& form_description) {
   auto form_structure =
       std::make_unique<FormStructure>(test::GetFormData(form_description));
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                          nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
   return form_structure;
 }
 

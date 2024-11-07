@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -795,8 +794,6 @@ void FormStructureRationalizer::RationalizePhoneNumbersForFilling() {
 }
 
 void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
-    FormSignature form_signature,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   // Group ADDRESS_HOME_STREET_ADDRESS `fields_` by section.
   std::map<Section, std::vector<AutofillField*>> street_address_fields;
@@ -821,11 +818,6 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
           << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to "
           << FieldTypeToString(*next_type);
       field->SetTypeTo(AutofillType(*next_type));
-      if (form_interactions_ukm_logger) {
-        form_interactions_ukm_logger
-            ->LogRepeatedServerTypePredictionRationalized(
-                form_signature, *field, ADDRESS_HOME_STREET_ADDRESS);
-      }
       ++next_type;
     }
   }
@@ -833,16 +825,13 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
 
 void FormStructureRationalizer::RationalizeFieldTypePredictions(
     const url::Origin& main_origin,
-    FormSignature form_signature,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const GeoIpCountryCode& client_country,
     const LanguageCode& language_code,
     LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
   RationalizeCreditCardNumberOffsets(log_manager);
-  RationalizeRepeatedStreetAddressFields(
-      form_signature, form_interactions_ukm_logger, log_manager);
+  RationalizeRepeatedStreetAddressFields(log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizeBetweenStreetFields(log_manager);
   RationalizePhoneNumberTrunkTypes(log_manager);

@@ -865,28 +865,6 @@ void FormInteractionsUkmLogger::LogHiddenRepresentationalFieldSkipDecision(
       .Record(ukm_recorder_);
 }
 
-void FormInteractionsUkmLogger::LogRepeatedServerTypePredictionRationalized(
-    const FormSignature form_signature,
-    const AutofillField& field,
-    FieldType old_type) {
-  if (!CanLog()) {
-    return;
-  }
-
-  ukm::builders::Autofill_RepeatedServerTypePredictionRationalized(
-      GetSourceId())
-      .SetFormSignature(HashFormSignature(form_signature))
-      .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetFieldTypeGroup(static_cast<int>(field.Type().group()))
-      .SetFieldNewOverallType(static_cast<int>(field.Type().GetStorableType()))
-      .SetHeuristicType(static_cast<int>(field.heuristic_type()))
-      .SetHtmlFieldType(static_cast<int>(field.html_type()))
-      .SetHtmlFieldMode(static_cast<int>(field.html_mode()))
-      .SetServerType(static_cast<int>(field.server_type()))
-      .SetFieldOldOverallType(static_cast<int>(old_type))
-      .Record(ukm_recorder_);
-}
-
 ukm::SourceId FormInteractionsUkmLogger::GetSourceId() {
   if (!source_id_.has_value()) {
     source_id_ = autofill_client_->GetUkmSourceId();

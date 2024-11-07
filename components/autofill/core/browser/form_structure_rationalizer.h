@@ -18,10 +18,6 @@ namespace autofill {
 
 class LogManager;
 
-namespace autofill_metrics {
-class FormInteractionsUkmLogger;
-}
-
 // Rationalization is the process of taking a parsed form structure and
 // changing the types of fields based on their context based on assumptions
 // about how forms should be structured.
@@ -68,8 +64,6 @@ class FormStructureRationalizer {
   // when it considers necessary.
   void RationalizeFieldTypePredictions(
       const url::Origin& main_origin,
-      FormSignature form_signature,
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       const GeoIpCountryCode& client_country,
       const LanguageCode& language_code,
       LogManager* log_manager);
@@ -102,10 +96,7 @@ class FormStructureRationalizer {
   // Rewrites two or three (not necessarily consecutive)
   // ADDRESS_HOME_STREET_ADDRESS fields in the same section into address line 1,
   // 2 and 3.
-  void RationalizeRepeatedStreetAddressFields(
-      FormSignature form_signature,
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      LogManager* log_manager);
+  void RationalizeRepeatedStreetAddressFields(LogManager* log_manager);
 
   // Rewrites sequences of (street address, address_line2) into (address_line1,
   // address_line2) as server predictions sometimes introduce wrong street

@@ -594,14 +594,11 @@ void AutofillManager::ParseFormsAsync(
 
   // To be run on a different task (must not access global or member
   // variables).
-  // TODO(crbug.com/40219607): We can't pass a UKM logger because it's a member
-  // variable. To be fixed.
   auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
     for (auto& form_structure : context.form_structures) {
-      form_structure->DetermineHeuristicTypes(
-          context.country_code,
-          /*form_interactions_ukm_logger=*/nullptr, context.log_manager.get());
+      form_structure->DetermineHeuristicTypes(context.country_code,
+                                              context.log_manager.get());
     }
     return context;
   };
@@ -727,13 +724,10 @@ void AutofillManager::ParseFormAsync(
 
   // To be run on a different task (must not access global or member
   // variables).
-  // TODO(crbug.com/40219607): We can't pass a UKM logger because it's a member
-  // variable. To be fixed.
   auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormAsync.RunHeuristics");
-    context.form_structure->DetermineHeuristicTypes(
-        context.country_code,
-        /*form_interactions_ukm_logger=*/nullptr, context.log_manager.get());
+    context.form_structure->DetermineHeuristicTypes(context.country_code,
+                                                    context.log_manager.get());
     return context;
   };
 
@@ -836,8 +830,7 @@ void AutofillManager::OnLoadedServerPredictions(
   // Parse and store the server predictions.
   ParseServerPredictionsQueryResponse(
       std::move(response->response), queried_forms,
-      response->queried_form_signatures, form_interactions_ukm_logger(),
-      log_manager_);
+      response->queried_form_signatures, log_manager_);
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.

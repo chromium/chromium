@@ -120,9 +120,8 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
@@ -144,9 +143,8 @@ TEST_F(AutofillOptimizationGuideTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
@@ -168,9 +166,8 @@ TEST_F(AutofillOptimizationGuideTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
@@ -189,9 +186,8 @@ TEST_F(AutofillOptimizationGuideTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
@@ -207,9 +203,8 @@ TEST_F(AutofillOptimizationGuideTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
   personal_data_manager_.reset();
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);

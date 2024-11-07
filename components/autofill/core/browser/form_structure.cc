@@ -193,7 +193,6 @@ void FormStructure::DetermineFieldRanks() {
 
 void FormStructure::DetermineHeuristicTypes(
     const GeoIpCountryCode& client_country,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
@@ -226,7 +225,7 @@ void FormStructure::DetermineHeuristicTypes(
 
   UpdateAutofillCount();
   AssignSections(fields_);
-  RationalizeFormStructure(form_interactions_ukm_logger, log_manager);
+  RationalizeFormStructure(log_manager);
   RationalizePhoneNumberFieldsForFilling();
 
   // Log the field type predicted by rationalization.
@@ -876,15 +875,13 @@ void FormStructure::RationalizePhoneNumberFieldsForFilling() {
   rationalizer.RationalizePhoneNumbersForFilling();
 }
 
-void FormStructure::RationalizeFormStructure(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    LogManager* log_manager) {
+void FormStructure::RationalizeFormStructure(LogManager* log_manager) {
   FormStructureRationalizer rationalizer(&fields_);
   rationalizer.RationalizeContentEditables(log_manager);
   rationalizer.RationalizeAutocompleteAttributes(log_manager);
   rationalizer.RationalizeFieldTypePredictions(
-      main_frame_origin(), form_signature(), form_interactions_ukm_logger,
-      client_country(), current_page_language(), log_manager);
+      main_frame_origin(), client_country(), current_page_language(),
+      log_manager);
 }
 
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {

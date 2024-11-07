@@ -41,10 +41,6 @@ class TimeTicks;
 
 namespace autofill {
 
-namespace autofill_metrics {
-class FormInteractionsUkmLogger;
-}
-
 class LogBuffer;
 class LogManager;
 struct ParsingContext;
@@ -75,7 +71,6 @@ class FormStructure {
   // types.
   void DetermineHeuristicTypes(
       const GeoIpCountryCode& client_country,
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 
   // Returns predictions using the details from the given |form_structures| and
@@ -239,9 +234,7 @@ class FormStructure {
 
   // Rationalize the form's autocomplete attributes, repeated fields and field
   // type predictions.
-  void RationalizeFormStructure(
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      LogManager* log_manager);
+  void RationalizeFormStructure(LogManager* log_manager);
 
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.

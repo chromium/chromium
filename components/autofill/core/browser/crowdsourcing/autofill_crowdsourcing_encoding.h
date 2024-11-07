@@ -14,10 +14,6 @@
 
 namespace autofill {
 
-namespace autofill_metrics {
-class FormInteractionsUkmLogger;
-}
-
 // Encodes the given FormStructure as a vector of protobufs.
 //
 // On success, the returned vector is non-empty. The first element encodes the
@@ -71,18 +67,15 @@ void ParseServerPredictionsQueryResponse(
     std::string_view payload,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager);
 
 // Parses the field types from the server query response. `forms` must be the
 // same as the one passed to `EncodeAutofillPageQueryRequest()` when
-// constructing the query. `form_interactions_ukm_logger` is used to provide
-// logs to UKM and can be null in tests.
+// constructing the query.
 void ProcessServerPredictionsQueryResponse(
     const AutofillQueryResponse& response,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager);
 
 }  // namespace autofill

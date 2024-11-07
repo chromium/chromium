@@ -2775,67 +2775,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.RepeatedServerTypePredictionRationalized">
-  <owner>parastoog@chromium.org</owner>
-  <summary>
-    Recorded when a field type predicted by server is rationalized because of
-    repetition.
-  </summary>
-  <metric name="FieldNewOverallType">
-    <summary>
-      Field's overall |FieldType| after rationalization. See
-      |AutofillField.GetStorableType()|.
-    </summary>
-  </metric>
-  <metric name="FieldOldOverallType">
-    <summary>
-      Field's overall |FieldType| before rationalization. See
-      |AutofillField.GetStorableType()|.
-    </summary>
-  </metric>
-  <metric name="FieldSignature">
-    <summary>
-      The signature of the field (mod 1021). This is the hash identifier used to
-      denote this field for query and voting purposes. See
-      components/autofill/core/common/signatures.cc for more details.
-    </summary>
-  </metric>
-  <metric name="FieldTypeGroup">
-    <summary>
-      Field's |FieldTypeGroup|. See |AutofillType.group()|.
-    </summary>
-  </metric>
-  <metric name="FormSignature">
-    <summary>
-      The signature of the form (mod 1021). This is the hash identifier used to
-      denote this form for query and voting purposes. See
-      components/autofill/core/common/signatures.cc for more details.
-    </summary>
-  </metric>
-  <metric name="HeuristicType">
-    <summary>
-      Field's |FieldType| based on heuristics. See
-      |AutofillField.heuristic_type()|.
-    </summary>
-  </metric>
-  <metric name="HtmlFieldMode">
-    <summary>
-      Whether the field's autocomplete hint specified 'billing' or 'shipping'.
-      See |AutofillField.html_mode()|.
-    </summary>
-  </metric>
-  <metric name="HtmlFieldType">
-    <summary>
-      Field's autocomplete field type hint. See |AutofillField.html_type()|.
-    </summary>
-  </metric>
-  <metric name="ServerType">
-    <summary>
-      Field's |FieldType| returned by server. See |AutofillField.server_type()|.
-    </summary>
-  </metric>
-</event>
-
 <event name="Autofill.SuggestionFilled">
   <owner>jsaul@google.com</owner>
   <summary>
