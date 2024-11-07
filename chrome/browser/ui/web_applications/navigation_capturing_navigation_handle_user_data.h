@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_NAVIGATION_HANDLE_USER_DATA_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_NAVIGATION_HANDLE_USER_DATA_H_
+#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_NAVIGATION_HANDLE_USER_DATA_H_
+#define CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_NAVIGATION_HANDLE_USER_DATA_H_
 
 #include <optional>
 
@@ -161,21 +161,39 @@ class NavigationCapturingNavigationHandleUserData
 
   // Information necessary to perform different actions based on multiple
   // redirects.
-  NavigationCapturingRedirectionInfo redirection_info() {
+  const std::optional<NavigationCapturingRedirectionInfo>& redirection_info() {
     return redirection_info_;
   }
+
+  // Set the app id of the app that was/will be launched as a result of this
+  // navigation. This is used by `MaybePerformAppHandlingTasksInWebContents` to
+  // decide if launch params, launch metrics and possible navigation capturing
+  // IPH need to be triggered.
+  std::optional<webapps::AppId> launched_app() const { return launched_app_; }
+  void set_launched_app(std::optional<webapps::AppId> launched_app) {
+    launched_app_ = launched_app;
+  }
+
+  // If this navigation triggered a web app launch, this method will queue
+  // launch params, record launch metrics and maybe show a navigation capturing
+  // IPH. Should be called when it is known that this navigation will commit.
+  void MaybePerformAppHandlingTasksInWebContents();
 
  private:
   NavigationCapturingNavigationHandleUserData(
       content::NavigationHandle& navigation_handle,
-      NavigationCapturingRedirectionInfo redirection_info);
+      std::optional<NavigationCapturingRedirectionInfo> redirection_info,
+      std::optional<webapps::AppId> launched_app);
 
   friend NavigationHandleUserData;
 
-  NavigationCapturingRedirectionInfo redirection_info_;
+  raw_ref<content::NavigationHandle> navigation_handle_;
+  std::optional<NavigationCapturingRedirectionInfo> redirection_info_;
+  std::optional<webapps::AppId> launched_app_;
+
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_NAVIGATION_HANDLE_USER_DATA_H_
+#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_NAVIGATION_HANDLE_USER_DATA_H_

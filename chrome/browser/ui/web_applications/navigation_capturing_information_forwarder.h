@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_INFORMATION_FORWARDER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_INFORMATION_FORWARDER_H_
+#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_INFORMATION_FORWARDER_H_
+#define CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_INFORMATION_FORWARDER_H_
 
-#include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -40,13 +40,15 @@ class NavigationCapturingInformationForwarder
  private:
   NavigationCapturingInformationForwarder(
       content::WebContents* contents,
-      NavigationCapturingRedirectionInfo redirection_info);
+      NavigationCapturingRedirectionInfo redirection_info,
+      std::optional<webapps::AppId> launched_app_id);
   friend WebContentsUserData;
 
   NavigationCapturingRedirectionInfo redirection_info_;
+  std::optional<webapps::AppId> launched_app_id_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_INFORMATION_FORWARDER_H_
+#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_INFORMATION_FORWARDER_H_

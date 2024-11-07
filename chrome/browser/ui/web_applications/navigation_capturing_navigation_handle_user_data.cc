@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_navigation_handle_user_data.h"
 
 #include "base/strings/to_string.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/web_app_launch_params.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -120,8 +125,41 @@ NavigationCapturingNavigationHandleUserData::
 NavigationCapturingNavigationHandleUserData::
     NavigationCapturingNavigationHandleUserData(
         content::NavigationHandle& navigation_handle,
-        NavigationCapturingRedirectionInfo redirection_info)
-    : redirection_info_(std::move(redirection_info)) {}
+        std::optional<NavigationCapturingRedirectionInfo> redirection_info,
+        std::optional<webapps::AppId> launched_app)
+    : navigation_handle_(navigation_handle),
+      redirection_info_(std::move(redirection_info)),
+      launched_app_(std::move(launched_app)) {}
+
+void NavigationCapturingNavigationHandleUserData::
+    MaybePerformAppHandlingTasksInWebContents() {
+  if (!launched_app_.has_value()) {
+    return;
+  }
+
+  const webapps::AppId& app_id = *launched_app_;
+  content::WebContents* web_contents = navigation_handle_->GetWebContents();
+
+  EnqueueLaunchParams(
+      web_contents, app_id, navigation_handle_->GetURL(),
+      /*wait_for_navigation_to_complete=*/!navigation_handle_->HasCommitted());
+
+  apps::LaunchContainer container =
+      WebAppTabHelper::FromWebContents(web_contents)->is_in_app_window()
+          ? apps::LaunchContainer::kLaunchContainerWindow
+          : apps::LaunchContainer::kLaunchContainerTab;
+  RecordLaunchMetrics(app_id, container,
+                      apps::LaunchSource::kFromNavigationCapturing,
+                      navigation_handle_->GetURL(), web_contents);
+
+  // TODO(crbug.com/371237535): Avoid reliance on FindBrowserWithTab and instead
+  // pass in the Browser instance earlier.
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  // TODO(crbug.com/336371044): Support IPH in browser tabs.
+  if (browser->app_controller()) {
+    MaybeShowNavigationCaptureIph(app_id, browser->profile(), browser);
+  }
+}
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
     NavigationCapturingNavigationHandleUserData);

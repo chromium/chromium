@@ -63,11 +63,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Shift%20Left"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Shift%20Left" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing", "kFromNavigationCapturing" ]
+            "launch_metric_buckets": [  ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {

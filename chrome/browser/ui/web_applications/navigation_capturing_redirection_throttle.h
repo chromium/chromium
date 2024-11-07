@@ -39,6 +39,8 @@ class NavigationCapturingRedirectionThrottle
   ThrottleCheckResult WillProcessResponse() override;
 
  private:
+  ThrottleCheckResult HandleResponse();
+
   explicit NavigationCapturingRedirectionThrottle(
       content::NavigationHandle* navigation_handle);
 
