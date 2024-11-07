@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
-#include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
 
 namespace on_device_model {
 
@@ -264,8 +263,9 @@ void FakeTsHolder::Reset(
 }
 
 FakeOnDeviceModelService::FakeOnDeviceModelService(
+    mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
     FakeOnDeviceServiceSettings* settings)
-    : settings_(settings) {}
+    : settings_(settings), receiver_(this, std::move(receiver)) {}
 
 FakeOnDeviceModelService::~FakeOnDeviceModelService() = default;
 
@@ -274,13 +274,13 @@ void FakeOnDeviceModelService::LoadModel(
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
   if (settings_->drop_connection_request) {
-    std::move(callback).Run(mojom::LoadModelResult::kSuccess);
+    std::move(callback).Run(settings_->load_model_result);
     return;
   }
   auto test_model =
       std::make_unique<FakeOnDeviceModel>(settings_, FakeOnDeviceModel::Data{});
   model_receivers_.Add(std::move(test_model), std::move(model));
-  std::move(callback).Run(mojom::LoadModelResult::kSuccess);
+  std::move(callback).Run(settings_->load_model_result);
 }
 
 void FakeOnDeviceModelService::LoadTextSafetyModel(
@@ -306,16 +306,8 @@ void FakeServiceLauncher::LaunchService(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         pending_receiver) {
   did_launch_service_ = true;
-  if (settings_->service_disconnect_reason) {
-    pending_receiver.ResetWithReason(
-        static_cast<uint32_t>(*settings_->service_disconnect_reason),
-        "Fake error");
-    return;
-  }
-  auto service =
-      std::make_unique<on_device_model::FakeOnDeviceModelService>(settings_);
-  auto* raw_service = service.get();
-  services_.Add(std::move(service), std::move(pending_receiver), raw_service);
+  service_ = std::make_unique<on_device_model::FakeOnDeviceModelService>(
+      std::move(pending_receiver), settings_);
 }
 
 }  // namespace on_device_model

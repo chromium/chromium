@@ -7,15 +7,12 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
-#include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -49,7 +46,7 @@ struct FakeOnDeviceServiceSettings final {
   // If non-empty, used as the output from Execute().
   std::vector<std::string> model_execute_result;
 
-  std::optional<ServiceDisconnectReason> service_disconnect_reason;
+  mojom::LoadModelResult load_model_result = mojom::LoadModelResult::kSuccess;
 
   bool drop_connection_request = false;
 
@@ -61,6 +58,10 @@ struct FakeOnDeviceServiceSettings final {
 
   void set_execute_result(const std::vector<std::string>& result) {
     model_execute_result = result;
+  }
+
+  void set_load_model_result(mojom::LoadModelResult result) {
+    load_model_result = result;
   }
 
   void set_drop_connection_request(bool value) {
@@ -174,7 +175,9 @@ class FakeTsHolder final {
 
 class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
  public:
-  explicit FakeOnDeviceModelService(FakeOnDeviceServiceSettings* settings);
+  FakeOnDeviceModelService(
+      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
+      FakeOnDeviceServiceSettings* settings);
   ~FakeOnDeviceModelService() override;
 
   size_t on_device_model_receiver_count() const {
@@ -194,6 +197,7 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   FakeTsHolder ts_holder_;
+  mojo::Receiver<mojom::OnDeviceModelService> receiver_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_receivers_;
 };
 
@@ -213,17 +217,11 @@ class FakeServiceLauncher final {
 
   bool did_launch_service() const { return did_launch_service_; }
 
-  bool is_service_running() const { return services_.size() > 0; }
-
   size_t on_device_model_receiver_count() const {
-    size_t total = 0;
-    for (const auto& [_, context] : services_.GetAllContexts()) {
-      total += (*context)->on_device_model_receiver_count();
-    }
-    return total;
+    return service_ ? service_->on_device_model_receiver_count() : 0;
   }
 
-  void CrashService() { services_.Clear(); }
+  void CrashService() { service_ = nullptr; }
 
  private:
   void LaunchService(
@@ -231,9 +229,7 @@ class FakeServiceLauncher final {
           pending_receiver);
 
   raw_ptr<on_device_model::FakeOnDeviceServiceSettings> settings_;
-  mojo::UniqueReceiverSet<mojom::OnDeviceModelService,
-                          FakeOnDeviceModelService*>
-      services_;
+  std::unique_ptr<FakeOnDeviceModelService> service_;
   bool did_launch_service_;
   base::WeakPtrFactory<FakeServiceLauncher> weak_ptr_factory_;
 };

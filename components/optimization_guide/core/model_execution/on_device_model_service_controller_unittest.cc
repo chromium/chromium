@@ -53,7 +53,6 @@
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
-#include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -531,8 +530,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // adaptations and the base model should be reset.
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
+  EXPECT_TRUE(GetModelAdaptationControllers().empty());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(fake_launcher_.is_service_running());
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
@@ -594,13 +594,20 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   session_compose.reset();
   session_test.reset();
 
-  // If we wait long enough, everything should idle out and the service should
-  // get terminated. This requires 2 idle timeout intervals (one for the
-  // adaptation and one for the base model).
-  task_environment_.FastForwardBy(2 * features::GetOnDeviceModelIdleTimeout() +
+  // Fast forward by the amount of time that triggers an idle disconnect. The
+  // base model will still be connected since it needs to wait for 2 idle
+  // timeouts (one for the adaptation and one for it's own timeout).
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
+  EXPECT_TRUE(GetModelAdaptationControllers().empty());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(fake_launcher_.is_service_running());
+  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  EXPECT_EQ(1ull, fake_launcher_.on_device_model_receiver_count());
+
+  // Fast forward by another idle timeout. The base model remote will be reset.
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+                                  base::Seconds(1));
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1776,8 +1783,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
   Initialize();
   // Start a session.
-  fake_settings_.service_disconnect_reason =
-      on_device_model::ServiceDisconnectReason::kGpuBlocked;
+  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
@@ -1799,8 +1805,7 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
 
 TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
   Initialize();
-  fake_settings_.service_disconnect_reason =
-      on_device_model::ServiceDisconnectReason::kGpuBlocked;
+  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session = CreateSession();
   ASSERT_TRUE(session);
 
@@ -2048,8 +2053,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   Initialize();
-  fake_settings_.service_disconnect_reason =
-      on_device_model::ServiceDisconnectReason::kGpuBlocked;
+  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);

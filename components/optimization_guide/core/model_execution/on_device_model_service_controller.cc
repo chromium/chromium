@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -87,11 +86,7 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
       on_device_component_state_manager_(
           std::move(on_device_component_state_manager)),
       service_client_(launch_fn),
-      safety_client_(service_client_.GetWeakPtr()) {
-  service_client_.set_on_disconnect_fn(base::BindRepeating(
-      &OnDeviceModelServiceController::OnServiceDisconnected,
-      weak_ptr_factory_.GetWeakPtr()));
-}
+      safety_client_(service_client_.GetWeakPtr()) {}
 
 OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
 
@@ -285,7 +280,8 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
   service_client_.Get()->LoadModel(
       std::move(params), std::move(model),
-      base::DoNothingAs<void(on_device_model::mojom::LoadModelResult)>());
+      base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
+                     weak_ptr_factory_.GetWeakPtr()));
   service_client_.RemovePendingUsage();
 }
 
@@ -390,26 +386,25 @@ void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
   NotifyModelAvailabilityChange(feature);
 }
 
-void OnDeviceModelServiceController::OnServiceDisconnected(
-    on_device_model::ServiceDisconnectReason reason) {
-  switch (reason) {
-    case on_device_model::ServiceDisconnectReason::kGpuBlocked:
+void OnDeviceModelServiceController::OnLoadModelResult(
+    on_device_model::mojom::LoadModelResult result) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceModelLoadResult",
+      ConvertToOnDeviceModelLoadResult(result));
+  switch (result) {
+    case on_device_model::mojom::LoadModelResult::kGpuBlocked:
       access_controller_->OnGpuBlocked();
+      model_adaptation_controllers_.clear();
+      base_model_remote_.reset();
       break;
-    // Below errors will be tracked by the related model disconnects, so they
-    // are not handled specifically here.
-    case on_device_model::ServiceDisconnectReason::kFailedToLoadLibrary:
-    case on_device_model::ServiceDisconnectReason::kUnspecified:
+    case on_device_model::mojom::LoadModelResult::kSuccess:
+      break;
+    case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
       break;
   }
 }
 
 void OnDeviceModelServiceController::OnBaseModelDisconnected() {
-  LOG(ERROR) << "Base model disconnected unexpectedly.";
-  // This could be either a true crash or just a failure to load the model,
-  // but we handle it the same way in either case.
-  // Explicitly reset to adaptations remotes to avoid receiving additional
-  // disconnect errors (though they may have already received them).
   model_adaptation_controllers_.clear();
   base_model_remote_.reset();
   access_controller_->OnDisconnectedFromRemote();
@@ -417,20 +412,25 @@ void OnDeviceModelServiceController::OnBaseModelDisconnected() {
 }
 
 void OnDeviceModelServiceController::OnBaseModelRemoteIdle() {
-  // Adaptations should all be disconnected already if this is idle, but we
-  // reset the explicitly anyway.
   model_adaptation_controllers_.clear();
   base_model_remote_.reset();
 }
 
-void OnDeviceModelServiceController::OnModelAdaptationRemoteDisconnected() {
-  LOG(ERROR) << "Model adaptation disconnected unexpectedly.";
-  // In the event of a service crash, we expect that OnBaseModelDisconnected
-  // will usually be called first, and prevent this from firing, otherwise this
-  // may double count the crash.
-  // TODO: crbug.com/376063340 - Consider tracking these separately and not
-  // suppressing the disconnect errors.
-  access_controller_->OnDisconnectedFromRemote();
+void OnDeviceModelServiceController::OnModelAdaptationRemoteDisconnected(
+    ModelBasedCapabilityKey feature,
+    ModelRemoteDisconnectReason reason) {
+  switch (reason) {
+    case ModelRemoteDisconnectReason::kGpuBlocked:
+      access_controller_->OnGpuBlocked();
+      break;
+    case ModelRemoteDisconnectReason::kDisconncted:
+      access_controller_->OnDisconnectedFromRemote();
+      break;
+    case ModelRemoteDisconnectReason::kModelLoadFailed:
+    case ModelRemoteDisconnectReason::kRemoteIdle:
+      break;
+  }
+  model_adaptation_controllers_.erase(feature);
 }
 
 OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
