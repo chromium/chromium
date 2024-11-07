@@ -56,6 +56,9 @@ void RationalizePhoneNumbersForFilling(std::vector<AutofillField*>& fields) {
     if (!field->is_visible()) {
       continue;
     }
+    // This phone number rationalization marks all but the first phone number as
+    // `set_only_fill_when_focused(true)`. Since it doesn't change the types, it
+    // intentionally uses the rationalized `Type()` (over the `ComputedType()`).
     FieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:
@@ -153,6 +156,7 @@ void RationalizePhoneNumbersForFilling(std::vector<AutofillField*>& fields) {
   // number related but not one of the found fields from first pass, set their
   // |only_fill_when_focused| field to true.
   for (AutofillField* field : fields) {
+    // As above, using the rationalized `Type()` is intentional.
     FieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:
@@ -396,7 +400,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   // found. See comments inline below.
   for (auto it = fields_->begin(); it != fields_->end(); ++it) {
     auto& field = *it;
-    FieldType current_field_type = field->Type().GetStorableType();
+    FieldType current_field_type = field->ComputedType().GetStorableType();
     switch (current_field_type) {
       case CREDIT_CARD_NAME_FIRST:
         if (!keep_cc_fields)
@@ -446,7 +450,8 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
                    "months and the last field was an expiration month";
             field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
           } else {
-            FieldType next_field_type = (*it2)->Type().GetStorableType();
+            FieldType next_field_type =
+                (*it2)->ComputedType().GetStorableType();
             if (next_field_type != CREDIT_CARD_EXP_2_DIGIT_YEAR &&
                 next_field_type != CREDIT_CARD_EXP_4_DIGIT_YEAR) {
               LOG_AF(log_manager)
@@ -782,8 +787,8 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
   // Group ADDRESS_HOME_STREET_ADDRESS `fields_` by section.
   std::map<Section, std::vector<AutofillField*>> street_address_fields;
   for (const std::unique_ptr<AutofillField>& field : *fields_) {
-    if (field->IsFocusable() &&
-        field->Type().GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
+    if (field->IsFocusable() && field->ComputedType().GetStorableType() ==
+                                    ADDRESS_HOME_STREET_ADDRESS) {
       street_address_fields[field->section()].push_back(field.get());
     }
   }
@@ -819,11 +824,13 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizeBetweenStreetFields(log_manager);
   RationalizePhoneNumberTrunkTypes(log_manager);
-  for (const auto& field : *fields_)
-    field->SetTypeTo(field->Type());
   RationalizePhoneCountryCode(log_manager);
   RationalizeByRationalizationEngine(client_country, language_code,
                                      log_manager);
+  // Cache the `ComputedType()` for fields that were not rationalized.
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    field->SetTypeTo(field->Type());
+  }
 }
 
 void FormStructureRationalizer::RationalizePhoneCountryCode(
@@ -832,12 +839,13 @@ void FormStructureRationalizer::RationalizePhoneCountryCode(
       PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX, PHONE_HOME_CITY_AND_NUMBER,
       PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
   if (std::ranges::any_of(*fields_, [&](const auto& field) {
-        return kRelevantPhoneTypes.contains(field->Type().GetStorableType());
+        return kRelevantPhoneTypes.contains(
+            field->ComputedType().GetStorableType());
       })) {
     return;
   }
   for (const std::unique_ptr<AutofillField>& field : *fields_) {
-    if (field->Type().GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
+    if (field->ComputedType().GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
       LOG_AF(log_manager)
           << "RationalizeTypeRelationships: Fields of type "
