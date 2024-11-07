@@ -110,14 +110,10 @@ class PasswordGenerationAgent;
 class PasswordAutofillAgent : public content::RenderFrameObserver,
                               public mojom::PasswordAutofillAgent {
  public:
-  using EnableHeavyFormDataScraping =
-      base::StrongAlias<class EnableHeavyFormDataScrapingTag, bool>;
   using UseFallbackData = base::StrongAlias<class UseFallbackDataTag, bool>;
 
-  PasswordAutofillAgent(
-      content::RenderFrame* render_frame,
-      blink::AssociatedInterfaceRegistry* registry,
-      EnableHeavyFormDataScraping enable_heavy_form_data_scraping);
+  PasswordAutofillAgent(content::RenderFrame* render_frame,
+                        blink::AssociatedInterfaceRegistry* registry);
 
   PasswordAutofillAgent(const PasswordAutofillAgent&) = delete;
   PasswordAutofillAgent& operator=(const PasswordAutofillAgent&) = delete;
@@ -578,10 +574,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   FieldDataManager& field_data_manager() const {
     return autofill_agent_->field_data_manager();
   }
-
-  // Controls heavy scraping of form data (e.g., button titles for unowned
-  // forms) is enabled.
-  EnableHeavyFormDataScraping enable_heavy_form_data_scraping_;
 
   // A map from WebInput elements to `PasswordInfo` for all elements that
   // password manager has fill information for.

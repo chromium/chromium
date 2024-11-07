@@ -752,10 +752,8 @@ void PasswordAutofillAgent::FocusStateNotifier::NotifyIfChanged(
 
 PasswordAutofillAgent::PasswordAutofillAgent(
     content::RenderFrame* render_frame,
-    blink::AssociatedInterfaceRegistry* registry,
-    EnableHeavyFormDataScraping enable_heavy_form_data_scraping)
-    : content::RenderFrameObserver(render_frame),
-      enable_heavy_form_data_scraping_(enable_heavy_form_data_scraping) {
+    blink::AssociatedInterfaceRegistry* registry)
+    : content::RenderFrameObserver(render_frame) {
   registry->AddInterface<mojom::PasswordAutofillAgent>(base::BindRepeating(
       &PasswordAutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
@@ -1723,7 +1721,6 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
     return std::nullopt;
   return CreateFormDataFromUnownedInputElements(
       *web_frame, field_data_manager(), &username_detector_cache_,
-      *enable_heavy_form_data_scraping_ ? &button_titles_cache_ : nullptr,
       autofill_agent_->GetCallTimerState(
           CallTimerState::CallSite::kGetFormDataFromUnownedInputElements));
 }

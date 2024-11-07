@@ -52,7 +52,6 @@ std::optional<FormData> CreateFormDataFromUnownedInputElements(
     const blink::WebLocalFrame& frame,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
-    form_util::ButtonTitlesCache* button_titles_cache,
     const CallTimerState& timer_state);
 
 // The "Realm" for the sign-on. This is scheme, host, port.

@@ -147,7 +147,6 @@ std::optional<FormData> CreateFormDataFromUnownedInputElements(
     const WebLocalFrame& frame,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
-    form_util::ButtonTitlesCache* button_titles_cache,
     const CallTimerState& timer_state) {
   std::optional<FormData> form_data = form_util::ExtractFormData(
       frame.GetDocument(), WebFormElement(), field_data_manager, timer_state);
