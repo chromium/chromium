@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -28,11 +27,6 @@ class Profile;
 namespace lookalikes {
 struct DomainInfo;
 }
-
-// A feature to enable Prewarming the Lookalike check during navigation. URLs in
-// the redirect chain are queried while the request is on the wire instead of
-// when the request is ready to commit.
-BASE_DECLARE_FEATURE(kPrewarmLookalikeCheck);
 
 // Returns true if the redirect is deemed to be safe. These are generally
 // defensive registrations where the domain owner redirects the IDN to the ASCII
