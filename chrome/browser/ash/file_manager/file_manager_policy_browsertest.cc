@@ -1343,6 +1343,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                           .EnableSkyVault(),
                       TestCase("fileDisplaySkyVaultMigrationToOneDrive")
                           .DontMountVolumes()
+                          .EnableSkyVault(),
+                      TestCase("fileDisplaySkyVaultMigrationRemovesMyFiles")
+                          .DontMountVolumes()
                           .EnableSkyVault()));
 
 }  // namespace file_manager

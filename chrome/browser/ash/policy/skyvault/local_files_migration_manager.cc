@@ -270,6 +270,10 @@ void LocalFilesMigrationManager::Shutdown() {
 void LocalFilesMigrationManager::AddObserver(Observer* observer) {
   CHECK(observer);
   observers_.AddObserver(observer);
+
+  if (state_ == State::kCompleted) {
+    observer->OnMigrationSucceeded();
+  }
 }
 
 void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {

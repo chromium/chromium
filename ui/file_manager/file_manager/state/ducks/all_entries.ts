@@ -590,6 +590,16 @@ export function getMyFiles(state: State):
     state.uiEntries = [...state.uiEntries, myFilesEntryList.toURL()];
   }
 
+  // It can happen that the fake entry was added before we got the policy
+  // update.
+  // TODO(376837858): The fake entry should be removed on policy change.
+  if (isSkyvaultV2Enabled() && !localFilesAllowed && !myFilesVolume) {
+    return {
+      myFilesEntry: null,
+      myFilesVolume,
+    };
+  }
+
   return {
     myFilesEntry: myFilesVolumeEntry || myFilesEntryList!,
     myFilesVolume,
