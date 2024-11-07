@@ -33,6 +33,9 @@ class GpuMemoryBufferManagerSingleton : public viz::HostGpuMemoryBufferManager,
 
   static GpuMemoryBufferManagerSingleton* GetInstance();
 
+  void AddObserver(gpu::GpuMemoryBufferManagerObserver* observer) final;
+  void RemoveObserver(gpu::GpuMemoryBufferManagerObserver* observer) final;
+
  private:
   // GpuDataManagerObserver:
   void OnGpuExtraInfoUpdate() override;

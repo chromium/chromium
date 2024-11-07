@@ -87,6 +87,7 @@ GpuMemoryBufferManagerSingleton::GpuMemoryBufferManagerSingleton(int client_id)
 
 GpuMemoryBufferManagerSingleton::~GpuMemoryBufferManagerSingleton() {
   DCHECK_EQ(this, g_gpu_memory_buffer_manager);
+  NotifyObservers();
   g_gpu_memory_buffer_manager = nullptr;
   gpu_data_manager_impl_->RemoveObserver(this);
 }
@@ -95,6 +96,18 @@ GpuMemoryBufferManagerSingleton::~GpuMemoryBufferManagerSingleton() {
 GpuMemoryBufferManagerSingleton*
 GpuMemoryBufferManagerSingleton::GetInstance() {
   return g_gpu_memory_buffer_manager;
+}
+
+void GpuMemoryBufferManagerSingleton::AddObserver(
+    gpu::GpuMemoryBufferManagerObserver* observer) {
+  if (!observers_.HasObserver(observer)) {
+    observers_.AddObserver(observer);
+  }
+}
+
+void GpuMemoryBufferManagerSingleton::RemoveObserver(
+    gpu::GpuMemoryBufferManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void GpuMemoryBufferManagerSingleton::OnGpuExtraInfoUpdate() {
