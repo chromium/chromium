@@ -640,11 +640,6 @@ gfx::Size LocationBarView::CalculatePreferredSize(
   return gfx::Size(width, height);
 }
 
-void LocationBarView::OnKeywordFaviconFetched(const gfx::Image& icon) {
-  DCHECK(!icon.IsEmpty());
-  selected_keyword_view_->SetCustomImage(icon);
-}
-
 void LocationBarView::Layout(PassKey) {
   if (!IsInitialized())
     return;

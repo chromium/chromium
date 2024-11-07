@@ -387,9 +387,6 @@ class LocationBarView
   // being displayed
   bool ShouldChipOverrideLocationIcon();
 
-  // Called with an async fetched for the keyword view.
-  void OnKeywordFaviconFetched(const gfx::Image& icon);
-
   // Updates the visibility of the QR Code Generator icon.
   void UpdateQRCodeGeneratorIcon();
 
