@@ -35,6 +35,10 @@ const char kBaseSpanIncludePath[] = "base/containers/span.h";
 // base::raw_span<...> replaces a raw_ptr<...>.
 const char kBaseRawSpanIncludePath[] = "base/memory/raw_span.h";
 
+const char kArrayIncludePath[] = "array";
+
+const char kStringViewIncludePath[] = "string_view";
+
 // This iterates over function parameters and matches the ones that match
 // parm_var_decl_matcher.
 AST_MATCHER_P(clang::FunctionDecl,
@@ -718,6 +722,30 @@ const clang::InitListExpr* GetArrayInitList(const clang::VarDecl* var_decl) {
   return clang::dyn_cast_or_null<clang::InitListExpr>(*first_child);
 }
 
+std::string GetStringViewType(const clang::QualType element_type,
+                              const clang::ASTContext& ast_context) {
+  if (element_type->isCharType()) {
+    return "std::string_view";  // c++17
+  }
+  if (element_type->isWideCharType()) {
+    return "std::wstring_view";  // c++17
+  }
+  if (element_type->isChar8Type()) {
+    return "std::u8string_view";  // c++20
+  }
+  if (element_type->isChar16Type()) {
+    return "std::u16string_view";  // c++17
+  }
+  if (element_type->isChar32Type()) {
+    return "std::u32string_view";  // c++17
+  }
+  clang::QualType element_type_without_qualifiers(element_type.getTypePtr(), 0);
+  return llvm::formatv(
+             "std::basic_string_view<{0}>",
+             GetTypeAsString(element_type_without_qualifiers, ast_context))
+      .str();
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
@@ -810,8 +838,17 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       init_list_expr ? init_list_expr->getEndLoc().getLocWithOffset(1)
                      : type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
 
+  const char* include_path = kArrayIncludePath;
   std::string replacement_text;
-  if (init_list_expr) {
+  if (element_type->isAnyCharacterType() &&
+      element_type.isConstant(ast_context) &&
+      clang::dyn_cast_or_null<clang::StringLiteral>(
+          array_variable->getInit())) {
+    replacement_text =
+        llvm::formatv("{0} {1}", GetStringViewType(element_type, ast_context),
+                      array_variable_as_string);
+    include_path = kStringViewIncludePath;
+  } else if (init_list_expr) {
     clang::Rewriter rw(source_manager, ast_context.getLangOpts());
     std::string init_expr_as_string =
         rw.getRewrittenText(init_list_expr->getSourceRange());
@@ -834,7 +871,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
       replacement_range,
       class_definition + qualifier_string.str() + replacement_text,
-      source_manager, "array",
+      source_manager, include_path,
       /* is_system_include_header =*/true);
   Node n;
   n.replacement = replacement_and_include_pair.first;
