@@ -90,9 +90,9 @@
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Callback to hide the activity overlay.
   base::ScopedClosureRunner _activityOverlayCallback;
-  // The add account coordinator if it’s open. It may be presented by the Manage
-  // Account’s coordinator view controller.
-  SigninCoordinator* _addAccountCoordinator;
+  // The child signin coordinator if it’s open. It may be presented by the
+  // Manage Account’s coordinator view controller.
+  SigninCoordinator* _signinCoordinator;
 
   // Block the UI when the identity removal or switch is in progress.
   std::unique_ptr<ScopedUIBlocker> _UIBlocker;
@@ -343,40 +343,47 @@
 }
 
 - (void)openTrustedVaultReauthForFetchKeys {
-  id<ApplicationCommands> applicationCommands =
-      static_cast<id<ApplicationCommands>>(
-          self.browser->GetCommandDispatcher());
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
-  [applicationCommands
-      showTrustedVaultReauthForFetchKeysFromViewController:_navigationController
-                                          securityDomainID:securityDomainID
-                                                   trigger:trigger
-                                               accessPoint:accessPoint];
+  SigninTrustedVaultDialogIntent intent =
+      SigninTrustedVaultDialogIntentFetchKeys;
+  _signinCoordinator = [SigninCoordinator
+      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
+          _navigationController
+                                                            browser:self.browser
+                                                             intent:intent
+                                                   securityDomainID:
+                                                       securityDomainID
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            accessPoint];
+  [self startSigninCoordinatorWithCompletion:nil];
 }
 
 - (void)openTrustedVaultReauthForDegradedRecoverability {
-  id<ApplicationCommands> applicationCommands =
-      static_cast<id<ApplicationCommands>>(
-          self.browser->GetCommandDispatcher());
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
-  [applicationCommands
-      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
+  SigninTrustedVaultDialogIntent intent =
+      SigninTrustedVaultDialogIntentDegradedRecoverability;
+  _signinCoordinator = [SigninCoordinator
+      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           _navigationController
-                                                       securityDomainID:
-                                                           securityDomainID
-                                                                trigger:trigger
-                                                            accessPoint:
-                                                                accessPoint];
+                                                            browser:self.browser
+                                                             intent:intent
+                                                   securityDomainID:
+                                                       securityDomainID
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            accessPoint];
+  [self startSigninCoordinatorWithCompletion:nil];
 }
 
 - (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {
@@ -384,14 +391,17 @@
 }
 
 - (void)openPrimaryAccountReauthDialog {
-  id<ApplicationCommands> applicationCommands =
-      static_cast<id<ApplicationCommands>>(
-          self.browser->GetCommandDispatcher());
-  ShowSigninCommand* signinCommand = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kPrimaryAccountReauth
-            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU];
-  [applicationCommands showSignin:signinCommand
-               baseViewController:_navigationController];
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  _signinCoordinator = [SigninCoordinator
+      primaryAccountReauthCoordinatorWithBaseViewController:
+          _navigationController
+                                                    browser:self.browser
+                                                accessPoint:accessPoint
+                                                promoAction:promoAction];
+  [self startSigninCoordinatorWithCompletion:nil];
 }
 
 #pragma mark - SigninCoordinator
@@ -432,34 +442,43 @@
 
 #pragma mark - Private
 
+- (void)startSigninCoordinatorWithCompletion:
+    (ShowSigninCommandCompletionCallback)completion {
+  CHECK(_signinCoordinator);
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion = ^(
+      SigninCoordinatorResult signinResult,
+      SigninCompletionInfo* signinCompletionInfo) {
+    [weakSelf signinCoordinatorCompletionWithSigninResult:signinResult
+                                           completionInfo:signinCompletionInfo
+                                               completion:completion];
+  };
+  [_signinCoordinator start];
+}
+
 // Opens the add account coordinator on top of `baseViewController`.
 - (void)openAddAccountWithBaseViewController:baseViewController
                                   completion:
                                       (ShowSigninCommandCompletionCallback)
                                           completion {
-  _addAccountCoordinator = [SigninCoordinator
+  _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:baseViewController
                                           browser:self.browser
                                       accessPoint:self.accessPoint];
-  __weak __typeof(self) weakSelf = self;
-  _addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
-        [weakSelf addAccountCompletionWithSigninResult:signinResult
-                                        completionInfo:signinCompletionInfo
-                                            completion:completion];
-      };
-  [_addAccountCoordinator start];
+  [self startSigninCoordinatorWithCompletion:completion];
 }
 
 // Clean up the add account coordinator.
 - (void)
-    addAccountCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                          completionInfo:(SigninCompletionInfo*)completionInfo
-                              completion:(ShowSigninCommandCompletionCallback)
+    signinCoordinatorCompletionWithSigninResult:
+        (SigninCoordinatorResult)signinResult
+                                 completionInfo:
+                                     (SigninCompletionInfo*)completionInfo
+                                     completion:
+                                         (ShowSigninCommandCompletionCallback)
                                              completion {
-  [_addAccountCoordinator stop];
-  _addAccountCoordinator = nil;
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
   if (completion) {
     completion(signinResult, completionInfo);
   }
@@ -508,13 +527,13 @@
     [weakSelf stopManageAccountsCoordinator];
     [weakSelf dismissViewControllerAction:action completion:completion];
   };
-  if (_addAccountCoordinator) {
+  if (_signinCoordinator) {
     SigninCoordinatorInterrupt subviewAction =
         (action == SigninCoordinatorInterrupt::UIShutdownNoDismiss)
             ? SigninCoordinatorInterrupt::UIShutdownNoDismiss
             : SigninCoordinatorInterrupt::DismissWithoutAnimation;
-    [_addAccountCoordinator interruptWithAction:subviewAction
-                                     completion:dismissAndCompletion];
+    [_signinCoordinator interruptWithAction:subviewAction
+                                 completion:dismissAndCompletion];
   } else {
     dismissAndCompletion();
   }

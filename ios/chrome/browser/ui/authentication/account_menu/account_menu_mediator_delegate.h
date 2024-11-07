@@ -20,7 +20,7 @@
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator;
 
 // Starts the sign-in flow. Then call `completion`, with a parameter stating
-// whether the the sign-out was done.
+// whether the the sign-in was done.
 - (AuthenticationFlow*)
     triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
                          completion:

@@ -354,18 +354,6 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testPassphrase) {
 // Tests that `openTrustedVaultReauthForFetchKeys` calls
 // `showTrustedVaultReauthForFetchKeysFromViewController`.
 TEST_F(AccountMenuCoordinatorNonManagedTest, testFetchKeys) {
-  OCMExpect([mock_application_commands_handler_
-      showTrustedVaultReauthForFetchKeysFromViewController:[OCMArg any]
-                                          securityDomainID:
-                                              trusted_vault::SecurityDomainId::
-                                                  kChromeSync
-                                                   trigger:
-                                                       syncer::
-                                                           TrustedVaultUserActionTriggerForUMA::
-                                                               kSettings
-                                               accessPoint:
-                                                   signin_metrics::AccessPoint::
-                                                       ACCESS_POINT_ACCOUNT_MENU]);
   [coordinator_ openTrustedVaultReauthForFetchKeys];
   assertOpenAndInterrupt();
 }
@@ -373,22 +361,6 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testFetchKeys) {
 // Tests that `openTrustedVaultReauthForDegradedRecoverability` calls
 // `showTrustedVaultReauthForDegradedRecoverabilityFromViewController`.
 TEST_F(AccountMenuCoordinatorNonManagedTest, testDegradedRecoverability) {
-  OCMExpect([mock_application_commands_handler_
-      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:[OCMArg
-                                                                            any]
-
-                                                       securityDomainID:
-                                                           trusted_vault::
-                                                               SecurityDomainId::
-                                                                   kChromeSync
-                                                                trigger:
-                                                                    syncer::
-                                                                        TrustedVaultUserActionTriggerForUMA::
-                                                                            kSettings
-                                                            accessPoint:
-                                                                signin_metrics::
-                                                                    AccessPoint::
-                                                                        ACCESS_POINT_ACCOUNT_MENU]);
   [coordinator_ openTrustedVaultReauthForDegradedRecoverability];
   assertOpenAndInterrupt();
 }
@@ -397,21 +369,5 @@ TEST_F(AccountMenuCoordinatorNonManagedTest, testDegradedRecoverability) {
 // mediator and view controller.
 TEST_F(AccountMenuCoordinatorNonManagedTest, testMDMError) {
   [coordinator_ openMDMErrodDialogWithSystemIdentity:kPrimaryIdentity];
-  assertOpenAndInterrupt();
-}
-
-// Tests that `openPrimaryAccountReauthDialog` calls `showSignin`.
-TEST_F(AccountMenuCoordinatorNonManagedTest, testReauth) {
-  OCMExpect([mock_application_commands_handler_
-              showSignin:[OCMArg checkWithBlock:^BOOL(
-                                     ShowSigninCommand* value) {
-                return value.operation ==
-                           AuthenticationOperation::kPrimaryAccountReauth &&
-                       value.accessPoint == signin_metrics::AccessPoint::
-                                                ACCESS_POINT_ACCOUNT_MENU &&
-                       value.identity == nil;
-              }]
-      baseViewController:[OCMArg any]]);
-  [coordinator_ openPrimaryAccountReauthDialog];
   assertOpenAndInterrupt();
 }
