@@ -4537,6 +4537,11 @@ enum WebFeature {
   kHasRicUnits = 5163,
   kHasLhUnits = 5164,
   kHasRlhUnits = 5165,
+  kCSSColorFunction = 5166,
+  kCSSColor_SpaceLxx = 5167,
+  kCSSColor_SpaceHwb = 5168,
+  kCSSRoundModRemFunctions = 5169,
+  kCSSTrigFunctions = 5170,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

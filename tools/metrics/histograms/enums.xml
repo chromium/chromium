@@ -10860,6 +10860,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5163" label="HasRicUnits"/>
   <int value="5164" label="HasLhUnits"/>
   <int value="5165" label="HasRlhUnits"/>
+  <int value="5166" label="CSSColorFunction"/>
+  <int value="5167" label="CSSColor_SpaceLxx"/>
+  <int value="5168" label="CSSColor_SpaceHwb"/>
+  <int value="5169" label="CSSRoundModRemFunctions"/>
+  <int value="5170" label="CSSTrigFunctions"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33828,6 +33833,15 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="166" label="WhiteSpaceCollapse"/>
   <int value="167" label="ImageOrientation"/>
   <int value="168" label="LogicalProperties"/>
+  <int value="169" label="ColorFunction"/>
+  <int value="170" label="Oklab"/>
+  <int value="171" label="Lab"/>
+  <int value="172" label="Hwb"/>
+  <int value="173" label="RevertValue"/>
+  <int value="174" label="PrefersContrast"/>
+  <int value="175" label="PrefersReducedTransparency"/>
+  <int value="176" label="RoundModRem"/>
+  <int value="177" label="TrigFunctions"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

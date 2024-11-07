@@ -224,6 +224,15 @@ enum WebDXFeature {
   kWhiteSpaceCollapse = 166,
   kImageOrientation = 167,
   kLogicalProperties = 168,
+  kColorFunction = 169,
+  kOklab = 170,
+  kLab = 171,
+  kHwb = 172,
+  kRevertValue = 173,
+  kPrefersContrast = 174,
+  kPrefersReducedTransparency = 175,
+  kRoundModRem = 176,
+  kTrigFunctions = 177,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -3906,10 +3906,15 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAsin:
       case CSSValueID::kAcos:
       case CSSValueID::kAtan:
-      case CSSValueID::kAtan2:
-        return CSSMathExpressionOperation::
-            CreateTrigonometricFunctionSimplified(std::move(nodes),
-                                                  function_id);
+      case CSSValueID::kAtan2: {
+        CSSMathExpressionNode* node =
+            CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
+                std::move(nodes), function_id);
+        if (node) {
+          context_.Count(WebFeature::kCSSTrigFunctions);
+        }
+        return node;
+      }
       case CSSValueID::kPow:
       case CSSValueID::kSqrt:
       case CSSValueID::kHypot:
