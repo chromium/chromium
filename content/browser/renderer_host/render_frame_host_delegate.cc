@@ -25,6 +25,12 @@
 
 namespace content {
 
+blink::mojom::PartitionedPopinParamsPtr
+PartitionedPopinOpenerProperties::AsMojom() const {
+  return blink::mojom::PartitionedPopinParams::New(top_frame_origin,
+                                                   site_for_cookies);
+}
+
 bool RenderFrameHostDelegate::OnMessageReceived(
     RenderFrameHostImpl* render_frame_host,
     const IPC::Message& message) {

@@ -127,6 +127,8 @@ struct PartitionedPopinOpenerProperties {
   url::Origin top_frame_origin;
   net::SiteForCookies site_for_cookies;
   blink::mojom::AncestorChainBit ancestor_chain_bit;
+
+  blink::mojom::PartitionedPopinParamsPtr AsMojom() const;
 };
 
 // An interface implemented by an object interested in knowing about the state

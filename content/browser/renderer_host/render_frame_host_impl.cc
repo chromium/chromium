@@ -9326,17 +9326,12 @@ void RenderFrameHostImpl::CreateNewWindow(
   // We must send access information relative to the popin opener in order for
   // the renderer to properly conduct checks.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  // TODO(crbug.com/340606651): Move into a function to share.
   blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params = nullptr;
   if (new_main_rfh->delegate()->IsPartitionedPopin() &&
       !IsNestedWithinFencedFrame()) {
-    partitioned_popin_params = blink::mojom::PartitionedPopinParams::New(
-        new_main_rfh->delegate()
-            ->GetPartitionedPopinOpenerProperties()
-            .top_frame_origin,
-        new_main_rfh->delegate()
-            ->GetPartitionedPopinOpenerProperties()
-            .site_for_cookies);
+    partitioned_popin_params = new_main_rfh->delegate()
+                                   ->GetPartitionedPopinOpenerProperties()
+                                   .AsMojom();
   }
 
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
