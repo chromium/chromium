@@ -3676,6 +3676,8 @@ static_library("ui") {
       "plus_addresses/plus_address_creation_controller_desktop.h",
       "plus_addresses/plus_address_error_dialog.cc",
       "plus_addresses/plus_address_error_dialog.h",
+      "plus_addresses/plus_address_menu_model.cc",
+      "plus_addresses/plus_address_menu_model.h",
       "send_tab_to_self/send_tab_to_self_bubble.h",
       "send_tab_to_self/send_tab_to_self_toolbar_icon_controller.cc",
       "send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h",

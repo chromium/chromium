@@ -145,6 +145,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_error_dialog.h"
+#include "chrome/browser/ui/plus_addresses/plus_address_menu_model.h"  // nogncheck
 #include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -624,7 +625,16 @@ void ChromeAutofillClient::ShowPlusAddressEmailOverrideNotification(
   }
   if (ToastController* const controller =
           browser->browser_window_features()->toast_controller()) {
-    controller->MaybeShowToast(ToastParams(ToastId::kPlusAddressOverride));
+    ToastParams params(ToastId::kPlusAddressOverride);
+    params.menu_model = std::make_unique<plus_addresses::PlusAddressMenuModel>(
+        base::UTF8ToUTF16(
+            GetIdentityManager()
+                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                .email),
+        std::move(email_override_undo_callback),
+        base::BindRepeating(&AutofillClient::ShowAutofillSettings, GetWeakPtr(),
+                            SuggestionType::kManagePlusAddress));
+    controller->MaybeShowToast(std::move(params));
   }
 #endif
 }
