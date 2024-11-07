@@ -108,6 +108,7 @@ struct BrowserContextFactoryDependencies {
 template <typename T>
 class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
  public:
+  using PassKey = base::PassKey<BrowserContextKeyedAPIFactory<T>>;
   static T* Get(content::BrowserContext* context) {
     return static_cast<T*>(
         T::GetFactoryInstance()->GetServiceForBrowserContext(context, true));

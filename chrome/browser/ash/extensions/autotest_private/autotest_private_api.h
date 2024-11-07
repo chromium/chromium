@@ -870,6 +870,11 @@ class AutotestPrivateSetCrostiniAppScaledFunction : public ExtensionFunction {
 class AutotestPrivateAPI : public BrowserContextKeyedAPI,
                            public ui::ClipboardObserver {
  public:
+  explicit AutotestPrivateAPI(
+      content::BrowserContext* context,
+      base::PassKey<BrowserContextKeyedAPIFactory<AutotestPrivateAPI>>);
+  ~AutotestPrivateAPI() override;
+
   static BrowserContextKeyedAPIFactory<AutotestPrivateAPI>*
   GetFactoryInstance();
 
@@ -879,9 +884,6 @@ class AutotestPrivateAPI : public BrowserContextKeyedAPI,
 
  private:
   friend class BrowserContextKeyedAPIFactory<AutotestPrivateAPI>;
-
-  explicit AutotestPrivateAPI(content::BrowserContext* context);
-  ~AutotestPrivateAPI() override;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "AutotestPrivateAPI"; }
@@ -1905,6 +1907,12 @@ class AutotestPrivateGetDeviceEventLogFunction : public ExtensionFunction {
   ~AutotestPrivateGetDeviceEventLogFunction() override;
   ResponseAction Run() override;
 };
+
+template <>
+std::unique_ptr<KeyedService>
+BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const;
 
 template <>
 KeyedService*
