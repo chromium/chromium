@@ -1022,6 +1022,8 @@ constexpr struct MappingData {
     {GamepadId::kSonyProduct0ce6, MapperDualSense},
     // DualSense Edge
     {GamepadId::kSonyProduct0df2, MapperDualSense},
+    // PlayStation Access
+    {GamepadId::kSonyProduct0e5f, MapperDualSense},
     // Switch Joy-Con L
     {GamepadId::kNintendoProduct2006, MapperSwitchJoyCon},
     // Switch Joy-Con R
