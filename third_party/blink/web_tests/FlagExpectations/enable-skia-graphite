@@ -38,7 +38,7 @@ crbug.com/dawn/2456 external/wpt/html/canvas/element/manual/wide-gamut-canvas/ca
 crbug.com/dawn/2456 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Crash Failure ]
 crbug.com/dawn/2456 external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Crash ]
 crbug.com/dawn/2456 external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Crash ]
-b/328789624 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash Pass ]
+crbug.com/328789624 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash Failure Pass ]
 crbug.com/40937352 external/wpt/css/css-color/parsing/color-valid-relative-color.html [ Failure ]
 crbug.com/40937352 external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure ]
 external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html [ Crash Timeout ]
