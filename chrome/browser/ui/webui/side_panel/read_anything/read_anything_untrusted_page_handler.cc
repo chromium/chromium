@@ -523,7 +523,7 @@ void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
       base::BindOnce(
           &OnGetPackStateResponse,
           base::BindOnce(&ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo,
-                         weak_factory_.GetSafeRef())));
+                         weak_factory_.GetWeakPtr())));
 #else
   TtsController::GetInstance()->LanguageStatusRequest(
       profile_, language, string_constants::kReadingModeName,
@@ -539,7 +539,7 @@ void ReadAnythingUntrustedPageHandler::InstallVoicePack(
       base::BindOnce(
           &OnInstallPackResponse,
           base::BindOnce(&ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo,
-                         weak_factory_.GetSafeRef())));
+                         weak_factory_.GetWeakPtr())));
 #else
   TtsController::GetInstance()->InstallLanguageRequest(
       profile_, language, string_constants::kReadingModeName,
