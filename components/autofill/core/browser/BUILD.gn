@@ -200,6 +200,7 @@ static_library("browser") {
     "field_filling_address_util.h",
     "field_filling_payments_util.cc",
     "field_filling_payments_util.h",
+    "field_filling_skip_reason.cc",
     "field_filling_skip_reason.h",
     "field_type_utils.cc",
     "field_type_utils.h",
