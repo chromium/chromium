@@ -16,7 +16,7 @@ class LobsterManager {
 
   ~LobsterManager();
 
-  void StartFlowWithFreeformText(const std::string& freeform_text);
+  void StartFlow(const std::string& freeform_text);
 
  private:
   std::unique_ptr<ash::LobsterController::Trigger> trigger_;

@@ -40,6 +40,8 @@ namespace chromeos::editor_menu {
 
 namespace {
 
+constexpr char kLobsterPresetId[] = "LOBSTER";
+
 TextAndImageMode CalculateTextAndImageMode(EditorMenuMode editor_menu_mode,
                                            LobsterMenuMode lobster_menu_mode) {
   if (lobster_menu_mode == LobsterMenuMode::kBlocked) {
@@ -99,6 +101,8 @@ void EditorMenuControllerImpl::OnTextAvailable(
   card_session_->editor_manager()->GetEditorPanelContext(base::BindOnce(
       &EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext,
       weak_factory_.GetWeakPtr(), anchor_bounds));
+
+  card_session_->OnSelectedTextChanged(selected_text);
 }
 
 void EditorMenuControllerImpl::OnAnchorBoundsChanged(
@@ -133,13 +137,12 @@ void EditorMenuControllerImpl::OnSettingsButtonPressed() {
 
 void EditorMenuControllerImpl::OnChipButtonPressed(
     std::string_view text_query_id) {
-  if (!card_session_ || card_session_->editor_manager() == nullptr) {
+  if (!card_session_) {
     return;
   }
 
   DisableEditorMenu();
-  card_session_->editor_manager()->StartEditingFlowWithPreset(
-      std::string(text_query_id));
+  card_session_->StartFlowWithPreset(std::string(text_query_id));
 }
 
 void EditorMenuControllerImpl::OnTabSelected(int index) {
@@ -342,9 +345,20 @@ void EditorMenuControllerImpl::EditorCardSession::StartFlowWithFreeformText(
       return;
     case Tab::kLobster:
       if (lobster_manager_) {
-        lobster_manager_->StartFlowWithFreeformText(freeform_text);
+        lobster_manager_->StartFlow(freeform_text);
       }
       return;
+  }
+}
+
+void EditorMenuControllerImpl::EditorCardSession::StartFlowWithPreset(
+    const std::string& preset_id) {
+  if (preset_id == kLobsterPresetId && lobster_manager_) {
+    lobster_manager_->StartFlow(selected_text_);
+    return;
+  }
+  if (editor_manager_) {
+    editor_manager_->StartEditingFlowWithPreset(preset_id);
   }
 }
 
@@ -376,6 +390,11 @@ void EditorMenuControllerImpl::EditorCardSession::OpenSettings() {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       setting_url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+void EditorMenuControllerImpl::EditorCardSession::OnSelectedTextChanged(
+    const std::string& text) {
+  selected_text_ = text;
 }
 
 }  // namespace chromeos::editor_menu

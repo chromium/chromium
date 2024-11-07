@@ -17,8 +17,7 @@ LobsterManager::LobsterManager(
 
 LobsterManager::~LobsterManager() = default;
 
-void LobsterManager::StartFlowWithFreeformText(
-    const std::string& freeform_text) {
+void LobsterManager::StartFlow(const std::string& freeform_text) {
   trigger_->Fire(freeform_text);
 }
 

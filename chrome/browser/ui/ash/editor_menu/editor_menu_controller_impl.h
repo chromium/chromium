@@ -95,12 +95,15 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
     void OnEditorModeChanged(const EditorMode& mode) override;
 
     void StartFlowWithFreeformText(const std::string& freeform_text);
+    void StartFlowWithPreset(const std::string& preset_id);
 
     void OpenSettings();
 
     EditorManager* editor_manager() { return editor_manager_.get(); }
 
     LobsterManager* lobster_manager() { return lobster_manager_.get(); }
+
+    void OnSelectedTextChanged(const std::string& text);
 
     Tab current_tab = Tab::kEditor;
 
@@ -113,6 +116,9 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
 
     // Provides access to the lobster trigger.
     std::unique_ptr<LobsterManager> lobster_manager_;
+
+    // The current selected text.
+    std::string selected_text_;
   };
 
   void OnGetEditorContext(
