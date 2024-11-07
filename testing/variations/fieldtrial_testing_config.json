@@ -16104,6 +16104,28 @@
             ]
         }
     ],
+    "PartialPageZeroing": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPAAndV8_20241106",
+                    "enable_features": [
+                        "PartitionAllocEventuallyZeroFreedMemory",
+                        "V8Flag_zero_unused_memory"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocAdvancedMemorySafetyChecks": [
         {
             "platforms": [
@@ -16149,28 +16171,6 @@
                     },
                     "enable_features": [
                         "PartitionAllocBackupRefPtr"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocEventuallyZeroFreedMemory": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocEventuallyZeroFreedMemory"
                     ]
                 }
             ]
@@ -25077,34 +25077,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8UpdateLimitAfterLoading"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8ZeroUnusedMemory": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8Flag_zero_unused_memory"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "V8Flag_zero_unused_memory"
                     ]
                 }
             ]
