@@ -15,7 +15,7 @@
 
 namespace net {
 
-class WebSocketChunkAssembler final {
+class NET_EXPORT WebSocketChunkAssembler final {
  public:
   WebSocketChunkAssembler();
   ~WebSocketChunkAssembler();

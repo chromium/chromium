@@ -61,7 +61,7 @@ class WebSocket {
   void Read();
   void OnRead(bool read_again, int code);
   void OnReadDuringHandshake(const char* data, int len);
-  void OnReadDuringOpen(const char* data, int len);
+  void OnReadDuringOpen(char* data, int len);
 
   void InvokeConnectCallback(int code);
   void Close(int code);

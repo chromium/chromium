@@ -4,7 +4,9 @@
 
 #include "net/websockets/websocket_chunk_assembler.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/websockets/websocket_errors.h"
@@ -21,10 +23,17 @@ constexpr uint64_t kMaxControlFramePayload = 125;
 // Utility function to create a WebSocketFrame
 std::unique_ptr<WebSocketFrame> MakeWebSocketFrame(
     const WebSocketFrameHeader& header,
-    const char* payload) {
+    char* payload) {
   auto frame = std::make_unique<WebSocketFrame>(header.opcode);
   frame->header.CopyFrom(header);
+
+  if (header.masked) {
+    auto writable_span = base::as_writable_byte_span(UNSAFE_BUFFERS(
+        base::span(payload, static_cast<size_t>(header.payload_length))));
+    MaskWebSocketFramePayload(header.masking_key, 0, writable_span);
+  }
   frame->payload = payload;
+
   return frame;
 }
 

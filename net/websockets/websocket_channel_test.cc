@@ -1650,7 +1650,7 @@ TEST_F(WebSocketChannelEventInterfaceTest, OneByteClosePayloadMessage) {
   EXPECT_CALL(
       *event_interface_,
       OnFailChannel(
-          "Received a broken close frame containing an invalid size body.", _,
+          "Received a broken close frame with an invalid size of 1 byte.", _,
           _));
 
   CreateChannelAndConnectSuccessfully();

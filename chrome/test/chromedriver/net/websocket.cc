@@ -307,18 +307,21 @@ void WebSocket::OnReadDuringHandshake(const char* data, int len) {
   state_ = OPEN;
   InvokeConnectCallback(net::OK);
   if (!leftover_message.empty())
-    OnReadDuringOpen(leftover_message.c_str(), leftover_message.length());
+    OnReadDuringOpen(leftover_message.data(), leftover_message.length());
 }
 
-void WebSocket::OnReadDuringOpen(const char* data, int len) {
+void WebSocket::OnReadDuringOpen(char* data, int len) {
   std::vector<std::unique_ptr<net::WebSocketFrameChunk>> frame_chunks;
-  CHECK(parser_.Decode(
-      base::as_bytes(
-          // TODO(crbug.com/354307328): It's not possible to construct this span
-          // soundedly here. OnReadDuringOpen() should receive a span instead of
-          // a pointer and length.
-          UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(len)))),
-      &frame_chunks));
+
+  // TODO(crbug.com/354307328): It's not possible to construct
+  // this span soundedly here. OnReadDuringOpen() should
+  // receive a span instead of a pointer and length.
+  auto data_span = UNSAFE_BUFFERS(base::as_writable_byte_span(
+      base::span(data, base::checked_cast<size_t>(len))));
+
+  // Call the parser's Decode method
+  CHECK(parser_.Decode(data_span, &frame_chunks));
+
   for (size_t i = 0; i < frame_chunks.size(); ++i) {
     const auto& header = frame_chunks[i]->header;
     if (header) {

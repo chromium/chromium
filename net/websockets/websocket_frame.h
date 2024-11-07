@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 
@@ -172,7 +174,9 @@ struct NET_EXPORT WebSocketFrameChunk {
   // of this object. This should be documented in the code that creates this
   // object.
   // TODO(crbug.com/40646382): Find more better way to clarify the life cycle.
-  base::span<const char> payload;
+  // Using RAW_PTR_EXCLUSION here temporarily to prevent dangling pointer
+  // issues.
+  RAW_PTR_EXCLUSION base::span<char> payload;
 };
 
 using WebSocketMaskingKey = WebSocketFrameHeader::WebSocketMaskingKey;
@@ -222,6 +226,29 @@ NET_EXPORT void MaskWebSocketFramePayload(
     const WebSocketMaskingKey& masking_key,
     uint64_t frame_offset,
     base::span<uint8_t> data);
+
+// Close frame parsing result structure.
+struct ParseCloseFrameResult {
+  // Status code (always present). Set to `kWebSocketErrorNoStatusReceived` if
+  // no code was included in the close frame.
+  uint16_t code;
+
+  // Reason text (can be empty, but always present).
+  std::string_view reason;
+
+  // Error message if a protocol error occurred during parsing.
+  // This is optional and, when set, points to static storage.
+  std::optional<std::string_view> error = std::nullopt;
+
+  ParseCloseFrameResult(uint16_t close_code,
+                        std::string_view close_reason,
+                        std::optional<std::string_view> error = std::nullopt)
+      : code(close_code), reason(close_reason), error(error) {}
+};
+
+// Parses a WebSocket Close frame, extracts the status code and reason.
+NET_EXPORT ParseCloseFrameResult
+ParseCloseFrame(base::span<const char> payload);
 
 }  // namespace net
 

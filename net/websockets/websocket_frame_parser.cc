@@ -43,7 +43,7 @@ WebSocketFrameParser::WebSocketFrameParser() = default;
 WebSocketFrameParser::~WebSocketFrameParser() = default;
 
 bool WebSocketFrameParser::Decode(
-    base::span<const uint8_t> data_span,
+    base::span<uint8_t> data_span,
     std::vector<std::unique_ptr<WebSocketFrameChunk>>* frame_chunks) {
   if (websocket_error_ != kWebSocketNormalClosure) {
     return false;
@@ -179,7 +179,7 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
 
 std::unique_ptr<WebSocketFrameChunk> WebSocketFrameParser::DecodeFramePayload(
     bool first_chunk,
-    base::span<const uint8_t>* data) {
+    base::span<uint8_t>* data) {
   // The cast here is safe because |payload_length| is already checked to be
   // less than std::numeric_limits<int>::max() when the header is parsed.
   const int chunk_data_size = static_cast<int>(
@@ -192,7 +192,8 @@ std::unique_ptr<WebSocketFrameChunk> WebSocketFrameParser::DecodeFramePayload(
   }
   frame_chunk->final_chunk = false;
   if (chunk_data_size > 0) {
-    frame_chunk->payload = base::as_chars(data->subspan(0, chunk_data_size));
+    frame_chunk->payload =
+        base::as_writable_chars(data->subspan(0, chunk_data_size));
     *data = data->subspan(chunk_data_size);
     frame_offset_ += chunk_data_size;
   }

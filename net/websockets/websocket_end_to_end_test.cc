@@ -23,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -31,6 +32,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -64,6 +66,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/websocket_echo_handler.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -173,8 +176,14 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
                      base::OnceCallback<void(const AuthCredentials*)> callback,
                      std::optional<AuthCredentials>* credentials) override;
 
+  std::string GetDataFramePayload();
+
+  void WaitForDropChannel() { drop_channel_future_.Get(); }
+
  private:
-  void QuitNestedEventLoop();
+  void QuitLoop();
+  void RunNewLoop();
+  void SetReceivedMessageFuture(std::string received_message);
 
   // failed_ is true if the handshake failed (ie. OnFailChannel was called).
   bool failed_ = false;
@@ -182,13 +191,16 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   std::string selected_subprotocol_;
   std::string extensions_;
   std::string failure_message_;
-  base::RunLoop run_loop_;
+  std::optional<base::RunLoop> run_loop_;
+
+  base::test::TestFuture<std::string> received_message_future_;
+  base::test::TestFuture<void> drop_channel_future_;
 };
 
 ConnectTestingEventInterface::ConnectTestingEventInterface() = default;
 
 void ConnectTestingEventInterface::WaitForResponse() {
-  run_loop_.Run();
+  RunNewLoop();
 }
 
 std::string ConnectTestingEventInterface::failure_message() const {
@@ -210,29 +222,43 @@ void ConnectTestingEventInterface::OnAddChannelResponse(
   response_ = std::move(response);
   selected_subprotocol_ = selected_subprotocol;
   extensions_ = extensions;
-  QuitNestedEventLoop();
+  QuitLoop();
 }
 
 void ConnectTestingEventInterface::OnDataFrame(bool fin,
                                                WebSocketMessageType type,
                                                base::span<const char> payload) {
+  DVLOG(3) << "Received WebSocket data frame with message:"
+           << std::string(payload.begin(), payload.end());
+  SetReceivedMessageFuture(std::string(base::as_string_view(payload)));
 }
 
 void ConnectTestingEventInterface::OnSendDataFrameDone() {}
 
-void ConnectTestingEventInterface::OnClosingHandshake() {}
+void ConnectTestingEventInterface::OnClosingHandshake() {
+  DVLOG(3) << "OnClosingHandeshake() invoked.";
+}
 
 void ConnectTestingEventInterface::OnDropChannel(bool was_clean,
                                                  uint16_t code,
-                                                 const std::string& reason) {}
+                                                 const std::string& reason) {
+  DVLOG(3) << "OnDropChannel() invoked, was_clean: " << was_clean
+           << ", code: " << code << ", reason: " << reason;
+  if (was_clean) {
+    drop_channel_future_.SetValue();
+  } else {
+    DVLOG(1) << "OnDropChannel() did not receive a clean close.";
+  }
+}
 
 void ConnectTestingEventInterface::OnFailChannel(
     const std::string& message,
     int net_error,
     std::optional<int> response_code) {
+  DVLOG(3) << "OnFailChannel invoked with message: " << message;
   failed_ = true;
   failure_message_ = message;
-  QuitNestedEventLoop();
+  QuitLoop();
 }
 
 void ConnectTestingEventInterface::OnStartOpeningHandshake(
@@ -260,8 +286,26 @@ int ConnectTestingEventInterface::OnAuthRequired(
   return OK;
 }
 
-void ConnectTestingEventInterface::QuitNestedEventLoop() {
-  run_loop_.Quit();
+void ConnectTestingEventInterface::QuitLoop() {
+  if (!run_loop_) {
+    DVLOG(3) << "No active run loop to quit.";
+    return;
+  }
+  run_loop_->Quit();
+}
+
+void ConnectTestingEventInterface::RunNewLoop() {
+  run_loop_.emplace();
+  run_loop_->Run();
+}
+
+void ConnectTestingEventInterface::SetReceivedMessageFuture(
+    std::string received_message) {
+  received_message_future_.SetValue(received_message);
+}
+
+std::string ConnectTestingEventInterface::GetDataFramePayload() {
+  return received_message_future_.Get();
 }
 
 // A subclass of TestNetworkDelegate that additionally implements the
@@ -322,8 +366,7 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
 class WebSocketEndToEndTest : public TestWithTaskEnvironment {
  protected:
   WebSocketEndToEndTest()
-      : event_interface_(),
-        proxy_delegate_(std::make_unique<TestProxyDelegateWithProxyInfo>()),
+      : proxy_delegate_(std::make_unique<TestProxyDelegateWithProxyInfo>()),
         context_builder_(CreateTestURLRequestContextBuilder()) {}
 
   // Initialise the URLRequestContext. Normally done automatically by
@@ -360,6 +403,48 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     return !event_interface_->failed();
   }
 
+  [[nodiscard]] WebSocketChannel::ChannelState SendMessage(
+      const std::string& message) {
+    scoped_refptr<IOBufferWithSize> buffer =
+        base::MakeRefCounted<IOBufferWithSize>(message.size());
+
+    buffer->span().copy_from(base::as_byte_span(message));
+    return channel_->SendFrame(true, WebSocketFrameHeader::kOpCodeText, buffer,
+                               message.size());
+  }
+
+  std::string ReceiveMessage() {
+    auto channel_state = channel_->ReadFrames();
+    if (channel_state != WebSocketChannel::ChannelState::CHANNEL_ALIVE) {
+      ADD_FAILURE()
+          << "WebSocket channel is no longer alive after reading frames. State:"
+          << channel_state;
+      return {};
+    }
+    return event_interface_->GetDataFramePayload();
+  }
+
+  void CloseWebSocket() {
+    const uint16_t close_code = 1000;
+    const std::string close_reason = "Closing connection";
+
+    DVLOG(3) << "Sending close handshake with code: " << close_code
+             << " and reason: " << close_reason;
+
+    auto channel_state =
+        channel_->StartClosingHandshake(close_code, close_reason);
+
+    EXPECT_EQ(channel_state, WebSocketChannel::ChannelState::CHANNEL_ALIVE)
+        << "WebSocket channel is no longer alive after sending the "
+           "Close frame. State: "
+        << channel_state;
+  }
+
+  void CloseWebSocketSuccessfully() {
+    CloseWebSocket();
+    event_interface_->WaitForDropChannel();
+  }
+
   raw_ptr<ConnectTestingEventInterface, DanglingUntriaged>
       event_interface_;  // owned by channel_
   std::unique_ptr<TestProxyDelegateWithProxyInfo> proxy_delegate_;
@@ -376,6 +461,45 @@ TEST_F(WebSocketEndToEndTest, BasicSmokeTest) {
                               GetWebSocketTestDataDirectory());
   ASSERT_TRUE(ws_server.Start());
   EXPECT_TRUE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
+}
+
+TEST_F(WebSocketEndToEndTest, EmbeddedBasicSmokeTest) {
+  test_server::EmbeddedTestServer embedded_test_server(
+      net::EmbeddedTestServer::TYPE_HTTP);
+
+  embedded_test_server.RegisterUpgradeRequestHandler(
+      test_server::WebSocketEchoHandler::CreateHandler());
+
+  ASSERT_TRUE(embedded_test_server.Start());
+
+  GURL echo_url = ReplaceUrlScheme(
+      embedded_test_server.GetURL("/echo-with-no-extension"), "ws");
+  EXPECT_TRUE(ConnectAndWait(echo_url));
+}
+
+TEST_F(WebSocketEndToEndTest, WebSocketEchoHandlerTest) {
+  net::test_server::EmbeddedTestServer embedded_test_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTP);
+
+  embedded_test_server.RegisterUpgradeRequestHandler(
+      net::test_server::WebSocketEchoHandler::CreateHandler());
+
+  ASSERT_TRUE(embedded_test_server.Start());
+
+  GURL echo_url = ReplaceUrlScheme(
+      embedded_test_server.GetURL("/echo-with-no-extension"), "ws");
+  ASSERT_TRUE(ConnectAndWait(echo_url));
+
+  const std::string test_message = "hello echo";
+
+  auto channel_state = SendMessage(test_message);
+
+  ASSERT_EQ(channel_state, WebSocketChannel::ChannelState::CHANNEL_ALIVE);
+
+  std::string received_message = ReceiveMessage();
+
+  EXPECT_EQ(test_message, received_message);
+  CloseWebSocketSuccessfully();
 }
 
 // These test are not compatible with RemoteTestServer because RemoteTestServer
@@ -446,8 +570,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsWssProxyUnauthedFails) {
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
 
-// Regression test for crbug/426736 "WebSocket connections not using configured
-// system HTTPS Proxy".
+// Regression test for crbug.com/426736 "WebSocket connections not using
+// configured system HTTPS Proxy".
 TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUsed) {
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_PROXY,
                                  base::FilePath());
