@@ -7,12 +7,6 @@
 
 'use strict';
 
-const reportPoller = new ReportPoller(
-    '/.well-known/private-aggregation/report-protected-audience',
-    '/.well-known/private-aggregation/debug/report-protected-audience',
-    /*fullTimeoutMs=*/ 5000,
-);
-
 private_aggregation_promise_test(async test => {
   const uuid = generateUuid();
   await runReportTest(test, uuid, {
@@ -21,10 +15,11 @@ private_aggregation_promise_test(async test => {
             {bucket: 1n, value: 2, filteringId: 3n});`
   });
 
-  const {reports: [report], debug_reports: [debug_report]} =
-      await reportPoller.pollReportsAndAssert(
-          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
 
+  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
@@ -33,7 +28,11 @@ private_aggregation_promise_test(async test => {
           ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE,
           NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
-  verifyReportsIdenticalExceptPayload(report, debug_report);
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'auction that calls Private Aggregation with a non-default filtering ID');
 
 private_aggregation_promise_test(async test => {
@@ -43,14 +42,21 @@ private_aggregation_promise_test(async test => {
             {bucket: 1n, value: 2, filteringId: 3n});`
   });
 
-  const {reports: [report]} = await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
 
+  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ false, /*debug_key=*/ undefined,
       /*expected_payload=*/ undefined);
 
+  // We use a short timeout as the previous poll should've waited long enough.
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience',
+      /*wait_for=*/ 1, /*timeout=*/ 50)
+  assert_equals(debug_reports, null);
 }, 'auction that calls Private Aggregation with a non-default filtering ID and no debug mode');
 
 private_aggregation_promise_test(async test => {
@@ -60,10 +66,11 @@ private_aggregation_promise_test(async test => {
         privateAggregation.contributeToHistogram({bucket: 1n, value: 2});`
   });
 
-  const {reports: [report], debug_reports: [debug_report]} =
-      await reportPoller.pollReportsAndAssert(
-          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
 
+  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
@@ -71,7 +78,11 @@ private_aggregation_promise_test(async test => {
       buildExpectedPayload(
           ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
-  verifyReportsIdenticalExceptPayload(report, debug_report);
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'auction that calls Private Aggregation with no filtering ID specified');
 
 
@@ -83,10 +94,11 @@ private_aggregation_promise_test(async test => {
             {bucket: 1n, value: 2, filteringId: 0n});`
   });
 
-  const {reports: [report], debug_reports: [debug_report]} =
-      await reportPoller.pollReportsAndAssert(
-          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
 
+  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
@@ -94,7 +106,11 @@ private_aggregation_promise_test(async test => {
       buildExpectedPayload(
           ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
-  verifyReportsIdenticalExceptPayload(report, debug_report);
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'auction that calls Private Aggregation with an explicitly default filtering ID');
 
 
@@ -105,14 +121,21 @@ private_aggregation_promise_test(async test => {
                       {bucket: 1n, value: 2, filteringId: 255n});`
   });
 
-  const {reports: [report]} = await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
 
+  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ false, /*debug_key=*/ undefined,
       /*expected_payload=*/ undefined);
 
+  // We use a short timeout as the previous poll should've waited long enough.
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience',
+      /*wait_for=*/ 1, /*timeout=*/ 50)
+  assert_equals(debug_reports, null);
 }, 'auction that calls Private Aggregation with max filtering ID');
 
 
@@ -124,9 +147,15 @@ private_aggregation_promise_test(async test => {
                           {bucket: 1n, value: 2, filteringId: 256n});`
                      }));
 
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports, null);
 
+  // We use a short timeout as the previous poll should've waited long enough.
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience',
+      /*wait_for=*/ 1, /*timeout=*/ 50)
+  assert_equals(debug_reports, null);
 }, 'auction that calls Private Aggregation with filtering ID too big');
 
 private_aggregation_promise_test(async test => {
@@ -136,8 +165,15 @@ private_aggregation_promise_test(async test => {
                           {bucket: 1n, value: 2, filteringId: -1n});`
                      }));
 
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports, null);
+
+  // We use a short timeout as the previous poll should've waited long enough.
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience',
+      /*wait_for=*/ 1, /*timeout=*/ 50)
+  assert_equals(debug_reports, null);
 }, 'auction that calls Private Aggregation with negative filtering ID');
 
 private_aggregation_promise_test(async test => {
@@ -148,10 +184,11 @@ private_aggregation_promise_test(async test => {
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2, filteringId: 2n });`
   });
 
-  const {reports: [report], debug_reports: [debug_report]} =
-      await reportPoller.pollReportsAndAssert(
-          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-protected-audience');
+  assert_equals(reports.length, 1);
 
+  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
@@ -160,5 +197,9 @@ private_aggregation_promise_test(async test => {
           MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE,
           NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
-  verifyReportsIdenticalExceptPayload(report, debug_report);
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-protected-audience');
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'auction that calls Private Aggregation with contributions that match buckets but not filtering IDs');
