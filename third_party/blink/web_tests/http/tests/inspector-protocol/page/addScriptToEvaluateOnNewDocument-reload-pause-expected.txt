@@ -1,0 +1,2 @@
+Tests that Page.addScriptToEvaluateOnNewDocument can handle detached sessions (Regression test for crbug.com/368672129)
+
