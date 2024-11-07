@@ -1233,9 +1233,8 @@ TEST_F(QuickInsertSearchRequestTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.GetCallback(), &client(),
-      std::to_array({QuickInsertCategory::kLinks,
-                     QuickInsertCategory::kDriveFiles,
-                     QuickInsertCategory::kLocalFiles}));
+      {QuickInsertCategory::kLinks, QuickInsertCategory::kDriveFiles,
+       QuickInsertCategory::kLocalFiles});
   EXPECT_FALSE(done_callback.IsReady());
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox, {});
   EXPECT_FALSE(done_callback.IsReady());
@@ -1266,8 +1265,7 @@ TEST_F(QuickInsertSearchRequestTest,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       done_callback.GetCallback(), &client(),
-      std::to_array(
-          {QuickInsertCategory::kClipboard, QuickInsertCategory::kLinks}));
+      {QuickInsertCategory::kClipboard, QuickInsertCategory::kLinks});
   EXPECT_FALSE(done_callback.IsReady());
   ClipboardHistoryController::GetHistoryValuesCallback get_history_values =
       get_history_values_future.Take();

@@ -86,6 +86,11 @@ void ImplicitConversionFromDynamicMutableContainerToStaticSpanDisallowed() {
   span<int, 3u> span = v;  // expected-error {{no viable conversion from 'std::vector<int>' to 'span<int, 3U>'}}
 }
 
+// Fixed-extent span construction from an initializer list is explicit.
+void InitializerListConstructionIsExplicit() {
+  span<const int, 3u> s = {{1, 2, 3}};  // expected-error {{chosen constructor is explicit in copy-initialization}}
+}
+
 // A std::set() should not satisfy the requirements for conversion to a span.
 void StdSetConversionDisallowed() {
   std::set<int> set;
@@ -299,8 +304,8 @@ void FromRefLifetimeBoundErrorForTemporaryStringObject() {
 
 void InitializerListLifetime() {
   // `std::initializer_list` destroyed at the end of the full expression.
-  [[maybe_unused]] auto wont_work = span<const int>({1, 2});      // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
-  [[maybe_unused]] auto wont_work2 = span<const int, 3>({1, 2});  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work = span<const int>({1, 2});      // expected-error-re {{array backing local initializer list {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work2 = span<const int, 3>({1, 2});  // expected-error-re {{array backing local initializer list {{.*}}will be destroyed at the end of the full-expression}}
   [[maybe_unused]] auto wont_work3 = as_byte_span({1, 2});        // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 

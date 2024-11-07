@@ -101,10 +101,6 @@ namespace {
     int kArray[] = {1, 2, 3};
     static_assert(std::is_same_v<decltype(span(kArray)), span<int, 3>>);
   }
-  // We also deduce an rvalue array to make a fixed-span over const values,
-  // which matches the span<const T> constructor from an array.
-  static_assert(std::is_same_v<decltype(span({1, 2, 3})), span<const int, 3>>);
-
   static_assert(
       std::is_same_v<decltype(span(std::declval<std::array<const bool, 3>&>())),
                      span<const bool, 3>>);
@@ -407,18 +403,6 @@ TEST(SpanTest, ConstructFromArray) {
   EXPECT_EQ(array, static_span.data());
   EXPECT_EQ(std::size(array), static_span.size());
   EXPECT_THAT(static_span, ElementsAreArray(array));
-
-  [](span<const int> dynamic_span) {
-    EXPECT_EQ(dynamic_span.size(), 5u);
-    EXPECT_EQ(dynamic_span[0u], 5);
-    EXPECT_EQ(dynamic_span[4u], 1);
-  }({{5, 4, 3, 2, 1}});
-
-  [](span<const int, 5u> static_span) {
-    EXPECT_EQ(static_span.size(), 5u);
-    EXPECT_EQ(static_span[0u], 5);
-    EXPECT_EQ(static_span[4u], 1);
-  }({{5, 4, 3, 2, 1}});
 }
 
 TEST(SpanTest, ConstructFromVolatileArray) {
@@ -608,21 +592,21 @@ TEST(SpanTest, ConstructFromRange) {
     Range r;
     auto s = base::span(r);
     static_assert(std::same_as<decltype(s), base::span<const int>>);
-    EXPECT_EQ(s, base::span({1, 2, 3}));
+    EXPECT_EQ(s, base::span<const int>({1, 2, 3}));
 
     // Implicit from modern range with dynamic size to dynamic span.
     base::span<const int> imp = r;
-    EXPECT_EQ(imp, base::span({1, 2, 3}));
+    EXPECT_EQ(imp, base::span<const int>({1, 2, 3}));
   }
   {
     Range r;
     auto s = base::span<const int, 3u>(r);
-    EXPECT_EQ(s, base::span({1, 2, 3}));
+    EXPECT_EQ(s, base::span<const int>({1, 2, 3}));
 
     // Explicit from modern range with dynamic size to fixed span.
     static_assert(!std::convertible_to<decltype(r), base::span<const int, 3u>>);
     base::span<const int, 3u> imp(r);
-    EXPECT_EQ(imp, base::span({1, 2, 3}));
+    EXPECT_EQ(imp, base::span<const int>({1, 2, 3}));
   }
 
   using FixedRange = const std::array<int, 3>;
@@ -632,20 +616,20 @@ TEST(SpanTest, ConstructFromRange) {
     FixedRange r = {1, 2, 3};
     auto s = base::span(r);
     static_assert(std::same_as<decltype(s), base::span<const int, 3>>);
-    EXPECT_EQ(s, base::span({1, 2, 3}));
+    EXPECT_EQ(s, base::span<const int>({1, 2, 3}));
 
     // Implicit from fixed size to dynamic span.
     base::span<const int> imp = r;
-    EXPECT_EQ(imp, base::span({1, 2, 3}));
+    EXPECT_EQ(imp, base::span<const int>({1, 2, 3}));
   }
   {
     FixedRange r = {1, 2, 3};
     auto s = base::span<const int, 3u>(r);
-    EXPECT_EQ(s, base::span({1, 2, 3}));
+    EXPECT_EQ(s, base::span<const int>({1, 2, 3}));
 
     // Implicit from fixed size to fixed span.
     base::span<const int, 3u> imp = r;
-    EXPECT_EQ(imp, base::span({1, 2, 3}));
+    EXPECT_EQ(imp, base::span<const int>({1, 2, 3}));
   }
 
   // Construction from std::vectors.
@@ -863,21 +847,22 @@ TEST(SpanTest, NoLifetimeWarnings) {
   }();
   [[maybe_unused]] auto a = l1(std::to_array({1, 2, 3}));
   [[maybe_unused]] auto b = l2(std::to_array({1, 2, 3}));
-  [[maybe_unused]] auto c =
+  [[maybe_unused]] auto c = l1({1, 2, 3});
+  [[maybe_unused]] auto d =
       l2(span<const int, 3>({1, 2, 3}));  // Constructor is explicit.
 
   // `std::string_view` is safe with a compile-time string constant, because it
   // refers directly to the character array in the binary.
-  [[maybe_unused]] auto d = span<const char>(std::string_view("123"));
-  [[maybe_unused]] auto e = span<const char, 3>(std::string_view("123"));
+  [[maybe_unused]] auto e = span<const char>(std::string_view("123"));
+  [[maybe_unused]] auto f = span<const char, 3>(std::string_view("123"));
 
   // It's also safe with an lvalue `std::string`.
   std::string s = "123";
-  [[maybe_unused]] auto f = span<const char>(std::string_view(s));
   [[maybe_unused]] auto g = span<const char>(std::string_view(s));
+  [[maybe_unused]] auto h = span<const char>(std::string_view(s));
 
   // Non-std:: helpers should also allow safe usage.
-  [[maybe_unused]] auto h = as_byte_span(std::string_view(s));
+  [[maybe_unused]] auto i = as_byte_span(std::string_view(s));
 }
 
 TEST(SpanTest, FromCStringOtherTypes) {
@@ -3311,34 +3296,44 @@ TEST(SpanTest, Printing) {
   };
 
   // Gtest prints values in the spans. Chars are special.
-  EXPECT_EQ(testing::PrintToString(base::span({1, 2, 3})), "[1, 2, 3]");
-  EXPECT_EQ(testing::PrintToString(base::span({S(), S()})), "[S(), S()]");
-  EXPECT_EQ(testing::PrintToString(base::span({'a', 'b', 'c'})), "[\"abc\"]");
-  EXPECT_EQ(testing::PrintToString(base::span({'a', 'b', 'c', '\0'})),
-            std::string_view("[\"abc\0\"]", 8u));
-  EXPECT_EQ(testing::PrintToString(base::span({'a', 'b', '\0', 'c', '\0'})),
+  EXPECT_EQ(testing::PrintToString(base::span<const int>({1, 2, 3})),
+            "[1, 2, 3]");
+  EXPECT_EQ(testing::PrintToString(base::span<const S>({S(), S()})),
+            "[S(), S()]");
+  EXPECT_EQ(testing::PrintToString(base::span<const char>({'a', 'b', 'c'})),
+            "[\"abc\"]");
+  EXPECT_EQ(
+      testing::PrintToString(base::span<const char>({'a', 'b', 'c', '\0'})),
+      std::string_view("[\"abc\0\"]", 8u));
+  EXPECT_EQ(testing::PrintToString(
+                base::span<const char>({'a', 'b', '\0', 'c', '\0'})),
             std::string_view("[\"ab\0c\0\"]", 9u));
   EXPECT_EQ(testing::PrintToString(base::span<int>()), "[]");
   EXPECT_EQ(testing::PrintToString(base::span<char>()), "[\"\"]");
 
-  EXPECT_EQ(testing::PrintToString(base::span({u'a', u'b', u'c'})),
-            "[u\"abc\"]");
-  EXPECT_EQ(testing::PrintToString(base::span({L'a', L'b', L'c'})),
-            "[L\"abc\"]");
+  EXPECT_EQ(
+      testing::PrintToString(base::span<const char16_t>({u'a', u'b', u'c'})),
+      "[u\"abc\"]");
+  EXPECT_EQ(
+      testing::PrintToString(base::span<const wchar_t>({L'a', L'b', L'c'})),
+      "[L\"abc\"]");
 
   // Base prints values in spans. Chars are special.
-  EXPECT_EQ(base::ToString(base::span({1, 2, 3})), "[1, 2, 3]");
-  EXPECT_EQ(base::ToString(base::span({S(), S()})), "[S(), S()]");
-  EXPECT_EQ(base::ToString(base::span({'a', 'b', 'c'})), "[\"abc\"]");
-  EXPECT_EQ(base::ToString(base::span({'a', 'b', 'c', '\0'})),
+  EXPECT_EQ(base::ToString(base::span<const int>({1, 2, 3})), "[1, 2, 3]");
+  EXPECT_EQ(base::ToString(base::span<const S>({S(), S()})), "[S(), S()]");
+  EXPECT_EQ(base::ToString(base::span<const char>({'a', 'b', 'c'})),
+            "[\"abc\"]");
+  EXPECT_EQ(base::ToString(base::span<const char>({'a', 'b', 'c', '\0'})),
             std::string_view("[\"abc\0\"]", 8u));
-  EXPECT_EQ(base::ToString(base::span({'a', 'b', '\0', 'c', '\0'})),
+  EXPECT_EQ(base::ToString(base::span<const char>({'a', 'b', '\0', 'c', '\0'})),
             std::string_view("[\"ab\0c\0\"]", 9u));
   EXPECT_EQ(base::ToString(base::span<int>()), "[]");
   EXPECT_EQ(base::ToString(base::span<char>()), "[\"\"]");
 
-  EXPECT_EQ(base::ToString(base::span({u'a', u'b', u'c'})), "[u\"abc\"]");
-  EXPECT_EQ(base::ToString(base::span({L'a', L'b', L'c'})), "[L\"abc\"]");
+  EXPECT_EQ(base::ToString(base::span<const char16_t>({u'a', u'b', u'c'})),
+            "[u\"abc\"]");
+  EXPECT_EQ(base::ToString(base::span<const wchar_t>({L'a', L'b', L'c'})),
+            "[L\"abc\"]");
 }
 
 }  // namespace base

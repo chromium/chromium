@@ -709,19 +709,19 @@ TEST_F(L10nUtilTest, IsAcceptLanguageDisplayable) {
 
 TEST_F(L10nUtilTest, KeepAcceptedLanguages) {
   // All valid languages.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"en", "es", "fr"}}),
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"en", "es", "fr"}),
             std::vector<std::string>({"en", "es", "fr"}));
   // Some invalid languages.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"en", "es", "iw"}}),
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"en", "es", "iw"}),
             std::vector<std::string>({"en", "es"}));
   // All invalid languages.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"iw", "ch_ZN"}}),
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"iw", "ch_ZN"}),
             std::vector<std::string>{});
   // Empty input.
   EXPECT_EQ(l10n_util::KeepAcceptedLanguages({}), std::vector<std::string>{});
   // Maintain languages order.
   EXPECT_EQ(
-      l10n_util::KeepAcceptedLanguages({{"en", "aa", "es", "iw", "fr", "xx"}}),
+      l10n_util::KeepAcceptedLanguages({"en", "aa", "es", "iw", "fr", "xx"}),
       std::vector<std::string>({"en", "es", "fr"}));
 }
 

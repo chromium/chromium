@@ -48,8 +48,7 @@ TEST(ConfigureAppContainerSandboxTest,
   base::FilePath pathB = temp_dir.GetPath().Append(L"dirB");
   ASSERT_TRUE(base::CreateWithDacl(pathB, kBaseDirDacl, true));
 
-  ASSERT_TRUE(ConfigureAppContainerSandbox(
-      std::array<const base::FilePath*, 2>{&pathA, &pathB}));
+  ASSERT_TRUE(ConfigureAppContainerSandbox({&pathA, &pathB}));
   EXPECT_EQ(kConfiguredDirDacl, base::GetFileDacl(pathA));
   EXPECT_EQ(kConfiguredDirDacl, base::GetFileDacl(pathB));
 }

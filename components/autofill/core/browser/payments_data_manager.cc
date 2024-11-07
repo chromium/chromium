@@ -833,8 +833,8 @@ gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
   }
   // The sizes are used on Android, but ignored on desktop.
   FetchImagesForURLs(base::span_from_ref(card_art_url),
-                     base::span({AutofillImageFetcherBase::ImageSize::kSmall,
-                                 AutofillImageFetcherBase::ImageSize::kLarge}));
+                     {AutofillImageFetcherBase::ImageSize::kSmall,
+                      AutofillImageFetcherBase::ImageSize::kLarge});
   return nullptr;
 }
 
@@ -2020,10 +2020,9 @@ void PaymentsDataManager::ProcessCardArtUrlChanges() {
     }
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(
-        updated_urls,
-        base::span({AutofillImageFetcherBase::ImageSize::kSmall,
-                    AutofillImageFetcherBase::ImageSize::kLarge}));
+    FetchImagesForURLs(updated_urls,
+                       {AutofillImageFetcherBase::ImageSize::kSmall,
+                        AutofillImageFetcherBase::ImageSize::kLarge});
   }
 }
 

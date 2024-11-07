@@ -864,8 +864,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
       base::BindOnce(
           [](const base::FilePath& target_path, const base::FilePath& temp_path,
              const CallbackWorkItem& work_item) {
-            return ConfigureAppContainerSandbox(
-                std::array<const base::FilePath*, 2>{&target_path, &temp_path});
+            return ConfigureAppContainerSandbox({&target_path, &temp_path});
           },
           target_path, temp_path),
       base::DoNothing());

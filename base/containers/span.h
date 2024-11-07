@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <array>
 #include <concepts>
+#include <initializer_list>
 #include <iosfwd>
 #include <iterator>
 #include <limits>
@@ -133,13 +134,6 @@
 // - Provides implicit conversion from fixed-extent `span` to `std::span`.
 //   `std::span`'s general-purpose range constructor is explicit in this case
 //   because it does not have a carve-out for `span`.
-// - Missing constructor from std::initializer_list (C++26).
-//   TODO(crbug.com/40569817): Add.
-//
-// Differences from [span.deduct]:
-// - Adds deduction guide from array of const T (which can bind to rvalues) due
-//   to lack of std::initializer_list constructor.
-//   TODO(crbug.com/40569817): Remove.
 //
 // Other differences:
 // - Using StrictNumeric<size_t> instead of size_t where possible.
@@ -397,6 +391,13 @@ class GSL_POINTER span {
       : UNSAFE_BUFFERS(
             span(std::ranges::data(range), std::ranges::size(range))) {}
 
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr explicit span(std::initializer_list<value_type> il LIFETIME_BOUND)
+    requires(std::is_const_v<T>)
+      // SAFETY: `size()` is exactly the number of elements in the initializer
+      // list, so accessing that many will be safe.
+      : UNSAFE_BUFFERS(span(il.begin(), il.size())) {}
+
   constexpr span(const span& other) noexcept = default;
   template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
     requires((OtherN == dynamic_extent || N == OtherN) &&
@@ -441,7 +442,7 @@ class GSL_POINTER span {
     // SAFETY: span provides that data() points to at least `N` many elements.
     // `count` is non-negative by its type and `count <= N` from the CHECK
     // above. So `count` is a valid new size for `data()`.
-    return UNSAFE_BUFFERS({data(), count});
+    return UNSAFE_BUFFERS(span<T>(data(), count));
   }
 
   // Returns a span over the last `count` elements.
@@ -455,7 +456,7 @@ class GSL_POINTER span {
     // `count` is non-negative by its type and `count <= N` from the CHECK
     // above. So `0 <= N - count <= N`, meaning `N - count` is a valid new size
     // for `data()` and it will point to `count` many elements.
-    return UNSAFE_BUFFERS({data() + (N - size_t{count}), count});
+    return UNSAFE_BUFFERS(span<T>(data() + (N - size_t{count}), count));
   }
 
   template <size_t Offset, size_t Count = dynamic_extent>
@@ -509,7 +510,7 @@ class GSL_POINTER span {
     // and since `new_extent` is non-negative, `offset + new_extent` is not
     // before `offset` so `new_extent` is a valid size for the span at `data() +
     // offset`.
-    return UNSAFE_BUFFERS({data() + offset, new_extent});
+    return UNSAFE_BUFFERS(span<T>(data() + offset, new_extent));
   }
 
   // Splits a span into two at the given `offset`, returning two spans that
@@ -982,6 +983,12 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       : UNSAFE_BUFFERS(
             span(std::ranges::data(range), std::ranges::size(range))) {}
 
+  constexpr span(std::initializer_list<value_type> il LIFETIME_BOUND)
+    requires(std::is_const_v<T>)
+      // SAFETY: `size()` is exactly the number of elements in the initializer
+      // list, so accessing that many will be safe.
+      : UNSAFE_BUFFERS(span(il.begin(), il.size())) {}
+
   constexpr span(const span& other) noexcept = default;
   template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
     requires(internal::LegalDataConversion<OtherT, T>)
@@ -1022,7 +1029,7 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     // SAFETY: span provides that data() points to at least `size()` many
     // elements. `count` is non-negative by its type and `count <= size()` from
     // the CHECK above. So `count` is a valid new size for `data()`.
-    return UNSAFE_BUFFERS({data(), count});
+    return UNSAFE_BUFFERS(span<T>(data(), count));
   }
 
   // Returns a span over the last `count` elements.
@@ -1037,7 +1044,7 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     // the CHECK above. So `0 <= size() - count <= size()`, meaning
     // `size() - count` is a valid new size for `data()` and it will point to
     // `count` many elements.
-    return UNSAFE_BUFFERS({data() + (size() - size_t{count}), count});
+    return UNSAFE_BUFFERS(span<T>(data() + (size() - size_t{count}), count));
   }
 
   template <size_t Offset, size_t Count = dynamic_extent>
@@ -1095,7 +1102,7 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     // valid offsets for data(), and since `new_extent` is non-negative, `offset
     // + new_extent` is not before `offset` so `new_extent` is a valid size for
     // the span at `data() + offset`.
-    return UNSAFE_BUFFERS({data() + offset, new_extent});
+    return UNSAFE_BUFFERS(span<T>(data() + offset, new_extent));
   }
 
   // Convert a dynamic-extent span to a fixed-extent span. Returns a
@@ -1424,8 +1431,6 @@ span(It, EndOrSize) -> span<std::remove_reference_t<std::iter_reference_t<It>>,
 
 template <typename T, size_t N>
 span(T (&)[N]) -> span<T, N>;
-template <typename T, size_t N>
-span(const T (&)[N]) -> span<const T, N>;
 
 template <typename R>
   requires(std::ranges::contiguous_range<R>)

@@ -1117,8 +1117,7 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
                           Pair(5, _), Pair(6, _)));
 
   ASSERT_TRUE(table_.ClearDataForSourceIds(
-      &db_, base::span({StoredSource::Id(5), StoredSource::Id(7),
-                        StoredSource::Id(9)})));
+      &db_, {StoredSource::Id(5), StoredSource::Id(7), StoredSource::Id(9)}));
 
   ASSERT_THAT(GetRateLimitRows(),
               ElementsAre(Pair(1, _), Pair(3, _), Pair(5, _)));
