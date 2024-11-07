@@ -103,6 +103,20 @@ public class SharedImageTilesCoordinator {
                 });
     }
 
+    /**
+     * Update the collaborationId for a SharedImageTiles component with a finished callback.
+     *
+     * @param collaborationId The new collaborationId or null to reset.
+     * @param finishedCallback The callback to notify about the SharedImageTiles update status.
+     */
+    public void updateCollaborationId(
+            @Nullable String collaborationId, Callback<Boolean> finishedCallback) {
+        updateCollaborationId(collaborationId);
+        // TODO(crbug.com/376329480): Implement face piles using bitmap and run finishedRunnable
+        // only when all views are populated.
+        finishedCallback.onResult(true);
+    }
+
     private void extractGroupMemberInfo(GroupData groupData) {
         List<String> emails = new ArrayList<>();
         for (GroupMember member : groupData.members) {
