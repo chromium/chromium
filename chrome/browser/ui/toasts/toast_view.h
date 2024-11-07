@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TOASTS_TOAST_VIEW_H_
 #define CHROME_BROWSER_UI_TOASTS_TOAST_VIEW_H_
 
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -14,11 +16,17 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
+namespace ui {
+class MenuModel;
+}  // namespace ui
+
 namespace views {
 class ImageButton;
 class ImageView;
 class Label;
 class MdTextButton;
+class MenuModelAdapter;
+class MenuRunner;
 }  // namespace views
 
 namespace toasts {
@@ -45,6 +53,7 @@ class ToastView : public views::BubbleDialogDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastActionButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastCloseButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastMenuButton);
   ToastView(
       views::View* anchor_view,
       const std::u16string& toast_text,
@@ -64,6 +73,11 @@ class ToastView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView::CreateBubble).
   void AddCloseButton(
       base::RepeatingClosure close_button_callback = base::DoNothing());
+
+  // Adds a three-dot menu button that, when clicked, runs the menu defined by
+  // `model`. Must be called prior to `Init` (which is called from
+  // views::BubbleDialogDelegateView::CreateBubble).
+  void AddMenu(std::unique_ptr<ui::MenuModel> model);
 
   // views::BubbleDialogDelegateView:
   void Init() override;
@@ -94,6 +108,13 @@ class ToastView : public views::BubbleDialogDelegateView,
  private:
   void AnimateOut(base::OnceClosure callback, bool show_height_animation);
 
+  // Opens the menu if it is not already open or closes the existing menu
+  // otherwise. Assumes that `menu_model_` and `menu_button_` are not null.
+  void OnMenuButtonClicked();
+
+  // Resets `menu_runner_` and removes the highlight from the menu button.
+  void OnMenuClosed();
+
   gfx::LinearAnimation height_animation_{this};
   gfx::Rect starting_widget_bounds_;
   gfx::Rect target_widget_bounds_;
@@ -101,7 +122,7 @@ class ToastView : public views::BubbleDialogDelegateView,
 
   const std::u16string toast_text_;
   const raw_ref<const gfx::VectorIcon> icon_;
-  raw_ptr<const ui::ImageModel> image_override_;
+  const raw_ptr<const ui::ImageModel> image_override_;
   bool render_toast_over_web_contents_;
   bool has_close_button_ = false;
   bool has_action_button_ = false;
@@ -109,12 +130,20 @@ class ToastView : public views::BubbleDialogDelegateView,
   base::RepeatingClosure action_button_callback_;
   base::RepeatingClosure close_button_callback_;
   base::RepeatingCallback<void(ToastCloseReason)> toast_close_callback_;
+  std::unique_ptr<ui::MenuModel> menu_model_;
+  // Wraps `menu_model_` and triggers closing the toast after executing menu
+  // commands.
+  std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // Raw pointers to child views.
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::MdTextButton> action_button_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
+
+  raw_ptr<views::ImageButton> menu_button_ = nullptr;
+  std::optional<views::Button::ScopedAnchorHighlight> menu_button_highlight_;
 };
 
 }  // namespace toasts

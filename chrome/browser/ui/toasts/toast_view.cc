@@ -4,18 +4,25 @@
 
 #include "chrome/browser/ui/toasts/toast_view.h"
 
+#include <algorithm>
 #include <climits>
 #include <memory>
+#include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
@@ -23,6 +30,9 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -50,12 +60,40 @@ bool IsCompatibleImageSize(const ui::ImageModel* image) {
          image_size.height() == intended_size;
 }
 
+// A simple `MenuModelAdapter` that runs `on_executed_command` whenever the
+// command corresponding to a menu item is executed.
+class ToastMenuModelAdapter : public views::MenuModelAdapter {
+ public:
+  ToastMenuModelAdapter(ui::MenuModel* menu_model,
+                        base::RepeatingClosure on_menu_closed,
+                        base::RepeatingClosure on_executed_command)
+      : views::MenuModelAdapter(menu_model, std::move(on_menu_closed)),
+        on_executed_command_(std::move(on_executed_command)) {}
+
+  ~ToastMenuModelAdapter() override = default;
+
+ private:
+  // views::MenuModelAdapter:
+  void ExecuteCommand(int id) override {
+    views::MenuModelAdapter::ExecuteCommand(id);
+    on_executed_command_.Run();
+  }
+
+  void ExecuteCommand(int id, int mouse_event_flags) override {
+    views::MenuModelAdapter::ExecuteCommand(id, mouse_event_flags);
+    on_executed_command_.Run();
+  }
+
+  base::RepeatingClosure on_executed_command_;
+};
+
 }  // namespace
 
 namespace toasts {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastActionButton);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastCloseButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastMenuButton);
 
 ToastView::ToastView(
     views::View* anchor_view,
@@ -98,6 +136,18 @@ void ToastView::AddCloseButton(base::RepeatingClosure close_callback) {
   close_button_callback_ = std::move(close_callback);
 }
 
+void ToastView::AddMenu(std::unique_ptr<ui::MenuModel> model) {
+  CHECK(!menu_model_);
+  menu_model_ = std::move(model);
+  menu_model_adapter_ = std::make_unique<ToastMenuModelAdapter>(
+      menu_model_.get(),
+      /*on_menu_closed=*/
+      base::BindRepeating(&ToastView::OnMenuClosed, base::Unretained(this)),
+      /*on_executed_command=*/
+      base::BindRepeating(&ToastView::Close, base::Unretained(this),
+                          ToastCloseReason::kMenuItemClick));
+}
+
 int ToastView::GetIconSize() {
   const ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
   return lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE);
@@ -126,6 +176,8 @@ void ToastView::Init() {
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetLineHeight(
       lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT));
+  int max_child_height =
+      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT);
 
   if (has_action_button_) {
     label_->SetProperty(
@@ -153,6 +205,9 @@ void ToastView::Init() {
     action_button_->SetProperty(views::kElementIdentifierKey,
                                 kToastActionButton);
     SetInitiallyFocusedView(action_button_);
+    max_child_height = std::max(
+        max_child_height,
+        lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON));
   }
 
   if (has_close_button_) {
@@ -174,18 +229,52 @@ void ToastView::Init() {
     }
   }
 
+  if (menu_model_) {
+    menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+        base::BindRepeating(&ToastView::OnMenuButtonClicked,
+                            base::Unretained(this)),
+        kBrowserToolsChromeRefreshIcon,
+        /*dip_size=*/
+        lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE),
+        ui::kColorToastButton));
+    views::InstallCircleHighlightPathGenerator(menu_button_);
+    menu_button_->SetProperty(views::kElementIdentifierKey, kToastMenuButton);
+    menu_button_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME));
+    const gfx::Insets insets = menu_button_->GetInsets();
+    const int right_margin =
+        lp->GetDistanceMetric(
+            DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_MENU_BUTTON_SPACING) -
+        lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING) -
+        insets.left();
+    menu_button_->SetProperty(views::kMarginsKey,
+                              gfx::Insets::TLBR(0, right_margin, 0, 0));
+    max_child_height =
+        std::max(max_child_height,
+                 lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE) +
+                     insets.height());
+  }
+
   // Height of the toast is set implicitly by adding margins depending on the
-  // height of the tallest child.
+  // height of the tallest child. We cannot simply iterate over all children
+  // here because the `ImageModel` for `ImageButton`s is only set once the theme
+  // is available.
   const int total_vertical_margins =
-      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT) -
-      lp->GetDistanceMetric(action_button_
-                                ? DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON
-                                : DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT);
+      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT) - max_child_height;
   const int top_margin = total_vertical_margins / 2;
-  const int right_margin = lp->GetDistanceMetric(
-      close_button_    ? DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON
-      : action_button_ ? DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON
-                       : DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL);
+  const int right_margin = [&]() {
+    if (menu_button_) {
+      return lp->GetDistanceMetric(
+          DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON);
+    } else if (close_button_) {
+      return lp->GetDistanceMetric(
+          DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON);
+    } else if (action_button_) {
+      return lp->GetDistanceMetric(
+          DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON);
+    }
+    return lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL);
+  }();
   set_margins(gfx::Insets::TLBR(
       top_margin, lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
       total_vertical_margins - top_margin, right_margin));
@@ -242,6 +331,8 @@ void ToastView::AnimateIn() {
 }
 
 void ToastView::Close(ToastCloseReason reason) {
+  // TODO(crbug.com/358618479): Only close if menu is not showing - otherwise,
+  // delay the close.
   // TODO(crbug.com/358610872): Log toast close reason metric.
   views::Widget::ClosedReason widget_closed_reason =
       views::Widget::ClosedReason::kUnspecified;
@@ -338,6 +429,27 @@ void ToastView::AnimateOut(base::OnceClosure callback,
       .Then()
       .SetDuration(base::Milliseconds(50))
       .SetOpacity(bubble_frame_view, 0);
+}
+
+void ToastView::OnMenuButtonClicked() {
+  if (menu_runner_) {
+    menu_runner_->Cancel();
+    return;
+  }
+  menu_button_highlight_ = menu_button_->AddAnchorHighlight();
+  menu_button_->SetState(views::Button::ButtonState::STATE_PRESSED);
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      menu_model_adapter_->CreateMenu(), views::MenuRunner::FIXED_ANCHOR);
+  menu_runner_->RunMenuAt(GetWidget(), /*button_controller=*/nullptr,
+                          menu_button_->GetBoundsInScreen(),
+                          views::MenuAnchorPosition::kTopRight,
+                          ui::mojom::MenuSourceType::kNone);
+}
+
+void ToastView::OnMenuClosed() {
+  menu_runner_.reset();
+  menu_button_highlight_.reset();
+  menu_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
 }
 
 BEGIN_METADATA(ToastView)

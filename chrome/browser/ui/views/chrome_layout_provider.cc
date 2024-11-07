@@ -169,6 +169,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING:
       return 4;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING:
+    case DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_MENU_BUTTON_SPACING:
       return 16;
     case DISTANCE_TOAST_BUBBLE_HEIGHT:
       return 48;
@@ -177,6 +178,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT:
       return 24;
     case DISTANCE_TOAST_BUBBLE_ICON_SIZE:
+    case DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE:
       return 20;
     case DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS:
       return 2;
@@ -185,6 +187,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON:
       return 6;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON:
+      return 12;
+    case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_MENU_BUTTON:
       return 12;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL:
       return 16;

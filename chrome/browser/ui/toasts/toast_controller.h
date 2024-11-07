@@ -34,6 +34,10 @@ enum class ToastCloseReason;
 class ToastView;
 }
 
+namespace ui {
+class MenuModel;
+}
+
 namespace views {
 class Widget;
 }
@@ -48,6 +52,7 @@ struct ToastParams {
   std::vector<std::u16string> body_string_replacement_params;
   std::vector<std::u16string> action_button_string_replacement_params;
   std::optional<ui::ImageModel> image_override;
+  std::unique_ptr<ui::MenuModel> menu_model;
 };
 
 class ToastController : public views::WidgetObserver,

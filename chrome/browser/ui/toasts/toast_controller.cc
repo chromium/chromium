@@ -263,6 +263,10 @@ void ToastController::CreateToast(ToastParams params,
             &RecordToastActionButtonClicked, params.toast_id)));
   }
 
+  if (params.menu_model) {
+    toast_view->AddMenu(std::move(params.menu_model));
+  }
+
   toast_view_ = toast_view.get();
   toast_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast_view));

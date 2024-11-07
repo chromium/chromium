@@ -16,8 +16,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/window/dialog_client_view.h"
+
+namespace {
+
+class TestMenuModel : public ui::SimpleMenuModel,
+                      ui::SimpleMenuModel::Delegate {
+ public:
+  TestMenuModel() : ui::SimpleMenuModel(/*delegate=*/this) {}
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override {}
+};
 
 class ToastViewTest : public DialogBrowserTest {
  public:
@@ -41,10 +53,10 @@ class ToastViewTest : public DialogBrowserTest {
                                             base::DoNothing());
     if (name == "CloseButton") {
       toast->AddCloseButton(base::DoNothing());
-    }
-
-    if (name == "ActionButton") {
+    } else if (name == "ActionButton") {
       toast->AddActionButton(l10n_util::GetStringUTF16(IDS_APP_OK));
+    } else if (name == "Menu") {
+      toast->AddMenu(std::make_unique<TestMenuModel>());
     }
     toast_ = toast.get();
     widget_ = views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
@@ -109,3 +121,9 @@ IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_CloseButton) {
 IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Image) {
   ShowAndVerifyUi();
 }
+
+IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Menu) {
+  ShowAndVerifyUi();
+}
+
+}  // namespace

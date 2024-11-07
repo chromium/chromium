@@ -18391,6 +18391,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Toast Strings-->
     <if expr="not is_android">
+      <message name="IDS_TOAST_MENU_BUTTON_NAME" desc="Accessible name of the 3-dot button to open the menu attached to the toast.">
+        More actions
+      </message>
       <message name="IDS_LINK_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when a link is successfully copied.">
         Link copied
       </message>
