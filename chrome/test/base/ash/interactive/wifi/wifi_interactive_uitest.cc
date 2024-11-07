@@ -25,6 +25,7 @@
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/polling_view_observer.h"
@@ -48,6 +49,9 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
     InteractiveAshTest::SetUpOnMainThread();
+    ash::ShillServiceClient::TestInterface* service_test =
+        ash::ShillServiceClient::Get()->GetTestInterface();
+    service_test->ClearServices();
 
     // Set up context for element tracking for InteractiveBrowserTest.
     SetupContextWidget();
@@ -172,9 +176,9 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
           /*text=*/l10n_util::GetStringUTF8(IDS_NETWORK_TYPE_WIFI)),
       WaitForElementExists(
           kOSSettingsId, settings::wifi::WiFiSubpageSearchForNetworksSpinner()),
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::wifi::WiFiSubpageSearchForNetworks(),
-                                 "Searching for networks"),
+      WaitForElementTextContains(
+          kOSSettingsId, settings::wifi::WiFiSubpageSearchForNetworks(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_NETWORK_SCANNING_MESSAGE)),
       WaitForElementDisplayNotNone(kOSSettingsId,
                                    settings::wifi::WiFiSubpageNetworkListDiv()),
       WaitForToggleState(kOSSettingsId,
@@ -198,9 +202,9 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
       WaitForState(kWifiPoweredState, true),
       WaitForElementExists(
           kOSSettingsId, settings::wifi::WiFiSubpageSearchForNetworksSpinner()),
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::wifi::WiFiSubpageSearchForNetworks(),
-                                 "Searching for networks"),
+      WaitForElementTextContains(
+          kOSSettingsId, settings::wifi::WiFiSubpageSearchForNetworks(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_NETWORK_SCANNING_MESSAGE)),
       WaitForElementDisplayNotNone(kOSSettingsId,
                                    settings::wifi::WiFiSubpageNetworkListDiv()),
 
@@ -327,6 +331,94 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, ConnectFromSettingsSubpage) {
           kOSSettingsId, settings::wifi::WifiNetworksList(), kWifiNetworkItem,
           kWifiItemTitle, WifiServiceName(), kWifiItemSublabel,
           /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, ToggleWifiFromInternetPage) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
+                                      kWifiPoweredState);
+  // Ensure the OS Settings app is installed.
+  InstallSystemApps();
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+      ObserveState(kWifiPoweredState,
+                   std::make_unique<ShillDevicePowerStateObserver>(
+                       ShillManagerClient::Get(), NetworkTypePattern::WiFi())),
+      WaitForState(kWifiPoweredState, true),
+      WaitForToggleState(kOSSettingsId, settings::wifi::WifiSummaryItemToggle(),
+                         /*is_checked=*/true),
+
+      Log("Navigate to the Internet subpage"),
+
+      NavigateSettingsToInternetPage(kOSSettingsId),
+
+      Log("Turn off WiFi toggle button from network summary"),
+
+      ClickElement(kOSSettingsId, settings::wifi::WifiSummaryItemToggle()),
+      WaitForToggleState(kOSSettingsId, settings::wifi::WifiSummaryItemToggle(),
+                         false),
+      WaitForState(kWifiPoweredState, false),
+
+      Log("WiFi subpage arrow should disappear"),
+
+      WaitForElementDisplayNone(kOSSettingsId,
+                                settings::wifi::WifiSummaryItemSubpageArrow()),
+
+      Log("Add WiFi div in expand section should disappear"),
+
+      ClickElement(kOSSettingsId, settings::AddConnectionsExpandButton()),
+      WaitForElementDoesNotExist(kOSSettingsId, settings::AddWiFiRow()),
+
+      Log("Verify WiFi network state is off"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::wifi::WifiSummaryItemNetworkState(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_SETTINGS_DEVICE_OFF)),
+
+      Log("Turn on WiFi toggle button from network summary"),
+
+      ClickElement(kOSSettingsId, settings::wifi::WifiSummaryItemToggle()),
+      WaitForToggleState(kOSSettingsId, settings::wifi::WifiSummaryItemToggle(),
+                         true),
+      WaitForState(kWifiPoweredState, true),
+
+      Log("Verify subpage arrow exists"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::wifi::WifiSummaryItemSubpageArrow()),
+
+      Log("Verify expand section contains Add Wi-Fi row"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::AddConnectionsExpandButton()),
+
+      Log("Add WiFi div in expand section should exist"),
+
+      WaitForElementExists(kOSSettingsId, settings::AddWiFiRow()),
+      WaitForElementExists(kOSSettingsId, settings::AddWifiIcon()),
+
+      Log("WiFi network state should change from Off to \"No network\" when no "
+          "visible network"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::wifi::WifiSummaryItemNetworkState(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_NETWORK_LIST_NO_NETWORK)),
+
+      // Add a Wifi configuration but don't connect it.
+      Do([&]() { ConfigureWifi(false); }),
+
+      Log("WiFi network state should change from \"No network\" to \"Not "
+          "connected\" when there are available networks"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::wifi::WifiSummaryItemNetworkState(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_NETWORK_LIST_NOT_CONNECTED)),
+
       Log("Test complete"));
 }
 

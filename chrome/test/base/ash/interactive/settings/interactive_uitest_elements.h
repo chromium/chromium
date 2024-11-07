@@ -52,6 +52,9 @@ WebContentsInteractionTestUtil::DeepQuery AddConnectionsExpandButton();
 // The "Add Wi-Fi" row in the expansion of "Add connection".
 WebContentsInteractionTestUtil::DeepQuery AddWiFiRow();
 
+// The "Add Wi-Fi" icon in the expansion of "Add connection".
+WebContentsInteractionTestUtil::DeepQuery AddWifiIcon();
+
 // The "Add built-in VPN" row in the expansion of "Add connection".
 WebContentsInteractionTestUtil::DeepQuery AddBuiltInVpnRow();
 
@@ -330,8 +333,20 @@ namespace wifi {
 // The network list under the WiFi subpage.
 WebContentsInteractionTestUtil::DeepQuery WifiNetworksList();
 
+// The network list div under the WiFi subpage.
+WebContentsInteractionTestUtil::DeepQuery WifiNetworksListDiv();
+
 // The WiFi toggle in WiFi subpage page.
 WebContentsInteractionTestUtil::DeepQuery WifiSubpageEnableToggle();
+
+// The wifi toggle on the top-level internet page.
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemToggle();
+
+// The wifi network state on the internet page.
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemNetworkState();
+
+// The wifi subpage arrow on the internet page.
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemSubpageArrow();
 
 // The wifi "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem();

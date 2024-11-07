@@ -34,5 +34,6 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//ui/base:base",
     "//ui/base:test_support",
+    "//ui/chromeos/strings:strings_grit",
   ]
 }

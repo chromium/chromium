@@ -71,6 +71,10 @@ WebContentsInteractionTestUtil::DeepQuery AddWiFiRow() {
   return InternetPage() + "div#add-wifi-label";
 }
 
+WebContentsInteractionTestUtil::DeepQuery AddWifiIcon() {
+  return InternetPage() + "cr-icon-button.icon-add-wifi";
+}
+
 WebContentsInteractionTestUtil::DeepQuery AddBuiltInVpnRow() {
   return InternetPage() + "div#add-vpn-label";
 }
@@ -498,9 +502,26 @@ WebContentsInteractionTestUtil::DeepQuery WifiNetworksList() {
          "network-list#networkList";
 }
 
+WebContentsInteractionTestUtil::DeepQuery WifiNetworksListDiv() {
+  return InternetPage() + "settings-internet-subpage" + "div#networkListDiv";
+}
+
 WebContentsInteractionTestUtil::DeepQuery WifiSubpageEnableToggle() {
   return InternetPage() + "settings-internet-subpage" +
          "cr-toggle#deviceEnabledButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemToggle() {
+  return InternetPage() + "network-summary" + "network-summary-item#WiFi" +
+         "cr-toggle#deviceEnabledButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemNetworkState() {
+  return WifiSummaryItem() + "div#networkState";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemSubpageArrow() {
+  return WifiSummaryItem() + "cr-icon-button.subpage-arrow";
 }
 
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem() {
