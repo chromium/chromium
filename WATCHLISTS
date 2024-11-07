@@ -2094,6 +2094,9 @@
     'styleguide_python': {
       'filepath': '^styleguide/python',
     },
+    'stylus_handwriting': {
+      'filepath': 'components/stylus_handwriting',
+    },
     'subresource_filter': {
       'filepath': 'subresource_filter|SubresourceFilter|url_pattern_index',
     },
@@ -3258,6 +3261,7 @@
                    'wfh+watch@chromium.org'],
     'styleguide_python': ['agrieve+watch@chromium.org',
                           'wnwen+watch@chromium.org'],
+    'stylus_handwriting': ['alexmitra+watch@chromium.org'],
     'subresource_filter': ['subresource-filter-reviews@chromium.org'],
     'supervised_users': [],
     'surface_layer_for_video': [ 'lethalantidote@chromium.org',
