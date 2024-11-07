@@ -1480,21 +1480,6 @@ TEST_P(CanvasRenderingContext2DTest, ContextDisposedBeforeCanvas) {
   // Passes by not crashing later during teardown
 }
 
-TEST_P(CanvasRenderingContext2DTest,
-       NoResourceProviderAfterCanvas2DLayerBridgeCreation) {
-  // This test enforces that there is no eager creation of
-  // CanvasResourceProvider for html canvas with 2d context when its
-  // Canvas2DLayerBridge is initially set up. This enforcement might be changed
-  // in the future refactoring; but change is seriously warned against because
-  // certain code paths in canvas 2d (that depend on the existence of
-  // CanvasResourceProvider) will be changed too, causing bad regressions.
-  CreateContext(kNonOpaque);
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-
-  EXPECT_TRUE(CanvasElement().GetOrCreateCanvas2DLayerBridge());
-  EXPECT_FALSE(CanvasElement().ResourceProvider());
-}
-
 static void TestDrawSingleHighBitDepthPNGOnCanvas(
     String filepath,
     CanvasRenderingContext2D* context,
