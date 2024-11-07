@@ -186,12 +186,13 @@ bool SpeechRecognitionServiceImpl::CreateRecognizer(
     return false;
   }
 
+  auto language = options->language.has_value()
+                      ? options->language.value()
+                      : default_live_caption_language_;
   SpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), std::move(options), binary_path_,
-      config_paths_,
-      options->language.has_value() ? options->language.value()
-                                    : default_live_caption_language_,
-      mask_offensive_words_, weak_factory_.GetWeakPtr());
+      config_paths_, language, mask_offensive_words_,
+      weak_factory_.GetWeakPtr());
 
   return true;
 }
