@@ -338,7 +338,8 @@ void AutofillDriverIOS::FetchFromsFilteredByName(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kAutofillThrottleDocumentFormScanIos)) {
+  if (base::FeatureList::IsEnabled(
+          kAutofillThrottleFilteredDocumentFormScanIos)) {
     document_filtered_scan_batcher_.PushRequest(std::move(completion),
                                                 form_name);
   } else {
