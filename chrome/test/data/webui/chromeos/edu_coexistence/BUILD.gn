@@ -14,6 +14,9 @@ build_webui_tests("build") {
   ]
 
   ts_path_mappings = [
+    "chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js|" + rebase_path(
+            "//chrome/browser/resources/chromeos/gaia_action_buttons/gaia_action_buttons.js",
+            target_gen_dir),
     "chrome://chrome-signin/edu_coexistence/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/chromeos/edu_coexistence/tsc/*",
             target_gen_dir),
