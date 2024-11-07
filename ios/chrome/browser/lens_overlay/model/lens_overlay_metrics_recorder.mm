@@ -9,6 +9,32 @@
 #import "base/timer/elapsed_timer.h"
 #import "components/lens/lens_overlay_metrics.h"
 #import "components/lens/lens_overlay_page_content_mime_type.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
+#import "ios/web/public/web_state.h"
+
+namespace {
+
+/// Returns the `lens::PageContentMimeType` of the `web_state`.
+lens::PageContentMimeType PageContentMimeTypeFromWebState(
+    web::WebState* web_state) {
+  if (!web_state) {
+    return lens::PageContentMimeType::kNone;
+  }
+
+  const std::string& mime_type = web_state->GetContentsMimeType();
+  if (mime_type == kHyperTextMarkupLanguageMimeType) {
+    return lens::PageContentMimeType::kHtml;
+  } else if (mime_type == kAdobePortableDocumentFormatMimeType) {
+    return lens::PageContentMimeType::kPdf;
+  } else if (mime_type == kTextMimeType) {
+    return lens::PageContentMimeType::kPlainText;
+  } else {
+    return lens::PageContentMimeType::kNone;
+  }
+}
+
+}  // namespace
 
 @implementation LensOverlayMetricsRecorder {
   /// Whether a lens request has been performed during this session.
@@ -25,16 +51,21 @@
   BOOL _firstInteractionRecorded;
   /// The invocation source.
   lens::LensOverlayInvocationSource _invocationSource;
-  /// The associated source ID.
+  /// The source ID of the webState where lens was invoked on.
   int64_t _sourceID;
+  /// The mime type of the webState where lens was invoked on.
+  lens::PageContentMimeType _mimeType;
 }
 
 - (instancetype)initWithEntrypoint:(LensOverlayEntrypoint)entrypoint
-                          sourceID:(int64_t)sourceID {
+                associatedWebState:(web::WebState*)associatedWebState {
   self = [super init];
   if (self) {
     _invocationSource = lens::InvocationSourceFromEntrypoint(entrypoint);
-    _sourceID = sourceID;
+    _sourceID = associatedWebState
+                    ? ukm::GetSourceIdForWebStateDocument(associatedWebState)
+                    : ukm::kInvalidSourceId;
+    _mimeType = PageContentMimeTypeFromWebState(associatedWebState);
     _firstInteractionRecorded = NO;
     _searchPerformedInSession = NO;
     _invocationTime = base::ElapsedTimer();
@@ -123,7 +154,7 @@
   [self recordLensOverlayClosed];
 
   // Invocation metrics.
-  lens::RecordInvocation(_invocationSource, lens::PageContentMimeType::kNone);
+  lens::RecordInvocation(_invocationSource, _mimeType);
   lens::RecordInvocationResultedInSearch(_invocationSource,
                                          _searchPerformedInSession);
   // Dismissal metric.

@@ -11,7 +11,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
@@ -299,7 +298,7 @@ const CGFloat kMenuSymbolSize = 18;
 
   _metricsRecorder = [[LensOverlayMetricsRecorder alloc]
       initWithEntrypoint:entrypoint
-                sourceID:self.associatedTabSourceId];
+      associatedWebState:_associatedTabHelper->GetWebState()];
 
   // The instance that creates the Lens UI designates itself as the command
   // handler for the associated tab.
@@ -1181,16 +1180,6 @@ const CGFloat kMenuSymbolSize = 18;
   for (UIGestureRecognizer* recognizer in panRecognizersAfterPresenting) {
     recognizer.cancelsTouchesInView = NO;
   }
-}
-
-/// Returns the UKM source id from the associated tab.
-- (ukm::SourceId)associatedTabSourceId {
-  if (_associatedTabHelper) {
-    if (web::WebState* webState = _associatedTabHelper->GetWebState()) {
-      return ukm::GetSourceIdForWebStateDocument(webState);
-    }
-  }
-  return ukm::kInvalidSourceId;
 }
 
 @end

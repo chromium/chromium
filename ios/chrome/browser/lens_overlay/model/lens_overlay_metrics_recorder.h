@@ -12,12 +12,17 @@
 #import "components/lens/lens_overlay_metrics.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 
+namespace web {
+class WebState;
+}  // namespace web
+
 /// Utility for recording lens overlay related metrics.
 @interface LensOverlayMetricsRecorder : NSObject
 
-/// Creates an instance for an associated entrypoint.
+/// Creates an instance for an associated entrypoint and the webState where the
+/// overlay is invoked on. The `associatedWebState` is not retained.
 - (instancetype)initWithEntrypoint:(LensOverlayEntrypoint)entrypoint
-                          sourceID:(int64_t)sourceID;
+                associatedWebState:(web::WebState*)associatedWebState;
 
 /// Sets whether the lens overlay is in foreground or not.
 - (void)setLensOverlayInForeground:(BOOL)lensOverlayInForeground;

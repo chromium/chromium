@@ -41,7 +41,6 @@ source_set("coordinator") {
     "//components/lens",
     "//components/search_engines",
     "//components/security_state/ios",
-    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings:ios_strings_grit",
