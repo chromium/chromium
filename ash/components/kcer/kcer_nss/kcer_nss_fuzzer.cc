@@ -16,8 +16,8 @@
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/raw_span.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/test_future.h"
@@ -249,8 +249,7 @@ class CertGenerator {
   // Not a hard requirement, can be changed if needed.
   bool can_be_used_ = true;
   const raw_ref<FuzzedDataProvider> data_provider_;
-  // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION base::span<const uint8_t> public_key_spki_;
+  base::raw_span<const uint8_t> public_key_spki_;
   std::unique_ptr<net::CertBuilder> issuer_;
   std::unique_ptr<net::CertBuilder> cert_builder_;
 };
