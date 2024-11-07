@@ -5,10 +5,13 @@
 #ifndef PDF_PDFIUM_PDFIUM_INK_READER_H_
 #define PDF_PDFIUM_PDFIUM_INK_READER_H_
 
+#include <optional>
 #include <vector>
 
 #include "pdf/buildflags.h"
+#include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/point.h"
 #include "third_party/pdfium/public/fpdfview.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
@@ -31,6 +34,10 @@ struct ReadV2InkPathResult {
 // If `page` is null, then the return value is an empty vector.
 std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
     FPDF_PAGE page);
+
+// Exposes internal CreateInkMeshFromPolyline() for testing.
+std::optional<ink::Mesh> CreateInkMeshFromPolylineForTesting(
+    const std::vector<ink::Point>& polyline);
 
 }  // namespace chrome_pdf
 

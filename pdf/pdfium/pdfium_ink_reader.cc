@@ -15,6 +15,7 @@
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
+#include "printing/units.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/ink/src/ink/geometry/point.h"
@@ -61,6 +62,30 @@ gfx::PointF GetSegmentPoint(FPDF_PATHSEGMENT segment) {
 ink::Point GetTransformedInkPoint(const gfx::AxisTransform2d& transform,
                                   const gfx::PointF& point) {
   return InkPointFromGfxPoint(transform.MapPoint(point));
+}
+
+// Wrapper around ink::CreateMeshFromPolyline() to convert `polyline` into an
+// ink::Mesh. It applies an additional check to make sure the points in
+// `polyline` have sane values.
+std::optional<ink::Mesh> CreateInkMeshFromPolyline(
+    const std::vector<ink::Point>& polyline) {
+  // Limit for ink::Point values in pixels. It is divided by 2 because the limit
+  // extends half way in the negative range.
+  constexpr int kInkPointDimensionLimit =
+      kMaxPdfDimensionInches * printing::kPixelsPerInch / 2;
+  for (const auto& pt : polyline) {
+    if (pt.x < -kInkPointDimensionLimit || pt.x > kInkPointDimensionLimit ||
+        pt.y < -kInkPointDimensionLimit || pt.y > kInkPointDimensionLimit) {
+      return std::nullopt;
+    }
+  }
+
+  auto mesh = ink::CreateMeshFromPolyline(polyline);
+  if (!mesh.ok()) {
+    return std::nullopt;
+  }
+
+  return *mesh;
 }
 
 // Creates an ink::Mesh from `polyline`. If it is valid, append it to `meshes`.
@@ -168,6 +193,11 @@ std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
     results.emplace_back(page_object, std::move(shape.value()));
   }
   return results;
+}
+
+std::optional<ink::Mesh> CreateInkMeshFromPolylineForTesting(  // IN-TEST
+    const std::vector<ink::Point>& polyline) {
+  return CreateInkMeshFromPolyline(polyline);
 }
 
 }  // namespace chrome_pdf

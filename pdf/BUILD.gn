@@ -554,6 +554,18 @@ if (enable_pdf) {
       "//base",
     ]
   }
+
+  if (enable_pdf_ink2) {
+    test("pdf_ink_reader_fuzzer") {
+      fuzztests = [ "PdfInkReaderFuzzer.CreateMeshFromPolylineDoesntCrash" ]
+      sources = [ "pdfium/pdfium_ink_reader_fuzzer.cc" ]
+      deps = [
+        ":internal",
+        "//third_party/fuzztest:fuzztest_gtest_main",
+        "//third_party/ink",
+      ]
+    }
+  }
 } else {
   # Dummy groups when PDF support is disabled so targets can unconditionally
   # depend on it.

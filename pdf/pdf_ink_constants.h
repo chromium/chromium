@@ -12,6 +12,12 @@ namespace chrome_pdf {
 // Signature for "V2" PDF page objects. Do not change.
 inline constexpr char kInkAnnotationIdentifierKeyV2[] = "GOOG:INKIsInker";
 
+// Since PDFium does not support UserUnit, this is the maximum possible PDF
+// dimension.
+// TODO(crbug.com/42271703): If the bug gets fixed, update the code that assumes
+// this is the limit.
+inline constexpr int kMaxPdfDimensionInches = 200;
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_PDF_INK_CONSTANTS_H_
