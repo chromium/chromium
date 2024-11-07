@@ -1234,12 +1234,6 @@ class ChoobeScreenTester extends ScreenElementApi {
     return this.shouldBeSkipped;
   }
 
-  // TODO(b/327270907): Remove `updatedShouldSkip()` after the users of the test
-  // API migrate to using `shouldSkip()`
-  updatedShouldSkip(): boolean {
-    return this.shouldSkip();
-  }
-
   isReadyForTesting(): boolean {
     return this.isVisible();
   }
@@ -1358,12 +1352,6 @@ class ChoobeTouchpadScrollScreenTester extends ScreenElementApi {
         '`shouldSkip()` should only be called after `requestShouldSkip()`' +
             'is called, and `isShouldSkippedReceived()` starts returning true');
     return this.shouldBeSkipped;
-  }
-
-  // TODO(b/327270907): Remove `updatedShouldSkip()` after the users of the test
-  // API migrate to using `shouldSkip()`
-  updatedShouldSkip(): boolean {
-    return this.shouldSkip();
   }
 
   isReadyForTesting(): boolean {
