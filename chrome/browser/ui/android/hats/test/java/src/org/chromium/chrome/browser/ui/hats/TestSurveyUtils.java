@@ -41,6 +41,11 @@ public class TestSurveyUtils {
                         trigger, TEST_TRIGGER_ID_FOO, 1.0f, false, psdBitFields, psdStringFields));
     }
 
+    /** Sets the flag that determines if we should forcefully use the testing configuration. */
+    public static void setSurveyConfigForceUsingTestingConfig(boolean shouldForce) {
+        SurveyConfig.setSurveyConfigForceUsingTestingConfig(shouldForce);
+    }
+
     /**
      * Force survey to show if SurveyClientImpl is used in test. This will bypass the throttler
      * check in the background.
