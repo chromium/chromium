@@ -23,7 +23,8 @@ namespace extensions {
 ExtensionInjectionHost::ExtensionInjectionHost(const Extension* extension)
     : InjectionHost(
           mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id())),
-      extension_(extension) {}
+      extension_(extension),
+      isolated_world_csp_(CSPInfo::GetIsolatedWorldCSP(*extension_)) {}
 
 ExtensionInjectionHost::~ExtensionInjectionHost() {
 }
@@ -40,11 +41,7 @@ std::unique_ptr<const InjectionHost> ExtensionInjectionHost::Create(
 }
 
 const std::string* ExtensionInjectionHost::GetContentSecurityPolicy() const {
-  if (!isolated_world_csp_) {
-    isolated_world_csp_ = CSPInfo::GetIsolatedWorldCSP(*extension_);
-  }
-
-  return &(isolated_world_csp_.value());
+  return isolated_world_csp_ ? &(isolated_world_csp_.value()) : nullptr;
 }
 
 const GURL& ExtensionInjectionHost::url() const {

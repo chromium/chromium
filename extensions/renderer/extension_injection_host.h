@@ -44,9 +44,8 @@ class ExtensionInjectionHost : public InjectionHost {
 
   raw_ptr<const Extension, DanglingUntriaged> extension_;
 
-  // The isolated world CSP, cached to avoid duplication. Mutable as it is
-  // lazily instantiated.
-  mutable std::optional<std::string> isolated_world_csp_;
+  // The isolated world CSP, cached to avoid duplication.
+  const std::optional<std::string> isolated_world_csp_;
 };
 
 }  // namespace extesions
