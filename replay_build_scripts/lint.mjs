@@ -1,3 +1,5 @@
+/* global process */
+
 import * as fs from "fs";
 import * as eslint from "eslint";
 
@@ -90,6 +92,11 @@ async function lintScript(
 
     env: {
       browser: true,
+      /**
+       * This is necessary!
+       * @see https://stackoverflow.com/a/58056722
+       */
+      es6: true,
     },
     globals: {
       __RECORD_REPLAY_ARGUMENTS__: true,
@@ -161,7 +168,11 @@ async function main() {
   }
 
   const bad = !!totalErrorCount;
-  console.log(`\n${bad ? '❌' : '✅'} Final Result:\n  ${totalErrorCount} errors\n  ${totalWarningCount} warnings`);
+  console.log(
+    `\n${
+      bad ? "❌" : "✅"
+    } Final Result:\n  ${totalErrorCount} errors\n  ${totalWarningCount} warnings`
+  );
   console.groupEnd();
   if (bad) {
     process.exit(1);

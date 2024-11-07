@@ -97,11 +97,19 @@ function assert(v, msg = "") {
   }
 }
 
+/**
+ * @see https://stackoverflow.com/a/37837872
+ */
+function isIteratable(obj) {
+  return typeof obj?.[Symbol.iterator] !== 'function';
+}
+
 const gSourceMapData = new Map();
 
 /** ###########################################################################
  * Use JS injection prevention:
  * Save some functions before User JS has a chance to overwrite them.
+ * NOTE: We access many more monkey-patchable functions.
  * ##########################################################################*/
 
 const JSON_stringify = JSON.stringify;
@@ -2818,6 +2826,8 @@ function StackingContext(window, options) {
   }
 }
 
+let gStackingContextWarn = 0;
+
 StackingContext.prototype = {
   toString() {
     return `StackingContext:${this.id}`;
@@ -2855,26 +2865,26 @@ StackingContext.prototype = {
       clipBounds = parentElem?.clipBounds || {};
     }
     clipBounds = Object.assign({}, clipBounds);
-    const elem = new StackingContextElement(this, node, parentElem, offset, style, clipBounds);
-    if (!["HTML", "BODY"].includes(elem.raw.tagName)) {
+    const cx = new StackingContextElement(this, node, parentElem, offset, style, clipBounds);
+    if (!["HTML", "BODY"].includes(cx.raw.tagName)) {
       if (style.getPropertyValue("overflow-x") != "visible") {
-        const clipBounds2 = elem.getFormattingContextElement().raw.getBoundingClientRect();
-        elem.clipBounds.left =
+        const clipBounds2 = cx.getFormattingContextElement().raw.getBoundingClientRect();
+        cx.clipBounds.left =
           clipBounds.left !== undefined
             ? Math.max(clipBounds2.left, clipBounds.left)
             : clipBounds2.left;
-        elem.clipBounds.right =
+        cx.clipBounds.right =
           clipBounds.right !== undefined
             ? Math.min(clipBounds2.right, clipBounds.right)
             : clipBounds2.right;
       }
       if (style.getPropertyValue("overflow-y") != "visible") {
-        const clipBounds2 = elem.getFormattingContextElement().raw.getBoundingClientRect();
-        elem.clipBounds.top =
+        const clipBounds2 = cx.getFormattingContextElement().raw.getBoundingClientRect();
+        cx.clipBounds.top =
           clipBounds.top !== undefined
             ? Math.max(clipBounds2.top, clipBounds.top)
             : clipBounds2.top;
-        elem.clipBounds.bottom =
+        cx.clipBounds.bottom =
           clipBounds.bottom !== undefined
             ? Math.min(clipBounds2.bottom, clipBounds.bottom)
             : clipBounds2.bottom;
@@ -2882,8 +2892,8 @@ StackingContext.prototype = {
     }
 
     // Create a new stacking context for any iframes.
-    if (elem.raw.tagName == "IFRAME" && elem.raw.contentWindow?.document) {
-      let { left, top } = elem.raw.getBoundingClientRect();
+    if (cx.raw.tagName == "IFRAME" && cx.raw.contentWindow?.document) {
+      let { left, top } = cx.raw.getBoundingClientRect();
 
       // The left and top are adjusted by the transform matrix for
       // the containing iframe, if any.  For this, we just search up the
@@ -2903,7 +2913,7 @@ StackingContext.prototype = {
       // Compute the transform matrix for the iframe within its containing
       // document.
       // If we have a parent transform matrix, multiply it with this one.
-      let transformMatrix = computeTransformMatrix(elem.raw, this.window);
+      let transformMatrix = computeTransformMatrix(cx.raw, this.window);
       if (parentTransformMatrix) {
         transformMatrix = multiplyTransformMatrix(
           parentTransformMatrix,
@@ -2911,59 +2921,59 @@ StackingContext.prototype = {
         );
       }
 
-      this.addContext(elem, undefined, { left, top, transformMatrix });
-      elem.context.addChildren(elem.raw.contentWindow.document);
+      this.addContext(cx, undefined, { left, top, transformMatrix });
+      cx.context.addChildren(cx.raw.contentWindow.document);
     }
 
-    if (!elem.style) {
-      this.addNonPositionedElement(elem);
-      this.addChildrenWithParent(elem);
+    if (!cx.style) {
+      this.addNonPositionedElement(cx);
+      this.addChildrenWithParent(cx);
       return;
     }
 
-    const parentDisplay = elem.parent?.style?.getPropertyValue("display");
+    const parentDisplay = cx.parent?.style?.getPropertyValue("display");
     if (
       position != "static" ||
       ["flex", "inline-flex", "grid", "inline-grid"].includes(parentDisplay)
     ) {
-      const zIndex = elem.style.getPropertyValue("z-index");
+      const zIndex = cx.style.getPropertyValue("z-index");
       if (zIndex != "auto") {
-        this.addContext(elem, undefined, {});
+        this.addContext(cx, undefined, {});
         // Elements with a zero z-index have their own stacking context but are
         // grouped with other positioned children with an auto z-index.
         const index = +zIndex | 0;
         if (index) {
-          this.realStackingContext.addZIndexElement(elem, index);
+          this.realStackingContext.addZIndexElement(cx, index);
           return;
         }
       }
 
       if (position != "static") {
-        this.realStackingContext.addPositionedElement(elem);
-        if (!elem.context) {
-          this.addContext(elem, this.realStackingContext, {});
+        this.realStackingContext.addPositionedElement(cx);
+        if (!cx.context) {
+          this.addContext(cx, this.realStackingContext, {});
         }
       } else {
-        this.addNonPositionedElement(elem);
-        if (!elem.context) {
-          this.addChildrenWithParent(elem);
+        this.addNonPositionedElement(cx);
+        if (!cx.context) {
+          this.addChildrenWithParent(cx);
         }
       }
       return;
     }
 
-    if (elem.isFloat()) {
+    if (cx.isFloat()) {
       // Group the element and its descendants.
-      this.addContext(elem, this.realStackingContext, {});
-      this.addFloatingElement(elem);
+      this.addContext(cx, this.realStackingContext, {});
+      this.addFloatingElement(cx);
       return;
     }
 
-    const display = elem.style.getPropertyValue("display");
+    const display = cx.style.getPropertyValue("display");
     if (display == "inline-block" || display == "inline-table") {
       // Group the element and its descendants.
-      this.addContext(elem, this.realStackingContext, {});
-      this.addNonPositionedElement(elem);
+      this.addContext(cx, this.realStackingContext, {});
+      this.addNonPositionedElement(cx);
       return;
     }
 
@@ -2974,16 +2984,16 @@ StackingContext.prototype = {
 
     // Elements with `opacity < 1` get their own stacking context.
     let opacity = 1;
-    const opacityStr = elem.style.getPropertyValue("opacity");
+    const opacityStr = cx.style.getPropertyValue("opacity");
     if (opacityStr !== undefined && opacityStr !== "") {
       opacity = +opacityStr;
     }
     if (opacity < 1) {
-      this.addContext(elem, undefined, {});
+      this.addContext(cx, undefined, {});
     }
 
-    this.addNonPositionedElement(elem);
-    this.addChildrenWithParent(elem);
+    this.addNonPositionedElement(cx);
+    this.addChildrenWithParent(cx);
   },
 
   addContext(
@@ -3042,12 +3052,24 @@ StackingContext.prototype = {
     }
   },
 
-  addChildrenWithParent(parentElem) {
-    for (const child of parentElem.raw.children) {
+  addChildrenWithParent(cx) {
+    if (!isIteratable(cx.raw.children)) {
+      // [TT-253] `cx.raw` should always be an Element and
+      // Element.prototype.children should always return an `HTMLCollection`.
+      // Not sure why it sometimes complains about not being iterable.
+      if (!isBlinkInstanceOf(cx.raw, Element) && !gStackingContextWarn) {
+        ++gStackingContextWarn;
+        warning(
+          `[TT-253] cx.raw should be Element but is not: ${cx.raw} (${typeof cx.raw}), ${cx.raw.children} (${typeof cx.raw.children}})`
+        );
+      }
+      return;
+    }
+    for (const child of cx.raw.children) {
       if (!isBlinkInstanceOf(child, Element)) {
         continue;
       }
-      this.add(child, parentElem, this.offset);
+      this.add(child, cx, this.offset);
     }
   },
 
