@@ -22,12 +22,12 @@ bool StyleColorRepeater::operator==(const StyleColorRepeater& other) const {
          repeat_count_ == other.repeat_count_;
 }
 
-GapColorData::GapColorData(StyleColor gap_color) : gap_color_(gap_color) {}
+GapData::GapData(StyleColor gap_color) : gap_color_(gap_color) {}
 
-GapColorData::GapColorData(StyleColorRepeater* color_repeater)
+GapData::GapData(StyleColorRepeater* color_repeater)
     : color_repeater_(color_repeater) {}
 
-bool GapColorData::operator==(const GapColorData& other) const {
+bool GapData::operator==(const GapData& other) const {
   return gap_color_ == other.gap_color_ &&
          base::ValuesEquivalent(color_repeater_, other.color_repeater_);
 }

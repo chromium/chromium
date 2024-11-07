@@ -8,15 +8,15 @@
 
 namespace blink {
 
-TEST(GapColorData, GapColorDataEquivalence) {
+TEST(GapData, GapDataEquivalence) {
   // Gap color data with the same color should be equal.
-  GapColorData color = GapColorData(StyleColor(Color(1, 0, 0)));
-  GapColorData color2 = GapColorData(StyleColor(Color(1, 0, 0)));
+  GapData color = GapData(StyleColor(Color(1, 0, 0)));
+  GapData color2 = GapData(StyleColor(Color(1, 0, 0)));
 
   EXPECT_EQ(color, color2);
 
   // Gap color data with different colors should not be equal.
-  GapColorData color3 = GapColorData(StyleColor(Color(0, 0, 1)));
+  GapData color3 = GapData(StyleColor(Color(0, 0, 1)));
   EXPECT_NE(color, color3);
 
   // Gap color data with a repeater should not be equal to a gap color data with
@@ -25,7 +25,7 @@ TEST(GapColorData, GapColorDataEquivalence) {
   colors.push_back(StyleColor(Color(1, 0, 0)));
   StyleColorRepeater* repeater =
       MakeGarbageCollected<StyleColorRepeater>(std::move(colors));
-  GapColorData color_repeater = GapColorData(repeater);
+  GapData color_repeater = GapData(repeater);
   EXPECT_NE(color, color_repeater);
 
   // Gap color data with the same repeater value should be equal.
@@ -33,7 +33,7 @@ TEST(GapColorData, GapColorDataEquivalence) {
   colors2.push_back(StyleColor(Color(1, 0, 0)));
   StyleColorRepeater* repeater2 =
       MakeGarbageCollected<StyleColorRepeater>(std::move(colors2));
-  GapColorData color_repeater2 = GapColorData(repeater2);
+  GapData color_repeater2 = GapData(repeater2);
   EXPECT_EQ(color_repeater, color_repeater2);
 }
 

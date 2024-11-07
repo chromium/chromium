@@ -13,25 +13,25 @@ namespace blink {
 // specified. These values can be an auto repeater, an integer repeater, or a
 // single color. See:
 // https://kbabbitt.github.io/css-gap-decorations/#column-row-rule-color
-class CORE_EXPORT GapColorDataList {
+class CORE_EXPORT GapDataList {
   DISALLOW_NEW();
 
  public:
-  GapColorDataList() = default;
+  GapDataList() = default;
 
-  static GapColorDataList DefaultGapColorDataList() {
+  static GapDataList DefaultGapColorDataList() {
     StyleColor color = StyleColor::CurrentColor();
-    auto default_gap_color_list = GapColorDataList(color);
+    auto default_gap_color_list = GapDataList(color);
     return default_gap_color_list;
   }
 
-  explicit GapColorDataList(GapDataVector&& gap_color_data_list)
+  explicit GapDataList(GapDataVector&& gap_color_data_list)
       : gap_color_data_list_(gap_color_data_list) {
     DCHECK(!gap_color_data_list_.empty());
   }
 
-  explicit GapColorDataList(const StyleColor& color) {
-    gap_color_data_list_.emplace_back(GapColorData(color));
+  explicit GapDataList(const StyleColor& color) {
+    gap_color_data_list_.emplace_back(GapData(color));
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(gap_color_data_list_); }
@@ -43,11 +43,11 @@ class CORE_EXPORT GapColorDataList {
     return gap_color_data_list_[0].GetGapColor();
   }
 
-  bool operator==(const GapColorDataList& o) const {
+  bool operator==(const GapDataList& o) const {
     return gap_color_data_list_ == o.gap_color_data_list_;
   }
 
-  bool operator!=(const GapColorDataList& o) const { return !(*this == o); }
+  bool operator!=(const GapDataList& o) const { return !(*this == o); }
 
  private:
   GapDataVector gap_color_data_list_;

@@ -36,19 +36,19 @@ struct CORE_EXPORT StyleColorRepeater
 };
 
 // A GapColorData is a single StyleColor or a StyleColorRepeater.
-class CORE_EXPORT GapColorData {
+class CORE_EXPORT GapData {
   DISALLOW_NEW();
 
  public:
-  GapColorData() = default;
-  explicit GapColorData(StyleColor gap_color);
-  explicit GapColorData(StyleColorRepeater* color_repeater);
+  GapData() = default;
+  explicit GapData(StyleColor gap_color);
+  explicit GapData(StyleColorRepeater* color_repeater);
   void Trace(Visitor* visitor) const {
     visitor->Trace(gap_color_);
     visitor->Trace(color_repeater_);
   }
 
-  bool operator==(const GapColorData& other) const;
+  bool operator==(const GapData& other) const;
 
   const StyleColor GetGapColor() const {
     CHECK(!color_repeater_);
@@ -67,10 +67,10 @@ class CORE_EXPORT GapColorData {
   Member<StyleColorRepeater> color_repeater_;
 };
 
-typedef HeapVector<GapColorData, 1> GapDataVector;
+typedef HeapVector<GapData, 1> GapDataVector;
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GapColorData)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GapData)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_H_

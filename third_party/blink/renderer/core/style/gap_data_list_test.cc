@@ -8,27 +8,26 @@
 
 namespace blink {
 
-TEST(GapColorDataListTest, GapColorDataListEquivalence) {
+TEST(GapDataListTest, GapDataListEquivalence) {
   // Gap color data list with the same color(s) should be equal.
-  GapColorDataList gap_colors = GapColorDataList(StyleColor(Color(0, 0, 1)));
-  GapColorDataList gap_colors1 = GapColorDataList(StyleColor(Color(0, 0, 1)));
+  GapDataList gap_colors = GapDataList(StyleColor(Color(0, 0, 1)));
+  GapDataList gap_colors1 = GapDataList(StyleColor(Color(0, 0, 1)));
   EXPECT_EQ(gap_colors, gap_colors1);
 
   // Gap color data list with same GapDataVector should equal.
   GapDataVector gap_data_vector;
-  gap_data_vector.push_back(GapColorData(StyleColor(Color(0, 0, 1))));
-  gap_data_vector.push_back(GapColorData(StyleColor(Color(1, 0, 0))));
-  GapColorDataList gap_colors2 = GapColorDataList(std::move(gap_data_vector));
+  gap_data_vector.push_back(GapData(StyleColor(Color(0, 0, 1))));
+  gap_data_vector.push_back(GapData(StyleColor(Color(1, 0, 0))));
+  GapDataList gap_colors2 = GapDataList(std::move(gap_data_vector));
 
   GapDataVector gap_data_vector2;
-  gap_data_vector2.push_back(GapColorData(StyleColor(Color(0, 0, 1))));
-  gap_data_vector2.push_back(GapColorData(StyleColor(Color(1, 0, 0))));
-  GapColorDataList gap_colors3 = GapColorDataList(std::move(gap_data_vector2));
+  gap_data_vector2.push_back(GapData(StyleColor(Color(0, 0, 1))));
+  gap_data_vector2.push_back(GapData(StyleColor(Color(1, 0, 0))));
+  GapDataList gap_colors3 = GapDataList(std::move(gap_data_vector2));
   EXPECT_EQ(gap_colors2, gap_colors3);
 
   // Gap color data with different colors should not be equal.
-  GapColorDataList default_gap_colors =
-      GapColorDataList::DefaultGapColorDataList();
+  GapDataList default_gap_colors = GapDataList::DefaultGapColorDataList();
   EXPECT_NE(gap_colors3, default_gap_colors);
 }
 

@@ -2241,7 +2241,7 @@ LengthSize StyleBuilderConverter::ConvertRadius(StyleResolverState& state,
   return LengthSize(radius_width, radius_height);
 }
 
-GapColorDataList StyleBuilderConverter::ConvertGapColorDataList(
+GapDataList StyleBuilderConverter::ConvertGapColorDataList(
     StyleResolverState& state,
     const CSSValue& value,
     bool for_visited_link) {
@@ -2249,9 +2249,9 @@ GapColorDataList StyleBuilderConverter::ConvertGapColorDataList(
   // 1. When using the legacy 'column-rule-color'.
   // 2. When the fast parse path is taken (see
   // CSSParserFastPaths::MaybeParseValue). In these cases, construct a
-  // GapColorDataList with a single StyleColor.
+  // GapDataList with a single StyleColor.
   if (!DynamicTo<CSSValueList>(value)) {
-    return GapColorDataList(ConvertStyleColor(state, value, for_visited_link));
+    return GapDataList(ConvertStyleColor(state, value, for_visited_link));
   }
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
@@ -2264,7 +2264,7 @@ GapColorDataList StyleBuilderConverter::ConvertGapColorDataList(
   gap_data_list.ReserveInitialCapacity(values.length());
 
   for (const auto& curr_value : values) {
-    GapColorData gap_data;
+    GapData gap_data;
     if (auto* gap_repeat_value =
             DynamicTo<cssvalue::CSSRepeatValue>(curr_value.Get())) {
       StyleColorVector gap_colors;
@@ -2284,16 +2284,16 @@ GapColorDataList StyleBuilderConverter::ConvertGapColorDataList(
         color_repeater = MakeGarbageCollected<StyleColorRepeater>(
             std::move(gap_colors), repeat_count);
       }
-      gap_data = GapColorData(color_repeater);
+      gap_data = GapData(color_repeater);
     } else {
-      gap_data = GapColorData(
+      gap_data = GapData(
           ConvertStyleColor(state, *curr_value.Get(), for_visited_link));
     }
 
     gap_data_list.push_back(gap_data);
   }
 
-  return GapColorDataList(std::move(gap_data_list));
+  return GapDataList(std::move(gap_data_list));
 }
 
 ShadowData StyleBuilderConverter::ConvertShadow(
