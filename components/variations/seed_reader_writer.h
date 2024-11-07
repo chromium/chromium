@@ -25,8 +25,8 @@ namespace variations {
 // Trial and group names for the seed file experiment.
 const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
-const char kControlGroup[] = "Control_V1";
-const char kSeedFilesGroup[] = "SeedFiles_V1";
+const char kControlGroup[] = "Control_V2";
+const char kSeedFilesGroup[] = "SeedFiles_V2";
 
 // Handles reading and writing seeds to disk.
 class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   // Schedules `seed_data` to be written using `seed_writer_`.
   void ScheduleSeedFileWrite(const std::string& seed_data);
+
+  // Schedules the deletion of a seed file.
+  void DeleteSeedFile();
 
   // Pref service used to persist seeds.
   raw_ptr<PrefService> local_state_;

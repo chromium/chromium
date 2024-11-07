@@ -95,8 +95,10 @@ void SeedReaderWriter::ClearSeed() {
   // files, attempt to clear the seed file for all groups here. If a client
   // switches experiment groups or channels, their device could have a seed file
   // with stale seed data.
-  if (ShouldWriteToSeedFile() || base::PathExists(seed_writer_->path())) {
+  if (ShouldWriteToSeedFile()) {
     ScheduleSeedFileWrite(std::string());
+  } else if (base::PathExists(seed_writer_->path())) {
+    DeleteSeedFile();
   }
 }
 
@@ -139,6 +141,14 @@ void SeedReaderWriter::ScheduleSeedFileWrite(const std::string& seed_data) {
     // occurring in a background thread and that this will result in a new write
     // being scheduled.
     seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
+  }
+}
+
+void SeedReaderWriter::DeleteSeedFile() {
+  if (seed_writer_) {
+    file_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                                  seed_writer_->path()));
   }
 }
 

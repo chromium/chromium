@@ -115,6 +115,35 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
             base64_compressed_seed);
 }
 
+// Verifies that a seed is cleared from both Local State and the seed file for
+// clients in the SeedFiles group.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_pref, file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
+  local_state_.SetString(GetParam().seed_pref,
+                         base::Base64Encode(compressed_seed));
+
+  // Clear seed and force write.
+  seed_reader_writer.ClearSeed();
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  // Verify seed cleared correctly in both Local State prefs and a seed file.
+  std::string seed_file_data;
+  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
+  EXPECT_THAT(seed_file_data, IsEmpty());
+  EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     SeedReaderWriterSeedFilesGroupTest,
@@ -149,6 +178,33 @@ TEST_P(SeedReaderWriterControlAndLocalStateOnlyGroupTest, WriteSeed) {
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
   EXPECT_EQ(local_state_.GetString(GetParam().seed_pref),
             base64_compressed_seed);
+}
+
+// Verifies that a seed is cleared from Local State and that seed file is
+// deleted if present for clients in the control group and those using local
+// state only.
+TEST_P(SeedReaderWriterControlAndLocalStateOnlyGroupTest, ClearSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_pref, file_writer_thread_.task_runner());
+
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
+  local_state_.SetString(GetParam().seed_pref,
+                         base::Base64Encode(compressed_seed));
+
+  // Clear seed and force file delete.
+  seed_reader_writer.ClearSeed();
+  file_writer_thread_.FlushForTesting();
+
+  // Verify seed cleared correctly in Local State prefs and that seed file is
+  // deleted.
+  EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
+  EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -186,34 +242,6 @@ TEST_P(SeedReaderWriterAllGroupsTest, EmptySeedFilePathIsValid) {
   // Verify seed stored correctly, should only be found in Local State prefs.
   EXPECT_EQ(local_state_.GetString(GetParam().seed_pref),
             base64_compressed_seed);
-}
-
-// Verifies that a seed is cleared from both Local State and the seed file.
-TEST_P(SeedReaderWriterAllGroupsTest, ClearSeed) {
-  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
-            GetParam().field_trial_group);
-  // Initialize seed_reader_writer with test thread and timer.
-  SeedReaderWriter seed_reader_writer(
-      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam().seed_pref, file_writer_thread_.task_runner());
-  seed_reader_writer.SetTimerForTesting(&timer_);
-
-  // Create and store seed.
-  const std::string compressed_seed = CreateCompressedVariationsSeed();
-  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
-  local_state_.SetString(GetParam().seed_pref,
-                         base::Base64Encode(compressed_seed));
-
-  // Clear seed and force write.
-  seed_reader_writer.ClearSeed();
-  timer_.Fire();
-  file_writer_thread_.FlushForTesting();
-
-  // Verify seed cleared correctly in both Local State prefs and a seed file.
-  std::string seed_file_data;
-  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
-  EXPECT_THAT(seed_file_data, IsEmpty());
-  EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(
