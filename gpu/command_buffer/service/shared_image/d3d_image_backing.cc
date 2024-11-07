@@ -551,8 +551,8 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
       return nullptr;
     }
     return std::make_unique<DawnEGLImageRepresentation>(
-        std::move(gl_representation), egl_image, manager, this, tracker,
-        device);
+        std::move(gl_representation), egl_image, manager, this, tracker, device,
+        std::move(view_formats));
   }
 #endif
 

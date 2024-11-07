@@ -325,7 +325,7 @@ std::unique_ptr<DawnImageRepresentation> EGLImageBacking::ProduceDawn(
     // TODO(crbug.com/40278761): Add multiplanar support to this representation.
     return std::make_unique<DawnEGLImageRepresentation>(
         std::move(gl_representation), egl_image, manager, this, tracker,
-        device.Get());
+        device.Get(), std::move(view_formats));
   }
 #endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   return nullptr;

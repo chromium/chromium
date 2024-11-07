@@ -30,11 +30,13 @@ DawnEGLImageRepresentation::DawnEGLImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device)
+    const wgpu::Device& device,
+    std::vector<wgpu::TextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
       egl_image_(std::move(egl_image)),
-      device_(device) {
+      device_(device),
+      view_formats_(std::move(view_formats)) {
   DCHECK(device_);
 }
 
@@ -44,12 +46,14 @@ DawnEGLImageRepresentation::DawnEGLImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device)
+    const wgpu::Device& device,
+    std::vector<wgpu::TextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
       owned_egl_image_(std::move(owned_egl_image)),
       egl_image_(owned_egl_image_.get()),
-      device_(device) {
+      device_(device),
+      view_formats_(std::move(view_formats)) {
   DCHECK(device_);
 }
 
@@ -63,6 +67,8 @@ wgpu::Texture DawnEGLImageRepresentation::BeginAccess(
   gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
   wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = ToDawnFormat(format());
+  texture_descriptor.viewFormatCount = view_formats_.size();
+  texture_descriptor.viewFormats = view_formats_.data();
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = wgpu::TextureDimension::e2D;
   texture_descriptor.size = {static_cast<uint32_t>(size().width()),

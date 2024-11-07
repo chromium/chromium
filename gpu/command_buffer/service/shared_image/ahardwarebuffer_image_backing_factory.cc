@@ -623,7 +623,7 @@ AHardwareBufferImageBacking::ProduceDawn(
 
     auto result = std::make_unique<DawnEGLImageRepresentation>(
         std::move(gl_representation), std::move(egl_image), manager, this,
-        tracker, device);
+        tracker, device, std::move(view_formats));
     return result;
   }
 #endif
