@@ -47,10 +47,6 @@ namespace crostini {
 class CrostiniUnsupportedActionNotifier;
 }  // namespace crostini
 
-namespace lock_screen_apps {
-class StateController;
-}
-
 namespace policy {
 class LockToSingleUserManager;
 }  // namespace policy
@@ -227,8 +223,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ChromeKeyboardControllerClient>
       chrome_keyboard_controller_client_;
 
-  std::unique_ptr<lock_screen_apps::StateController>
-      lock_screen_apps_state_controller_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   std::unique_ptr<crosapi::BrowserManager> browser_manager_;
 

@@ -907,8 +907,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::kAttestationForContentProtectionEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[prefs::kRestoreLastLockScreenNote] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::kDevicePeripheralDataAccessEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled] =

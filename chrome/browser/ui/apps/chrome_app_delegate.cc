@@ -48,10 +48,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #endif
@@ -412,14 +408,8 @@ void ChromeAppDelegate::OnShow() {
 
 bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
                                   bool reverse) {
-  if (!for_lock_screen_app_)
-    return false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return lock_screen_apps::StateController::Get()->HandleTakeFocus(web_contents,
-                                                                   reverse);
-#else
+  // TODO(crbug.com/376354347): Remove this method.
   return false;
-#endif
 }
 
 content::PictureInPictureResult ChromeAppDelegate::EnterPictureInPicture(

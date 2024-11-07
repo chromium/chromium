@@ -55,7 +55,6 @@ static_library("main_parts") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/locale",
-    "//chrome/browser/ash/lock_screen_apps",
     "//chrome/browser/ash/logging",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/demo_mode",

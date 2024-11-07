@@ -378,7 +378,6 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -1153,6 +1152,18 @@ inline constexpr char kExpsOptInStatusGrantedPref[] =
 inline constexpr char kHasNavigatedToExpsSuccessPage[] =
     "Companion.HasNavigatedToExpsSuccessPage";
 
+// Deprecated 11/2024.
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kNoteTakingAppEnabledOnLockScreen[] =
+    "settings.note_taking_app_enabled_on_lock_screen";
+constexpr char kNoteTakingAppsLockScreenAllowlist[] =
+    "settings.note_taking_apps_lock_screen_whitelist";
+constexpr char kNoteTakingAppsLockScreenToastShown[] =
+    "settings.note_taking_apps_lock_screen_toast_shown";
+constexpr char kRestoreLastLockScreenNote[] =
+    "settings.restore_last_lock_screen_note";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1634,6 +1645,15 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kPcoPromoDeclinedCountPref, 0);
   registry->RegisterBooleanPref(kExpsOptInStatusGrantedPref, false);
   registry->RegisterBooleanPref(kHasNavigatedToExpsSuccessPage, false);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 11/2024
+  registry->RegisterBooleanPref(kNoteTakingAppEnabledOnLockScreen, false);
+  registry->RegisterListPref(kNoteTakingAppsLockScreenAllowlist,
+                             base::Value::List());
+  registry->RegisterDictionaryPref(kNoteTakingAppsLockScreenToastShown);
+  registry->RegisterBooleanPref(kRestoreLastLockScreenNote, false);
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2276,7 +2296,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   crostini::prefs::RegisterProfilePrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterProfilePrefs(registry);
   guest_os::prefs::RegisterProfilePrefs(registry);
-  lock_screen_apps::StateController::RegisterProfilePrefs(registry);
   plugin_vm::prefs::RegisterProfilePrefs(registry);
   policy::ArcAppInstallEventLogger::RegisterProfilePrefs(registry);
   policy::AppInstallEventLogManagerWrapper::RegisterProfilePrefs(registry);
@@ -3000,6 +3019,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kPcoPromoDeclinedCountPref);
   profile_prefs->ClearPref(kExpsOptInStatusGrantedPref);
   profile_prefs->ClearPref(kHasNavigatedToExpsSuccessPage);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 11/2024
+  profile_prefs->ClearPref(kNoteTakingAppEnabledOnLockScreen);
+  profile_prefs->ClearPref(kNoteTakingAppsLockScreenAllowlist);
+  profile_prefs->ClearPref(kNoteTakingAppsLockScreenToastShown);
+  profile_prefs->ClearPref(kRestoreLastLockScreenNote);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

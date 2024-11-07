@@ -2982,9 +2982,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<DefaultGeolocationPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<DeviceLoginScreenGeolocationAccessLevelPolicyHandler>());
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kNoteTakingAppsLockScreenAllowlist,
-      prefs::kNoteTakingAppsLockScreenAllowlist, false /*allow_wildcards*/));
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
       key::kSecondaryGoogleAccountSigninAllowed,
       ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));

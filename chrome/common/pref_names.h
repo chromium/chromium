@@ -583,31 +583,6 @@ inline constexpr char kChromeOSReleaseNotesVersion[] =
 // indicates that the user hasn't selected an app yet.
 inline constexpr char kNoteTakingAppId[] = "settings.note_taking_app_id";
 
-// A boolean pref indicating whether preferred note-taking app (see
-// |kNoteTakingAppId|) is allowed to handle note taking actions on the lock
-// screen.
-inline constexpr char kNoteTakingAppEnabledOnLockScreen[] =
-    "settings.note_taking_app_enabled_on_lock_screen";
-
-// List of note taking aps that can be enabled to run on the lock screen.
-// The intended usage is to allow the set of apps that the user can enable
-// to run on lock screen, not to actually enable the apps to run on lock screen.
-// Note that this used to be `kNoteTakingAppsLockScreenWhitelist`, hence the
-// difference between the variable name and the string value.
-inline constexpr char kNoteTakingAppsLockScreenAllowlist[] =
-    "settings.note_taking_apps_lock_screen_whitelist";
-
-// Dictionary pref that maps lock screen app ID to a boolean indicating whether
-// the toast dialog has been show and dismissed as the app was being launched
-// on the lock screen.
-inline constexpr char kNoteTakingAppsLockScreenToastShown[] =
-    "settings.note_taking_apps_lock_screen_toast_shown";
-
-// Whether the preferred note taking app should be requested to restore the last
-// note created on lock screen when launched on lock screen.
-inline constexpr char kRestoreLastLockScreenNote[] =
-    "settings.restore_last_lock_screen_note";
-
 // Automatically open online re-authentication window on the lock screen.
 inline constexpr char kLockScreenAutoStartOnlineReauth[] =
     "lock_screen_auto_start_online_reauth";

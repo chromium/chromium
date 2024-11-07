@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -57,7 +56,6 @@ ViewsScreenLocker::ViewsScreenLocker()
 }
 
 ViewsScreenLocker::~ViewsScreenLocker() {
-  lock_screen_apps::StateController::Get()->SetFocusCyclerDelegate(nullptr);
   LoginScreenClientImpl::Get()->SetDelegate(nullptr);
 }
 
@@ -88,7 +86,6 @@ void ViewsScreenLocker::Init(const user_manager::UserList& users) {
   user_selection_screen_->InitEasyUnlock();
   UMA_HISTOGRAM_TIMES("LockScreen.LockReady",
                       base::TimeTicks::Now() - lock_time_);
-  lock_screen_apps::StateController::Get()->SetFocusCyclerDelegate(this);
 }
 
 void ViewsScreenLocker::OnAshLockAnimationFinished() {
@@ -146,11 +143,8 @@ void ViewsScreenLocker::HandleOnFocusPod(const AccountId& account_id) {
 }
 
 bool ViewsScreenLocker::HandleFocusLockScreenApps(bool reverse) {
-  if (lock_screen_app_focus_handler_.is_null())
-    return false;
-
-  lock_screen_app_focus_handler_.Run(reverse);
-  return true;
+  // TODO(crbug.com/376354347): Remove this method.
+  return false;
 }
 
 void ViewsScreenLocker::HandleFocusOobeDialog() {
@@ -169,19 +163,6 @@ void ViewsScreenLocker::SuspendDone(base::TimeDelta sleep_duration) {
        user_manager::UserManager::Get()->GetUnlockUsers()) {
     UpdatePinKeyboardState(user->GetAccountId());
   }
-}
-
-void ViewsScreenLocker::RegisterLockScreenAppFocusHandler(
-    const LockScreenAppFocusCallback& focus_handler) {
-  lock_screen_app_focus_handler_ = focus_handler;
-}
-
-void ViewsScreenLocker::UnregisterLockScreenAppFocusHandler() {
-  lock_screen_app_focus_handler_.Reset();
-}
-
-void ViewsScreenLocker::HandleLockScreenAppFocusOut(bool reverse) {
-  LoginScreen::Get()->GetModel()->HandleFocusLeavingLockScreenApps(reverse);
 }
 
 void ViewsScreenLocker::OnAuthenticated(

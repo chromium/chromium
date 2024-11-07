@@ -19,10 +19,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#endif
-
 // TODO(jamescook): We probably shouldn't compile this class at all on Android.
 // See http://crbug.com/343612
 #if !BUILDFLAG(IS_ANDROID)
@@ -58,17 +54,8 @@ ChromeAppWindowClient::CreateAppWindowForLockScreenAction(
     content::BrowserContext* context,
     const extensions::Extension* extension,
     extensions::api::app_runtime::ActionType action) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto app_delegate = std::make_unique<ChromeAppDelegate>(
-      Profile::FromBrowserContext(context), true /*keep_alive*/);
-  app_delegate->set_for_lock_screen_app(true);
-
-  return lock_screen_apps::StateController::Get()
-      ->CreateAppWindowForLockScreenAction(context, extension, action,
-                                           std::move(app_delegate));
-#else
+  // TODO(crbug.com/376354347): Remove this method.
   return nullptr;
-#endif
 }
 
 std::unique_ptr<extensions::NativeAppWindow>

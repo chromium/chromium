@@ -44,8 +44,6 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
   void UpdateNoteTakingApps();
   void HandleRequestApps(const base::Value::List& unused_args);
   void HandleSetPreferredNoteTakingApp(const base::Value::List& args);
-  void HandleSetPreferredNoteTakingAppEnabledOnLockScreen(
-      const base::Value::List& args);
   void HandleInitialize(const base::Value::List& args);
 
   // Enables or disables the stylus UI section.

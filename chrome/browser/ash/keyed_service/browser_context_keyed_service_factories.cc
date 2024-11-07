@@ -66,7 +66,6 @@
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/kcer/nssdb_migration/pkcs12_migrator.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager_factory.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
@@ -206,7 +205,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   kcer::Pkcs12MigratorFactory::GetInstance();
   KerberosCredentialsManagerFactory::GetInstance();
   KioskAppUpdateServiceFactory::GetInstance();
-  LockScreenAppsFactory::GetInstance();
   LockScreenReauthManagerFactory::GetInstance();
   LockedSessionWindowTrackerFactory::GetInstance();
   login::SecurityTokenSessionControllerFactory::GetInstance();

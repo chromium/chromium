@@ -56,7 +56,6 @@ static_library("keyed_service") {
     "//chrome/browser/ash/kcer",
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/kerberos",
-    "//chrome/browser/ash/lock_screen_apps",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/extensions",
     "//chrome/browser/ash/login/lock/online_reauth",
