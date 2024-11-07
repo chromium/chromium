@@ -909,10 +909,14 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         navigation_state_ = NavigationState::kCommitted;
         physics_model_.OnNavigationFinished(/*navigation_committed=*/true);
 
-        if (error_or_cross_origin_redirect) {
-          // If we encountered a cross-origin redirect, start cross-fading as
-          // soon as the invoke animation has finished playing. Do not wait for
-          // Viz to activate the first frame.
+        if (primary_main_frame_navigation_entry_item_sequence_number_ == -1 ||
+            error_or_cross_origin_redirect) {
+          // The destination FrameNavigationEntry doesn't have a valid
+          // item_sequence_number when the navigation starts. Immediately
+          // crossfade to the new content to avoid the screenshot timeout.
+          // Moreoever, if we encountered a cross-origin redirect, start
+          // cross-fading as soon as the invoke animation has finished playing.
+          // Do not wait for Viz to activate the first frame.
           PostNavigationFirstFrameActivated();
         } else {
           // This is a same-doc navigation (where redirect cannot happen), or
@@ -1876,8 +1880,6 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
     return;
   }
 
-  new_render_widget_host_->render_frame_metadata_provider()->AddObserver(
-      animation_manager_);
   FrameNavigationEntry* frame_nav_entry =
       static_cast<NavigationEntryImpl*>(
           navigation_request->GetNavigationEntry())
@@ -1885,7 +1887,17 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
   // This is a session history of the primary main frame. We must have a
   // valid `FrameNavigationEntry`.
   CHECK(frame_nav_entry);
-  CHECK_NE(frame_nav_entry->item_sequence_number(), -1);
+
+  // TODO(crbug.com/377355493): Each FrameNavigationEntry should ideally have a
+  // valid sequence number. This is a workaround when that's not the case - for
+  // example, it seems to happen when navigating towards a native page. See
+  // crbug.com/376944343.
+  if (frame_nav_entry->item_sequence_number() == -1) {
+    return;
+  }
+
+  new_render_widget_host_->render_frame_metadata_provider()->AddObserver(
+      animation_manager_);
   primary_main_frame_navigation_entry_item_sequence_number_ =
       frame_nav_entry->item_sequence_number();
 }

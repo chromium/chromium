@@ -230,6 +230,10 @@ class CONTENT_EXPORT FrameNavigationEntry
     protect_url_in_navigation_api_ = protect;
   }
 
+  void set_item_sequence_number_for_testing(int64_t item_sequence_number) {
+    item_sequence_number_ = item_sequence_number;
+  }
+
  private:
   friend class base::RefCounted<FrameNavigationEntry>;
   virtual ~FrameNavigationEntry();

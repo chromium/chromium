@@ -3306,6 +3306,46 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   EXPECT_TRUE(cc::MatchesBitmap(actual_pixels, expected_pixels, comparator));
 }
 
+// Regression test for https://crbug.com/377338996: If the destination frame
+// navigation entry item sequence number is invalid, we immediately play the
+// cross-fade animation after the invoke animation has finished.
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       InvalidFrameNavigationEntryItemSequenceNumber) {
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  ASSERT_TRUE(GetAnimator());
+
+  // Modifying the item sequence number to -1.
+  auto* frame_tree_node =
+      web_contents()->GetPrimaryMainFrame()->frame_tree_node();
+  std::optional<int> index =
+      web_contents()->GetController().GetIndexForGoBack();
+  ASSERT_TRUE(index);
+  NavigationEntryImpl* red_entry =
+      web_contents()->GetController().GetEntryAtIndex(*index);
+  red_entry->GetFrameEntry(frame_tree_node)
+      ->set_item_sequence_number_for_testing(-1);
+
+  TestFuture<void> did_cross_fade;
+  TestFuture<AnimatorState> destroyed;
+  TestFuture<void> did_invoke;
+  GetAnimator()->set_on_cross_fade_animation_displayed(
+      did_cross_fade.GetCallback());
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
+
+  TestNavigationObserver back_to_red(web_contents());
+  GetAnimationManager()->OnGestureInvoked();
+  back_to_red.Wait();
+
+  ASSERT_TRUE(did_invoke.Wait());
+  ASSERT_TRUE(did_cross_fade.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+
+  ASSERT_EQ(back_to_red.last_navigation_url(), RedURL());
+}
+
 namespace {
 class BackForwardTransitionAnimationManagerBrowserTestWithProgressBar
     : public BackForwardTransitionAnimationManagerBrowserTest {
