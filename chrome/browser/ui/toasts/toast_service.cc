@@ -129,6 +129,7 @@ void ToastService::RegisterToasts(
             vector_icons::kEmailIcon,
 #endif
             IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MESSAGE)
+            .AddMenu()
             .Build());
   }
 }

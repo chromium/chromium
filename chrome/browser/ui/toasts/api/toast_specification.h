@@ -13,7 +13,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/menus/simple_menu_model.h"
 
 // ToastSpecification details what the toast should contain when shown.
 class ToastSpecification {
@@ -38,7 +37,9 @@ class ToastSpecification {
 
     // Adds a three dot menu to the toast. Toasts with an action button are not
     // allowed to have menu because they must have an "X" close button instead.
-    Builder& AddMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model);
+    // If the specification includes a menu, the `ToastParams` that are used
+    // to show the Toast must have a non-null `menu_model` member.
+    Builder& AddMenu();
 
     // Toasts by default are scoped to the active tab when they are triggered.
     // Globally scoped toasts will not immediately dismiss when the user
@@ -68,21 +69,21 @@ class ToastSpecification {
   base::RepeatingClosure action_button_callback() const {
     return action_button_closure_;
   }
-  ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
+  bool has_menu() const { return has_menu_; }
   bool is_global_scope() const { return is_global_scope_; }
 
   void AddCloseButton();
   void AddActionButton(int string_id, base::RepeatingClosure closure);
-  void AddMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model);
+  void AddMenu();
   void AddGlobalScope();
 
  private:
   const base::raw_ref<const gfx::VectorIcon> icon_;
   int body_string_id_;
   bool has_close_button_ = false;
+  bool has_menu_ = false;
   std::optional<int> action_button_string_id_;
   base::RepeatingClosure action_button_closure_;
-  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   bool is_global_scope_ = false;
 };
 

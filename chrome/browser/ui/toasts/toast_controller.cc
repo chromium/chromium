@@ -207,6 +207,7 @@ void ToastController::ShowToast(ToastParams params) {
   const ToastSpecification* current_toast_spec =
       toast_registry_->GetToastSpecification(params.toast_id);
   CHECK(current_toast_spec);
+  CHECK_EQ(current_toast_spec->has_menu(), !!params.menu_model);
 
   currently_showing_toast_id_ = params.toast_id;
   base::TimeDelta timeout =

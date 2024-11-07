@@ -38,9 +38,8 @@ ToastSpecification::Builder& ToastSpecification::Builder::AddActionButton(
   return *this;
 }
 
-ToastSpecification::Builder& ToastSpecification::Builder::AddMenu(
-    std::unique_ptr<ui::SimpleMenuModel> menu_model) {
-  toast_specification_->AddMenu(std::move(menu_model));
+ToastSpecification::Builder& ToastSpecification::Builder::AddMenu() {
+  toast_specification_->AddMenu();
   return *this;
 }
 
@@ -58,12 +57,12 @@ void ToastSpecification::Builder::ValidateSpecification() {
   // Toasts with an action button must have a close button and not a menu.
   if (toast_specification_->action_button_string_id().has_value()) {
     CHECK(toast_specification_->has_close_button());
-    CHECK(!toast_specification_->menu_model());
+    CHECK(!toast_specification_->has_menu());
   }
 
   // Toasts with a menu can't have a close button. If this behavior is needed,
   // discuss with UX how to design this in a way that supports both.
-  if (toast_specification_->menu_model()) {
+  if (toast_specification_->has_menu()) {
     CHECK(!toast_specification_->has_close_button());
   }
 }
@@ -87,9 +86,8 @@ void ToastSpecification::AddActionButton(int string_id,
   action_button_closure_ = std::move(closure);
 }
 
-void ToastSpecification::AddMenu(
-    std::unique_ptr<ui::SimpleMenuModel> menu_model) {
-  menu_model_ = std::move(menu_model);
+void ToastSpecification::AddMenu() {
+  has_menu_ = true;
 }
 
 void ToastSpecification::AddGlobalScope() {
