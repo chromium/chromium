@@ -229,6 +229,7 @@ TEST_F(MainThreadMetricsHelperTest, GetFrameStatusTest) {
 }
 
 TEST_F(MainThreadMetricsHelperTest, TaskQueueingDelay) {
+  metrics_helper_->DisableMetricsSubsamplingForTesting();
   base::TimeTicks queue_time = Now();
   base::TimeDelta queue_duration = base::Microseconds(11);
   base::TimeDelta task_duration = base::Microseconds(97);
