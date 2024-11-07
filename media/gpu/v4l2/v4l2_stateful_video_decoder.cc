@@ -202,8 +202,9 @@ class H264FrameReassembler {
   // contains multiple frames. In any case, it might return a vector of
   // DecoderBuffer + DecodeCB; if so, the caller can treat those as ready to be
   // enqueued in the driver: this method will hold onto and reassemble
-  // fragments as needed. |decode_cb| will be called internally to signal
-  // errors or correctly received |buffer|s.
+  // fragments as needed. This method is guaranteed to return a vector. If a
+  // partial frame is not ready, only the DecodeCB associated with |buffer|
+  // will returned.
   std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
   Process(scoped_refptr<DecoderBuffer> buffer,
           VideoDecoder::DecodeCB decode_cb);
@@ -1123,34 +1124,40 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
         std::move(decoder_buffer_and_callbacks_.front().second);
     decoder_buffer_and_callbacks_.pop();
 
-    if (media_buffer->end_of_stream()) {
-      // We had received an end_of_stream() buffer but there were still pending
-      // |decoder_buffer_and_callbacks_|, so we stored it; we can now process it
-      // and start the Flush.
-      if (!OUTPUT_queue_->SendStopCommand()) {
-        std::move(media_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    // Every |decoder_buffer_and_callbacks_| entry is guaranteed to contain a
+    // valid DecodeCB. However, when the |h264_frame_reassembler_| is in use,
+    // not every |decoder_buffer_and_callbacks_| entry will contain a valid
+    // DecoderBuffer.
+    if (media_buffer) {
+      if (media_buffer->end_of_stream()) {
+        // We had received an end_of_stream() buffer but there were still
+        // pending |decoder_buffer_and_callbacks_|, so we stored it; we can now
+        // process it and start the Flush.
+        if (!OUTPUT_queue_->SendStopCommand()) {
+          std::move(media_decode_cb).Run(DecoderStatus::Codes::kFailed);
+          return false;
+        }
+        flush_cb_ = std::move(media_decode_cb);
+        return true;
+      }
+
+      CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
+      uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
+      CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), media_buffer->size());
+      memcpy(dst, media_buffer->data(), media_buffer->size());
+      v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->size());
+      VLOGF(4) << "Enqueuing " << media_buffer->size() << " bytes.";
+      v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
+
+      const int64_t flat_timespec = media_buffer->timestamp().InMilliseconds();
+      encoding_timestamps_[flat_timespec] = base::TimeTicks::Now();
+
+      if (!std::move(*v4l2_buffer).QueueMMap()) {
+        LOG(ERROR) << "Error while queuing input |media_buffer|!";
+        std::move(media_decode_cb)
+            .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
         return false;
       }
-      flush_cb_ = std::move(media_decode_cb);
-      return true;
-    }
-
-    CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
-    uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
-    CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), media_buffer->size());
-    memcpy(dst, media_buffer->data(), media_buffer->size());
-    v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->size());
-    VLOGF(4) << "Enqueuing " << media_buffer->size() << " bytes.";
-    v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
-
-    const int64_t flat_timespec = media_buffer->timestamp().InMilliseconds();
-    encoding_timestamps_[flat_timespec] = base::TimeTicks::Now();
-
-    if (!std::move(*v4l2_buffer).QueueMMap()) {
-      LOG(ERROR) << "Error while queuing input |media_buffer|!";
-      std::move(media_decode_cb)
-          .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
-      return false;
     }
     std::move(media_decode_cb).Run(DecoderStatus::Codes::kOk);
   }
@@ -1212,7 +1219,7 @@ std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
 H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
                               VideoDecoder::DecodeCB decode_cb) {
   std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
-      whole_frames;
+      frames;
 
   auto remaining = base::span(*buffer);
 
@@ -1230,16 +1237,16 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
     if (nalu_info->is_start_of_new_frame && HasFragments()) {
       VLOGF(4) << frame_fragments_.size()
                << " currently stored frame fragment(s) can be reassembled.";
-      whole_frames.emplace_back(ReassembleFragments(frame_fragments_),
-                                base::DoNothing());
+      frames.emplace_back(ReassembleFragments(frame_fragments_),
+                          base::DoNothing());
     }
 
     if (nalu_info->is_whole_frame) {
       VLOGF(3) << "Found a whole frame, size=" << found_nalu_size << " bytes";
-      whole_frames.emplace_back(
+      frames.emplace_back(
           DecoderBuffer::CopyFrom(remaining.first(found_nalu_size)),
           base::DoNothing());
-      whole_frames.back().first->set_timestamp(buffer->timestamp());
+      frames.back().first->set_timestamp(buffer->timestamp());
 
       remaining = remaining.subspan(found_nalu_size);
       continue;
@@ -1254,18 +1261,18 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
   } while (!remaining.empty());
 
   // |decode_cb| is used to signal to our client that encoded chunks have been
-  // "accepted", and that we are ready to receive more. If we have found (some)
-  // whole frame(s), then we can just return |decode_cb| so that it can be Run()
-  // at the actual enqueueing in driver moment; but if there were no frames
-  // found, we need to signal the callback now otherwise the client might stop
-  // sending fragments altogether and we'll wait forever.
-  if (whole_frames.empty()) {
-    std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
+  // "accepted", and that we are ready to receive more. It must be called in
+  // order of accepted frames. If there is no complete frame the callback still
+  // needs to be stuffed in |frames| so that when they are dequeued they are
+  // interleaved correctly. While there may not be compressed data to enqueue,
+  // there will always be a callback to enqueue.
+  if (frames.empty()) {
+    frames.emplace_back(nullptr, std::move(decode_cb));
   } else {
-    whole_frames.back().second = std::move(decode_cb);
+    frames.back().second = std::move(decode_cb);
   }
 
-  return whole_frames;
+  return frames;
 }
 
 std::optional<struct H264FrameReassembler::FrameBoundaryInfo>
