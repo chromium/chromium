@@ -301,6 +301,7 @@ source_set("unit_tests") {
     "permission_auditing_service_unittest.cc",
     "permission_context_base_unittest.cc",
     "permission_decision_auto_blocker_unittest.cc",
+    "permission_indicators_tab_data_unittest.cc",
     "permission_manager_unittest.cc",
     "permission_request_manager_unittest.cc",
     "permission_request_queue_unittest.cc",

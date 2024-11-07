@@ -1326,6 +1326,20 @@ chromium-metrics-reviews@google.com.
   <token key="Source" variants="ContentSettingSource"/>
 </histogram>
 
+<histogram name="Permissions.Usage.ElapsedTimeSinceLastUsage.{PermissionType}"
+    enum="Duration" expires_after="2025-03-09">
+  <owner>lyf@chromium.org</owner>
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Record each time when a site uses PermissionType. Duration represents
+    buckets of time between two adjacent permission usages.
+  </summary>
+  <token key="PermissionType">
+    <variant name="Geolocation"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.Usage.Notifications.DidRecordUkm" enum="Boolean"
     expires_after="2025-05-05">
   <owner>engedy@chromium.org</owner>
