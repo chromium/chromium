@@ -1459,6 +1459,7 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
 
   response->request_time = url_request_->request_time();
   response->response_time = url_request_->response_time();
+  response->original_response_time = url_request_->original_response_time();
   response->headers = url_request_->response_headers();
   response->parsed_headers =
       PopulateParsedHeaders(response->headers.get(), url_request_->url());

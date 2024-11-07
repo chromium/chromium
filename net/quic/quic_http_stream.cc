@@ -626,7 +626,8 @@ int QuicHttpStream::ProcessResponseHeaders(
   response_info_->was_alpn_negotiated = true;
   response_info_->alpn_negotiated_protocol =
       HttpConnectionInfoToString(response_info_->connection_info);
-  response_info_->response_time = base::Time::Now();
+  response_info_->response_time = response_info_->original_response_time =
+      base::Time::Now();
   response_info_->request_time = request_time_;
   response_headers_received_ = true;
 

@@ -518,6 +518,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return response_info_.response_time;
   }
 
+  // Like response_time, but ignoring revalidations.
+  const base::Time& original_response_time() const {
+    return response_info_.original_response_time;
+  }
+
   // Indicate if this response was fetched from disk cache.
   bool was_cached() const { return response_info_.was_cached; }
 

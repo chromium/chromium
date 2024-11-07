@@ -898,7 +898,8 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   // Record our best estimate of the 'response time' as the time when we read
   // the first bytes of the response headers.
   if (read_buf_->offset() == 0) {
-    response_->response_time = base::Time::Now();
+    response_->response_time = response_->original_response_time =
+        base::Time::Now();
     // Also keep the time as base::TimeTicks for `first_response_start_time_`
     // and `non_informational_response_start_time_`.
     current_response_start_time_ = base::TimeTicks::Now();

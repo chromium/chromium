@@ -410,7 +410,8 @@ void URLRequestJob::NotifyHeadersComplete() {
   // Initialize to the current time, and let the subclass optionally override
   // the time stamps if it has that information.  The default request_time is
   // set by URLRequest before it calls our Start method.
-  request_->response_info_.response_time = base::Time::Now();
+  request_->response_info_.response_time =
+      request_->response_info_.original_response_time = base::Time::Now();
   GetResponseInfo(&request_->response_info_);
 
   request_->OnHeadersComplete();

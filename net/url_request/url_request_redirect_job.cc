@@ -50,6 +50,7 @@ void URLRequestRedirectJob::GetResponseInfo(HttpResponseInfo* info) {
   info->headers = fake_headers_;
   info->request_time = response_time_;
   info->response_time = response_time_;
+  info->original_response_time = response_time_;
 }
 
 void URLRequestRedirectJob::GetLoadTimingInfo(

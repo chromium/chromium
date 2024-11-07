@@ -2082,6 +2082,9 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
   response_.headers->Update(*new_response_->headers.get());
   response_.stale_revalidate_timeout = base::Time();
   response_.response_time = new_response_->response_time;
+  if (new_response_->headers->response_code() != net::HTTP_NOT_MODIFIED) {
+    response_.original_response_time = new_response_->response_time;
+  }
   response_.request_time = new_response_->request_time;
   response_.network_accessed = new_response_->network_accessed;
   response_.unused_since_prefetch = new_response_->unused_since_prefetch;

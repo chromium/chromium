@@ -288,7 +288,8 @@ void WebSocketHttp3HandshakeStream::OnHeadersReceived(
   // Do not store SSLInfo in the response here, HttpNetworkTransaction will take
   // care of that part.
   http_response_info_->was_alpn_negotiated = true;
-  http_response_info_->response_time = base::Time::Now();
+  http_response_info_->response_time =
+      http_response_info_->original_response_time = base::Time::Now();
   http_response_info_->request_time = request_time_;
   http_response_info_->connection_info = HttpConnectionInfo::kHTTP2;
   http_response_info_->alpn_negotiated_protocol =
