@@ -10,6 +10,8 @@
 #import "base/types/cxx23_to_underlying.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/deferred_initialization_queue.h"
+#import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/profile/profile_state_agent.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -85,6 +87,8 @@
     _observers = [ProfileStateObserverList observers];
     _uiBlockerManagerObservers = [UIBlockerManagerObservers
         observersWithProtocol:@protocol(UIBlockerManagerObserver)];
+    _deferredRunner = [[DeferredInitializationRunner alloc]
+        initWithQueue:[DeferredInitializationQueue sharedInstance]];
   }
   return self;
 }

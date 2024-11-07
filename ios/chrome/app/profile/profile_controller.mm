@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/profile/certificate_policy_profile_agent.h"
 #import "ios/chrome/app/profile/docking_promo_profile_agent.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
@@ -46,6 +47,10 @@
   for (SceneState* sceneState in _state.connectedScenes) {
     sceneState.activationLevel = SceneActivationLevelDisconnected;
   }
+
+  // Cancel any pending deferred startup tasks (the profile is shutting
+  // down, so there is no point in running them).
+  [_state.deferredRunner cancelAllBlocks];
 }
 
 #pragma mark ProfileStateObserver

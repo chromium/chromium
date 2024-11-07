@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
 @class AppState;
+@class DeferredInitializationRunner;
 class ProfileIOS;
 @protocol ProfileStateAgent;
 @protocol ProfileStateObserver;
@@ -49,6 +50,9 @@ class ProfileIOS;
 
 // Container for startup information.
 @property(nonatomic, weak, readonly) id<StartupInformation> startupInformation;
+
+// Can be used to schedule deferred initialization tasks.
+@property(nonatomic, readonly) DeferredInitializationRunner* deferredRunner;
 
 // YES if the sign-out prompt should be shown to the user when the scene becomes
 // active and enters the foreground. This can happen if the policies have

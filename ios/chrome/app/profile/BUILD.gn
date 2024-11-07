@@ -18,6 +18,7 @@ source_set("profile") {
   frameworks = [ "Foundation.framework" ]
   deps = [
     "//base",
+    "//ios/chrome/app",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
@@ -40,6 +41,7 @@ source_set("profile_controller") {
     ":profile",
     ":search_engine_choice_profile_agent",
     "//base",
+    "//ios/chrome/app",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
