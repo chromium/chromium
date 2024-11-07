@@ -27,3 +27,9 @@
 
 # crbug.com/364371348
 -All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*
+
+# crbug.com/343335591
+-FormControlsBrowserTest.Button
+-FormControlsBrowserTest.Checkbox
+-FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select
