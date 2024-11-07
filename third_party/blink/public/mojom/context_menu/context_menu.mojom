@@ -82,6 +82,9 @@ struct CustomContextMenuItem {
   bool has_directional_override;
   bool enabled;
   bool checked;
+  // The flag can be used to show accelerators in Mac menus. Any usage of this
+  // should be after consulting with the Mac team.
+  bool force_show_accelerator_for_item;
   array<CustomContextMenuItem> submenu;
 };
 

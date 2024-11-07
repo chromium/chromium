@@ -117,6 +117,10 @@ void AddCustomItemsToMenu(
               ui::Accelerator(
                   static_cast<ui::KeyboardCode>(item->accelerator->key_code),
                   item->accelerator->modifiers));
+          if (item->force_show_accelerator_for_item) {
+            menu_model->SetForceShowAcceleratorForItemAt(
+                menu_model->GetItemCount() - 1, true);
+          }
         }
         break;
       case blink::mojom::CustomContextMenuItemType::kCheckableOption:

@@ -42,6 +42,7 @@ dictionary ShowContextMenuItem {
   boolean isExperimentalFeature = false;
   boolean enabled = true;
   boolean checked = false;
+  boolean isDevToolsPerformanceMenuItem = false;
   Accelerator accelerator;
   sequence<ShowContextMenuItem> subItems;
 };

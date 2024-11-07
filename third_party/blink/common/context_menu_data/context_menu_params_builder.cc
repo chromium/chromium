@@ -35,6 +35,8 @@ blink::mojom::CustomContextMenuItemPtr MenuItemBuild(
   result->has_directional_override = item.has_text_direction_override;
   result->enabled = item.enabled;
   result->checked = item.checked;
+  result->force_show_accelerator_for_item =
+      item.force_show_accelerator_for_item;
   for (const auto& sub_menu_item : item.sub_menu_items)
     result->submenu.push_back(MenuItemBuild(sub_menu_item));
 

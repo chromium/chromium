@@ -228,6 +228,8 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
         accelerator.key_code = item->accelerator()->keyCode();
         accelerator.modifiers = item->accelerator()->modifiers();
         item_info.accelerator = accelerator;
+        item_info.force_show_accelerator_for_item =
+            item->isDevToolsPerformanceMenuItem();
       }
       item_info.is_experimental_feature = item->isExperimentalFeature();
       item_info.enabled = item->enabled();

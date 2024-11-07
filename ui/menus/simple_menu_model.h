@@ -260,6 +260,13 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   // nullopt if not found.
   std::optional<size_t> GetIndexOfCommandId(int command_id) const;
 
+  // Sets whether an accelerator will be displayed for item at |index|
+  // disregarding of the platform.
+  // Can be used to violate platform UI expectations. Any usage should be agreed
+  // with the Mac team.
+  void SetForceShowAcceleratorForItemAt(size_t index,
+                                        bool force_show_accelerator_for_item);
+
   // Overridden from MenuModel:
   base::WeakPtr<ui::MenuModel> AsWeakPtr() override;
   size_t GetItemCount() const override;
@@ -294,6 +301,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   MenuModel* GetSubmenuModelAt(size_t index) const override;
   void MenuWillShow() override;
   void MenuWillClose() override;
+  bool GetForceShowAcceleratorForItemAt(size_t index) const override;
 
  protected:
   Delegate* delegate() { return delegate_; }
@@ -324,6 +332,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
     bool visible = true;
     bool is_new_feature = false;
     bool may_have_mnemonics = true;
+    bool force_show_accelerator_for_item = false;
     std::u16string accessible_name;
     ElementIdentifier unique_id;
     base::RepeatingCallback<void(int)> on_execute_callback;

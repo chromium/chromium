@@ -232,9 +232,12 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     item.target = self;
     item.representedObject =
         [WeakPtrToMenuModelAsNSObject weakPtrForModel:model];
-    // On the Mac, context menus never have accelerators. Menus constructed
-    // for context use have useWithPopUpButtonCell_ set to NO.
-    if (_useWithPopUpButtonCell) {
+    // On the Mac, context menus do not have accelerators except when
+    // |force_show_accelerator_for_item| is set to true. Consult with the Mac
+    // team before using the flag!
+    // Menus constructed for context use have useWithPopUpButtonCell_ set to NO.
+    if (_useWithPopUpButtonCell ||
+        model->GetForceShowAcceleratorForItemAt(index)) {
       ui::Accelerator accelerator;
       if (model->GetAcceleratorAt(index, &accelerator)) {
         KeyEquivalentAndModifierMask* equivalent =

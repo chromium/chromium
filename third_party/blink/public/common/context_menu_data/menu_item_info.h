@@ -49,25 +49,21 @@ struct AcceleratorContainer {
 struct MenuItemInfo {
   enum Type { kOption, kCheckableOption, kGroup, kSeparator, kSubMenu };
 
-  MenuItemInfo()
-      : type(kOption),
-        action(0),
-        text_direction(base::i18n::TextDirection::UNKNOWN_DIRECTION),
-        has_text_direction_override(false),
-        enabled(false),
-        checked(false) {}
+  MenuItemInfo() = default;
 
   std::u16string label;
   std::optional<AcceleratorContainer> accelerator;
   bool is_experimental_feature = false;
   std::u16string tool_tip;
-  Type type;
-  unsigned action;
-  base::i18n::TextDirection text_direction;
+  Type type = kOption;
+  unsigned action = 0;
+  base::i18n::TextDirection text_direction =
+      base::i18n::TextDirection::UNKNOWN_DIRECTION;
   std::vector<MenuItemInfo> sub_menu_items;
-  bool has_text_direction_override;
-  bool enabled;
-  bool checked;
+  bool has_text_direction_override = false;
+  bool enabled = false;
+  bool checked = false;
+  bool force_show_accelerator_for_item;
 };
 
 }  // namespace blink

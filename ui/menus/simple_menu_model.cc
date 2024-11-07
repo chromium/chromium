@@ -416,6 +416,13 @@ std::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
   return std::nullopt;
 }
 
+void SimpleMenuModel::SetForceShowAcceleratorForItemAt(
+    size_t index,
+    bool force_show_accelerator_for_item) {
+  items_[ValidateItemIndex(index)].force_show_accelerator_for_item =
+      force_show_accelerator_for_item;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel, MenuModel implementation:
 
@@ -604,6 +611,10 @@ void SimpleMenuModel::OnMenuClosed() {
   if (delegate_) {
     delegate_->MenuClosed(this);
   }
+}
+
+bool SimpleMenuModel::GetForceShowAcceleratorForItemAt(size_t index) const {
+  return items_[ValidateItemIndex(index)].force_show_accelerator_for_item;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
