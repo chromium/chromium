@@ -612,6 +612,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kBorderEndEndRadius, logical_properties},
           {CSSSampleId::kBorderStartEndRadius, logical_properties},
           {CSSSampleId::kBorderEndStartRadius, logical_properties},
+          {CSSSampleId::kFontVariantPosition,
+           WebDXFeature::kFontVariantPosition},
       }};
 
   return *kMap;
