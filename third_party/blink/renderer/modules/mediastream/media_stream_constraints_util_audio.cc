@@ -17,7 +17,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_features.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
@@ -426,8 +425,11 @@ class EchoCancellationContainer {
         // same device.
         true;
 #else
+        // Allowing it when the system echo cancellation is enforced via flag,
+        // for evaluation purposes.
+        media::IsSystemEchoCancellationEnforced() ||
         properties.echo_cancellation_type !=
-        EchoCancellationType::kEchoCancellationSystem;
+            EchoCancellationType::kEchoCancellationSystem;
 #endif
     if (is_reconfiguration_allowed && is_aec_reconfiguration_supported) {
       return;
@@ -527,11 +529,6 @@ class EchoCancellationContainer {
     return EchoCancellationTypeSet(std::move(types));
   }
 
-  static bool ShouldUseExperimentalSystemEchoCanceller(
-      const media::AudioParameters& parameters) {
-    return false;
-  }
-
   EchoCancellationType SelectBestEcMode(
       const ConstraintSet& constraint_set) const {
     DCHECK(!IsEmpty());
@@ -559,8 +556,7 @@ class EchoCancellationContainer {
         ec_mode_allowed_values_.Contains(
             EchoCancellationType::kEchoCancellationSystem) &&
         (device_parameters_.effects() &
-             media::AudioParameters::ECHO_CANCELLER ||
-         ShouldUseExperimentalSystemEchoCanceller(device_parameters_))) {
+         media::AudioParameters::ECHO_CANCELLER)) {
       return EchoCancellationType::kEchoCancellationSystem;
     }
 
@@ -1026,9 +1022,7 @@ class ProcessingBasedContainer {
             GetAllowedLatency(processing_type, device_parameters)) {
     // If the parameters indicate that system echo cancellation is available, we
     // add such value in the allowed values for the EC type.
-    if (device_parameters.effects() & media::AudioParameters::ECHO_CANCELLER ||
-        device_parameters.effects() &
-            media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER) {
+    if (device_parameters.effects() & media::AudioParameters::ECHO_CANCELLER) {
       echo_cancellation_types.push_back(
           EchoCancellationType::kEchoCancellationSystem);
     }

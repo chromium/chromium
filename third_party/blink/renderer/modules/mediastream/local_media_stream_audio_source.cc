@@ -33,25 +33,27 @@ LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
   DVLOG(1) << "LocalMediaStreamAudioSource::LocalMediaStreamAudioSource("
               "device.input="
            << device.input.AsHumanReadableString()
-           << "requested_buffer_size=" << requested_buffer_size
-           << "enable_system_echo_cancellation="
-           << (enable_system_echo_cancellation ? "true" : "false") << ")";
-  const int device_supported_effects = device.input.effects();
+           << " requested_buffer_size=" << requested_buffer_size
+           << " enable_system_echo_cancellation="
+           << (enable_system_echo_cancellation ? "true" : "false") << ")"
+           << " system AEC available: "
+           << (!!(device.input.effects() &
+                  media::AudioParameters::ECHO_CANCELLER)
+                   ? "YES"
+                   : "NO");
   MediaStreamDevice device_to_request(device);
   if (enable_system_echo_cancellation) {
-    // Echo cancellation may only be requested if supported by the device,
-    // otherwise a different MediaStreamSource implementation should be used.
-    DCHECK_NE(device_supported_effects &
-                  (media::AudioParameters::ECHO_CANCELLER |
-                   media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER),
+    // System echo cancellation may only be requested if supported by the
+    // device, otherwise a different MediaStreamSource implementation should be
+    // used.
+    DCHECK_NE(device_to_request.input.effects() &
+                  media::AudioParameters::ECHO_CANCELLER,
               0);
-    // The EXPERIMENTAL_ECHO_CANCELLER bit only signals presence of a device
-    // effect, we need to toggle the ECHO_CANCELLER bit to request the effect.
-    device_to_request.input.set_effects(device_supported_effects |
-                                        media::AudioParameters::ECHO_CANCELLER);
   } else {
+    // No need for system echo cancellation, clearing the bit if it's set.
     device_to_request.input.set_effects(
-        device_supported_effects & ~media::AudioParameters::ECHO_CANCELLER);
+        device_to_request.input.effects() &
+        ~media::AudioParameters::ECHO_CANCELLER);
   }
   SetDevice(device_to_request);
 

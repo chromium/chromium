@@ -196,9 +196,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     HOTWORD = 1 << 3,
     NOISE_SUPPRESSION = 1 << 4,
     AUTOMATIC_GAIN_CONTROL = 1 << 5,
-    EXPERIMENTAL_ECHO_CANCELLER = 1 << 6,  // Indicates an echo canceller is
-                                           // available that should only
-                                           // experimentally be enabled.
+    // EXPERIMENTAL_ECHO_CANCELLER used to hold 1 << 6, but has been deprecated.
     MULTIZONE = 1 << 7,
     AUDIO_PREFETCH = 1 << 8,
     ALLOW_DSP_ECHO_CANCELLER = 1 << 9,

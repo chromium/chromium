@@ -475,6 +475,13 @@ BASE_FEATURE(kChromeWideEchoCancellation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+// Enforces the use of system echo cancellation.
+BASE_FEATURE(kEnforceSystemEchoCancellation,
+             "EnforceSystemEchoCancellation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 // To control running audio communication effect on Chrome OS Audio Server.
 BASE_FEATURE(kCrOSSystemAEC,
@@ -1737,7 +1744,16 @@ BASE_FEATURE(kMediaFoundationD3DVideoProcessing,
 
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);
+  return base::FeatureList::IsEnabled(kChromeWideEchoCancellation) &&
+         !IsSystemEchoCancellationEnforced();
+#else
+  return false;
+#endif
+}
+
+bool IsSystemEchoCancellationEnforced() {
+#if BUILDFLAG(IS_MAC)
+  return base::FeatureList::IsEnabled(kEnforceSystemEchoCancellation);
 #else
   return false;
 #endif

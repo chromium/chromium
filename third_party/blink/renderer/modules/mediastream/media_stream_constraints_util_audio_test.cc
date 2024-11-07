@@ -79,18 +79,6 @@ static bool Contains(const WTF::Vector<T>& vector, T value) {
 
 class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
  protected:
-  void MakeSystemEchoCancellerDeviceExperimental() {
-    media::AudioParameters experimental_system_echo_canceller_parameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::ChannelLayoutConfig::Stereo(),
-        media::AudioParameters::kAudioCDSampleRate, 1000);
-    experimental_system_echo_canceller_parameters.set_effects(
-        media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
-    capabilities_[1] = {"experimental_system_echo_canceller_device",
-                        "fake_group3",
-                        experimental_system_echo_canceller_parameters};
-  }
-
   void SetMediaStreamSource(const std::string& source) {}
 
   void ResetFactory() {
@@ -153,7 +141,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
       bool enable_system_echo_canceller,
       bool disable_local_echo,
       bool render_to_associated_sink,
-      bool enable_experimental_echo_canceller = false,
       const int* requested_buffer_size = nullptr) {
     blink::MediaStreamDevice device;
     device.type = GetMediaStreamType();
@@ -161,8 +148,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     int effects = 0;
     if (enable_system_echo_canceller)
       effects |= media::AudioParameters::ECHO_CANCELLER;
-    if (enable_experimental_echo_canceller)
-      effects |= media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER;
     device.input.set_effects(effects);
 
     if (render_to_associated_sink)
@@ -170,7 +155,8 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
     return std::make_unique<blink::LocalMediaStreamAudioSource>(
         /*blink::WebLocalFrame=*/nullptr, device, requested_buffer_size,
-        enable_system_echo_canceller, disable_local_echo,
+        /*disable_local_echo=*/disable_local_echo,
+        /*enable_system_echo_canceller=*/enable_system_echo_canceller,
         blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
@@ -425,7 +411,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
             false /* enable_system_echo_canceller */,
             false /* disable_local_echo */,
             false /* render_to_associated_sink */,
-            false /* enable_experimental_echo_canceller */,
             base::OptionalToPtr(result.requested_buffer_size()));
     EXPECT_EQ(local_source->GetAudioParameters().frames_per_buffer(),
               expected_buffer_size);
@@ -1891,23 +1876,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
     EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
               EchoCancellationType::kEchoCancellationAec3);
   }
-}
-
-TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimentalEcWithSource) {
-  std::unique_ptr<blink::LocalMediaStreamAudioSource> source =
-      GetLocalMediaStreamAudioSource(
-          false /* enable_system_echo_canceller */,
-          false /* disable_local_echo */, false /* render_to_associated_sink */,
-          true /* enable_experimental_echo_canceller */);
-
-  constraint_factory_.Reset();
-  constraint_factory_.basic().echo_cancellation.SetExact(false);
-
-  auto result = SelectSettingsAudioCapture(
-      source.get(), constraint_factory_.CreateMediaConstraints());
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationDisabled);
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest,

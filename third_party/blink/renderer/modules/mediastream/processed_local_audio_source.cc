@@ -152,6 +152,13 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
       allow_invalid_render_frame_id_for_testing_(false) {
   DCHECK(frame.DomWindow());
   SetDevice(device);
+  DVLOG(1) << "ProcessedLocalAudioSource: system AEC available = "
+           << !!(device.input.effects() &
+                 media::AudioParameters::ECHO_CANCELLER)
+           << " remote APM = " << use_remote_apm_
+           << "\naudio_processing_properties_ : ["
+           << GetAudioProcesingPropertiesLogString(audio_processing_properties_)
+           << "]";
   SendLogMessage(
       base::StringPrintf("ProcessedLocalAudioSource({session_id=%s}, {APM:%s})",
                          device.session_id().ToString().c_str(),
@@ -211,13 +218,15 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   blink::MediaStreamDevice modified_device(device());
   bool device_is_modified = false;
 
-  // Disable system echo cancellation if specified by
+  // Disable system echo cancellation if available but not requested by
   // |audio_processing_properties_|. Also disable any system noise suppression
   // and automatic gain control to avoid those causing issues for the echo
   // cancellation.
   if (audio_processing_properties_.echo_cancellation_type !=
           EchoCancellationType::kEchoCancellationSystem &&
       device().input.effects() & media::AudioParameters::ECHO_CANCELLER) {
+    DVLOG(1)
+        << "ProcessedLocalAudioSource: resetting system echo cancellation flag";
     modified_device.input.set_effects(modified_device.input.effects() &
                                       ~media::AudioParameters::ECHO_CANCELLER);
     if (!IsIndependentSystemNsAllowed()) {
@@ -228,17 +237,6 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     modified_device.input.set_effects(
         modified_device.input.effects() &
         ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
-    device_is_modified = true;
-  } else if (audio_processing_properties_.echo_cancellation_type ==
-                 EchoCancellationType::kEchoCancellationSystem &&
-             (device().input.effects() &
-              media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER)) {
-    // Set the ECHO_CANCELLER effect, since that is what controls what's
-    // actually being used. The EXPERIMENTAL_ flag only indicates availability.
-    // TODO(grunell): AND with
-    // ~media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER.
-    modified_device.input.set_effects(modified_device.input.effects() |
-                                      media::AudioParameters::ECHO_CANCELLER);
     device_is_modified = true;
   }
 

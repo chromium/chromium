@@ -200,11 +200,6 @@ AudioParameters AudioManagerCras::GetStreamParametersForSystem(
   RetrieveSystemEffectFeatures(enforce_system_aec, enforce_system_ns,
                                enforce_system_agc, tuned_system_aec_allowed);
 
-  // Activation of the system AEC. Allow experimentation with system AEC with
-  // all devices, but enable it by default on devices that actually support it.
-  params.set_effects(params.effects() |
-                     AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
-
   // Rephrase the field aec_supported to properly reflect its meaning in this
   // context (since it currently signals whether an CrAS APM with tuned settings
   // is available).
