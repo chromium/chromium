@@ -412,6 +412,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kGeolocationWatchPosition,
           WebFeature::
               kServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement,
+          WebFeature::kThirdPartyCookieBlocked,
       }));
   return *opt_in_features;
 }
