@@ -244,11 +244,6 @@ int GetDefaultVmMemoryMiB(ArcVmClientAdapterDelegate* delegate) {
 
 // Returns whether an LVM-provided disk should be used for virtio-blk /data.
 bool ShouldUseLvmApplicationContainerForVirtioBlkData() {
-  // Allow tests to override use_lvm param.
-  if (base::FeatureList::IsEnabled(kVirtioBlkDataConfigOverride)) {
-    return kVirtioBlkDataConfigUseLvm.Get();
-  }
-
   // Use LVM backend if LVM application containers feature is supported and
   // user cryptohome data is not ephemeral (b/278305150).
   return base::FeatureList::IsEnabled(kLvmApplicationContainers) &&

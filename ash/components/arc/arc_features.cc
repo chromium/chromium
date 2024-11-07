@@ -190,16 +190,6 @@ BASE_FEATURE(kExternalStorageAccess,
              "ArcExternalStorageAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Used for overriding config params for the virtio-blk feature above.
-BASE_FEATURE(kVirtioBlkDataConfigOverride,
-             "ArcVirtioBlkDataConfigOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether to use the LVM-provided disk as the backend device for
-// Android /data instead of using the concierge-provided disk.
-const base::FeatureParam<bool> kVirtioBlkDataConfigUseLvm{
-    &kVirtioBlkDataConfigOverride, "use_lvm", false};
-
 // Indicates whether LVM application containers feature is supported.
 BASE_FEATURE(kLvmApplicationContainers,
              "ArcLvmApplicationContainers",
