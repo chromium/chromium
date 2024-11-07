@@ -239,6 +239,22 @@ enum WebDXFeature {
   kTextWrap = 181,
   kTextWrapStyle = 182,
   kCalcConstants = 183,
+  kExpFunctions = 184,
+  kFileSelectorButton = 185,
+  kLinearEasing = 186,
+  kModal = 187,
+  kMotionPath = 188,
+  kOutline = 189,
+  kOverflow = 190,
+  kRex = 191,
+  kSpellingGrammarError = 192,
+  kTextDecorationSelection = 193,
+  kTransformBox = 194,
+  kUpdate = 195,
+  kWordBreakAutoPhrase = 196,
+  kMarker = 197,
+  kDynamicRange = 198,
+  kDisplayMode = 199,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

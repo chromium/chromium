@@ -33847,6 +33847,22 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="181" label="TextWrap"/>
   <int value="182" label="TextWrapStyle"/>
   <int value="183" label="CalcConstants"/>
+  <int value="184" label="ExpFunctions"/>
+  <int value="185" label="FileSelectorButton"/>
+  <int value="186" label="LinearEasing"/>
+  <int value="187" label="Modal"/>
+  <int value="188" label="MotionPath"/>
+  <int value="189" label="Outline"/>
+  <int value="190" label="Overflow"/>
+  <int value="191" label="Rex"/>
+  <int value="192" label="SpellingGrammarError"/>
+  <int value="193" label="TextDecorationSelection"/>
+  <int value="194" label="TransformBox"/>
+  <int value="195" label="Update"/>
+  <int value="196" label="WordBreakAutoPhrase"/>
+  <int value="197" label="Marker"/>
+  <int value="198" label="DynamicRange"/>
+  <int value="199" label="DisplayMode"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
