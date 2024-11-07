@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -24,17 +26,47 @@ class DataSharingBubbleDialogView : public WebUIBubbleDialogView {
   METADATA_HEADER(DataSharingBubbleDialogView, WebUIBubbleDialogView)
  public:
   explicit DataSharingBubbleDialogView(
+      Browser* browser,
       views::View* anchor_view,
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper)
       : WebUIBubbleDialogView(anchor_view,
                               contents_wrapper->GetWeakPtr(),
                               std::nullopt,
                               views::BubbleBorder::Arrow::TOP_LEFT),
-        contents_wrapper_(std::move(contents_wrapper)) {}
+        contents_wrapper_(std::move(contents_wrapper)),
+        browser_(browser) {}
+
+  // WebUIContentsWrapper::Host override. Handle opening WebUI href links into
+  // browser.
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
 
  private:
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
+  raw_ptr<Browser> browser_;
 };
+
+content::WebContents* DataSharingBubbleDialogView::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  NavigateParams params(browser_, target_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.tabstrip_index = browser_->tab_strip_model()->count();
+  params.disposition = disposition;
+  Navigate(&params);
+  return params.navigated_or_inserted_contents;
+}
 
 BEGIN_METADATA(DataSharingBubbleDialogView)
 END_METADATA
@@ -85,7 +117,7 @@ void DataSharingBubbleController::Show(
   }
 
   auto bubble_view = std::make_unique<DataSharingBubbleDialogView>(
-      anchor_view_for_share, std::move(contents_wrapper));
+      &GetBrowser(), anchor_view_for_share, std::move(contents_wrapper));
   bubble_view->SetProperty(views::kElementIdentifierKey,
                            kDataSharingBubbleElementId);
   bubble_view_ = bubble_view->GetWeakPtr();
