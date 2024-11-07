@@ -23,72 +23,15 @@ namespace policy {
 using sandbox::mojom::Sandbox;
 
 bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
-  switch (sandbox_type) {
-    case Sandbox::kNoSandbox:
-      return true;
-#if BUILDFLAG(IS_WIN)
-    case Sandbox::kNoSandboxAndElevatedPrivileges:
-      return true;
-    case Sandbox::kXrCompositing:
-    case Sandbox::kPdfConversion:
-    case Sandbox::kIconReader:
-    case Sandbox::kMediaFoundationCdm:
-    case Sandbox::kWindowsSystemProxyResolver:
-      return false;
-#endif
-    case Sandbox::kAudio:
-      return false;
-#if BUILDFLAG(IS_FUCHSIA)
-    case Sandbox::kVideoCapture:
-      return false;
-#endif
-    case Sandbox::kNetwork:
-      return false;
-    case Sandbox::kOnDeviceModelExecution:
-      return false;
-    case Sandbox::kRenderer:
-    case Sandbox::kService:
-    case Sandbox::kServiceWithJit:
-    case Sandbox::kUtility:
-    case Sandbox::kGpu:
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-    case Sandbox::kPpapi:
-#endif
-    case Sandbox::kCdm:
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-    case Sandbox::kPrintBackend:
-#endif
-    case Sandbox::kPrintCompositor:
-#if BUILDFLAG(IS_MAC)
-    case Sandbox::kMirroring:
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-    case Sandbox::kHardwareVideoDecoding:
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    case Sandbox::kIme:
-    case Sandbox::kTts:
-    case Sandbox::kNearby:
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case Sandbox::kLibassistant:
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    case Sandbox::kZygoteIntermediateSandbox:
-    case Sandbox::kHardwareVideoEncoding:
-#endif
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    case Sandbox::kScreenAI:
-#endif
-    case Sandbox::kSpeechRecognition:
-#if BUILDFLAG(IS_LINUX)
-    case Sandbox::kVideoEffects:
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-    case Sandbox::kOnDeviceTranslation:
-#endif
-      return false;
+  if (sandbox_type == Sandbox::kNoSandbox) {
+    return true;
   }
+#if BUILDFLAG(IS_WIN)
+  if (sandbox_type == Sandbox::kNoSandboxAndElevatedPrivileges) {
+    return true;
+  }
+#endif
+  return false;
 }
 
 void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
