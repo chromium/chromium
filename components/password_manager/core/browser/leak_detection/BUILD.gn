@@ -62,6 +62,7 @@ source_set("leak_detection") {
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/prefs",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
     "//components/version_info:channel",

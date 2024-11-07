@@ -216,6 +216,9 @@ class LeakDetectionDelegateTest : public testing::Test {
   raw_ptr<MockLeakDetectionCheckFactory> mock_factory_ = nullptr;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_ =
       std::make_unique<TestingPrefServiceSimple>();
+
+ protected:
+  base::test::ScopedFeatureList feature_list;
 };
 
 TEST_F(LeakDetectionDelegateTest, InIncognito) {
@@ -375,6 +378,44 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
   EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_FALSE(delegate().leak_check());
+  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(),
+                                                     GetTestUrl(), nullptr));
+}
+
+TEST_F(LeakDetectionDelegateTest,
+       StartCheckWithNoSafeBrowsingWhileLeakDetectionOn) {
+  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
+  SetSBState(safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+  SetLeakDetectionEnabled(true);
+  const PasswordForm form = CreateTestForm();
+  EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  EXPECT_CALL(*check_instance,
+              Start(LeakDetectionInitiator::kSignInCheck, form.url,
+                    form.username_value, form.password_value));
+  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_TRUE(delegate().leak_check());
+  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(),
+                                                    GetTestUrl(), nullptr));
+}
+
+TEST_F(LeakDetectionDelegateTest,
+       DoNotStartCheckWithEnhancedProtectionWhileLeakProtectionIsOff) {
+  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
+  SetSBState(safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  SetLeakDetectionEnabled(false);
+  const PasswordForm form = CreateTestForm();
+  EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
                             GetTestUrl());
 
