@@ -813,6 +813,13 @@ if (is_win || is_mac || is_linux) {
           "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
         ]
       }
+      if (is_asan) {
+        copy("enterprise_companion_test_crx_asan_dylib") {
+          sources = [ "${_source_bundle_path}/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+          outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/{{source_file_part}}" ]
+          deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
+        }
+      }
       zip("enterprise_companion_test_crx_contents_zip") {
         inputs = get_target_outputs(
                      ":enterprise_companion_test_crx_install_script") +
@@ -827,6 +834,12 @@ if (is_win || is_mac || is_linux) {
           ":enterprise_companion_test_crx_pkginfo",
           ":enterprise_companion_test_crx_plist",
         ]
+
+        if (is_asan) {
+          inputs +=
+              get_target_outputs(":enterprise_companion_test_crx_asan_dylib")
+          deps += [ ":enterprise_companion_test_crx_asan_dylib" ]
+        }
       }
     }
 

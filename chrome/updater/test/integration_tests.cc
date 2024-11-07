@@ -2026,17 +2026,9 @@ class IntegrationTestDeviceManagement
   }
 };
 
-// TODO(crbug.com/376745598): Figure out if the ASAN dylib can be made to work
-// with OTA installations of the companion app in tests.
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-INSTANTIATE_TEST_SUITE_P(CecaExperimentFlag,
-                         IntegrationTestDeviceManagement,
-                         ::testing::Values(false));
-#else
 INSTANTIATE_TEST_SUITE_P(CecaExperimentFlag,
                          IntegrationTestDeviceManagement,
                          ::testing::Bool());
-#endif
 
 // Tests the setup and teardown of the fixture.
 TEST_P(IntegrationTestDeviceManagement, Nothing) {}
