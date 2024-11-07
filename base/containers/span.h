@@ -133,9 +133,6 @@
 // - Provides implicit conversion from fixed-extent `span` to `std::span`.
 //   `std::span`'s general-purpose range constructor is explicit in this case
 //   because it does not have a carve-out for `span`.
-// - Adds "legacy range" constructors that don't check for the range concept,
-//   but rather whether std::ranges::data and std::ranges::size are well formed.
-//   TODO(crbug.com/40945581): Remove.
 // - Missing constructor from std::initializer_list (C++26).
 //   TODO(crbug.com/40569817): Add.
 //
@@ -245,27 +242,6 @@ concept CompatibleRange =
     LegalDataConversion<
         std::remove_reference_t<std::ranges::range_reference_t<R>>,
         T>;
-
-template <typename T>
-concept LegacyRangeDataIsPointer = std::is_pointer_v<T>;
-
-template <typename R>
-concept LegacyRange =
-    kCompatibleRangeType<std::remove_cvref_t<R>> && requires(R& r) {
-      { std::ranges::data(r) } -> LegacyRangeDataIsPointer;
-      { std::ranges::size(r) } -> std::convertible_to<size_t>;
-    };
-
-// NOTE: Ideally we'd just use `CompatibleRange`, however this currently breaks
-// code that was written prior to C++20 being standardized and assumes providing
-// .data() and .size() is sufficient.
-// TODO: https://crbug.com/1504998 - Remove in favor of CompatibleRange and fix
-// callsites.
-template <typename T, typename R>
-concept LegacyCompatibleRange = LegacyRange<R> && requires(R& r) {
-  requires LegalDataConversion<
-      std::remove_reference_t<decltype(*std::ranges::data(r))>, T>;
-};
 
 // Computes a fixed extent if possible from a source container type `T`.
 template <typename T>
@@ -401,22 +377,6 @@ class GSL_POINTER span {
       // SAFETY: `std::ranges::size()` returns the number of elements
       // `std::ranges::data()` will point to, so accessing those elements will
       // be safe.
-      : UNSAFE_BUFFERS(
-            span(std::ranges::data(range), std::ranges::size(range))) {}
-
-  template <typename R, size_t X = internal::kComputedExtent<R>>
-    requires(internal::LegacyCompatibleRange<T, R> &&
-             (X == N || X == dynamic_extent) &&
-             !internal::CompatibleRange<T, R> &&
-             // Ensure just adding "const" wouldn't make this eligible for the
-             // non-legacy constructor -- if it would, allowing this would
-             // bypass the "T is const or R is a borrowed range" safety check.
-             !internal::CompatibleRange<const T, const R>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr explicit(X == dynamic_extent) span(R&& range) noexcept
-      // SAFETY: The std::ranges::size() function gives the number of elements
-      // pointed to by the std::ranges::data() function, which meets the
-      // requirement of span.
       : UNSAFE_BUFFERS(
             span(std::ranges::data(range), std::ranges::size(range))) {}
 
@@ -996,21 +956,6 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       : UNSAFE_BUFFERS(
             span(std::ranges::data(range), std::ranges::size(range))) {}
 
-  template <typename R>
-    requires(internal::LegacyCompatibleRange<T, R> &&
-             !internal::CompatibleRange<T, R> &&
-             // Ensure just adding "const" wouldn't make this eligible for the
-             // non-legacy constructor -- if it would, allowing this would
-             // bypass the "T is const or R is a borrowed range" safety check.
-             !internal::CompatibleRange<const T, const R>)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr span(R&& range)
-      // SAFETY: The std::ranges::size() function gives the number of elements
-      // pointed to by the std::ranges::data() function, which meets the
-      // requirement of span.
-      : UNSAFE_BUFFERS(
-            span(std::ranges::data(range), std::ranges::size(range))) {}
-
   constexpr span(const span& other) noexcept = default;
   template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
     requires(internal::LegalDataConversion<OtherT, T>)
@@ -1460,14 +1405,6 @@ template <typename R>
   requires(std::ranges::contiguous_range<R>)
 span(R&&) -> span<std::remove_reference_t<std::ranges::range_reference_t<R>>,
                   internal::kComputedExtent<R>>;
-
-// This guide prefers to let the contiguous_range guide match, since it can
-// produce a fixed-size span. Whereas, LegacyRange only produces a dynamic-sized
-// span.
-template <typename R>
-  requires(!std::ranges::contiguous_range<R> && internal::LegacyRange<R>)
-span(R&& r) noexcept
-    -> span<std::remove_reference_t<decltype(*std::ranges::data(r))>>;
 
 // [span.objectrep], views of object representation
 template <typename T, size_t X, typename InternalPtrType>

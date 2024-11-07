@@ -625,35 +625,6 @@ TEST(SpanTest, ConstructFromRange) {
     EXPECT_EQ(imp, base::span({1, 2, 3}));
   }
 
-  struct LegacyRange {
-    const int* data() const { return arr_.data(); }
-    size_t size() const { return arr_.size(); }
-
-    std::array<const int, 3u> arr_ = {1, 2, 3};
-  };
-  static_assert(!std::ranges::contiguous_range<LegacyRange>);
-  static_assert(base::internal::LegacyRange<LegacyRange>);
-  {
-    LegacyRange r;
-    auto s = base::span(r);
-    static_assert(std::same_as<decltype(s), base::span<const int>>);
-    EXPECT_EQ(s, base::span({1, 2, 3}));
-
-    // Implicit from legacy range with dynamic size to dynamic span.
-    base::span<const int> imp = r;
-    EXPECT_EQ(imp, base::span({1, 2, 3}));
-  }
-  {
-    LegacyRange r;
-    auto s = base::span<const int, 3u>(r);
-    EXPECT_EQ(s, base::span({1, 2, 3}));
-
-    // Explicit from legacy range with dynamic size to fixed span.
-    static_assert(!std::convertible_to<decltype(r), base::span<const int, 3u>>);
-    base::span<const int, 3> imp(r);
-    EXPECT_EQ(imp, base::span({1, 2, 3}));
-  }
-
   using FixedRange = const std::array<int, 3>;
   static_assert(std::ranges::contiguous_range<FixedRange>);
   static_assert(std::ranges::sized_range<FixedRange>);
