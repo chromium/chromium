@@ -1178,7 +1178,7 @@ void AutocompleteResult::DeduplicateMatches(
   // Group matches by stripped URL and whether it's a calculator suggestion.
   std::unordered_map<AutocompleteResult::MatchDedupComparator,
                      std::vector<ACMatches::iterator>,
-                     ACMatchKeyHash<std::string, bool, bool>>
+                     ACMatchKeyHash<std::string, bool, bool, bool>>
       url_to_matches;
   for (auto i = matches->begin(); i != matches->end(); ++i) {
     url_to_matches[GetMatchComparisonFields(*i)].push_back(i);
@@ -1491,8 +1491,12 @@ AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
       (match.answer_template.has_value() &&
        OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) ||
       match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER;
-  return std::make_tuple(match.stripped_destination_url.spec(),
-                         match.type == ACMatchType::CALCULATOR, is_answer);
+  return std::make_tuple(
+      match.stripped_destination_url.spec(),
+      match.type == ACMatchType::CALCULATOR,
+      match.provider != nullptr &&
+          match.provider->type() == AutocompleteProvider::TYPE_VERBATIM_MATCH,
+      is_answer);
 }
 
 void AutocompleteResult::LimitNumberOfURLsShown(

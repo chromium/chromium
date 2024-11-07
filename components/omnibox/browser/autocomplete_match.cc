@@ -187,7 +187,11 @@ size_t ACMatchKeyHash<Args...>::operator()(
 // declaration here.
 template struct ACMatchKeyHash<std::u16string,
                                std::string>;  // base_search_provider
-template struct ACMatchKeyHash<std::string, bool, bool>;  // autocomplete_result
+// Deduplication key hash for AutocompleteResult.
+template struct ACMatchKeyHash<std::string,  // URL
+                               bool,         // Is Calculator type?
+                               bool,         // Is Verbatim Match?
+                               bool>;        // Is Answer card?
 
 // RichAutocompletionParams ---------------------------------------------------
 

@@ -39,7 +39,10 @@ class AutocompleteResult {
  public:
   typedef ACMatches::const_iterator const_iterator;
   typedef ACMatches::iterator iterator;
-  using MatchDedupComparator = ACMatchKey<std::string, bool, bool>;
+  using MatchDedupComparator = ACMatchKey<std::string,  // URL
+                                          bool,         // Is Calculator type?
+                                          bool,         // Is Verbatim Match?
+                                          bool>;        // Is Answer card?
 
   // Max number of matches we'll show from the various providers. This limit
   // may be different for zero suggest and non zero suggest. Does not take into
