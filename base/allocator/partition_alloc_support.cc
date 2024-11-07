@@ -1051,17 +1051,37 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // check here too to wrap the GetMemoryTaggingModeForCurrentThread() call.
   if (!base::FeatureList::IsEnabled(
           base::features::kKillPartitionAllocMemoryTagging)) {
-    // If synchronous mode is enabled from startup it means this is a test and
-    // memory tagging should be enabled.
-    if (partition_alloc::internal::GetMemoryTaggingModeForCurrentThread() ==
+    // If synchronous mode is enabled from startup it means this is a test or it
+    // was force enabled in Chrome some how so honor that choice.
+    partition_alloc::TagViolationReportingMode
+        startup_memory_tagging_reporting_mode =
+            partition_alloc::internal::GetMemoryTaggingModeForCurrentThread();
+    if (startup_memory_tagging_reporting_mode ==
         partition_alloc::TagViolationReportingMode::kSynchronous) {
       enable_memory_tagging = true;
       memory_tagging_reporting_mode =
           partition_alloc::TagViolationReportingMode::kSynchronous;
+      // Not enabling permissive mode as this config is used to crash and detect
+      // bugs.
+      VLOG(1) << "PartitionAlloc: Memory tagging enabled in SYNC mode at "
+                 "startup (Process: "
+              << process_type << ")";
     } else {
       enable_memory_tagging = ShouldEnableMemoryTagging(process_type);
 #if BUILDFLAG(IS_ANDROID)
+      // Android Scudo does not allow MTE to be re-enabled if MTE was disabled.
+      if (enable_memory_tagging &&
+          startup_memory_tagging_reporting_mode ==
+              partition_alloc::TagViolationReportingMode::kDisabled) {
+        LOG(ERROR) << "PartitionAlloc: Failed to enable memory tagging due to "
+                      "MTE disabled at startup (Process: "
+                   << process_type << ")";
+        debug::DumpWithoutCrashing();
+        enable_memory_tagging = false;
+      }
+
       if (enable_memory_tagging) {
+        // Configure MTE.
         switch (base::features::kMemtagModeParam.Get()) {
           case base::features::MemtagMode::kSync:
             memory_tagging_reporting_mode =
@@ -1072,15 +1092,28 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                 partition_alloc::TagViolationReportingMode::kAsynchronous;
             break;
         }
-        partition_alloc::PermissiveMte::SetEnabled(base::FeatureList::IsEnabled(
-            base::features::kPartitionAllocPermissiveMte));
+        bool enable_permissive_mte = base::FeatureList::IsEnabled(
+            base::features::kPartitionAllocPermissiveMte);
+        partition_alloc::PermissiveMte::SetEnabled(enable_permissive_mte);
         CHECK(partition_alloc::internal::
                   ChangeMemoryTaggingModeForAllThreadsPerProcess(
                       memory_tagging_reporting_mode));
         CHECK_EQ(
             partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
             memory_tagging_reporting_mode);
+        VLOG(1)
+            << "PartitionAlloc: Memory tagging enabled in "
+            << (memory_tagging_reporting_mode ==
+                        partition_alloc::TagViolationReportingMode::kSynchronous
+                    ? "SYNC"
+                    : "ASYNC")
+            << " mode (Process: " << process_type << ")";
+        if (enable_permissive_mte) {
+          VLOG(1) << "PartitionAlloc: Permissive MTE enabled (Process: "
+                  << process_type << ")";
+        }
       } else if (base::CPU::GetInstanceNoAllocation().has_mte()) {
+        // Disable MTE.
         memory_tagging_reporting_mode =
             partition_alloc::TagViolationReportingMode::kDisabled;
         CHECK(partition_alloc::internal::
@@ -1089,23 +1122,13 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         CHECK_EQ(
             partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
             memory_tagging_reporting_mode);
+        VLOG(1) << "PartitionAlloc: Memory tagging disabled (Process: "
+                << process_type << ")";
       }
 #endif  // BUILDFLAG(IS_ANDROID)
     }
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-
-  if (enable_memory_tagging) {
-    CHECK((memory_tagging_reporting_mode ==
-           partition_alloc::TagViolationReportingMode::kSynchronous) ||
-          (memory_tagging_reporting_mode ==
-           partition_alloc::TagViolationReportingMode::kAsynchronous));
-  } else {
-    CHECK((memory_tagging_reporting_mode ==
-           partition_alloc::TagViolationReportingMode::kUndefined) ||
-          (memory_tagging_reporting_mode ==
-           partition_alloc::TagViolationReportingMode::kDisabled));
-  }
 
   allocator_shim::UseSmallSingleSlotSpans use_small_single_slot_spans(
       base::FeatureList::IsEnabled(
