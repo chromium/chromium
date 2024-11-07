@@ -443,9 +443,7 @@ ExtensionService::ExtensionService(
 
   UpgradeDetector::GetInstance()->AddObserver(this);
 
-  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
-    cws_info_service_observation_.Observe(CWSInfoService::Get(profile_));
-  }
+  cws_info_service_observation_.Observe(CWSInfoService::Get(profile_));
 
   ExtensionManagementFactory::GetForBrowserContext(profile_)->AddObserver(this);
 
@@ -511,9 +509,7 @@ ExtensionService::~ExtensionService() {
 }
 
 void ExtensionService::Shutdown() {
-  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
-    cws_info_service_observation_.Reset();
-  }
+  cws_info_service_observation_.Reset();
   ExtensionManagementFactory::GetForBrowserContext(profile())->RemoveObserver(
       this);
   external_install_manager_->Shutdown();
@@ -1934,12 +1930,10 @@ void ExtensionService::OnExtensionManagementSettingsChanged() {
   // unpublished extensions should not be enabled. This update allows
   // unpublished extensions to be disabled sooner rather than waiting till the
   // next regularly scheduled fetch.
-  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
-    if (profile_->GetPrefs()->GetInteger(
-            pref_names::kExtensionUnpublishedAvailability) !=
-        kAllowUnpublishedExtensions) {
-      CWSInfoService::Get(profile_)->CheckAndMaybeFetchInfo();
-    }
+  if (profile_->GetPrefs()->GetInteger(
+          pref_names::kExtensionUnpublishedAvailability) !=
+      kAllowUnpublishedExtensions) {
+    CWSInfoService::Get(profile_)->CheckAndMaybeFetchInfo();
   }
 }
 

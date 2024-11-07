@@ -158,12 +158,6 @@ void RecordNetworkHistograms(const network::SimpleURLLoader* url_loader) {
 
 namespace extensions {
 
-// Allow periodic retrieval of extensions metadata from the Chrome Web Store
-// (CWS). This is effectively a kill-switch for the feature.
-BASE_FEATURE(kCWSInfoService,
-             "CWSInfoService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Increase the frequency of periodic retrieval of extensions metadata from
 // CWS. This feature is used only for testing purposes.
 BASE_FEATURE(kCWSInfoFastCheck,

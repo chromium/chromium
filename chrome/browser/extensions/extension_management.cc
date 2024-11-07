@@ -379,10 +379,6 @@ bool ExtensionManagement::IsExemptFromMV2DeprecationByPolicy(
 
 bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
     const Extension* extension) {
-  // Check the kill switch before applying policy check.
-  if (!base::FeatureList::IsEnabled(kCWSInfoService)) {
-    return true;
-  }
   // This policy only applies to extensions that update from CWS.
   if (!UpdatesFromWebstore(*extension)) {
     return true;
