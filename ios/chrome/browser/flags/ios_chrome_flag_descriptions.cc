@@ -333,6 +333,11 @@ const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
 const char kDataSharingJoinOnlyDescription[] =
     "Enabled Data Sharing Joining flow related UI and features.";
 
+const char kDefaultBrowserBannerPromoName[] = "Default Browser banner promo";
+const char kDefaultBrowserBannerPromoDescription[] =
+    "When enabled, the default browser banner promo will show when conditions "
+    "are met.";
+
 const char kDefaultBrowserIntentsShowSettingsName[] =
     "Default Browser Intents show settings";
 const char kDefaultBrowserIntentsShowSettingsDescription[] =

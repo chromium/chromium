@@ -1191,3 +1191,11 @@ const char kNewFeedPositioningHomestackOnForAll[] = "homestack_on_for_all";
 bool ShouldEnableHomestack() {
   return ShouldEnableCombinedMVTAndHomestack()[1];
 }
+
+BASE_FEATURE(kDefaultBrowserBannerPromo,
+             "DefaultBrowserBannerPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDefaultBrowserBannerPromoEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBrowserBannerPromo);
+}

@@ -960,4 +960,10 @@ extern const char kNewFeedPositioningHomestackOnForAll[];
 // Returns whether homestack should be enabled.
 bool ShouldEnableHomestack();
 
+// Feature flag to control whether the Default Browser banner promo is enabled.
+BASE_DECLARE_FEATURE(kDefaultBrowserBannerPromo);
+
+// Returns whether `kDefaultBrowserBannerPromo` is enabled.
+bool IsDefaultBrowserBannerPromoEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

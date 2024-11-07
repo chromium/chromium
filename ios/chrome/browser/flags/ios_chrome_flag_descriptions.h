@@ -275,6 +275,10 @@ extern const char kDataSharingDescription[];
 extern const char kDataSharingJoinOnlyName[];
 extern const char kDataSharingJoinOnlyDescription[];
 
+// Title and description for Default Browser banner promo experiment.
+extern const char kDefaultBrowserBannerPromoName[];
+extern const char kDefaultBrowserBannerPromoDescription[];
+
 // Title and description for the flag to show the default browser tutorial from
 // an external app.
 extern const char kDefaultBrowserIntentsShowSettingsName[];
