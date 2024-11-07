@@ -243,6 +243,11 @@ concept CompatibleRange =
         std::remove_reference_t<std::ranges::range_reference_t<R>>,
         T>;
 
+// Whether source object extent `X` will work to create a span of fixed extent
+// `N`. This is not intended for use in dynamic-extent spans.
+template <size_t N, size_t X>
+concept FixedExtentConstructibleFromExtent = X == N || X == dynamic_extent;
+
 // Computes a fixed extent if possible from a source container type `T`.
 template <typename T>
 inline constexpr size_t kComputedExtentImpl = dynamic_extent;
@@ -366,14 +371,26 @@ class GSL_POINTER span {
   }
 
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr span(std::type_identity_t<T> (&arr)[N]) noexcept
+  constexpr span(std::type_identity_t<T> (&arr LIFETIME_BOUND)[N]) noexcept
       // SAFETY: The type signature guarantees `arr` contains `N` elements.
       : UNSAFE_BUFFERS(span(arr, N)) {}
 
   template <typename R, size_t X = internal::kComputedExtent<R>>
-    requires(internal::CompatibleRange<T, R> && (X == N || X == dynamic_extent))
+    requires(internal::CompatibleRange<T, R> &&
+             internal::FixedExtentConstructibleFromExtent<N, X>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr explicit(X == dynamic_extent) span(R&& range)
+  constexpr explicit(X != N) span(R&& range LIFETIME_BOUND)
+      // SAFETY: `std::ranges::size()` returns the number of elements
+      // `std::ranges::data()` will point to, so accessing those elements will
+      // be safe.
+      : UNSAFE_BUFFERS(
+            span(std::ranges::data(range), std::ranges::size(range))) {}
+  template <typename R, size_t X = internal::kComputedExtent<R>>
+    requires(internal::CompatibleRange<T, R> &&
+             internal::FixedExtentConstructibleFromExtent<N, X> &&
+             std::ranges::borrowed_range<R>)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr explicit(X != N) span(R&& range)
       // SAFETY: `std::ranges::size()` returns the number of elements
       // `std::ranges::data()` will point to, so accessing those elements will
       // be safe.
@@ -942,12 +959,21 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
 
   template <size_t N>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr span(std::type_identity_t<T> (&arr)[N]) noexcept
+  constexpr span(std::type_identity_t<T> (&arr LIFETIME_BOUND)[N]) noexcept
       // SAFETY: The type signature guarantees `arr` contains `N` elements.
       : UNSAFE_BUFFERS(span(arr, N)) {}
 
   template <typename R>
     requires(internal::CompatibleRange<T, R>)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr span(R&& range LIFETIME_BOUND)
+      // SAFETY: `std::ranges::size()` returns the number of elements
+      // `std::ranges::data()` will point to, so accessing those elements will
+      // be safe.
+      : UNSAFE_BUFFERS(
+            span(std::ranges::data(range), std::ranges::size(range))) {}
+  template <typename R>
+    requires(internal::CompatibleRange<T, R> && std::ranges::borrowed_range<R>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr span(R&& range)
       // SAFETY: `std::ranges::size()` returns the number of elements
@@ -1520,6 +1546,12 @@ UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, EndOrSize end_or_size) {
 // TODO(crbug.com/341907909): Remove.
 template <int&... ExplicitArgumentBarrier, typename Container>
   requires(internal::SpanConstructibleFrom<Container &&>)
+constexpr auto make_span(Container&& container LIFETIME_BOUND) {
+  return span(std::forward<Container>(container));
+}
+template <int&... ExplicitArgumentBarrier, typename Container>
+  requires(internal::SpanConstructibleFrom<Container &&> &&
+           std::ranges::borrowed_range<Container>)
 constexpr auto make_span(Container&& container) {
   return span(std::forward<Container>(container));
 }
@@ -1652,6 +1684,12 @@ constexpr span<const uint8_t, N> byte_span_with_nul_from_cstring(
 // into an API that requires byte spans.
 template <int&... ExplicitArgumentBarrier, typename Spannable>
   requires(internal::SpanConstructibleFrom<const Spannable&>)
+constexpr auto as_byte_span(const Spannable& arg LIFETIME_BOUND) {
+  return as_bytes(span(arg));
+}
+template <int&... ExplicitArgumentBarrier, typename Spannable>
+  requires(internal::SpanConstructibleFrom<const Spannable&> &&
+           std::ranges::borrowed_range<Spannable>)
 constexpr auto as_byte_span(const Spannable& arg) {
   return as_bytes(span(arg));
 }
@@ -1671,6 +1709,9 @@ template <int&... ExplicitArgumentBarrier, typename Spannable>
   requires(internal::SpanConstructibleFrom<Spannable &&> &&
            !std::is_const_v<typename decltype(span(
                std::declval<Spannable>()))::element_type>)
+// NOTE: `arg` is not marked as lifetimebound because the "non-const
+// `element_type`" requirement above will in turn require `Spannable` to be a
+// borrowed range.
 constexpr auto as_writable_byte_span(Spannable&& arg) {
   return as_writable_bytes(span(std::forward<Spannable>(arg)));
 }
