@@ -259,6 +259,10 @@ void ScrollbarThemeAura::PaintTrackBackgroundAndButtons(
           : NinePatchTrackAndButtonsAperture(scrollbar).width();
 
   gfx::Rect back_button_rect = BackButtonRect(scrollbar);
+  if (back_button_rect.IsEmpty()) {
+    PaintTrackBackground(context, scrollbar, gfx::Rect(1, 1));
+    return;
+  }
   back_button_rect.Offset(offset);
   PaintButton(context, scrollbar, back_button_rect, kBackButtonStartPart);
 
