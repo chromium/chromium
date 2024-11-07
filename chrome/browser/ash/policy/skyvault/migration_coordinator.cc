@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/drive_skyvault_uploader.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
@@ -285,6 +286,9 @@ void OneDriveMigrationUploader::OnUploadDone(
     return;
   }
 
+  SkyVaultMigrationUploadErrorHistogram(CloudProvider::kOneDrive,
+                                        error.value());
+
   if (!ErrorCanBeIgnored(error.value())) {
     errors_.insert({file_path, error.value()});
   }
@@ -385,6 +389,9 @@ void GoogleDriveMigrationUploader::OnUploadDone(
     OnErrorLogged(file_path);
     return;
   }
+
+  SkyVaultMigrationUploadErrorHistogram(CloudProvider::kGoogleDrive,
+                                        error.value());
 
   if (!ErrorCanBeIgnored(error.value())) {
     errors_.insert({file_path, error.value()});

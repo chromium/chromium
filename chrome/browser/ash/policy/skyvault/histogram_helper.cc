@@ -37,6 +37,7 @@ constexpr char kMigrationStateErrorContextSuffix[] = "StateErrorContext";
 constexpr char kMigrationWrongStateSuffix[] = "WrongState";
 constexpr char kMigrationFailedSuffix[] = "Failed";
 constexpr char kMigrationWriteAccessErrorSuffix[] = "WriteAccessError";
+constexpr char kMigrationUploadErrorSuffix[] = "UploadError";
 constexpr char kMigrationDialogActionSuffix[] = "DialogAction";
 constexpr char kMigrationDialogShownSuffix[] = "DialogShown";
 
@@ -174,6 +175,14 @@ void SkyVaultMigrationWriteAccessErrorHistogram(bool value) {
   base::UmaHistogramBoolean(GetHistogramName(kMigrationWriteAccessErrorSuffix,
                                              UploadTrigger::kMigration),
                             value);
+}
+
+void SkyVaultMigrationUploadErrorHistogram(CloudProvider provider,
+                                           MigrationUploadError error) {
+  base::UmaHistogramEnumeration(
+      GetHistogramName(kMigrationUploadErrorSuffix, UploadTrigger::kMigration,
+                       provider),
+      error);
 }
 
 void SkyVaultMigrationDialogActionHistogram(CloudProvider provider,

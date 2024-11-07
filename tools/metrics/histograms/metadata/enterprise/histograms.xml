@@ -3051,6 +3051,7 @@ chromium-metrics-reviews@google.com.
     Records user interactions with the migration dialog displayed 24 hours
     before the scheduled migration of local files to {CloudProvider}.
   </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.DialogShown"
@@ -3063,6 +3064,7 @@ chromium-metrics-reviews@google.com.
     value of &quot;false&quot; indicates the dialog was not shown, typically
     because a previous dialog was already displayed.
   </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Enabled"
@@ -3110,6 +3112,17 @@ chromium-metrics-reviews@google.com.
     Recorded when SkyVault migration of local files to {CloudProvider} is
     stopped due to policy update to allow local storage, disable migration, or
     change the target cloud provider.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.UploadError"
+    enum="EnterpriseSkyVaultMigrationUploadError" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Records upload errors that occur during SkyVault migration of local files to
+    {CloudProvider}.
   </summary>
   <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
 </histogram>

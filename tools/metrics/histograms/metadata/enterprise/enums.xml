@@ -2357,6 +2357,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:StateErrorContext) -->
 
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationUploadError) -->
+
+<enum name="EnterpriseSkyVaultMigrationUploadError">
+  <int value="0" label="Unexpected error"/>
+  <int value="1" label="Service unavailable"/>
+  <int value="2" label="Google Drive create folder failed"/>
+  <int value="3" label="Google Drive sync failed"/>
+  <int value="4" label="Cloud quota full"/>
+  <int value="5" label="File not found"/>
+  <int value="6" label="OneDrive invalid URL"/>
+  <int value="7" label="Generic copy failed error"/>
+  <int value="8" label="Delete failed"/>
+  <int value="9" label="OneDrive authentication required"/>
+  <int value="10" label="Generic move failed error"/>
+  <int value="11" label="Cancelled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:MigrationUploadError) -->
+
 <enum name="EnterpriseUserInfoFetchStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failed with a network error"/>

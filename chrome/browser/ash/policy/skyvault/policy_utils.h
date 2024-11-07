@@ -31,6 +31,10 @@ enum class CloudProvider {
 };
 
 // Categories of errors that can occur during the file upload process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MigrationUploadError)
 enum class MigrationUploadError {
   kUnexpectedError = 0,     // An unexpected error occurred, e.g. no profile.
   kServiceUnavailable = 1,  // The cloud provider is not accessible.
@@ -44,7 +48,9 @@ enum class MigrationUploadError {
   kAuthRequired = 9,        // OneDrive reauthentication required.
   kMoveFailed = 10,         // Generic catch-all move error.
   kCancelled = 11,          // Upload explicitly cancelled.
+  kMaxValue = kCancelled,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSkyVaultMigrationUploadError)
 
 // The event or action that triggers an upload to the cloud.
 enum class UploadTrigger {

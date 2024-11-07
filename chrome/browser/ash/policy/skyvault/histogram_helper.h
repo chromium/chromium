@@ -31,6 +31,8 @@ void SkyVaultMigrationWrongStateHistogram(CloudProvider provider,
                                           State state);
 void SkyVaultMigrationFailedHistogram(CloudProvider provider, bool value);
 void SkyVaultMigrationWriteAccessErrorHistogram(bool value);
+void SkyVaultMigrationUploadErrorHistogram(CloudProvider provider,
+                                           MigrationUploadError error);
 
 // Helper functions to log UMA stats on migration dialog interactions.
 void SkyVaultMigrationDialogActionHistogram(CloudProvider provider,
