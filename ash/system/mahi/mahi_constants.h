@@ -51,6 +51,7 @@ enum ViewId {
   kQuestionAnswerErrorImage,
   kQuestionAnswerErrorLabel,
   kInfoSparkIcon,
+  kSummaryElucidationIndicator,
 };
 
 // The size of the icon that appears in the panel's source row.

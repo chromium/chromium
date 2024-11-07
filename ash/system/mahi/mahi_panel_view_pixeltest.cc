@@ -125,7 +125,7 @@ TEST_F(MahiPanelViewPixelTest, MainPanel) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "panel_view", /*revision_number=*/8, panel_view()));
+      "panel_view", /*revision_number=*/9, panel_view()));
 }
 
 TEST_F(MahiPanelViewPixelTest, ContentSourceButton) {
@@ -156,7 +156,7 @@ TEST_F(MahiPanelViewPixelTest, SummaryView) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "summary_view", /*revision_number=*/5,
+      "summary_view", /*revision_number=*/6,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
@@ -173,7 +173,7 @@ TEST_F(MahiPanelViewPixelTest, PanelWithoutFeedbackButtons) {
   RecreatePanelWidget();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "scroll_view", /*revision_number=*/1,
+      "scroll_view", /*revision_number=*/2,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -257,7 +257,7 @@ TEST_F(MahiPanelViewPixelTest, SummaryViewScrollToBottom) {
   ScrollToBottom();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "summary_view_bottom", /*revision_number=*/4,
+      "summary_view_bottom", /*revision_number=*/5,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

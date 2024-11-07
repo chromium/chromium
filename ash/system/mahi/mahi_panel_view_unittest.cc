@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -286,8 +287,9 @@ class MahiPanelViewTest : public AshTestBase {
   MockNewWindowDelegate new_window_delegate_;
 };
 
-// Checks that the summary text is set correctly in ctor with different texts.
-TEST_F(MahiPanelViewTest, SummaryText) {
+// Checks that the summary text is set correctly in ctor with different texts,
+// and the indicator label is set to properly, too.
+TEST_F(MahiPanelViewTest, SummaryTextAndIndicatorLabel) {
   const std::u16string summary_text1(u"test summary text 1");
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([&summary_text1](
@@ -298,7 +300,13 @@ TEST_F(MahiPanelViewTest, SummaryText) {
   MahiPanelView mahi_view1(ui_controller());
   const auto* const summary_label1 = views::AsViewClass<views::Label>(
       mahi_view1.GetViewByID(mahi_constants::ViewId::kSummaryLabel));
+  const auto* const indicator_label =
+      views::AsViewClass<views::Label>(mahi_view1.GetViewByID(
+          mahi_constants::ViewId::kSummaryElucidationIndicator));
   EXPECT_EQ(summary_text1, summary_label1->GetText());
+  EXPECT_TRUE(indicator_label->GetVisible());
+  EXPECT_EQ(indicator_label->GetText(),
+            l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_INDICATOR_LABEL));
 
   const std::u16string summary_text2(u"test summary text 2");
   ON_CALL(mock_mahi_manager(), GetSummary)
@@ -316,6 +324,32 @@ TEST_F(MahiPanelViewTest, SummaryText) {
   EXPECT_TRUE(summary_label2->GetMultiLine());
   EXPECT_EQ(summary_label2->GetHorizontalAlignment(),
             gfx::HorizontalAlignment::ALIGN_LEFT);
+}
+
+// Checks that the text is set correctly in ctor with elucidation result when
+// the ui controller has `elucidation_in_use_ = true`, and the indicator label
+// is set properly, too.
+TEST_F(MahiPanelViewTest, SimplifiedTextAndIndicatorLabel) {
+  const std::u16string simplified_text(u"test simplified text");
+  ON_CALL(mock_mahi_manager(), GetElucidation)
+      .WillByDefault(
+          [&simplified_text](
+              chromeos::MahiManager::MahiElucidationCallback callback) {
+            std::move(callback).Run(simplified_text,
+                                    MahiResponseStatus::kSuccess);
+          });
+
+  ui_controller()->set_elucidation_in_use_for_testing(true);
+  MahiPanelView mahi_view(ui_controller());
+  const auto* const result_label = views::AsViewClass<views::Label>(
+      mahi_view.GetViewByID(mahi_constants::ViewId::kSummaryLabel));
+  const auto* const indicator_label =
+      views::AsViewClass<views::Label>(mahi_view.GetViewByID(
+          mahi_constants::ViewId::kSummaryElucidationIndicator));
+  EXPECT_EQ(simplified_text, result_label->GetText());
+  EXPECT_TRUE(indicator_label->GetVisible());
+  EXPECT_EQ(indicator_label->GetText(),
+            l10n_util::GetStringUTF16(IDS_MAHI_SIMPLIFY_INDICATOR_LABEL));
 }
 
 TEST_F(MahiPanelViewTest, ThumbsUpFeedbackButton) {

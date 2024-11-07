@@ -430,11 +430,17 @@
       <message name="IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT" desc="The text label for the summarize button inside the Mahi menu">
         Summarize
       </message>
+      <message name="IDS_MAHI_SUMMARIZE_INDICATOR_LABEL" desc="The text label that indicates the result is a summary">
+        Summary
+      </message>
       <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP" desc="The tooltip of summary button.">
         Click to summarize the webpage/PDF file
       </message>
       <message name="IDS_MAHI_SIMPLIFY_BUTTON_LABEL_TEXT" desc="The text label for the simplify button inside the Mahi menu">
         Simplify
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_INDICATOR_LABEL" desc="The text label that indicates the result is a simplication">
+        Simplified text
       </message>
       <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_ENABLED" desc="The tooltip of the simplify button when it's enabled">
         Click to simplify the selected text

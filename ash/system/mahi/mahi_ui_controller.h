@@ -139,6 +139,10 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
 
   views::Widget* mahi_panel_widget() { return mahi_panel_widget_.get(); }
 
+  void set_elucidation_in_use_for_testing(bool elucidation_in_use) {
+    elucidation_in_use_ = elucidation_in_use;
+  }
+
  private:
   void HandleError(const MahiUiError& error);
 
