@@ -205,6 +205,13 @@ source_set("views_examples_proc") {
     deps += [ "//build/win:default_exe_manifest" ]
   }
 
+  if (is_mac) {
+    sources += [
+      "examples_main_proc_mac_parts.h",
+      "examples_main_proc_mac_parts.mm",
+    ]
+  }
+
   if (use_aura) {
     deps += [
       "//ui/aura",

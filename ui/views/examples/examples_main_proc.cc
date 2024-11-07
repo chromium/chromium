@@ -68,6 +68,10 @@
 #include "ui/views/examples/examples_skia_gold_pixel_diff.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/examples/examples_main_proc_mac_parts.h"
+#endif
+
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -82,6 +86,10 @@ bool g_initialized_once = false;
 ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
 #if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer;
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  ExamplesMainProcMacParts();
 #endif
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
