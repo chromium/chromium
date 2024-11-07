@@ -553,60 +553,6 @@ namespace {
 
 // Deprecated 10/2023.
 const char kSyncRequested[] = "sync.requested";
-const char kDownloadLastCompleteTime[] = "download.last_complete_time";
-
-// Deprecated 10/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kLastSuccessfulDomainPref[] = "android_sms.last_successful_domain";
-const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
-const char kAudioVolumePercent[] = "settings.audio.volume_percent";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 10/2023.
-#if BUILDFLAG(IS_CHROMEOS)
-const char kSupportedLinksAppPrefsKey[] = "supported_links_infobar.apps";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Deprecated 10/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kNightLightCachedLatitude[] = "ash.night_light.cached_latitude";
-constexpr char kNightLightCachedLongitude[] =
-    "ash.night_light.cached_longitude";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 11/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kUserGeolocationAllowed[] = "ash.user.geolocation_allowed";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 11/2023.
-const char kPrivacySandboxAntiAbuseInitialized[] =
-    "privacy_sandbox.anti_abuse_initialized";
-
-// Deprecated 11/2023.
-constexpr char kWebRTCAllowLegacyTLSProtocols[] =
-    "webrtc.allow_legacy_tls_protocols";
-
-// Deprecated 11/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kSystemTrayExpanded[] = "ash.system_tray.expanded";
-#endif
-
-// Deprecated 11/2023.
-constexpr char kPasswordChangeSuccessTrackerFlows[] =
-    "password_manager.password_change_success_tracker.flows";
-constexpr char kPasswordChangeSuccessTrackerVersion[] =
-    "password_manager.password_change_success_tracker.version";
-
-// Deprecated 11/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kImageSearchPrivacyNotice[] =
-    "ash.launcher.image_search_privacy_notice";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 11/2023.
-constexpr char kWebAndAppActivityEnabledForShopping[] =
-    "web_and_app_activity_enabled_for_shopping";
 
 // Deprecated 12/2023.
 #if BUILDFLAG(IS_ANDROID)
@@ -1167,7 +1113,7 @@ constexpr char kRestoreLastLockScreenNote[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 11/2023.
+  // Deprecated 12/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kIsolatedWebAppsEnabled, false);
 #endif
@@ -1281,53 +1227,6 @@ void RegisterProfilePrefsForMigration(
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
   // Deprecated 10/2023.
   registry->RegisterBooleanPref(kSyncRequested, false);
-
-  // Deprecated 10/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterStringPref(kLastSuccessfulDomainPref, std::string());
-  registry->RegisterBooleanPref(kShouldAttemptReenable, true);
-  registry->RegisterDoublePref(kAudioVolumePercent, 0);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterTimePref(kDownloadLastCompleteTime, base::Time());
-
-// Deprecated 10/2023.
-#if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterDictionaryPref(kSupportedLinksAppPrefsKey);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Deprecated 10/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterDoublePref(kNightLightCachedLatitude, 0.0);
-  registry->RegisterDoublePref(kNightLightCachedLongitude, 0.0);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Deprecated 11/2023.
-  registry->RegisterBooleanPref(kPrivacySandboxAntiAbuseInitialized, false);
-
-  // Deprecated 11/2023.
-  registry->RegisterBooleanPref(kWebRTCAllowLegacyTLSProtocols, false);
-
-// Deprecated 11/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kSystemTrayExpanded, true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 11/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kUserGeolocationAllowed, true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Deprecated 11/2023.
-  registry->RegisterListPref(kPasswordChangeSuccessTrackerFlows);
-  registry->RegisterIntegerPref(kPasswordChangeSuccessTrackerVersion, 0);
-
-  // Deprecated 11/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterDictionaryPref(kImageSearchPrivacyNotice);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Deprecated 11/2023.
-  registry->RegisterBooleanPref(kWebAndAppActivityEnabledForShopping, true);
 
   // Deprecated 12/2023.
 #if BUILDFLAG(IS_ANDROID)
@@ -2473,7 +2372,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-// Added 11/2023.
+  // Added 12/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kIsolatedWebAppsEnabled);
 #endif
@@ -2619,46 +2518,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 10/2023.
   ClearSyncRequestedPrefAndMaybeMigrate(profile_prefs);
 
-// Added 10/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_prefs->ClearPref(kLastSuccessfulDomainPref);
-  profile_prefs->ClearPref(kShouldAttemptReenable);
-  profile_prefs->ClearPref(kAudioVolumePercent);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 10/2023.
-#if BUILDFLAG(IS_CHROMEOS)
-  profile_prefs->ClearPref(kSupportedLinksAppPrefsKey);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 10/2023.
-  profile_prefs->ClearPref(kNightLightCachedLatitude);
-  profile_prefs->ClearPref(kNightLightCachedLongitude);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 11/2023.
-  profile_prefs->ClearPref(kPrivacySandboxAntiAbuseInitialized);
-
-  // Added 11/2023.
-  profile_prefs->ClearPref(kWebRTCAllowLegacyTLSProtocols);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 11/2023.
-  profile_prefs->ClearPref(kSystemTrayExpanded);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 11/2023.
-  profile_prefs->ClearPref(kUserGeolocationAllowed);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 11/2023.
-  password_manager::features_util::MigrateOptInPrefToSyncSelectedTypes(
-      profile_prefs);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
   // Added 11/2023, but DO NOT REMOVE after the usual year!
   // TODO(crbug.com/40268177): The pref kPasswordsUseUPMLocalAndSeparateStores
@@ -2670,18 +2529,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   password_manager_android_util::SetUsesSplitStoresAndUPMForLocal(profile_prefs,
                                                                   profile_path);
 #endif
-
-  // Added 11/2023.
-  profile_prefs->ClearPref(kPasswordChangeSuccessTrackerFlows);
-  profile_prefs->ClearPref(kPasswordChangeSuccessTrackerVersion);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 11/2023.
-  profile_prefs->ClearPref(kImageSearchPrivacyNotice);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 11/2023.
-  profile_prefs->ClearPref(kWebAndAppActivityEnabledForShopping);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Added 12/2023.
