@@ -723,7 +723,7 @@ class ArchiveBuild(abc.ABC):
       raise BisectException(f"chromedriver is not supported on {self.platform}")
     return '%s/*/%s' % (tempdir, self.chromedriver_binary_name)
 
-  def _run(self, runcommand, cwd=None, shell=False):
+  def _run(self, runcommand, cwd=None, shell=False, print_when_error=True):
     # is_verbos is a global variable.
     if is_verbose:
       print(('Running ' + str(runcommand)))
@@ -734,8 +734,10 @@ class ArchiveBuild(abc.ABC):
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
     (stdout, stderr) = subproc.communicate()
-    if is_verbose:
-      print(f'retcode:{subproc.returncode}\nstdout:\n')
+    if print_when_error and subproc.returncode:
+      print('command: ' + str(runcommand))
+    if is_verbose or (print_when_error and subproc.returncode):
+      print(f'retcode: {subproc.returncode}\nstdout:\n')
       sys.stdout.buffer.write(stdout)
       sys.stdout.flush()
       print('stderr:\n')
@@ -1966,7 +1968,7 @@ def GetRevisionFromMilestone(milestone):
   response = urllib.request.urlopen(MILESTONES_URL % milestone)
   milestones = json.loads(response.read())
   for m in milestones:
-    if m['milestone'] == milestone:
+    if m['milestone'] == milestone and m.get('chromium_main_branch_position'):
       return m['chromium_main_branch_position']
   raise BisectException(f'Can not find revision for milestone {milestone}')
 
