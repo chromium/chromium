@@ -663,6 +663,24 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       } else if (extension->manifest_version() == 3) {
         manifest_version_counts->version_3_count++;
       }
+      // Report the days since the extension was installed.
+      base::Time time_since_install =
+          extension_prefs_->GetFirstInstallTime(extension->id());
+      if (!time_since_install.is_null()) {
+        int days_since_install =
+            (base::Time::Now() - time_since_install).InDays();
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.DaysSinceInstall",
+                                    days_since_install, 0, 5000, 91);
+      }
+      // Report the days since the extension was last updated.
+      base::Time time_since_last_update =
+          extension_prefs_->GetLastUpdateTime(extension->id());
+      if (!time_since_last_update.is_null()) {
+        int days_since_updated =
+            (base::Time::Now() - time_since_last_update).InDays();
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.DaysSinceLastUpdate",
+                                    days_since_updated, 0, 5000, 91);
+      }
     }
 
     // From now on, don't count component extensions, since they are only

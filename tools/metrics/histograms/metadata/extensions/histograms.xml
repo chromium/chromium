@@ -992,6 +992,28 @@ This is emitted for two scenarios when a worker may be unregistered:
   </token>
 </histogram>
 
+<histogram name="Extensions.DaysSinceInstall" units="days"
+    expires_after="2025-10-01">
+  <owner>psarouthakis@google.com</owner>
+  <owner>anunoy@chromium.org</owner>
+  <summary>
+    How many days ago an extension was first installed. Recorded during the
+    InstalledLoader::RecordExtensionsMetrics function. Buckets are every 91 days
+    which approximately corresponds to a fourth of a year.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.DaysSinceLastUpdate" units="days"
+    expires_after="2025-10-01">
+  <owner>psarouthakis@google.com</owner>
+  <owner>anunoy@chromium.org</owner>
+  <summary>
+    How many days ago an extension was updated. Recorded during the
+    InstalledLoader::RecordExtensionsMetrics function. Buckets are every 91 days
+    which approximately corresponds to a fourth of a year.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Debugger.UserIsInDeveloperMode"
     enum="InDeveloperMode" expires_after="2023-01-15">
   <owner>ghazale@chromium.org</owner>
