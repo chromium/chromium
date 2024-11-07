@@ -234,16 +234,6 @@ std::unordered_map<std::string, ExpectedHeaderInfo> GetExpectedHeaderInfo() {
   return expected_headers;
 }
 
-std::pair<base::debug::CrashKeyString*, base::debug::CrashKeyString*>
-AllocateCrashKeyString(const std::string& name) {
-  return std::make_pair(
-      base::debug::AllocateCrashKeyString(base::StrCat({name, "-name"}).c_str(),
-                                          base::debug::CrashKeySize::Size256),
-      base::debug::AllocateCrashKeyString(
-          base::StrCat({name, "-value"}).c_str(),
-          base::debug::CrashKeySize::Size256));
-}
-
 // Check the Content-Security-Policy header is expected, except for the `nonce`.
 bool CheckContentSecurityPolicyHeaderConsistency(
     const std::string header_value) {
@@ -693,6 +683,14 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     return;
   }
 
+#define SET_CRASH_KEYS(key_name, header_name, value)                         \
+  static auto* const header_crash_key = base::debug::AllocateCrashKeyString( \
+      key_name "-name", base::debug::CrashKeySize::Size256);                 \
+  base::debug::SetCrashKeyString(header_crash_key, header_name);             \
+  static auto* const value_crash_key = base::debug::AllocateCrashKeyString(  \
+      key_name "-name", base::debug::CrashKeySize::Size256);                 \
+  base::debug::SetCrashKeyString(value_crash_key, value);
+
   std::unordered_map<std::string, ExpectedHeaderInfo> expected_headers =
       GetExpectedHeaderInfo();
   bool set_crash_key = false;
@@ -702,10 +700,7 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
   while (response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
     if (!expected_headers.contains(name)) {
       // GWSHeaderNotExpected: The header is not in the expected header list.
-      static const auto crash_keys =
-          AllocateCrashKeyString("GWSHeaderNotExpected");
-      base::debug::SetCrashKeyString(crash_keys.first, name);
-      base::debug::SetCrashKeyString(crash_keys.second, value);
+      SET_CRASH_KEYS("GWSHeaderNotExpected", name, value);
       set_crash_key = true;
       continue;
     }
@@ -713,10 +708,7 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
       // Check content-security-policy separately. The CSP value should be
       // consistent except for the `nonce` value.
       if (!CheckContentSecurityPolicyHeaderConsistency(value)) {
-        static const auto crash_keys =
-            AllocateCrashKeyString("GWSHeaderValueMismatched");
-        base::debug::SetCrashKeyString(crash_keys.first, name);
-        base::debug::SetCrashKeyString(crash_keys.second, value);
+        SET_CRASH_KEYS("GWSHeaderValueMismatched", name, value);
         set_crash_key = true;
       }
     }
@@ -725,10 +717,7 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     if (!expected->allow_value_mismatch && !expected->values.contains(value)) {
       // GWSHeaderValueMismatched: The header is in the expected header list,
       // but the value is different or an inconsistent value is not allowed.
-      static const auto crash_keys =
-          AllocateCrashKeyString("GWSHeaderValueMismatched");
-      base::debug::SetCrashKeyString(crash_keys.first, name);
-      base::debug::SetCrashKeyString(crash_keys.second, value);
+      SET_CRASH_KEYS("GWSHeaderValueMismatched", name, value);
       set_crash_key = true;
       continue;
     }
@@ -740,9 +729,7 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     }
     // GWSHeaderNotActuallyExist: The expected header does not exist in the
     // actual headers.
-    static const auto crash_keys =
-        AllocateCrashKeyString("GWSHeaderNotActuallyExist");
-    base::debug::SetCrashKeyString(crash_keys.first, header.first);
+    SET_CRASH_KEYS("GWSHeaderNotActuallyExist", header.first, "");
     set_crash_key = true;
   }
 
