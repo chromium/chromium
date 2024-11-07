@@ -3168,7 +3168,7 @@
       status: "experimental",
     },
     {
-      name: "PartitionVisitedLinkDatabase",
+      name: "PartitionVisitedLinkDatabaseWithSelfLinks",
       status: {"iOS": "", "default": "experimental"},
     },
     // This is to add an option to enable the Reveal button on password inputs while waiting ::reveal gets standardized.

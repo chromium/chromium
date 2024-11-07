@@ -11814,6 +11814,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPartitionVisitedLinkDatabaseDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPartitionVisitedLinkDatabase)},
 
+    {"partition-visited-link-database-with-self-links",
+     flag_descriptions::kPartitionVisitedLinkDatabaseWithSelfLinksName,
+     flag_descriptions::kPartitionVisitedLinkDatabaseWithSelfLinksDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)},
+
     {"autofill-disable-local-card-migration",
      flag_descriptions::kAutofillDisableLocalCardMigrationName,
      flag_descriptions::kAutofillDisableLocalCardMigrationDescription,

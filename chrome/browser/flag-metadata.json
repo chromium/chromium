@@ -6852,7 +6852,12 @@
   },
   {
     "name": "partition-visited-link-database",
-    "owners": [ "janiceliu@chromium.org", "kyraseevers@chromium.org"],
+    "owners": ["janiceliu@chromium.org", "kyraseevers@chromium.org"],
+    "expiry_milestone": 142
+  },
+  {
+    "name": "partition-visited-link-database-with-self-links",
+    "owners": ["janiceliu@chromium.org", "kyraseevers@chromium.org"],
     "expiry_milestone": 142
   },
   {

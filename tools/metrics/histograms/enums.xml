@@ -15593,6 +15593,8 @@ from previous Chrome versions.
   <int value="-1880683127" label="UnrestrictedUsb:disabled"/>
   <int value="-1880633355" label="CaptureModeAudioMixing:disabled"/>
   <int value="-1880355454" label="disable-topchrome-md"/>
+  <int value="-1879979876"
+      label="PartitionVisitedLinkDatabaseWithSelfLinks:disabled"/>
   <int value="-1879877238" label="disable-cancel-all-touches"/>
   <int value="-1878958319" label="ScrollableTabStripButtons:disabled"/>
   <int value="-1878244826" label="LensOverlayTranslateButton:disabled"/>
@@ -22415,6 +22417,8 @@ from previous Chrome versions.
   <int value="889816966"
       label="TrustedWebActivityNotificationPermissionDelegation:disabled"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
+  <int value="889887361"
+      label="PartitionVisitedLinkDatabaseWithSelfLinks:enabled"/>
   <int value="890560037" label="always-enable-hdcp"/>
   <int value="891150132"
       label="UpdatedSupervisedUserExtensionApprovalStrings:enabled"/>
