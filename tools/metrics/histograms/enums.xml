@@ -10865,6 +10865,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5168" label="CSSColor_SpaceHwb"/>
   <int value="5169" label="CSSRoundModRemFunctions"/>
   <int value="5170" label="CSSTrigFunctions"/>
+  <int value="5171" label="CSSCalcConstants"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33845,6 +33846,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="180" label="TextEmphasis"/>
   <int value="181" label="TextWrap"/>
   <int value="182" label="TextWrapStyle"/>
+  <int value="183" label="CalcConstants"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

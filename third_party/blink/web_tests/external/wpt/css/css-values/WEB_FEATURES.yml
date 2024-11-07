@@ -32,3 +32,6 @@ features:
   files:
   - acos-asin-atan-atan2-*
   - sin-cos-tan-*
+- name: calc-constants
+  files:
+  - calc-infinity-*
