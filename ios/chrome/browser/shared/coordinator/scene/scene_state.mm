@@ -100,6 +100,14 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return self.agents;
 }
 
+- (void)setRootViewController:(UIViewController*)rootViewController
+            makeKeyAndVisible:(BOOL)makeKeyAndVisible {
+  self.window.rootViewController = rootViewController;
+  if (makeKeyAndVisible) {
+    [self.window makeKeyAndVisible];
+  }
+}
+
 #pragma mark - Setters & Getters.
 
 - (UIWindow*)window {
@@ -110,6 +118,10 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
     }
   }
   return mainWindow;
+}
+
+- (UIViewController*)rootViewController {
+  return [self.window rootViewController];
 }
 
 - (void)setScene:(UIWindowScene*)scene {
