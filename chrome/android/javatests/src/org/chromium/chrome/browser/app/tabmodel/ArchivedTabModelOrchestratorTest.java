@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -415,5 +416,42 @@ public class ArchivedTabModelOrchestratorTest {
                                 withEffectiveVisibility(Visibility.VISIBLE)))
                 .perform(click());
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testOpenArchivedTabFromHubSearch_Incognito() {
+        finishLoading();
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH_2), /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+        runOnUiThreadBlocking(
+                () -> {
+                    doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
+                    mOrchestrator.getTabArchiver().setClockForTesting(mClock);
+                    mRegularTabModel.getTabAt(0).setTimestampMillis(0L);
+                    mRegularTabModel.getTabAt(1).setTimestampMillis(0L);
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+                    mOrchestrator.resetBeginDeclutterForTesting();
+                    mOrchestrator.maybeBeginDeclutter();
+                });
+
+        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH_2), /* incognito= */ true);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        SearchActivity searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+
+        onView(allOf(withId(R.id.line_2), withText(containsString(TEST_PATH))))
+                .check(doesNotExist());
     }
 }

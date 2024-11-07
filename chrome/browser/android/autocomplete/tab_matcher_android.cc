@@ -157,7 +157,8 @@ TabMatcherAndroid::GetOpenAndroidTabs(const AutocompleteInput* input) const {
 
   CHECK(input);
   if (input->current_page_classification() ==
-      metrics::OmniboxEventProto_PageClassification_ANDROID_HUB) {
+          metrics::OmniboxEventProto_PageClassification_ANDROID_HUB &&
+      profile_->IsRegularProfile()) {
     TabModel* archived_tab_model = TabModelList::GetArchivedTabModel();
     if (archived_tab_model) {
       tab_models.push_back(archived_tab_model);
