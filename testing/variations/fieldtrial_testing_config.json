@@ -25083,43 +25083,6 @@
             ]
         }
     ],
-    "V8WasmTurboshaft": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebAssemblyTurboshaft",
-                        "WebAssemblyTurboshaftInstructionSelection"
-                    ]
-                },
-                {
-                    "name": "EnabledNoInstructionSelection",
-                    "enable_features": [
-                        "WebAssemblyTurboshaft"
-                    ],
-                    "disable_features": [
-                        "WebAssemblyTurboshaftInstructionSelection"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "WebAssemblyTurboshaft",
-                        "WebAssemblyTurboshaftInstructionSelection"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8ZeroUnusedMemory": [
         {
             "platforms": [
