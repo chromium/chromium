@@ -4,29 +4,20 @@
 
 #include "ui/ozone/common/features.h"
 
-#include "build/chromeos_buildflags.h"
-
 namespace ui {
 
-// Overlay delegation is required for delegated compositing.
+// Overlay delegation is required for delegated compositing. This doesn't enable
+// delegated compositing, but rather allows usage of subsurfaces for delegation.
 BASE_FEATURE(kWaylandOverlayDelegation,
              "WaylandOverlayDelegation",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Controls whether support for the fractional_scale_v1 protocol should be
 // enabled.
 BASE_FEATURE(kWaylandFractionalScaleV1,
              "WaylandFractionalScaleV1",
-#if BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Controls whether support for the xdg-toplevel-drag protocol should be
@@ -34,15 +25,11 @@ BASE_FEATURE(kWaylandFractionalScaleV1,
 // protocol is supported.
 BASE_FEATURE(kWaylandXdgToplevelDrag,
              "WaylandXdgToplevelDrag",
-#if BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // This debug/dev flag pretty-prints DRM modeset configuration logs for ease
-// of reading. For more information, see: http://b/233006802
+// of reading. For more information, see: http://crbug.com/233006802
 BASE_FEATURE(kPrettyPrintDrmModesetConfigLogs,
              "PrettyPrintDrmModesetConfigLogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
