@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <link rel=author href="mailto:wjmaclean@chromium.org">
+  <link rel=match href="translated-oopif-scrollbar-horizontal-expected.html">
+  <meta name="fuzzy" content="maxDifference=0-255; totalPixels=0-1500">
+  <body>
+    <h1>Mainframe with text and an out-of-process iframe</h1>
+    This is some mainframe text.<p>
+    <!--  use of localhost below will make the iframe an OOPIF -->
+    <iframe style="transform: translate(0.5px, 0.5px)"
+            src="http://localhost:8080/html/resources/scaled-oopif-scrollbar-horizontal.html"></iframe>
+  </body>
+</html>

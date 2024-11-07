@@ -58,6 +58,9 @@ extern const char kAcceleratedVideoEncodeDescription[];
 extern const char kAiSettingsPageRefreshName[];
 extern const char kAiSettingsPageRefreshDescription[];
 
+extern const char kAlignSurfaceLayerImplToPixelGridName[];
+extern const char kAlignSurfaceLayerImplToPixelGridDescription[];
+
 extern const char kAlignWakeUpsName[];
 extern const char kAlignWakeUpsDescription[];
 

@@ -12,6 +12,13 @@
 
 namespace features {
 
+// When enabled, this forces composited textures for SurfaceLayerImpls to be
+// aligned to the pixel grid. Lack of alignment can lead to blur, noticeably so
+// in text. https://crbug.com/359279545
+BASE_FEATURE(kAlignSurfaceLayerImplToPixelGrid,
+             "AlignSurfaceLayerImplToPixelGrid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses the Resume method instead of the Catch-up method for animated images.
 // - Catch-up behavior tries to keep animated images in pace with wall-clock
 //   time. This might require decoding several animation frames if the

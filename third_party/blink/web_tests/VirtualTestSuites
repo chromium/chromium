@@ -51,6 +51,24 @@
     "expires": "Nov 1, 2024"
   },
   {
+    "prefix": "align-surface-layer",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "compositing/video/video-subpixel.html",
+      "http/tests/html/scaled-oopif-text-not-blurry.html",
+      "http/tests/html/scaled-oopif-scrollbar-both.html",
+      "http/tests/html/scaled-oopif-scrollbar-vertical.html",
+      "http/tests/html/scaled-oopif-scrollbar-horizontal.html",
+      "http/tests/html/translated-oopif-text-not-blurry.html",
+      "http/tests/html/translated-oopif-scrollbar-both.html",
+      "http/tests/html/translated-oopif-scrollbar-vertical.html",
+      "http/tests/html/translated-oopif-scrollbar-horizontal.html"
+    ],
+    "args": ["--enable-features=AlignSurfaceLayerImplToPixelGrid"],
+    "owners": ["wjmaclean@chromium.org", "pdr@chromium.org"],
+    "expires": "Mar 1, 2025"
+  },
+  {
     "prefix": "pna-permission",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/private-network-access"],

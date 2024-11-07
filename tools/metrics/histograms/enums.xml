@@ -19648,6 +19648,7 @@ from previous Chrome versions.
   <int value="-269966631" label="UnifiedPasswordManagerErrorMessages:enabled"/>
   <int value="-269440655"
       label="AutofillDownstreamCvcPromptUseGooglePayLogo:disabled"/>
+  <int value="-269321347" label="AlignSurfaceLayerImplToPixelGrid:enabled"/>
   <int value="-269227049" label="PersistentQuotaIsTemporaryQuota:enabled"/>
   <int value="-268897347" label="DisableCameraFrameRotationAtSource:disabled"/>
   <int value="-268549184"
@@ -23582,6 +23583,7 @@ from previous Chrome versions.
   <int value="1343713259" label="ArcPrintSpoolerExperiment:disabled"/>
   <int value="1344833841" label="ImeThread:enabled"/>
   <int value="1345192233" label="VaapiVideoDecoder:enabled"/>
+  <int value="1345482545" label="AlignSurfaceLayerImplToPixelGrid:disabled"/>
   <int value="1346018846"
       label="ForceSupervisedUserReauthenticationForBlockedSites:enabled"/>
   <int value="1346994602" label="SyncPseudoUSSDictionary:enabled"/>
