@@ -125,7 +125,7 @@
         <settings-subpage id="compare"
             associated-control="[[$$('#compareRowV2')]]"
             page-title="$i18n{aiCompareLabel}">
-          <settings-ai-compare-subpage></settings-ai-compare-subpage>
+          <settings-ai-compare-subpage prefs="{{prefs}}"></settings-ai-compare-subpage>
         </settings-subpage>
       </template>
     </template>
@@ -146,7 +146,7 @@
         <settings-subpage id="tabOrganization"
             associated-control="[[$$('#tabOrganizationRowV2')]]"
             page-title="$i18n{tabOrganizationSettingLabel}">
-          <settings-ai-tab-organization-subpage>
+          <settings-ai-tab-organization-subpage prefs="{{prefs}}">
           </settings-ai-tab-organization-subpage>
         </settings-subpage>
       </template>

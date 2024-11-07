@@ -77,7 +77,7 @@
             hidden="[[!isAnswersFeatureEnabled_]]">
           $i18n{historySearchWithAnswersSettingSublabelV2}$i18n{sentenceEnd}
         </span>
-        <a href="[[learnMoreUrl_]]"
+        <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
             aria-label="$i18n{historySearchLearnMoreA11yLabel}"
             on-click="onLearnMoreClick_" target="_blank">
           $i18n{learnMore}
@@ -86,7 +86,7 @@
     </cr-link-row>
     <div class="separator"></div>
     <settings-toggle-button aria-label="$i18n{historySearchSettingLabel}"
-        learn-more-url="[[learnMoreUrl_]]"
+        learn-more-url="[[getLearnMoreUrl_(enterprisePref_)]]"
         learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
         pref="{{prefs.optimization_guide.history_search_setting_state}}"
         numeric-unchecked-values="[[numericUncheckedValues_]]"
@@ -134,10 +134,8 @@
           <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
           <div class="secondary">$i18n{historySearchConsiderData}</div>
         </li>
-        <li>
-          <cr-icon icon="settings20:account-box" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{aiSubpageSublabelReviewers}</div>
-        </li>
+        <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+        </settings-ai-logging-info-bullet>
         <li>
           <cr-icon icon="settings20:file-save" aria-hidden="true"></cr-icon>
           <div id="considerDataEncryptedText" class="secondary"

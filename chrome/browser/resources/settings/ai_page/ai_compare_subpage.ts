@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -12,9 +13,13 @@ import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageCompareInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
 import {getTemplate} from './ai_compare_subpage.html.js';
-import {AiPageActions} from './constants.js';
+import {getAiLearnMoreUrl} from './ai_learn_more_url_util.js';
+import {AiEnterpriseFeaturePrefName, AiPageActions} from './constants.js';
 
-export class SettingsAiCompareSubpageElement extends PolymerElement {
+const SettingsAiCompareSubpageElementBase = PrefsMixin(PolymerElement);
+
+export class SettingsAiCompareSubpageElement extends
+    SettingsAiCompareSubpageElementBase {
   static get is() {
     return 'settings-ai-compare-subpage';
   }
@@ -23,6 +28,16 @@ export class SettingsAiCompareSubpageElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      enterprisePref_: {
+        type: Object,
+        computed: `computePref(prefs.${AiEnterpriseFeaturePrefName.COMPARE})`,
+      },
+    };
+  }
+
+  private enterprisePref_: chrome.settingsPrivate.PrefObject;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
@@ -49,6 +64,12 @@ export class SettingsAiCompareSubpageElement extends PolymerElement {
     this.recordInteractionMetrics_(
         AiPageCompareInteractions.LEARN_MORE_LINK_CLICKED,
         AiPageActions.COMPARE_LEARN_MORE_CLICKED);
+  }
+
+  private getLearnMoreUrl_(): string {
+    return getAiLearnMoreUrl(
+        this.enterprisePref_, loadTimeData.getString('compareLearnMoreUrl'),
+        loadTimeData.getString('compareLearnMoreManagedUrl'));
   }
 }
 

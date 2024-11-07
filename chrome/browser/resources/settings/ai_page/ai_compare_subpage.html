@@ -8,7 +8,7 @@
     on-click="onCompareLinkoutClick_" external>
   <div slot="sub-label">
     $i18n{aiCompareSublabel}$i18n{sentenceEnd}
-    <a href="$i18n{compareLearnMoreUrl}"
+    <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
         aria-label="$i18n{aiCompareLearnMoreA11yLabel}"
         on-click="onLearnMoreClick_" target="_blank">
       $i18n{learnMore}
@@ -37,10 +37,8 @@
         <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
         <div class="secondary">$i18n{aiCompareConsiderData}</div>
       </li>
-      <li>
-        <cr-icon icon="settings20:account-box" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{aiSubpageSublabelReviewers}</div>
-      </li>
+      <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+      </settings-ai-logging-info-bullet>
       <li>
         <cr-icon icon="settings20:account-circle" aria-hidden="true">
         </cr-icon>
