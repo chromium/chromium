@@ -33842,6 +33842,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="175" label="PrefersReducedTransparency"/>
   <int value="176" label="RoundModRem"/>
   <int value="177" label="TrigFunctions"/>
+  <int value="178" label="GradientInterpolation"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

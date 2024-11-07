@@ -509,6 +509,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kNthChildOf},
           {WebFeature::kForcedColorsMediaFeature, WebDXFeature::kForcedColors},
           {WebFeature::kCSSTrigFunctions, WebDXFeature::kTrigFunctions},
+          {WebFeature::kCSSColorGradientColorSpace,
+           WebDXFeature::kGradientInterpolation},
       }};
 
   return *kMap;
