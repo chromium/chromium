@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/search_results_panel.h"
 
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_web_view.h"
@@ -37,13 +38,23 @@ namespace {
 // TODO(sophiewen): Remove hardcoded values when we get UX specs.
 inline constexpr int kPanelCornerRadius = 16;
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
-inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
-inline constexpr int kHeaderRowSpacing = 10;
+inline constexpr int kPanelPaddingSize = 16;
+inline constexpr gfx::Insets kPanelPadding = gfx::Insets(kPanelPaddingSize);
 inline constexpr int kHeaderIconSize = 20;
-inline constexpr gfx::Insets kHeaderPadding = gfx::Insets::TLBR(0, 0, 8, 0);
+inline constexpr int kSearchBoxHeight = 48;
+inline constexpr int kSearchBoxRadius = 24;
+inline constexpr int kSearchBoxImageRadius = 8;
+inline constexpr gfx::Insets kSearchBoxViewSpacing = gfx::Insets::VH(12, 0);
+inline constexpr gfx::Insets kSearchImageSpacing =
+    gfx::Insets::TLBR(8, 16, 8, 12);
+inline constexpr gfx::Insets kSearchTextfieldSpacing =
+    gfx::Insets::TLBR(14, 0, 14, 16);
+inline constexpr gfx::Insets kHeaderIconSpacing = gfx::Insets::TLBR(0, 2, 0, 8);
 
 }  // namespace
 
+// TODO: crbug.com/377764351 - Fix the textfield being too far to the left when
+// the region is very narrow (height >> width).
 // `SunfishSearchBoxView` contains an image thumbnail and a textfield.
 class SunfishSearchBoxView : public views::View,
                              public views::TextfieldController {
@@ -62,22 +73,37 @@ class SunfishSearchBoxView : public views::View,
                      .CopyAddressTo(&image_view_)
                      .SetImage(ui::ImageModel::FromVectorIcon(
                          vector_icons::kGoogleColorIcon))
+                     .SetProperty(views::kMarginsKey, kSearchImageSpacing)
                      .Build());
-    AddChildView(views::Builder<views::Textfield>()
-                     .CopyAddressTo(&textfield_)
-                     .SetController(this)
-                     .SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT)
-                     .SetPlaceholderText(kSearchBoxPlaceholderText)
-                     .SetProperty(views::kFlexBehaviorKey,
-                                  views::FlexSpecification(
-                                      views::LayoutOrientation::kHorizontal,
-                                      views::MinimumFlexSizeRule::kPreferred,
-                                      views::MaximumFlexSizeRule::kUnbounded))
-                     .SetBackgroundEnabled(false)
-                     .SetBorder(nullptr)
-                     .Build());
-    SetBackground(views::CreateThemedSolidBackground(
-        cros_tokens::kCrosSysSystemBaseElevated));
+    AddChildView(
+        views::Builder<views::Textfield>()
+            .CopyAddressTo(&textfield_)
+            .SetController(this)
+            .SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT)
+            .SetPlaceholderText(kSearchBoxPlaceholderText)
+            .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+                TypographyToken::kCrosBody2))
+            .SetProperty(views::kMarginsKey, kSearchTextfieldSpacing)
+            .SetProperty(views::kFlexBehaviorKey,
+                         views::FlexSpecification(
+                             views::LayoutOrientation::kHorizontal,
+                             views::MinimumFlexSizeRule::kPreferred,
+                             views::MaximumFlexSizeRule::kUnbounded))
+            .SetBackgroundEnabled(false)
+            .SetBorder(nullptr)
+            .Build());
+
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysSystemOnBase1, kSearchBoxRadius));
+
+    SetPreferredSize(gfx::Size(
+        capture_mode::kSearchResultsPanelWidth - 2 * kPanelPaddingSize,
+        kSearchBoxHeight));
+
+    image_view_->SetPaintToLayer();
+    image_view_->layer()->SetFillsBoundsOpaquely(false);
+    image_view_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kSearchBoxImageRadius));
   }
   SunfishSearchBoxView(const SunfishSearchBoxView&) = delete;
   SunfishSearchBoxView& operator=(const SunfishSearchBoxView&) = delete;
@@ -138,30 +164,26 @@ SearchResultsPanel::SearchResultsPanel() {
           .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
           .SetIgnoreDefaultMainAxisMargins(true)
           .SetCollapseMargins(true)
-          .SetInteriorMargin(kHeaderPadding)
-          .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
-            layout->SetDefault(views::kMarginsKey,
-                               gfx::Insets::VH(0, kHeaderRowSpacing));
-          }))
           .AddChildren(
               // Lens icon.
-              views::Builder<views::ImageView>().SetImage(
-                  ui::ImageModel::FromVectorIcon(kLensIcon, ui::kColorMenuIcon,
-                                                 kHeaderIconSize)),
+              views::Builder<views::ImageView>()
+                  .SetImage(ui::ImageModel::FromVectorIcon(
+                      kLensIcon, ui::kColorMenuIcon, kHeaderIconSize))
+                  .SetProperty(views::kMarginsKey, kHeaderIconSpacing),
               // Title.
               views::Builder<views::Label>()
                   .SetText(u"Search with Lens")
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetFontList(
                       TypographyProvider::Get()->ResolveTypographyToken(
-                          TypographyToken::kCrosButton1))
+                          TypographyToken::kCrosTitle1))
                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurface),
               // Close Button, aligned to the right by setting a
               // `FlexSpecification` with unbounded maximum flex size and
               // `LayoutAlignment::kEnd`.
               views::Builder<views::Button>(
                   IconButton::Builder()
-                      .SetType(IconButton::Type::kMediumFloating)
+                      .SetType(IconButton::Type::kSmallFloating)
                       .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
                       .SetAccessibleName(u"Close Panel")
                       .Build())
@@ -179,6 +201,7 @@ SearchResultsPanel::SearchResultsPanel() {
           .Build());
 
   search_box_view_ = AddChildView(std::make_unique<SunfishSearchBoxView>());
+  search_box_view_->SetProperty(views::kMarginsKey, kSearchBoxViewSpacing);
   search_results_view_ =
       AddChildView(CaptureModeController::Get()->CreateSearchResultsView());
   search_results_view_->SetProperty(
