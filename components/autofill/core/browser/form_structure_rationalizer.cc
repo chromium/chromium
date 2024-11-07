@@ -26,7 +26,6 @@ namespace {
 // Defines necessary types for the rationalization logic, meaning that fields of
 // `type` are only filled if at least one field of some `GetNecessaryTypesFor()`
 // is present.
-// TODO(crbug.com/40220393) Cleanup when launched.
 FieldTypeSet GetNecessaryTypesFor(FieldType type) {
   switch (type) {
     case PHONE_HOME_COUNTRY_CODE: {
