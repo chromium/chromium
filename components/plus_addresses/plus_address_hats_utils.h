@@ -14,10 +14,9 @@ namespace plus_addresses::hats {
 
 // Hats Bits data fields:
 inline constexpr char kFirstPlusAddressCreationTime[] =
-    "The time when the the user has created the first plus address on any "
-    "platform in Chrome, in seconds";
+    "Time passed since the user has created the first plus address, in seconds";
 inline constexpr char kLastPlusAddressFillingTime[] =
-    "The time the user has filled a plus address on any platform in Chrome, in "
+    "Time passed since the user has filled a plus address the last time, in "
     "seconds";
 
 std::map<std::string, std::string> GetPlusAddressHatsData(
