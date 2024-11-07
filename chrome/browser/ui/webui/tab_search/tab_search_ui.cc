@@ -153,6 +153,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"thumbsDown", IDS_TAB_ORGANIZATION_THUMBS_DOWN},
       {"thumbsUp", IDS_TAB_ORGANIZATION_THUMBS_UP},
       // Declutter UI strings
+      {"closeTabs", IDS_DECLUTTER_CLOSE_TABS},
       {"declutterCloseTabAriaLabel", IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL},
       {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
       {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},

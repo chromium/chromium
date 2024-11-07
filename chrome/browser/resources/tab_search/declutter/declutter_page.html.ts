@@ -60,7 +60,7 @@ export function getHtml(this: DeclutterPageElement) {
                                                                    ''}
       </div>
       <cr-button class="action-button" @click="${this.onCloseTabsClick_}">
-        Close tabs
+        $i18n{closeTabs}
       </cr-button>
     `}
   </div><!--_html_template_end_-->`;
