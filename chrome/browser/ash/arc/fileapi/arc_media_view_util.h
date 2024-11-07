@@ -9,12 +9,7 @@
 
 #include <string>
 
-#include "base/feature_list.h"
-
 namespace arc {
-
-// base::FeatureList feature for ARC media view.
-BASE_DECLARE_FEATURE(kMediaViewFeature);
 
 // Authority of MediaDocumentsProvider in Android.
 extern const char kMediaDocumentsProviderAuthority[];

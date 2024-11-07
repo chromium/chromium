@@ -267,8 +267,7 @@ std::unique_ptr<Volume> CreateForFuseBoxDownloads(
 }
 
 bool IsArcEnabled(Profile* profile) {
-  return base::FeatureList::IsEnabled(arc::kMediaViewFeature) &&
-         arc::IsArcAllowedForProfile(profile);
+  return arc::IsArcAllowedForProfile(profile);
 }
 
 bool IsSkyVaultV2Enabled() {
