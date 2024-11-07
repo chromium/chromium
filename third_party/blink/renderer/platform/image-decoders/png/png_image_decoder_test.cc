@@ -10,8 +10,11 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "png.h"
+#include "skia/buildflags.h"
+#include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
@@ -159,9 +162,15 @@ void CompareFrameWithExpectation(const PublicFrameInfo& expected,
   ASSERT_TRUE(frame);
 
   EXPECT_EQ(expected.duration, frame->Duration());
-  EXPECT_EQ(expected.frame_rect, frame->OriginalFrameRect());
   EXPECT_EQ(expected.disposal_method, frame->GetDisposalMethod());
-  EXPECT_EQ(expected.alpha_blend, frame->GetAlphaBlendSource());
+
+  // TODO(https://crbug.com/377542069): Enable these test assertions for
+  // Rust-based decoder, once `SkiaImageDecoderBase` propagates the relevant
+  // frame metadata.
+  if (!skia::IsRustyPngEnabled()) {
+    EXPECT_EQ(expected.frame_rect, frame->OriginalFrameRect());
+    EXPECT_EQ(expected.alpha_blend, frame->GetAlphaBlendSource());
+  }
 }
 
 // This function removes |length| bytes at |offset|, and then calls FrameCount.
@@ -233,7 +242,13 @@ void TestInvalidFctlSize(const char* png_file,
     EXPECT_EQ(expected_frame_count, decoder->FrameCount());
     EXPECT_EQ(true, decoder->Failed());
   } else {
-    ExpectStatic(decoder.get());
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  If some animated frames have an error, then other animated
+    // frames may continue to work.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    if (!skia::IsRustyPngEnabled()) {
+      ExpectStatic(decoder.get());
+    }
   }
 }
 
@@ -279,11 +294,29 @@ void TestProgressiveDecodingContinuesAfterFullData(
   EXPECT_EQ(hash_full, hash_upfront);
 }
 
-}  // Anonymous namespace
+enum class RustFeatureState { kRustEnabled, kRustDisabled };
+
+class PNGTests : public testing::TestWithParam<RustFeatureState> {
+ public:
+  PNGTests() {
+    switch (GetParam()) {
+      case RustFeatureState::kRustEnabled:
+        features_.InitAndEnableFeature(skia::kRustyPngFeature);
+        break;
+      case RustFeatureState::kRustDisabled:
+        features_.InitAndDisableFeature(skia::kRustyPngFeature);
+        break;
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+};
 
 // Animated PNG Tests
 
-TEST(AnimatedPNGTests, sizeTest) {
+using AnimatedPNGTests = PNGTests;
+TEST_P(AnimatedPNGTests, sizeTest) {
   TestSize(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png",
@@ -294,7 +327,7 @@ TEST(AnimatedPNGTests, sizeTest) {
       gfx::Size(227, 35));
 }
 
-TEST(AnimatedPNGTests, repetitionCountTest) {
+TEST_P(AnimatedPNGTests, repetitionCountTest) {
   TestRepetitionCount(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png",
@@ -308,8 +341,8 @@ TEST(AnimatedPNGTests, repetitionCountTest) {
       kAnimationNone);
 }
 
-// Test if the decoded metdata corresponds to the defined expectations
-TEST(AnimatedPNGTests, MetaDataTest) {
+// Test if the decoded metadata corresponds to the defined expectations
+TEST_P(AnimatedPNGTests, MetaDataTest) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -322,7 +355,7 @@ TEST(AnimatedPNGTests, MetaDataTest) {
   }
 }
 
-TEST(AnimatedPNGTests, EmptyFrame) {
+TEST_P(AnimatedPNGTests, EmptyFrame) {
   const char* png_file = "/images/resources/empty-frame.png";
   auto decoder = CreatePNGDecoderWithPngData(png_file);
   // Frame 0 is empty. Ensure that decoding frame 1 (which depends on frame 0)
@@ -331,12 +364,21 @@ TEST(AnimatedPNGTests, EmptyFrame) {
   EXPECT_FALSE(decoder->Failed());
 
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(1);
-  EXPECT_TRUE(decoder->Failed());
   ASSERT_NE(nullptr, frame);
   EXPECT_EQ(ImageFrame::kFrameEmpty, frame->GetStatus());
+
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    ASSERT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 2u);
+  } else {
+    ASSERT_TRUE(decoder->Failed());
+  }
 }
 
-TEST(AnimatedPNGTests, ByteByByteSizeAvailable) {
+TEST_P(AnimatedPNGTests, ByteByByteSizeAvailable) {
   TestSizeByteByByte(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png",
@@ -347,7 +389,7 @@ TEST(AnimatedPNGTests, ByteByByteSizeAvailable) {
       79u, gfx::Size(227, 35));
 }
 
-TEST(AnimatedPNGTests, ByteByByteMetaData) {
+TEST_P(AnimatedPNGTests, ByteByByteMetaData) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -358,6 +400,14 @@ TEST(AnimatedPNGTests, ByteByByteMetaData) {
   // frame data chunk, plus 8 bytes for recognition. The exception on this is
   // the first frame, which is reported when its first framedata is seen.
   size_t frame_offsets[kExpectedFrameCount] = {141, 249, 322, 430};
+  if (skia::IsRustyPngEnabled()) {
+    // The original offsets correspond to 8 bytes after the corresponding
+    // `fcTL` and `fdAT` chunk.  `SkPngRustCodec` can discover and report
+    // frame metadata earlier - as soon as the `fdAT` chunk is recognized.
+    frame_offsets[1] = 218;
+    frame_offsets[2] = 287;
+    frame_offsets[3] = 360;
+  }
 
   auto decoder = CreatePNGDecoder();
   Vector<char> data = ReadFile(png_file);
@@ -374,6 +424,14 @@ TEST(AnimatedPNGTests, ByteByByteMetaData) {
     if (length < frame_offsets[frames_parsed]) {
       EXPECT_EQ(frames_parsed, decoder->FrameCount());
     } else {
+      if (skia::IsRustyPngEnabled() && frames_parsed > 0) {
+        // `SkPngRustCodec` cannot discover new frames when in the middle of an
+        // incremental decode (see http://review.skia.org/913917).  To make
+        // progress, we need to finish the previous decode.
+        EXPECT_NE(nullptr,
+                  decoder->DecodeFrameBufferAtIndex(frames_parsed - 1));
+      }
+
       ASSERT_EQ(frames_parsed + 1, decoder->FrameCount());
       CompareFrameWithExpectation(g_png_animated_frame_info[frames_parsed],
                                   decoder.get(), frames_parsed);
@@ -384,34 +442,34 @@ TEST(AnimatedPNGTests, ByteByByteMetaData) {
   EXPECT_FALSE(decoder->Failed());
 }
 
-TEST(AnimatedPNGTests, TestRandomFrameDecode) {
+TEST_P(AnimatedPNGTests, TestRandomFrameDecode) {
   TestRandomFrameDecode(&CreatePNGDecoder,
                         "/images/resources/"
                         "png-animated-idat-part-of-animation.png",
                         2u);
 }
 
-TEST(AnimatedPNGTests, TestDecodeAfterReallocation) {
+TEST_P(AnimatedPNGTests, TestDecodeAfterReallocation) {
   TestDecodeAfterReallocatingData(&CreatePNGDecoder,
                                   "/images/resources/"
                                   "png-animated-idat-part-of-animation.png");
 }
 
-TEST(AnimatedPNGTests, ProgressiveDecode) {
+TEST_P(AnimatedPNGTests, ProgressiveDecode) {
   TestProgressiveDecoding(&CreatePNGDecoder,
                           "/images/resources/"
                           "png-animated-idat-part-of-animation.png",
                           13u);
 }
 
-TEST(AnimatedPNGTests, ParseAndDecodeByteByByte) {
+TEST_P(AnimatedPNGTests, ParseAndDecodeByteByByte) {
   TestByteByByteDecode(&CreatePNGDecoder,
                        "/images/resources/"
                        "png-animated-idat-part-of-animation.png",
                        4u, 6u);
 }
 
-TEST(AnimatedPNGTests, FailureDuringParsing) {
+TEST_P(AnimatedPNGTests, FailureDuringParsing) {
   // Test the first fcTL in the stream. Because no frame data has been set at
   // this point, the expected frame count is zero. 95 bytes is just before the
   // first fcTL chunk, at which the first frame is detected. This is before the
@@ -423,13 +481,23 @@ TEST(AnimatedPNGTests, FailureDuringParsing) {
 
   // Test for the third fcTL in the stream. This should see 1 frame before the
   // fcTL, and then fail when parsing it.
+  size_t expected_frame_count = 1u;
+  bool should_fail = true;
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  If some animated frames have an error, then other animated
+    // frames may continue to work.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    expected_frame_count = 2u;
+    should_fail = false;
+  }
   TestInvalidFctlSize(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png",
-      241u, 1u, true);
+      241u, expected_frame_count, should_fail);
 }
 
-TEST(AnimatedPNGTests, ActlErrors) {
+TEST_P(AnimatedPNGTests, ActlErrors) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -459,7 +527,7 @@ TEST(AnimatedPNGTests, ActlErrors) {
   // Insert an extra acTL at a couple of different offsets.
   // Prior to the IDAT, this should result in a static image. After, this
   // should fail.
-  const struct {
+  struct {
     size_t offset;
     bool should_fail;
   } kGRecs[] = {{8u, false},
@@ -467,6 +535,18 @@ TEST(AnimatedPNGTests, ActlErrors) {
                 {133u, false},
                 {172u, true},
                 {422u, true}};
+  if (skia::IsRustyPngEnabled()) {
+    // https://www.w3.org/TR/2003/REC-PNG-20031110/#5ChunkOrdering says that the
+    // IHDR chunk "shall be first". Rust `png` crate treats this situation as an
+    // error in accordance with the spec.
+    kGRecs[0].should_fail = true;
+
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    kGRecs[3].should_fail = false;
+    kGRecs[4].should_fail = false;
+  }
   for (const auto& rec : kGRecs) {
     const size_t offset = rec.offset;
     scoped_refptr<SharedBuffer> extra_actl_data =
@@ -475,7 +555,19 @@ TEST(AnimatedPNGTests, ActlErrors) {
     extra_actl_data->Append(data.data() + offset, data.size() - offset);
     auto decoder = CreatePNGDecoder();
     decoder->SetData(extra_actl_data, true);
-    EXPECT_EQ(rec.should_fail ? 0u : 1u, decoder->FrameCount());
+
+    // `blink::PNGImageDecoder` falls back to the static image upon encountering
+    // APNG-specific issues (as suggested by the APNG spec).
+    // `blink::SkiaImageDecoderBase` in this situation animates the successful
+    // frames, and ignore the failed frames (this is by design - see
+    // https://crbug.com/371592786#comment3).
+    wtf_size_t frame_count = decoder->FrameCount();
+    if (skia::IsRustyPngEnabled()) {
+      EXPECT_LE(0u, frame_count);
+      EXPECT_LE(frame_count, 4u);
+    } else {
+      EXPECT_EQ(rec.should_fail ? 0u : 1u, decoder->FrameCount());
+    }
     EXPECT_EQ(rec.should_fail, decoder->Failed());
   }
 
@@ -507,7 +599,7 @@ TEST(AnimatedPNGTests, ActlErrors) {
   }
 }
 
-TEST(AnimatedPNGTests, fdatBeforeIdat) {
+TEST_P(AnimatedPNGTests, fdatBeforeIdat) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-not-part-of-animation.png";
@@ -565,7 +657,7 @@ TEST(AnimatedPNGTests, fdatBeforeIdat) {
   }
 }
 
-TEST(AnimatedPNGTests, FrameOverflowX) {
+TEST_P(AnimatedPNGTests, FrameOverflowX) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -593,11 +685,20 @@ TEST(AnimatedPNGTests, FrameOverflowX) {
   for (size_t i = 0; i < decoder->FrameCount(); i++) {
     decoder->DecodeFrameBufferAtIndex(i);
   }
-  ASSERT_TRUE(decoder->Failed());
+
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    ASSERT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 1u);
+  } else {
+    ASSERT_TRUE(decoder->Failed());
+  }
 }
 
 // This test is exactly the same as above, except it changes y_offset.
-TEST(AnimatedPNGTests, FrameOverflowY) {
+TEST_P(AnimatedPNGTests, FrameOverflowY) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -625,10 +726,19 @@ TEST(AnimatedPNGTests, FrameOverflowY) {
   for (size_t i = 0; i < decoder->FrameCount(); i++) {
     decoder->DecodeFrameBufferAtIndex(i);
   }
-  ASSERT_TRUE(decoder->Failed());
+
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    ASSERT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 1u);
+  } else {
+    ASSERT_TRUE(decoder->Failed());
+  }
 }
 
-TEST(AnimatedPNGTests, IdatSizeMismatch) {
+TEST_P(AnimatedPNGTests, IdatSizeMismatch) {
   // The default image must fill the image
   const char* png_file =
       "/images/resources/"
@@ -652,10 +762,20 @@ TEST(AnimatedPNGTests, IdatSizeMismatch) {
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(modified_data.get(), true);
-  ExpectStatic(decoder.get());
+
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  If some animated frames have an error, then other animated
+    // frames may continue to work.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    EXPECT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 4u);
+  } else {
+    ExpectStatic(decoder.get());
+  }
 }
 
-TEST(AnimatedPNGTests, EmptyFdatFails) {
+TEST_P(AnimatedPNGTests, EmptyFdatFails) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -686,13 +806,22 @@ TEST(AnimatedPNGTests, EmptyFdatFails) {
   for (size_t i = 0; i < decoder->FrameCount(); i++) {
     decoder->DecodeFrameBufferAtIndex(i);
   }
-  ASSERT_TRUE(decoder->Failed());
+
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    ASSERT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 3u);
+  } else {
+    ASSERT_TRUE(decoder->Failed());
+  }
 }
 
 // Originally, the third frame has an offset of (1,2) and a size of (3,2). By
 // changing the offset to (4,4), the frame rect is no longer within the image
 // size of 5x5. This results in a failure.
-TEST(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
+TEST_P(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -722,12 +851,19 @@ TEST(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_EQ(expected_size, decoder->Size());
 
-  const size_t kExpectedFrameCount = 0;
-  EXPECT_EQ(kExpectedFrameCount, decoder->FrameCount());
-  EXPECT_TRUE(decoder->Failed());
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    EXPECT_EQ(decoder->FrameCount(), 2u);
+    ASSERT_FALSE(decoder->Failed());
+  } else {
+    EXPECT_EQ(decoder->FrameCount(), 0u);
+    ASSERT_TRUE(decoder->Failed());
+  }
 }
 
-TEST(AnimatedPNGTests, ProgressiveDecodingContinuesAfterFullData) {
+TEST_P(AnimatedPNGTests, ProgressiveDecodingContinuesAfterFullData) {
   // 160u is a randomly chosen offset in the IDAT chunk of the first frame.
   TestProgressiveDecodingContinuesAfterFullData(
       "/images/resources/"
@@ -735,7 +871,7 @@ TEST(AnimatedPNGTests, ProgressiveDecodingContinuesAfterFullData) {
       160u);
 }
 
-TEST(AnimatedPNGTests, RandomDecodeAfterClearFrameBufferCache) {
+TEST_P(AnimatedPNGTests, RandomDecodeAfterClearFrameBufferCache) {
   TestRandomDecodeAfterClearFrameBufferCache(
       &CreatePNGDecoder,
       "/images/resources/"
@@ -743,7 +879,7 @@ TEST(AnimatedPNGTests, RandomDecodeAfterClearFrameBufferCache) {
       2u);
 }
 
-TEST(AnimatedPNGTests, VerifyAlphaBlending) {
+TEST_P(AnimatedPNGTests, VerifyAlphaBlending) {
   TestAlphaBlending(&CreatePNGDecoder,
                     "/images/resources/"
                     "png-animated-idat-part-of-animation.png");
@@ -763,7 +899,7 @@ TEST(AnimatedPNGTests, VerifyAlphaBlending) {
 // there are three frames which can be shown.
 // Attempting to decode the third frame should fail, since the file is
 // truncated.
-TEST(AnimatedPNGTests, FailureMissingIendChunk) {
+TEST_P(AnimatedPNGTests, FailureMissingIendChunk) {
   Vector<char> full_data = ReadFile(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png");
@@ -779,22 +915,29 @@ TEST(AnimatedPNGTests, FailureMissingIendChunk) {
   EXPECT_FALSE(decoder->Failed());
 
   // Provide the rest of the data except for the last IEND chunk.
-  const size_t kExpectedFramesAfterAllExcept12Bytes = 3;
   temp_data = SharedBuffer::Create(full_data.data(), full_data.size() - 12);
   decoder->SetData(temp_data.get(), true);
-  ASSERT_EQ(kExpectedFramesAfterAllExcept12Bytes, decoder->FrameCount());
 
-  for (size_t i = 0; i < kExpectedFramesAfterAllExcept12Bytes; i++) {
+  for (size_t i = 0; i < decoder->FrameCount(); i++) {
     EXPECT_FALSE(decoder->Failed());
     decoder->DecodeFrameBufferAtIndex(i);
   }
 
-  EXPECT_TRUE(decoder->Failed());
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    ASSERT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 4u);
+  } else {
+    ASSERT_TRUE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 3u);
+  }
 }
 
 // Verify that a malformatted PNG, where the IEND appears before any frame data
 // (IDAT), invalidates the decoder.
-TEST(AnimatedPNGTests, VerifyIENDBeforeIDATInvalidatesDecoder) {
+TEST_P(AnimatedPNGTests, VerifyIENDBeforeIDATInvalidatesDecoder) {
   Vector<char> full_data = ReadFile(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png");
@@ -814,7 +957,7 @@ TEST(AnimatedPNGTests, VerifyIENDBeforeIDATInvalidatesDecoder) {
 }
 
 // All IDAT chunks must be before all fdAT chunks
-TEST(AnimatedPNGTests, MixedDataChunks) {
+TEST_P(AnimatedPNGTests, MixedDataChunks) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -837,7 +980,16 @@ TEST(AnimatedPNGTests, MixedDataChunks) {
   auto decoder = CreatePNGDecoder();
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
-  EXPECT_TRUE(decoder->Failed());
+
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    EXPECT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 1u);
+  } else {
+    EXPECT_TRUE(decoder->Failed());
+  }
 
   // Insert an IDAT after an fdAT.
   const size_t kPostfdAT = kPostIDAT + kFcTLSize + kFdATSize;
@@ -849,12 +1001,21 @@ TEST(AnimatedPNGTests, MixedDataChunks) {
   decoder = CreatePNGDecoder();
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
-  EXPECT_TRUE(decoder->Failed());
+
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    EXPECT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 2u);
+  } else {
+    EXPECT_TRUE(decoder->Failed());
+  }
 }
 
 // Verify that erroneous values for the disposal method and alpha blending
 // cause the decoder to fail.
-TEST(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
+TEST_P(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -882,7 +1043,16 @@ TEST(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
 
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
-  ASSERT_TRUE(decoder->Failed());
+
+  if (skia::IsRustyPngEnabled()) {
+    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
+    // frames fail.  This is by design - see
+    // https://crbug.com/371592786#comment3.
+    ASSERT_FALSE(decoder->Failed());
+    EXPECT_EQ(decoder->FrameCount(), 2u);
+  } else {
+    ASSERT_TRUE(decoder->Failed());
+  }
 }
 
 // This test verifies that the following situation does not invalidate the
@@ -895,7 +1065,7 @@ TEST(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
 // This is a tricky case since the decoder resets the png struct for each frame,
 // and this test verifies that it does not break the decoding of frame 0, even
 // though it already started in the first call.
-TEST(AnimatedPNGTests, VerifySuccessfulFirstFrameDecodeAfterLaterFrame) {
+TEST_P(AnimatedPNGTests, VerifySuccessfulFirstFrameDecodeAfterLaterFrame) {
   const char* png_file =
       "/images/resources/"
       "png-animated-three-independent-frames.png";
@@ -914,6 +1084,13 @@ TEST(AnimatedPNGTests, VerifySuccessfulFirstFrameDecodeAfterLaterFrame) {
             decoder->DecodeFrameBufferAtIndex(0)->GetStatus());
 
   decoder->SetData(SharedBuffer::Create(full_data), true);
+  if (skia::IsRustyPngEnabled()) {
+    // `SkPngRustCodec` cannot discover new frames when in the middle of an
+    // incremental decode (see http://review.skia.org/913917).  To make
+    // progress, we need to finish the previous decode.
+    EXPECT_EQ(ImageFrame::kFrameComplete,
+              decoder->DecodeFrameBufferAtIndex(0)->GetStatus());
+  }
   ASSERT_EQ(3u, decoder->FrameCount());
   ASSERT_EQ(ImageFrame::kFrameComplete,
             decoder->DecodeFrameBufferAtIndex(1)->GetStatus());
@@ -931,7 +1108,7 @@ TEST(AnimatedPNGTests, VerifySuccessfulFirstFrameDecodeAfterLaterFrame) {
 // independent, it needs to discard its png_struct so it can use a modified
 // IHDR. Test this by comparing a decode of frame 1 after frame 0 to a decode
 // of frame 1 without decoding frame 0.
-TEST(AnimatedPNGTests, DecodeFromIndependentFrame) {
+TEST_P(AnimatedPNGTests, DecodeFromIndependentFrame) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -968,7 +1145,12 @@ TEST(AnimatedPNGTests, DecodeFromIndependentFrame) {
   frame = decoder->DecodeFrameBufferAtIndex(1);
   ASSERT_TRUE(frame);
   ASSERT_FALSE(decoder->Failed());
-  ASSERT_NE(gfx::Rect(decoder->Size()), frame->OriginalFrameRect());
+  // TODO(https://crbug.com/377542069): Enable this test assertion for
+  // Rust-based decoder, once `SkiaImageDecoderBase` propagates the relevant
+  // frame metadata.
+  if (!skia::IsRustyPngEnabled()) {
+    ASSERT_NE(gfx::Rect(decoder->Size()), frame->OriginalFrameRect());
+  }
   ASSERT_EQ(kNotFound, frame->RequiredPreviousFrameIndex());
 
   const auto hash = HashBitmap(frame->Bitmap());
@@ -985,7 +1167,7 @@ TEST(AnimatedPNGTests, DecodeFromIndependentFrame) {
 // If the first frame is subset from IHDR (only allowed if the first frame is
 // not the default image), the decoder has to destroy the png_struct it used
 // for parsing so it can use a modified IHDR.
-TEST(AnimatedPNGTests, SubsetFromIHDR) {
+TEST_P(AnimatedPNGTests, SubsetFromIHDR) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-not-part-of-animation.png";
@@ -1015,7 +1197,7 @@ TEST(AnimatedPNGTests, SubsetFromIHDR) {
   TestByteByByteDecode(CreatePNGDecoder, data.get(), 1, kAnimationNone);
 }
 
-TEST(AnimatedPNGTests, Offset) {
+TEST_P(AnimatedPNGTests, Offset) {
   const char* png_file = "/images/resources/apng18.png";
   Vector<char> original_data = ReadFile(png_file);
   ASSERT_FALSE(original_data.empty());
@@ -1049,7 +1231,7 @@ TEST(AnimatedPNGTests, Offset) {
   }
 }
 
-TEST(AnimatedPNGTests, ExtraChunksBeforeIHDR) {
+TEST_P(AnimatedPNGTests, ExtraChunksBeforeIHDR) {
   const char* png_file = "/images/resources/apng18.png";
   Vector<char> original_data = ReadFile(png_file);
   ASSERT_FALSE(original_data.empty());
@@ -1078,25 +1260,41 @@ TEST(AnimatedPNGTests, ExtraChunksBeforeIHDR) {
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(data, true);
-  ASSERT_EQ(kExpectedFrameCount, decoder->FrameCount());
 
-  for (size_t i = 0; i < kExpectedFrameCount; ++i) {
-    auto* frame = decoder->DecodeFrameBufferAtIndex(i);
-    EXPECT_EQ(baseline_hashes[i], HashBitmap(frame->Bitmap()));
+  if (skia::IsRustyPngEnabled()) {
+    // https://www.w3.org/TR/2003/REC-PNG-20031110/#5ChunkOrdering says that the
+    // IHDR chunk "shall be first". Rust `png` crate treats this situation as an
+    // error in accordance with the spec.
+    //
+    // FWIW the `ExtraChunksBeforeIHDR` test was added for
+    // https://crbug.com/40090523 and the test input was found by a fuzzer.
+    // Reporting a failure seems like a valid way to handle such inputs
+    // (as long as there are no heap buffer overflows or other memory safety
+    // issues).
+    EXPECT_EQ(0u, decoder->FrameCount());
+    EXPECT_TRUE(decoder->Failed());
+  } else {
+    ASSERT_EQ(kExpectedFrameCount, decoder->FrameCount());
+    for (size_t i = 0; i < kExpectedFrameCount; ++i) {
+      auto* frame = decoder->DecodeFrameBufferAtIndex(i);
+      EXPECT_EQ(baseline_hashes[i], HashBitmap(frame->Bitmap()));
+    }
+    EXPECT_FALSE(decoder->Failed());
   }
 }
 
 // Static PNG tests
 
-TEST(StaticPNGTests, repetitionCountTest) {
+using StaticPNGTests = PNGTests;
+TEST_P(StaticPNGTests, repetitionCountTest) {
   TestRepetitionCount("/images/resources/png-simple.png", kAnimationNone);
 }
 
-TEST(StaticPNGTests, sizeTest) {
+TEST_P(StaticPNGTests, sizeTest) {
   TestSize("/images/resources/png-simple.png", gfx::Size(111, 29));
 }
 
-TEST(StaticPNGTests, MetaDataTest) {
+TEST_P(StaticPNGTests, MetaDataTest) {
   const size_t kExpectedFrameCount = 1;
   const base::TimeDelta kExpectedDuration;
   auto decoder =
@@ -1122,7 +1320,7 @@ TEST(StaticPNGTests, MetaDataTest) {
 // Since Chromium chooses to undefine PNG_READ_OPT_PLTE_SUPPORTED in
 // pnglibconf.h, it is not affected by this potential bug. For extra assurance,
 // this test decodes this image and makes sure there are no errors.
-TEST(StaticPNGTests, ColorType2TrnsBeforePlte) {
+TEST_P(StaticPNGTests, ColorType2TrnsBeforePlte) {
   auto decoder = CreatePNGDecoderWithPngData(
       "/images/resources/circle-trns-before-plte.png");
   ASSERT_EQ(decoder->FrameCount(), 1u);
@@ -1152,16 +1350,16 @@ TEST(StaticPNGTests, ColorType2TrnsBeforePlte) {
 #endif
 }
 
-TEST(StaticPNGTests, InvalidIHDRChunk) {
+TEST_P(StaticPNGTests, InvalidIHDRChunk) {
   TestMissingDataBreaksDecoding("/images/resources/png-simple.png", 20u, 2u);
 }
 
-TEST(StaticPNGTests, ProgressiveDecoding) {
+TEST_P(StaticPNGTests, ProgressiveDecoding) {
   TestProgressiveDecoding(&CreatePNGDecoder, "/images/resources/png-simple.png",
                           11u);
 }
 
-TEST(StaticPNGTests, ProgressiveDecodingContinuesAfterFullData) {
+TEST_P(StaticPNGTests, ProgressiveDecodingContinuesAfterFullData) {
   TestProgressiveDecodingContinuesAfterFullData(
       "/images/resources/png-simple.png", 1000u);
 }
@@ -1177,6 +1375,12 @@ struct PNGSample {
 
 static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
                                         ImageDecoder* decoder) {
+  // TODO(https://crbug.com/359350061): Add high-bit support to `SkCodec`.
+  if (skia::IsRustyPngEnabled()) {
+    GTEST_SKIP() << "TODO(https://crbug.com/359350061): "
+                 << "Add high-bit support to `SkCodec`";
+  }
+
   scoped_refptr<SharedBuffer> png = png_sample.png_contents;
   ASSERT_TRUE(png.get());
   decoder->SetData(png.get(), true);
@@ -1376,7 +1580,7 @@ static Vector<PNGSample> GetPNGSamplesInfo(bool include_8bit_pngs) {
   return png_samples;
 }
 
-TEST(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
+TEST_P(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
   const bool include_8bit_pngs = false;
   Vector<PNGSample> png_samples = GetPNGSamplesInfo(include_8bit_pngs);
   FillPNGSamplesSourcePixels(png_samples);
@@ -1389,7 +1593,7 @@ TEST(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
   }
 }
 
-TEST(StaticPNGTests, ImageIsHighBitDepth) {
+TEST_P(StaticPNGTests, ImageIsHighBitDepth) {
   const bool include_8bit_pngs = true;
   Vector<PNGSample> png_samples = GetPNGSamplesInfo(include_8bit_pngs);
   gfx::Size size(2, 2);
@@ -1408,12 +1612,16 @@ TEST(StaticPNGTests, ImageIsHighBitDepth) {
       ASSERT_TRUE(decoder->IsDecodedSizeAvailable());
       ASSERT_EQ(size, decoder->Size());
       ASSERT_EQ(size, decoder->DecodedSize());
-      ASSERT_EQ(png_sample.is_high_bit_depth, decoder->ImageIsHighBitDepth());
+
+      // TODO(https://crbug.com/359350061): Add high-bit support to `SkCodec`.
+      if (!skia::IsRustyPngEnabled()) {
+        ASSERT_EQ(png_sample.is_high_bit_depth, decoder->ImageIsHighBitDepth());
+      }
     }
   }
 }
 
-TEST(PNGTests, VerifyFrameCompleteBehavior) {
+TEST_P(PNGTests, VerifyFrameCompleteBehavior) {
   struct {
     const char* name;
     size_t expected_frame_count;
@@ -1456,13 +1664,29 @@ TEST(PNGTests, VerifyFrameCompleteBehavior) {
 
     decoder->SetData(SharedBuffer::Create(full_data), true);
 
-    // With full data, parsing the size still does not mark a frame as
-    // complete for animated images.
+    // With full data, parsing the size still does not mark a frame as complete
+    // for animated images.
     EXPECT_TRUE(decoder->IsSizeAvailable());
-    if (rec.expected_frame_count > 1) {
-      EXPECT_FALSE(decoder->FrameIsReceivedAtIndex(0));
-    } else {
-      EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
+    // TODO(https://crbug.com/377555843): Enable this test assertion for
+    // Rust-based decoder, once `SkiaImageDecoderBase` takes
+    // `IsAllDataReceived` into account.
+    if (!skia::IsRustyPngEnabled()) {
+      if (rec.expected_frame_count > 1) {
+        EXPECT_FALSE(decoder->FrameIsReceivedAtIndex(0));
+      } else {
+        EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
+      }
+    }
+
+    if (skia::IsRustyPngEnabled()) {
+      // `SkPngRustCodec` cannot discover new frames when in the middle of an
+      // incremental decode (see http://review.skia.org/913917).  To make
+      // progress and discover additional frames, we need to finish the previous
+      // decode.
+      ASSERT_EQ(1u, decoder->FrameCount());
+      frame = decoder->DecodeFrameBufferAtIndex(0);
+      ASSERT_TRUE(frame);
+      EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     }
 
     const auto frame_count = decoder->FrameCount();
@@ -1470,7 +1694,12 @@ TEST(PNGTests, VerifyFrameCompleteBehavior) {
 
     // After parsing (the full file), all frames are complete.
     for (size_t i = 0; i < frame_count; ++i) {
-      EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(i));
+      // TODO(https://crbug.com/377555843): Enable this test assertion for
+      // Rust-based decoder, once `SkiaImageDecoderBase` takes
+      // `IsAllDataReceived` into account.
+      if (!skia::IsRustyPngEnabled()) {
+        EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(i));
+      }
     }
 
     frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -1480,14 +1709,14 @@ TEST(PNGTests, VerifyFrameCompleteBehavior) {
   }
 }
 
-TEST(PNGTests, sizeMayOverflow) {
+TEST_P(PNGTests, sizeMayOverflow) {
   auto decoder =
       CreatePNGDecoderWithPngData("/images/resources/crbug702934.png");
   EXPECT_FALSE(decoder->IsSizeAvailable());
   EXPECT_TRUE(decoder->Failed());
 }
 
-TEST(PNGTests, truncated) {
+TEST_P(PNGTests, truncated) {
   auto decoder =
       CreatePNGDecoderWithPngData("/images/resources/crbug807324.png");
 
@@ -1503,7 +1732,7 @@ TEST(PNGTests, truncated) {
   }
 }
 
-TEST(PNGTests, crbug827754) {
+TEST_P(PNGTests, crbug827754) {
   const char* png_file = "/images/resources/crbug827754.png";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
   ASSERT_TRUE(data);
@@ -1515,7 +1744,7 @@ TEST(PNGTests, crbug827754) {
   ASSERT_FALSE(decoder->Failed());
 }
 
-TEST(PNGTests, cicp) {
+TEST_P(PNGTests, cicp) {
   const char* png_file = "/images/resources/cicp_pq.png";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
   ASSERT_TRUE(data);
@@ -1525,6 +1754,12 @@ TEST(PNGTests, cicp) {
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
   ASSERT_FALSE(decoder->Failed());
+
+  // TODO(https://crbug.com/376758571): Add support for cICP chunks.
+  if (skia::IsRustyPngEnabled()) {
+    ASSERT_FALSE(decoder->HasEmbeddedColorProfile());
+    GTEST_SKIP() << "SkPngRustCodec doesn't yet support cICP chunks";
+  }
   ASSERT_TRUE(decoder->HasEmbeddedColorProfile());
   ColorProfileTransform* transform = decoder->ColorTransform();
 
@@ -1532,7 +1767,7 @@ TEST(PNGTests, cicp) {
   EXPECT_TRUE(skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
 }
 
-TEST(PNGTests, HDRMetadata) {
+TEST_P(PNGTests, HDRMetadata) {
   const char* png_file = "/images/resources/cicp_pq.png";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
   ASSERT_TRUE(data);
@@ -1544,6 +1779,13 @@ TEST(PNGTests, HDRMetadata) {
   ASSERT_FALSE(decoder->Failed());
   const std::optional<gfx::HDRMetadata> hdr_metadata =
       decoder->GetHDRMetadata();
+
+  // TODO(https://crbug.com/376550658): Add support for `cLLi` and `mDCv` chunks
+  // to Rust png.
+  if (skia::IsRustyPngEnabled()) {
+    ASSERT_FALSE(hdr_metadata);
+    GTEST_SKIP() << "SkPngRustCodec doesn't yet support cLLI nor mDCv chunks";
+  }
   ASSERT_TRUE(hdr_metadata);
 
   ASSERT_TRUE(hdr_metadata->cta_861_3);
@@ -1563,7 +1805,7 @@ TEST(PNGTests, HDRMetadata) {
   EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->luminance_min, .01f);
 }
 
-TEST(AnimatedPNGTests, TrnsMeansAlpha) {
+TEST_P(AnimatedPNGTests, TrnsMeansAlpha) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
@@ -1572,7 +1814,7 @@ TEST(AnimatedPNGTests, TrnsMeansAlpha) {
   ASSERT_TRUE(frame->HasAlpha());
 }
 
-TEST(PNGTests, CriticalPrivateChunkBeforeIHDR) {
+TEST_P(PNGTests, CriticalPrivateChunkBeforeIHDR) {
   auto decoder = CreatePNGDecoder();
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
       kDecodersTestingDir, "private-critical-chunk-before-ihdr.png");
@@ -1582,4 +1824,27 @@ TEST(PNGTests, CriticalPrivateChunkBeforeIHDR) {
   EXPECT_TRUE(decoder->Failed());
 }
 
+#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
+INSTANTIATE_TEST_SUITE_P(RustEnabled,
+                         AnimatedPNGTests,
+                         ::testing::Values(RustFeatureState::kRustEnabled));
+INSTANTIATE_TEST_SUITE_P(RustEnabled,
+                         PNGTests,
+                         ::testing::Values(RustFeatureState::kRustEnabled));
+INSTANTIATE_TEST_SUITE_P(RustEnabled,
+                         StaticPNGTests,
+                         ::testing::Values(RustFeatureState::kRustEnabled));
+#endif
+
+INSTANTIATE_TEST_SUITE_P(RustDisabled,
+                         AnimatedPNGTests,
+                         ::testing::Values(RustFeatureState::kRustDisabled));
+INSTANTIATE_TEST_SUITE_P(RustDisabled,
+                         PNGTests,
+                         ::testing::Values(RustFeatureState::kRustDisabled));
+INSTANTIATE_TEST_SUITE_P(RustDisabled,
+                         StaticPNGTests,
+                         ::testing::Values(RustFeatureState::kRustDisabled));
+
+}  // namespace
 }  // namespace blink

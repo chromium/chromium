@@ -118,6 +118,7 @@ void TestByteByByteDecode(DecoderCreator create_decoder,
       // only then both frames could be completely decoded.
       ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(i);
       if (frame && frame->GetStatus() == ImageFrame::kFrameComplete) {
+        EXPECT_EQ(baseline_hashes[i], HashBitmap(frame->Bitmap()));
         ++frames_decoded;
       }
     }

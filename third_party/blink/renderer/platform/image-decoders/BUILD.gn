@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
@@ -64,6 +65,7 @@ component("image_decoders") {
 
   deps = [
     "//skia",
+    "//skia:rusty_png_feature_detection",
     "//skia:skcms",
     "//third_party:jpeg",
     "//third_party/blink/public:blink_headers",
@@ -85,6 +87,13 @@ component("image_decoders") {
     deps += [
       "//third_party/crabbyavif",
       "//third_party/libavif",
+    ]
+  }
+
+  if (enable_rust_png) {
+    sources += [
+      "png/skia_png_rust_image_decoder.cc",
+      "png/skia_png_rust_image_decoder.h",
     ]
   }
 }
@@ -116,6 +125,7 @@ source_set("unit_tests") {
 
   deps = [
     ":image_decoders",
+    "//skia:rusty_png_feature_detection",
     "//third_party/blink/renderer/platform:test_support",
   ]
 

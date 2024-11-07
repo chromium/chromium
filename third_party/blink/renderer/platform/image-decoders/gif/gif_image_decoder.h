@@ -47,6 +47,7 @@ class PLATFORM_EXPORT GIFImageDecoder final : public SkiaImageDecoderBase {
   const AtomicString& MimeType() const override;
 
  protected:
+  // SkiaImageDecoderBase:
   std::unique_ptr<SkCodec> OnCreateSkCodec(std::unique_ptr<SkStream>,
                                            SkCodec::Result* result) override;
 };
