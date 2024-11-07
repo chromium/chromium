@@ -21,6 +21,7 @@ message LensOverlayVisualSearchInteractionData {
   ZoomedCrop zoomed_crop = 7;
 
   // The selected object id for this interaction, instead of the zoomed crop.
+  // Currently unsupported and should not be populated.
   string object_id = 3;
 
   // Logging-specific data.
