@@ -16278,6 +16278,26 @@
             ]
         }
     ],
+    "PartitionAllocMemoryTagging": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "enabled-processes": "all-processes",
+                        "memtag-mode": "sync",
+                        "retag-mode": "random"
+                    },
+                    "enable_features": [
+                        "PartitionAllocMemoryTagging"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocParameterTuning": [
         {
             "platforms": [
