@@ -15,11 +15,26 @@
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+// Psapi.h must come after Windows.h.
+#include <psapi.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace tracing {
 
 namespace {
 
 constexpr base::TimeDelta kSamplingInterval = base::Seconds(5);
+
+#if BUILDFLAG(IS_WIN)
+// Returns memory in bytes from pages count.
+size_t GetTotalMemory(size_t num_pages, size_t page_size) {
+  return base::ValueOrDefaultForType<size_t>(
+      base::CheckedNumeric(num_pages) * page_size, 0U);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -70,8 +85,36 @@ void SystemMetricsSampler::Sampler::SampleSystemMetrics() {
       TRACE_DISABLED_BY_DEFAULT("system_metrics"),
       perfetto::CounterTrack("NumActiveCpus", perfetto::Track::Global(0)),
       cpu_info.num_active_cpus);
+
+  SampleMemoryMetrics();
 #endif
 }
+
+#if BUILDFLAG(IS_WIN)
+void SystemMetricsSampler::Sampler::SampleMemoryMetrics() {
+  PERFORMANCE_INFORMATION performance_info = {};
+  performance_info.cb = sizeof(performance_info);
+  bool get_performance_info_result =
+      ::GetPerformanceInfo(&performance_info, sizeof(performance_info));
+  if (!get_performance_info_result) {
+    return;
+  }
+
+  TRACE_COUNTER(
+      TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+      perfetto::CounterTrack("CommitMemoryLimit", perfetto::Track::Global(0)),
+      GetTotalMemory(performance_info.CommitLimit, performance_info.PageSize));
+  TRACE_COUNTER(
+      TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+      perfetto::CounterTrack("CommitMemoryTotal", perfetto::Track::Global(0)),
+      GetTotalMemory(performance_info.CommitTotal, performance_info.PageSize));
+  TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+                perfetto::CounterTrack("AvailablePhysicalMemory",
+                                       perfetto::Track::Global(0)),
+                GetTotalMemory(performance_info.PhysicalAvailable,
+                               performance_info.PageSize));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void SystemMetricsSampler::Sampler::OnCpuProbeResult(
     std::optional<system_cpu::CpuSample> cpu_sample) {
