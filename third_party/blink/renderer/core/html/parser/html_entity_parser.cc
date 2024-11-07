@@ -35,62 +35,31 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_search.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_table.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
 namespace blink {
 
-static const UChar kWindowsLatin1ExtensionArray[32] = {
+namespace {
+
+constexpr UChar kWindowsLatin1ExtensionArray[32] = {
     0x20AC, 0x0081, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,  // 80-87
     0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0x008D, 0x017D, 0x008F,  // 88-8F
     0x0090, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,  // 90-97
     0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0x009D, 0x017E, 0x0178,  // 98-9F
 };
 
-static bool IsAlphaNumeric(UChar cc) {
-  return (cc >= '0' && cc <= '9') || (cc >= 'a' && cc <= 'z') ||
-         (cc >= 'A' && cc <= 'Z');
-}
-
-static UChar AdjustEntity(UChar32 value) {
+UChar AdjustEntity(UChar32 value) {
   if ((value & ~0x1F) != 0x0080)
     return value;
   return kWindowsLatin1ExtensionArray[value - 0x80];
 }
 
-void AppendLegalEntityFor(UChar32 c, DecodedHTMLEntity& decoded_entity) {
-  // FIXME: A number of specific entity values generate parse errors.
-  if (c <= 0 || c > 0x10FFFF || (c >= 0xD800 && c <= 0xDFFF)) {
-    decoded_entity.Append(0xFFFD);
-    return;
-  }
-  if (U_IS_BMP(c)) {
-    decoded_entity.Append(AdjustEntity(c));
-    return;
-  }
-  decoded_entity.Append(c);
-}
-
-static const UChar32 kInvalidUnicode = -1;
-
-static bool IsHexDigit(UChar cc) {
-  return (cc >= '0' && cc <= '9') || (cc >= 'a' && cc <= 'f') ||
-         (cc >= 'A' && cc <= 'F');
-}
-
-static UChar AsHexDigit(UChar cc) {
-  if (cc >= '0' && cc <= '9')
-    return cc - '0';
-  if (cc >= 'a' && cc <= 'z')
-    return 10 + cc - 'a';
-  if (cc >= 'A' && cc <= 'Z')
-    return 10 + cc - 'A';
-  NOTREACHED();
-}
+constexpr UChar32 kInvalidUnicode = -1;
 
 typedef Vector<UChar, 64> ConsumedCharacterBuffer;
 
-static void UnconsumeCharacters(SegmentedString& source,
-                                ConsumedCharacterBuffer& consumed_characters) {
+void UnconsumeCharacters(SegmentedString& source,
+                         ConsumedCharacterBuffer& consumed_characters) {
   if (consumed_characters.size() == 1)
     source.Push(consumed_characters[0]);
   else if (consumed_characters.size() == 2) {
@@ -101,11 +70,11 @@ static void UnconsumeCharacters(SegmentedString& source,
                    SegmentedString::PrependType::kUnconsume);
 }
 
-static bool ConsumeNamedEntity(SegmentedString& source,
-                               DecodedHTMLEntity& decoded_entity,
-                               bool& not_enough_characters,
-                               UChar additional_allowed_character,
-                               UChar& cc) {
+bool ConsumeNamedEntity(SegmentedString& source,
+                        DecodedHTMLEntity& decoded_entity,
+                        bool& not_enough_characters,
+                        UChar additional_allowed_character,
+                        UChar& cc) {
   ConsumedCharacterBuffer consumed_characters;
   HTMLEntitySearch entity_search;
   while (!source.IsEmpty()) {
@@ -150,7 +119,8 @@ static bool ConsumeNamedEntity(SegmentedString& source,
     cc = source.CurrentChar();
   }
   if (entity_search.MostRecentMatch()->LastCharacter() == ';' ||
-      !additional_allowed_character || !(IsAlphaNumeric(cc) || cc == '=')) {
+      !additional_allowed_character ||
+      !(IsASCIIAlphanumeric(cc) || cc == '=')) {
     decoded_entity.Append(entity_search.MostRecentMatch()->first_value);
     if (UChar32 second = entity_search.MostRecentMatch()->second_value)
       decoded_entity.Append(second);
@@ -158,6 +128,21 @@ static bool ConsumeNamedEntity(SegmentedString& source,
   }
   UnconsumeCharacters(source, consumed_characters);
   return false;
+}
+
+}  // namespace
+
+void AppendLegalEntityFor(UChar32 c, DecodedHTMLEntity& decoded_entity) {
+  // FIXME: A number of specific entity values generate parse errors.
+  if (c <= 0 || c > 0x10FFFF || (c >= 0xD800 && c <= 0xDFFF)) {
+    decoded_entity.Append(0xFFFD);
+    return;
+  }
+  if (U_IS_BMP(c)) {
+    decoded_entity.Append(AdjustEntity(c));
+    return;
+  }
+  decoded_entity.Append(c);
 }
 
 bool ConsumeHTMLEntity(SegmentedString& source,
@@ -219,7 +204,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
         return false;
       }
       case kMaybeHexLowerCaseX: {
-        if (IsHexDigit(cc)) {
+        if (IsASCIIHexDigit(cc)) {
           entity_state = kHex;
           continue;
         }
@@ -228,7 +213,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
         return false;
       }
       case kMaybeHexUpperCaseX: {
-        if (IsHexDigit(cc)) {
+        if (IsASCIIHexDigit(cc)) {
           entity_state = kHex;
           continue;
         }
@@ -237,9 +222,9 @@ bool ConsumeHTMLEntity(SegmentedString& source,
         return false;
       }
       case kHex: {
-        if (IsHexDigit(cc)) {
+        if (IsASCIIHexDigit(cc)) {
           if (result != kInvalidUnicode)
-            result = result * 16 + AsHexDigit(cc);
+            result = result * 16 + ToASCIIHexValue(cc);
         } else if (cc == ';') {
           source.AdvanceAndASSERT(cc);
           AppendLegalEntityFor(result, decoded_entity);
