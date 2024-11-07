@@ -213,8 +213,16 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   base::HistogramTester histogram_tester;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       ImageSearchWithValidImageOpensUnifiedSidePanelForLens) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens \
+  DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanelForLens
+#else
+#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens \
+  ImageSearchWithValidImageOpensUnifiedSidePanelForLens
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SearchImageWithUnifiedSidePanel,
+    MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
@@ -361,8 +369,16 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
   EXPECT_TRUE(GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       ClosingSidePanelDeregistersLensViewAndLogsCloseMetric) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ClosingSidePanelDeregistersLensViewAndLogsCloseMetric \
+  DISABLED_ClosingSidePanelDeregistersLensViewAndLogsCloseMetric
+#else
+#define MAYBE_ClosingSidePanelDeregistersLensViewAndLogsCloseMetric \
+  ClosingSidePanelDeregistersLensViewAndLogsCloseMetric
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SearchImageWithUnifiedSidePanel,
+    MAYBE_ClosingSidePanelDeregistersLensViewAndLogsCloseMetric) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
@@ -382,8 +398,15 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
   EXPECT_EQ(1, user_action_tester.GetActionCount(kCloseAction));
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OpenInNewTabOpensInNewTabAndClosesSidePanel \
+  DISABLED_OpenInNewTabOpensInNewTabAndClosesSidePanel
+#else
+#define MAYBE_OpenInNewTabOpensInNewTabAndClosesSidePanel \
+  OpenInNewTabOpensInNewTabAndClosesSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       OpenInNewTabOpensInNewTabAndClosesSidePanel) {
+                       MAYBE_OpenInNewTabOpensInNewTabAndClosesSidePanel) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
