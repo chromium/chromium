@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/data_sharing/public/features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -268,6 +269,7 @@ PreviewServerProxy::~PreviewServerProxy() = default;
 
 void PreviewServerProxy::GetSharedDataPreview(
     const GroupToken& group_token,
+    std::optional<syncer::DataType> data_type,
     base::OnceCallback<
         void(const DataSharingService::SharedDataPreviewOrFailureOutcome&)>
         callback) {
@@ -280,17 +282,27 @@ void PreviewServerProxy::GetSharedDataPreview(
                                  kPersistentFailure)));
     return;
   }
+  std::string data_type_str;
+  if (data_type.has_value()) {
+    int field_number = GetSpecificsFieldNumberFromDataType(*data_type);
+    data_type_str = base::NumberToString(field_number);
+  } else {
+    data_type_str = "-";
+  }
 
   // Path in the URL to get shared entnties preview, {collaborationId} needs to
   // be replaced by the caller.
   const char kSharedEntitiesPreviewPath[] =
-      "collaborations/{collaborationId}/dataTypes/-/sharedEntities:preview";
+      "collaborations/{collaborationId}/dataTypes/{data_type}/"
+      "sharedEntities:preview";
   std::string shared_entities_preview_path = kSharedEntitiesPreviewPath;
   std::string encoded_id;
   base::Base64UrlEncode(group_token.group_id.value(),
                         base::Base64UrlEncodePolicy::OMIT_PADDING, &encoded_id);
   base::ReplaceFirstSubstringAfterOffset(&shared_entities_preview_path, 0,
                                          "{collaborationId}", encoded_id);
+  base::ReplaceFirstSubstringAfterOffset(&shared_entities_preview_path, 0,
+                                         "{data_type}", data_type_str);
   GURL url = GURL(
       kServiceBaseUrl.Get().append("/").append(shared_entities_preview_path));
 

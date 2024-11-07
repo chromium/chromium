@@ -12,6 +12,7 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/sync/base/data_type.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
@@ -36,8 +37,10 @@ class PreviewServerProxy {
   PreviewServerProxy& operator=(const PreviewServerProxy& other) = delete;
 
   // Called to get a preview of shared data.
+  // Use an empty |data_type| to fetch all available data types.
   virtual void GetSharedDataPreview(
       const GroupToken& group_token,
+      std::optional<syncer::DataType> data_type,
       base::OnceCallback<
           void(const DataSharingService::SharedDataPreviewOrFailureOutcome&)>
           callback);

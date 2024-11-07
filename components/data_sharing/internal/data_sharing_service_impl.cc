@@ -588,7 +588,9 @@ void DataSharingServiceImpl::GetSharedEntitiesPreview(
     const GroupToken& group_token,
     base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
         callback) {
-  preview_server_proxy_->GetSharedDataPreview(group_token, std::move(callback));
+  preview_server_proxy_->GetSharedDataPreview(
+      group_token, syncer::DataType::SHARED_TAB_GROUP_DATA,
+      std::move(callback));
 }
 
 void DataSharingServiceImpl::SetSDKDelegate(

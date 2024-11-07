@@ -16,6 +16,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/data_type.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -35,6 +36,10 @@ const char kAccessToken[] = "abcdefg";
 const char kExpectedUrl[] =
     "https://test.com/collaborations/"
     "cmVzb3VyY2VzLzEyMzQ1NjcvZS8xMTExMTExMTExMTExMTE/dataTypes/-/"
+    "sharedEntities:preview?accessToken=abcdefg&pageToken=&pageSize=100";
+const char kExpectedUrlSharedTabGroupsOnly[] =
+    "https://test.com/collaborations/"
+    "cmVzb3VyY2VzLzEyMzQ1NjcvZS8xMTExMTExMTExMTExMTE/dataTypes/1239418/"
     "sharedEntities:preview?accessToken=abcdefg&pageToken=&pageSize=100";
 
 const std::string kTabGroupResponse = R"(
@@ -183,16 +188,36 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_TabGroup) {
   base::RunLoop run_loop;
   server_proxy_->GetSharedDataPreview(
       GroupToken(GroupId(kCollaborationId), kAccessToken),
-      base::BindOnce([](const DataSharingService::
-                            SharedDataPreviewOrFailureOutcome& result) {
-        ASSERT_TRUE(result.has_value());
-        ASSERT_TRUE(result.value().shared_tab_group_preview);
-        SharedTabGroupPreview preview =
-            result.value().shared_tab_group_preview.value();
-        ASSERT_EQ(preview.title, "Test");
-        ASSERT_EQ(preview.tabs.size(), 1u);
-        ASSERT_EQ(preview.tabs[0].url, GURL("https://www.foo.com/"));
-      }).Then(run_loop.QuitClosure()));
+      /*data_type=*/std::nullopt,
+      base::BindOnce(
+          [](const DataSharingService::SharedDataPreviewOrFailureOutcome&
+                 result) {
+            ASSERT_TRUE(result.has_value());
+            ASSERT_TRUE(result.value().shared_tab_group_preview);
+            SharedTabGroupPreview preview =
+                result.value().shared_tab_group_preview.value();
+            ASSERT_EQ(preview.title, "Test");
+            ASSERT_EQ(preview.tabs.size(), 1u);
+            ASSERT_EQ(preview.tabs[0].url, GURL("https://www.foo.com/"));
+          })
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_TabGroupsOnly) {
+  fetcher_->SetFetchResponse(kTabGroupResponse);
+  EXPECT_CALL(*server_proxy_,
+              CreateEndpointFetcher(GURL(kExpectedUrlSharedTabGroupsOnly)))
+      .Times(1);
+
+  base::RunLoop run_loop;
+  server_proxy_->GetSharedDataPreview(
+      GroupToken(GroupId(kCollaborationId), kAccessToken),
+      syncer::DataType::SHARED_TAB_GROUP_DATA,
+      base::BindOnce(
+          [](const DataSharingService::SharedDataPreviewOrFailureOutcome&
+                 result) { ASSERT_TRUE(result.has_value()); })
+          .Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -204,6 +229,7 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_TabWithoutGroup) {
   base::RunLoop run_loop;
   server_proxy_->GetSharedDataPreview(
       GroupToken(GroupId(kCollaborationId), kAccessToken),
+      /*data_type=*/std::nullopt,
       base::BindOnce([](const DataSharingService::
                             SharedDataPreviewOrFailureOutcome& result) {
         ASSERT_EQ(
@@ -222,6 +248,7 @@ TEST_F(PreviewServerProxyTest,
   base::RunLoop run_loop;
   server_proxy_->GetSharedDataPreview(
       GroupToken(GroupId(kCollaborationId), kAccessToken),
+      /*data_type=*/std::nullopt,
       base::BindOnce([](const DataSharingService::
                             SharedDataPreviewOrFailureOutcome& result) {
         ASSERT_EQ(
@@ -242,6 +269,7 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_Deleted) {
   base::RunLoop run_loop;
   server_proxy_->GetSharedDataPreview(
       GroupToken(GroupId(kCollaborationId), kAccessToken),
+      /*data_type=*/std::nullopt,
       base::BindOnce([](const DataSharingService::
                             SharedDataPreviewOrFailureOutcome& result) {
         ASSERT_EQ(
@@ -258,6 +286,7 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_ServerError) {
   base::RunLoop run_loop;
   server_proxy_->GetSharedDataPreview(
       GroupToken(GroupId(kCollaborationId), kAccessToken),
+      /*data_type=*/std::nullopt,
       base::BindOnce([](const DataSharingService::
                             SharedDataPreviewOrFailureOutcome& result) {
         ASSERT_EQ(
@@ -275,6 +304,7 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_WrongJson) {
   base::RunLoop run_loop;
   server_proxy_->GetSharedDataPreview(
       GroupToken(GroupId(kCollaborationId), kAccessToken),
+      /*data_type=*/std::nullopt,
       base::BindOnce([](const DataSharingService::
                             SharedDataPreviewOrFailureOutcome& result) {
         ASSERT_EQ(
