@@ -1414,8 +1414,9 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
         children->MoveToNextSkippingChildren();
         continue;
       }
-      if (fragment->IsBlockInInline())
+      if (fragment->IsBlockInInline() && !fragment->IsHiddenForPaint()) {
         PaintBoxItem(*item, *fragment, *children, paint_info, paint_offset);
+      }
     }
     children->MoveToNext();
   }
