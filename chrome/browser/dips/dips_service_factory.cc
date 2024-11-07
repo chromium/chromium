@@ -47,7 +47,8 @@ content::BrowserContext* DIPSServiceFactory::GetBrowserContextToUse(
   return context;
 }
 
-KeyedService* DIPSServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DIPSServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new DIPSServiceImpl(PassKey(), context);
+  return std::make_unique<DIPSServiceImpl>(PassKey(), context);
 }
