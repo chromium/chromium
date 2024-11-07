@@ -70,10 +70,7 @@ cr-button:focus-visible {
 
 #prefixIcon {
   align-items: center;
-  background: linear-gradient(
-      135deg,
-      var(--color-loading-gradient-middle) 0%,
-      var(--color-loading-gradient-end) 100%);
+  background-color: var(--color-tab-search-button-icon-background);
   color: var(--color-tab-search-selected);
   border-radius: 8px;
   display: flex;
