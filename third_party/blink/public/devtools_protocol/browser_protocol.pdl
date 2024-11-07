@@ -5707,7 +5707,9 @@ domain Network
   # Unique loader identifier.
   type LoaderId extends string
 
-  # Unique request identifier.
+  # Unique network request identifier.
+  # Note that this does not identify individual HTTP requests that are part of
+  # a network request.
   type RequestId extends string
 
   # Unique intercepted request identifier.
@@ -11507,6 +11509,8 @@ domain Fetch
   depends on Page
 
   # Unique request identifier.
+  # Note that this does not identify individual HTTP requests that are part of
+  # a network request.
   type RequestId extends string
 
   # Stages of the request to handle. Request will intercept before the request is
