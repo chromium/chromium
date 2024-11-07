@@ -74,6 +74,7 @@
 #include "components/policy/core/common/policy_scheduler.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/policy_utils.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
@@ -321,7 +322,8 @@ void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
       policy::RemoteCommandsService* const remote_commands_service =
           manager->core()->remote_commands_service();
       if (remote_commands_service) {
-        remote_commands_service->FetchRemoteCommands();
+        remote_commands_service->FetchRemoteCommands(
+            policy::RemoteCommandsFetchReason::kUserRequest);
       }
     }
   }

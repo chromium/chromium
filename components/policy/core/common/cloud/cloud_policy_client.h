@@ -44,6 +44,7 @@ class DMServerJobConfiguration;
 class RegistrationJobConfiguration;
 class SigningService;
 struct DMServerJobResult;
+enum class RemoteCommandsFetchReason;
 
 inline constexpr char kPolicyFetchingTimeHistogramName[] =
     "Enterprise.CloudManagement.PolicyFetchingTime";
@@ -451,6 +452,7 @@ class POLICY_EXPORT CloudPolicyClient {
           command_results,
       enterprise_management::PolicyFetchRequest::SignatureType signature_type,
       const std::string& request_type,
+      RemoteCommandsFetchReason reason,
       RemoteCommandCallback callback);
 
   // Sends a device attribute update permission request to the server, uses

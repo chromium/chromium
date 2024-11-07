@@ -3157,6 +3157,22 @@ message RemoteCommandResult {
 }
 
 message DeviceRemoteCommandRequest {
+  // Reason for the requesting remote commands, to help with monitoring and
+  // alerting (e.g. to detect a decrease in invalidation requests).
+  enum Reason {
+    REASON_UNSPECIFIED = 0;
+    // A placeholder reason used for tests.
+    REASON_TEST = 1;
+    // Fetch on browser startup.
+    REASON_STARTUP = 2;
+    // Fetch to upload results of executed commands
+    REASON_UPLOAD_EXECUTION_RESULTS = 3;
+    // User triggered fetch.
+    REASON_USER_REQUEST = 4;
+    // Fetch due to an invalidation.
+    REASON_INVALIDATION = 5;
+  }
+
   // The command ID of the last command received from the server until
   // now. Omitted if no commands have been received yet.
   optional int64 last_command_unique_id = 1;
@@ -3176,6 +3192,9 @@ message DeviceRemoteCommandRequest {
   // fetched. This type helps the server redirect the request to different
   // handlers.
   optional string type = 5;
+
+  // Fetch request triggering reason.
+  optional Reason reason = 6;
 }
 
 message DeviceRemoteCommandResponse {

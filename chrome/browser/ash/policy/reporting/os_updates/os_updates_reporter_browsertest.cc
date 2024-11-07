@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
@@ -221,7 +222,8 @@ class OsUpdatesReporterPowerwashBrowserTest
   void TriggerRemoteCommandsFetch() {
     policy::RemoteCommandsService* const remote_commands_service =
         policy_manager_->core()->remote_commands_service();
-    remote_commands_service->FetchRemoteCommands();
+    remote_commands_service->FetchRemoteCommands(
+        policy::RemoteCommandsFetchReason::kTest);
   }
 
   em::RemoteCommandResult WaitForResult(int command_id) {

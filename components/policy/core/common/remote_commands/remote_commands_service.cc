@@ -23,6 +23,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
@@ -216,7 +217,8 @@ RemoteCommandsService::RemoteCommandsService(
 
 RemoteCommandsService::~RemoteCommandsService() = default;
 
-bool RemoteCommandsService::FetchRemoteCommands() {
+bool RemoteCommandsService::FetchRemoteCommands(
+    RemoteCommandsFetchReason reason) {
   if (!client_->is_registered()) {
     SYSLOG(WARNING) << "Client is not registered.";
     return false;
@@ -251,7 +253,7 @@ bool RemoteCommandsService::FetchRemoteCommands() {
 
   client_->FetchRemoteCommands(
       std::move(id_to_acknowledge), previous_results, GetSignatureType(),
-      GetRequestType(scope_),
+      GetRequestType(scope_), reason,
       base::BindOnce(&RemoteCommandsService::OnRemoteCommandsFetched,
                      weak_factory_.GetWeakPtr()));
 
@@ -285,7 +287,8 @@ void RemoteCommandsService::VerifyAndEnqueueSignedCommand(
         self->unsent_results_.push_back(result);
         self->RecordReceivedRemoteCommand(metric);
         // Trigger another fetch so the results are uploaded.
-        self->FetchRemoteCommands();
+        self->FetchRemoteCommands(
+            RemoteCommandsFetchReason::kUploadExecutionResults);
       },
       base::Unretained(this));
 
@@ -402,7 +405,7 @@ void RemoteCommandsService::OnJobFinished(RemoteCommandJob* command) {
 
   RecordExecutedRemoteCommand(*command);
 
-  FetchRemoteCommands();
+  FetchRemoteCommands(RemoteCommandsFetchReason::kUploadExecutionResults);
 }
 
 void RemoteCommandsService::OnRemoteCommandsFetched(
@@ -425,7 +428,7 @@ void RemoteCommandsService::OnRemoteCommandsFetched(
   // Start another fetch request job immediately if there are unsent command
   // results or enqueued fetch requests.
   if (!unsent_results_.empty() || has_enqueued_fetch_request_) {
-    FetchRemoteCommands();
+    FetchRemoteCommands(RemoteCommandsFetchReason::kUploadExecutionResults);
   }
 }
 

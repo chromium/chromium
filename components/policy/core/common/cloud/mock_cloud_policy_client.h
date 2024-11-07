@@ -73,6 +73,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                const std::vector<enterprise_management::RemoteCommandResult>&,
                enterprise_management::PolicyFetchRequest::SignatureType,
                const std::string&,
+               RemoteCommandsFetchReason,
                RemoteCommandCallback),
               (override));
   MOCK_METHOD(void,

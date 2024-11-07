@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -30,6 +31,7 @@
 #include "components/policy/core/common/cloud/signing_service.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -154,6 +156,23 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
       return Request::UNNECESSARY_DISCONNECT;
   }
   NOTREACHED();
+}
+
+em::DeviceRemoteCommandRequest::Reason TranslateFetchReason(
+    RemoteCommandsFetchReason reason) {
+  using Request = em::DeviceRemoteCommandRequest;
+  switch (reason) {
+    case RemoteCommandsFetchReason::kTest:
+      return Request::REASON_TEST;
+    case RemoteCommandsFetchReason::kStartup:
+      return Request::REASON_STARTUP;
+    case RemoteCommandsFetchReason::kUploadExecutionResults:
+      return Request::REASON_UPLOAD_EXECUTION_RESULTS;
+    case RemoteCommandsFetchReason::kUserRequest:
+      return Request::REASON_USER_REQUEST;
+    case RemoteCommandsFetchReason::kInvalidation:
+      return Request::REASON_INVALIDATION;
+  }
 }
 
 em::PolicyValidationReportRequest::ValidationResultType
@@ -1040,12 +1059,17 @@ void CloudPolicyClient::FetchRemoteCommands(
     const std::vector<em::RemoteCommandResult>& command_results,
     em::PolicyFetchRequest::SignatureType signature_type,
     const std::string& request_type,
+    RemoteCommandsFetchReason reason,
     RemoteCommandCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
 
   // Unsigned commands and NONE signature are not supported.
   DCHECK_NE(signature_type, em::PolicyFetchRequest::NONE);
+
+  if (reason == RemoteCommandsFetchReason::kTest) {
+    CHECK_IS_TEST();
+  }
 
   auto params = DMServerJobConfiguration::CreateParams::WithClient(
       DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS, this);
@@ -1071,6 +1095,7 @@ void CloudPolicyClient::FetchRemoteCommands(
   request->set_send_secure_commands(true);
   request->set_signature_type(signature_type);
   request->set_type(request_type);
+  request->set_reason(TranslateFetchReason(reason));
 
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }

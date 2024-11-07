@@ -45,6 +45,7 @@
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -402,25 +403,25 @@ em::DeviceManagementRequest GetUploadStatusRequest() {
 
 em::DeviceManagementRequest GetRemoteCommandRequest(
     em::PolicyFetchRequest::SignatureType signature_type) {
-  em::DeviceManagementRequest remote_command_request;
+  em::DeviceManagementRequest request;
 
-  remote_command_request.mutable_remote_command_request()
-      ->set_last_command_unique_id(kLastCommandId);
+  em::DeviceRemoteCommandRequest* remote_command_request =
+      request.mutable_remote_command_request();
+
+  remote_command_request->set_last_command_unique_id(kLastCommandId);
   em::RemoteCommandResult* command_result =
-      remote_command_request.mutable_remote_command_request()
-          ->add_command_results();
+      remote_command_request->add_command_results();
   command_result->set_command_id(kLastCommandId);
   command_result->set_result(em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
   command_result->set_payload(kResultPayload);
   command_result->set_timestamp(kTimestamp);
-  remote_command_request.mutable_remote_command_request()->set_signature_type(
-      signature_type);
-  remote_command_request.mutable_remote_command_request()
-      ->set_send_secure_commands(true);
-  remote_command_request.mutable_remote_command_request()->set_type(
-      dm_protocol::kChromeUserRemoteCommandType);
+  remote_command_request->set_signature_type(signature_type);
+  remote_command_request->set_send_secure_commands(true);
+  remote_command_request->set_type(dm_protocol::kChromeUserRemoteCommandType);
+  remote_command_request->set_reason(
+      em::DeviceRemoteCommandRequest::REASON_TEST);
 
-  return remote_command_request;
+  return request;
 }
 
 em::DeviceManagementRequest GetRobotAuthCodeFetchRequest() {
@@ -828,6 +829,52 @@ INSTANTIATE_TEST_SUITE_P(
         std::tuple(PolicyFetchReason::kSignin, false),
         std::tuple(PolicyFetchReason::kTest, false),
         std::tuple(PolicyFetchReason::kUserRequest, false)));
+
+class CloudPolicyClientWithRemoteCommandsFetchReasonTest
+    : public CloudPolicyClientTest,
+      public testing::WithParamInterface<
+          std::tuple<RemoteCommandsFetchReason,
+                     em::DeviceRemoteCommandRequest::Reason>> {
+ public:
+  auto GetReason() const { return get<0>(GetParam()); }
+  auto GetProtoReason() const { return get<1>(GetParam()); }
+};
+
+TEST_P(CloudPolicyClientWithRemoteCommandsFetchReasonTest, FetchReason) {
+  RegisterClient();
+
+  em::DeviceManagementResponse empty_server_response;
+  ExpectAndCaptureJob(empty_server_response);
+
+  base::test::TestFuture<DeviceManagementStatus,
+                         const std::vector<enterprise_management::SignedData>&>
+      result_future;
+  client_->FetchRemoteCommands(
+      std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
+      kRemoteCommandsFetchSignatureType,
+      dm_protocol::kChromeUserRemoteCommandType, GetReason(),
+      result_future.GetCallback());
+
+  ASSERT_TRUE(result_future.Wait());
+  ASSERT_TRUE(job_request_.remote_command_request().has_reason());
+  EXPECT_EQ(job_request_.remote_command_request().reason(), GetProtoReason());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CloudPolicyClientWithReasonParams,
+    CloudPolicyClientWithRemoteCommandsFetchReasonTest,
+    ::testing::Values(
+        std::tuple{RemoteCommandsFetchReason::kTest,
+                   em::DeviceRemoteCommandRequest::REASON_TEST},
+        std::tuple{RemoteCommandsFetchReason::kStartup,
+                   em::DeviceRemoteCommandRequest::REASON_STARTUP},
+        std::tuple{
+            RemoteCommandsFetchReason::kUploadExecutionResults,
+            em::DeviceRemoteCommandRequest::REASON_UPLOAD_EXECUTION_RESULTS},
+        std::tuple{RemoteCommandsFetchReason::kUserRequest,
+                   em::DeviceRemoteCommandRequest::REASON_USER_REQUEST},
+        std::tuple{RemoteCommandsFetchReason::kInvalidation,
+                   em::DeviceRemoteCommandRequest::REASON_INVALIDATION}));
 
 TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
@@ -2687,7 +2734,8 @@ TEST_F(CloudPolicyClientTest, ShouldRejectUnsignedCommands) {
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
       kRemoteCommandsFetchSignatureType,
-      dm_protocol::kChromeUserRemoteCommandType, std::move(callback));
+      dm_protocol::kChromeUserRemoteCommandType,
+      policy::RemoteCommandsFetchReason::kTest, std::move(callback));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -2717,7 +2765,8 @@ TEST_F(CloudPolicyClientTest,
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
       kRemoteCommandsFetchSignatureType,
-      dm_protocol::kChromeUserRemoteCommandType, std::move(callback));
+      dm_protocol::kChromeUserRemoteCommandType,
+      policy::RemoteCommandsFetchReason::kTest, std::move(callback));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(received_commands, ElementsAre());
@@ -2744,7 +2793,8 @@ TEST_F(CloudPolicyClientTest, ShouldNotFailIfRemoteCommandResponseIsEmpty) {
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
       kRemoteCommandsFetchSignatureType,
-      dm_protocol::kChromeUserRemoteCommandType, std::move(callback));
+      dm_protocol::kChromeUserRemoteCommandType,
+      policy::RemoteCommandsFetchReason::kTest, std::move(callback));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(received_commands, ElementsAre());
@@ -2790,7 +2840,8 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId),
       command_results, kRemoteCommandsFetchSignatureType,
-      dm_protocol::kChromeUserRemoteCommandType, std::move(callback));
+      dm_protocol::kChromeUserRemoteCommandType,
+      policy::RemoteCommandsFetchReason::kTest, std::move(callback));
   run_loop.Run();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
             job_type_);

@@ -197,6 +197,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -1608,7 +1609,8 @@ AutotestPrivateRefreshRemoteCommandsFunction::Run() {
       policy::RemoteCommandsService* const remote_commands_service =
           manager->core()->remote_commands_service();
       if (remote_commands_service) {
-        remote_commands_service->FetchRemoteCommands();
+        remote_commands_service->FetchRemoteCommands(
+            policy::RemoteCommandsFetchReason::kTest);
       }
     }
   }
