@@ -155,10 +155,7 @@ void NavigationCapturingNavigationHandleUserData::
   // TODO(crbug.com/371237535): Avoid reliance on FindBrowserWithTab and instead
   // pass in the Browser instance earlier.
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  // TODO(crbug.com/336371044): Support IPH in browser tabs.
-  if (browser->app_controller()) {
-    MaybeShowNavigationCaptureIph(app_id, browser->profile(), browser);
-  }
+  MaybeShowNavigationCaptureIph(app_id, browser->profile(), browser);
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(

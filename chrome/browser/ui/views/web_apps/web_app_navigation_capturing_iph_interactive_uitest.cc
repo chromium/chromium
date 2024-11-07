@@ -21,9 +21,11 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/interaction/dom_message_observer.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
@@ -63,7 +65,8 @@ class WebAppNavigationCapturingIphUiTest
  public:
   WebAppNavigationCapturingIphUiTest()
       : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch})) {
+            {feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
+             feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab})) {
     base::FieldTrialParams params;
     params["link_capturing_state"] = "reimpl_default_on";
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -177,17 +180,19 @@ class WebAppNavigationCapturingIphUiTest
   auto TriggerAppLaunch(
       const std::string& element_id,
       ui_controls::MouseButton button,
-      ui_controls::AcceleratorState accel = ui_controls::kNoAccelerator) {
+      ui_controls::AcceleratorState accel = ui_controls::kNoAccelerator,
+      bool expect_new_browser = false) {
     // Note: on Mac, the web contents for a new app can become "visible" well
     // before the browser itself does, which can cause a race condition.
     // Therefore, throughout, we wait for the web contents and not the browser
     // to enforce consistency.
-    auto steps = Steps(InstrumentNextTab(kDestinationPageId, AnyBrowser()),
-                       ClickLaunchLink(element_id, button, accel),
-                       InAnyContext(WaitForShow(kDestinationPageId)),
-                       InSameContext(CheckViewProperty(
-                           kBrowserViewElementId, &BrowserView::browser,
-                           testing::Ne(browser()))));
+    auto steps =
+        Steps(InstrumentNextTab(kDestinationPageId, AnyBrowser()),
+              ClickLaunchLink(element_id, button, accel),
+              InAnyContext(WaitForShow(kDestinationPageId)),
+              InSameContext(CheckViewProperty(
+                  kBrowserViewElementId, &BrowserView::browser,
+                  testing::Ne(expect_new_browser ? browser() : nullptr))));
     AddDescription(steps, "TriggerAppLaunch( %s )");
     return steps;
   }
@@ -326,6 +331,23 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
           WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
           PressDefaultPromoButton(),
           CheckActionCount("LinkCapturingIPHAppBubbleNotAccepted", 1))));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
+                       IPHShownForAppInTab) {
+  webapps::AppId app_id = test::InstallWebApp(
+      browser()->profile(),
+      WebAppInstallInfo::CreateForTesting(
+          GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,
+          mojom::UserDisplayMode::kBrowser,
+          blink::mojom::ManifestLaunchHandler_ClientMode::kAuto));
+  RunTestSequence(
+      OpenStartPage(),
+      TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
+                       ui_controls::kNoAccelerator,
+                       /* expect_new_browser= */ false),
+      InSameContext(WaitForPromo(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)));
 }
 
 }  // namespace

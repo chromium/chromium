@@ -748,6 +748,14 @@ void WebAppUiManagerImpl::ClearWebAppSiteDataIfNeeded(
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+const base::Feature& GetPromoFeatureEngagementFromBrowser(
+    const Browser* browser) {
+  return browser->app_controller() != nullptr
+             ? feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch
+             : feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab;
+}
+
 void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
     const Browser* browser,
     const webapps::AppId& app_id,
@@ -757,7 +765,7 @@ void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
   }
 
   user_education::FeaturePromoParams promo_params(
-      feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch, app_id);
+      GetPromoFeatureEngagementFromBrowser(browser), app_id);
   promo_params.close_callback =
       base::BindOnce(&WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing,
                      weak_ptr_factory_.GetWeakPtr(), browser, app_id);
@@ -788,8 +796,7 @@ void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
 
   user_education::FeaturePromoClosedReason close_reason;
   feature_promo_controller->HasPromoBeenDismissed(
-      {feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch, app_id},
-      &close_reason);
+      {GetPromoFeatureEngagementFromBrowser(browser), app_id}, &close_reason);
   switch (close_reason) {
     case user_education::FeaturePromoClosedReason::kAction:
       base::RecordAction(

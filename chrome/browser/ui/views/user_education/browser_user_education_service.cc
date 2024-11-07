@@ -1161,6 +1161,50 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered once per-app when a link is captured and "
                        "opened in a PWA.")));
 
+  // kIPHDesktopPWAsLinkCapturingLaunchAppInTab:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
+          kLocationIconElementId, IDS_DESKTOP_PWA_LINK_CAPTURING_TEXT,
+          IDS_DESKTOP_PWA_LINK_CAPTURING_SETTINGS,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* const browser =
+                    chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                TabStripModel* const tab_strip_model =
+                    browser->tab_strip_model();
+                if (!tab_strip_model) {
+                  return;
+                }
+                content::WebContents* const web_contents =
+                    tab_strip_model->GetActiveWebContents();
+                const webapps::AppId* app_id =
+                    web_app::WebAppTabHelper::GetAppId(web_contents);
+                if (!app_id) {
+                  return;
+                }
+                const GURL final_url(chrome::kChromeUIWebAppSettingsURL +
+                                     *app_id);
+                if (web_contents &&
+                    web_contents->GetURL() != browser->GetNewTabURL()) {
+                  NavigateParams params(browser->profile(), final_url,
+                                        ui::PAGE_TRANSITION_LINK);
+                  params.disposition =
+                      WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                  Navigate(&params);
+                }
+              }))
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetPromoSubtype(user_education::FeaturePromoSpecification::
+                               PromoSubtype::kKeyedNotice)
+          .SetMetadata(122, "finnur@chromium.org",
+                       "Triggered once per-app when a link is captured and "
+                       "opened in a browser tab.")));
+
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHHistorySearchFeature,

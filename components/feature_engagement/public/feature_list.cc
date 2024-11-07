@@ -285,6 +285,7 @@ const base::Feature* const kAllFeatures[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     &kIPHDesktopPWAsLinkCapturingLaunch,
+    &kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
     &kIPHToolbarManagementButtonFeature,
 #endif  // BUILDFLAG(IS_WIN) ||  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

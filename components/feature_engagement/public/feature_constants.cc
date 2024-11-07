@@ -796,6 +796,14 @@ BASE_FEATURE(kIPHScalableIphGamingFeature,
 BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunch,
              "IPH_DesktopPWAsLinkCapturingLaunch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This can be enabled by default, as the DesktopPWAsLinkCapturing
+// flag is needed for the IPH linked to this feature to work, and
+// use-cases to show the IPH are guarded by that flag.
+BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
+             "IPH_DesktopPWAsLinkCapturingLaunchAppInTab",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This can be enabled by default, as the kManagementToolbarButton
 // flag is needed for the IPH linked to this feature to work, and
 // use-cases to show the IPH are guarded by that flag. This feature is
