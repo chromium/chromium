@@ -8415,3 +8415,6 @@ crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentati
 crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-001d-print.html [ Failure Pass ]
 crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-002c-print.html [ Failure Pass ]
 crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-002d-print.html [ Failure Pass ]
+
+# Gardener 2024-11-07
+crbug.com/377172757 [ Linux ] external/wpt/event-timing/selection-autoscroll.html [ Timeout Pass ]
