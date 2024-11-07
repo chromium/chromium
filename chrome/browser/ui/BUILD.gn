@@ -365,6 +365,7 @@ static_library("ui") {
     "//chrome/browser/picture_in_picture:impl",
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:impl",
+    "//chrome/browser/preloading:prefs",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
