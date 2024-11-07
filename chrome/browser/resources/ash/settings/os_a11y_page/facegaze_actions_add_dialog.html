@@ -13,7 +13,7 @@
     padding-inline-end: var(--dialog-horizontal-padding);
     padding-inline-start: var(--dialog-horizontal-padding);
     padding-bottom: 16px;
-    line-height: 1;
+    font-size: 14px;
   }
 
   cr-dialog [slot=body] {
@@ -123,6 +123,10 @@
 
   #faceGazeGestureCount {
     text-align: center;
+    font-size: 14px;
+    color: var(--cros-sys-on_surface);
+    padding-bottom: 0px;
+    padding-top: 16px;
   }
 
   #cameraPreviewContainer {
@@ -170,7 +174,6 @@
   iron-icon[icon='cr:info-outline'] {
     --iron-icon-fill-color: var(--cros-sys-on_secondary_container);
   }
-
 
   #complexActionContainer {
     background-color: var(--cros-sys-secondary_container);
@@ -348,6 +351,11 @@
       $i18n{faceGazeActionsDialogGestureThresholdSubtitle}
     </div>
     <div slot="body">
+      <div id="faceGazeGestureCount"
+          class="start settings-box-text"
+          aria-live="polite">
+        [[localizedGestureCountLabel_]]
+      </div>
       <div id="cameraPreviewContainer" class="gesture-not-detected">
         <video class="preview" id="cameraStream" autoplay playsinline></video>
       </div>
@@ -375,11 +383,6 @@
             aria-label="$i18n{faceGazeActionsDialogGestureThresholdIncreaseButtonLabel}"
             on-click="onIncreaseThresholdButtonClick_">
         </cr-icon-button>
-      </div>
-      <div id="faceGazeGestureCount"
-          class="start settings-box-text"
-          aria-live="polite">
-        [[localizedGestureCountLabel_]]
       </div>
     </div>
     <div slot="button-container" class="justify-space-between">
