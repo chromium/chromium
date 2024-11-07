@@ -525,7 +525,7 @@ Otherwise submit an issue for a project maintainer.
 third_party/bidimapper/roll_bidmapper
 ```
 
-3. Submit a CL with bug `chromedriver:4226`.
+3. Submit a CL with bug `42323268` ([link](https://crbug.com/42323268)).
 
 4. [Regenerate WPT expectations or baselines](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md#test-expectations-and-baselines):
 
