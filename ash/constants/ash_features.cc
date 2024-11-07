@@ -2151,11 +2151,6 @@ BASE_FEATURE(kFeatureManagementOobeAiIntro,
              "FeatureManagementOobeAiIntro",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables OOBE gemini intro feature for testing.
-BASE_FEATURE(kOobeGeminiIntroForTesting,
-             "OobeGeminiIntroForTesting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OOBE gemini intro feature.
 BASE_FEATURE(kFeatureManagementOobeGeminiIntro,
              "FeatureManagementOobeGeminiIntro",
@@ -4328,11 +4323,6 @@ bool IsSplitKeyboardRefactorEnabled() {
 
 bool IsOobeAiIntroEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementOobeAiIntro);
-}
-
-bool IsOobeGeminiIntroEnabled() {
-  return base::FeatureList::IsEnabled(kOobeGeminiIntroForTesting) ||
-         base::FeatureList::IsEnabled(kFeatureManagementOobeGeminiIntro);
 }
 
 bool IsOobeJellyModalEnabled() {

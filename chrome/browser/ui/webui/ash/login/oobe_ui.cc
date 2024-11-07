@@ -326,8 +326,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeLazyLoadingEnabled",
                      features::IsOobeLazyLoadingEnabled());
   source->AddBoolean("isOobeAiIntroEnabled", features::IsOobeAiIntroEnabled());
-  source->AddBoolean("isOobeGeminiIntroEnabled",
-                     features::IsOobeGeminiIntroEnabled());
   source->AddBoolean("isJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyModalEnabled",
@@ -499,10 +497,7 @@ void OobeUI::ConfigureOobeDisplay() {
   if (features::IsOobeAiIntroEnabled()) {
     AddScreenHandler(std::make_unique<AiIntroScreenHandler>());
   }
-
-  if (features::IsOobeGeminiIntroEnabled()) {
-    AddScreenHandler(std::make_unique<GeminiIntroScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<GeminiIntroScreenHandler>());
 
   AddScreenHandler(std::make_unique<DemoSetupScreenHandler>());
 

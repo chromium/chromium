@@ -144,11 +144,7 @@ export const commonScreensList: OobeTypes.ScreensList = [
     condition: 'isOobeGaiaInfoScreenEnabled',
   },
   {tag: 'gaia-signin-element', id: 'gaia-signin'},
-  {
-    tag: 'gemini-intro-element',
-    id: 'gemini-intro',
-    condition: 'isOobeGeminiIntroEnabled',
-  },
+  {tag: 'gemini-intro-element', id: 'gemini-intro'},
   {tag: 'gesture-navigation-element', id: 'gesture-navigation'},
   {tag: 'guest-tos-element', id: 'guest-tos'},
   {tag: 'hw-data-collection-element', id: 'hw-data-collection'},

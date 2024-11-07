@@ -37,10 +37,6 @@ std::string GeminiIntroScreen::GetResultString(Result result) {
 
 // static
 bool GeminiIntroScreen::ShouldBeSkipped() {
-  if (!features::IsOobeGeminiIntroEnabled()) {
-    return true;
-  }
-
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
 
   // Skip the screen if the perk was already shown to the user in perks

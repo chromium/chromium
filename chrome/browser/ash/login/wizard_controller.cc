@@ -729,12 +729,10 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (features::IsOobeGeminiIntroEnabled()) {
-    append(std::make_unique<GeminiIntroScreen>(
-        oobe_ui->GetView<GeminiIntroScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnGeminiIntroScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<GeminiIntroScreen>(
+      oobe_ui->GetView<GeminiIntroScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnGeminiIntroScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<WrongHWIDScreen>(
       oobe_ui->GetView<WrongHWIDScreenHandler>()->AsWeakPtr(),
@@ -1938,10 +1936,8 @@ void WizardController::OnPerksDiscoveryScreenExit(
                PerksDiscoveryScreen::GetResultString(result));
   if (features::IsOobeAiIntroEnabled()) {
     ShowAiIntroScreen();
-  } else if (features::IsOobeGeminiIntroEnabled()) {
-    ShowGeminiIntroScreen();
   } else {
-    ShowAssistantOptInFlowScreen();
+    ShowGeminiIntroScreen();
   }
 }
 
@@ -2750,12 +2746,7 @@ void WizardController::OnAppDownloadingScreenExit() {
 void WizardController::OnAiIntroScreenExit(AiIntroScreen::Result result) {
   OnScreenExit(AiIntroScreenView::kScreenId,
                AiIntroScreen::GetResultString(result));
-
-  if (features::IsOobeGeminiIntroEnabled()) {
-    ShowGeminiIntroScreen();
-  } else {
-    ShowAssistantOptInFlowScreen();
-  }
+  ShowGeminiIntroScreen();
 }
 
 void WizardController::OnGeminiIntroScreenExit(
