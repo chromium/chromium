@@ -3457,20 +3457,24 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PostRestoreSignin.Choice"
-    enum="IOSPostRestoreSigninChoice" expires_after="2024-03-31">
+    enum="IOSPostRestoreSigninChoice" expires_after="2025-03-31">
   <owner>scottyoder@google.com</owner>
+  <owner>jlebel@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
-    Logs a user's choice when presented with the Post Restore Signin Promo.'
+    Logs a user's choice when presented with the Post Restore Signin Promo.
+    Note: this metric got expired for a while between 2024-03-31 and 2024-11-07.
   </summary>
 </histogram>
 
 <histogram name="IOS.PostRestoreSignin.Displayed" enum="Boolean"
-    expires_after="2024-03-31">
+    expires_after="2025-03-31">
   <owner>scottyoder@google.com</owner>
+  <owner>jlebel@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
-    Indicates whether the Post Restore Signin Promo was displayed.
+    Indicates whether the Post Restore Signin Promo was displayed. Note: this
+    metric got expired for a while between 2024-03-31 and 2024-11-07.
   </summary>
 </histogram>
 
