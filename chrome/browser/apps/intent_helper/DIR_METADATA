@@ -1,7 +1,4 @@
-monorail: {
-  component: "Platform>Apps>Foundation>Intents"
-}
 os: CHROME_OS
-buganizer_public: {
-  component_id: 1456740
+buganizer: {
+  component_id: 1389907
 }
