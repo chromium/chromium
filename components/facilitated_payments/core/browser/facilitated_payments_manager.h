@@ -114,9 +114,9 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RiskDataNotEmpty_GetClientTokenCalled);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           GetClientTokenHistogram_ClientTokenNotEmpty);
+                           LogGetClientTokenResultAndLatency);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           GetClientTokenHistogram_ClientTokenEmpty);
+                           PayflowExitedReason_ClientTokenNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixPaymentPromptAccepted_ProgressSceenShown);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,

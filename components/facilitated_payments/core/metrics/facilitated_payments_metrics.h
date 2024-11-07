@@ -34,7 +34,9 @@ enum class PayflowExitedReason {
   kApiClientNotAvailable = 5,
   // The risk data needed to send the server request is not available.
   kRiskDataNotAvailable = 6,
-  kMaxValue = kRiskDataNotAvailable
+  // The client token needed to send the server request is not available.
+  kClientTokenNotAvailable = 7,
+  kMaxValue = kClientTokenNotAvailable
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
@@ -88,8 +90,8 @@ void LogApiAvailabilityCheckResultAndLatency(bool result,
 void LogLoadRiskDataResultAndLatency(bool was_successful,
                                      base::TimeDelta duration);
 
-// Log the result of the GetClientToken call made to api client.
-void LogGetClientTokenResult(bool result, base::TimeDelta duration);
+// Log the result and the latency of the GetClientToken call made to api client.
+void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration);
 
 // Log the reason for the payflow was exited early. This includes all the
 // reasons after receiving a signal from the renderer process that a valid code

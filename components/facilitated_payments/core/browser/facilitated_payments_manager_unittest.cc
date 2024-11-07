@@ -279,46 +279,38 @@ TEST_F(FacilitatedPaymentsManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
 // The GetClientToken async call is made after fetching the risk data. This test
 // verifies that the result and latency of the GetClientToken call is logged
 // correctly.
-TEST_F(FacilitatedPaymentsManagerTest,
-       GetClientTokenHistogram_ClientTokenNotEmpty) {
-  base::HistogramTester histogram_tester;
-  EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
-  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
-                             /*risk_data=*/"seems pretty risky");
-  FastForwardBy(base::Seconds(2));
+TEST_F(FacilitatedPaymentsManagerTest, LogGetClientTokenResultAndLatency) {
+  for (bool get_client_token_result : {true, false}) {
+    base::HistogramTester histogram_tester;
+    EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
+    manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
+                               /*risk_data=*/"seems pretty risky");
+    FastForwardBy(base::Seconds(2));
 
-  manager_->OnGetClientToken(std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'});
+    manager_->OnGetClientToken(
+        get_client_token_result ? std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'}
+                                : std::vector<uint8_t>{});
 
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.GetClientToken.Result",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.GetClientToken.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Pix.GetClientToken.",
+                      get_client_token_result ? "Success" : "Failure",
+                      ".Latency"}),
+        /*sample=*/2000,
+        /*expected_bucket_count=*/1);
+  }
 }
 
-// The GetClientToken async call is made after fetching the risk data. This test
-// verifies that the result and latency of the GetClientToken call is logged
-// correctly.
+// If the client token is not available, then the PayflowExitedReason histogram
+// should be logged.
 TEST_F(FacilitatedPaymentsManagerTest,
-       GetClientTokenHistogram_ClientTokenEmpty) {
+       PayflowExitedReason_ClientTokenNotAvailable) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
-  manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
-                             /*risk_data=*/"seems pretty risky");
-  FastForwardBy(base::Seconds(2));
 
   manager_->OnGetClientToken(std::vector<uint8_t>{});
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.GetClientToken.Result",
-      /*sample=*/false,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.GetClientToken.Latency",
-      /*sample=*/2000,
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kClientTokenNotAvailable,
       /*expected_bucket_count=*/1);
 }
 

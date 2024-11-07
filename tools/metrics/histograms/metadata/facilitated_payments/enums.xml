@@ -34,6 +34,7 @@ reviewer.
              triggered"/>
   <int value="5" label="API client not available"/>
   <int value="6" label="Risk data not available"/>
+  <int value="7" label="Client token not available"/>
 </enum>
 
 <enum name="FacilitatedPayments.PaymentNotOfferedReason">

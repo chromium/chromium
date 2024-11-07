@@ -220,14 +220,12 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
 
 void FacilitatedPaymentsManager::OnGetClientToken(
     std::vector<uint8_t> client_token) {
-  LogGetClientTokenResult(
+  LogGetClientTokenResultAndLatency(
       !client_token.empty(),
       (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
     client_->ShowErrorScreen();
-    LogTransactionResult(TransactionResult::kFailed, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
+    LogPayflowExitedReason(PayflowExitedReason::kClientTokenNotAvailable);
     return;
   }
   initiate_payment_request_details_->client_token_ = client_token;

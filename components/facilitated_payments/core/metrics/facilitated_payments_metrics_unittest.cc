@@ -96,17 +96,13 @@ TEST(FacilitatedPaymentsMetricsTest, LogLoadRiskDataResult) {
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogGetClientTokenResult) {
+TEST(FacilitatedPaymentsMetricsTest, LogGetClientTokenResultAndLatency) {
   base::HistogramTester histogram_tester;
 
-  LogGetClientTokenResult(/*result=*/true, base::Milliseconds(10));
+  LogGetClientTokenResultAndLatency(/*result=*/true, base::Milliseconds(10));
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.GetClientToken.Result",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.GetClientToken.Latency",
+      "FacilitatedPayments.Pix.GetClientToken.Success.Latency",
       /*sample=*/10,
       /*expected_bucket_count=*/1);
 }
@@ -226,7 +222,8 @@ INSTANTIATE_TEST_SUITE_P(
                     PayflowExitedReason::kNoLinkedAccount,
                     PayflowExitedReason::kLandscapeScreenOrientation,
                     PayflowExitedReason::kApiClientNotAvailable,
-                    PayflowExitedReason::kRiskDataNotAvailable));
+                    PayflowExitedReason::kRiskDataNotAvailable,
+                    PayflowExitedReason::kClientTokenNotAvailable));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:

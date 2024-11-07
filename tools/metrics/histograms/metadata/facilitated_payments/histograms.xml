@@ -123,7 +123,7 @@ reviewer.
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.Latency"
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
@@ -132,28 +132,13 @@ reviewer.
   <summary>
     Latency for the call to fetch the client token. The client token is fetched
     from the platform specific payment library in preparation for facilitating
-    the payment using Google Pay. [Frequency] Logged at most once per page load.
+    the payment using Google Pay. {Result} is the token fetch result.
+    [Frequency] Logged at most once per {FacilitatedPaymentsType} payflow.
     [Trigger] Page is loaded and the main frame contains a valid payment code
     for {FacilitatedPaymentsType}.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
-</histogram>
-
-<histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.Result"
-    enum="Boolean" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Result of whether the call to fetch the client token was successful or not.
-    The client token is fetched from the platform specific payment library in
-    preparation for facilitating the payment using Google Pay. [Frequency]
-    Logged at most once per page load. [Trigger] Page is loaded and the main
-    frame contains a valid payment code for {FacilitatedPaymentsType}.
-  </summary>
-  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram

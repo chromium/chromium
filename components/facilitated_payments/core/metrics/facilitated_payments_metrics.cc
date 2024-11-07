@@ -54,13 +54,13 @@ void LogLoadRiskDataResultAndLatency(bool was_successful,
       duration);
 }
 
-void LogGetClientTokenResult(bool result, base::TimeDelta duration) {
+void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration) {
   // TODO(b/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
-  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.GetClientToken.Result",
-                        result);
-  base::UmaHistogramLongTimes("FacilitatedPayments.Pix.GetClientToken.Latency",
-                              duration);
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.Pix.GetClientToken.",
+                    result ? "Success" : "Failure", ".Latency"}),
+      duration);
 }
 
 void LogPayflowExitedReason(PayflowExitedReason reason) {
