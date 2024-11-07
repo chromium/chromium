@@ -1724,9 +1724,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusRichGestures);
 // enabling functions like writing into a nearby input element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusPointerAdjustment);
 
-// If enabled, regex match on script source to detect third party technologies.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThirdPartyScriptDetection);
-
 // If enabled, reads and decodes navigation body data off the main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
 
