@@ -47,7 +47,6 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             BrowserServicesIntentDataProvider intentData,
             Supplier<TouchEventProvider> touchEventProvider,
             Supplier<Tab> tab,
-            CustomTabsConnection connection,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager,
             BooleanSupplier isEnteringPip,
@@ -58,10 +57,12 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
 
         CustomTabsSessionToken session = intentData.getSession();
         OnResizedCallback resizeCallback =
-                (height, width) -> connection.onResized(session, height, width);
+                (height, width) ->
+                        CustomTabsConnection.getInstance().onResized(session, height, width);
         OnActivityLayoutCallback layoutCallback =
                 (left, top, right, bottom, state) ->
-                        connection.onActivityLayout(session, left, top, right, bottom, state);
+                        CustomTabsConnection.getInstance()
+                                .onActivityLayout(session, left, top, right, bottom, state);
         return new PartialCustomTabDisplayManager(
                 activity,
                 intentData,

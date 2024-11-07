@@ -132,7 +132,6 @@ public class ChromeOriginVerifierJunitTest {
                         PACKAGE_NAME,
                         CustomTabsService.RELATION_HANDLE_ALL_URLS,
                         null,
-                        null,
                         ChromeVerificationResultStore.getInstance());
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
@@ -152,7 +151,6 @@ public class ChromeOriginVerifierJunitTest {
                 new ChromeOriginVerifier(
                         PACKAGE_NAME,
                         CustomTabsService.RELATION_HANDLE_ALL_URLS,
-                        null,
                         null,
                         ChromeVerificationResultStore.getInstance());
         TestOriginVerificationListener resultListener =

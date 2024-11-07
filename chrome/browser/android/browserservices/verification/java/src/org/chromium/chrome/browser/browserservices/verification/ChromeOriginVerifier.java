@@ -57,8 +57,6 @@ import java.util.List;
 public class ChromeOriginVerifier extends OriginVerifier {
     private static final String TAG = "ChromeOriginVerifier";
 
-    @Nullable private ExternalAuthUtils mExternalAuthUtils;
-
     static String relationToRelationship(@Relation int relation) {
         switch (relation) {
             case CustomTabsService.RELATION_USE_AS_ORIGIN:
@@ -72,21 +70,20 @@ public class ChromeOriginVerifier extends OriginVerifier {
     }
 
     /**
-     * Main constructor.
-     * Use {@link ChromeOriginVerifier#start}
+     * Main constructor. Use {@link ChromeOriginVerifier#start}
+     *
      * @param packageName The package for the Android application for verification.
      * @param relation Digital Asset Links {@link Relation} to use during verification.
      * @param webContents The web contents of the tab used for reporting errors to DevTools. Can be
-     *         null if unavailable.
+     *     null if unavailable.
      * @param externalAuthUtils The auth utils used to check if an origin is allowlisted to bypass/
      * @param verificationResultStore The {@link ChromeVerificationResultStore} for persisting
-     *         results.
+     *     results.
      */
     public ChromeOriginVerifier(
             String packageName,
             @Relation int relation,
             @Nullable WebContents webContents,
-            @Nullable ExternalAuthUtils externalAuthUtils,
             ChromeVerificationResultStore verificationResultStore) {
         super(
                 packageName,
@@ -94,7 +91,6 @@ public class ChromeOriginVerifier extends OriginVerifier {
                 webContents,
                 null,
                 verificationResultStore);
-        mExternalAuthUtils = externalAuthUtils;
     }
 
     /**
@@ -134,11 +130,11 @@ public class ChromeOriginVerifier extends OriginVerifier {
 
     @Override
     public boolean isAllowlisted(String packageName, Origin origin, String relation) {
-        if (mExternalAuthUtils == null) return false;
+        if (ExternalAuthUtils.getInstance() == null) return false;
 
         if (!relation.equals(HANDLE_ALL_URLS)) return false;
 
-        return mExternalAuthUtils.isAllowlistedForTwaVerification(packageName, origin);
+        return ExternalAuthUtils.getInstance().isAllowlistedForTwaVerification(packageName, origin);
     }
 
     @Override

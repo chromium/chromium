@@ -44,7 +44,6 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
         int NUM_ENTRIES = 4;
     }
 
-    private final CustomTabsConnection mConnection;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
 
@@ -52,11 +51,9 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
 
     @Inject
     public CustomTabActivityClientConnectionKeeper(
-            CustomTabsConnection connection,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BaseCustomTabActivity activity) {
-        mConnection = connection;
         mIntentDataProvider = intentDataProvider;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         lifecycleDispatcher.register(this);
@@ -65,14 +62,16 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
     @Override
     public void onStartWithNative() {
         mIsKeepingAlive =
-                mConnection.keepAliveForSession(
-                        mIntentDataProvider.getSession(),
-                        mIntentDataProvider.getKeepAliveServiceIntent());
+                CustomTabsConnection.getInstance()
+                        .keepAliveForSession(
+                                mIntentDataProvider.getSession(),
+                                mIntentDataProvider.getKeepAliveServiceIntent());
     }
 
     @Override
     public void onStopWithNative() {
-        mConnection.dontKeepAliveForSession(mIntentDataProvider.getSession());
+        CustomTabsConnection.getInstance()
+                .dontKeepAliveForSession(mIntentDataProvider.getSession());
         mIsKeepingAlive = false;
     }
 
@@ -84,7 +83,8 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
 
         CustomTabsSessionToken session = mIntentDataProvider.getSession();
         boolean isConnected =
-                packageName.equals(mConnection.getClientPackageNameForSession(session));
+                packageName.equals(
+                        CustomTabsConnection.getInstance().getClientPackageNameForSession(session));
         int status = -1;
         if (isConnected) {
             if (mIsKeepingAlive) {

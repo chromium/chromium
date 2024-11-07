@@ -572,7 +572,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         intentDataProvider,
                         () -> mCompositorViewHolderSupplier.get(),
                         () -> mTabModelSelectorSupplier.get().getCurrentTab(),
-                        CustomTabsConnection.getInstance(),
                         mActivityLifecycleDispatcher,
                         mFullscreenManager,
                         () -> mMinimizeDelegateSupplier.get().isMinimized(),

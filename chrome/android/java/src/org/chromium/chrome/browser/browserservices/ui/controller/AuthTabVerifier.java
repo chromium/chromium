@@ -40,7 +40,6 @@ import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -88,8 +87,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     public AuthTabVerifier(
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
-            BaseCustomTabActivity activity,
-            ExternalAuthUtils externalAuthUtils) {
+            BaseCustomTabActivity activity) {
         mLifecycleDispatcher = lifecycleDispatcher;
         mIntentDataProvider = intentDataProvider;
         mActivity = activity;
@@ -112,8 +110,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
                     ChromeOriginVerifierFactory.create(
                             intentDataProvider.getClientPackageName(),
                             CustomTabsService.RELATION_HANDLE_ALL_URLS,
-                            webContents,
-                            externalAuthUtils);
+                            webContents);
         }
     }
 

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -53,8 +54,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
-import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
-import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -105,9 +104,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public ProfileProvider profileProvider;
     @Mock public CipherFactory cipherFactory;
 
-    public AsyncTabParamsManager realAsyncTabParamsManager =
-            AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-
     public final CustomTabActivityTabProvider tabProvider =
             new CustomTabActivityTabProvider(SPECULATED_URL);
 
@@ -124,9 +120,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     protected void starting(Description description) {
         MockitoAnnotations.initMocks(this);
 
-        // There are a number of places that call CustomTabsConnection.getInstance(), which would
-        // otherwise result in a real CustomTabsConnection being created.
         CustomTabsConnection.setInstanceForTesting(connection);
+        ChromeBrowserInitializer.setForTesting(browserInitializer);
+        WarmupManager.setInstanceForTesting(warmupManager);
 
         tabFromFactory = prepareTab();
 
@@ -157,7 +153,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     @Override
     protected void finished(Description description) {
-        realAsyncTabParamsManager.getAsyncTabParams().clear();
+        AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
     }
 
@@ -169,17 +165,14 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 activity,
                 profileProviderSupplier,
                 () -> customTabDelegateFactory,
-                connection,
                 intentDataProvider,
                 activityTabProvider,
                 () -> compositorViewHolder,
                 lifecycleDispatcher,
-                warmupManager,
                 tabPersistencePolicy,
                 tabFactory,
                 webContentsFactory,
                 reparentingTaskProvider,
-                () -> realAsyncTabParamsManager,
                 () -> activity.getSavedInstanceState(),
                 activity.getWindowAndroid(),
                 tabModelInitializer,
@@ -193,7 +186,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                         tabController,
                         intentDataProvider,
                         closeButtonNavigator,
-                        browserInitializer,
                         activity,
                         lifecycleDispatcher,
                         new DefaultBrowserProviderImpl());
@@ -230,8 +222,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public WebContents prepareTransferredWebcontents() {
         int tabId = 1;
         WebContents webContents = mock(WebContents.class);
-        realAsyncTabParamsManager.add(
-                tabId, new AsyncTabCreationParams(mock(LoadUrlParams.class), webContents));
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(tabId, new AsyncTabCreationParams(mock(LoadUrlParams.class), webContents));
         IntentHandler.setTabId(mIntent, tabId);
         IntentUtils.setForceIsTrustedIntentForTesting(true);
         return webContents;

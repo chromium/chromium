@@ -79,7 +79,6 @@ public class CustomTabBottomBarDelegate
     private final BrowserServicesIntentDataProvider mDataProvider;
     private final Supplier<Tab> mTabProvider;
     private final CustomTabNightModeStateController mNightModeStateController;
-    private final SystemNightModeMonitor mSystemNightModeMonitor;
 
     private CustomTabBottomBarView mBottomBarView;
     @Nullable private View mBottomBarContentView;
@@ -116,14 +115,12 @@ public class CustomTabBottomBarDelegate
             BrowserServicesIntentDataProvider dataProvider,
             BrowserControlsSizer browserControlsSizer,
             CustomTabNightModeStateController nightModeStateController,
-            SystemNightModeMonitor systemNightModeMonitor,
             CustomTabCompositorContentInitializer compositorContentInitializer) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mDataProvider = dataProvider;
         mBrowserControlsSizer = browserControlsSizer;
         mNightModeStateController = nightModeStateController;
-        mSystemNightModeMonitor = systemNightModeMonitor;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         browserControlsSizer.addObserver(this);
         mKeepContentView = false;
@@ -410,7 +407,7 @@ public class CustomTabBottomBarDelegate
                         remoteViews,
                         getBottomBarView(),
                         mNightModeStateController.isInNightMode(),
-                        mSystemNightModeMonitor.isSystemNightModeOn());
+                        SystemNightModeMonitor.getInstance().isSystemNightModeOn());
 
         if (inflatedView == null) return false;
 

@@ -87,17 +87,16 @@ public class LensUtils {
     }
 
     /**
-     * Checks whether the GSA package on the device is guaranteed to be an official
-     * GSA build.
+     * Checks whether the GSA package on the device is guaranteed to be an official GSA build.
      *
      * @return Whether the package is valid.
      */
-    public static boolean isValidAgsaPackage(final ExternalAuthUtils externalAuthUtils) {
+    public static boolean isValidAgsaPackage() {
         if (sFakePassableLensEnvironmentForTesting) {
             return true;
         }
 
-        return externalAuthUtils.isGoogleSigned(IntentHandler.PACKAGE_GSA);
+        return ExternalAuthUtils.getInstance().isGoogleSigned(IntentHandler.PACKAGE_GSA);
     }
 
     public static boolean isGoogleLensFeatureEnabled(boolean isIncognito) {

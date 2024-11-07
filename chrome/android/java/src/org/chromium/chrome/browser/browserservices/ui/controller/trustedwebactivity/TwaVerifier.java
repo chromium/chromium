@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashSet;
@@ -55,10 +54,7 @@ public class TwaVerifier implements Verifier, DestroyObserver {
                 tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;
         mOriginVerifier =
                 ChromeOriginVerifierFactory.create(
-                        clientPackageNameProvider.get(),
-                        RELATIONSHIP,
-                        webContents,
-                        ExternalAuthUtils.getInstance());
+                        clientPackageNameProvider.get(), RELATIONSHIP, webContents);
 
         lifecycleDispatcher.register(this);
     }

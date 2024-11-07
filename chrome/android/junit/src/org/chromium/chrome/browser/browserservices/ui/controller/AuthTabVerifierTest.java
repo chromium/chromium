@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
@@ -65,7 +64,6 @@ public class AuthTabVerifierTest {
     @Mock AuthTabIntentDataProvider mIntentDataProvider;
     @Mock ChromeOriginVerifier mOriginVerifier;
     @Mock CustomTabActivityTabProvider mActivityTabProvider;
-    @Mock ExternalAuthUtils mExternalAuthUtils;
     @Mock BaseCustomTabActivity mActivity;
 
     private AuthTabVerifier mDelegate;
@@ -81,9 +79,7 @@ public class AuthTabVerifierTest {
         ChromeOriginVerifierFactory.setInstanceForTesting(mOriginVerifier);
         when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mActivityTabProvider);
 
-        mDelegate =
-                new AuthTabVerifier(
-                        mLifecycleDispatcher, mIntentDataProvider, mActivity, mExternalAuthUtils);
+        mDelegate = new AuthTabVerifier(mLifecycleDispatcher, mIntentDataProvider, mActivity);
     }
 
     void simulateVerificationResultFromNetwork(String url, boolean success) {

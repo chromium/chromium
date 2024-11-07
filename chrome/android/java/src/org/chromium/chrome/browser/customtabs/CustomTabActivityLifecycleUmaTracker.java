@@ -65,7 +65,6 @@ public class CustomTabActivityLifecycleUmaTracker
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final Activity mActivity;
-    private final CustomTabsConnection mConnection;
 
     private WebappCustomTabTimeSpentLogger mWebappTimeSpentLogger;
     private boolean mIsInitialResume = true;
@@ -138,12 +137,10 @@ public class CustomTabActivityLifecycleUmaTracker
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
             Activity activity,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
-            CustomTabsConnection connection) {
+            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
         mIntentDataProvider = intentDataProvider;
         mActivity = activity;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
-        mConnection = connection;
 
         lifecycleDispatcher.register(this);
     }
@@ -200,12 +197,14 @@ public class CustomTabActivityLifecycleUmaTracker
 
     @Override
     public void onStartWithNative() {
-        mConnection.setCustomTabIsInForeground(mIntentDataProvider.getSession(), true);
+        CustomTabsConnection.getInstance()
+                .setCustomTabIsInForeground(mIntentDataProvider.getSession(), true);
     }
 
     @Override
     public void onStopWithNative() {
-        mConnection.setCustomTabIsInForeground(mIntentDataProvider.getSession(), false);
+        CustomTabsConnection.getInstance()
+                .setCustomTabIsInForeground(mIntentDataProvider.getSession(), false);
     }
 
     @Override

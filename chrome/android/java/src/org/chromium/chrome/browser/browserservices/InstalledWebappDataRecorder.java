@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.browserservices;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
-
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.components.embedder_support.util.Origin;
@@ -20,24 +18,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
- * Takes care of recording that Chrome contains data for the installed webapp (TWA or WebAPK) in
- * the {@link InstalledWebappDataRegister}. It performs three main duties:
- * - Holds a cache to deduplicate requests (for performance not correctness).
- * - Transforming the package name into a uid and app label.
- * - Transforming the origin into a domain (requires native).
+ * Takes care of recording that Chrome contains data for the installed webapp (TWA or WebAPK) in the
+ * {@link InstalledWebappDataRegister}. It performs three main duties: - Holds a cache to
+ * deduplicate requests (for performance not correctness). - Transforming the package name into a
+ * uid and app label. - Transforming the origin into a domain (requires native).
  *
- * Lifecycle: There should be a 1-1 relationship between this class and
- * {@link CurrentPageVerifier}. Having more instances won't effect correctness, but will
- * limit the performance benefits of the cache.
- * Thread safety: All methods on this class should be called from the same thread.
+ * <p>Lifecycle: There should be a 1-1 relationship between this class and {@link
+ * CurrentPageVerifier}. Having more instances won't effect correctness, but will limit the
+ * performance benefits of the cache. Thread safety: All methods on this class should be called from
+ * the same thread.
  */
 @ActivityScope
 public class InstalledWebappDataRecorder {
     private static final String TAG = "DataRecorder";
-    private final PackageManager mPackageManager;
 
     /** Underlying data register. */
     private final InstalledWebappDataRegister mDataRegister;
@@ -50,9 +45,7 @@ public class InstalledWebappDataRecorder {
     private final Set<String> mCache = new HashSet<>();
 
     @Inject
-    InstalledWebappDataRecorder(
-            @Named(APP_CONTEXT) Context context, InstalledWebappDataRegister dataRegister) {
-        mPackageManager = context.getPackageManager();
+    InstalledWebappDataRecorder(InstalledWebappDataRegister dataRegister) {
         mDataRegister = dataRegister;
     }
 
@@ -66,8 +59,9 @@ public class InstalledWebappDataRecorder {
         if (!mCache.add(combine(packageName, origin))) return;
 
         try {
-            ApplicationInfo ai = mPackageManager.getApplicationInfo(packageName, 0);
-            String appLabel = mPackageManager.getApplicationLabel(ai).toString();
+            PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+            ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+            String appLabel = pm.getApplicationLabel(ai).toString();
 
             if (TextUtils.isEmpty(appLabel) || ai.uid == -1) {
                 Log.e(

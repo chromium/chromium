@@ -352,7 +352,6 @@ class ClientManager {
     }
 
     private final InstalledAppProviderWrapper mInstalledAppProviderWrapper;
-    private final ChromeBrowserInitializer mChromeBrowserInitializer;
 
     private final Map<CustomTabsSessionToken, SessionParams> mSessionParams = new HashMap<>();
 
@@ -360,14 +359,11 @@ class ClientManager {
     private boolean mWarmupHasBeenCalled;
 
     public ClientManager() {
-        this(new ProdInstalledAppProviderWrapper(), ChromeBrowserInitializer.getInstance());
+        this(new ProdInstalledAppProviderWrapper());
     }
 
-    public ClientManager(
-            InstalledAppProviderWrapper installedAppProviderWrapper,
-            ChromeBrowserInitializer chromeBrowserInitializer) {
+    public ClientManager(InstalledAppProviderWrapper installedAppProviderWrapper) {
         mInstalledAppProviderWrapper = installedAppProviderWrapper;
-        mChromeBrowserInitializer = chromeBrowserInitializer;
         RequestThrottler.loadInBackground();
     }
 
@@ -623,19 +619,17 @@ class ClientManager {
 
         params.originVerifier =
                 ChromeOriginVerifierFactory.create(
-                        params.getPackageName(),
-                        relation,
-                        /* webContents= */ null,
-                        /* externalAuthUtils= */ null);
+                        params.getPackageName(), relation, /* webContents= */ null);
 
-        mChromeBrowserInitializer.runNowOrAfterFullBrowserStarted(
-                () -> {
-                    PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                params.originVerifier.start(listener, origin);
-                            });
-                });
+        ChromeBrowserInitializer.getInstance()
+                .runNowOrAfterFullBrowserStarted(
+                        () -> {
+                            PostTask.runOrPostTask(
+                                    TaskTraits.UI_DEFAULT,
+                                    () -> {
+                                        params.originVerifier.start(listener, origin);
+                                    });
+                        });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
                 && mInstalledAppProviderWrapper.isAppInstalledAndAssociatedWithOrigin(
                         params.getPackageName(), origin)) {

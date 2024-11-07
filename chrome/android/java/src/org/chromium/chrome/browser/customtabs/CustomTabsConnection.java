@@ -382,7 +382,7 @@ public class CustomTabsConnection {
         PostMessageServiceConnection serviceConnection =
                 new PostMessageServiceConnection(session) {};
         PostMessageHandler handler = new PostMessageHandler(serviceConnection);
-        var engagementSignalsHandler = new EngagementSignalsHandler(this, session);
+        var engagementSignalsHandler = new EngagementSignalsHandler(session);
         return mClientManager.newSession(
                 session,
                 Binder.getCallingUid(),

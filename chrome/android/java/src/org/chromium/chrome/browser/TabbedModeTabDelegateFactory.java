@@ -46,7 +46,6 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -169,8 +168,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         () -> mBottomSheetController,
                         mModalDialogManagerSupplier),
                 mShareDelegateSupplier,
-                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
-                ExternalAuthUtils.getInstance());
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
     }
 
     @Override

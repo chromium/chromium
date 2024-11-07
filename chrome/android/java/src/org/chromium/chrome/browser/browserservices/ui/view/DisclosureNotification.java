@@ -11,16 +11,15 @@ import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityM
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_NOT_SHOWN;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.PACKAGE_NAME;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.NOTIFICATION_ID_TWA_DISCLOSURE_INITIAL;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.NOTIFICATION_ID_TWA_DISCLOSURE_SUBSEQUENT;
 
-import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver;
@@ -38,7 +37,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Displays a notification when the user is on the verified domain. The first such notification (per
@@ -46,7 +44,6 @@ import javax.inject.Named;
  */
 public class DisclosureNotification
         implements PropertyObservable.PropertyObserver<PropertyKey>, StartStopWithNativeObserver {
-    private final Context mContext;
     private final Resources mResources;
     private final TrustedWebActivityModel mModel;
     private final NotificationManagerProxy mNotificationManager;
@@ -54,12 +51,10 @@ public class DisclosureNotification
 
     @Inject
     DisclosureNotification(
-            @Named(APP_CONTEXT) Context context,
             Resources resources,
             NotificationManagerProxy notificationManager,
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mContext = context;
         mResources = resources;
         mNotificationManager = notificationManager;
         mModel = model;
@@ -123,7 +118,7 @@ public class DisclosureNotification
 
         PendingIntentProvider intent =
                 DisclosureAcceptanceBroadcastReceiver.createPendingIntent(
-                        mContext, scope, notificationId, packageName);
+                        ContextUtils.getApplicationContext(), scope, notificationId, packageName);
 
         // We don't have an icon to display.
         int icon = 0;

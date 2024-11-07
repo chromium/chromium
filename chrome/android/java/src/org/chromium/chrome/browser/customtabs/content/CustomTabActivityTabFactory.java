@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -59,8 +58,6 @@ public class CustomTabActivityTabFactory {
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final CipherFactory mCipherFactory;
 
-    private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
-
     @Nullable private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
     @ActivityType int mActivityType;
 
@@ -72,7 +69,6 @@ public class CustomTabActivityTabFactory {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             BrowserServicesIntentDataProvider intentDataProvider,
-            Lazy<AsyncTabParamsManager> asyncTabParamsManager,
             TabCreatorManager tabCreatorManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
@@ -83,7 +79,6 @@ public class CustomTabActivityTabFactory {
         mProfileProviderSupplier = profileProviderSupplier;
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mIntentDataProvider = intentDataProvider;
-        mAsyncTabParamsManager = asyncTabParamsManager;
         mTabCreatorManager = tabCreatorManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
@@ -114,7 +109,7 @@ public class CustomTabActivityTabFactory {
                 mTabCreatorManager,
                 mPersistencePolicy,
                 mActivityType,
-                mAsyncTabParamsManager.get(),
+                AsyncTabParamsManagerSingleton.getInstance(),
                 mCipherFactory);
     }
 

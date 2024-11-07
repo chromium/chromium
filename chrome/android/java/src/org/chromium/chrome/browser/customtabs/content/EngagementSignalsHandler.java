@@ -12,7 +12,6 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.tab.Tab;
  * androidx.browser.customtabs.EngagementSignalsCallback}.
  */
 public class EngagementSignalsHandler {
-    private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSession;
     @Nullable private EngagementSignalsInitialScrollObserver mInitialScrollObserver;
     @Nullable private RealtimeEngagementSignalObserver mObserver;
@@ -30,9 +28,7 @@ public class EngagementSignalsHandler {
     private EngagementSignalsCallback mCallback;
     private Callback<Boolean> mPrivacyPreferencesObserver;
 
-    public EngagementSignalsHandler(
-            CustomTabsConnection connection, CustomTabsSessionToken session) {
-        mConnection = connection;
+    public EngagementSignalsHandler(CustomTabsSessionToken session) {
         mSession = session;
     }
 
@@ -101,7 +97,7 @@ public class EngagementSignalsHandler {
                         && mInitialScrollObserver.hasCurrentPageHadScrollDown();
         mObserver =
                 new RealtimeEngagementSignalObserver(
-                        mTabObserverRegistrar, mConnection, mSession, mCallback, hadScrollDown);
+                        mTabObserverRegistrar, mSession, mCallback, hadScrollDown);
         if (mInitialScrollObserver != null) {
             mInitialScrollObserver.destroy();
             mInitialScrollObserver = null;

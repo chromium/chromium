@@ -24,18 +24,14 @@ public class TwaFinishHandler {
 
     private final Activity mActivity;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final CustomTabsConnection mConnection;
 
     private boolean mShouldAttemptFinishingTask;
 
     @Inject
     public TwaFinishHandler(
-            Activity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabsConnection connection) {
+            Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
         mActivity = activity;
         mIntentDataProvider = intentDataProvider;
-        mConnection = connection;
     }
 
     public void setShouldAttemptFinishingTask(boolean shouldAttemptFinishingTask) {
@@ -70,8 +66,9 @@ public class TwaFinishHandler {
         // Currently we don't make this API public, because there could potentially be a way of
         // avoiding it altogether in the two use cases WebAPKs currently have.
         Bundle result =
-                mConnection.sendExtraCallbackWithResult(
-                        mIntentDataProvider.getSession(), FINISH_TASK_COMMAND_NAME, null);
+                CustomTabsConnection.getInstance()
+                        .sendExtraCallbackWithResult(
+                                mIntentDataProvider.getSession(), FINISH_TASK_COMMAND_NAME, null);
         return result != null && result.getBoolean(SUCCESS_KEY, false);
     }
 }

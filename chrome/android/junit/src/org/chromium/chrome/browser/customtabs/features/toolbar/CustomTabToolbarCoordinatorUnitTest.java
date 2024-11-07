@@ -85,10 +85,8 @@ public class CustomTabToolbarCoordinatorUnitTest {
         mCoordinator =
                 new CustomTabToolbarCoordinator(
                         env.intentDataProvider,
-                        env.connection,
                         mActivity,
                         mActivityWindowAndroid,
-                        mActivity,
                         mBrowserControlsVisibilityManager,
                         env.createNavigationController(mTabController),
                         mCloseButtonVisibilityManager,
@@ -115,14 +113,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
             mCoordinator.onCustomButtonClick(mCustomButtonParams);
             verify(mShareDelegate, never()).share(any(Tab.class), eq(false), anyInt());
             verify(mPendingIntent)
-                    .send(
-                            eq(mActivity),
-                            eq(0),
-                            any(Intent.class),
-                            any(),
-                            isNull(),
-                            isNull(),
-                            any());
+                    .send(any(), eq(0), any(Intent.class), any(), isNull(), isNull(), any());
         } catch (PendingIntent.CanceledException e) {
             assert false;
         }

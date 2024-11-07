@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
-import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -201,9 +200,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         // This is called before Dagger component is created, so using getInstance() directly.
         mNightModeStateController =
                 new CustomTabNightModeStateController(
-                        getLifecycleDispatcher(),
-                        SystemNightModeMonitor.getInstance(),
-                        PowerSavingModeMonitor.getInstance());
+                        getLifecycleDispatcher(), PowerSavingModeMonitor.getInstance());
         return mNightModeStateController;
     }
 

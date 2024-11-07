@@ -58,9 +58,7 @@ public class GlobalNightModeStateProviderHolder {
                 sInstance = new PlaceholderNightModeStateProvider();
             } else {
                 sInstance =
-                        new GlobalNightModeStateController(
-                                SystemNightModeMonitor.getInstance(),
-                                PowerSavingModeMonitor.getInstance());
+                        new GlobalNightModeStateController(PowerSavingModeMonitor.getInstance());
             }
             // Do not cache the singleton between tests since the creation logic depends on flags.
             ResettersForTesting.register(() -> sInstance = null);

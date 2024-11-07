@@ -87,7 +87,7 @@ public class DetachedResourceRequestTest {
 
     @After
     public void tearDown() {
-        CustomTabsTestUtils.cleanupSessions(mConnection);
+        CustomTabsTestUtils.cleanupSessions();
     }
 
     @Test

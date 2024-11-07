@@ -119,6 +119,7 @@ public class ClientManagerTest {
                 .when(mChromeBrowserInitializer)
                 .runNowOrAfterFullBrowserStarted(Mockito.any());
 
+        ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         RequestThrottler.purgeAllEntriesForTesting();
@@ -128,7 +129,7 @@ public class ClientManagerTest {
                 PACKAGE_NAME,
                 mUid);
 
-        mClientManager = new ClientManager(mInstalledAppProviderWrapper, mChromeBrowserInitializer);
+        mClientManager = new ClientManager(mInstalledAppProviderWrapper);
 
         ChromeOriginVerifier.clearCachedVerificationsForTesting();
         UmaRecorderHolder.resetForTesting();

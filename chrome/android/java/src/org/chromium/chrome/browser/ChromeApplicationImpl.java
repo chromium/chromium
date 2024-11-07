@@ -21,9 +21,7 @@ import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
-import org.chromium.chrome.browser.dependency_injection.ChromeAppModule;
 import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent;
-import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -145,19 +143,6 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
     }
 
     private static ChromeAppComponent createComponent() {
-        ChromeAppModule.Factory overriddenFactory =
-                ModuleFactoryOverrides.getOverrideFor(ChromeAppModule.Factory.class);
-        ChromeAppModule module =
-                overriddenFactory == null ? new ChromeAppModule() : overriddenFactory.create();
-
-        AppHooksModule.Factory appHooksFactory =
-                ModuleFactoryOverrides.getOverrideFor(AppHooksModule.Factory.class);
-        AppHooksModule appHooksModule =
-                appHooksFactory == null ? new AppHooksModule() : appHooksFactory.create();
-
-        return DaggerChromeAppComponent.builder()
-                .chromeAppModule(module)
-                .appHooksModule(appHooksModule)
-                .build();
+        return DaggerChromeAppComponent.builder().build();
     }
 }

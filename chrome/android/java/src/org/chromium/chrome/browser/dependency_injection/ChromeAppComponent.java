@@ -6,16 +6,13 @@ package org.chromium.chrome.browser.dependency_injection;
 
 import dagger.Component;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.AppHooksModule;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 
 import javax.inject.Singleton;
 
 /** Component representing the Singletons in the main process of the application. */
-@Component(modules = {ChromeAppModule.class, AppHooksModule.class})
+@Component
 @Singleton
 public interface ChromeAppComponent {
     ChromeActivityComponent createChromeActivityComponent(ChromeActivityCommonsModule module);
@@ -23,8 +20,4 @@ public interface ChromeAppComponent {
     BaseCustomTabActivityComponent createBaseCustomTabActivityComponent(
             ChromeActivityCommonsModule module,
             BaseCustomTabActivityModule baseCustomTabActivityModule);
-
-    CustomTabsConnection resolveCustomTabsConnection();
-
-    SharedPreferencesManager resolveChromeSharedPreferences();
 }

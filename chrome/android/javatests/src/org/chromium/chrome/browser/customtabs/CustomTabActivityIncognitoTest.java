@@ -490,7 +490,7 @@ public class CustomTabActivityIncognitoTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         // Passes the launch intent to the connection.
-        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, token);
+        mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
         Assert.assertFalse(
                 connection.mayLaunchUrl(token, Uri.parse(mTestPage), intent.getExtras(), null));
         CriteriaHelper.pollUiThread(
@@ -518,7 +518,7 @@ public class CustomTabActivityIncognitoTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         // Passes null intent here to mimic not having incognito extra in intent at the connection.
-        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, token);
+        mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
         Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(mTestPage), null, null));
         CriteriaHelper.pollUiThread(
                 () -> {

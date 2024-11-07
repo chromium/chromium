@@ -126,7 +126,7 @@ public class CustomTabPrivacySandboxDialogTest {
                 });
 
         if (mConnectionToCleanup != null) {
-            CustomTabsTestUtils.cleanupSessions(mConnectionToCleanup);
+            CustomTabsTestUtils.cleanupSessions();
         }
     }
 

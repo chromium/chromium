@@ -110,7 +110,6 @@ public class CustomTabActivityNavigationController
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabObserver mCustomTabObserver;
     private final CloseButtonNavigator mCloseButtonNavigator;
-    private final ChromeBrowserInitializer mChromeBrowserInitializer;
     private final Activity mActivity;
     private final DefaultBrowserProvider mDefaultBrowserProvider;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
@@ -144,7 +143,7 @@ public class CustomTabActivityNavigationController
 
                 private boolean shouldInterceptBackPress() {
                     return mTabProvider.getTab() != null
-                            && mChromeBrowserInitializer.isFullBrowserInitialized();
+                            && ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
                 }
             };
 
@@ -153,7 +152,6 @@ public class CustomTabActivityNavigationController
             CustomTabActivityTabController tabController,
             BrowserServicesIntentDataProvider intentDataProvider,
             CloseButtonNavigator closeButtonNavigator,
-            ChromeBrowserInitializer chromeBrowserInitializer,
             BaseCustomTabActivity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             DefaultBrowserProvider customTabsDefaultBrowserProvider) {
@@ -162,16 +160,16 @@ public class CustomTabActivityNavigationController
         mIntentDataProvider = intentDataProvider;
         mCustomTabObserver = activity.getCustomTabObserver();
         mCloseButtonNavigator = closeButtonNavigator;
-        mChromeBrowserInitializer = chromeBrowserInitializer;
         mActivity = activity;
         mDefaultBrowserProvider = customTabsDefaultBrowserProvider;
 
         lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
-        mChromeBrowserInitializer.runNowOrAfterFullBrowserStarted(
-                () -> {
-                    mBackPressStateSupplier.set(mTabProvider.getTab() != null);
-                });
+        ChromeBrowserInitializer.getInstance()
+                .runNowOrAfterFullBrowserStarted(
+                        () -> {
+                            mBackPressStateSupplier.set(mTabProvider.getTab() != null);
+                        });
     }
 
     /**
@@ -233,7 +231,7 @@ public class CustomTabActivityNavigationController
 
     /** Handles back button navigation. */
     public boolean navigateOnBack() {
-        if (!mChromeBrowserInitializer.isFullBrowserInitialized()) return false;
+        if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) return false;
 
         boolean separateTask =
                 (mIntentDataProvider.getIntent().getFlags()

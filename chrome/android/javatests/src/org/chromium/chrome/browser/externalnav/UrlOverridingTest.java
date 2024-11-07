@@ -1715,7 +1715,7 @@ public class UrlOverridingTest {
 
         connection.setCanUseHiddenTabForSession(token, true);
         Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), null, null));
-        CustomTabsTestUtils.ensureCompletedSpeculationForUrl(connection, url);
+        CustomTabsTestUtils.ensureCompletedSpeculationForUrl(url);
 
         // Can't wait for Activity startup as we close so fast the polling is flaky.
         mCustomTabActivityRule.launchActivity(intent);

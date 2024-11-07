@@ -59,12 +59,11 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
         mCustomSessionInitiatedForIntent = true;
     }
 
-    public void buildSessionWithHiddenTab(
-            CustomTabsConnection connection, CustomTabsSessionToken token) {
-        Assert.assertTrue(connection.newSession(token));
+    public void buildSessionWithHiddenTab(CustomTabsSessionToken token) {
+        Assert.assertTrue(CustomTabsConnection.getInstance().newSession(token));
         // Need to set params to reach |CustomTabsConnection#doMayLaunchUrlOnUiThread|.
-        connection.mClientManager.setHideDomainForSession(token, true);
-        connection.setCanUseHiddenTabForSession(token, true);
+        CustomTabsConnection.getInstance().mClientManager.setHideDomainForSession(token, true);
+        CustomTabsConnection.getInstance().setCanUseHiddenTabForSession(token, true);
     }
 
     @Override

@@ -51,7 +51,6 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     private final Lazy<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Lazy<CustomTabBottomBarDelegate> mBottomBarDelegate;
     private final CustomTabIntentHandler mIntentHandler;
-    private final CustomTabsConnection mConnection;
     private final Activity mActivity;
 
     @Inject
@@ -60,7 +59,6 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
             Lazy<CustomTabToolbarCoordinator> toolbarCoordinator,
             Lazy<CustomTabBottomBarDelegate> bottomBarDelegate,
             CustomTabIntentHandler intentHandler,
-            CustomTabsConnection connection,
             BaseCustomTabActivity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mIntentDataProvider = intentDataProvider;
@@ -68,7 +66,6 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
         mToolbarCoordinator = toolbarCoordinator;
         mBottomBarDelegate = bottomBarDelegate;
         mIntentHandler = intentHandler;
-        mConnection = connection;
         mActivity = activity;
         lifecycleDispatcher.register(this);
 
@@ -164,7 +161,8 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     @Override
     public boolean canUseReferrer(Uri referrer) {
         CustomTabsSessionToken session = mIntentDataProvider.getSession();
-        String packageName = mConnection.getClientPackageNameForSession(session);
+        String packageName =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
         if (TextUtils.isEmpty(packageName)) return false;
         Origin origin = Origin.create(referrer);
         if (origin == null) return false;

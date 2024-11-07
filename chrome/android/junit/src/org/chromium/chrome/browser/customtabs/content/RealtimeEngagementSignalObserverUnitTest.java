@@ -928,7 +928,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver =
                 new RealtimeEngagementSignalObserver(
                         env.tabObserverRegistrar,
-                        env.connection,
                         env.session,
                         mEngagementSignalsCallback,
                         hadScrollDown);

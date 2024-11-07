@@ -106,6 +106,7 @@ public class ChromeContextMenuPopulatorTest {
         mAutomotiveRule.setIsAutomotive(false);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
 
         GURL pageUrl = new GURL(PAGE_URL);
         when(mItemDelegate.getPageUrl()).thenReturn(pageUrl);
@@ -141,7 +142,6 @@ public class ChromeContextMenuPopulatorTest {
                                 mItemDelegate,
                                 () -> mShareDelegate,
                                 mode,
-                                mExternalAuthUtils,
                                 ContextUtils.getApplicationContext(),
                                 params,
                                 mNativeDelegate));

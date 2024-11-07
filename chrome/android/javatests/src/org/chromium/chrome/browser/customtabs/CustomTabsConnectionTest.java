@@ -100,7 +100,7 @@ public class CustomTabsConnectionTest {
 
     @After
     public void tearDown() {
-        CustomTabsTestUtils.cleanupSessions(mCustomTabsConnection);
+        CustomTabsTestUtils.cleanupSessions();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> WarmupManager.getInstance().destroySpareWebContents());
         ThreadUtils.runOnUiThreadBlocking(() -> WarmupManager.getInstance().destroySpareTab());
@@ -229,7 +229,7 @@ public class CustomTabsConnectionTest {
     @SmallTest
     public void testMayLaunchUrlNullOrEmptyUrl() throws Exception {
         assertWarmupAndMayLaunchUrl(null, null, true);
-        CustomTabsTestUtils.cleanupSessions(mCustomTabsConnection); // Resets throttling.
+        CustomTabsTestUtils.cleanupSessions(); // Resets throttling.
         assertWarmupAndMayLaunchUrl(null, "", true);
     }
 
@@ -665,7 +665,7 @@ public class CustomTabsConnectionTest {
     @SmallTest
     public void testForgetsSession() throws Exception {
         CustomTabsSessionToken token = assertWarmupAndMayLaunchUrl(null, URL, true);
-        CustomTabsTestUtils.cleanupSessions(mCustomTabsConnection);
+        CustomTabsTestUtils.cleanupSessions();
         assertWarmupAndMayLaunchUrl(token, URL, false);
     }
 

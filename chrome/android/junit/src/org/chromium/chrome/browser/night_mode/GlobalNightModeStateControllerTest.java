@@ -69,8 +69,8 @@ public class GlobalNightModeStateControllerTest {
         MockitoAnnotations.initMocks(this);
         captureObservers();
 
-        mGlobalNightModeStateController =
-                new GlobalNightModeStateController(mSystemNightModeMonitor, mPowerSavingMonitor);
+        SystemNightModeMonitor.setInstanceForTesting(mSystemNightModeMonitor);
+        mGlobalNightModeStateController = new GlobalNightModeStateController(mPowerSavingMonitor);
 
         mGlobalNightModeStateController.onApplicationStateChange(HAS_RUNNING_ACTIVITIES);
 

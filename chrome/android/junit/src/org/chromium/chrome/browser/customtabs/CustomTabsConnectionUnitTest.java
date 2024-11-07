@@ -210,7 +210,7 @@ public class CustomTabsConnectionUnitTest {
         ShadowProcess.setUid(uid);
         shadowOf(RuntimeEnvironment.getApplication().getApplicationContext().getPackageManager())
                 .setPackagesForUid(uid, "test.package.name");
-        var handler = new EngagementSignalsHandler(mConnection, mSession);
+        var handler = new EngagementSignalsHandler(mSession);
         mConnection.mClientManager.newSession(mSession, uid, null, null, null, handler);
     }
 

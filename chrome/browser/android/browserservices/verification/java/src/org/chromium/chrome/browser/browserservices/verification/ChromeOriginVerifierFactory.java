@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.WebContents;
 
 /** A factory that creates instances of {@link ChromeOriginVerifier}. */
@@ -23,14 +22,9 @@ public class ChromeOriginVerifierFactory {
     public static ChromeOriginVerifier create(
             String packageName,
             @CustomTabsService.Relation int relation,
-            @Nullable WebContents webContents,
-            @Nullable ExternalAuthUtils externalAuthUtils) {
+            @Nullable WebContents webContents) {
         if (sInstanceForTests != null) return sInstanceForTests;
         return new ChromeOriginVerifier(
-                packageName,
-                relation,
-                webContents,
-                externalAuthUtils,
-                ChromeVerificationResultStore.getInstance());
+                packageName, relation, webContents, ChromeVerificationResultStore.getInstance());
     }
 }

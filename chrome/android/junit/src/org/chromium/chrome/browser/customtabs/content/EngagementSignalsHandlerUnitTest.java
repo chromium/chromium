@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -42,7 +41,6 @@ import org.chromium.content_public.browser.WebContents;
 public class EngagementSignalsHandlerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private CustomTabsConnection mConnection;
     @Mock private CustomTabsSessionToken mSession;
     @Mock private EngagementSignalsCallback mCallback;
     @Mock private TabObserverRegistrar mTabObserverRegistrar;
@@ -65,7 +63,7 @@ public class EngagementSignalsHandlerUnitTest {
                 .thenAnswer(inv -> mCrashUploadPermittedSupplier.get());
         when(mTab.getWebContents()).thenReturn(mWebContents);
         mCrashUploadPermittedSupplier.set(true);
-        mEngagementSignalsHandler = new EngagementSignalsHandler(mConnection, mSession);
+        mEngagementSignalsHandler = new EngagementSignalsHandler(mSession);
     }
 
     @Test

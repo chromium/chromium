@@ -92,7 +92,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final TabContextMenuItemDelegate mItemDelegate;
     private final @ContextMenuMode int mMode;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
-    private final ExternalAuthUtils mExternalAuthUtils;
     private final ContextMenuParams mParams;
     private ContextMenuNativeDelegate mNativeDelegate;
     private static final String LENS_SUPPORT_STATUS_HISTOGRAM_NAME =
@@ -228,14 +227,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             TabContextMenuItemDelegate itemDelegate,
             Supplier<ShareDelegate> shareDelegate,
             @ContextMenuMode int mode,
-            ExternalAuthUtils externalAuthUtils,
             Context context,
             ContextMenuParams params,
             ContextMenuNativeDelegate nativeDelegate) {
         mItemDelegate = itemDelegate;
         mShareDelegateSupplier = shareDelegate;
         mMode = mode;
-        mExternalAuthUtils = externalAuthUtils;
         mContext = context;
         mParams = params;
         mNativeDelegate = nativeDelegate;
@@ -906,7 +903,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             return false;
         }
 
-        if (!LensUtils.isValidAgsaPackage(mExternalAuthUtils)) {
+        if (!LensUtils.isValidAgsaPackage()) {
             LensMetrics.recordLensSupportStatus(
                     LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
                     LensMetrics.LensSupportStatus.INVALID_PACKAGE);

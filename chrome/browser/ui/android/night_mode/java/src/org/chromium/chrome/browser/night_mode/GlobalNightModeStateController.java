@@ -23,7 +23,6 @@ class GlobalNightModeStateController
                 SystemNightModeMonitor.Observer,
                 ApplicationStatus.ApplicationStateListener {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final SystemNightModeMonitor mSystemNightModeMonitor;
     private final PowerSavingModeMonitor mPowerSaveModeMonitor;
 
     private final Runnable mPowerSaveModeObserver = this::updateNightMode;
@@ -43,15 +42,10 @@ class GlobalNightModeStateController
      * Should not directly instantiate unless for testing purpose. Use {@link
      * GlobalNightModeStateProviderHolder#getInstance()} instead.
      *
-     * @param systemNightModeMonitor The {@link SystemNightModeMonitor} that maintains the system
-     *     night mode state.
      * @param powerSaveModeMonitor The {@link PowerSavingModeMonitor} that maintains the system
      *     power saving setting.
      */
-    GlobalNightModeStateController(
-            @NonNull SystemNightModeMonitor systemNightModeMonitor,
-            @NonNull PowerSavingModeMonitor powerSaveModeMonitor) {
-        mSystemNightModeMonitor = systemNightModeMonitor;
+    GlobalNightModeStateController(@NonNull PowerSavingModeMonitor powerSaveModeMonitor) {
         mPowerSaveModeMonitor = powerSaveModeMonitor;
 
         mPreferenceListener =
@@ -111,7 +105,7 @@ class GlobalNightModeStateController
         if (mIsStarted) return;
         mIsStarted = true;
 
-        mSystemNightModeMonitor.addObserver(this);
+        SystemNightModeMonitor.getInstance().addObserver(this);
         mPowerSaveModeMonitor.addObserver(mPowerSaveModeObserver);
         ContextUtils.getAppSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(mPreferenceListener);
@@ -126,7 +120,7 @@ class GlobalNightModeStateController
         if (!mIsStarted) return;
         mIsStarted = false;
 
-        mSystemNightModeMonitor.removeObserver(this);
+        SystemNightModeMonitor.getInstance().removeObserver(this);
         mPowerSaveModeMonitor.removeObserver(mPowerSaveModeObserver);
         ContextUtils.getAppSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(mPreferenceListener);
@@ -138,7 +132,8 @@ class GlobalNightModeStateController
         final boolean newNightModeOn =
                 (theme == ThemeType.SYSTEM_DEFAULT
                                 && (powerSaveModeOn
-                                        || mSystemNightModeMonitor.isSystemNightModeOn()))
+                                        || SystemNightModeMonitor.getInstance()
+                                                .isSystemNightModeOn()))
                         || theme == ThemeType.DARK;
         if (mNightModeOn != null && newNightModeOn == mNightModeOn) return;
 

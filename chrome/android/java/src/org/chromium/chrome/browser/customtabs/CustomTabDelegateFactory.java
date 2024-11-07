@@ -89,7 +89,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     static class CustomTabNavigationDelegate extends ExternalNavigationDelegateImpl {
         private static final String TAG = "customtabs";
         private final String mClientPackageName;
-        private final ExternalAuthUtils mExternalAuthUtils;
         private final Verifier mVerifier;
         private final @ActivityType int mActivityType;
         private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -98,14 +97,12 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         /** Constructs a new instance of {@link CustomTabNavigationDelegate}. */
         CustomTabNavigationDelegate(
                 Tab tab,
-                ExternalAuthUtils authUtils,
                 Verifier verifier,
                 @ActivityType int activityType,
                 BrowserServicesIntentDataProvider intentDataProvider,
                 Lazy<AuthTabVerifier> authTabVerifier) {
             super(tab);
             mClientPackageName = TabAssociatedApp.from(tab).getAppId();
-            mExternalAuthUtils = authUtils;
             mVerifier = verifier;
             mActivityType = activityType;
             mIntentDataProvider = intentDataProvider;
@@ -128,7 +125,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         public boolean isForTrustedCallingApp(Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             if (TextUtils.isEmpty(mClientPackageName)) return false;
             if (!ExternalIntentsFeatures.TRUSTED_CLIENT_GESTURE_BYPASS.isEnabled()
-                    && !mExternalAuthUtils.isGoogleSigned(mClientPackageName)) {
+                    && !ExternalAuthUtils.getInstance().isGoogleSigned(mClientPackageName)) {
                 return false;
             }
 
@@ -302,7 +299,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final @DisplayMode.EnumType int mDisplayMode;
     private final boolean mShouldEnableEmbeddedMediaExperience;
     private final BrowserControlsVisibilityDelegate mBrowserStateVisibilityDelegate;
-    private final ExternalAuthUtils mExternalAuthUtils;
     private final Verifier mVerifier;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -360,7 +356,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             @DisplayMode.EnumType int displayMode,
             boolean shouldEnableEmbeddedMediaExperience,
             BrowserControlsVisibilityDelegate visibilityDelegate,
-            ExternalAuthUtils authUtils,
             Verifier verifier,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -384,7 +379,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mDisplayMode = displayMode;
         mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
         mBrowserStateVisibilityDelegate = visibilityDelegate;
-        mExternalAuthUtils = authUtils;
         mVerifier = verifier;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -407,7 +401,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             BaseCustomTabActivity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabBrowserControlsVisibilityDelegate visibilityDelegate,
-            ExternalAuthUtils authUtils,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager,
@@ -430,7 +423,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 getDisplayMode(intentDataProvider),
                 intentDataProvider.shouldEnableEmbeddedMediaExperience(),
                 visibilityDelegate,
-                authUtils,
                 activity.getVerifier(),
                 chromeActivityNativeDelegate,
                 browserControlsStateProvider,
@@ -461,7 +453,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 DisplayMode.BROWSER,
                 false,
-                null,
                 null,
                 null,
                 null,
@@ -533,12 +524,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         } else {
             mNavigationDelegate =
                     new CustomTabNavigationDelegate(
-                            tab,
-                            mExternalAuthUtils,
-                            mVerifier,
-                            mActivityType,
-                            mIntentDataProvider,
-                            mAuthTabVerifier);
+                            tab, mVerifier, mActivityType, mIntentDataProvider, mAuthTabVerifier);
         }
         return new ExternalNavigationHandler(mNavigationDelegate);
     }
@@ -564,10 +550,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @ChromeContextMenuPopulator.ContextMenuMode
         int contextMenuMode = getContextMenuMode(mActivityType);
         return new ChromeContextMenuPopulatorFactory(
-                createTabContextMenuItemDelegate(tab),
-                mShareDelegateSupplier,
-                contextMenuMode,
-                ExternalAuthUtils.getInstance());
+                createTabContextMenuItemDelegate(tab), mShareDelegateSupplier, contextMenuMode);
     }
 
     @Override

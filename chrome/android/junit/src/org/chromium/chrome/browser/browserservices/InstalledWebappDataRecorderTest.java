@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.Origin;
@@ -73,6 +74,7 @@ public class InstalledWebappDataRecorderTest {
 
         Context context = mock(Context.class);
         when(context.getPackageManager()).thenReturn(mPackageManager);
+        ContextUtils.initApplicationContextForTests(context);
 
         ShadowUrlUtilities.setTestImpl(
                 new ShadowUrlUtilities.TestImpl() {
@@ -83,7 +85,7 @@ public class InstalledWebappDataRecorderTest {
                     }
                 });
 
-        mRecorder = new InstalledWebappDataRecorder(context, mRegister);
+        mRecorder = new InstalledWebappDataRecorder(mRegister);
     }
 
     @After

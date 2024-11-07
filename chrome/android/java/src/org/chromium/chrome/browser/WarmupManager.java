@@ -36,6 +36,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -368,9 +369,15 @@ public class WarmupManager {
         return mSpareTab == tab;
     }
 
-    /** Removes the singleton instance for the WarmupManager for testing. */
     public static void deInitForTesting() {
         sWarmupManager = null;
+    }
+
+    /** Removes the singleton instance for the WarmupManager for testing. */
+    public static void setInstanceForTesting(WarmupManager instance) {
+        var oldValue = sWarmupManager;
+        sWarmupManager = instance;
+        ResettersForTesting.register(() -> sWarmupManager = oldValue);
     }
 
     /**

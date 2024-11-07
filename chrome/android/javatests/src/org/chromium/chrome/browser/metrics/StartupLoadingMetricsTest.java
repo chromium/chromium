@@ -108,7 +108,7 @@ public class StartupLoadingMetricsTest {
     @After
     public void tearDown() {
         if (mConnectionToCleanup != null) {
-            CustomTabsTestUtils.cleanupSessions(mConnectionToCleanup);
+            CustomTabsTestUtils.cleanupSessions();
         }
     }
 

@@ -61,11 +61,7 @@ public class DisclosureNotificationTest {
         Context context = RuntimeEnvironment.application;
         mNotification =
                 new DisclosureNotification(
-                        context,
-                        context.getResources(),
-                        mNotificationManager,
-                        mModel,
-                        mLifecycleDispatcher);
+                        context.getResources(), mNotificationManager, mModel, mLifecycleDispatcher);
     }
 
     @Test

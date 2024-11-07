@@ -66,8 +66,8 @@ public class CustomTabsTestUtils {
         return connection;
     }
 
-    public static void cleanupSessions(final CustomTabsConnection connection) {
-        ThreadUtils.runOnUiThreadBlocking(connection::cleanupAllForTesting);
+    public static void cleanupSessions() {
+        ThreadUtils.runOnUiThreadBlocking(CustomTabsConnection.getInstance()::cleanupAllForTesting);
     }
 
     public static ClientAndSession bindWithCallback(final CustomTabsCallback callback)
@@ -148,20 +148,20 @@ public class CustomTabsTestUtils {
         return CustomTabsTestUtilsJni.get().hasVariationId(id);
     }
 
-    /** Waits for the speculation of |url| for the |connection| to complete. */
-    public static void ensureCompletedSpeculationForUrl(
-            final CustomTabsConnection connection, final String url) {
+    /** Waits for the speculation of |url| to complete. */
+    public static void ensureCompletedSpeculationForUrl(final String url) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             "Tab was not created",
-                            connection.getSpeculationParamsForTesting(),
+                            CustomTabsConnection.getInstance().getSpeculationParamsForTesting(),
                             Matchers.notNullValue());
                 },
                 LONG_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         ChromeTabUtils.waitForTabPageLoaded(
-                connection.getSpeculationParamsForTesting().hiddenTab.tab, url);
+                CustomTabsConnection.getInstance().getSpeculationParamsForTesting().hiddenTab.tab,
+                url);
     }
 
     /**
