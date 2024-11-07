@@ -10,7 +10,7 @@
 #include "base/observer_list_types.h"
 
 namespace tabs {
-class TabModel;
+class TabInterface;
 }
 
 class TabDeclutterObserver : public base::CheckedObserver {
@@ -20,7 +20,7 @@ class TabDeclutterObserver : public base::CheckedObserver {
   virtual void OnTriggerDeclutterUIVisibility(bool should_show) {}
 
   // Called whenevener the service processes the tabstrip for stale tabs.
-  virtual void OnStaleTabsProcessed(std::vector<tabs::TabModel*> tabs) {}
+  virtual void OnStaleTabsProcessed(std::vector<tabs::TabInterface*> tabs) {}
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_OBSERVER_H_

@@ -24,6 +24,8 @@ class BrowserWindowInterface;
 
 namespace tabs {
 
+class TabInterface;
+
 // Controller that computes the tabs to be decluttered, tied to a specific
 // browser.
 class TabDeclutterController {
@@ -66,20 +68,20 @@ class TabDeclutterController {
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
-  virtual std::vector<tabs::TabModel*> GetStaleTabs();
+  virtual std::vector<tabs::TabInterface*> GetStaleTabs();
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
-  void ExcludeFromStaleTabs(tabs::TabModel* tab_model);
+  void ExcludeFromStaleTabs(tabs::TabInterface* tabs);
 
   // Closes the tabs from the tabstrip if they are present.
-  void DeclutterTabs(std::vector<tabs::TabModel*> tab_models);
+  void DeclutterTabs(std::vector<tabs::TabInterface*> tabs);
 
   void DidBecomeActive(BrowserWindowInterface* browser_window_interface);
   void DidBecomeInactive(BrowserWindowInterface* browser_window_interface);
 
  private:
   void StartDeclutterTimer();
-  bool DeclutterNudgeCriteriaMet(base::span<tabs::TabModel*> stale_tabs);
+  bool DeclutterNudgeCriteriaMet(base::span<tabs::TabInterface*> stale_tabs);
   void ProcessStaleTabs();
   void StartNudgeTimer();
 
@@ -99,11 +101,11 @@ class TabDeclutterController {
   // The timer that is responsible for blocking the nudge from showing.
   base::TimeTicks next_nudge_valid_time_ticks_;
   // The list of tabs shown previously in a nudge.
-  std::set<tabs::TabModel*> stale_tabs_previous_nudge_;
+  std::set<tabs::TabInterface*> stale_tabs_previous_nudge_;
 
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
-  std::vector<tabs::TabModel*> excluded_tabs_;
+  std::vector<tabs::TabInterface*> excluded_tabs_;
 
   bool is_active_;
   // Holds subscriptions for BrowserWindowInterface callbacks.

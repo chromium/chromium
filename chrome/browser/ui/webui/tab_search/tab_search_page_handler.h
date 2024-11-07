@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
@@ -133,7 +134,7 @@ class TabSearchPageHandler
                     TabChangeType change_type) override;
 
   // TabDeclutterObserver:
-  void OnStaleTabsProcessed(std::vector<tabs::TabModel*> tabs) override;
+  void OnStaleTabsProcessed(std::vector<tabs::TabInterface*> tabs) override;
 
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
@@ -166,7 +167,9 @@ class TabSearchPageHandler
     disable_last_active_time_for_testing_ = true;
   }
 
-  std::vector<tabs::TabModel*> stale_tabs_for_testing() { return stale_tabs_; }
+  std::vector<tabs::TabInterface*> stale_tabs_for_testing() {
+    return stale_tabs_;
+  }
 
   void SetTabDeclutterControllerForTesting(
       tabs::TabDeclutterController* tab_declutter_controller);
@@ -183,13 +186,17 @@ class TabSearchPageHandler
 
   // Encapsulates tab details to facilitate performing an action on a tab.
   struct TabDetails {
-    TabDetails(Browser* browser, tabs::TabModel* tab)
+    TabDetails(Browser* browser, tabs::TabInterface* tab)
         : browser(browser), tab(tab) {}
 
-    int GetIndex() const { return tab->owning_model()->GetIndexOfTab(tab); }
+    int GetIndex() const {
+      return tab->GetBrowserWindowInterface()
+          ->GetTabStripModel()
+          ->GetIndexOfTab(tab);
+    }
 
     raw_ptr<Browser> browser;
-    raw_ptr<tabs::TabModel> tab;
+    raw_ptr<tabs::TabInterface> tab;
   };
 
   // Show the UI if all tabs are ready to be shown.
@@ -250,15 +257,15 @@ class TabSearchPageHandler
   std::vector<mojo::StructPtr<tab_search::mojom::Tab>> GetMojoStaleTabs();
 
   void UnregisterTabCallbacks();
-  void RegisterTabDeclutterCallbacks(tabs::TabModel* tab_model);
-  void OnStaleTabDidEnterForeground(tabs::TabInterface* tab_interface);
-  void OnStaleTabWillDetach(tabs::TabInterface* tab_interface,
+  void RegisterTabDeclutterCallbacks(tabs::TabInterface* tab);
+  void OnStaleTabDidEnterForeground(tabs::TabInterface* tab);
+  void OnStaleTabWillDetach(tabs::TabInterface* tab,
                             tabs::TabInterface::DetachReason reason);
-  void OnStaleTabPinnedStateChanged(tabs::TabModel* tab_model,
+  void OnStaleTabPinnedStateChanged(tabs::TabInterface* tab,
                                     bool new_pinned_state);
-  void OnStaleTabGroupChanged(tabs::TabModel* tab_model,
+  void OnStaleTabGroupChanged(tabs::TabInterface* tab,
                               std::optional<tab_groups::TabGroupId> new_group);
-  void RemoveStaleTab(tabs::TabModel* tab_model);
+  void RemoveStaleTab(tabs::TabInterface* tab);
 
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();
@@ -304,8 +311,8 @@ class TabSearchPageHandler
   std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>
       listened_sessions_;
 
-  std::vector<tabs::TabModel*> stale_tabs_;
-  std::map<tabs::TabModel*, std::vector<base::CallbackListSubscription>>
+  std::vector<tabs::TabInterface*> stale_tabs_;
+  std::map<tabs::TabInterface*, std::vector<base::CallbackListSubscription>>
       tab_declutter_subscriptions_map_;
 
   base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>

@@ -40,6 +40,14 @@ class MockTabInterface : public TabInterface {
               RegisterDidInsert,
               (DidInsertCallback),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterPinnedStateChanged,
+              (PinnedStateChangedCallback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterGroupChanged,
+              (GroupChangedCallback),
+              (override));
   MOCK_METHOD(bool, CanShowModalUI, (), (const, override));
   MOCK_METHOD(std::unique_ptr<ScopedTabModalUI>, ShowModalUI, (), (override));
   MOCK_METHOD(bool, IsInNormalWindow, (), (const override));
@@ -52,6 +60,11 @@ class MockTabInterface : public TabInterface {
               CreateAndShowTabScopedWidget,
               (views::WidgetDelegate*),
               (override));
+  MOCK_METHOD(bool, IsPinned, (), (const override));
+  MOCK_METHOD(std::optional<tab_groups::TabGroupId>,
+              GetGroup,
+              (),
+              (const override));
   MOCK_METHOD(uint32_t, GetTabHandle, (), (const override));
 };
 

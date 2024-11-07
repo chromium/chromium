@@ -182,14 +182,12 @@ base::CallbackListSubscription TabModel::RegisterDidInsert(
 }
 
 base::CallbackListSubscription TabModel::RegisterPinnedStateChanged(
-    base::RepeatingCallback<void(TabModel*, bool new_pinned_state)> callback) {
+    TabInterface::PinnedStateChangedCallback callback) {
   return pinned_state_changed_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription TabModel::RegisterGroupChanged(
-    base::RepeatingCallback<
-        void(TabModel*, std::optional<tab_groups::TabGroupId> new_group)>
-        callback) {
+    TabInterface::GroupChangedCallback callback) {
   return group_changed_callback_list_.Add(std::move(callback));
 }
 
@@ -218,6 +216,14 @@ std::unique_ptr<views::Widget> TabModel::CreateAndShowTabScopedWidget(
   // TODO(kylixrd): Remove the use of constrained window API.
   return base::WrapUnique(
       constrained_window::ShowWebModalDialogViews(delegate, GetContents()));
+}
+
+bool TabModel::IsPinned() const {
+  return pinned_;
+}
+
+std::optional<tab_groups::TabGroupId> TabModel::GetGroup() const {
+  return group_;
 }
 
 uint32_t TabModel::GetTabHandle() const {

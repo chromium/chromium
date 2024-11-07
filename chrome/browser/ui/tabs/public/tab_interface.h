@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "components/tab_groups/tab_group_id.h"
 
 namespace content {
 class WebContents;
@@ -117,6 +118,18 @@ class TabInterface {
   virtual base::CallbackListSubscription RegisterDidInsert(
       DidInsertCallback callback) = 0;
 
+  // Register for this callback to detect when the pinned state changes.
+  using PinnedStateChangedCallback =
+      base::RepeatingCallback<void(TabInterface*, bool new_pinned_state)>;
+  virtual base::CallbackListSubscription RegisterPinnedStateChanged(
+      PinnedStateChangedCallback callback) = 0;
+
+  // Register for this callback to detect when the group changes.
+  using GroupChangedCallback = base::RepeatingCallback<
+      void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
+  virtual base::CallbackListSubscription RegisterGroupChanged(
+      GroupChangedCallback callback) = 0;
+
   // Features that want to show tab-modal UI are mutually exclusive. Before
   // showing a modal UI first check `CanShowModal`. Then call ShowModal() and
   // keep `ScopedTabModal` alive to prevent other features from showing
@@ -159,6 +172,13 @@ class TabInterface {
 
   virtual std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
       views::WidgetDelegate* delegate) = 0;
+
+  // Return true if the tab is pinned in its tabstrip, or false otherwise.
+  virtual bool IsPinned() const = 0;
+
+  // Returns the id of the tab group this tab belongs to, or nullopt if the tab
+  // is not grouped.
+  virtual std::optional<tab_groups::TabGroupId> GetGroup() const = 0;
 
   // An identifier that is guaranteed to be unique.
   virtual uint32_t GetTabHandle() const = 0;

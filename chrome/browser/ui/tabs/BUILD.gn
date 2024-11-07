@@ -14,7 +14,10 @@ source_set("tabs_public") {
     "tab_network_state.h",
   ]
   sources = [ "tab_network_state.cc" ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/tab_groups:tab_groups",
+  ]
   deps = [ "//content/public/browser" ]
 }
 

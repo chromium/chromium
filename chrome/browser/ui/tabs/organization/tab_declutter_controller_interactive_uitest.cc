@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -36,7 +36,8 @@ class FakeTabDeclutterObserver : public TabDeclutterObserver {
  public:
   FakeTabDeclutterObserver() = default;
 
-  void OnStaleTabsProcessed(const std::vector<tabs::TabModel*> tabs) override {
+  void OnStaleTabsProcessed(
+      const std::vector<tabs::TabInterface*> tabs) override {
     stale_tabs_processed_count_++;
     processed_tabs_ = tabs;
   }
@@ -52,7 +53,7 @@ class FakeTabDeclutterObserver : public TabDeclutterObserver {
     return trigger_declutter_ui_visibility_count_;
   }
 
-  const std::vector<tabs::TabModel*>& processed_tabs() const {
+  const std::vector<tabs::TabInterface*>& processed_tabs() const {
     return processed_tabs_;
   }
 
@@ -61,7 +62,7 @@ class FakeTabDeclutterObserver : public TabDeclutterObserver {
  private:
   int stale_tabs_processed_count_ = 0;
   int trigger_declutter_ui_visibility_count_ = 0;
-  std::vector<tabs::TabModel*> processed_tabs_;
+  std::vector<tabs::TabInterface*> processed_tabs_;
   bool ui_visibility_;
 };
 
@@ -149,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 
   // Tabs at index 3 and 4 are stale tabs.
-  std::vector<tabs::TabModel*> expected_stale_tabs;
+  std::vector<tabs::TabInterface*> expected_stale_tabs;
   expected_stale_tabs.push_back(browser()->tab_strip_model()->GetTabAtIndex(3));
   expected_stale_tabs.push_back(browser()->tab_strip_model()->GetTabAtIndex(4));
 
@@ -310,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest, TestDeclutterTabs) {
   AddTabsWithLastActiveTime(12, 2);
   AddTabsWithLastActiveTime(4, 8);
 
-  std::vector<tabs::TabModel*> stale_tabs =
+  std::vector<tabs::TabInterface*> stale_tabs =
       tab_declutter_controller()->GetStaleTabs();
 
   int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
@@ -334,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   AddTabsWithLastActiveTime(12, 2);
   AddTabsWithLastActiveTime(4, 8);
 
-  std::vector<tabs::TabModel*> stale_tabs =
+  std::vector<tabs::TabInterface*> stale_tabs =
       tab_declutter_controller()->GetStaleTabs();
 
   EXPECT_EQ(browser_two->tab_strip_model()->GetTabCount(), 1);
@@ -360,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   // Add 4 tabs that are 8 days old. These are all stale.
   AddTabsWithLastActiveTime(4, 8);
 
-  tabs::TabModel* tab_to_exclude =
+  tabs::TabInterface* tab_to_exclude =
       browser()->tab_strip_model()->GetTabAtIndex(1);
   tab_declutter_controller()->ExcludeFromStaleTabs(tab_to_exclude);
 
@@ -370,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 1);
 
   // Verify that the excluded tab is not part of the processed stale tabs.
-  std::vector<tabs::TabModel*> processed_stale_tabs =
+  std::vector<tabs::TabInterface*> processed_stale_tabs =
       fake_observer.processed_tabs();
   EXPECT_EQ(processed_stale_tabs.size(), 3ul);
   EXPECT_FALSE(std::find(processed_stale_tabs.begin(),

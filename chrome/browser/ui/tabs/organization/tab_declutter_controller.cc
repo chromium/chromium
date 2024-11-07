@@ -18,8 +18,8 @@
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -80,7 +80,7 @@ void TabDeclutterController::StartDeclutterTimer() {
 void TabDeclutterController::ProcessStaleTabs() {
   CHECK(features::IsTabstripDeclutterEnabled());
 
-  std::vector<tabs::TabModel*> tabs = GetStaleTabs();
+  std::vector<tabs::TabInterface*> tabs = GetStaleTabs();
 
   for (auto& observer : observers_) {
     observer.OnStaleTabsProcessed(tabs);
@@ -99,28 +99,27 @@ void TabDeclutterController::ProcessStaleTabs() {
   }
 }
 
-std::vector<tabs::TabModel*> TabDeclutterController::GetStaleTabs() {
+std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
   CHECK(features::IsTabstripDeclutterEnabled());
-  std::vector<tabs::TabModel*> tabs;
+  std::vector<tabs::TabInterface*> tabs;
 
   const base::Time now = base::Time::Now();
   for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
        tab_index++) {
-    tabs::TabModel* tab_model = tab_strip_model_->GetTabAtIndex(tab_index);
+    tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
 
-    if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab_model) !=
+    if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab) !=
         excluded_tabs_.end()) {
       continue;
     }
 
-    if (tab_model->pinned() || tab_model->group().has_value() ||
-        tab_model->contents()->GetVisibility() ==
-            content::Visibility::VISIBLE) {
+    if (tab->IsPinned() || tab->GetGroup().has_value() ||
+        tab->GetContents()->GetVisibility() == content::Visibility::VISIBLE) {
       continue;
     }
 
     auto* lifecycle_unit = resource_coordinator::TabLifecycleUnitSource::
-        GetTabLifecycleUnitExternal(tab_model->contents());
+        GetTabLifecycleUnitExternal(tab->GetContents());
 
     const base::Time last_focused_time = lifecycle_unit->GetLastFocusedTime();
 
@@ -129,16 +128,16 @@ std::vector<tabs::TabModel*> TabDeclutterController::GetStaleTabs() {
                                         : (now - last_focused_time);
 
     if (elapsed >= stale_tab_threshold_duration_) {
-      tabs.push_back(tab_model);
+      tabs.push_back(tab);
     }
   }
   return tabs;
 }
 
 void TabDeclutterController::DeclutterTabs(
-    std::vector<tabs::TabModel*> tab_models) {
+    std::vector<tabs::TabInterface*> tabs) {
   UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.DeclutterTabCount",
-                            tab_models.size());
+                            tabs.size());
   UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.TotalTabCount",
                             tab_strip_model_->count());
   UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.ExcludedTabCount",
@@ -154,14 +153,13 @@ void TabDeclutterController::DeclutterTabs(
   base::UmaHistogramCounts1000("Tab.Organization.Declutter.TotalUsageCount",
                                usage_count);
 
-  for (tabs::TabModel* tab_model : tab_models) {
-    if (tab_strip_model_->GetIndexOfTab(tab_model->GetHandle()) ==
-        TabStripModel::kNoTab) {
+  for (tabs::TabInterface* tab : tabs) {
+    if (tab_strip_model_->GetIndexOfTab(tab) == TabStripModel::kNoTab) {
       continue;
     }
 
     tab_strip_model_->CloseWebContentsAt(
-        tab_strip_model_->GetIndexOfWebContents(tab_model->GetContents()),
+        tab_strip_model_->GetIndexOfWebContents(tab->GetContents()),
         TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   }
 
@@ -177,20 +175,19 @@ void TabDeclutterController::DidBecomeInactive(
   is_active_ = false;
 }
 
-void TabDeclutterController::ExcludeFromStaleTabs(tabs::TabModel* tab_model) {
-  if (tab_strip_model_->GetIndexOfTab(tab_model->GetHandle()) ==
-      TabStripModel::kNoTab) {
+void TabDeclutterController::ExcludeFromStaleTabs(tabs::TabInterface* tab) {
+  if (tab_strip_model_->GetIndexOfTab(tab) == TabStripModel::kNoTab) {
     return;
   }
 
-  if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab_model) ==
+  if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab) ==
       excluded_tabs_.end()) {
-    excluded_tabs_.push_back(tab_model);
+    excluded_tabs_.push_back(tab);
   }
 }
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(
-    base::span<tabs::TabModel*> stale_tabs) {
+    base::span<tabs::TabInterface*> stale_tabs) {
   if (!is_active_) {
     return false;
   }
@@ -217,7 +214,7 @@ bool TabDeclutterController::DeclutterNudgeCriteriaMet(
   }
 
   // If there is a new stale tab found in this computation, return true.
-  for (tabs::TabModel* tab : stale_tabs) {
+  for (tabs::TabInterface* tab : stale_tabs) {
     if (stale_tabs_previous_nudge_.count(tab) == 0) {
       return true;
     }

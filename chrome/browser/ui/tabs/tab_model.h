@@ -135,16 +135,10 @@ class TabModel final : public SupportsHandles<TabModel>,
       TabInterface::WillDetach callback) override;
   base::CallbackListSubscription RegisterDidInsert(
       TabInterface::DidInsertCallback callback) override;
-
-  // Register for this callback to detect when the pinned state changes.
   base::CallbackListSubscription RegisterPinnedStateChanged(
-      base::RepeatingCallback<void(TabModel*, bool new_pinned_state)> callback);
-
-  // Register for this callback to detect when the group changes.
+      TabInterface::PinnedStateChangedCallback callback) override;
   base::CallbackListSubscription RegisterGroupChanged(
-      base::RepeatingCallback<
-          void(TabModel*, std::optional<tab_groups::TabGroupId> new_group)>
-          callback);
+      TabInterface::GroupChangedCallback callback) override;
 
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
@@ -153,6 +147,8 @@ class TabModel final : public SupportsHandles<TabModel>,
   tabs::TabFeatures* GetTabFeatures() override;
   std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
       views::WidgetDelegate* delegate) override;
+  bool IsPinned() const override;
+  std::optional<tab_groups::TabGroupId> GetGroup() const override;
   uint32_t GetTabHandle() const override;
   void Close() override;
 
@@ -221,12 +217,11 @@ class TabModel final : public SupportsHandles<TabModel>,
   DidInsertCallbackList did_insert_callback_list_;
 
   using PinnedStateChangedCallbackList =
-      base::RepeatingCallbackList<void(TabModel*, bool new_pinned_state)>;
+      base::RepeatingCallbackList<void(TabInterface*, bool new_pinned_state)>;
+  PinnedStateChangedCallbackList pinned_state_changed_callback_list_;
 
   using GroupChangedCallbackList = base::RepeatingCallbackList<
-      void(TabModel*, std::optional<tab_groups::TabGroupId> new_group)>;
-
-  PinnedStateChangedCallbackList pinned_state_changed_callback_list_;
+      void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
   GroupChangedCallbackList group_changed_callback_list_;
 
   // Tracks whether a modal UI is showing.

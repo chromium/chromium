@@ -70,7 +70,7 @@ class MockTabDeclutterController : public tabs::TabDeclutterController {
   explicit MockTabDeclutterController(BrowserWindowInterface* browser)
       : TabDeclutterController(browser) {}
 
-  MOCK_METHOD(std::vector<tabs::TabModel*>, GetStaleTabs, (), (override));
+  MOCK_METHOD(std::vector<tabs::TabInterface*>, GetStaleTabs, (), (override));
 };
 
 class MockPage : public tab_search::mojom::Page {
@@ -974,7 +974,7 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
   EXPECT_CALL(page_, StaleTabsChanged(_)).Times(1);
-  std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
+  std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
 
   for (int i = 0; i < 4; ++i) {
     std::unique_ptr<tabs::TabModel> tab_model =
@@ -1001,7 +1001,7 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
   EXPECT_CALL(page_, StaleTabsChanged(_)).Times(2);
-  std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
+  std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
 
   for (int i = 0; i < 4; ++i) {
     std::unique_ptr<tabs::TabModel> tab_model =
@@ -1028,7 +1028,7 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterStaleTabChanges) {
   EXPECT_CALL(page_, StaleTabsChanged(_)).Times(::testing::AtLeast(1));
-  std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
+  std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
 
   // Create 10 stale tabs.
   for (int i = 0; i < 10; ++i) {
