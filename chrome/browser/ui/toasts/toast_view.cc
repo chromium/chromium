@@ -224,6 +224,8 @@ void ToastView::Init() {
     views::InstallCircleHighlightPathGenerator(close_button_);
     close_button_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE));
     close_button_->SetProperty(views::kElementIdentifierKey, kToastCloseButton);
+    close_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOAST_CLOSE_TOOLTIP));
     if (!HasConfiguredInitiallyFocusedView()) {
       SetInitiallyFocusedView(close_button_);
     }
