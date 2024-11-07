@@ -707,6 +707,16 @@ NSString* kDriveIconRepositoryPrefix =
     _metricsHelper.searchingState = DriveFilePickerSearchState::kSearchRecent;
   }
 
+  if (_shouldShowSearchItems == _selectedFilesAreSearchItems) {
+    NSMutableSet<NSString*>* selectedFilesIdentifiers = [NSMutableSet set];
+    for (const DriveItem& selectedFile : _selectedFiles) {
+      [selectedFilesIdentifiers addObject:selectedFile.identifier];
+    }
+    [self.consumer setSelectedItemIdentifiers:selectedFilesIdentifiers];
+  } else {
+    [self.consumer setSelectedItemIdentifiers:nil];
+  }
+
   // When switching between search items and non-search items, the list of items
   // is cleared and the loading indicator is presented.
   [self clearItemsAndShowLoadingIndicator];
@@ -717,6 +727,14 @@ NSString* kDriveIconRepositoryPrefix =
 }
 
 - (void)selectOrDeselectFile:(const DriveItem&)file {
+  if (_shouldShowSearchItems && !_selectedFilesAreSearchItems) {
+    // If the file picker is now in search mode but the selected files come from
+    // outside search mode, reset the selection before editing it further. This
+    // is unnecessary in the other direction since the selection is already
+    // cleared when exiting search mode if files were selected from search mode.
+    [self setSelectedFiles:{}];
+  }
+
   const std::unordered_set<DriveItem>& oldSelectedFiles = _selectedFiles;
   bool fileWasAlreadySelected = oldSelectedFiles.contains(file);
 
@@ -756,7 +774,8 @@ NSString* kDriveIconRepositoryPrefix =
 - (void)setSelectedFiles:(std::unordered_set<DriveItem>)newSelectedFiles {
   const std::unordered_set<DriveItem>& oldSelectedFiles = _selectedFiles;
 
-  if (oldSelectedFiles == newSelectedFiles) {
+  if (oldSelectedFiles == newSelectedFiles &&
+      _shouldShowSearchItems == _selectedFilesAreSearchItems) {
     // If the selection is the same, do nothing.
     return;
   }
