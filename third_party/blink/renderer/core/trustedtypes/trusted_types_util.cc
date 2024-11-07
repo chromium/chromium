@@ -285,7 +285,7 @@ String GetStringFromScriptHelper(
     return script;
   }
 
-  TrustedScript* result = default_policy->CreateScript(
+  TrustedScript* result = default_policy->createScript(
       context->GetIsolate(), script,
       GetDefaultCallbackArgs(context->GetIsolate(), "TrustedScript",
                              interface_name, property_name, script),
@@ -344,7 +344,7 @@ String TrustedTypesCheckForHTML(const String& html,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedHTML* result = default_policy->CreateHTML(
+  TrustedHTML* result = default_policy->createHTML(
       execution_context->GetIsolate(), html,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedHTML",
                              interface_name, property_name),
@@ -398,7 +398,7 @@ String TrustedTypesCheckForScript(const String& script,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedScript* result = default_policy->CreateScript(
+  TrustedScript* result = default_policy->createScript(
       execution_context->GetIsolate(), script,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedScript",
                              interface_name, property_name, script),
@@ -453,7 +453,7 @@ String TrustedTypesCheckForScriptURL(const String& script_url,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedScriptURL* result = default_policy->CreateScriptURL(
+  TrustedScriptURL* result = default_policy->createScriptURL(
       execution_context->GetIsolate(), script_url,
       GetDefaultCallbackArgs(execution_context->GetIsolate(),
                              "TrustedScriptURL", interface_name, property_name),
