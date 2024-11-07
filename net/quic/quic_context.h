@@ -65,7 +65,7 @@ AllSupportedQuicVersions() {
 }
 
 // When a connection is idle for 30 seconds it will be closed.
-constexpr base::TimeDelta kIdleConnectionTimeout = base::Seconds(30);
+inline constexpr base::TimeDelta kIdleConnectionTimeout = base::Seconds(30);
 
 // Sessions can migrate if they have been idle for less than this period.
 constexpr base::TimeDelta kDefaultIdleSessionMigrationPeriod =
@@ -80,7 +80,8 @@ constexpr base::TimeDelta kDefaultRetransmittableOnWireTimeout =
 
 // The default maximum time QUIC session could be on non-default network before
 // migrate back to default network.
-constexpr base::TimeDelta kMaxTimeOnNonDefaultNetwork = base::Seconds(128);
+inline constexpr base::TimeDelta kMaxTimeOnNonDefaultNetwork =
+    base::Seconds(128);
 
 // The default maximum number of migrations to non default network on write
 // error per network.

@@ -32,7 +32,7 @@ class CertNetFetcher;
 //
 // Use 7 days as the max allowable leaf revocation status age, which is
 // sufficient for both CRL and OCSP, and which aligns with Microsoft policies.
-constexpr base::TimeDelta kMaxRevocationLeafUpdateAge = base::Days(7);
+inline constexpr base::TimeDelta kMaxRevocationLeafUpdateAge = base::Days(7);
 
 // Baseline Requirements 1.6.5, section 4.9.7:
 //     For the status of Subordinate CA Certificates: The CA SHALL update and
@@ -49,7 +49,8 @@ constexpr base::TimeDelta kMaxRevocationLeafUpdateAge = base::Days(7);
 //
 // Use 366 days to allow for leap years, though it is overly permissive in
 // other years.
-constexpr base::TimeDelta kMaxRevocationIntermediateUpdateAge = base::Days(366);
+inline constexpr base::TimeDelta kMaxRevocationIntermediateUpdateAge =
+    base::Days(366);
 
 // RevocationPolicy describes how revocation should be carried out for a
 // particular chain.
