@@ -19,7 +19,6 @@ namespace enterprise_companion {
 
 const char kExecutableName[] = "enterprise_companion.exe";
 
-// Returns the installation directory.
 std::optional<base::FilePath> GetInstallDirectory() {
   base::FilePath program_files_dir;
   if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86, &program_files_dir)) {
@@ -30,7 +29,6 @@ std::optional<base::FilePath> GetInstallDirectory() {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-// Searches for an installed app.
 std::optional<base::FilePath> FindExistingInstall() {
   std::optional<base::FilePath> install_dir = GetInstallDirectory();
   if (!install_dir) {

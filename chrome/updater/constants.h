@@ -29,14 +29,6 @@ inline constexpr char kExecutableName[] = "updater.exe";
 inline constexpr char kExecutableName[] = "updater";
 #endif
 
-// The name of the enterprise companion program image.
-#if BUILDFLAG(IS_WIN)
-inline constexpr char kCompanionAppExecutableName[] =
-    "enterprise_companion.exe";
-#else
-inline constexpr char kCompanionAppExecutableName[] = "enterprise_companion";
-#endif
-
 // Uninstall switch for the enterprise companion app.
 inline constexpr char kUninstallCompanionAppSwitch[] = "uninstall";
 

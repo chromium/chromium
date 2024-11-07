@@ -2413,11 +2413,6 @@ TEST_F(IntegrationTestDeviceManagementBase,
 
   ASSERT_NO_FATAL_FAILURE(InstallEnterpriseCompanionApp());
 
-  const base::FilePath companion_app_exe =
-      enterprise_companion::GetInstallDirectory()->AppendASCII(
-          kCompanionAppExecutableName);
-  ASSERT_TRUE(base::PathExists(companion_app_exe));
-
   // Uninstall ping for the app.
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   // Expect an update check and then the uninstall ping for the updater itself.
@@ -2426,7 +2421,7 @@ TEST_F(IntegrationTestDeviceManagementBase,
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_TRUE(WaitFor([&] { return !base::PathExists(companion_app_exe); }));
+  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }

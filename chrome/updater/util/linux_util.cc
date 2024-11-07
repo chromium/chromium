@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_branding.h"
@@ -77,7 +78,7 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
   }
 
   return install_dir->AppendASCII(
-      base::StrCat({kCompanionAppExecutableName, kExecutableSuffix}));
+      base::StrCat({enterprise_companion::kExecutableName, kExecutableSuffix}));
 }
 
 }  // namespace updater

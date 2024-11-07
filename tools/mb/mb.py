@@ -1481,10 +1481,13 @@ class MetaBuildWrapper:
               'test_data/chrome/browser/resources/chromeos/accessibility/'
               'select_to_speak/',
           )) or (is_mac and f in (  # https://crbug.com/1000667
+              'ChromeEnterpriseCompanion.app/',
+              'ChromeEnterpriseCompanion_test.app/',
               'Chromium Framework.framework/',
               'Chromium Helper.app/',
               'Chromium.app/',
               'ChromiumEnterpriseCompanion.app/',
+              'ChromiumEnterpriseCompanion_test.app/',
               'ChromiumUpdater.app/',
               'ChromiumUpdater_test.app/',
               'Content Shell.app/',

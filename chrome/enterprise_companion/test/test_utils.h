@@ -49,6 +49,9 @@ class TestMethods {
   TestMethods() = default;
   virtual ~TestMethods() = default;
 
+  // Returns the path to the application under test's binary.
+  virtual base::FilePath GetTestExePath() = 0;
+
   // Removes traces of the application from the system.
   virtual void Clean();
 
@@ -60,6 +63,9 @@ class TestMethods {
 
   // Installs the application under test via the bundled installer.
   virtual void Install();
+
+ private:
+  void RunAppUnderTest(const std::string& switch_string);
 };
 
 TestMethods& GetTestMethods();

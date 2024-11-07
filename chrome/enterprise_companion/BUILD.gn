@@ -277,7 +277,7 @@ test("enterprise_companion_integration_tests") {
     "//testing/gtest",
   ]
   data = [ "//testing/scripts/run_telemetry_as_googletest.py" ]
-  data_deps = [ ":enterprise_companion_test" ]
+  data_deps = []
 
   # The MacOS integration tests require the pkg installer to be built, which is
   # only possible on MacOS hosts.
@@ -286,8 +286,13 @@ test("enterprise_companion_integration_tests") {
     data_deps += [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
   }
 
-  if (is_win) {
+  if (is_mac) {
+    data_deps +=
+        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
+  } else if (is_win) {
     sources += [ "test/integration_tests_win.cc" ]
+    data_deps += [ ":enterprise_companion_test" ]
+  } else if (is_linux) {
     data_deps += [ ":enterprise_companion_test" ]
   }
 

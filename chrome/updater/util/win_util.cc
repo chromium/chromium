@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/updater/util/win_util.h"
+#include "base/win/win_util.h"
 
 #include <windows.h>
 
@@ -65,13 +65,14 @@
 #include "base/win/scoped_process_information.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/startup_information.h"
-#include "base/win/win_util.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
@@ -1460,11 +1461,11 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
     return std::nullopt;
   }
 
-  return install_dir->AppendASCII(
-      base::StrCat({base::FilePath::FromASCII(kCompanionAppExecutableName)
-                        .RemoveExtension()
-                        .MaybeAsASCII(),
-                    kExecutableSuffix, ".exe"}));
+  return install_dir->AppendASCII(base::StrCat(
+      {base::FilePath::FromASCII(enterprise_companion::kExecutableName)
+           .RemoveExtension()
+           .MaybeAsASCII(),
+       kExecutableSuffix, ".exe"}));
 }
 
 }  // namespace updater

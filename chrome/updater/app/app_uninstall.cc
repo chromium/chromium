@@ -95,20 +95,15 @@ namespace {
 
 // Uninstalls the enterprise companion app if it exists.
 [[nodiscard]] int UninstallEnterpriseCompanionApp() {
-  std::optional<base::FilePath> install_dir =
-      enterprise_companion::GetInstallDirectory();
-  if (!install_dir) {
-    VLOG(1) << __func__ << ": Cannot get enterprise companion app "
-            << "installation directory, skips the uninstall.";
+  std::optional<base::FilePath> exe_path =
+      enterprise_companion::FindExistingInstall();
+  if (!exe_path) {
+    VLOG(1) << __func__
+            << ": Could not locate an enterprise companion app installation.";
     return kErrorOk;
   }
 
-  base::CommandLine command_line(
-      install_dir->AppendASCII(kCompanionAppExecutableName));
-  if (!base::PathExists(command_line.GetProgram())) {
-    VLOG(1) << __func__ << ": Companion app not found, skip the uninstall.";
-    return kErrorOk;
-  }
+  base::CommandLine command_line(*exe_path);
   command_line.AppendSwitch(kUninstallCompanionAppSwitch);
   int exit_code = -1;
   std::string output;

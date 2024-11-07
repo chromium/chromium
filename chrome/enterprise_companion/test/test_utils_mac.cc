@@ -9,7 +9,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,6 +24,14 @@ class TestMethodsMac : public TestMethods {
   TestMethodsMac() = default;
   ~TestMethodsMac() override = default;
 
+  base::FilePath GetTestExePath() override {
+    return base::PathService::CheckedGet(base::DIR_EXE)
+        .AppendASCII("EnterpriseCompanionTestApp")
+        .AppendASCII(base::StrCat({PRODUCT_FULLNAME_STRING, ".app"}))
+        .Append(FILE_PATH_LITERAL("Contents/MacOS"))
+        .AppendASCII(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
+  }
+
   void Clean() override {
     TestMethods::Clean();
     ASSERT_TRUE(base::DeleteFile(GetKSAdminPath()));
@@ -32,8 +42,7 @@ class TestMethodsMac : public TestMethods {
     std::optional<base::FilePath> install_dir = GetInstallDirectory();
     ASSERT_TRUE(install_dir);
     int exe_mode = 0;
-    ASSERT_TRUE(base::GetPosixFilePermissions(
-        install_dir->AppendASCII(kExecutableName), &exe_mode));
+    ASSERT_TRUE(base::GetPosixFilePermissions(*install_dir, &exe_mode));
     EXPECT_EQ(exe_mode, base::FILE_PERMISSION_USER_MASK |
                             base::FILE_PERMISSION_READ_BY_GROUP |
                             base::FILE_PERMISSION_EXECUTE_BY_GROUP |

@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/util/process_version.gni")
+import("//chrome/enterprise_companion/branding.gni")
 import("//chrome/updater/branding.gni")
 import("//chrome/updater/zip.gni")
 import("//components/crx_file/crx3.gni")
@@ -631,6 +632,7 @@ if (is_win || is_mac || is_linux) {
       ":tagging",
       ":version_header",
       "//base",
+      "//chrome/enterprise_companion:installer_paths",
       "//components/update_client",
       "//mojo/core/embedder",
       "//url",
@@ -775,26 +777,55 @@ if (is_win || is_mac || is_linux) {
     }
 
     if (is_mac) {
-      copy("enterprise_companion_test_crx_install_script") {
-        sources = [ "test/data/enterprise_companion_install_script.sh" ]
-        outputs = [
-          "$target_gen_dir/enterprise_companion_test_crx_contents/.install",
+      process_version("enterprise_companion_test_crx_install_script") {
+        extra_args = [
+          "-e",
+          "PRODUCT_NAME=\"${enterprise_companion_product_full_name}\"",
+        ]
+        process_only = true
+        executable = true
+        template_file = "test/data/enterprise_companion_install_script.sh.in"
+        output =
+            "$target_gen_dir/enterprise_companion_test_crx_contents/.install"
+      }
+
+      _enterprise_companion_app_name =
+          "${enterprise_companion_product_full_name}.app"
+      _source_bundle_path = "$root_build_dir/EnterpriseCompanionTestApp/${_enterprise_companion_app_name}"
+      copy("enterprise_companion_test_crx_exe") {
+        sources = [ "${_source_bundle_path}/Contents/MacOS/${enterprise_companion_product_full_name}" ]
+        outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/MacOS/{{source_file_part}}" ]
+        deps = [
+          "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
         ]
       }
-      copy("enterprise_companion_test_crx_binary") {
-        sources = [ "$root_build_dir/enterprise_companion_test" ]
-        outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/{{source_file_part}}" ]
-        deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
+      copy("enterprise_companion_test_crx_pkginfo") {
+        sources = [ "${_source_bundle_path}/Contents/PkgInfo" ]
+        outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/{{source_file_part}}" ]
+        deps = [
+          "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
+        ]
+      }
+      copy("enterprise_companion_test_crx_plist") {
+        sources = [ "${_source_bundle_path}/Contents/Info.plist" ]
+        outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/{{source_file_part}}" ]
+        deps = [
+          "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
+        ]
       }
       zip("enterprise_companion_test_crx_contents_zip") {
         inputs = get_target_outputs(
                      ":enterprise_companion_test_crx_install_script") +
-                 get_target_outputs(":enterprise_companion_test_crx_binary")
+                 get_target_outputs(":enterprise_companion_test_crx_exe") +
+                 get_target_outputs(":enterprise_companion_test_crx_pkginfo") +
+                 get_target_outputs(":enterprise_companion_test_crx_plist")
         base_dir = "$target_gen_dir/enterprise_companion_test_crx_contents/"
         output = "$target_gen_dir/enterprise_companion_test.zip"
         deps = [
-          ":enterprise_companion_test_crx_binary",
+          ":enterprise_companion_test_crx_exe",
           ":enterprise_companion_test_crx_install_script",
+          ":enterprise_companion_test_crx_pkginfo",
+          ":enterprise_companion_test_crx_plist",
         ]
       }
     }
@@ -951,7 +982,6 @@ if (is_win || is_mac || is_linux) {
     data_deps = [
       ":enterprise_companion_test_crx",
       ":updater_selfupdate_test_crx",
-      "//chrome/enterprise_companion:enterprise_companion_test",
       "//chrome/updater/test/test_installer:app_installers",
     ]
 
@@ -999,6 +1029,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data_deps += [
+        "//chrome/enterprise_companion:enterprise_companion_test",
         "//chrome/updater/win:updater",
         "//chrome/updater/win:updater_test",
         "//chrome/updater/win/installer:installer_test",
@@ -1131,6 +1162,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data_deps += [
+        "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
         "//chrome/updater/mac:ksadmin_test",
         "//chrome/updater/mac:updater_bundle_test",
         "//chrome/updater/mac/client_lib/test_helpers/app_bundle:registration_test_app_bundle",
@@ -1167,7 +1199,10 @@ if (is_win || is_mac || is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
       data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
-      data_deps += [ "//chrome/updater/linux:updater_test" ]
+      data_deps += [
+        "//chrome/enterprise_companion:enterprise_companion_test",
+        "//chrome/updater/linux:updater_test",
+      ]
       libs = [ "systemd" ]
     }
 

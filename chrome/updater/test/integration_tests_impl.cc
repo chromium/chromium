@@ -99,8 +99,9 @@ constexpr char kSelfUpdateCRXRun[] = PRODUCT_FULLNAME_STRING "_test.app";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_dmg.crx";
 constexpr char kDoNothingCRXRun[] = "updater_qualification_app_dmg.dmg";
 constexpr char kEnterpriseCompanionCRXRun[] = "enterprise_companion_test.zip";
+// On Mac, the test companion app does not have a different name.
 constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
-    FILE_PATH_LITERAL("enterprise_companion_test");
+    BROWSER_NAME_STRING "EnterpriseCompanion";
 #elif BUILDFLAG(IS_WIN)
 constexpr char kSelfUpdateCRXRun[] = "UpdaterSetup_test.exe";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_exe.crx";
@@ -118,6 +119,17 @@ constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
 #endif
 constexpr char kEnterpriseCompanionCRXName[] = "enterprise_companion_test.crx3";
 constexpr char kEnterpriseCompanionCRXArguments[] = "--install";
+
+// Returns the relative path to the enterprise companion app's binary from the
+// install directory or test data directory.
+base::FilePath GetEnterpriseCompanionAppExeRelativePath() {
+  base::FilePath exe_path;
+#if BUILDFLAG(IS_MAC)
+  exe_path = exe_path.AppendASCII(BROWSER_NAME_STRING "EnterpriseCompanion.app")
+                 .AppendASCII("Contents/MacOS");
+#endif
+  return exe_path.Append(kCompanionAppTestExecutableName);
+}
 
 std::string GetHashHex(const base::FilePath& file) {
   base::MemoryMappedFile mmfile;
@@ -1552,8 +1564,9 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
 }
 
 std::set<base::FilePath::StringType> GetCompanionAppProcessNames() {
-  return {base::FilePath::FromASCII(kCompanionAppExecutableName).value(),
-          kCompanionAppTestExecutableName};
+  return {
+      base::FilePath::FromASCII(enterprise_companion::kExecutableName).value(),
+      kCompanionAppTestExecutableName};
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1673,23 +1686,28 @@ void DMCleanup(UpdaterScope scope) {
 void InstallEnterpriseCompanionApp() {
   base::FilePath exe_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  int exit_code = -1;
-  base::CommandLine command(exe_path.Append(kCompanionAppTestExecutableName));
+#if BUILDFLAG(IS_MAC)
+  exe_path = exe_path.Append(FILE_PATH_LITERAL("EnterpriseCompanionTestApp"));
+#endif
+  exe_path = exe_path.Append(GetEnterpriseCompanionAppExeRelativePath());
+
+  base::CommandLine command(exe_path);
   command.AppendSwitch("install");
   base::Process process = base::LaunchProcess(command, {});
   EXPECT_TRUE(process.IsValid());
+  int exit_code = -1;
   EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                              &exit_code));
 }
 
 void InstallBrokenEnterpriseCompanionApp() {
-  std::optional<base::FilePath> install_dir =
+  std::optional<base::FilePath> exe_path =
       enterprise_companion::GetInstallDirectory();
-  ASSERT_TRUE(install_dir);
-  ASSERT_TRUE(base::CreateDirectory(*install_dir));
-  ASSERT_TRUE(
-      base::WriteFile(install_dir->AppendASCII(kCompanionAppExecutableName),
-                      "broken enterprise companion app"));
+  ASSERT_TRUE(exe_path);
+  exe_path = exe_path->Append(GetEnterpriseCompanionAppExeRelativePath());
+
+  ASSERT_TRUE(base::CreateDirectory(exe_path->DirName()));
+  ASSERT_TRUE(base::WriteFile(*exe_path, "broken enterprise companion app"));
   VLOG(1) << "Broken enterprise companion app installed.";
 }
 
@@ -1726,28 +1744,17 @@ void InstallEnterpriseCompanionAppOverrides(
 }
 
 void ExpectEnterpriseCompanionAppNotInstalled() {
-  std::optional<base::FilePath> install_dir =
-      enterprise_companion::GetInstallDirectory();
-  if (!install_dir) {
-    VLOG(1) << "Cannot find enterprise companion app installation directory, "
-            << "assume it does not exist.";
-    return;
-  }
-  EXPECT_FALSE(
-      base::PathExists(install_dir->Append(kCompanionAppTestExecutableName)));
+  EXPECT_FALSE(enterprise_companion::FindExistingInstall());
 }
 
 void UninstallEnterpriseCompanionApp() {
-  std::optional<base::FilePath> install_dir =
-      enterprise_companion::GetInstallDirectory();
-  if (!install_dir) {
-    VLOG(1) << "Cannot find enterprise companion app installation directory, "
-            << "assume it does not exist.";
+  std::optional<base::FilePath> exe_path =
+      enterprise_companion::FindExistingInstall();
+  if (!exe_path) {
     return;
   }
 
-  base::CommandLine command_line(
-      install_dir->AppendASCII(kCompanionAppExecutableName));
+  base::CommandLine command_line(*exe_path);
   command_line.AppendSwitch(kUninstallCompanionAppSwitch);
   base::Process uninstall_process = base::LaunchProcess(command_line, {});
   if (uninstall_process.IsValid() && WaitForProcess(uninstall_process) == 0) {
