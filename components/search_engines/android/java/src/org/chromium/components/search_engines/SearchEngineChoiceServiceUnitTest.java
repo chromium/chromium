@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -308,6 +309,74 @@ public class SearchEngineChoiceServiceUnitTest {
             doReturn(futureInstant).when(mDelegate).getDeviceBrowserSelectedTimestamp();
             assertFalse(service.isDefaultBrowserPromoSuppressed());
         }
+    }
+
+    @Test
+    public void testDelegateRelease() {
+        // Param state: A suppression period is specified.
+        configureClayBlockingFeature(
+                mIsClayBlockingEnabled,
+                /* isDarkLaunchEnabled= */ false,
+                /* defaultBrowserPromoSuppressedMillis= */ 24_000);
+
+        var deviceCountryPromise = new Promise<String>();
+        doReturn(deviceCountryPromise).when(mDelegate).getDeviceCountry();
+        doReturn(false).when(mDelegate).isDeviceChoiceDialogEligible();
+        doReturn(Instant.now()).when(mDelegate).getDeviceBrowserSelectedTimestamp();
+
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        // Device country is being checked on startup.
+        verify(mDelegate).getDeviceCountry();
+
+        service.isDeviceChoiceDialogEligible();
+        verify(mDelegate, mIsClayBlockingEnabled ? times(1) : never())
+                .isDeviceChoiceDialogEligible();
+
+        // Eligibility is checked every time, not cached.
+        service.isDeviceChoiceDialogEligible();
+        verify(mDelegate, mIsClayBlockingEnabled ? times(2) : never())
+                .isDeviceChoiceDialogEligible();
+
+        // On resolution, the delegate is freed up, but the default browser selection timestamp is
+        // proactively checked, in case we need it later.
+        deviceCountryPromise.fulfill("deviceCountry");
+        ShadowLooper.runUiThreadTasks();
+        verify(mDelegate, mIsClayBlockingEnabled ? times(1) : never())
+                .getDeviceBrowserSelectedTimestamp();
+
+        // The delegate is not checked anymore, because it was freed up.
+        clearInvocations(mDelegate);
+        service.isDeviceChoiceDialogEligible();
+        verify(mDelegate, never()).isDeviceChoiceDialogEligible();
+
+        // We still can check whether the default browser promo is suppressed.
+        assertEquals(mIsClayBlockingEnabled, service.isDefaultBrowserPromoSuppressed());
+    }
+
+    @Test
+    public void testDelegateRelease_blocked() {
+        var deviceCountryPromise = new Promise<String>();
+        doReturn(deviceCountryPromise).when(mDelegate).getDeviceCountry();
+        doReturn(true).when(mDelegate).isDeviceChoiceDialogEligible();
+
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        service.isDeviceChoiceDialogEligible();
+        verify(mDelegate, mIsClayBlockingEnabled ? times(1) : never())
+                .isDeviceChoiceDialogEligible();
+
+        // On resolution, the delegate is not freed up, so we don't need to check the default
+        // browser selection timestamp.
+        deviceCountryPromise.fulfill("deviceCountry");
+        ShadowLooper.runUiThreadTasks();
+        verify(mDelegate, never()).getDeviceBrowserSelectedTimestamp();
+
+        // The delegate is still checked, the service kept it.
+        clearInvocations(mDelegate);
+        service.isDeviceChoiceDialogEligible();
+        verify(mDelegate, mIsClayBlockingEnabled ? times(1) : never())
+                .isDeviceChoiceDialogEligible();
     }
 
     private static void configureClayBlockingFeature(
