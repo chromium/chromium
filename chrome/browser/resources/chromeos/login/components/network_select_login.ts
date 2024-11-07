@@ -11,7 +11,7 @@ import './oobe_network_icons.html.js';
 
 import {NetworkList} from '//resources/ash/common/network/network_list_types.js';
 import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertInstanceof} from '//resources/js/assert.js';
 import {StartConnectResult} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
@@ -123,20 +123,9 @@ export class NetworkSelectLogin extends PolymerElement {
     this.isShown = false;
   }
 
-  private isNetworkSelectElement(obj: any): obj is NetworkSelectElement {
-    return typeof obj.refreshNetworks === 'function' &&
-        typeof obj.focus === 'function' &&
-        typeof obj.getDefaultNetwork === 'function' &&
-        typeof obj.getNetwork === 'function' &&
-        typeof obj.getNetworkListItemByNameForTest === 'function';
-  }
-
   private getNetworkSelect(): NetworkSelectElement {
-    const networkSelect =
-        this.shadowRoot?.querySelector<NetworkSelectElement>('#networkSelect');
-    // TODO: replace with instanceof and remove the function
-    // once network_select.js has been migrated to TS (b/322154192)
-    assert(this.isNetworkSelectElement(networkSelect));
+    const networkSelect = this.shadowRoot?.querySelector('#networkSelect');
+    assertInstanceof(networkSelect, NetworkSelectElement);
     return networkSelect;
   }
 
