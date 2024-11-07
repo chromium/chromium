@@ -8,7 +8,7 @@ rust_static_library("chromesync") {
   crate_name = "chromesync"
   sources = [ "src/lib.rs" ]
   inputs = [ "sync_pb.rs" ]
-  deps = [ "//third_party/rust/prost/v0_12:lib" ]
+  deps = [ "//third_party/rust/prost/v0_13:lib" ]
   no_chromium_prelude = true
   testonly = true
 }

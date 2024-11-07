@@ -1,0 +1,52 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "prost_derive"
+  epoch = "0.13"
+  crate_type = "proc-macro"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.3/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.3/src/field/group.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.3/src/field/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.3/src/field/message.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.3/src/field/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.3/src/field/oneof.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.3/src/field/scalar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.3/src/lib.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.13.3"
+  cargo_pkg_authors = "Dan Burkert <dan@danburkert.com>, Lucio Franco <luciofranco14@gmail.com>, Casper Meijn <casper@meijn.net>, Tokio Contributors <team@tokio.rs>"
+  cargo_pkg_name = "prost-derive"
+  cargo_pkg_description = "Generate encoding and decoding implementations for Prost annotated types."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/itertools/v0_11:lib",
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/syn/v2:lib",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  testonly = true
+}
