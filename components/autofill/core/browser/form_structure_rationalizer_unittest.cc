@@ -1019,7 +1019,7 @@ TEST_F(FormStructureRationalizerTest, RationalizePhoneCountryCode_PhoneFields) {
                           PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX));
 }
 
-class RationalizePhoneNumberFieldsTest : public testing::Test {
+class RationalizePhoneNumbersForFillingTest : public testing::Test {
  public:
   struct FieldTemplate {
     // Description of the field passed to the rationalization.
@@ -1067,7 +1067,7 @@ class RationalizePhoneNumberFieldsTest : public testing::Test {
   }
 };
 
-TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_FirstNumberIsWholeNumber) {
+TEST_F(RationalizePhoneNumbersForFillingTest, FirstNumberIsWholeNumber) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
                   {ADDRESS_HOME_LINE1, false},
@@ -1079,8 +1079,7 @@ TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_FirstNumberIsWholeNumber) {
               ::testing::Eq(expected_only_fill_when_focused));
 }
 
-TEST_F(RationalizePhoneNumberFieldsTest,
-       PhoneNumber_FirstNumberIsComponentized) {
+TEST_F(RationalizePhoneNumbersForFillingTest, FirstNumberIsComponentized) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
                   {ADDRESS_HOME_LINE1, false},
@@ -1096,8 +1095,8 @@ TEST_F(RationalizePhoneNumberFieldsTest,
               ::testing::Eq(expected_only_fill_when_focused));
 }
 
-TEST_F(RationalizePhoneNumberFieldsTest,
-       PhoneNumber_BestEffortWhenNoCompleteNumberIsFound) {
+TEST_F(RationalizePhoneNumbersForFillingTest,
+       BestEffortWhenNoCompleteNumberIsFound) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
                   {ADDRESS_HOME_LINE1, false},
@@ -1111,7 +1110,7 @@ TEST_F(RationalizePhoneNumberFieldsTest,
               ::testing::Eq(expected_only_fill_when_focused));
 }
 
-TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_FillPhonePartsOnceOnly) {
+TEST_F(RationalizePhoneNumbersForFillingTest, FillPhonePartsOnceOnly) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
                   {ADDRESS_HOME_LINE1, false},
@@ -1128,8 +1127,7 @@ TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_FillPhonePartsOnceOnly) {
               ::testing::Eq(expected_only_fill_when_focused));
 }
 
-TEST_F(RationalizePhoneNumberFieldsTest,
-       PhoneNumber_SkipHiddenPhoneNumberFields) {
+TEST_F(RationalizePhoneNumbersForFillingTest, SkipHiddenPhoneNumberFields) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
                   {ADDRESS_HOME_LINE1, false},
@@ -1147,8 +1145,7 @@ TEST_F(RationalizePhoneNumberFieldsTest,
               ::testing::Eq(expected_only_fill_when_focused));
 }
 
-TEST_F(RationalizePhoneNumberFieldsTest,
-       PhoneNumber_ProcessNumberPrefixAndSuffix) {
+TEST_F(RationalizePhoneNumbersForFillingTest, ProcessNumberPrefixAndSuffix) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
                   {ADDRESS_HOME_LINE1, false},
@@ -1165,7 +1162,7 @@ TEST_F(RationalizePhoneNumberFieldsTest,
               ::testing::Eq(expected_only_fill_when_focused));
 }
 
-TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_IncorrectPrefix) {
+TEST_F(RationalizePhoneNumbersForFillingTest, IncorrectPrefix) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
                   {ADDRESS_HOME_LINE1, false},
@@ -1182,7 +1179,7 @@ TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_IncorrectPrefix) {
               ::testing::Eq(expected_only_fill_when_focused));
 }
 
-TEST_F(RationalizePhoneNumberFieldsTest, PhoneNumber_IncorrectSuffix) {
+TEST_F(RationalizePhoneNumbersForFillingTest, IncorrectSuffix) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
                   {ADDRESS_HOME_LINE1, false},

@@ -23,7 +23,7 @@ namespace autofill {
 
 namespace {
 
-void RationalizePhoneNumberFields(std::vector<AutofillField*>& fields) {
+void RationalizePhoneNumbersForFilling(std::vector<AutofillField*>& fields) {
   // A whole phone number can be structured in the following ways:
   // - whole number
   // - country code, city and number
@@ -773,7 +773,7 @@ void FormStructureRationalizer::RationalizePhoneNumbersForFilling() {
     section_fields[field->section()].push_back(field.get());
   }
   for (auto& [section, fields] : section_fields) {
-    RationalizePhoneNumberFields(fields);
+    autofill::RationalizePhoneNumbersForFilling(fields);
   }
 }
 
