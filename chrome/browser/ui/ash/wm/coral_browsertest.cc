@@ -448,8 +448,8 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseTabAppUpdateChip) {
   // Create a fake coral group which contains non-duplicated tabs and apps.
   std::vector<coral::mojom::GroupPtr> test_groups;
   test_groups.push_back(
-      CreateTestGroup({{"google.com", "https://google.com/"},
-                       {"youtube.com", "https://youtube.com/"},
+      CreateTestGroup({{"google.com", GURL("https://google.com/")},
+                       {"youtube.com", GURL("https://youtube.com/")},
                        {"YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"},
                        {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
                       "Coral desk"));
@@ -503,6 +503,73 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseTabAppUpdateChip) {
   CloseBrowserSynchronously(browser());
 
   EXPECT_FALSE(GetBirchChipButton());
+}
+
+// Tests that the same coral chip will not show up again if we just created a
+// desk from it.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, NoRepeatChipAfterLaunchGroup) {
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+
+  // Create a browser with two tabs.
+  test::CreateAndShowBrowser(primary_profile, {GURL("https://youtube.com"),
+                                               GURL("https://google.com")});
+
+  test::InstallSystemAppsForTesting(primary_profile);
+
+  // Open one SWA window and a PWA window.
+  test::CreateSystemWebApp(primary_profile, SystemWebAppType::FILE_MANAGER);
+  test::InstallAndLaunchPWA(primary_profile, GURL("https://www.youtube.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"YouTube");
+
+  // Create a fake coral group which contains all tabs and apps.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"google.com", GURL("https://google.com/")},
+                       {"youtube.com", GURL("https://youtube.com/")},
+                       {"YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"},
+                       {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
+                      "Coral desk"));
+
+  OverrideTestResponse(std::move(test_groups));
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a coral chip.
+  auto* coral_chip = GetBirchChipButton();
+  ASSERT_TRUE(coral_chip);
+
+  // Create a new desk by clicking on the chip.
+  DeskSwitchAnimationWaiter waiter;
+  test::Click(coral_chip);
+  waiter.Wait();
+
+  auto* desks_controller = DesksController::Get();
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_EQ(u"Coral desk", desks_controller->GetDeskName(
+                               desks_controller->GetActiveDeskIndex()));
+
+  // Re-enter in Overview, there should be no chips.
+  base::RunLoop birch_data_fetch_waiter2;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter2.QuitClosure());
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  birch_data_fetch_waiter2.Run();
+
+  // The birch bar should have no coral chips.
+  ASSERT_FALSE(GetBirchChipButton());
 }
 
 }  // namespace ash

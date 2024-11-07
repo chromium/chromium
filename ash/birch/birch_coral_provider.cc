@@ -21,6 +21,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/coral/coral_controller.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -169,6 +171,42 @@ std::unordered_set<coral::mojom::AppPtr> GetInSessionAppData() {
     app_data.insert(std::move(app_mojom));
   }
   return app_data;
+}
+
+// Checks if we should show the response on Glanceables bar.
+bool ShouldShowResponse(CoralResponse* response) {
+  if (!response) {
+    return false;
+  }
+
+  // If we got only one group from an in-session response whose name and content
+  // are exactly same as the active desk which was created from a coral group,
+  // we won't show it.
+  const auto& groups = response->groups();
+  if (response->source() == CoralSource::kPostLogin ||
+      DesksController::Get()->active_desk()->type() != Desk::Type::kCoral ||
+      groups.size() != 1) {
+    return true;
+  }
+
+  // Since the non-duplicated entities in the group is a subset of the tabs and
+  // apps on the active desk, we only need to check if the number of group
+  // entities equals to the total number of tabs and apps on the active desk.
+  Shell* shell = Shell::Get();
+  const size_t tab_num = base::ranges::count_if(
+      shell->tab_cluster_ui_controller()->tab_items(),
+      [](const auto& tab_item) {
+        aura::Window* window = tab_item->current_info().browser_window;
+        return IsBrowserWindow(window) &&
+               desks_util::BelongsToActiveDesk(window);
+      });
+  const size_t app_num = base::ranges::count_if(
+      shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
+      [](const auto& window) {
+        return !wm::GetTransientParent(window) && !IsBrowserWindow(window);
+      });
+
+  return groups[0]->entities.size() != (tab_num + app_num);
 }
 
 }  // namespace
@@ -503,14 +541,13 @@ void BirchCoralProvider::HandleInSessionCoralResponse(
 void BirchCoralProvider::HandleCoralResponse(
     std::unique_ptr<CoralResponse> response) {
   std::vector<BirchCoralItem> items;
-  if (!response) {
-    response_.reset();
+  response_ = std::move(response);
+  if (!ShouldShowResponse(response_.get())) {
     app_windows_observation_.RemoveAllObservations();
     Shell::Get()->birch_model()->SetCoralItems(items);
     return;
   }
 
-  response_ = std::move(response);
   CHECK(HasValidClusterCount(response_->groups().size()));
   for (size_t i = 0; i < response_->groups().size(); ++i) {
     const auto& group = response_->groups()[i];

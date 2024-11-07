@@ -244,9 +244,10 @@ Desk::ScopedContentUpdateNotificationDisabler::
 // -----------------------------------------------------------------------------
 // Desk:
 
-Desk::Desk(int associated_container_id, bool desk_being_restored)
+Desk::Desk(int associated_container_id, Type type)
     : uuid_(base::Uuid::GenerateRandomV4()),
       container_id_(associated_container_id),
+      type_(type),
       creation_time_(base::Time::Now()) {
   // For the very first default desk added during initialization, there won't be
   // any root windows yet. That's OK, OnRootWindowAdded() will be called
@@ -254,8 +255,9 @@ Desk::Desk(int associated_container_id, bool desk_being_restored)
   for (aura::Window* root : Shell::GetAllRootWindows())
     OnRootWindowAdded(root);
 
-  if (!desk_being_restored)
+  if (type != Type::kRestored) {
     MaybeIncrementWeeklyActiveDesks();
+  }
 }
 
 Desk::~Desk() {
