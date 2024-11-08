@@ -708,13 +708,17 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
           context.Count(WebFeature::kCSSColor_SpaceOkLxx_outOfRec2020);
         }
         break;
-      case Color::ColorSpace::kXYZD50:
-      case Color::ColorSpace::kXYZD65:
       case Color::ColorSpace::kLab:
       case Color::ColorSpace::kLch:
+        context.Count(WebFeature::kCSSColor_SpaceLxx);
+        break;
+      case Color::ColorSpace::kHWB:
+        context.Count(WebFeature::kCSSColor_SpaceHwb);
+        break;
+      case Color::ColorSpace::kXYZD50:
+      case Color::ColorSpace::kXYZD65:
       case Color::ColorSpace::kSRGBLegacy:
       case Color::ColorSpace::kHSL:
-      case Color::ColorSpace::kHWB:
       case Color::ColorSpace::kNone:
         break;
     }
