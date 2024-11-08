@@ -6431,6 +6431,7 @@ data/download/download-with-xfo-deny.html
 data/download/download-with-xfo-deny.html.mock-http-headers
 data/download/empty.bin
 data/download/empty.bin.mock-http-headers
+data/download/forms.mhtml
 data/download/gzip-content.gz
 data/download/gzip-content.gz.mock-http-headers
 data/download/hello.mhtml

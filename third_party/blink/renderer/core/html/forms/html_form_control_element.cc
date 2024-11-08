@@ -24,6 +24,8 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
@@ -271,11 +273,25 @@ HTMLFormElement* HTMLFormControlElement::formOwner() const {
 }
 
 bool HTMLFormControlElement::IsDisabledFormControl() const {
-  // Since the MHTML is loaded in sandboxing mode with form submission and
-  // script execution disabled, we should gray out all form control elements
-  // to indicate that the form cannot be worked on.
-  if (GetDocument().Fetcher()->Archive())
-    return true;
+  // When an MHTML page is loaded through a HTTPS URL, it's considered a trusted
+  // offline page. This can only happen on Android, and happens automatically
+  // sometimes to show cached pages rather than an error page.
+  // For this circumstance, it's beneficial to disable form controls so that
+  // users do not waste time trying to edit them.
+  //
+  // For MHTML pages loaded through other means, we do not disable forms. This
+  // avoids modification of the original page, and more closely matches other
+  // saved page formats.
+  if (GetDocument().Fetcher()->Archive()) {
+    if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
+      if (GetDocument().Url().ProtocolIsInHTTPFamily()) {
+        return true;
+      }
+    } else {
+      // Without `kMHTML_Improvements`, MHTML forms are always disabled.
+      return true;
+    }
+  }
 
   return IsActuallyDisabled();
 }
