@@ -302,6 +302,8 @@ CSSValue* ConsumeLinear(CSSParserTokenStream& stream,
   }
   stream.ConsumeWhitespace();
 
+  context.Count(WebFeature::kCSSLinearEasing);
+
   // 6. Return function.
   return result;
 }

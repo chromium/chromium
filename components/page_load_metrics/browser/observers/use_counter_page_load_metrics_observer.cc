@@ -526,6 +526,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kPrefersReducedTransparency},
           {WebFeature::kCSSRoundModRemFunctions, WebDXFeature::kRoundModRem},
           {WebFeature::kCSSExponentialFunctions, WebDXFeature::kExpFunctions},
+          {WebFeature::kCSSLinearEasing, WebDXFeature::kLinearEasing},
       }};
 
   return *kMap;

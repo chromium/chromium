@@ -10859,6 +10859,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5173" label="HasRchUnits"/>
   <int value="5174" label="HasRexUnits"/>
   <int value="5175" label="CSSExponentialFunctions"/>
+  <int value="5176" label="CSSLinearEasing"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

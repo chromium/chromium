@@ -4547,6 +4547,7 @@ enum WebFeature {
   kHasRchUnits = 5173,
   kHasRexUnits = 5174,
   kCSSExponentialFunctions = 5175,
+  kCSSLinearEasing = 5176,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
