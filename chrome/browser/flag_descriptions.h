@@ -4764,9 +4764,6 @@ extern const char kComposeId[];
 extern const char kComposeName[];
 extern const char kComposeDescription[];
 
-extern const char kComposeTextSelectionName[];
-extern const char kComposeTextSelectionDescription[];
-
 extern const char kComposeNudgeAtCursorName[];
 extern const char kComposeNudgeAtCursorDescription[];
 

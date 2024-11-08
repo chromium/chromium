@@ -98,10 +98,9 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kComposeTextSelection) &&
-      IsWordCountWithinBounds(
+  // Select all text if the current selection is one or zero words.
+  if (IsWordCountWithinBounds(
           base::UTF16ToUTF8(form_field_data->selected_text()), 0, 1)) {
-    // Select all words.
     driver->ApplyFieldAction(autofill::mojom::FieldActionType::kSelectAll,
                              autofill::mojom::ActionPersistence::kFill,
                              field_id, u"");
