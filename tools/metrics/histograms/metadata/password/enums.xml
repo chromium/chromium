@@ -1543,6 +1543,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="The credential is requested by typing the URL."/>
   <int value="12" label="Passkey copy display name button clicked"/>
   <int value="13" label="Passkey card delete button clicked"/>
+  <int value="14" label="Passkey edit button clicked"/>
 </enum>
 
 <enum name="PasswordWeaknessScore">
