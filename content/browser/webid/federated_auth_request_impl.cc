@@ -129,7 +129,7 @@ std::string ComputeUrlEncodedTokenPostData(
     const RpMode& rp_mode,
     const std::optional<std::vector<std::string>>& fields,
     const std::vector<std::string>& disclosure_shown_for,
-    const base::flat_map<std::string, std::string>& params) {
+    const std::string& params_json) {
   std::string query;
   if (!client_id.empty()) {
     query +=
@@ -200,22 +200,9 @@ std::string ComputeUrlEncodedTokenPostData(
                    /*use_plus=*/true);
     }
 
-    if (!params.empty()) {
-      base::Value::Dict param_dict;
-      for (const auto& pair : params) {
-        // TODO(crbug.com/368087170): Remove before shipping this.
-        query += "&param_" +
-                 base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) +
-                 "=" +
-                 base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
-        // For JSON serialization
-        param_dict.Set(pair.first, pair.second);
-      }
-      std::optional<std::string> json = base::WriteJson(param_dict);
-      if (json) {
-        query +=
-            "&params=" + base::EscapeUrlEncodedData(*json, /*use_plus=*/true);
-      }
+    if (!params_json.empty()) {
+      query += "&params=" +
+               base::EscapeUrlEncodedData(params_json, /*use_plus=*/true);
     }
   }
 
@@ -936,8 +923,7 @@ void FederatedAuthRequestImpl::RequestToken(
       if (webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
         any_idp_has_custom_scopes =
             any_idp_has_custom_scopes || GetDisclosureFields(*idp_ptr).empty();
-        any_idp_has_parameters =
-            any_idp_has_parameters || !idp_ptr->params.empty();
+        any_idp_has_parameters = any_idp_has_parameters || idp_ptr->params_json;
       }
 
       blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
@@ -2243,7 +2229,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
           idp_info.provider->nonce, account_id,
           identity_selection_type_ != kExplicit, rp_mode_,
           idp_info.provider->fields, disclosure_shown_for,
-          idp_info.provider->params),
+          idp_info.provider->params_json.value_or("")),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()),

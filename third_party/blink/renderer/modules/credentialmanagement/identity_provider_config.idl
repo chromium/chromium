@@ -22,5 +22,5 @@ dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   DOMString loginHint;
   [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> fields;
-  [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
+  [RuntimeEnabled=FedCmAuthz] any params;
 };

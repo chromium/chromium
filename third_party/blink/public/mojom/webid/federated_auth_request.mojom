@@ -108,7 +108,8 @@ struct IdentityProviderRequestOptions {
 
   // Additional parameters that the relying party can send to the IdP after
   // the user's permission has been gathered.
-  map<string, string> params;
+  // null if not provided by the JS caller.
+  string? params_json;
 };
 
 // The information passed in an IdentityProvider.disconnect() call.

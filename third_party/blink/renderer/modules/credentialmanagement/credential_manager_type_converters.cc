@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -919,11 +920,14 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
     mojo_options->fields = options.fields();
   }
   if (options.hasParams()) {
-    HashMap<String, String> params;
-    for (const auto& pair : options.params()) {
-      params.Set(pair.first, pair.second);
+    v8::Isolate* isolate = options.params().GetIsolate();
+    v8::MaybeLocal<v8::String> json = v8::JSON::Stringify(
+        isolate->GetCurrentContext(), options.params().V8Value());
+    if (json.IsEmpty()) {
+      return nullptr;
     }
-    mojo_options->params = std::move(params);
+    mojo_options->params_json =
+        blink::ToCoreString(isolate, json.ToLocalChecked());
   }
 
   return mojo_options;

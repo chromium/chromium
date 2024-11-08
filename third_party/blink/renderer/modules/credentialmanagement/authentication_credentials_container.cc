@@ -2040,12 +2040,31 @@ void AuthenticationCredentialsContainer::GetForIdentity(
                         WebFeature::kFedCmDomainHint);
     }
 
+    if (!provider->hasConfigURL()) {
+      resolver->RejectWithTypeError("Missing the provider's configURL.");
+      return;
+    }
+
+    mojom::blink::IdentityProviderRequestOptionsPtr identity_provider;
+    {
+      // It is possible that serializing the custom parameters to JSON fails
+      // due to a JS exception, e.g. a custom getter throwing an exception.
+      // Catch it here and rethrow so the caller knows what went wrong.
+      v8::TryCatch try_catch(script_state->GetIsolate());
+      identity_provider =
+          blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
+      if (!identity_provider) {
+        DCHECK(try_catch.HasCaught())
+            << "Converting to mojo should only fail due to JS exception";
+        resolver->Reject(try_catch.Exception());
+        return;
+      }
+    }
+
     if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
         blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
             context) &&
-        provider->hasConfigURL() && provider->configURL() == "any") {
-      mojom::blink::IdentityProviderRequestOptionsPtr identity_provider =
-          blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
+        provider->configURL() == "any") {
       identity_provider_ptrs.push_back(std::move(identity_provider));
       continue;
     }
@@ -2053,10 +2072,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     // TODO(kenrb): Add some renderer-side validation here, such as
     // validating |provider|, and making sure the calling context is legal.
     // Some of this has not been spec'd yet.
-    if (!provider->hasConfigURL()) {
-      resolver->RejectWithTypeError("Missing the provider's configURL.");
-      return;
-    }
 
     KURL provider_url(provider->configURL());
 
@@ -2082,8 +2097,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
       return;
     }
 
-    mojom::blink::IdentityProviderRequestOptionsPtr identity_provider =
-        blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
     identity_provider_ptrs.push_back(std::move(identity_provider));
   }
 

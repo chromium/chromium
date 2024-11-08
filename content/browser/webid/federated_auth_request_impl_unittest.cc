@@ -154,7 +154,7 @@ struct IdentityProviderParameters {
   const char* login_hint;
   const char* domain_hint;
   std::optional<std::vector<std::string>> fields;
-  base::flat_map<std::string, std::string> params;
+  const char* params_json;
 };
 
 // Parameters for a call to RequestToken.
@@ -1138,7 +1138,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       options->login_hint = identity_provider.login_hint;
       options->domain_hint = identity_provider.domain_hint;
       options->fields = std::move(identity_provider.fields);
-      options->params = std::move(identity_provider.params);
+      if (identity_provider.params_json) {
+        options->params_json = identity_provider.params_json;
+      }
       idp_ptrs.push_back(std::move(options));
     }
     blink::mojom::IdentityProviderGetParametersPtr get_params =
@@ -6056,7 +6058,7 @@ TEST_F(FederatedAuthRequestImplTest, RequestWithParameters) {
   list.InitAndEnableFeature(features::kFedCmAuthz);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].params = {{"foo", "bar"}};
+  parameters.identity_providers[0].params_json = "{\"foo\", \"bar\"}";
 
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
 
@@ -6072,7 +6074,7 @@ TEST_F(FederatedAuthRequestImplTest, RequestWithParametersAndScopes) {
 
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].fields = {"non_default_field"};
-  parameters.identity_providers[0].params = {{"foo", "bar"}};
+  parameters.identity_providers[0].params_json = "{\"foo\", \"bar\"}";
 
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
 
