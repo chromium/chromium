@@ -697,6 +697,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
         previousPrice: '$78',
         clusterId: BigInt(12345),
         categoryLabels: [],
+        priceSummary: '',
       },
     };
     shoppingServiceApi.getCallbackRouterRemote().priceTrackedForBookmark(

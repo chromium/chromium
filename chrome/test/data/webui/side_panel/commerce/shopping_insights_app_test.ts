@@ -34,6 +34,7 @@ suite('ShoppingInsightsAppTest', () => {
     previousPrice: '$34',
     clusterId: BigInt(12345),
     categoryLabels: [],
+    priceSummary: '',
   };
   const priceInsights1: PriceInsightsInfo = {
     clusterId: BigInt(123),

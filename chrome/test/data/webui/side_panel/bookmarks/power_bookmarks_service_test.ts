@@ -36,6 +36,7 @@ class ServiceTestPowerBookmarksDelegate extends TestPowerBookmarksDelegate {
       price: '29.99',
       rating: '4.5',
       description: 'This is a sample product description.',
+      priceSummary: '',
     };
 
     const bookmarkProductInfo: BookmarkProductInfo = {

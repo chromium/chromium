@@ -41,6 +41,7 @@ function createProductInfo(overrides?: Partial<ProductInfo>): ProductInfo {
         currentPrice: '',
         previousPrice: '',
         categoryLabels: [],
+        priceSummary: '',
       },
       overrides);
 }
@@ -406,6 +407,8 @@ suite('AppTest', () => {
       title: 'foobar',
       productUrl: {url: 'https://example2.com/'},
       imageUrl: {url: 'foobar.com/image'},
+      currentPrice: '$15',
+      priceSummary: '$10 - $20',
     });
 
     const promiseValues = createAppPromiseValues({
@@ -480,7 +483,7 @@ suite('AppTest', () => {
             // `productDetails` should have empty strings for `description` and
             // summary`.
             productDetails: [
-              {title: 'price', content: {price: '', jackpotUrl: ''}},
+              {title: 'price', content: {price: '$10 - $20', jackpotUrl: ''}},
               {title: 'summary', content: {attributes: [], summary: []}},
               {title: detailTitle, content: null},
             ],
