@@ -195,7 +195,7 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldInitializeModelAfterRestart) {
   group.AddTabLocally(SavedTabGroupTab(GURL("https://google.com"), u"tab title",
                                        group.saved_guid(),
                                        /*position=*/std::nullopt));
-  model().Add(std::move(group));
+  model().AddedLocally(std::move(group));
 
   InitializeModelAndMediator();
   EXPECT_TRUE(model().is_loaded());
@@ -243,7 +243,7 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldResolveDuplicatesOnLoad) {
                                 /*position=*/std::nullopt);
   shared_group_1.AddTabLocally(shared_tab_1);
   shared_group_1.AddTabLocally(shared_tab_2);
-  model().Add(shared_group_1);
+  model().AddedLocally(shared_group_1);
   SavedTabGroup shared_group_2(u"shared group 2",
                                tab_groups::TabGroupColorId::kBlue, /*urls=*/{},
                                /*position=*/std::nullopt);
@@ -252,7 +252,7 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldResolveDuplicatesOnLoad) {
                                 shared_group_2.saved_guid(),
                                 /*position=*/std::nullopt);
   shared_group_2.AddTabLocally(shared_tab_3);
-  model().Add(shared_group_2);
+  model().AddedLocally(shared_group_2);
 
   // Restart with only saved tab groups enabled to create duplicates.
   InitializeModelAndMediator(/*initialize_shared_tab_group=*/false);
@@ -270,7 +270,7 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldResolveDuplicatesOnLoad) {
       GURL("http://google.com/2"), u"saved tab 2",
       group_1_saved_copy.saved_guid(),
       /*position=*/std::nullopt, shared_tab_2.saved_tab_guid()));
-  model().Add(group_1_saved_copy);
+  model().AddedLocally(group_1_saved_copy);
 
   // Add duplicate tab to a new saved tab group.
   SavedTabGroup saved_group(u"saved group", tab_groups::TabGroupColorId::kGreen,
@@ -282,7 +282,7 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldResolveDuplicatesOnLoad) {
   saved_group.AddTabLocally(SavedTabGroupTab(
       GURL("http://google.com/4"), u"saved tab 4", saved_group.saved_guid(),
       /*position=*/std::nullopt));
-  model().Add(saved_group);
+  model().AddedLocally(saved_group);
 
   // Restart the bridge with both types enabled, and verify the result.
   InitializeModelAndMediator(/*initialize_shared_tab_group=*/true);

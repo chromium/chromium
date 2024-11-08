@@ -4744,9 +4744,11 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
   Browser* new_browser = QuitBrowserAndRestore(
       browser(), GURL(), true, base::BindLambdaForTesting([&]() {
         saved_tab_group_keyed_service->model()->RemoveTabFromGroupFromSync(
-            saved_group_id, tab_id_1, /*prevent_group_destruction=*/true);
+            saved_group_id, tab_id_1,
+            /*prevent_group_destruction_for_testing=*/true);
         saved_tab_group_keyed_service->model()->RemoveTabFromGroupFromSync(
-            saved_group_id, tab_id_2, /*prevent_group_destruction=*/true);
+            saved_group_id, tab_id_2,
+            /*prevent_group_destruction_for_testing=*/true);
 
         const tab_groups::SavedTabGroup* saved_group =
             saved_tab_group_keyed_service->model()->Get(saved_group_id);

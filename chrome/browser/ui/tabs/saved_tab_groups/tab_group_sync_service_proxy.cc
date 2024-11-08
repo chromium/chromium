@@ -47,7 +47,7 @@ void TabGroupSyncServiceProxy::SetTabGroupSyncDelegate(
 }
 
 void TabGroupSyncServiceProxy::AddGroup(SavedTabGroup group) {
-  service_->model()->Add(std::move(group));
+  service_->model()->AddedLocally(std::move(group));
 }
 
 void TabGroupSyncServiceProxy::RemoveGroup(const LocalTabGroupID& local_id) {
@@ -55,14 +55,14 @@ void TabGroupSyncServiceProxy::RemoveGroup(const LocalTabGroupID& local_id) {
 }
 
 void TabGroupSyncServiceProxy::RemoveGroup(const base::Uuid& sync_id) {
-  service_->model()->Remove(sync_id);
+  service_->model()->RemovedLocally(sync_id);
 }
 
 void TabGroupSyncServiceProxy::UpdateVisualData(
     const LocalTabGroupID local_group_id,
     const TabGroupVisualData* visual_data) {
   service_->UpdateAttributions(local_group_id);
-  service_->model()->UpdateVisualData(local_group_id, visual_data);
+  service_->model()->UpdateVisualDataLocally(local_group_id, visual_data);
 
   std::optional<SavedTabGroup> group = GetGroup(local_group_id);
   CHECK(group.has_value());

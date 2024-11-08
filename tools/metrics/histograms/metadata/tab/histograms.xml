@@ -996,6 +996,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="TabGroups.Sync.AddedGroupIsEmptyFromSync" enum="Boolean"
+    expires_after="2025-10-10">
+  <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records whether a newly saved tab group was empty or not. Recorded on all
+    platforms (Android, iOS, Desktop) whenever a tab group is added to the
+    SavedTabGroupModel by syncing it from another device. Note that since
+    messages are not received/processed in any particular order, it should not
+    be surprising if this is a large value; however, each empty group should be
+    filled, so the counts should be similar to TabAddedToEmptyGroupFromSync.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.AddedGroupIsEmptyLocally" enum="Boolean"
+    expires_after="2025-10-10">
+  <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records whether a newly saved tab group was empty or not. Recorded on all
+    platforms (Android, iOS, Desktop) whenever a tab group is added to the
+    SavedTabGroupModel by the local device.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Sync.ClosedTabGroupCount" units="groups"
     expires_after="2025-03-30">
   <owner>shaktisahu@chromium.org</owner>
@@ -1120,6 +1145,28 @@ chromium-metrics-reviews@google.com.
 
     Recorded once per tab on startup 10 seconds after TabGroupSyncService
     initialization. Android and iOS only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabAddedToEmptyGroupFromSync" enum="Boolean"
+    expires_after="2025-10-10">
+  <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records whether a tab added to a saved group was the first tab or not.
+    Recorded on all platforms (Android, iOS, Desktop) whenever a tab is added to
+    a tab group by syncing it from another device.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabAddedToEmptyGroupLocally" enum="Boolean"
+    expires_after="2025-10-10">
+  <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records whether a tab added to a saved group was the first tab or not.
+    Recorded on all platforms (Android, iOS, Desktop) whenever a tab is added to
+    a tab group by the local device.
   </summary>
 </histogram>
 
@@ -1281,6 +1328,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Sync.TabGroupLoadedEmptiness"
+    enum="TabGroupLoadedEmptiness" expires_after="2025-10-10">
+  <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records whether a tab group loaded from disk was empty, not empty, or if it
+    became empty after removing tabs already in a shared group. Recorded on all
+    platforms (Android, iOS, Desktop) on browser startup or profile open for
+    each saved or shared tab group loaded.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Sync.TabGroupTitleLength" units="characters"
     expires_after="2025-04-06">
   <owner>shaktisahu@chromium.org</owner>
@@ -1290,6 +1349,17 @@ chromium-metrics-reviews@google.com.
     TabGroupSyncService::UpdateVisualData is invoked which is typically invoked
     whenever there is any change to title, color, or even when tab group dialog
     is closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabRemovedFromGroupWasLastTab" enum="Boolean"
+    expires_after="2025-10-10">
+  <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records whether a tab removed from a saved group was the last tab or not.
+    Recorded on all platforms (Android, iOS, Desktop) whenever a tab is removed
+    from a tab group.
   </summary>
 </histogram>
 

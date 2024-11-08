@@ -301,7 +301,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                               std::move(group_1_tabs), std::nullopt, guid_1);
 
-  service()->model()->Add(saved_group_1);
+  service()->model()->AddedLocally(saved_group_1);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
@@ -351,7 +351,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                               std::move(group_1_tabs), std::nullopt, guid_1);
 
-  service()->model()->Add(saved_group_1);
+  service()->model()->AddedLocally(saved_group_1);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
@@ -458,8 +458,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
                               std::move(group_1_tabs), std::nullopt, guid_1);
   SavedTabGroup saved_group_2(u"Group 2", tab_groups::TabGroupColorId::kRed,
                               std::move(group_2_tabs), std::nullopt, guid_2);
-  service()->model()->Add(saved_group_1);
-  service()->model()->Add(saved_group_2);
+  service()->model()->AddedLocally(saved_group_1);
+  service()->model()->AddedLocally(saved_group_2);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
@@ -509,7 +509,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
                             std::move(group_tabs), std::nullopt, guid);
-  service()->model()->Add(saved_group);
+  service()->model()->AddedLocally(saved_group);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
@@ -575,7 +575,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
                             std::move(group_tabs), std::nullopt, guid);
-  service()->model()->Add(saved_group);
+  service()->model()->AddedLocally(saved_group);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
@@ -641,7 +641,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
                             std::move(group_tabs), std::nullopt, guid);
-  service()->model()->Add(saved_group);
+  service()->model()->AddedLocally(saved_group);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.

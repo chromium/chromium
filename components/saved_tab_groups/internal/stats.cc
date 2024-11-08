@@ -14,6 +14,19 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
+namespace {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TabGroupLoadedEmptiness)
+enum class TabGroupLoadedEmptiness {
+  kNotEmpty = 0,
+  kAlreadyEmpty = 1,
+  kBecameEmptyAfterRemovingDuplicates = 2,
+  kMaxValue = kBecameEmptyAfterRemovingDuplicates,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/tab/enums.xml:TabGroupLoadedEmptiness)
+}  // namespace
+
 namespace tab_groups {
 namespace stats {
 constexpr base::TimeDelta kModifiedThreshold = base::Days(30);
@@ -135,6 +148,105 @@ void RecordSharedTabGroupDataLoadFromDiskResult(
     SharedTabGroupDataLoadFromDiskResult result) {
   base::UmaHistogramEnumeration(
       "TabGroups.Shared.LoadFromDiskResult", result);
+}
+
+void RecordEmptyGroupsMetricsOnLoad(
+    const std::vector<SavedTabGroup>& all_groups,
+    const std::vector<SavedTabGroupTab>& all_tabs,
+    const std::unordered_set<base::Uuid, base::UuidHash>&
+        groups_with_filtered_tabs) {
+  // Empty groups will sometimes happen because the order of sync messages are
+  // not guaranteed - and clients might quit while they are missing some out of
+  // order messages, so groups might be empty on load too. Record metrics so we
+  // can validate that this is rare as expected, and that we don't create empty
+  // groups in other ways.
+  std::unordered_set<base::Uuid, base::UuidHash> empty_groups;
+  for (const SavedTabGroup& group : all_groups) {
+    empty_groups.emplace(group.saved_guid());
+  }
+  for (const SavedTabGroupTab& tab : all_tabs) {
+    empty_groups.erase(tab.saved_group_guid());
+  }
+
+  for (const SavedTabGroup& group : all_groups) {
+    TabGroupLoadedEmptiness metric_value = TabGroupLoadedEmptiness::kNotEmpty;
+    if (empty_groups.contains(group.saved_guid())) {
+      metric_value =
+          groups_with_filtered_tabs.contains(group.saved_guid())
+              ? TabGroupLoadedEmptiness::kBecameEmptyAfterRemovingDuplicates
+              : TabGroupLoadedEmptiness::kAlreadyEmpty;
+    }
+    base::UmaHistogramEnumeration(
+        "TabGroups.SavedTabGroups.TabGroupLoadedEmptiness", metric_value);
+  }
+}
+
+void RecordEmptyGroupsMetricsOnGroupAddedLocally(const SavedTabGroup& group,
+                                                 bool model_is_loaded) {
+  // This method is used to load the model from disk. Avoid recording metrics
+  // during load so we don't double count with the previous session.
+  if (!model_is_loaded) {
+    return;
+  }
+
+  base::UmaHistogramBoolean("TabGroups.Sync.AddedGroupIsEmptyLocally",
+                            group.saved_tabs().empty());
+  if (group.saved_tabs().empty()) {
+    // This seems like it may be happening in production, unexpectedly; it
+    // should still be rare, so add a diagnostic dump to find out if anyone is
+    // adding empty groups, so we can see if we need to support it properly or
+    // if this should become a CHECK. In the latter case we'll need to update
+    // the many tests which do add empty groups.
+    base::debug::DumpWithoutCrashing();
+  }
+}
+
+void RecordEmptyGroupsMetricsOnGroupAddedFromSync(const SavedTabGroup& group,
+                                                  bool model_is_loaded) {
+  // Avoid recording metrics during load so we don't double count with the
+  // previous session. This method is currently not called during load, but that
+  // could change.
+  if (!model_is_loaded) {
+    return;
+  }
+
+  base::UmaHistogramBoolean("TabGroups.Sync.AddedGroupIsEmptyFromSync",
+                            group.saved_tabs().empty());
+}
+
+void RecordEmptyGroupsMetricsOnTabAddedLocally(const SavedTabGroup& group,
+                                               const SavedTabGroupTab& tab,
+                                               bool model_is_loaded) {
+  // Avoid recording metrics during load so we don't double count with the
+  // previous session. This method is currently not called during load, but that
+  // could change.
+  if (!model_is_loaded) {
+    return;
+  }
+
+  // The tab must not be already in the group; otherwise we can't tell if the
+  // group was empty before (as the tab may have been replaced).
+  CHECK(!group.ContainsTab(tab.saved_tab_guid()));
+
+  base::UmaHistogramBoolean("TabGroups.Sync.TabAddedToEmptyGroupLocally",
+                            group.saved_tabs().empty());
+}
+
+void RecordEmptyGroupsMetricsOnTabAddedFromSync(const SavedTabGroup& group,
+                                                const SavedTabGroupTab& tab,
+                                                bool model_is_loaded) {
+  // This method is used to load the model from disk. Avoid recording metrics
+  // during load so we don't double count with the previous session.
+  if (!model_is_loaded) {
+    return;
+  }
+
+  // The tab must not be already in the group; otherwise we can't tell if the
+  // group was empty before (as the tab may have been replaced).
+  CHECK(!group.ContainsTab(tab.saved_tab_guid()));
+
+  base::UmaHistogramBoolean("TabGroups.Sync.TabAddedToEmptyGroupFromSync",
+                            group.saved_tabs().empty());
 }
 
 }  // namespace stats

@@ -241,7 +241,7 @@ void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
 
   std::optional<LocalTabGroupID> local_group_id = group.local_group_id();
 
-  model_->Add(std::move(group));
+  model_->AddedLocally(std::move(group));
 
   // Local group id can be null for tests.
   if (local_group_id.has_value()) {
@@ -259,20 +259,20 @@ void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {
 
   base::Uuid sync_id = group->saved_guid();
   LogEvent(TabGroupEvent::kTabGroupRemoved, local_id);
-  model_->Remove(local_id);
+  model_->RemovedLocally(local_id);
 }
 
 void TabGroupSyncServiceImpl::RemoveGroup(const base::Uuid& sync_id) {
   VLOG(2) << __func__;
   // TODO(shaktisahu): Provide LogEvent API to work with sync ID.
-  model_->Remove(sync_id);
+  model_->RemovedLocally(sync_id);
 }
 
 void TabGroupSyncServiceImpl::UpdateVisualData(
     const LocalTabGroupID local_group_id,
     const tab_groups::TabGroupVisualData* visual_data) {
   VLOG(2) << __func__;
-  model_->UpdateVisualData(local_group_id, visual_data);
+  model_->UpdateVisualDataLocally(local_group_id, visual_data);
   UpdateAttributions(local_group_id);
   LogEvent(TabGroupEvent::kTabGroupVisualsChanged, local_group_id,
            std::nullopt);
@@ -491,7 +491,7 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   saved_group = nullptr;
   // TODO(crbug.com/370745855): remove the originating saved tab group from the
   // model afterwards.
-  model_->Add(std::move(shared_group));
+  model_->AddedLocally(std::move(shared_group));
 
   // TODO(crbug.com/370745855): move the code below to HandleTabGroupAdded() to
   // cover transition on remote devices.
@@ -1056,7 +1056,7 @@ void TabGroupSyncServiceImpl::ForceRemoveClosedTabGroupsOnStartup() {
           << " Cleaning up groups on startup, groups# = " << group_ids.size();
 
   for (const auto& group_id : group_ids) {
-    model_->Remove(group_id);
+    model_->RemovedLocally(group_id);
   }
 
   metrics_logger_->RecordTabGroupDeletionsOnStartup(group_ids.size());

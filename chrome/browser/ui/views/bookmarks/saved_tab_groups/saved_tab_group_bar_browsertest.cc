@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     {  // Add the STG to the model and then open it from the current browser.
       const int original_model_count = model->GetTabCount();
 
-      stg_model->Add(SavedTabGroup(
+      stg_model->AddedLocally(SavedTabGroup(
           std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
           {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid,
                             /*position=*/0)
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     base::Uuid guid = base::Uuid::GenerateRandomV4();
 
     {  // Add an STG, open a group for it in the tabstrip, and delete the STG.
-      stg_model->Add(SavedTabGroup(
+      stg_model->AddedLocally(SavedTabGroup(
           std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
           {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid,
                             /*position=*/0)

@@ -7,11 +7,16 @@
 
 #include <stddef.h>
 
+#include <unordered_set>
+
+#include "base/uuid.h"
 #include "components/saved_tab_groups/public/types.h"
 
 namespace tab_groups {
 
 class SavedTabGroupModel;
+class SavedTabGroup;
+class SavedTabGroupTab;
 class TabGroupVisualData;
 
 namespace stats {
@@ -88,6 +93,28 @@ void RecordTabGroupVisualsMetrics(
 // Records the result of loading SharedTabGroupData from disk.
 void RecordSharedTabGroupDataLoadFromDiskResult(
     SharedTabGroupDataLoadFromDiskResult result);
+
+void RecordEmptyGroupsMetricsOnLoad(
+    const std::vector<SavedTabGroup>& all_groups,
+    const std::vector<SavedTabGroupTab>& all_tabs,
+    const std::unordered_set<base::Uuid, base::UuidHash>&
+        groups_with_filtered_tabs);
+
+// Records whether the group is currently empty when it is added to the
+// SavedTabGroupModel.
+void RecordEmptyGroupsMetricsOnGroupAddedLocally(const SavedTabGroup& group,
+                                                 bool model_is_loaded);
+void RecordEmptyGroupsMetricsOnGroupAddedFromSync(const SavedTabGroup& group,
+                                                  bool model_is_loaded);
+
+// Records whether the group is currently empty, before the tab is added to the
+// SavedTabGroupModel. The tab must not be in the group yet.
+void RecordEmptyGroupsMetricsOnTabAddedLocally(const SavedTabGroup& group,
+                                               const SavedTabGroupTab& tab,
+                                               bool model_is_loaded);
+void RecordEmptyGroupsMetricsOnTabAddedFromSync(const SavedTabGroup& group,
+                                                const SavedTabGroupTab& tab,
+                                                bool model_is_loaded);
 
 }  // namespace stats
 }  // namespace tab_groups

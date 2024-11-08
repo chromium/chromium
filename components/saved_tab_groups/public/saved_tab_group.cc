@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/notreached.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -256,8 +257,9 @@ SavedTabGroup& SavedTabGroup::RemoveTabLocally(
 }
 
 SavedTabGroup& SavedTabGroup::RemoveTabFromSync(
-    const base::Uuid& saved_tab_guid) {
-  RemoveTabImpl(saved_tab_guid);
+    const base::Uuid& saved_tab_guid,
+    bool ignore_empty_groups_for_testing) {
+  RemoveTabImpl(saved_tab_guid, ignore_empty_groups_for_testing);
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
@@ -427,12 +429,19 @@ bool SavedTabGroup::IsPendingSanitization() const {
   return false;
 }
 
-void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid) {
+void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
+                                  bool ignore_empty_groups_for_testing) {
   std::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
   CHECK_LT(index.value(), saved_tabs_.size());
   saved_tabs_.erase(saved_tabs_.begin() + index.value());
+
+  base::UmaHistogramBoolean(
+      "TabGroups.SavedTabGroups.TabRemovedFromGroupWasLastTab",
+      saved_tabs_.empty());
+  CHECK(ignore_empty_groups_for_testing || !saved_tabs_.empty(),
+        base::NotFatalUntil::M135);
 }
 
 }  // namespace tab_groups

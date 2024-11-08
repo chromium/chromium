@@ -191,7 +191,7 @@ void SavedTabGroupKeyedService::SaveRestoredGroup(SavedTabGroup group) {
         << "This group is somehow saved already when it shouldn't be.";
     const std::optional<LocalTabGroupID> local_id = group.local_group_id();
     const base::Uuid sync_id = group.saved_guid();
-    model_->Add(std::move(group));
+    model_->AddedLocally(std::move(group));
     if (local_id.has_value()) {
       ConnectLocalTabGroup(local_id.value(), sync_id);
     }
@@ -371,7 +371,7 @@ base::Uuid SavedTabGroupKeyedService::SaveGroup(const TabGroupId& group_id,
   }
 
   const base::Uuid saved_group_guid = saved_tab_group.saved_guid();
-  model_->Add(std::move(saved_tab_group));
+  model_->AddedLocally(std::move(saved_tab_group));
 
   // Link the local group to the saved group in the listener.
   listener_->ConnectToLocalTabGroup(*model_->Get(saved_group_guid),
@@ -396,7 +396,7 @@ void SavedTabGroupKeyedService::UnsaveGroup(const TabGroupId& group_id,
   DisconnectLocalTabGroup(group_id);
 
   // Unsave the group.
-  model_->Remove(group->saved_guid());
+  model_->RemovedLocally(group->saved_guid());
 }
 
 void SavedTabGroupKeyedService::PauseTrackingLocalTabGroup(

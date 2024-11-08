@@ -140,9 +140,12 @@ class SavedTabGroup {
   // Removes a tab from `saved_tabs_` denoted by `saved_tab_guid` even if that
   // was the last tab in the group: crbug/1371959. If the tab was removed
   // locally update the positions of all tabs in the group. Otherwise, leave the
-  // order of the group as is.
+  // order of the group as is. CHECKs that the removed tab is not the last tab,
+  // unless `ignore_empty_groups_for_testing` is true.
   SavedTabGroup& RemoveTabLocally(const base::Uuid& saved_tab_guid);
-  SavedTabGroup& RemoveTabFromSync(const base::Uuid& saved_tab_guid);
+  SavedTabGroup& RemoveTabFromSync(
+      const base::Uuid& saved_tab_guid,
+      bool ignore_empty_groups_for_testing = false);
 
   // Replaces that tab denoted by `tab_id` with value of `tab` unless the
   // replacement tab already exists. In this case we CHECK.
@@ -198,8 +201,10 @@ class SavedTabGroup {
   // in the group at `group_index`. Does not call observers.
   void UpdateTabPositionsImpl();
 
-  // Removes `saved_tab_guid` from this group.
-  void RemoveTabImpl(const base::Uuid& saved_tab_guid);
+  // Removes `saved_tab_guid` from this group. CHECKs that the removed tab is
+  // not the last tab, unless `ignore_empty_groups_for_testing` is true.
+  void RemoveTabImpl(const base::Uuid& saved_tab_guid,
+                     bool ignore_empty_groups_for_testing = false);
 
   // The ID used to represent the group in sync.
   base::Uuid saved_guid_;

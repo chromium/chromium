@@ -235,6 +235,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:TabGroupEvent) -->
 
+<!-- LINT.IfChange(TabGroupLoadedEmptiness)-->
+
+<enum name="TabGroupLoadedEmptiness">
+  <int value="0" label="Not empty"/>
+  <int value="1" label="Already empty"/>
+  <int value="2" label="Became empty after removing duplicates"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/internal/stats.cc:TabGroupLoadedEmptiness) -->
+
 <enum name="TabOrganizationDeclutterCTREvent">
   <int value="0" label="Declutter Shown"/>
   <int value="1" label="Close Tabs Clicked"/>

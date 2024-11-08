@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/internal/stats.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -143,7 +144,7 @@ const SavedTabGroup* SavedTabGroupModel::Get(
   return &saved_tab_groups_[index.value()];
 }
 
-void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
+void SavedTabGroupModel::AddedLocally(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   CHECK(!Contains(group_guid));
 
@@ -156,6 +157,8 @@ void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
     saved_group.SetPosition(Count());
   }
 
+  stats::RecordEmptyGroupsMetricsOnGroupAddedLocally(saved_group, is_loaded_);
+
   InsertGroupImpl(std::move(saved_group));
 
   for (auto& observer : observers_) {
@@ -163,7 +166,7 @@ void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
   }
 }
 
-void SavedTabGroupModel::Remove(const LocalTabGroupID tab_group_id) {
+void SavedTabGroupModel::RemovedLocally(const LocalTabGroupID tab_group_id) {
   if (!Contains(tab_group_id)) {
     return;
   }
@@ -179,7 +182,7 @@ void SavedTabGroupModel::Remove(const LocalTabGroupID tab_group_id) {
   RecordGroupDeletedMetric(removed_group);
 }
 
-void SavedTabGroupModel::Remove(const base::Uuid& id) {
+void SavedTabGroupModel::RemovedLocally(const base::Uuid& id) {
   if (!Contains(id)) {
     return;
   }
@@ -195,7 +198,7 @@ void SavedTabGroupModel::Remove(const base::Uuid& id) {
   RecordGroupDeletedMetric(removed_group);
 }
 
-void SavedTabGroupModel::UpdateVisualData(
+void SavedTabGroupModel::UpdateVisualDataLocally(
     LocalTabGroupID tab_group_id,
     const tab_groups::TabGroupVisualData* visual_data) {
   if (!Contains(tab_group_id)) {
@@ -224,8 +227,12 @@ void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
     return;
   }
 
+  stats::RecordEmptyGroupsMetricsOnGroupAddedFromSync(saved_group, is_loaded_);
+
   InsertGroupImpl(std::move(saved_group));
 
+  // TODO(crbug.com/375636822): Doing this before `is_loaded_ == true` is
+  // problematic.
   for (auto& observer : observers_) {
     observer.SavedTabGroupAddedFromSync(Get(group_guid)->saved_guid());
   }
@@ -314,8 +321,11 @@ void SavedTabGroupModel::AddTabToGroupLocally(const base::Uuid& group_id,
   }
 
   const base::Uuid tab_id = tab.saved_tab_guid();
-  std::optional<int> group_index = GetIndexOf(group_id);
-  saved_tab_groups_[group_index.value()].AddTabLocally(std::move(tab));
+  SavedTabGroup& group = saved_tab_groups_[GetIndexOf(group_id).value()];
+
+  stats::RecordEmptyGroupsMetricsOnTabAddedLocally(group, tab, is_loaded_);
+
+  group.AddTabLocally(std::move(tab));
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
@@ -332,15 +342,19 @@ void SavedTabGroupModel::AddTabToGroupFromSync(const base::Uuid& group_id,
   }
 
   const base::Uuid tab_id = tab.saved_tab_guid();
-  std::optional<int> group_index = GetIndexOf(group_id);
+  SavedTabGroup& group = saved_tab_groups_[GetIndexOf(group_id).value()];
 
-  if (saved_tab_groups_[group_index.value()].ContainsTab(tab_id)) {
+  if (group.ContainsTab(tab_id)) {
     // This can happen when an out of sync SavedTabGroup sends a tab update.
-    saved_tab_groups_[group_index.value()].ReplaceTabAt(tab_id, std::move(tab));
+    group.ReplaceTabAt(tab_id, std::move(tab));
   } else {
-    saved_tab_groups_[group_index.value()].AddTabFromSync(std::move(tab));
+    stats::RecordEmptyGroupsMetricsOnTabAddedFromSync(group, tab, is_loaded_);
+
+    group.AddTabFromSync(std::move(tab));
   }
 
+  // TODO(crbug.com/375636822): Doing this before `is_loaded_ == true` is
+  // problematic.
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedFromSync(group_id, tab_id);
   }
@@ -394,7 +408,7 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
 
   // Remove the group from the model if the last tab will be removed from it.
   if (group.saved_tabs().size() == 1) {
-    Remove(group_id);
+    RemovedLocally(group_id);
     return;
   }
 
@@ -416,7 +430,7 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
 void SavedTabGroupModel::RemoveTabFromGroupFromSync(
     const base::Uuid& group_id,
     const base::Uuid& tab_id,
-    bool prevent_group_destruction) {
+    bool prevent_group_destruction_for_testing) {
   std::optional<int> index = GetIndexOf(group_id);
   CHECK(index.has_value());
   const SavedTabGroup& group = saved_tab_groups_[index.value()];
@@ -427,13 +441,15 @@ void SavedTabGroupModel::RemoveTabFromGroupFromSync(
 
   // Remove the group from the model if the last tab will be removed from it,
   // unless explicitly preventing group destruction.
-  if (group.saved_tabs().size() == 1 && !prevent_group_destruction) {
+  if (group.saved_tabs().size() == 1 &&
+      !prevent_group_destruction_for_testing) {
     RemovedFromSync(group_id);
     return;
   }
 
   const base::Uuid copy_tab_id = tab_id;
-  saved_tab_groups_[index.value()].RemoveTabFromSync(tab_id);
+  saved_tab_groups_[index.value()].RemoveTabFromSync(
+      tab_id, prevent_group_destruction_for_testing);
 
   // TODO(dljames): Update to use SavedTabGroupRemoveFromSync and update the API
   // to pass a group_id and an optional tab_id.
@@ -531,7 +547,7 @@ const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
     } else {
       // If the group is unpinned, find the first unpinned group index to
       // insert.
-      for (auto& group : saved_tab_groups_) {
+      for (const SavedTabGroup& group : saved_tab_groups_) {
         if (group.is_pinned()) {
           ++new_index;
         }
@@ -640,7 +656,9 @@ void SavedTabGroupModel::LoadStoredEntries(std::vector<SavedTabGroup> groups,
   // at the front of the vector. As such, we can run into the case where we
   // try to add a tab to a group that does not exist for us yet.
   for (SavedTabGroup& group : groups) {
-    Add(std::move(group));
+    // TODO(crbug.com/375636822): AddedLocally doesn't make sense here. This
+    // should probably use a separate path that doesn't notify observers.
+    AddedLocally(std::move(group));
   }
   UpdateGroupPositionsImpl();
 

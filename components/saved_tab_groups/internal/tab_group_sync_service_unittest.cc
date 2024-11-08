@@ -224,9 +224,9 @@ class TabGroupSyncServiceTest : public testing::Test {
     group_2_ = SavedTabGroup(title_2, color_2, group_2_tabs, 1, id_2);
     group_3_ = SavedTabGroup(title_3, color_3, group_3_tabs, 2, id_3);
 
-    model_->Add(group_1_);
-    model_->Add(group_2_);
-    model_->Add(group_3_);
+    model_->AddedLocally(group_1_);
+    model_->AddedLocally(group_2_);
+    model_->AddedLocally(group_3_);
     model_->UpdateLocalCacheGuid(/*old_cache_guid=*/std::nullopt,
                                  kTestCacheGuid);
   }
@@ -333,7 +333,7 @@ TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
 TEST_F(TabGroupSyncServiceTest,
        GetDeletedGroupIdsUsingPrefsWhileRemovedFromLocal) {
   // Delete a group from local. It should not add the entry to the prefs.
-  model_->Remove(group_1_.saved_guid());
+  model_->RemovedLocally(group_1_.saved_guid());
   WaitForPostedTasks();
 
   auto deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
@@ -856,7 +856,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::LOCAL)))
       .Times(0);
-  model_->Add(group_4);
+  model_->AddedLocally(group_4);
 
   // Verify that the observers are posted instead of directly notifying.
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
@@ -876,7 +876,7 @@ TEST_F(TabGroupSyncServiceTest, EmptyGroupAddedFromLocalSource) {
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::LOCAL)))
       .Times(0);
-  model_->Add(group_4);
+  model_->AddedLocally(group_4);
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::LOCAL)))
       .Times(0);
@@ -919,7 +919,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
       .Times(0);
 
   // Verify that the observers are posted instead of directly notifying.
-  model_->UpdateVisualData(group_1_.local_group_id().value(), &visual_data);
+  model_->UpdateVisualDataLocally(group_1_.local_group_id().value(),
+                                  &visual_data);
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
@@ -1065,7 +1066,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
                                                 group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
-  model_->Remove(group_1_.local_group_id().value());
+  model_->RemovedLocally(group_1_.local_group_id().value());
 }
 
 TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {

@@ -676,10 +676,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   group_to_delete.AddTabLocally(SavedTabGroupTab(
       GURL("https://website.com"), u"Website Title",
       group_to_delete.saved_guid(), /*position=*/std::nullopt));
-  model()->Add(group_to_delete);
-  model()->Add(SavedTabGroup(u"title 2", tab_groups::TabGroupColorId::kGrey,
-                             /*urls=*/{}, /*position=*/std::nullopt)
-                   .SetCollaborationId("collaboration 2"));
+  model()->AddedLocally(group_to_delete);
+  model()->AddedLocally(SavedTabGroup(u"title 2",
+                                      tab_groups::TabGroupColorId::kGrey,
+                                      /*urls=*/{}, /*position=*/std::nullopt)
+                            .SetCollaborationId("collaboration 2"));
   ASSERT_EQ(model()->Count(), 2);
 
   ApplySingleEntityChange(syncer::EntityChange::CreateDelete(
@@ -704,7 +705,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   group.AddTabLocally(SavedTabGroupTab(GURL("https://google.com/2"), u"title 2",
                                        group.saved_guid(),
                                        /*position=*/std::nullopt));
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_EQ(model()->Count(), 1);
   ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(2));
 
@@ -760,7 +761,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyObserversOnDisableSync) {
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
       "http://google.com", u"tab 2", group.saved_guid(), /*position=*/1);
 
-  model()->Add(group);
+  model()->AddedLocally(group);
   model()->AddTabToGroupLocally(group.saved_guid(), tab1);
   model()->AddTabToGroupLocally(group.saved_guid(), tab2);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
@@ -790,7 +791,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnGroupDataForCommit) {
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
       "http://google.com", u"tab 2", group.saved_guid(), /*position=*/1);
 
-  model()->Add(group);
+  model()->AddedLocally(group);
   model()->AddTabToGroupLocally(group.saved_guid(), tab1);
   model()->AddTabToGroupLocally(group.saved_guid(), tab2);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
@@ -815,7 +816,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabDataForCommit) {
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
       "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
 
-  model()->Add(group);
+  model()->AddedLocally(group);
   model()->AddTabToGroupLocally(group.saved_guid(), tab1);
   model()->AddTabToGroupLocally(group.saved_guid(), tab2);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
@@ -843,7 +844,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
       "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
 
-  model()->Add(group);
+  model()->AddedLocally(group);
   model()->AddTabToGroupLocally(group.saved_guid(), tab1);
   model()->AddTabToGroupLocally(group.saved_guid(), tab2);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
@@ -897,7 +898,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
                             kOriginatingSavedTabGroupGuid))),
                   _));
 
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 }
@@ -917,7 +918,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
 
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab2);
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
@@ -930,7 +931,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
           })));
   tab_groups::TabGroupVisualData visual_data(
       u"new title", tab_groups::TabGroupColorId::kYellow);
-  model()->UpdateVisualData(group.local_group_id().value(), &visual_data);
+  model()->UpdateVisualDataLocally(group.local_group_id().value(),
+                                   &visual_data);
 
   EXPECT_THAT(
       captured_entity_data,
@@ -948,7 +950,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewLocalTab) {
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
 
   group.AddTabLocally(tab);
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 1u);
 
@@ -983,7 +985,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalTab) {
 
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab_to_remove);
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
@@ -1006,7 +1008,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedLocalTab) {
 
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab_to_update);
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
@@ -1040,7 +1042,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
 
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab2);
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
@@ -1053,7 +1055,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
   EXPECT_CALL(mock_processor(),
               Delete(tab2.saved_tab_guid().AsLowercaseString(), _, _))
       .Times(0);
-  model()->Remove(group.saved_guid());
+  model()->RemovedLocally(group.saved_guid());
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
@@ -1072,7 +1074,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab2);
 
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
@@ -1176,7 +1178,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
               "title", sync_pb::SharedTabGroup_Color_GREY, "collaboration")),
           _));
 
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 }
@@ -1188,7 +1190,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId("collaboration");
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   // Add the first tab to the group.
   sync_pb::UniquePosition unique_position =
@@ -1216,7 +1218,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
   group.AddTabLocally(tab);
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   // Add new tab before the existing tab.
   sync_pb::UniquePosition unique_position =
@@ -1253,7 +1255,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
   group.AddTabLocally(tab);
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   // Add new tab after the existing tab.
   sync_pb::UniquePosition unique_position =
@@ -1293,7 +1295,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
       "http://google.com/2", u"tab after", group.saved_guid(), /*position=*/1);
   group.AddTabLocally(tab_before);
   group.AddTabLocally(tab_after);
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   // Add new tab after the existing tab.
   sync_pb::UniquePosition unique_position =
@@ -1339,7 +1341,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
       "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
   group.AddTabLocally(tab_to_move);
   group.AddTabLocally(tab_2);
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   // Generate unique position for the moved tab.
   sync_pb::UniquePosition unique_position =
@@ -1382,7 +1384,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdatePositionOnRemoteUpdate) {
         /*position=*/i));
   }
   GenerateUniquePositionsForTabsInGroup(group);
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               ElementsAre(HasTabMetadata("tab 0", "https://google.com/0"),
@@ -1467,7 +1469,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
         /*position=*/i));
   }
   GenerateUniquePositionsForTabsInGroup(group);
-  model()->Add(group);
+  model()->AddedLocally(group);
   ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               ElementsAre(HasTabMetadata("tab 0", "https://google.com/0"),
                           HasTabMetadata("tab 1", "https://google.com/1"),
@@ -1521,7 +1523,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
         /*position=*/i));
   }
   GenerateUniquePositionsForTabsInGroup(group);
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               ElementsAre(HasTabMetadata("tab 0", "https://google.com/0"),
@@ -1566,7 +1568,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAssignLocalGroupId) {
   group.SetCollaborationId(kCollaborationId);
   group.AddTabLocally(test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0));
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   LocalTabGroupID local_group_id = test::GenerateRandomTabGroupID();
   model()->OnGroupOpenedInTabStrip(group.saved_guid(), local_group_id);
@@ -1605,7 +1607,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   group.SetCollaborationId(kCollaborationId);
   group.AddTabLocally(test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0));
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   sync_pb::SharedTabGroupDataSpecifics group_update_specifics =
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
@@ -1689,7 +1691,7 @@ TEST_P(SharedTabGroupDataSyncBridgeRemoteUpdateOrderTest,
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId(kCollaborationId);
-  model()->Add(group);
+  model()->AddedLocally(group);
 
   // Generate remote tabs and then shuffle them.
   syncer::EntityChangeList change_list;
