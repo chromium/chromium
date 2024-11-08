@@ -64,7 +64,11 @@ struct BlockLineClampData {
   DISALLOW_NEW();
 
   explicit BlockLineClampData(LineClampData line_clamp_data)
-      : data(line_clamp_data) {}
+      : data(line_clamp_data) {
+    if (data.state == LineClampData::kClampByLines) {
+      initial_lines_until_clamp = data.lines_until_clamp;
+    }
+  }
 
   std::optional<int> LinesUntilClamp(bool show_measured_lines = false) const {
     return data.LinesUntilClamp(show_measured_lines);
@@ -174,11 +178,19 @@ struct BlockLineClampData {
 
   LineClampData data;
 
+  // TODO(abotella): Make the following fields into a union.
+
+  // The initial number of lines until clamp from the start of this layout.
+  // Needed when relayouting due to factors other than line-clamp. Only relevant
+  // if data.state == kClampByLines.
+  int initial_lines_until_clamp = 0;
+
+  // Only relevant if data.state == kMeasureLinesUntilBfcOffset.
   MarginStrut end_margin_strut;
 
   // If set, the box was clamped, and this is the previous inflow position after
   // the last line or box before clamp. Can only be set if
-  // data.state == kClampByLines or data.state == kClampByBfcOffset.
+  // data.state == kClampByLines.
   std::optional<PreviousInflowPosition> previous_inflow_position_when_clamped;
 };
 

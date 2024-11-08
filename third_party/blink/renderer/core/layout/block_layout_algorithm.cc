@@ -394,15 +394,17 @@ void BlockLayoutAlgorithm::SetupRelayoutData(
   } else if (relayout_type == kRelayoutWithLineClampBlockSize) {
     line_clamp_data_.data.state = LineClampData::kClampByLines;
     line_clamp_data_.data.lines_until_clamp =
-        previous.line_clamp_data_.data.lines_until_clamp;
-    line_clamp_data_.end_margin_strut =
-        previous.line_clamp_data_.end_margin_strut;
-  } else {
-    line_clamp_data_.data.state = previous.line_clamp_data_.data.state;
+        line_clamp_data_.initial_lines_until_clamp =
+            previous.line_clamp_data_.data.lines_until_clamp;
+  } else if (previous.line_clamp_data_.data.state ==
+             LineClampData::kClampByLines) {
+    line_clamp_data_.data.state = LineClampData::kClampByLines;
     line_clamp_data_.data.lines_until_clamp =
-        previous.line_clamp_data_.data.lines_until_clamp;
-    line_clamp_data_.end_margin_strut =
-        previous.line_clamp_data_.end_margin_strut;
+        line_clamp_data_.initial_lines_until_clamp =
+            previous.line_clamp_data_.initial_lines_until_clamp;
+  } else if (previous.line_clamp_data_.data.state ==
+             LineClampData::kDontTruncate) {
+    line_clamp_data_.data.state = LineClampData::kDontTruncate;
   }
 
   if (relayout_type == kRelayoutForTextBoxTrim) {
@@ -1112,11 +1114,15 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     return container_builder_.Abort(LayoutResult::kNeedsLineClampRelayout);
   }
 
-  if (ShouldTextBoxTrimEnd() && last_non_empty_inflow_child_) [[unlikely]] {
+  if (ShouldTextBoxTrimEnd() && last_non_empty_inflow_child_ &&
+      !line_clamp_data_.previous_inflow_position_when_clamped.has_value())
+      [[unlikely]] {
     // The `text-box-trim: trim-end` should apply to the last inflow child, but
     // which child this was isn't always something we can tell up-front, e.g. if
     // the last formatted line is inside a block-in-inline, and we moved past it
     // with no trimming.
+    // We ignore this if we have line-clamped, because the trim-end would have
+    // applied to the last line before clamp regardless.
     return container_builder_.Abort(LayoutResult::kTextBoxTrimEndDidNotApply);
   }
 
@@ -2591,25 +2597,24 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     if (should_text_box_trim_node_end_) {
       if (line_clamp_data_.data.state ==
               LineClampData::kMeasureLinesUntilBfcOffset &&
+          layout_result->TrimBlockEndBy() &&
           layout_result->GetPhysicalFragment().GetBreakToken()) {
         // If we trimmed the end only because we're in the first layout of a
         // line-clamp: auto context, and we might not trim in the relayout, then
         // we don't reset should_text_box_trim_node_end_, and we add the trim
         // length to the logical block offset so next lines are set in the right
         // position.
-        DCHECK(layout_result->TrimBlockEndBy());
         previous_inflow_position->logical_block_offset +=
             *layout_result->TrimBlockEndBy();
-      } else {
-        if (layout_result->IsBlockEndTrimmableLine() ||
-            (child.IsBlock() && IsLastInflowChild(*child.GetLayoutBox()))) {
-          ClearShouldTextBoxTrimEnd();
-        } else if (!layout_result->IsSelfCollapsing() && child.IsInline() &&
-                   !override_text_box_trim_end_child_) {
-          // Keep the last non-empty child for `RelayoutForTextBoxTrimEnd`.
-          last_non_empty_inflow_child_ = To<InlineNode>(child);
-          last_non_empty_break_token_ = child_break_token;
-        }
+      } else if (layout_result->IsBlockEndTrimmableLine() ||
+                 (child.IsBlock() &&
+                  IsLastInflowChild(*child.GetLayoutBox()))) {
+        ClearShouldTextBoxTrimEnd();
+      } else if (!layout_result->IsSelfCollapsing() && child.IsInline() &&
+                 !override_text_box_trim_end_child_) {
+        // Keep the last non-empty child for `RelayoutForTextBoxTrimEnd`.
+        last_non_empty_inflow_child_ = To<InlineNode>(child);
+        last_non_empty_break_token_ = child_break_token;
       }
     }
   }
