@@ -10,6 +10,7 @@
  * #css_wrapper_metadata_end */
 
 cr-icon-button {
+  --cr-icon-button-fill-color: var(--color-tab-search-secondary-foreground);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
@@ -17,7 +18,7 @@ cr-icon-button {
 }
 
 tab-search-item {
-  --tab-search-item-icon-margin: 8px;
+  --tab-search-item-icon-margin: 16px;
   --tab-search-favicon-background: var(--color-tab-search-background);
   align-items: center;
   display: flex;

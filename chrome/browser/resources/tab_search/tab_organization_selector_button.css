@@ -64,22 +64,23 @@ cr-button:focus-visible {
   flex-direction: row;
   font-size: 13px;
   font-weight: 400;
-  gap: 8px;
+  gap: 12px;
   line-height: 20px;
 }
 
 #prefixIcon {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
   align-items: center;
   background-color: var(--color-tab-search-button-icon-background);
-  color: var(--color-tab-search-selected);
+  color: var(--color-tab-search-button-icon);
   border-radius: 8px;
   display: flex;
-  height: 32px;
+  height: 40px;
   justify-content: center;
-  width: 32px;
+  width: 40px;
 }
 
 :host([disabled]) #prefixIcon {
-  background: var(--color-tab-search-disabled-container);
   color: var(--color-tab-search-disabled);
 }

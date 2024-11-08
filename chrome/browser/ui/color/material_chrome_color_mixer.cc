@@ -137,6 +137,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   // Tab Search colors.
   mixer[kColorTabSearchButtonBackground] = {ui::kColorSysSurface2};
+  mixer[kColorTabSearchButtonIcon] = {ui::kColorSysOnTonalContainer};
   mixer[kColorTabSearchButtonIconBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorTabSearchCardBackground] = {ui::kColorSysSurface5};
   mixer[kColorTabSearchBackground] = {ui::kColorSysSurface};
