@@ -32,6 +32,10 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
 
   void ProcessKeyEvent(ui::KeyEvent* event);
 
+  // Removes the item associated with given `identifier` when corresponding
+  // windows or desks are closed.
+  void RemoveItemBySystem(std::string_view identifier);
+
  private:
   class TabAppSelectionItemView;
   FRIEND_TEST_ALL_PREFIXES(CoralPixelDiffTest, CoralSelectorView);
@@ -49,6 +53,8 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   // Destroys `sender` and destroys subtitles if necessary (`sender` was the
   // last tab or app).
   void OnCloseButtonPressed(TabAppSelectionItemView* sender);
+
+  void RemoveItemView(TabAppSelectionItemView* item_view);
 
   // Deselects all items except `sender`.
   void OnItemTapped(TabAppSelectionItemView* sender);

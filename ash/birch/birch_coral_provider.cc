@@ -680,8 +680,10 @@ void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {
         group_iter = groups.erase(group_iter);
         continue;
       }
-
-      // TODO(zxdan): update birch chip icon and tab app selector menu.
+      if (auto* birch_bar_controller = BirchBarController::Get()) {
+        birch_bar_controller->OnCoralEntityRemoved(group->id,
+                                                   entity_identifier);
+      }
     }
     group_iter++;
   }

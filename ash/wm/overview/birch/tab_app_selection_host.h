@@ -29,6 +29,9 @@ class TabAppSelectionHost : public views::Widget {
   // Slides the widget under `owner_` before hiding it.
   void SlideOut();
 
+  // Removes an item associated with given `identifier` from selection view.
+  void RemoveItem(std::string_view identifier);
+
   // views::Widget:
   void OnNativeWidgetVisibilityChanged(bool visible) override;
 

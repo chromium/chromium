@@ -543,6 +543,16 @@ void TabAppSelectionView::ProcessKeyEvent(ui::KeyEvent* event) {
   }
 }
 
+void TabAppSelectionView::RemoveItemBySystem(std::string_view identifier) {
+  auto iter =
+      base::ranges::find_if(item_views_, [&identifier](const auto& item_view) {
+        return item_view->identifier() == identifier;
+      });
+  if (iter != item_views_.end()) {
+    RemoveItemView(iter->get());
+  }
+}
+
 void TabAppSelectionView::AdvanceSelection(bool reverse) {
   std::optional<size_t> selected_index;
   for (size_t i = 0; i < item_views_.size(); ++i) {
@@ -590,14 +600,18 @@ void TabAppSelectionView::OnCloseButtonPressed(
     TabAppSelectionItemView* sender) {
   BirchCoralProvider::Get()->RemoveItemFromGroup(group_id_,
                                                  sender->identifier());
-  TabAppSelectionItemView::InitParams::Type sender_type = sender->type();
-  std::erase(item_views_, sender);
-  scroll_view_->contents()->RemoveChildViewT(sender);
+  RemoveItemView(sender);
+}
+
+void TabAppSelectionView::RemoveItemView(TabAppSelectionItemView* item_view) {
+  TabAppSelectionItemView::InitParams::Type item_type = item_view->type();
+  std::erase(item_views_, item_view);
+  scroll_view_->contents()->RemoveChildViewT(item_view);
 
   // Remove the subtitle(s) if necessary.
   bool remove_subtitle = true;
   for (TabAppSelectionItemView* item : item_views_) {
-    if (sender_type == item->type()) {
+    if (item_type == item->type()) {
       remove_subtitle = false;
       break;
     }
@@ -605,7 +619,7 @@ void TabAppSelectionView::OnCloseButtonPressed(
 
   if (remove_subtitle) {
     std::optional<ViewID> id;
-    switch (sender_type) {
+    switch (item_type) {
       case TabAppSelectionItemView::InitParams::Type::kTab:
         id = kTabSubtitleID;
         break;

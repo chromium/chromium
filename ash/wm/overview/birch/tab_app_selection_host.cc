@@ -119,6 +119,7 @@ void TabAppSelectionHost::ProcessKeyEvent(ui::KeyEvent* event) {
     Hide();
     return;
   }
+
   views::AsViewClass<TabAppSelectionView>(GetContentsView())
       ->ProcessKeyEvent(event);
 }
@@ -164,6 +165,11 @@ void TabAppSelectionHost::SlideOut() {
       .SetClipRect(layer,
                    gfx::Rect(selection_bounds.width(), chip_bounds.height()),
                    gfx::Tween::EASE_IN_OUT_EMPHASIZED);
+}
+
+void TabAppSelectionHost::RemoveItem(std::string_view identifier) {
+  views::AsViewClass<TabAppSelectionView>(GetContentsView())
+      ->RemoveItemBySystem(identifier);
 }
 
 void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
