@@ -11,12 +11,6 @@
 
 static void* kObservingContext = &kObservingContext;
 
-@implementation CALayerFrameSinkProvider
-- (ui::CALayerFrameSink*)frameSink {
-  return nil;
-}
-@end
-
 @interface BETextPosition : UITextPosition {
   CGRect rect_;
 }

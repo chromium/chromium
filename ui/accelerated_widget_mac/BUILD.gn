@@ -34,7 +34,10 @@ component("accelerated_widget_mac") {
   ]
 
   if (is_ios) {
-    sources += [ "ca_layer_frame_sink_provider.h" ]
+    sources += [
+      "ca_layer_frame_sink_provider.h",
+      "ca_layer_frame_sink_provider.mm",
+    ]
   }
 
   if (is_mac) {
