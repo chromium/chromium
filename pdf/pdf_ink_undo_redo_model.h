@@ -20,28 +20,27 @@ static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace chrome_pdf {
 
-// Models commands as seen in the CommandsType enum below. Based on the recorded
-// commands, processes undo / redo requests and calculates what commands need to
-// be applied.
+// Models draw and erase commands. Based on the recorded commands,
+// processes undo / redo requests and calculates what commands need to be
+// applied.
 class PdfInkUndoRedoModel {
  public:
   enum class CommandsType {
     kNone,
-    kDrawStroke,
-    kEraseStroke,
+    kDraw,
+    kErase,
   };
 
-  // Set of IDs for the enum CommandsType values above.
-  using DrawStrokeCommands =
-      base::StrongAlias<class DrawStrokeCommandsTag, std::set<InkStrokeId>>;
-  using EraseStrokeCommands =
-      base::StrongAlias<class EraseStrokeCommandsTag, std::set<InkStrokeId>>;
+  // Set of IDs to draw/erase.
+  using DrawCommands =
+      base::StrongAlias<class DrawCommandsTag, std::set<InkStrokeId>>;
+  using EraseCommands =
+      base::StrongAlias<class EraseCommandsTag, std::set<InkStrokeId>>;
 
-  using Commands =
-      absl::variant<absl::monostate, DrawStrokeCommands, EraseStrokeCommands>;
+  using Commands = absl::variant<absl::monostate, DrawCommands, EraseCommands>;
 
   // Set of IDs used for drawing to discard.
-  using DiscardedDrawStrokeCommands = std::set<InkStrokeId>;
+  using DiscardedDrawCommands = std::set<InkStrokeId>;
 
   PdfInkUndoRedoModel();
   PdfInkUndoRedoModel(const PdfInkUndoRedoModel&) = delete;
@@ -62,32 +61,32 @@ class PdfInkUndoRedoModel {
   // not at the top of the stack, then this discards all entries from the
   // current position to the top of the stack. The caller can discard its
   // entries with IDs that match the returned values.
-  // Must be called before DrawStroke().
+  // Must be called before Draw().
   // Must not be called while another draw/erase has been started.
-  [[nodiscard]] std::optional<DiscardedDrawStrokeCommands> StartDrawStroke();
+  [[nodiscard]] std::optional<DiscardedDrawCommands> StartDraw();
   // Records drawing a stroke identified by `id`.
-  // Must be called between StartDrawStroke() and FinishDrawStroke().
+  // Must be called between StartDraw() and FinishDraw().
   // `id` must not be on the commands stack.
-  [[nodiscard]] bool DrawStroke(InkStrokeId id);
+  [[nodiscard]] bool Draw(InkStrokeId id);
   // Finishes recording draw commands and pushes a new element onto the stack.
-  // Must be called after StartDrawStroke().
-  [[nodiscard]] bool FinishDrawStroke();
+  // Must be called after StartDraw().
+  [[nodiscard]] bool FinishDraw();
 
   // Starts recording erase commands. If the current commands stack position is
   // not at the top of the stack, then this discards all entries from the
   // current position to the top of the stack. The caller can discard its
   // entries with IDs that match the returned values.
-  // Must be called before EraseStroke().
+  // Must be called before Erase().
   // Must not be called while another draw/erase has been started.
-  [[nodiscard]] std::optional<DiscardedDrawStrokeCommands> StartEraseStroke();
+  [[nodiscard]] std::optional<DiscardedDrawCommands> StartErase();
   // Records erasing a stroke identified by `id`.
-  // Must be called between StartEraseStroke() and FinishEraseStroke().
-  // `id` must be in a `DrawStrokeCommands` on the commands stack.
-  // `id` must not be in any `EraseStrokeCommands` on the commands stack.
-  [[nodiscard]] bool EraseStroke(InkStrokeId id);
+  // Must be called between StartErase() and FinishErase().
+  // `id` must be in a `DrawCommands` on the commands stack.
+  // `id` must not be in any `EraseCommands` on the commands stack.
+  [[nodiscard]] bool Erase(InkStrokeId id);
   // Finishes recording erase commands and pushes a new element onto the stack.
-  // Must be called after StartEraseStroke().
-  [[nodiscard]] bool FinishEraseStroke();
+  // Must be called after StartErase().
+  [[nodiscard]] bool FinishErase();
 
   // Returns the commands that needs to be applied to satisfy the undo / redo
   // request and moves the position in the commands stack without modifying the
@@ -96,30 +95,27 @@ class PdfInkUndoRedoModel {
   Commands Redo();
 
   static CommandsType GetCommandsType(const Commands& commands);
-  static const DrawStrokeCommands& GetDrawStrokeCommands(
-      const Commands& commands);
-  static const EraseStrokeCommands& GetEraseStrokeCommands(
-      const Commands& commands);
+  static const DrawCommands& GetDrawCommands(const Commands& commands);
+  static const EraseCommands& GetEraseCommands(const Commands& commands);
 
  private:
   template <typename T>
-  std::optional<DiscardedDrawStrokeCommands> StartImpl();
+  std::optional<DiscardedDrawCommands> StartImpl();
 
   bool IsAtTopOfStackWithGivenCommandType(CommandsType type) const;
-  bool HasIdInDrawStrokeCommands(InkStrokeId id) const;
-  bool HasIdInEraseStrokeCommands(InkStrokeId id) const;
+  bool HasIdInDrawCommands(InkStrokeId id) const;
+  bool HasIdInEraseCommands(InkStrokeId id) const;
 
   // Invariants:
   // (1) Never empty.
   // (2) The last element and only the last element can be `absl::monostate`.
-  // (3) IDs used in `DrawStrokeCommands` elements are unique among all
-  //     `DrawStrokeCommands` elements.
-  // (4) IDs added to a `DrawStrokeCommands` must not exist in any
-  //     `EraseStrokeCommands`.
-  // (5) IDs used in `EraseStrokeCommands` elements are unique among all
-  //     `EraseStrokeCommands` elements.
-  // (6) IDs added to a `EraseStrokeCommands` must exist in some
-  //     `DrawStrokeCommands` element.
+  // (3) IDs used in `DrawCommands` elements are unique among all `DrawCommands`
+  //     elements.
+  // (4) IDs added to a `DrawCommands` must not exist in any `EraseCommands`.
+  // (5) IDs used in `EraseCommands` elements are unique among all
+  //     `EraseCommands` elements.
+  // (6) IDs added to a `EraseCommands` must exist in some `DrawCommands`
+  //     element.
   std::vector<Commands> commands_stack_ = {absl::monostate()};
 
   // Invariants:

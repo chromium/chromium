@@ -299,7 +299,7 @@ class PdfInkModule {
   void ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids, bool should_draw);
 
   void ApplyUndoRedoDiscards(
-      const PdfInkUndoRedoModel::DiscardedDrawStrokeCommands& discards);
+      const PdfInkUndoRedoModel::DiscardedDrawCommands& discards);
 
   void MaybeSetCursor();
 

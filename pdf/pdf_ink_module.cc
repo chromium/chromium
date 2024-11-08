@@ -418,8 +418,8 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   // Invalidate area around this one point.
   client_->Invalidate(GetDrawingBrush().GetInvalidateArea(position, position));
 
-  std::optional<PdfInkUndoRedoModel::DiscardedDrawStrokeCommands> discards =
-      undo_redo_model_.StartDrawStroke();
+  std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+      undo_redo_model_.StartDraw();
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
 
@@ -522,7 +522,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
       InkStrokeId id = stroke_id_generator_.GetIdAndAdvance();
       strokes_[state.page_index].push_back(
           FinishedStrokeState(segment.CopyToStroke(), id));
-      bool undo_redo_success = undo_redo_model_.DrawStroke(id);
+      bool undo_redo_success = undo_redo_model_.Draw(id);
       CHECK(undo_redo_success);
     }
   }
@@ -530,7 +530,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   client_->StrokeFinished();
   client_->UpdateThumbnail(state.page_index);
 
-  bool undo_redo_success = undo_redo_model_.FinishDrawStroke();
+  bool undo_redo_success = undo_redo_model_.FinishDraw();
   CHECK(undo_redo_success);
 
   // Reset `state` now that the stroke operation is done.
@@ -553,8 +553,8 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position) {
   CHECK(!state.erasing);
   state.erasing = true;
 
-  std::optional<PdfInkUndoRedoModel::DiscardedDrawStrokeCommands> discards =
-      undo_redo_model_.StartEraseStroke();
+  std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+      undo_redo_model_.StartErase();
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
 
@@ -592,7 +592,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
     return false;
   }
 
-  bool undo_redo_success = undo_redo_model_.FinishEraseStroke();
+  bool undo_redo_success = undo_redo_model_.FinishErase();
   CHECK(undo_redo_success);
 
   CHECK(is_erasing_stroke());
@@ -640,7 +640,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
     invalidate_envelope.Add(shape.Bounds());
 
-    bool undo_redo_success = undo_redo_model_.EraseStroke(stroke.id);
+    bool undo_redo_success = undo_redo_model_.Erase(stroke.id);
     CHECK(undo_redo_success);
   }
 
@@ -847,15 +847,15 @@ void PdfInkModule::ApplyUndoRedoCommands(
     case PdfInkUndoRedoModel::CommandsType::kNone: {
       return;
     }
-    case PdfInkUndoRedoModel::CommandsType::kDrawStroke: {
+    case PdfInkUndoRedoModel::CommandsType::kDraw: {
       ApplyUndoRedoCommandsHelper(
-          PdfInkUndoRedoModel::GetDrawStrokeCommands(commands).value(),
+          PdfInkUndoRedoModel::GetDrawCommands(commands).value(),
           /*should_draw=*/true);
       return;
     }
-    case PdfInkUndoRedoModel::CommandsType::kEraseStroke: {
+    case PdfInkUndoRedoModel::CommandsType::kErase: {
       ApplyUndoRedoCommandsHelper(
-          PdfInkUndoRedoModel::GetEraseStrokeCommands(commands).value(),
+          PdfInkUndoRedoModel::GetEraseCommands(commands).value(),
           /*should_draw=*/false);
       return;
     }
@@ -911,7 +911,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
 }
 
 void PdfInkModule::ApplyUndoRedoDiscards(
-    const PdfInkUndoRedoModel::DiscardedDrawStrokeCommands& discards) {
+    const PdfInkUndoRedoModel::DiscardedDrawCommands& discards) {
   if (discards.empty()) {
     return;
   }
