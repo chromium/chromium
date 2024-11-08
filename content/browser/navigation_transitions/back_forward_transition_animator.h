@@ -428,6 +428,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void DeferDialogs();
   void ResumeDialogs();
 
+  void AppendToSerializeStates(const std::string& state);
+
+  std::string FormatStateAndNavigationState() const;
+
+  void SerializeNavigationRequest(NavigationRequest* request);
+
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
 
@@ -582,6 +588,17 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // live page.
   int deferred_dialog_token_ =
       ui::ModalDialogManagerBridge::kInvalidDialogToken;
+
+  // Member variable so the abort reason can show up in `serialized_states_`.
+  std::optional<AnimationAbortReason> abort_reason_;
+
+  // Stores a serialized states transition of `this`. When the crash happens
+  // internally, the string will show up as a crash key. It's in the format of
+  // "state0(nav_state0) state1(nav_state1) ext_event0 state2(nav_state2)..."
+  std::string serialized_states_;
+
+  // Stores a serialized string representation of a tracked navigation request.
+  std::string serialized_request_;
 
   base::WeakPtrFactory<BackForwardTransitionAnimator> weak_ptr_factory_{this};
 };
