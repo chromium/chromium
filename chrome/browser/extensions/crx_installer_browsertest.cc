@@ -994,6 +994,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, DISABLED_KioskOnlyTest) {
   // kiosk_only is allowlisted from non-chromeos.
   base::FilePath crx_path = test_data_dir_.AppendASCII("kiosk/kiosk_only.crx");
   EXPECT_FALSE(InstallExtension(crx_path, 0));
+  LOG(INFO) << "Extension didn't install in non-kiosk mode.";
   // Simulate ChromeOS kiosk mode. |scoped_user_manager| will take over
   // lifetime of |user_manager|.
   auto* fake_user_manager = new ash::FakeChromeUserManager();
@@ -1003,6 +1004,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, DISABLED_KioskOnlyTest) {
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   EXPECT_TRUE(InstallExtension(crx_path, 1));
+  LOG(INFO) << "Extension installed in simulated kiosk mode.";
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
