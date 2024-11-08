@@ -26,7 +26,7 @@ class AIContextBoundObjectSet {
   size_t GetSizeForTesting();
 
   static AIContextBoundObjectSet* GetFromContext(
-      base::SupportsUserData* context_user_data);
+      base::SupportsUserData& context_user_data);
 
   // Returns a weak pointer for testing purposes only.
   base::WeakPtr<AIContextBoundObjectSet> GetWeakPtrForTesting() {

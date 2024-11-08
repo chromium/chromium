@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_assistant.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
@@ -39,7 +40,7 @@ class AIManagerKeyedService : public KeyedService,
   ~AIManagerKeyedService() override;
 
   void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-                   base::SupportsUserData* context_user_data);
+                   base::SupportsUserData& context_user_data);
   void CreateAssistantForCloning(
       base::PassKey<AIAssistant> pass_key,
       blink::mojom::AIAssistantSamplingParamsPtr sampling_params,

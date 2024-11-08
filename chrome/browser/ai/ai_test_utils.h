@@ -104,7 +104,7 @@ class AITestUtils {
     void SetupNullOptimizationGuideKeyedService();
 
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
-    MockSupportsUserData* mock_host() { return mock_host_.get(); }
+    MockSupportsUserData& mock_host() { return *mock_host_.get(); }
     void ResetMockHost();
     size_t GetAIManagerReceiversSize();
     size_t GetAIManagerDownloadProgressObserversSize();

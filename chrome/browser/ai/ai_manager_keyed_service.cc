@@ -131,7 +131,7 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
   static void CreateAndStart(
       content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
-      base::SupportsUserData* context_user_data,
+      base::SupportsUserData& context_user_data,
       CreateOptionsPtrType options,
       mojo::PendingRemote<ClientRemoteInterface> client) {
     auto task = std::make_unique<CreateContextBoundObjectTask>(
@@ -150,11 +150,11 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
       base::PassKey<CreateContextBoundObjectTask>,
       content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
-      base::SupportsUserData* context_user_data,
+      base::SupportsUserData& context_user_data,
       CreateOptionsPtrType options,
       mojo::PendingRemote<ClientRemoteInterface> client)
       : CreateOnDeviceSessionTask(browser_context, feature),
-        owning_user_data_(*context_user_data),
+        owning_user_data_(context_user_data),
         options_(std::move(options)),
         client_remote_(std::move(client)) {
     client_remote_.set_disconnect_handler(base::BindOnce(
@@ -174,7 +174,7 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
       return;
     }
     mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
-    AIContextBoundObjectSet::GetFromContext(&owning_user_data_.get())
+    AIContextBoundObjectSet::GetFromContext(owning_user_data_.get())
         ->AddContextBoundObject(std::make_unique<ContextBoundObjectType>(
             std::move(session), std::move(options_),
             pending_remote.InitWithNewPipeAndPassReceiver()));
@@ -226,9 +226,9 @@ AIManagerKeyedService::~AIManagerKeyedService() = default;
 
 void AIManagerKeyedService::AddReceiver(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-    base::SupportsUserData* context_user_data) {
+    base::SupportsUserData& context_user_data) {
   mojo::ReceiverId receiver_id =
-      receivers_.Add(this, std::move(receiver), context_user_data);
+      receivers_.Add(this, std::move(receiver), &context_user_data);
   AIContextBoundObjectSet* context_bound_object_set =
       AIContextBoundObjectSet::GetFromContext(context_user_data);
   context_bound_object_set->AddContextBoundObject(
@@ -286,8 +286,9 @@ void AIManagerKeyedService::CreateAssistant(
   // Since this is a mojo IPC implementation, the context should be
   // non-null;
   base::SupportsUserData* context_user_data = receivers_.current_context();
+  CHECK(context_user_data);
   AIContextBoundObjectSet* context_bound_object_set =
-      AIContextBoundObjectSet::GetFromContext(context_user_data);
+      AIContextBoundObjectSet::GetFromContext(*context_user_data);
   CHECK(context_bound_object_set);
 
   auto create_assistant_callback = base::BindOnce(
@@ -343,7 +344,7 @@ void AIManagerKeyedService::CreateAssistant(
   if (task->IsPending()) {
     // Put `task` to AIContextBoundObjectSet to continue observing the model
     // availability.
-    AIContextBoundObjectSet::GetFromContext(context_user_data)
+    AIContextBoundObjectSet::GetFromContext(*context_user_data)
         ->AddContextBoundObject(std::move(task));
   }
 }
@@ -362,7 +363,7 @@ void AIManagerKeyedService::CreateSummarizer(
                                blink::mojom::AISummarizerCreateOptionsPtr>::
       CreateAndStart(browser_context_,
                      optimization_guide::ModelBasedCapabilityKey::kSummarize,
-                     receivers_.current_context(), std::move(options),
+                     *receivers_.current_context(), std::move(options),
                      std::move(client));
 }
 
@@ -381,7 +382,7 @@ void AIManagerKeyedService::CreateWriter(
                                blink::mojom::AIWriterCreateOptionsPtr>::
       CreateAndStart(browser_context_,
                      optimization_guide::ModelBasedCapabilityKey::kCompose,
-                     receivers_.current_context(), std::move(options),
+                     *receivers_.current_context(), std::move(options),
                      std::move(client));
 }
 
@@ -404,7 +405,7 @@ void AIManagerKeyedService::CreateRewriter(
                                blink::mojom::AIRewriterCreateOptionsPtr>::
       CreateAndStart(browser_context_,
                      optimization_guide::ModelBasedCapabilityKey::kCompose,
-                     receivers_.current_context(), std::move(options),
+                     *receivers_.current_context(), std::move(options),
                      std::move(client));
 }
 

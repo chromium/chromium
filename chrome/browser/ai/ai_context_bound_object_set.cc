@@ -29,14 +29,14 @@ class AIContextBoundObjectSetSupportsUserData
 
   static AIContextBoundObjectSetSupportsUserData* GetOrCreateFor(
       base::PassKey<AIContextBoundObjectSet> pass_key,
-      base::SupportsUserData* context_user_data) {
-    if (!context_user_data->GetUserData(kAIContextBoundObjectSetUserDataKey)) {
-      context_user_data->SetUserData(
+      base::SupportsUserData& context_user_data) {
+    if (!context_user_data.GetUserData(kAIContextBoundObjectSetUserDataKey)) {
+      context_user_data.SetUserData(
           kAIContextBoundObjectSetUserDataKey,
           std::make_unique<AIContextBoundObjectSetSupportsUserData>());
     }
     return static_cast<AIContextBoundObjectSetSupportsUserData*>(
-        context_user_data->GetUserData(kAIContextBoundObjectSetUserDataKey));
+        context_user_data.GetUserData(kAIContextBoundObjectSetUserDataKey));
   }
 };
 
@@ -67,7 +67,7 @@ void AIContextBoundObjectSet::RemoveContextBoundObject(
 }
 
 AIContextBoundObjectSet* AIContextBoundObjectSet::GetFromContext(
-    base::SupportsUserData* context_user_data) {
+    base::SupportsUserData& context_user_data) {
   return AIContextBoundObjectSetSupportsUserData::GetOrCreateFor(
       base::PassKey<AIContextBoundObjectSet>(), context_user_data);
 }

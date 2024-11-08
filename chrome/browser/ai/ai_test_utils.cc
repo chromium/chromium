@@ -75,7 +75,7 @@ mojo::Remote<blink::mojom::AIManager>
 AITestUtils::AITestBase::GetAIManagerRemote() {
   mojo::Remote<blink::mojom::AIManager> ai_manager;
   GetAIManager()->AddReceiver(ai_manager.BindNewPipeAndPassReceiver(),
-                              mock_host_.get());
+                              mock_host());
   return ai_manager;
 }
 
