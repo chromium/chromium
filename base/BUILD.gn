@@ -338,6 +338,7 @@ component("base") {
     "location.h",
     "logging.cc",
     "logging.h",
+    "logging/log_severity.h",
     "macros/concat.h",
     "macros/if.h",
     "macros/is_empty.h",
@@ -2447,7 +2448,19 @@ component("base") {
   }
 }
 
-rust_bindgen("rust_log_bindgen") {
+rust_bindgen("logging_log_severity_bindgen") {
+  # TODO(danakj): Maybe combine all base bindgen targets, or all base/logging
+  # ones even) into a single GN target? But the GN rule needs to handle multiple
+  # headers then.
+  header = "logging/log_severity.h"
+  cpp = true
+  visibility = [ ":*" ]
+
+  # Transitive generated header dependency.
+  deps = [ ":debugging_buildflags" ]
+}
+
+rust_bindgen("logging_rust_log_integration_bindgen") {
   header = "logging/rust_log_integration.h"
   cpp = true
   visibility = [ ":*" ]
@@ -2456,7 +2469,8 @@ rust_bindgen("rust_log_bindgen") {
 rust_static_library("rust_logger") {
   allow_unsafe = true  # Unsafe needed for FFI.
   deps = [
-    ":rust_log_bindgen",
+    ":logging_log_severity_bindgen",
+    ":logging_rust_log_integration_bindgen",
     "//third_party/rust/log/v0_4:lib",
   ]
   visibility = [ ":base" ]

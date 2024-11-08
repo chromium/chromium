@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use log::Level::{Debug, Error, Info, Trace, Warn};
-use log::{LevelFilter, Metadata, Record};
-use std::ffi::CString;
-
 chromium::import! {
-    "//base:rust_log_bindgen";
+    "//base:logging_log_severity_bindgen" as log_severity;
+    "//base:logging_rust_log_integration_bindgen" as rust_log_integration;
 }
 
-use rust_log_bindgen::logging::internal::print_rust_log;
-use rust_log_bindgen::logging::internal::{
-    RustLogSeverity_DEBUG, RustLogSeverity_ERROR, RustLogSeverity_INFO, RustLogSeverity_TRACE,
-    RustLogSeverity_WARNING,
-};
+use log::Level::{Debug, Error, Info, Trace, Warn};
+use log::{LevelFilter, Metadata, Record};
+use log_severity::logging::{LOGGING_ERROR, LOGGING_INFO, LOGGING_WARNING};
+use rust_log_integration::logging::internal::print_rust_log;
+use std::ffi::CString;
 
 struct RustLogger;
 
@@ -42,15 +39,15 @@ impl log::Log for RustLogger {
                 file.as_ptr(),
                 record.line().unwrap() as i32,
                 match record.metadata().level() {
-                    Error => RustLogSeverity_ERROR,
-                    Warn => RustLogSeverity_WARNING,
-                    Info => RustLogSeverity_INFO,
-                    // TODO(thiruak1024@gmail.com): Debug and Trace macros can be eliminated at
-                    // compile time by introducing a new feature to enable or disable these logs
-                    // by default. https://crbug.com/371112532
-                    Debug => RustLogSeverity_DEBUG,
-                    Trace => RustLogSeverity_TRACE,
+                    Error => LOGGING_ERROR,
+                    Warn => LOGGING_WARNING,
+                    Info => LOGGING_INFO,
+                    // Note that Debug and Trace level logs are dropped at
+                    // compile time at the macro call-site when DCHECK_IS_ON()
+                    // is false. This is done through a Cargo feature.
+                    Debug | Trace => LOGGING_INFO,
                 },
+                record.metadata().level() == Trace,
             )
         }
     }

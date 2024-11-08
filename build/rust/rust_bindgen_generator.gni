@@ -123,7 +123,7 @@ template("rust_bindgen_generator") {
     # Several important compiler flags come from default_compiler_configs
     configs += default_compiler_configs
 
-    output_dir = "$target_gen_dir"
+    output_dir = "${target_gen_dir}/${target_name}"
     if (!defined(output_name)) {
       output_name = target_name
     }
