@@ -111,6 +111,8 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
     bool local_captions_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_captions_enabled_ = local_captions_enabled;
+  caption_controller_wrapper_->ToggleLiveCaptionForBabelOrca(
+      local_captions_enabled_);
   if (!session_captions_enabled_ && !local_captions_enabled_) {
     StopRecognition();
     return;
