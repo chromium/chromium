@@ -30,6 +30,10 @@ MEDIA_EXPORT bool IsDefaultEncoderSupportedVideoType(const VideoType& type);
 MEDIA_EXPORT bool IsDecoderBuiltInVideoCodec(VideoCodec codec);
 MEDIA_EXPORT bool IsEncoderBuiltInVideoCodec(VideoCodec codec);
 
+// This function describe if the specific video encoder codec is likely to have
+// a platform software encoder, and we also allow to select this encoder.
+MEDIA_EXPORT bool MayHaveAndAllowSelectOSSoftwareEncoder(VideoCodec codec);
+
 // This function lets the caller add additional video decoder codec profiles to
 // those supported by default. Used primarily to add platform supported codec
 // profiles once support is known.

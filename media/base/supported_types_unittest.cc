@@ -455,4 +455,12 @@ TEST(SupportedTypesTest, IsEncoderBuiltInVideoCodec) {
   EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kDolbyVision));
 }
 
+TEST(SupportedTypesTest, MayHaveAndAllowSelectOSSoftwareEncoder) {
+  EXPECT_EQ(MayHaveAndAllowSelectOSSoftwareEncoder(VideoCodec::kHEVC),
+            BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER));
+  EXPECT_EQ(MayHaveAndAllowSelectOSSoftwareEncoder(VideoCodec::kH264),
+            (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)) &&
+                !BUILDFLAG(ENABLE_OPENH264));
+}
+
 }  // namespace media

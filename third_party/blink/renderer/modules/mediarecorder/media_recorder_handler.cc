@@ -115,28 +115,6 @@ VideoTrackRecorder::CodecId CodecIdFromMediaVideoCodec(media::VideoCodec id) {
   }
 }
 
-media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
-  switch (id) {
-    case VideoTrackRecorder::CodecId::kVp8:
-      return media::VideoCodec::kVP8;
-    case VideoTrackRecorder::CodecId::kVp9:
-      return media::VideoCodec::kVP9;
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    case VideoTrackRecorder::CodecId::kH264:
-      return media::VideoCodec::kH264;
-#endif
-    case VideoTrackRecorder::CodecId::kAv1:
-      return media::VideoCodec::kAV1;
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case VideoTrackRecorder::CodecId::kHevc:
-      return media::VideoCodec::kHEVC;
-#endif
-    case VideoTrackRecorder::CodecId::kLast:
-      return media::VideoCodec::kUnknown;
-  }
-  NOTREACHED() << "Unsupported video codec";
-}
-
 media::AudioCodec CodecIdToMediaAudioCodec(AudioTrackRecorder::CodecId id) {
   switch (id) {
     case AudioTrackRecorder::CodecId::kPcm:
@@ -234,6 +212,28 @@ bool IsMp4MuxerRequired(const String& type) {
 }
 
 }  // anonymous namespace
+
+media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
+  switch (id) {
+    case VideoTrackRecorder::CodecId::kVp8:
+      return media::VideoCodec::kVP8;
+    case VideoTrackRecorder::CodecId::kVp9:
+      return media::VideoCodec::kVP9;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    case VideoTrackRecorder::CodecId::kH264:
+      return media::VideoCodec::kH264;
+#endif
+    case VideoTrackRecorder::CodecId::kAv1:
+      return media::VideoCodec::kAV1;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoTrackRecorder::CodecId::kHevc:
+      return media::VideoCodec::kHEVC;
+#endif
+    case VideoTrackRecorder::CodecId::kLast:
+      return media::VideoCodec::kUnknown;
+  }
+  NOTREACHED() << "Unsupported video codec";
+}
 
 // Extracts the first recognised CodecId of |codecs| or CodecId::LAST if none
 // of them is known. Sets codec profile and level if the information can be

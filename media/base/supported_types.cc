@@ -617,6 +617,26 @@ bool IsEncoderBuiltInVideoCodec(VideoCodec codec) {
   return false;
 }
 
+bool MayHaveAndAllowSelectOSSoftwareEncoder(VideoCodec codec) {
+  // Allow OS software encoding when we don't have an equivalent
+  // software encoder.
+  constexpr bool kHasBundledH264Encoder = BUILDFLAG(ENABLE_OPENH264);
+  constexpr bool kHasOSSoftwareH264Encoder =
+      BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID);
+  constexpr bool kHasOSSoftwareHEVCEncoder =
+      BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER);
+
+  switch (codec) {
+    case VideoCodec::kH264:
+      // Prefer the bundled encoder, if present.
+      return kHasOSSoftwareH264Encoder && !kHasBundledH264Encoder;
+    case VideoCodec::kHEVC:
+      return kHasOSSoftwareHEVCEncoder;
+    default:
+      return false;
+  }
+}
+
 void UpdateDefaultDecoderSupportedVideoProfiles(
     const base::flat_set<media::VideoCodecProfile>& profiles) {
   GetSupplementalDecoderVideoProfileCache()->UpdateCache(profiles);

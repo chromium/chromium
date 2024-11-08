@@ -27,6 +27,7 @@
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_encoder_wrapper.h"
+#include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 #include "third_party/blink/renderer/modules/mediarecorder/vea_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/vpx_encoder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -308,16 +310,25 @@ std::optional<media::VideoCodecProfile> GetMediaVideoCodecProfile(
 }
 
 MediaRecorderEncoderWrapper::CreateEncoderCB
-GetCreateHardwareVideoEncoderCallback() {
+GetCreateHardwareVideoEncoderCallback(CodecId codec_id) {
+  auto required_encoder_type =
+      media::MayHaveAndAllowSelectOSSoftwareEncoder(
+          MediaVideoCodecFromCodecId(codec_id))
+          ? media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference
+          : media::VideoEncodeAccelerator::Config::EncoderType::kHardware;
   return ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
-      [](media::GpuVideoAcceleratorFactories* gpu_factories)
+      [](media::VideoEncodeAccelerator::Config::EncoderType
+             required_encoder_type,
+         media::GpuVideoAcceleratorFactories* gpu_factories)
           -> std::unique_ptr<media::VideoEncoder> {
         return std::make_unique<media::AsyncDestroyVideoEncoder<
             media::VideoEncodeAcceleratorAdapter>>(
             std::make_unique<media::VideoEncodeAcceleratorAdapter>(
                 gpu_factories, std::make_unique<media::NullMediaLog>(),
-                base::SequencedTaskRunner::GetCurrentDefault()));
-      }));
+                base::SequencedTaskRunner::GetCurrentDefault(),
+                required_encoder_type));
+      },
+      required_encoder_type));
 }
 
 MediaRecorderEncoderWrapper::CreateEncoderCB
@@ -782,6 +793,13 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
     if (codec_profile.profile && *codec_profile.profile != profile.profile) {
       continue;
     }
+    // Skip if profile is OS software encoder profile and we don't allow use
+    // OS software encoder.
+    if (profile.is_software_codec &&
+        !media::MayHaveAndAllowSelectOSSoftwareEncoder(
+            media::VideoCodecProfileToVideoCodec(profile.profile))) {
+      continue;
+    }
 
     const gfx::Size& min_resolution = profile.min_resolution;
     DCHECK_GE(min_resolution.width(), 0);
@@ -974,7 +992,7 @@ VideoTrackRecorderImpl::CreateMediaVideoEncoder(
       std::move(encoding_task_runner), *codec_profile.profile, bits_per_second_,
       is_screencast, create_vea_encoder ? gpu_factories : nullptr,
       create_vea_encoder
-          ? GetCreateHardwareVideoEncoderCallback()
+          ? GetCreateHardwareVideoEncoderCallback(codec_profile.codec_id)
           : GetCreateSoftwareVideoEncoderCallback(codec_profile.codec_id),
       on_encoded_video_cb_, std::move(on_error_cb));
 }

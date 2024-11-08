@@ -49,6 +49,10 @@ struct WebMediaConfiguration;
 
 MODULES_EXPORT BASE_DECLARE_FEATURE(kMediaRecorderEnableMp4Muxer);
 
+// Helper function to convert media recorder codec id to media video codec.
+MODULES_EXPORT media::VideoCodec MediaVideoCodecFromCodecId(
+    VideoTrackRecorder::CodecId id);
+
 // Helper function to parse a codec string to codec/profile/level.
 MODULES_EXPORT VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
     const String& codecs);

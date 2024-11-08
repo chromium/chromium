@@ -26,6 +26,7 @@
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/mime_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
@@ -588,41 +589,11 @@ bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
              IsGpuMemoryBufferReadbackFromTextureEnabled();
 }
 
-bool MayHaveOSSoftwareEncoder(media::VideoCodecProfile profile) {
-  // Allow OS software encoding when we don't have an equivalent
-  // software encoder.
-  //
-  // Note: Since we don't enumerate OS software encoders this may still fail and
-  // trigger fallback to our bundled software encoder (if any).
-  //
-  // Note 2: It's not ideal to have this logic live here, but otherwise we need
-  // to always wait for GpuFactories enumeration.
-  //
-  // TODO(crbug.com/1383643): Add IS_WIN here once we can force
-  // selection of a software encoder there.
-  constexpr bool kHasBundledH264Encoder = BUILDFLAG(ENABLE_OPENH264);
-  constexpr bool kHasOSSoftwareH264Encoder =
-      BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID);
-  constexpr bool kHasOSSoftwareHEVCEncoder =
-      BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER);
-
-  switch (media::VideoCodecProfileToVideoCodec(profile)) {
-    case media::VideoCodec::kH264:
-      // Prefer the bundled encoder, if present.
-      return kHasOSSoftwareH264Encoder && !kHasBundledH264Encoder;
-
-    case media::VideoCodec::kHEVC:
-      return kHasOSSoftwareHEVCEncoder;
-
-    default:
-      return false;
-  }
-}
-
 EncoderType GetRequiredEncoderType(media::VideoCodecProfile profile,
                                    HardwarePreference hw_pref) {
   if (hw_pref != HardwarePreference::kPreferHardware &&
-      MayHaveOSSoftwareEncoder(profile)) {
+      media::MayHaveAndAllowSelectOSSoftwareEncoder(
+          media::VideoCodecProfileToVideoCodec(profile))) {
     return hw_pref == HardwarePreference::kPreferSoftware
                ? EncoderType::kSoftware
                : EncoderType::kNoPreference;
@@ -771,7 +742,7 @@ VideoEncoder::CreateMediaVideoEncoder(
   is_platform_encoder = true;
   if (config.hw_pref == HardwarePreference::kPreferHardware ||
       config.hw_pref == HardwarePreference::kNoPreference ||
-      MayHaveOSSoftwareEncoder(config.profile)) {
+      media::MayHaveAndAllowSelectOSSoftwareEncoder(config.codec)) {
     auto result = CreateAcceleratedVideoEncoder(config.profile, config.options,
                                                 gpu_factories, config.hw_pref);
     if (config.hw_pref == HardwarePreference::kPreferHardware) {
@@ -1293,7 +1264,7 @@ void VideoEncoder::ProcessConfigure(Request* request) {
   }
 
   if (active_config_->hw_pref == HardwarePreference::kPreferSoftware &&
-      !MayHaveOSSoftwareEncoder(active_config_->profile)) {
+      !media::MayHaveAndAllowSelectOSSoftwareEncoder(active_config_->codec)) {
     ContinueConfigureWithGpuFactories(request, nullptr);
     return;
   }
@@ -1649,7 +1620,7 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
   // register them with HeapBarrierCallback.
   wtf_size_t num_callbacks = 0;
   if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware ||
-      MayHaveOSSoftwareEncoder(parsed_config->profile)) {
+      media::MayHaveAndAllowSelectOSSoftwareEncoder(parsed_config->codec)) {
     ++num_callbacks;
   }
   if (parsed_config->hw_pref != HardwarePreference::kPreferHardware) {
@@ -1664,7 +1635,7 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
       WTF::BindOnce(&FindAnySupported, WrapPersistent(resolver)));
 
   if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware ||
-      MayHaveOSSoftwareEncoder(parsed_config->profile)) {
+      media::MayHaveAndAllowSelectOSSoftwareEncoder(parsed_config->codec)) {
     // Hardware support not denied, detect support by hardware encoders.
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
