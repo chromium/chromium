@@ -271,7 +271,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                 this,
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),
-                getInsetObserver());
+                getInsetObserver(),
+                /* trackOcclusion= */ true);
     }
 
     @Override

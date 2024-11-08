@@ -78,7 +78,8 @@ public class ShareHelperUnitTest {
                         mActivity,
                         /* listenToActivityState= */ false,
                         IntentRequestTracker.createFromActivity(mActivity),
-                        /* insetObserver= */ null);
+                        /* insetObserver= */ null,
+                        /* trackOcclusion= */ true);
         mImageUri = Uri.parse(IMAGE_URI);
     }
 

@@ -28,6 +28,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -198,6 +199,9 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
 
     /** Whether or not the Tab is currently visible to the user. */
     private boolean mIsHidden = true;
+
+    /** Called when the current window's occlusion changes. */
+    private final Callback<Boolean> mOcclusionCallback = (v) -> updateWebContentsVisibility();
 
     /**
      * Importance of the WebContents currently attached to this tab. Note the key difference from
@@ -618,6 +622,7 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         // We must check this as an additional condition to detachment for this case to continue
         // to work. See https://crbug.com/1501849.
         mIsDetached = window == null || !windowHasActivity(window);
+        updateWebContentsVisibility();
     }
 
     private boolean checkAttached() {
@@ -922,6 +927,19 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         return mIsDestroyed;
     }
 
+    private void updateWebContentsVisibility() {
+        var webContents = getWebContents();
+        if (webContents == null) return;
+        if (mIsHidden) {
+            webContents.updateWebContentsVisibility(Visibility.HIDDEN);
+        } else if (!mIsDetached && mWindowAndroid.getOcclusionSupplier().get()) {
+            // If we are not attached to a window, occlusion does not make sense.
+            webContents.updateWebContentsVisibility(Visibility.OCCLUDED);
+        } else {
+            webContents.updateWebContentsVisibility(Visibility.VISIBLE);
+        }
+    }
+
     @Override
     public final void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
         try {
@@ -947,9 +965,7 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
             // call.
             TabImplJni.get().onShow(mNativeTabAndroid);
 
-            if (getWebContents() != null) {
-                getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
-            }
+            updateWebContentsVisibility();
 
             // If the NativePage was frozen while in the background (see NativePageAssassin),
             // recreate the NativePage now.
@@ -984,10 +1000,7 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
             if (isHidden()) return;
             mIsHidden = true;
             updateInteractableState();
-
-            if (getWebContents() != null) {
-                getWebContents().updateWebContentsVisibility(Visibility.HIDDEN);
-            }
+            updateWebContentsVisibility();
 
             // Allow this tab's NativePage to be frozen if it stays hidden for a while.
             NativePageAssassin.getInstance().tabHidden(this);
@@ -1257,10 +1270,19 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     void updateWindowAndroid(WindowAndroid windowAndroid) {
         // TODO(yusufo): mWindowAndroid can never be null until crbug.com/657007 is fixed.
         assert windowAndroid != null;
+
+        if (mWindowAndroid != null) {
+            mWindowAndroid.getOcclusionSupplier().removeObserver(mOcclusionCallback);
+        }
+
         mWindowAndroid = windowAndroid;
         WebContents webContents = getWebContents();
         if (webContents != null) webContents.setTopLevelNativeWindow(mWindowAndroid);
 
+        windowAndroid.getOcclusionSupplier().addObserver(mOcclusionCallback);
+
+        // updateIsDetached will also update the web contents visibility if the
+        // occlusion has changed.
         updateIsDetached(windowAndroid);
     }
 
@@ -1714,7 +1736,7 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
                                         bounds.bottom);
                     }
                     initWebContents(webContents);
-                    webContents.updateWebContentsVisibility(Visibility.VISIBLE);
+                    updateWebContentsVisibility();
                 });
 
         if (didStartLoad) {

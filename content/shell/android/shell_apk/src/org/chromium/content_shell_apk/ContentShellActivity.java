@@ -68,7 +68,8 @@ public class ContentShellActivity extends Activity {
                         this,
                         listenToActivityState,
                         mIntentRequestTracker,
-                        /* insetObserver= */ null);
+                        /* insetObserver= */ null,
+                        /* trackOcclusion= */ true);
         mIntentRequestTracker.restoreInstanceState(savedInstanceState);
         mShellManager.setWindow(mWindowAndroid);
         // Set up the animation placeholder to be the SurfaceView. This disables the

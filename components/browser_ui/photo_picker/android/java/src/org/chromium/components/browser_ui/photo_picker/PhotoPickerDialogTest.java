@@ -139,7 +139,8 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
                                     getActivity(),
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(getActivity()),
-                                    /* insetObserver= */ null);
+                                    /* insetObserver= */ null,
+                                    /* trackOcclusion= */ true);
                         });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -203,7 +203,8 @@ public class ShareHelperMultiInstanceUnitTest {
                             mActivity,
                             /* listenToActivityState= */ false,
                             mIntentRequestTracker,
-                            /* insetObserver= */ null);
+                            /* insetObserver= */ null,
+                            /* trackOcclusion= */ true);
         }
 
         public SingleWindowTestInstance startShare() {

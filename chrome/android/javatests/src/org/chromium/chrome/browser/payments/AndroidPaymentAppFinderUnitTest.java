@@ -99,7 +99,8 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
                                     getActivity(),
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(getActivity()),
-                                    mInsetObserver);
+                                    mInsetObserver,
+                                    /* trackOcclusion= */ true);
                         });
 
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
