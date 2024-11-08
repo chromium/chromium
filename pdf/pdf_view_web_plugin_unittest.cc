@@ -2014,10 +2014,8 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInNonEditMode) {
   {
     InSequence pdf_host_sequence;
 
-    EXPECT_CALL(pdf_host_, SetPluginCanSave(false));
     EXPECT_CALL(pdf_host_, SaveUrlAs(GURL(kPdfUrl),
                                      network::mojom::ReferrerPolicy::kDefault));
-    EXPECT_CALL(pdf_host_, SetPluginCanSave(false));
   }
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);

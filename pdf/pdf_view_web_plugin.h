@@ -556,6 +556,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SaveToBuffer(const std::string& token);
   void SaveToFile(const std::string& token);
 
+  // Sets whether the plugin can and should handle the save by using `pdf_host_`
+  // to notify the browser. Prevents duplicate notifications to the browser if
+  // the state has not changed.
+  void SetPluginCanSave(bool can_save);
+
   // Converts a scroll offset (which is relative to a UI direction-dependent
   // scroll origin) to a scroll position (which is always relative to the
   // top-left corner).
@@ -701,6 +706,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 #endif
 
   bool initialized_ = false;
+
+  bool plugin_can_save_ = false;
 
   blink::WebString selected_text_;
 
