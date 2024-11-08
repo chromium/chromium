@@ -1998,6 +1998,11 @@ Permissions you've already given to websites and apps may apply to this account.
           desc="Accessibility label for the button that shows the target translate language when in translate mode. Informs the user of the current target translate language that is set on the UI which is the language the screen will be translated to.">
           Translated language: <ph name="LANGUAGE"><ex>English</ex>$1</ph>
         </message>
+        <message name="IDS_LENS_OVERLAY_SEARCH_LANGUAGE_PICKER_LABEL"
+          is_accessibility_with_no_ui="true"
+          desc="Accessibility label for the button that opens a searchbox on the language picker so the user can search through the defined languages to find one that matches the text they enter into the searchbox.">
+          Search language list
+        </message>
 
         <!-- IPH Strings -->
         <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH"
