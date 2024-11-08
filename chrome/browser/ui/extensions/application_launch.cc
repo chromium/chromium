@@ -487,6 +487,7 @@ WebContents* NavigateApplicationWindow(Browser* browser,
 
   NavigateParams nav_params(browser, url, transition);
   nav_params.disposition = disposition;
+  nav_params.pwa_navigation_capturing_force_off = true;
   Navigate(&nav_params);
 
   WebContents* const web_contents = nav_params.navigated_or_inserted_contents;
