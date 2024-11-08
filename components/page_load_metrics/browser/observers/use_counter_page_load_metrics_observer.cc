@@ -633,6 +633,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kTextEmphasis, WebDXFeature::kTextEmphasis},
           {CSSSampleId::kTextWrap, WebDXFeature::kTextWrap},
           {CSSSampleId::kTextWrapStyle, WebDXFeature::kTextWrapStyle},
+          {CSSSampleId::kOffsetPath, WebDXFeature::kMotionPath},
       }};
 
   return *kMap;
