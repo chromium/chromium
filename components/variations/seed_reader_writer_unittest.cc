@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -73,6 +74,7 @@ class SeedReaderWriterTest : public TestWithParam<SeedReaderWriterTestParams> {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
   base::FilePath temp_seed_file_path_;
   base::Thread file_writer_thread_;
   base::ScopedTempDir temp_dir_;
@@ -144,6 +146,83 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
 }
 
+// Verifies clients in SeedFiles group read seeds from the seed file.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedFileBasedSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
+  local_state_.SetString(GetParam().seed_pref, "unused seed");
+
+  // Initialize seed_reader_writer with test thread.
+  base::HistogramTester histogram_tester;
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_pref, file_writer_thread_.task_runner());
+
+  // Ensure seed data loaded from seed file.
+  ASSERT_EQ(compressed_seed, seed_reader_writer.GetSeedData());
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {"Variations.SeedFileRead.",
+           base::Contains(GetParam().seed_pref, "Safe") ? "Safe" : "Latest"}),
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+// Verifies clients in SeedFiles group do not crash if reading empty seed file.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadEmptySeedFile) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, ""));
+  local_state_.SetString(GetParam().seed_pref, "unused seed");
+
+  // Initialize seed_reader_writer with test thread.
+  base::HistogramTester histogram_tester;
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_pref, file_writer_thread_.task_runner());
+
+  // Ensure read failed due to seed file not existing.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {"Variations.SeedFileRead.",
+           base::Contains(GetParam().seed_pref, "Safe") ? "Safe" : "Latest"}),
+      /*sample=*/1, /*expected_bucket_count=*/1);
+
+  // Ensure seed data from local state prefs is loaded and decoded.
+  ASSERT_EQ("", seed_reader_writer.GetSeedData());
+}
+
+// Verifies clients in SeedFiles group read seeds from local state prefs if no
+// seed file found.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadMissingSeedFile) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Create and store seed.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  local_state_.SetString(GetParam().seed_pref,
+                         base::Base64Encode(compressed_seed));
+
+  // Initialize seed_reader_writer with test thread.
+  base::HistogramTester histogram_tester;
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_pref, file_writer_thread_.task_runner());
+
+  // Ensure read failed due to seed file not existing.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {"Variations.SeedFileRead.",
+           base::Contains(GetParam().seed_pref, "Safe") ? "Safe" : "Latest"}),
+      /*sample=*/0, /*expected_bucket_count=*/1);
+
+  // Ensure seed data from local state prefs is loaded and decoded.
+  ASSERT_EQ(compressed_seed, seed_reader_writer.GetSeedData());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     SeedReaderWriterSeedFilesGroupTest,
@@ -205,6 +284,33 @@ TEST_P(SeedReaderWriterControlAndLocalStateOnlyGroupTest, ClearSeed) {
   // deleted.
   EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+}
+
+// Verifies clients in the control group and those using local state only read
+// seeds from Local State.
+TEST_P(SeedReaderWriterControlAndLocalStateOnlyGroupTest,
+       ReadLocalStateBasedSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Create and store seed.
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, "unused seed"));
+  local_state_.SetString(GetParam().seed_pref,
+                         base::Base64Encode(CreateCompressedVariationsSeed()));
+
+  // Initialize seed_reader_writer with test thread.
+  base::HistogramTester histogram_tester;
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_pref, file_writer_thread_.task_runner());
+
+  // Ensure seed data loaded from prefs, not seed file.
+  ASSERT_EQ(local_state_.GetString(GetParam().seed_pref),
+            seed_reader_writer.GetSeedData());
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {"Variations.SeedFileRead.",
+           base::Contains(GetParam().seed_pref, "Safe") ? "Safe" : "Latest"}),
+      /*expected_count=*/0);
 }
 
 INSTANTIATE_TEST_SUITE_P(

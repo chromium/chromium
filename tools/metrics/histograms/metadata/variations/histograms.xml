@@ -553,6 +553,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.SeedFileRead.{SeedFile}" enum="BooleanSuccess"
+    expires_after="2025-05-06">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the success or failure of reading a seed file, distinguishing
+    between safe seed file and latest seed file. This metric is emitted only by
+    clients in the seed file treatment group.
+
+    {SeedFile}
+  </summary>
+  <token key="SeedFile">
+    <variant name="Latest" summary="Read outcome for latest seed file."/>
+    <variant name="Safe" summary="Read outcome for safe seed file."/>
+  </token>
+</histogram>
+
 <histogram name="Variations.SeedFreshness" units="minutes"
     expires_after="2025-03-09">
   <owner>asvitkine@chromium.org</owner>

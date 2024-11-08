@@ -374,6 +374,7 @@ void VariationsSeedStore::RecordLastFetchTime(base::Time fetch_time) {
 
   // If the latest and safe seeds are identical, update the fetch time for the
   // safe seed as well.
+  // TODO(crbug.com/374947675): Use |seed_reader_writer_| to read a seed.
   if (local_state_->GetString(prefs::kVariationsCompressedSeed) ==
       kIdenticalToSafeSeedSentinel) {
     safe_seed_store_->SetFetchTime(fetch_time);
@@ -615,6 +616,7 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
                                                  std::string* seed_data) {
   std::string base64_seed_data;
   if (seed_type == SeedType::LATEST) {
+    // TODO(crbug.com/374947675): Use |seed_reader_writer_| to read a seed.
     base64_seed_data =
         local_state_->GetString(prefs::kVariationsCompressedSeed);
   } else {
@@ -712,6 +714,7 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
 #if BUILDFLAG(IS_ANDROID)
   // If currently we do not have any stored pref then we mark seed storing as
   // successful on the Java side to avoid repeated seed fetches.
+  // TODO(crbug.com/374947675): Use |seed_reader_writer_| to read a seed.
   if (local_state_->GetString(prefs::kVariationsCompressedSeed).empty() &&
       use_first_run_prefs_) {
     android::MarkVariationsSeedAsStored();
@@ -766,10 +769,11 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
     // value should be overwritten in this case, as a seed should not be
     // considered safe unless a new seed can be both received *and saved* from
     // the server.
+    // TODO(crbug.com/374947675): Use |seed_reader_writer_| to read a seed.
     std::string latest_seed =
         local_state_->GetString(prefs::kVariationsCompressedSeed);
     if (latest_seed == kIdenticalToSafeSeedSentinel) {
-      // TODO(crbug.com/369080917): Use seed_reader_writer to store a seed.
+      // TODO(crbug.com/369080917): Use |seed_reader_writer_| to store a seed.
       local_state_->SetString(prefs::kVariationsCompressedSeed,
                               previous_safe_seed);
     }
@@ -788,9 +792,10 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
 
   // As a space optimization, overwrite the stored latest seed data with an
   // alias to the safe seed, if they are identical.
+  // TODO(crbug.com/374947675): Use |seed_reader_writer_| to read a seed.
   if (seed.base64_seed_data ==
       local_state_->GetString(prefs::kVariationsCompressedSeed)) {
-    // TODO(crbug.com/369080917): Use seed_reader_writer to store a seed.
+    // TODO(crbug.com/369080917): Use |seed_reader_writer_| to store a seed.
     local_state_->SetString(prefs::kVariationsCompressedSeed,
                             kIdenticalToSafeSeedSentinel);
 

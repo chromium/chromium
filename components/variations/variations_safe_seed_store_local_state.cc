@@ -58,8 +58,7 @@ void VariationsSafeSeedStoreLocalState::SetTimeForStudyDateChecks(
 }
 
 std::string VariationsSafeSeedStoreLocalState::GetCompressedSeed() const {
-  // TODO(crbug.com/374947675): Support reading the compressed unencoded seed
-  // from the new seed file.
+  // TODO(crbug.com/374947675): Use |seed_reader_writer_| to read a seed.
   return local_state_->GetString(prefs::kVariationsSafeCompressedSeed);
 }
 
