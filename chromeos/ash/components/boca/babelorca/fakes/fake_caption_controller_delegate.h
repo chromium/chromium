@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_CAPTION_CONTROLLER_DELEGATE_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_CAPTION_CONTROLLER_DELEGATE_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -44,6 +45,8 @@ class FakeCaptionControllerDelegate : public CaptionController::Delegate {
 
   void RemoveCaptionStyleObserver(ui::NativeThemeObserver* observer) override;
 
+  size_t GetCreateBubbleControllerCount();
+
   ui::NativeThemeObserver* GetCaptionStyleObserver();
 
   size_t GetOnAudioStreamEndCount();
@@ -68,6 +71,7 @@ class FakeCaptionControllerDelegate : public CaptionController::Delegate {
  private:
   bool caption_bubble_alive_ = false;
   bool on_transcritption_success_ = true;
+  size_t create_bubble_controller_count_ = 0;
   size_t audio_stream_end_count_ = 0;
   std::vector<std::optional<ui::CaptionStyle>> caption_style_updates_;
   std::vector<media::SpeechRecognitionResult> transcriptions_;

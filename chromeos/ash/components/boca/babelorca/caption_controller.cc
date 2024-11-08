@@ -112,6 +112,14 @@ bool CaptionController::DispatchTranscription(
   if (!caption_bubble_controller_) {
     return false;
   }
+  bool success = caption_bubble_controller_->OnTranscription(
+      caption_bubble_context_.get(), result);
+  if (success) {
+    return true;
+  }
+  // Rebuild caption bubble in case it was closed.
+  caption_bubble_controller_ = delegate_->CreateCaptionBubbleController(
+      profile_prefs_, application_locale_);
   return caption_bubble_controller_->OnTranscription(
       caption_bubble_context_.get(), result);
 }

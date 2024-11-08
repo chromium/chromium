@@ -71,6 +71,7 @@ FakeCaptionControllerDelegate::CreateCaptionBubbleController(
     PrefService*,
     const std::string&) {
   caption_bubble_alive_ = true;
+  ++create_bubble_controller_count_;
   return std::make_unique<FakeCaptionBubbleController>(this);
 }
 
@@ -82,6 +83,10 @@ void FakeCaptionControllerDelegate::AddCaptionStyleObserver(
 void FakeCaptionControllerDelegate::RemoveCaptionStyleObserver(
     ui::NativeThemeObserver* observer) {
   style_observer_ = nullptr;
+}
+
+size_t FakeCaptionControllerDelegate::GetCreateBubbleControllerCount() {
+  return create_bubble_controller_count_;
 }
 
 ui::NativeThemeObserver*

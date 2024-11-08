@@ -98,6 +98,7 @@ TEST(CaptionControllerTest, DispatchBeforeStartLiveCaption) {
       media::SpeechRecognitionResult("transcript", /*is_final=*/true));
 
   EXPECT_FALSE(dispatch_success);
+  EXPECT_EQ(delegate_ptr->GetCreateBubbleControllerCount(), 0u);
   EXPECT_THAT(delegate_ptr->GetCaptionStyleObserver(), testing::IsNull());
 }
 
@@ -115,6 +116,7 @@ TEST(CaptionControllerTest, DispatchTranscription) {
   bool success = caption_controller.DispatchTranscription(transcript);
 
   EXPECT_TRUE(success);
+  EXPECT_EQ(delegate_ptr->GetCreateBubbleControllerCount(), 1u);
   ASSERT_EQ(delegate_ptr->GetTranscriptions().size(), 1u);
   EXPECT_EQ(delegate_ptr->GetTranscriptions().at(0), transcript);
 }
@@ -122,9 +124,11 @@ TEST(CaptionControllerTest, DispatchTranscription) {
 TEST(CaptionControllerTest, DispatchAfterStopLiveCaption) {
   TestingPrefServiceSimple pref_service;
   RegisterPrefs(&pref_service);
+  auto delegate = std::make_unique<FakeCaptionControllerDelegate>();
+  auto* delegate_ptr = delegate.get();
   CaptionController caption_controller(
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
-      std::make_unique<FakeCaptionControllerDelegate>());
+      std::move(delegate));
 
   caption_controller.StartLiveCaption();
   caption_controller.StopLiveCaption();
@@ -132,6 +136,7 @@ TEST(CaptionControllerTest, DispatchAfterStopLiveCaption) {
       media::SpeechRecognitionResult("transcript", /*is_final=*/true));
 
   EXPECT_FALSE(dispatch_success);
+  EXPECT_EQ(delegate_ptr->GetCreateBubbleControllerCount(), 1u);
 }
 
 TEST(CaptionControllerTest, OnAudioStreamEndBeforeStart) {
@@ -232,6 +237,27 @@ TEST(CaptionControllerTest, NoCaptionStyleUpdatesAfterStopLiveCaption) {
                            base::Value("10%"));
 
   EXPECT_THAT(delegate_ptr->GetCaptionStyleObserver(), testing::IsNull());
+}
+
+TEST(CaptionControllerTest, DispatchTranscriptionFailed) {
+  TestingPrefServiceSimple pref_service;
+  RegisterPrefs(&pref_service);
+  auto delegate = std::make_unique<FakeCaptionControllerDelegate>();
+  auto* delegate_ptr = delegate.get();
+  CaptionController caption_controller(
+      /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
+      std::move(delegate));
+
+  caption_controller.StartLiveCaption();
+  delegate_ptr->SetOnTranscriptionSuccess(/*success=*/false);
+  media::SpeechRecognitionResult transcript("transcript", /*is_final=*/true);
+  bool success = caption_controller.DispatchTranscription(transcript);
+
+  EXPECT_FALSE(success);
+  EXPECT_EQ(delegate_ptr->GetCreateBubbleControllerCount(), 2u);
+  ASSERT_EQ(delegate_ptr->GetTranscriptions().size(), 2u);
+  EXPECT_EQ(delegate_ptr->GetTranscriptions().at(0), transcript);
+  EXPECT_EQ(delegate_ptr->GetTranscriptions().at(1), transcript);
 }
 
 }  // namespace
