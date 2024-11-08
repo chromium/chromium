@@ -20,6 +20,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/numerics/checked_math.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/elapsed_timer.h"
@@ -93,6 +94,15 @@ void RecordSessionRestorationFetcherHasDataForSource(
   }
 }
 
+// Clamps `last_committed_item_index` so that it is in range [0; count-1] or
+// -1 if count is zero.
+int ClampLastCommittedItemIndex(int last_committed_item_index, int count) {
+  const int val = std::min(std::max(last_committed_item_index, 0), count - 1);
+  CHECK_GE(val, -1);
+  CHECK_LT(val, count);
+  return val;
+}
+
 }  // namespace
 
 namespace web {
@@ -144,7 +154,14 @@ void NavigationManagerImpl::SerializeToProto(
     last_committed_item_index = count - 1;
   }
 
-  DCHECK_LT(last_committed_item_index, count);
+  // Ensure that `last_committed_item_index` is in range [0; count-1] to
+  // avoid crashing when the data is loaded from disk. The index should
+  // be in that range, but as https://crbug.com/372914303 show, this
+  // invariant has sometimes been broken in the past leading to startup
+  // crashes as https://crbug.com/372926054 show. Avoid writing data that
+  // would be considered invalid on load.
+  last_committed_item_index =
+      ClampLastCommittedItemIndex(last_committed_item_index, count);
 
   // As some items may be skipped during serialization (e.g. because their
   // URL is too large, or they were marked "to skip during serialisation")
@@ -922,8 +939,14 @@ void NavigationManagerImpl::Restore(
     std::vector<std::unique_ptr<NavigationItem>> items) {
   WillRestore(items.size());
 
-  DCHECK_LT(last_committed_item_index, static_cast<int>(items.size()));
-  DCHECK(items.empty() || last_committed_item_index >= 0);
+  // Ensure that last_committed_item_index is in range [0; items.size()-1]
+  // to avoid crashing if the data loaded from disk in invalid. This could
+  // happen if the data is corrupt, tampered with or if it was written by a
+  // version of the application with a bug e.g. https://crbug.com/372914303.
+  // See https://crbug.com/372926054 for a crash caused by the invariant
+  // not being respected.
+  last_committed_item_index = ClampLastCommittedItemIndex(
+      last_committed_item_index, base::saturated_cast<int>(items.size()));
 
   if (!web_view_cache_.IsAttachedToWebView())
     web_view_cache_.ResetToAttached();
