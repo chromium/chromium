@@ -207,8 +207,8 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // The chips are owned by either primary or secondary row.
   std::vector<raw_ptr<BirchChipButtonBase>> chips_;
 
-  // The chip which is waiting to be attached.
-  std::unique_ptr<BirchChipButtonBase> chip_to_attach_;
+  // The chips which are waiting to be attached.
+  base::circular_deque<std::unique_ptr<BirchChipButtonBase>> chips_to_attach_;
 
   // Called after relayout.
   RelayoutCallback relayout_callback_;

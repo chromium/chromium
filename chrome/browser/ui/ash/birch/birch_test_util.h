@@ -18,6 +18,9 @@ void EnsureItemRemoverInitialized();
 // Returns the button from the birch chip bar. Asserts there is only one button.
 BirchChipButtonBase* GetBirchChipButton();
 
+// Returns the number of chip buttons on birch bar.
+size_t GetBirchChipsNum();
+
 // Disables all data type prefs except the given exceptions.
 void DisableAllDataTypePrefsExcept(std::vector<std::string_view> exceptions);
 

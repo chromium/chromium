@@ -108,18 +108,18 @@ class TestBirchItem : public BirchItem {
 ////////////////////////////////////////////////////////////////////////////////
 // BirchBarTest:
 // The test class of birch bar with Forest feature enabled by default.
-class BirchBarTest : public AshTestBase {
+class BirchBarTestBase : public AshTestBase {
  public:
-  BirchBarTest() {
+  BirchBarTestBase() {
     feature_list_.InitWithFeatures(
         {features::kForestFeature, features::kBirchWeather,
          features::kCoralFeature},
         {});
   }
 
-  BirchBarTest(const BirchBarTest&) = delete;
-  BirchBarTest& operator=(const BirchBarTest&) = delete;
-  ~BirchBarTest() override = default;
+  BirchBarTestBase(const BirchBarTestBase&) = delete;
+  BirchBarTestBase& operator=(const BirchBarTestBase&) = delete;
+  ~BirchBarTestBase() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -328,6 +328,18 @@ class BirchBarTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+// Adds a mock clock override to the test since the time may impact the ranking
+// of the chips.
+class BirchBarTest : public BirchBarTestBase {
+ public:
+  BirchBarTest() = default;
+  BirchBarTest(const BirchBarTest&) = delete;
+  BirchBarTest& operator=(const BirchBarTest&) = delete;
+  ~BirchBarTest() override = default;
+
+ private:
   // Ensure base::Time::Now() is a fixed value.
   base::ScopedMockClockOverride mock_clock_override_;
 };
@@ -631,53 +643,6 @@ TEST_F(BirchBarMenuTest, RemoveChip) {
   LeftClickOn(hide_suggestion_item);
   // Check if the item is removed and the chips on both bars get updated.
   chips_match_items(3);
-}
-
-// Tests that there is no crash when removing a chip.
-TEST_F(BirchBarMenuTest, NoCrashOnRemovingChip) {
-  // Create 4 suggestions with different item types.
-  SetWeatherItems(/*num=*/1);
-  SetCalendarItems(/*num=*/1);
-  SetFileItems(/*num=*/1);
-  SetTabItems(/*num=*/1);
-
-  // Enter Overview and check the two bar views are created.
-  EnterOverview();
-
-  aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
-  OverviewGridTestApi grid_test_api(root_window);
-
-  ASSERT_TRUE(grid_test_api.birch_bar_view());
-
-  // Cache the chips on the bar.
-  const auto& chips = grid_test_api.GetBirchChips();
-
-  // There should be 4 chips on the bar.
-  EXPECT_EQ(4u, chips.size());
-
-  // Remove the third chip on the first bar view.
-  // Right clicking on the second chip of first bar view to show the context
-  // menu.
-  RightClickOn(chips[2]);
-
-  auto* model_adapter = GetBirchBarChipMenuModelAdaper();
-  EXPECT_TRUE(model_adapter->IsShowingMenu());
-
-  // Hiding the third suggestion by selecting the corresponding menu item.
-  const auto* hide_suggestion_item =
-      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
-  EXPECT_EQ(hide_suggestion_item->GetCommand(),
-            base::to_underlying(
-                BirchChipContextMenuModel::CommandId::kHideSuggestion));
-
-  ui::LayerAnimationStoppedWaiter animation_waiter;
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  LeftClickOn(hide_suggestion_item);
-  animation_waiter.Wait(chips[2]->layer());
-
-  // There should be 3 chips on the bar after animation without crash.
-  EXPECT_EQ(3u, chips.size());
 }
 
 // Regression test to confirm there is no crash when removing a chip from a two
@@ -1508,6 +1473,124 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsByTappingChipMenu) {
   // Select the calendar.
   GestureTapOn(calendar_checkbox);
   EXPECT_TRUE(GetPrefService()->GetBoolean(prefs::kBirchUseCalendar));
+}
+
+// The tests run with animations. Since the mock clock will be blocked by the
+// animation waiter, we don't use it in the tests.
+class BirchBarAnimationTest : public BirchBarTestBase {
+ public:
+  BirchBarAnimationTest() = default;
+  BirchBarAnimationTest(const BirchBarAnimationTest&) = delete;
+  BirchBarAnimationTest& operator=(const BirchBarAnimationTest&) = delete;
+  ~BirchBarAnimationTest() override = default;
+
+ protected:
+  const std::vector<std::unique_ptr<BirchItem>>& GetItems() const {
+    return BirchBarController::Get()->items_;
+  }
+
+  // Remove the item and its related chips from current birch bars at given
+  // `pos`.
+  void RemoveItem(size_t pos) {
+    auto* birch_bar_controller = BirchBarController::Get();
+    ASSERT_LT(pos, birch_bar_controller->items_.size());
+    auto iter = birch_bar_controller->items_.begin() + pos;
+    birch_bar_controller->RemoveItemChips(iter->get());
+    birch_bar_controller->items_.erase(iter);
+  }
+
+  void WaitLayerAnimationEnd(ui::Layer* layer) {
+    ASSERT_TRUE(layer->GetAnimator()->is_animating());
+    ui::LayerAnimationStoppedWaiter().Wait(layer);
+  }
+};
+
+// Tests that there is no crash when removing a chip.
+TEST_F(BirchBarAnimationTest, NoCrashOnRemovingChip) {
+  // Create 4 suggestions with different item types.
+  SetWeatherItems(/*num=*/1);
+  SetCalendarItems(/*num=*/1);
+  SetFileItems(/*num=*/1);
+  SetTabItems(/*num=*/1);
+
+  // Enter Overview and check the two bar views are created.
+  EnterOverview();
+
+  aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
+  OverviewGridTestApi grid_test_api(root_window);
+
+  ASSERT_TRUE(grid_test_api.birch_bar_view());
+
+  // Cache the chips on the bar.
+  const auto& chips = grid_test_api.GetBirchChips();
+
+  // There should be 4 chips on the bar.
+  EXPECT_EQ(4u, chips.size());
+
+  // Cache the third chip before removing.
+  auto* chip_3 = chips[2].get();
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  RemoveItem(2);
+  WaitLayerAnimationEnd(chip_3->layer());
+
+  // There should be 3 chips on the bar after animation without crash.
+  EXPECT_EQ(3u, chips.size());
+}
+
+// Tests that consecutively removing chips works correctly.
+TEST_F(BirchBarAnimationTest, RemoveMultipleChips) {
+  // Create 6 suggestions with different item types.
+  SetWeatherItems(/*num=*/1);
+  SetCalendarItems(/*num=*/3);
+  SetFileItems(/*num=*/1);
+  SetTabItems(/*num=*/1);
+
+  // Enter Overview and check the bar view is created.
+  EnterOverview();
+
+  aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
+  OverviewGridTestApi grid_test_api(root_window);
+
+  ASSERT_TRUE(grid_test_api.birch_bar_view());
+
+  // There should be 6 items in the controller.
+  EXPECT_EQ(6u, GetItems().size());
+
+  // There should be 4 chips on the bar corresponding to the first 4 items.
+  EXPECT_EQ(4u, grid_test_api.GetBirchChips().size());
+
+  // The 5th and 6th items should not be on the bar.
+  const auto* item_5 = GetItems()[4].get();
+  EXPECT_TRUE(std::ranges::none_of(
+      grid_test_api.GetBirchChips(),
+      [&item_5](const auto& chip) { return chip->GetItem() == item_5; }));
+  const auto* item_6 = GetItems()[5].get();
+  EXPECT_TRUE(std::ranges::none_of(
+      grid_test_api.GetBirchChips(),
+      [&item_6](const auto& chip) { return chip->GetItem() == item_6; }));
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Cache the third chip view before removing.
+  auto* chip_4 = grid_test_api.GetBirchChips()[3].get();
+
+  // Remove the chip corresponding to original second item.
+  RemoveItem(1);
+  // Remove the chip corresponding to original fourth item.
+  RemoveItem(2);
+
+  // Wait until the third chip fades out.
+  WaitLayerAnimationEnd(chip_4->layer());
+
+  // There should still be 4 chips on the bar.
+  EXPECT_EQ(4u, grid_test_api.GetBirchChips().size());
+
+  // The last two chips on the bar correspond to the original 5th and 6th items.
+  EXPECT_EQ(grid_test_api.GetBirchChips()[2]->GetItem(), item_5);
+  EXPECT_EQ(grid_test_api.GetBirchChips()[3]->GetItem(), item_6);
 }
 
 // The parameter structure for birch bar responsive layout tests.

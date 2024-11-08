@@ -262,8 +262,8 @@ void BirchBarView::ShutdownChips() {
     chip->Shutdown();
   }
 
-  if (chip_to_attach_) {
-    chip_to_attach_->Shutdown();
+  for (auto& chip_to_attach : chips_to_attach_) {
+    chip_to_attach->Shutdown();
   }
 }
 
@@ -373,10 +373,10 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
 
   // Create a new chip for the attached item.
   if (attached_item) {
-    chip_to_attach_ = views::Builder<BirchChipButton>()
-                          .Init(attached_item)
-                          .SetPreferredSize(chip_size_)
-                          .Build();
+    chips_to_attach_.push_back(views::Builder<BirchChipButton>()
+                                   .Init(attached_item)
+                                   .SetPreferredSize(chip_size_)
+                                   .Build());
   }
 
   // Apply fading-out animation to the chip being removed.
@@ -465,7 +465,7 @@ void BirchBarView::Clear() {
     RemoveChildViewT(std::exchange(secondary_row_, nullptr));
   }
 
-  chip_to_attach_.reset();
+  chips_to_attach_.clear();
 
   if (state_ == State::kShuttingDown) {
     Relayout(RelayoutReason::kClearOnDisabled);
@@ -726,8 +726,9 @@ void BirchBarView::RemoveChipFromOneRowBar(BirchChipButtonBase* removing_chip) {
   // Remove the chip from its owner.
   removing_chip->parent()->RemoveChildViewT(removing_chip);
 
-  if (chip_to_attach_) {
-    AttachChip(std::move(chip_to_attach_));
+  if (!chips_to_attach_.empty()) {
+    AttachChip(std::move(chips_to_attach_.front()));
+    chips_to_attach_.pop_front();
     // Attaching a chip after removing will not change the bar widget bounds
     // such that chips bounds will not get updated immediately. However, to
     // perform sliding animation, we need to get the chips target bounds to
@@ -762,8 +763,9 @@ void BirchBarView::RemoveChipFromTwoRowsBar(
     BirchChipButtonBase* removing_chip) {
   // TODO(zxdan): implement the animation when the motion spec is ready.
   removing_chip->parent()->RemoveChildViewT(removing_chip);
-  if (chip_to_attach_) {
-    AttachChip(std::move(chip_to_attach_));
+  if (!chips_to_attach_.empty()) {
+    AttachChip(std::move(chips_to_attach_.front()));
+    chips_to_attach_.erase(chips_to_attach_.begin());
   } else {
     Relayout(RelayoutReason::kAddRemoveChip);
   }

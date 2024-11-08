@@ -116,6 +116,7 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   }
 
  private:
+  friend class BirchBarAnimationTest;
   friend class BirchBarMenuTest;
 
   // Fetches data from birch model if there is no fetching in progress.

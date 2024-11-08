@@ -505,6 +505,63 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseTabAppUpdateChip) {
   EXPECT_FALSE(GetBirchChipButton());
 }
 
+// Tests that closing a window which contains all the items in two groups would
+// remove corresponding coral chips.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseWindowRemoveTwoChips) {
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+
+  // Create a browser containing 8 tabs.
+  test::CreateAndShowBrowser(
+      primary_profile,
+      {GURL("https://mail.google.com"), GURL("https://youtube.com"),
+       GURL("https://google.com"), GURL("https://earth.google.com"),
+       GURL("https://maps.google.com"), GURL("https://docs.google.com"),
+       GURL("https://calendar.google.com"), GURL("https://chat.google.com")});
+  // Create another browser to keep staying in Overview after removing the first
+  // one.
+  test::CreateAndShowBrowser(primary_profile,
+                             {GURL("https://meet.google.com")});
+
+  // Create a fake coral group which contains non-duplicated tabs and apps.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"mail.google.com", GURL("https://mail.google.com")},
+                       {"youtube.com", GURL("https://youtube.com")},
+                       {"google.com", GURL("https://google.com")},
+                       {"earth.google.com", GURL("https://earth.google.com")}},
+                      "Coral desk 1", /*id=*/base::Token(1, 2)));
+  test_groups.push_back(CreateTestGroup(
+      {{"maps.google.com", GURL("https://maps.google.com")},
+       {"docs.google.com", GURL("https://docs.google.com")},
+       {"calendar.google.com", GURL("https://calendar.google.com")},
+       {"chat.google.com", GURL("https://chat.google.com")}},
+      "Coral desk 2", /*id=*/base::Token(2, 3)));
+
+  OverrideTestResponse(std::move(test_groups));
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with two coral chips.
+  ASSERT_EQ(GetBirchChipsNum(), 2u);
+
+  // Closing the first browser with all items in groups.
+  SelectFirstBrowser();
+  EXPECT_EQ(8, browser()->tab_strip_model()->GetTabCount());
+  CloseBrowserSynchronously(browser());
+
+  // Two chips are removed.
+  EXPECT_EQ(GetBirchChipsNum(), 0u);
+}
+
 // Tests that the same coral chip will not show up again if we just created a
 // desk from it.
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, NoRepeatChipAfterLaunchGroup) {
@@ -530,7 +587,6 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, NoRepeatChipAfterLaunchGroup) {
                        {"YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"},
                        {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
                       "Coral desk"));
-
   OverrideTestResponse(std::move(test_groups));
 
   // Set up a callback for a birch data fetch.
