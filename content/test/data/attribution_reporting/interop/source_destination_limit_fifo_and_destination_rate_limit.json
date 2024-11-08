@@ -1,7 +1,6 @@
 {
   "description": "Source destination limit with FIFO and destination rate-limit both hit",
   "api_config": {
-    "needs_source_destination_limit": true,
     "max_destinations_per_source_site_reporting_site": "1",
     "max_destinations_per_rate_limit_window": "2",
     "max_destinations_per_rate_limit_window_reporting_site": "2"

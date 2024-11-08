@@ -24,7 +24,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
@@ -41,7 +40,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/privacy_math.h"
@@ -4530,15 +4528,7 @@ TEST_F(AttributionResolverTest, ProcessAggregatableDebugReport_SourceId) {
   }
 }
 
-class AttributionResolverSourceDestinationLimitTest
-    : public AttributionResolverTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      attribution_reporting::features::kAttributionSourceDestinationLimit};
-};
-
-TEST_F(AttributionResolverSourceDestinationLimitTest,
-       PerDayLimitReached_SourceDropped) {
+TEST_F(AttributionResolverTest, PerDayLimitReached_SourceDropped) {
   delegate()->set_destination_rate_limit({
       .max_per_reporting_site_per_day = 1,
   });
@@ -4572,8 +4562,7 @@ TEST_F(AttributionResolverSourceDestinationLimitTest,
             StorableSource::Result::kSuccess);
 }
 
-TEST_F(AttributionResolverSourceDestinationLimitTest,
-       LimitHit_DestinationDeactivated) {
+TEST_F(AttributionResolverTest, LimitHit_DestinationDeactivated) {
   delegate()->set_max_destinations_per_source_site_reporting_site(1);
 
   EXPECT_THAT(
@@ -4602,8 +4591,7 @@ TEST_F(AttributionResolverSourceDestinationLimitTest,
               UnorderedElementsAre(SourceEventIdIs(2)));
 }
 
-TEST_F(AttributionResolverSourceDestinationLimitTest,
-       PriorityTooLow_SourceDropped) {
+TEST_F(AttributionResolverTest, PriorityTooLow_SourceDropped) {
   delegate()->set_max_destinations_per_source_site_reporting_site(1);
 
   EXPECT_THAT(
@@ -4636,8 +4624,7 @@ TEST_F(AttributionResolverSourceDestinationLimitTest,
               UnorderedElementsAre(SourceEventIdIs(1)));
 }
 
-TEST_F(AttributionResolverSourceDestinationLimitTest,
-       LimitHit_EventLevelReportNotDeleted) {
+TEST_F(AttributionResolverTest, LimitHit_EventLevelReportNotDeleted) {
   delegate()->set_max_destinations_per_source_site_reporting_site(1);
 
   EXPECT_THAT(
@@ -4676,8 +4663,7 @@ TEST_F(AttributionResolverSourceDestinationLimitTest,
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1));
 }
 
-TEST_F(AttributionResolverSourceDestinationLimitTest,
-       LimitHit_AggregatableReportDeleted) {
+TEST_F(AttributionResolverTest, LimitHit_AggregatableReportDeleted) {
   delegate()->set_rate_limits([]() {
     AttributionConfig::RateLimitConfig r;
     r.max_attributions = 1;
@@ -4736,8 +4722,7 @@ TEST_F(AttributionResolverSourceDestinationLimitTest,
             AttributionTrigger::AggregatableResult::kSuccess);
 }
 
-TEST_F(AttributionResolverSourceDestinationLimitTest,
-       LimitHit_FakeReportDeleted) {
+TEST_F(AttributionResolverTest, LimitHit_FakeReportDeleted) {
   delegate()->set_rate_limits([]() {
     AttributionConfig::RateLimitConfig r;
     r.max_attributions = 1;
@@ -4817,7 +4802,7 @@ TEST_F(AttributionResolverSourceDestinationLimitTest,
 }
 
 TEST_F(
-    AttributionResolverSourceDestinationLimitTest,
+    AttributionResolverTest,
     LimitHitAndDestinationGlobalRateLimitHit_DestinationDeactivatedAndSourceDropped) {
   delegate()->set_max_destinations_per_source_site_reporting_site(1);
   delegate()->set_destination_rate_limit([]() {
@@ -4847,8 +4832,7 @@ TEST_F(
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 }
 
-TEST_F(AttributionResolverSourceDestinationLimitTest,
-       DestinationLimitResultMetrics) {
+TEST_F(AttributionResolverTest, DestinationLimitResultMetrics) {
   delegate()->set_max_destinations_per_source_site_reporting_site(1);
 
   StorableSource source =

@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,7 +27,6 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -85,21 +83,13 @@ enum class DestinationLimitResult {
 
 DestinationLimitResult GetDestinationLimitResult(
     const std::vector<StoredSource::Id>& sources_to_deactivate) {
-  const bool destination_limit_hit = !sources_to_deactivate.empty();
-
-  if (!base::FeatureList::IsEnabled(attribution_reporting::features::
-                                        kAttributionSourceDestinationLimit)) {
-    return destination_limit_hit ? DestinationLimitResult::kNotAllowed
-                                 : DestinationLimitResult::kAllowed;
-  }
-
   DestinationLimitResult result =
-      destination_limit_hit
-          ? (base::Contains(sources_to_deactivate,
+      sources_to_deactivate.empty()
+          ? DestinationLimitResult::kAllowed
+          : (base::Contains(sources_to_deactivate,
                             StoredSource::Id(RateLimitTable::kUnsetRecordId))
                  ? DestinationLimitResult::kNotAllowed
-                 : DestinationLimitResult::kAllowedLimitHit)
-          : DestinationLimitResult::kAllowed;
+                 : DestinationLimitResult::kAllowedLimitHit);
 
   base::UmaHistogramEnumeration("Conversions.SourceDestinationLimitResult",
                                 result);
@@ -340,8 +330,6 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
-  if (base::FeatureList::IsEnabled(attribution_reporting::features::
-                                       kAttributionSourceDestinationLimit)) {
     switch (storage_.SourceAllowedForDestinationPerDayRateLimit(source,
                                                                 source_time)) {
       case RateLimitResult::kAllowed:
@@ -354,7 +342,6 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
       case RateLimitResult::kError:
         return make_result(StoreSourceResult::InternalError());
     }
-  }
 
   base::expected<std::vector<StoredSource::Id>, RateLimitTable::Error>
       source_ids_to_deactivate =

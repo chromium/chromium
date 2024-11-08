@@ -449,11 +449,6 @@ RunAttributionInteropSimulation(
                                       kAttributionAggregatableDebugReporting);
   }
 
-  if (run.config.needs_source_destination_limit) {
-    enabled_features.emplace_back(
-        attribution_reporting::features::kAttributionSourceDestinationLimit);
-  }
-
   if (run.config.needs_aggregatable_filtering_ids) {
     enabled_features.emplace_back(
         attribution_reporting::features::

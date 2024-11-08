@@ -185,8 +185,6 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
         *std::move(aggregatable_debug_reporting_config);
   }
 
-  if (base::FeatureList::IsEnabled(attribution_reporting::features::
-                                       kAttributionSourceDestinationLimit)) {
     ASSIGN_OR_RETURN(
         result.destination_limit_priority,
         ParseInt64(registration, kDestinationLimitPriority)
@@ -194,7 +192,6 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
         [](ParseError) {
           return SourceRegistrationError::kDestinationLimitPriorityInvalid;
         });
-  }
 
   CHECK(result.IsValid());
   CHECK(result.IsValidForSourceType(source_type));
@@ -271,10 +268,7 @@ base::Value::Dict SourceRegistration::ToJson() const {
     dict.Set(kAttributionScopes, attribution_scopes_data->ToJson());
   }
 
-  if (base::FeatureList::IsEnabled(attribution_reporting::features::
-                                       kAttributionSourceDestinationLimit)) {
     SerializeInt64(dict, kDestinationLimitPriority, destination_limit_priority);
-  }
 
   aggregatable_named_budget_defs.Serialize(dict);
 

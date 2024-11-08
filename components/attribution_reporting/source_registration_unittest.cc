@@ -497,9 +497,6 @@ TEST(SourceRegistrationTest, ToJson) {
 }
 
 TEST(SourceRegistrationTest, ParseDestinationLimitPriority) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionSourceDestinationLimit);
-
   const struct {
     const char* desc;
     const char* json;
@@ -555,9 +552,6 @@ TEST(SourceRegistrationTest, ParseDestinationLimitPriority) {
 }
 
 TEST(SourceRegistrationTest, SerializeDestinationLimit) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionSourceDestinationLimit);
-
   const DestinationSet destination = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://d.example")});
 
