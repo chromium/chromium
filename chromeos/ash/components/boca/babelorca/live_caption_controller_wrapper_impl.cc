@@ -36,4 +36,9 @@ void LiveCaptionControllerWrapperImpl::OnAudioStreamEnd() {
   live_caption_controller_->OnAudioStreamEnd(caption_bubble_context_.get());
 }
 
+void LiveCaptionControllerWrapperImpl::RestartCaptions() {
+  live_caption_controller_->ToggleLiveCaptionForBabelOrca(/*enabled=*/false);
+  live_caption_controller_->ToggleLiveCaptionForBabelOrca(/*enabled=*/true);
+}
+
 }  // namespace ash::babelorca

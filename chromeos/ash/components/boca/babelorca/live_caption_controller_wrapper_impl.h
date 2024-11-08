@@ -37,6 +37,8 @@ class LiveCaptionControllerWrapperImpl : public LiveCaptionControllerWrapper {
 
   void OnAudioStreamEnd() override;
 
+  void RestartCaptions() override;
+
  private:
   raw_ptr<captions::LiveCaptionController> live_caption_controller_;
   std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context_;

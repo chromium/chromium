@@ -27,6 +27,8 @@ class LiveCaptionControllerWrapper {
 
   virtual void OnAudioStreamEnd() = 0;
 
+  virtual void RestartCaptions() = 0;
+
  protected:
   LiveCaptionControllerWrapper() = default;
 };

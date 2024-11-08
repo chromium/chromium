@@ -169,6 +169,12 @@ void BabelOrcaProducer::OnTranscriptionResult(
   if (local_captions_enabled_) {
     bool dispatch_success =
         caption_controller_wrapper_->DispatchTranscription(result);
+    if (!dispatch_success) {
+      // Restart captions in case the bubble was closed.
+      caption_controller_wrapper_->RestartCaptions();
+      dispatch_success =
+          caption_controller_wrapper_->DispatchTranscription(result);
+    }
     // TODO(crbug.com/373692250): add dispatch attempts error limit and report
     // failure.
     VLOG_IF(1, !dispatch_success)
