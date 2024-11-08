@@ -43,7 +43,7 @@
 // button.
 - (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update;
 
-// Called to update the profile data in the fields.
+// Called to update the profile data in the fields from the settings view.
 - (void)updateProfileData;
 
 // Called when the fields need to be reconfigured.

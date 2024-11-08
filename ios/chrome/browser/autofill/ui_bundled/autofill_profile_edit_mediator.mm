@@ -14,12 +14,12 @@
 #import "components/autofill/core/browser/profile_requirement_utils.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/ios/common/features.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #import "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -42,6 +42,9 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 // Stores the address input fields.
 @property(nonatomic, strong, readonly)
     NSArray<AutofillProfileAddressField*>* inputAddressFields;
+
+// Yes, if the error section has been presented.
+@property(nonatomic, assign) BOOL errorSectionPresented;
 
 @end
 
@@ -160,6 +163,11 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 }
 
 - (void)didSaveProfileFromModal {
+  if (self.errorSectionPresented) {
+    return;
+  }
+
+  [_consumer updateProfileData];
   [_delegate didSaveProfile];
 }
 
@@ -238,6 +246,19 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
 - (NSString*)currentValueForType:(NSString*)autofillFieldType {
   return _currentValuesMap[autofillFieldType];
+}
+
+- (void)validateFieldsAndUpdateButtonStatus {
+  BOOL shouldShowError = ([self requiredFieldsWithEmptyValuesCount] > 0);
+
+  if (shouldShowError != self.errorSectionPresented) {
+    [_consumer updateErrorStatus:shouldShowError];
+    self.errorSectionPresented = shouldShowError;
+  } else if (shouldShowError) {
+    [_consumer updateErrorMessageIfRequired];
+  }
+
+  [_consumer updateButtonStatus:!shouldShowError];
 }
 
 #pragma mark - Private
@@ -387,6 +408,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
 // Populates `_currentValuesMap` on the basis of values in `_autofillProfile`.
 - (void)populateCurrentValuesMap {
+  CHECK(!self.errorSectionPresented);
   int totalFieldCount =
       [self.inputAddressFields count] + kStaticFieldsTypes.size();
   NSMutableDictionary<NSString*, NSString*>* fieldValuesMap =

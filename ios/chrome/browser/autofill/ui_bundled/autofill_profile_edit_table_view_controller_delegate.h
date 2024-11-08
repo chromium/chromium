@@ -52,6 +52,15 @@
 // Getter of the current field value for `autofillFieldType`.
 - (NSString*)currentValueForType:(NSString*)autofillFieldType;
 
+// Responsible for showing the error if a required field does not have a
+// value, or just updating the error message if multiple required fields have
+// missing values or just removing the error if all the requirements are met.
+// Also, updates the button status if the error is shown/removed.
+- (void)validateFieldsAndUpdateButtonStatus;
+
+// TODO(crbug.com/377270834): Remove once it is entirely moved to mediator.
+- (BOOL)errorSectionPresented;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_

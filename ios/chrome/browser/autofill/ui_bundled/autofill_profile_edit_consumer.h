@@ -17,6 +17,19 @@
 // an account profile or not.
 - (void)setAccountProfile:(BOOL)accountProfile;
 
+// Notifies the consumer to present/remove the error state based on
+// `shouldShowError`.
+- (void)updateErrorStatus:(BOOL)shouldShowError;
+
+// Notifies the consumer to update the error message if required.
+- (void)updateErrorMessageIfRequired;
+
+// Notifies the consumer to update the button status.
+- (void)updateButtonStatus:(BOOL)enabled;
+
+// Notifies the consumer to update the profile data.
+- (void)updateProfileData;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_PROFILE_EDIT_CONSUMER_H_

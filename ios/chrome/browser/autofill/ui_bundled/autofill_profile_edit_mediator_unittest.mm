@@ -51,12 +51,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.countrySelected = country;
 }
 
-- (void)setFieldValuesMap:
-    (NSMutableDictionary<NSString*, NSString*>*)fieldValueMap {
+- (void)updateErrorStatus:(BOOL)shouldShowError {
 }
 
-- (void)setAddressInputFields:
-    (NSArray<AutofillProfileAddressField*>*)addressInputFields {
+- (void)updateErrorMessageIfRequired {
+}
+
+- (void)updateButtonStatus:(BOOL)shouldShowError {
+}
+
+- (void)updateProfileData {
 }
 
 @end

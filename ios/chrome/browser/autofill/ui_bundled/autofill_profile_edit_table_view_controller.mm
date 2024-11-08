@@ -53,9 +53,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   // The AutofillProfileEditTableViewControllerDelegate for this ViewController.
   __weak id<AutofillProfileEditTableViewControllerDelegate> _delegate;
 
-  // Yes, if the error section has been presented.
-  BOOL _errorSectionPresented;
-
   // The shown view controller.
   __weak LegacyChromeTableViewController* _controller;
 
@@ -93,7 +90,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   if (self) {
     _delegate = delegate;
     _userEmail = userEmail;
-    _errorSectionPresented = NO;
     _accountProfile = NO;
     _controller = controller;
     _settingsView = settingsView;
@@ -106,11 +102,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (BOOL)canDismissImmediately {
-  return !_errorSectionPresented && !_edited;
+  return ![_delegate errorSectionPresented] && !_edited;
 }
 
 - (BOOL)shouldShowConfirmationDialogOnDismissBySwiping {
-  return !_errorSectionPresented && _edited;
+  return ![_delegate errorSectionPresented] && _edited;
 }
 
 #pragma mark - AutofillProfileEditHandler
@@ -119,6 +115,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [_delegate viewDidDisappear];
 }
 
+// Updates the profile via the delegate.
 - (void)updateProfileData {
   if (_dynamicallyLoadInputFieldsEnabled) {
     const std::array<AutofillProfileDetailsSectionIdentifier, 3> allSections = {
@@ -406,7 +403,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
           fieldContainsValidValue:profileItem.autofillFieldType
                     hasEmptyValue:(profileItem.textFieldValue.length == 0)
         moveToAccountFromSettings:_moveToAccountFromSettings];
-    [self validateFieldsAndChangeButtonStatus];
+    [_delegate validateFieldsAndUpdateButtonStatus];
   }
 
   [_controller reconfigureCellsForItems:@[ tableViewItem ]];
@@ -453,20 +450,72 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [self findRequiredFieldsWithEmptyValues];
 }
 
+- (void)updateErrorStatus:(BOOL)shouldShowError {
+  if (!_settingsView && !_dynamicallyLoadInputFieldsEnabled) {
+    return;
+  }
+
+  AutofillProfileDetailsSectionIdentifier addSection =
+      shouldShowError ? AutofillProfileDetailsSectionIdentifierErrorFooter
+                      : AutofillProfileDetailsSectionIdentifierFooter;
+  AutofillProfileDetailsSectionIdentifier removeSection =
+      shouldShowError ? AutofillProfileDetailsSectionIdentifierFooter
+                      : AutofillProfileDetailsSectionIdentifierErrorFooter;
+
+  [self changeFooterStatusToRemoveSection:removeSection addSection:addSection];
+}
+
+- (void)updateErrorMessageIfRequired {
+  if (!_settingsView && !_dynamicallyLoadInputFieldsEnabled) {
+    return;
+  }
+
+  if ([self shouldChangeErrorMessage]) {
+    [self
+        changeFooterStatusToRemoveSection:
+            AutofillProfileDetailsSectionIdentifierErrorFooter
+                               addSection:
+                                   AutofillProfileDetailsSectionIdentifierErrorFooter];
+  }
+}
+
+- (void)updateButtonStatus:(BOOL)enabled {
+  if (_settingsView) {
+    _controller.navigationItem.rightBarButtonItem.enabled = enabled;
+  } else {
+    if (_dynamicallyLoadInputFieldsEnabled) {
+      [_controller.tableView beginUpdates];
+
+      NSInteger section = [[_controller tableViewModel]
+          sectionForSectionIdentifier:
+              AutofillProfileDetailsSectionIdentifierButton];
+      UITableViewHeaderFooterView* footer =
+          [_controller.tableView footerViewForSection:section];
+      AutofillEditProfileButtonFooterCell* buttonFooter =
+          base::apple::ObjCCastStrict<AutofillEditProfileButtonFooterCell>(
+              footer);
+      buttonFooter.button.enabled = enabled;
+      [buttonFooter updateButtonColorBasedOnStatus];
+
+      [_controller.tableView endUpdates];
+    } else {
+      _modalSaveUpdateButton.enabled = enabled;
+      [_controller reconfigureCellsForItems:@[ _modalSaveUpdateButton ]];
+    }
+  }
+}
+
 #pragma mark - AutofillEditProfileButtonFooterDelegate
 
 - (void)didTapButton {
   CHECK(!_settingsView);
-  if (!_errorSectionPresented) {
-    [self didTapSaveButton];
-  }
+  [_delegate didSaveProfileFromModal];
 }
 
 #pragma mark - Actions
 
 - (void)didTapSaveButton {
   CHECK(!_settingsView);
-  [self updateProfileData];
   [_delegate didSaveProfileFromModal];
 }
 
@@ -704,58 +753,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                         completion:nil];
 }
 
-// Responsible for the showing the error if a required field does not have a
-// value, or just updating the error message if multiple required fields have
-// missing values or just removing the error if all the requirements are met.
-// Also, updates the button status if the error is shown.
-- (void)validateFieldsAndChangeButtonStatus {
-  BOOL shouldShowError = ([_delegate requiredFieldsWithEmptyValuesCount] > 0);
-
-  if (_settingsView || _dynamicallyLoadInputFieldsEnabled) {
-    if (shouldShowError != _errorSectionPresented) {
-      AutofillProfileDetailsSectionIdentifier addSection =
-          shouldShowError ? AutofillProfileDetailsSectionIdentifierErrorFooter
-                          : AutofillProfileDetailsSectionIdentifierFooter;
-      AutofillProfileDetailsSectionIdentifier removeSection =
-          shouldShowError ? AutofillProfileDetailsSectionIdentifierFooter
-                          : AutofillProfileDetailsSectionIdentifierErrorFooter;
-      [self changeFooterStatusToRemoveSection:removeSection
-                                   addSection:addSection];
-      _errorSectionPresented = shouldShowError;
-    } else if (shouldShowError && [self shouldChangeErrorMessage]) {
-      [self
-          changeFooterStatusToRemoveSection:
-              AutofillProfileDetailsSectionIdentifierErrorFooter
-                                 addSection:
-                                     AutofillProfileDetailsSectionIdentifierErrorFooter];
-    }
-  }
-
-  if (_settingsView) {
-    _controller.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
-  } else {
-    if (_dynamicallyLoadInputFieldsEnabled) {
-      [_controller.tableView beginUpdates];
-
-      NSInteger section = [[_controller tableViewModel]
-          sectionForSectionIdentifier:
-              AutofillProfileDetailsSectionIdentifierButton];
-      UITableViewHeaderFooterView* footer =
-          [_controller.tableView footerViewForSection:section];
-      AutofillEditProfileButtonFooterCell* buttonFooter =
-          base::apple::ObjCCastStrict<AutofillEditProfileButtonFooterCell>(
-              footer);
-      buttonFooter.button.enabled = !shouldShowError;
-      [buttonFooter updateButtonColorBasedOnStatus];
-
-      [_controller.tableView endUpdates];
-    } else {
-      _modalSaveUpdateButton.enabled = !shouldShowError;
-      [_controller reconfigureCellsForItems:@[ _modalSaveUpdateButton ]];
-    }
-  }
-}
-
 // Returns YES, if the error message needs to be changed. This happens when
 // there are multiple required fields that become empty.
 - (BOOL)shouldChangeErrorMessage {
@@ -857,7 +854,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     }
   }
 
-  [self validateFieldsAndChangeButtonStatus];
+  [_delegate validateFieldsAndUpdateButtonStatus];
   [self reconfigureCells];
 }
 
