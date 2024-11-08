@@ -179,6 +179,9 @@ BASE_FEATURE(kBatterySaver,
              "CrosBatterySaver",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Determines if BabelOrca captions are available.
+BASE_FEATURE(kBabelOrca, "BabelOrca", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Determines the behavior of the battery saver controller auto enable threshold
 // and notification timing.
 const base::FeatureParam<BatterySaverNotificationBehavior>::Option
@@ -3486,6 +3489,10 @@ bool IsBackgroundBlurEnabled() {
 #else
   return enabled_by_feature_flag;
 #endif
+}
+
+bool IsBabelOrcaAvailable() {
+  return base::FeatureList::IsEnabled(kBabelOrca);
 }
 
 bool IsBatterySaverAvailable() {

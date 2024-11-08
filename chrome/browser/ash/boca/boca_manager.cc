@@ -107,8 +107,10 @@ BocaManager::BocaManager(Profile* profile,
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetAccountId(),
       /*is_producer=*/!is_consumer);
-  babel_orca_manager_ =
-      CreateBabelOrcaManager(profile, application_locale, is_consumer);
+  if (ash::features::IsBabelOrcaAvailable()) {
+    babel_orca_manager_ =
+        CreateBabelOrcaManager(profile, application_locale, is_consumer);
+  }
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),
