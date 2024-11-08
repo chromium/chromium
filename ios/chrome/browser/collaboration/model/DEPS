@@ -5,4 +5,5 @@ include_rules = [
   "+ios/chrome/browser/saved_tab_groups/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/share_kit/model",
 ]

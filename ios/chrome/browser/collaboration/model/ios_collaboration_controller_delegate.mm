@@ -4,11 +4,20 @@
 
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 
+#import "base/check.h"
+#import "base/functional/callback.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+
 namespace collaboration {
 
-IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate() {
-  // TODO(crbug.com/377306986): Implement this.
-}
+IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
+    std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow)
+    : collaboration_flow_(std::move(collaboration_flow)) {}
 
 IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 
@@ -38,7 +47,26 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(ResultCallback result) {
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
     ResultCallback result) {
-  // TODO(crbug.com/377306986): Implement this.
+  CHECK_EQ(collaboration_flow_->type(),
+           CollaborationFlowConfiguration::Type::kShare);
+  const CollaborationFlowConfigurationShare& share_flow =
+      collaboration_flow_->As<CollaborationFlowConfigurationShare>();
+
+  if (!share_flow.tab_group()) {
+    std::move(result).Run(false);
+    return;
+  }
+
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = share_flow.tab_group().get();
+  config.baseViewController = share_flow.base_view_controller();
+  config.applicationHandler =
+      HandlerForProtocol(share_flow.command_dispatcher(), ApplicationCommands);
+  share_flow.share_kit_service()->ShareGroup(config);
+  // TODO(crbug.com/377869115): `result` should be returned when the
+  // ShareKit UI is done.
+  std::move(result).Run(true);
 }
 
 }  // namespace collaboration

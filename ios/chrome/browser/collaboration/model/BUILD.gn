@@ -8,6 +8,8 @@ source_set("model") {
     "collaboration_service_factory.mm",
     "ios_collaboration_controller_delegate.h",
     "ios_collaboration_controller_delegate.mm",
+    "ios_collaboration_flow_configuration.h",
+    "ios_collaboration_flow_configuration.mm",
   ]
 
   deps = [
@@ -18,8 +20,11 @@ source_set("model") {
     "//components/keyed_service/ios:ios",
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/saved_tab_groups/model/",
+    "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
   ]
@@ -38,9 +43,15 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/collaboration/public",
     "//components/data_sharing/public:features",
+    "//ios/chrome/browser/share_kit/model:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/fakes",
     "//ios/web/public/test",
+    "//third_party/ocmock",
   ]
 }
 

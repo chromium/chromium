@@ -9,10 +9,13 @@
 
 namespace collaboration {
 
+class CollaborationFlowConfiguration;
+
 // iOS implementation of CollaborationControllerDelegate.
 class IOSCollaborationControllerDelegate : CollaborationControllerDelegate {
  public:
-  IOSCollaborationControllerDelegate();
+  IOSCollaborationControllerDelegate(
+      std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow);
 
   IOSCollaborationControllerDelegate(
       const IOSCollaborationControllerDelegate&) = delete;
@@ -27,6 +30,9 @@ class IOSCollaborationControllerDelegate : CollaborationControllerDelegate {
   void NotifySignInAndSyncStatusChange(ResultCallback result) override;
   void ShowJoinDialog(ResultCallback result) override;
   void ShowShareDialog(ResultCallback result) override;
+
+ private:
+  std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow_;
 };
 
 }  // namespace collaboration
