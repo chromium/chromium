@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
@@ -159,8 +160,23 @@ std::u16string ScannerActionViewModel::GetText() const {
 }
 
 const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
-  // TODO(b/369470078): Replace this placeholder.
-  return kCaptureModeIcon;
+  // TODO(b/378002546): Replace these icons with finalized icons when ready.
+  switch (unpopulated_action_.action_case()) {
+    case manta::proto::ScannerAction::kNewEvent:
+      return kGlanceablesCalendarTodayIcon;
+    case manta::proto::ScannerAction::kNewContact:
+      return kShelfAddPersonButtonIcon;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      return chromeos::kFiletypeGdocIcon;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      return chromeos::kFiletypeGsheetIcon;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      return kClipboardIcon;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      // This should only be possible if `unpopulated_action_` has been
+      // previously moved.
+      NOTREACHED();
+  }
 }
 
 void ScannerActionViewModel::ExecuteAction(
