@@ -13,7 +13,6 @@ external/wpt/apng/*
 external/wpt/css/css-align/*
 external/wpt/css/css-animations/*
 external/wpt/css/css-box/*
-external/wpt/css/css-break/*
 external/wpt/css/css-color-adjust/*
 external/wpt/css/css-device-adapt/*
 external/wpt/css/css-easing/*

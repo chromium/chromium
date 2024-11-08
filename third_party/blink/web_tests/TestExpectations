@@ -2616,8 +2616,6 @@ crbug.com/377576485 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpParameters-ad
 crbug.com/377543821 [ Mac13 ] external/wpt/css/css-shapes/shape-functions/shape-function-valid.tentative.html [ Failure ]
 crbug.com/377543821 [ Mac13 ] external/wpt/webrtc/RTCRtpEncodingParameters-codec-opus-stereo.https.html [ Timeout ]
 crbug.com/377543821 [ Mac14 ] external/wpt/webrtc/RTCRtpEncodingParameters-codec-opus-stereo.https.html [ Timeout ]
-crbug.com/377543817 [ Mac14 ] external/wpt/css/css-break/overflowed-abs-pos-with-percentage-height-print.html [ Failure ]
-crbug.com/377543817 [ Linux ] external/wpt/css/css-break/overflowed-abs-pos-with-percentage-height-print.html [ Failure ]
 crbug.com/377576478 external/wpt/css/css-masking/clip-path/clip-path-shape-007.tentative.html [ Failure ]
 crbug.com/377576478 [ Win11 ] external/wpt/css/css-masking/clip-path/clip-path-shape-008.tentative.html [ Failure ]
 crbug.com/377576478 [ Win11-arm64 ] external/wpt/css/css-masking/clip-path/clip-path-shape-008.tentative.html [ Failure Timeout ]
@@ -8380,16 +8378,11 @@ crbug.com/374856213 external/wpt/digital-credentials/allow-attribute.https.html 
 crbug.com/376320405 external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
 
 # Fail or Crash after enable swiftshader on headless shell
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069c-print.html [ Failure Pass ]
 crbug.com/339041663 external/wpt/css/geometry/DOMMatrix2DInit-validate-fixup.html [ Failure Pass ]
 crbug.com/339041663 [ Linux ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Failure ]
 crbug.com/339041663 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Failure ]
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackGenerator-video.https.html [ Crash Timeout ]
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/tentative/VideoTrackGenerator.https.html [ Crash Timeout ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-060-print.html [ Failure Pass ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-063-print.html [ Failure Pass ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-064-print.html [ Failure Pass ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/transform-022-print.html [ Failure Pass ]
 # failure from enabling swiftshader on headless shell, combined with a preexisting flaky Crash/Timeout
 crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Timeout ]
 
@@ -8413,12 +8406,6 @@ crbug.com/376931817 external/wpt/file-system-access/local_FileSystemDirectoryHan
 crbug.com/376931817 external/wpt/file-system-access/local_FileSystemFileHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
 crbug.com/376931817 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
 crbug.com/376931817 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemFileHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
-
-# Gardener 2024-11-05
-crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-001c-print.html [ Failure Pass ]
-crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-001d-print.html [ Failure Pass ]
-crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-002c-print.html [ Failure Pass ]
-crbug.com/377417379 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-002d-print.html [ Failure Pass ]
 
 # Gardener 2024-11-07
 crbug.com/377172757 [ Linux ] external/wpt/event-timing/selection-autoscroll.html [ Timeout Pass ]
