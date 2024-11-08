@@ -659,4 +659,44 @@ TEST_F(DeviceRestrictionScheduleControllerTestTimeTampering,
   Mock::VerifyAndClearExpectations(&observer_);
 }
 
+// Verify that DST is handled properly (Winter -> Summer).
+TEST_F(DeviceRestrictionScheduleControllerTest, HandlingDST_WinterToSummer) {
+  // Override the local time zone to fix the DST transitions.
+  base::ScopedEnvironmentVariableOverride scoped_timezone(kTZ, "Europe/Berlin");
+  // DST starts on Sun, 31 Mar 2024 when the clock moves from 2:00 to 3:00.
+  SetTime("Sat 30 Mar 2024 12:00");
+
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true)).Times(1);
+  UpdatePolicyPref(kPolicyJson);
+  Mock::VerifyAndClearExpectations(&observer_);
+
+  // Next regular period should start at Mon 06:00.
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false))
+      .Times(1)
+      .WillOnce(EXPECT_TIME_STR("Mon 1 Apr 2024 6:00"));
+
+  AdvanceTime(base::Days(2));
+  Mock::VerifyAndClearExpectations(&observer_);
+}
+
+// Verify that DST is handled properly (Summer -> Winter).
+TEST_F(DeviceRestrictionScheduleControllerTest, HandlingDST_SummerToWinter) {
+  // Override the local time zone to fix the DST transitions.
+  base::ScopedEnvironmentVariableOverride scoped_timezone(kTZ, "Europe/Berlin");
+  // DST ends on Sun, 27 Oct 2024 when the clock moves from 3:00 to 2:00.
+  SetTime("Sat 26 Oct 2024 12:00");
+
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true)).Times(1);
+  UpdatePolicyPref(kPolicyJson);
+  Mock::VerifyAndClearExpectations(&observer_);
+
+  // Next regular period should start at Mon 06:00.
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false))
+      .Times(1)
+      .WillOnce(EXPECT_TIME_STR("Mon 28 Oct 2024 6:00"));
+
+  AdvanceTime(base::Days(2));
+  Mock::VerifyAndClearExpectations(&observer_);
+}
+
 }  // namespace policy

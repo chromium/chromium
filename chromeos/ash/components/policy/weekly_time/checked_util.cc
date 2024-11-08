@@ -15,6 +15,42 @@
 
 namespace policy::weekly_time {
 
+namespace {
+
+std::optional<base::Time> UTCToLocal(base::Time utc) {
+  base::Time::Exploded utc_exploded_local;
+  utc.LocalExplode(&utc_exploded_local);
+  if (!utc_exploded_local.HasValidValues()) {
+    return std::nullopt;
+  }
+
+  base::Time utc_exploded_local_unexploded_utc;
+  if (!base::Time::FromUTCExploded(utc_exploded_local,
+                                   &utc_exploded_local_unexploded_utc)) {
+    return std::nullopt;
+  }
+
+  return utc_exploded_local_unexploded_utc;
+}
+
+std::optional<base::Time> LocalToUTC(base::Time local) {
+  base::Time::Exploded local_exploded_utc;
+  local.UTCExplode(&local_exploded_utc);
+  if (!local_exploded_utc.HasValidValues()) {
+    return std::nullopt;
+  }
+
+  base::Time local_exploded_utc_unexploded_local;
+  if (!base::Time::FromLocalExploded(local_exploded_utc,
+                                     &local_exploded_utc_unexploded_local)) {
+    return std::nullopt;
+  }
+
+  return local_exploded_utc_unexploded_local;
+}
+
+}  // namespace
+
 std::optional<std::vector<WeeklyTimeIntervalChecked>> ExtractIntervalsFromList(
     const base::Value::List& list) {
   std::vector<WeeklyTimeIntervalChecked> intervals;
@@ -76,6 +112,22 @@ std::optional<base::TimeDelta> GetDurationToNextEvent(
     return std::nullopt;
   }
   return WeeklyTimeIntervalChecked(time, next_event.value()).Duration();
+}
+
+base::Time AddOffsetInLocalTime(base::Time utc, base::TimeDelta offset) {
+  std::optional<base::Time> local = UTCToLocal(utc);
+  if (!local.has_value()) {
+    return utc + offset;
+  }
+
+  base::Time local_with_offset = local.value() + offset;
+
+  std::optional<base::Time> utc_with_offset = LocalToUTC(local_with_offset);
+  if (!utc_with_offset.has_value()) {
+    return utc + offset;
+  }
+
+  return utc_with_offset.value();
 }
 
 }  // namespace policy::weekly_time

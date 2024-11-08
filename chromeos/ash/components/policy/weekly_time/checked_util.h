@@ -51,6 +51,15 @@ std::optional<base::TimeDelta> GetDurationToNextEvent(
     const std::vector<WeeklyTimeIntervalChecked>& intervals,
     const WeeklyTimeChecked& time);
 
+// Adds the `offset` to the passed in `utc` time, but the calculation is done in
+// local time (result = UTC(Local(utc) + offset)). This is to properly handle
+// any DST changes that might occur.
+// In case of any errors (eg. in Germany "Sun, 31 Mar 2024 02:00:00" local time
+// doesn't exist because of DST; at 2:00 the clock is moved to 3:00), does the
+// calculation in UTC time.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
+base::Time AddOffsetInLocalTime(base::Time utc, base::TimeDelta offset);
+
 }  // namespace policy::weekly_time
 
 #endif  // CHROMEOS_ASH_COMPONENTS_POLICY_WEEKLY_TIME_CHECKED_UTIL_H_

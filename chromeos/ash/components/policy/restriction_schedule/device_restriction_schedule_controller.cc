@@ -42,6 +42,7 @@ constexpr base::TimeDelta kNotificationLeadTime = base::Minutes(30);
 // with. For more details check the comment on `highest_seen_time_`.
 constexpr base::TimeDelta kMaxClockDeltaTampering = base::Days(1);
 
+using ::policy::weekly_time::AddOffsetInLocalTime;
 using ::policy::weekly_time::ExtractIntervalsFromList;
 using ::policy::weekly_time::GetDurationToNextEvent;
 using ::policy::weekly_time::GetNextEvent;
@@ -288,7 +289,7 @@ std::optional<base::Time> DeviceRestrictionScheduleController::GetNextRunTime(
     return std::nullopt;
   }
 
-  return current_time + time_to_next_run.value();
+  return AddOffsetInLocalTime(current_time, time_to_next_run.value());
 }
 
 // TODO(isandrk): Pass in `intervals_` and convert to pure function in the empty
