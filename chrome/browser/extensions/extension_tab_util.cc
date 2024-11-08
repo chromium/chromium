@@ -494,6 +494,9 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   tab_object.auto_discardable =
       !tab_lifecycle_unit_external ||
       tab_lifecycle_unit_external->IsAutoDiscardable();
+  tab_object.frozen = tab_lifecycle_unit_external &&
+                      tab_lifecycle_unit_external->GetTabState() ==
+                          ::mojom::LifecycleUnitState::FROZEN;
 
   tab_object.muted_info = CreateMutedInfo(contents);
   tab_object.incognito = contents->GetBrowserContext()->IsOffTheRecord();

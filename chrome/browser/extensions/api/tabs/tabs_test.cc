@@ -36,6 +36,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
+#include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -82,7 +83,9 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
@@ -1766,6 +1769,103 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
   EXPECT_TRUE(api_test_utils::GetBoolean(result, "discarded"));
   // The result should be scrubbed.
   EXPECT_FALSE(result.contains("url"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {
+  // Create a background tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+
+  // Create an extension.
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
+
+  // Query all tabs. Their "frozen" property should be false.
+  {
+    auto query_function = base::MakeRefCounted<TabsQueryFunction>();
+    query_function->set_extension(extension.get());
+    base::Value::List result(
+        utils::ToList(utils::RunFunctionAndReturnSingleResult(
+            query_function.get(), "[{}]", browser()->profile())));
+    ASSERT_EQ(2u, result.size());
+
+    for (auto& element : result) {
+      base::Value::Dict dict = utils::ToDict(element);
+      std::optional<bool> frozen = dict.FindBool("frozen");
+      ASSERT_TRUE(frozen.has_value());
+      EXPECT_FALSE(frozen.value());
+    }
+  }
+
+  // This implicitly creates the `TabsEventRouter`, which is required to get a
+  // tab update event.
+  TabsWindowsAPI::Get(profile())->tabs_event_router();
+
+  // Freeze the background tab and wait for a tab update event.
+  TestEventRouterObserver event_router_observer(EventRouter::Get(profile()));
+  web_contents->SetPageFrozen(true);
+  event_router_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
+
+  // Check arguments for the tab update event.
+  //
+  // Note: Must simulate dispatching to an actual extension to get arguments,
+  // because the tab details exposed vary by extension. The arguments for the
+  // event received by `WillDispatchEvent()` are empty.
+  {
+    auto event_it =
+        event_router_observer.events().find(api::tabs::OnUpdated::kEventName);
+    ASSERT_NE(event_it, event_router_observer.events().end());
+    std::optional<base::Value::List> args_out;
+    mojom::EventFilteringInfoPtr event_filtering_info_out;
+    EXPECT_TRUE(event_it->second->will_dispatch_callback.Run(
+        profile(), mojom::ContextType::kUnprivilegedExtension, extension.get(),
+        /* listener_filter=*/nullptr, args_out, event_filtering_info_out));
+    ASSERT_TRUE(args_out.has_value());
+    ASSERT_EQ(args_out->size(), 3U);
+    EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contents),
+              args_out.value()[0].GetInt());
+    auto changed_properties = utils::ToDict(args_out.value()[1]);
+    auto frozen_changed_property = changed_properties.FindBool("frozen");
+    ASSERT_TRUE(frozen_changed_property.has_value());
+    EXPECT_TRUE(frozen_changed_property.value());
+  }
+
+  // Query frozen tabs. There should be 1 and its "frozen" property should be
+  // true.
+  {
+    auto query_function = base::MakeRefCounted<TabsQueryFunction>();
+    query_function->set_extension(extension.get());
+    base::Value::List result(
+        utils::ToList(utils::RunFunctionAndReturnSingleResult(
+            query_function.get(), "[{\"frozen\": true}]",
+            browser()->profile())));
+    ASSERT_EQ(1u, result.size());
+    base::Value::Dict tab = utils::ToDict(result.front());
+    std::optional<bool> frozen = tab.FindBool("frozen");
+    ASSERT_TRUE(frozen.has_value());
+    EXPECT_TRUE(frozen.value());
+    EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contents),
+              api_test_utils::GetInteger(tab, "id"));
+  }
+
+  // Query non-frozen tabs. There should be 1 and its "frozen" property should
+  // be false.
+  {
+    auto query_function = base::MakeRefCounted<TabsQueryFunction>();
+    query_function->set_extension(extension.get());
+    base::Value::List result(
+        utils::ToList(utils::RunFunctionAndReturnSingleResult(
+            query_function.get(), "[{\"frozen\": false}]",
+            browser()->profile())));
+    ASSERT_EQ(1u, result.size());
+    std::optional<bool> frozen =
+        utils::ToDict(result.front()).FindBool("frozen");
+    ASSERT_TRUE(frozen.has_value());
+    EXPECT_FALSE(frozen.value());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {

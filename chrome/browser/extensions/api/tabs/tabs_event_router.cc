@@ -51,6 +51,7 @@ constexpr char kOldPositionKey[] = "oldPosition";
 constexpr char kOldWindowIdKey[] = "oldWindowId";
 constexpr char kPinnedKey[] = "pinned";
 constexpr char kAudibleKey[] = "audible";
+constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
 constexpr char kAutoDiscardableKey[] = "autoDiscardable";
 constexpr char kMutedInfoKey[] = "mutedInfo";
@@ -342,9 +343,13 @@ void TabsEventRouter::OnTabLifecycleStateChange(
     ::mojom::LifecycleUnitState previous_state,
     ::mojom::LifecycleUnitState new_state,
     std::optional<LifecycleUnitDiscardReason> discard_reason) {
-  if (previous_state == ::mojom::LifecycleUnitState::DISCARDED ||
-      new_state == ::mojom::LifecycleUnitState::DISCARDED) {
-    std::set<std::string> changed_property_names;
+  auto previous_or_new_state_is = [&](::mojom::LifecycleUnitState state) {
+    return previous_state == state || new_state == state;
+  };
+
+  std::set<std::string> changed_property_names;
+
+  if (previous_or_new_state_is(::mojom::LifecycleUnitState::DISCARDED)) {
     // If the "discarded" property changes, so does the "status" property:
     // - a discarded tab has status "unloaded", and will transition to "loading"
     //   on un-discarding; and,
@@ -352,6 +357,13 @@ void TabsEventRouter::OnTabLifecycleStateChange(
     //   in which case it will transition to "unloaded".
     changed_property_names.insert(kDiscardedKey);
     changed_property_names.insert(kStatusKey);
+  }
+
+  if (previous_or_new_state_is(::mojom::LifecycleUnitState::FROZEN)) {
+    changed_property_names.insert(kFrozenKey);
+  }
+
+  if (!changed_property_names.empty()) {
     DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
   }
 }

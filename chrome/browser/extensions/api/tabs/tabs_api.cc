@@ -1318,6 +1318,12 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
           resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
               web_contents);
 
+      if (!MatchesBool(params->query_info.frozen,
+                       tab_lifecycle_unit_external->GetTabState() ==
+                           ::mojom::LifecycleUnitState::FROZEN)) {
+        continue;
+      }
+
       if (!MatchesBool(params->query_info.discarded,
                        tab_lifecycle_unit_external->GetTabState() ==
                            ::mojom::LifecycleUnitState::DISCARDED)) {
