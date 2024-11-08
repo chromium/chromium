@@ -56,7 +56,7 @@
     "experiments": [],
     "limits": "fastlocal=0",
     "project": "rbe-chromium-trusted",
-    "remote_jobs": 500
+    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
