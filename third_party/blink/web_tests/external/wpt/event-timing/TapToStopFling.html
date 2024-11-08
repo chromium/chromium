@@ -32,12 +32,10 @@
     assert_equals(entries.length, 2, "two pointerdown entries should be received");
     let entry = entries[0];
     assert_equals(entry.name, 'pointerdown');
-    assert_equals(entry.interactionId, 0, '1st pointerdown event should have a \
-    0 interaction id');
+    assert_equals(entry.interactionId, 0);
     entry = entries[1];
     assert_equals(entry.name, 'pointerdown');
-    assert_equals(entry.interactionId, 0, '2nd pointerdown event should have a \
-    0 interaction id');
+    assert_equals(entry.interactionId, 0);
   }
 
   promise_test(async t => {
