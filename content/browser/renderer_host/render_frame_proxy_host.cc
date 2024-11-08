@@ -602,9 +602,14 @@ void RenderFrameProxyHost::RouteMessageEvent(
   SiteInstanceGroup* target_group = target_rfh->GetSiteInstance()->group();
 
   bool is_embedder_to_guest_communication = false;
+  // An embedder could only target a guest's main frame, so it's enough to check
+  // for the `target_rfh` having an embedder RFH.
   if (!target_rfh->GetParentOrOuterDocument()) {
     RenderFrameHostImpl* target_embedder_rfh =
         target_rfh->GetParentOrOuterDocumentOrEmbedder();
+    // Note that this is not checking that the source and target are related,
+    // but that the source is related to the embedder, allowing frames related
+    // to the embedder to also message the guest.
     if (target_embedder_rfh &&
         site_instance_group()->IsCoopRelatedSiteInstanceGroup(
             target_embedder_rfh->GetSiteInstance()->group())) {
@@ -621,6 +626,8 @@ void RenderFrameProxyHost::RouteMessageEvent(
           source_rfh->GetOutermostMainFrame();
       RenderFrameHostImpl* source_embedder_rfh =
           source_outermost_rfh->GetParentOrOuterDocumentOrEmbedder();
+      // Note that this is not checking that the source and target are related,
+      // but that the target is related to the embedder.
       if (source_embedder_rfh &&
           target_group->IsCoopRelatedSiteInstanceGroup(
               source_embedder_rfh->GetSiteInstance()->group())) {
@@ -681,6 +688,9 @@ void RenderFrameProxyHost::RouteMessageEvent(
         // We create a RenderFrameProxyHost for the embedder in the guest's
         // render process but we intentionally do not expose the embedder's
         // opener chain to it.
+        // TODO(crbug.com/40261772): Using the main frame will lead to a null
+        // event.source if a subframe posts a message to the guest. See also
+        // https://crbug.com/41172969
         CHECK(target_rfh->is_main_frame());
         source_rfh->GetMainFrame()
             ->frame_tree_node()
@@ -691,6 +701,9 @@ void RenderFrameProxyHost::RouteMessageEvent(
       } else if (is_guest_to_embedder_communication) {
         // A RenderFrameProxyHost was already created when the guest was
         // attached.
+        // We do not create proxies for the subframes of a guest. Note that the
+        // computation of `is_embedder_to_guest_communication` above assumes
+        // that guest subframes are not targetable.
       } else {
         // Ensure that we have a proxy for the source frame in the target
         // SiteInstance. If it doesn't exist, create it on demand and also
