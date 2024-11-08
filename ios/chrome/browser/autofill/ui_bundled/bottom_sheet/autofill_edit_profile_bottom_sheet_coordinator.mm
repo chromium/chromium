@@ -20,15 +20,19 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @interface AutofillEditProfileBottomSheetCoordinator () <
     AutofillCountrySelectionTableViewControllerDelegate,
     AutofillEditProfileBottomSheetTableViewControllerDelegate,
-    AutofillProfileEditMediatorDelegate>
+    AutofillProfileEditMediatorDelegate,
+    UIAdaptivePresentationControllerDelegate>
 @end
 
 @implementation AutofillEditProfileBottomSheetCoordinator {
@@ -48,6 +52,9 @@
 
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
   raw_ptr<web::WebState> _webState;
+
+  // The action sheet coordinator, if one is currently being shown.
+  ActionSheetCoordinator* _actionSheetCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:
@@ -122,9 +129,9 @@
       UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
   _navigationController.modalPresentationStyle =
       isIPad ? UIModalPresentationFormSheet : UIModalPresentationPageSheet;
-  _navigationController.modalInPresentation = YES;
   _navigationController.modalTransitionStyle =
       UIModalTransitionStyleCoverVertical;
+  _navigationController.presentationController.delegate = self;
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
@@ -136,8 +143,66 @@
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
+  _navigationController.presentationController.delegate = nil;
   _viewController = nil;
   _autofillProfileEditMediator = nil;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return [_autofillProfileEditTableViewController canDismissImmediately];
+}
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self didCancelBottomSheetView];
+}
+
+- (void)presentationControllerDidAttemptToDismiss:
+    (UIPresentationController*)presentationController {
+  if (![_autofillProfileEditTableViewController
+          shouldShowConfirmationDialogOnDismissBySwiping]) {
+    return;
+  }
+
+  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:_navigationController.topViewController
+                         browser:self.browser
+                           title:nil
+                         message:nil
+                   barButtonItem:_navigationController.topViewController
+                                     .navigationItem.leftBarButtonItem];
+
+  __weak __typeof(self) weakSelf = self;
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                  // TODO(crbug.com/377270834): Add functionality to save.
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                  [weakSelf didCancelBottomSheetView];
+                }
+                 style:UIAlertActionStyleDestructive];
+
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
+
+  [_actionSheetCoordinator start];
 }
 
 #pragma mark - AutofillProfileEditMediatorDelegate
@@ -248,6 +313,11 @@
           FromInfobarDelegate(infobar->delegate());
 
   return delegate;
+}
+
+- (void)dismissActionSheetCoordinator {
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = nil;
 }
 
 @end

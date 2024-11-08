@@ -53,6 +53,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

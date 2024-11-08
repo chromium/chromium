@@ -119,6 +119,10 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
                     grey_kindOfClass([UITextField class]), nil);
 }
 
+id<GREYMatcher> EditProfileBottomSheet() {
+  return grey_accessibilityID(kEditProfileBottomSheetViewIdentfier);
+}
+
 }  // namespace
 
 @interface SaveProfileEGTest : ChromeTestCase
@@ -139,7 +143,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
   if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)] ||
       [self
-          isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)]) {
+          isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)] ||
+      [self isRunningTest:@selector(testEditBottomSheetAlertBySwipingDown)]) {
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
@@ -535,6 +540,48 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   // prompt.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+}
+
+// Tests that there is an alert shown if the user tries to dismiss an alert
+// after they edited a field in the edit prompt without saving.
+- (void)testEditBottomSheetAlertBySwipingDown {
+  // TODO(crbug.com/377270834): Fix implementation on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
+  }
+
+  // Fill and submit the form.
+  [self fillPresidentProfileAndShowSaveModal];
+
+  // Edit the profile.
+  [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Replace city field value.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(@"City")]
+      performAction:grey_replaceText(@"New York")];
+
+  // Swipe down the sheet.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  id<GREYMatcher> keepEditingAlert = grey_text(
+      l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES));
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:keepEditingAlert];
+
+  // Keep editing.
+  [[EarlGrey selectElementWithMatcher:keepEditingAlert]
+      performAction:grey_tap()];
+
+  // Swipe down the sheet again.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the save changes button exists.
+  id<GREYMatcher> saveChangesAlert = grey_text(
+      l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:saveChangesAlert];
 }
 
 @end

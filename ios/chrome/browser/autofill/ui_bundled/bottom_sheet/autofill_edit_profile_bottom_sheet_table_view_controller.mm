@@ -76,6 +76,7 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
   cancelButton.accessibilityIdentifier = kEditProfileBottomSheetCancelButton;
 
   self.navigationItem.leftBarButtonItem = cancelButton;
+
   self.navigationController.navigationBar.prefersLargeTitles = NO;
   switch (_editSheetMode) {
     case AutofillSaveProfilePromptMode::kNewProfile:
@@ -95,6 +96,7 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
   }
 
   self.tableView.allowsSelectionDuringEditing = YES;
+  self.view.accessibilityIdentifier = kEditProfileBottomSheetViewIdentfier;
 
   [self loadModel];
 }

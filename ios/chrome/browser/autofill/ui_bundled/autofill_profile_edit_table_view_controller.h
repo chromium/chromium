@@ -29,6 +29,13 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Returns YES if the view can be dismissed immediately.
+- (BOOL)canDismissImmediately;
+
+// Returns YES if a confirmation dialog should be shown when the view is
+// dismissed.
+- (BOOL)shouldShowConfirmationDialogOnDismissBySwiping;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_H_
