@@ -52,3 +52,9 @@ UIViewController* TestShareKitService::FacePile(
 void TestShareKitService::ReadGroups(ShareKitReadConfiguration* config) {
   // TODO(crbug.com/358373145): add fake implementation.
 }
+
+id<ShareKitAvatarPrimitive> TestShareKitService::AvatarImage(
+    ShareKitAvatarConfiguration* config) {
+  // TODO(crbug.com/375366568): add fake implementation.
+  return nil;
+}

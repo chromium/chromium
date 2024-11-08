@@ -22,6 +22,8 @@ class TestShareKitService : public ShareKitService {
   void JoinGroup(ShareKitJoinConfiguration* config) override;
   UIViewController* FacePile(ShareKitFacePileConfiguration* config) override;
   void ReadGroups(ShareKitReadConfiguration* config) override;
+  id<ShareKitAvatarPrimitive> AvatarImage(
+      ShareKitAvatarConfiguration* config) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_TEST_SHARE_KIT_SERVICE_H_

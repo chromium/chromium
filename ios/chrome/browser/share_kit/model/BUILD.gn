@@ -4,6 +4,9 @@
 
 source_set("model") {
   sources = [
+    "share_kit_avatar_configuration.h",
+    "share_kit_avatar_configuration.mm",
+    "share_kit_avatar_primitive.h",
     "share_kit_face_pile_configuration.h",
     "share_kit_face_pile_configuration.mm",
     "share_kit_join_configuration.h",

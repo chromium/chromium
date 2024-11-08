@@ -23,6 +23,10 @@ class ChromiumShareKitService final : public ShareKitService {
     return nil;
   }
   void ReadGroups(ShareKitReadConfiguration* config) override {}
+  id<ShareKitAvatarPrimitive> AvatarImage(
+      ShareKitAvatarConfiguration* config) override {
+    return nil;
+  }
 };
 
 }  // namespace

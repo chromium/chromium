@@ -10,6 +10,8 @@
 #import "base/memory/weak_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 
+@protocol ShareKitAvatarPrimitive;
+@class ShareKitAvatarConfiguration;
 @class ShareKitFacePileConfiguration;
 @class ShareKitJoinConfiguration;
 @class ShareKitManageConfiguration;
@@ -43,6 +45,11 @@ class ShareKitService : public KeyedService {
   // Reads the info for the groups passed in `config` and returns the result
   // through the config callback.
   virtual void ReadGroups(ShareKitReadConfiguration* config);
+
+  // Returns a wrapper object of the avatar image for the avatar URL passed in
+  // `config`.
+  virtual id<ShareKitAvatarPrimitive> AvatarImage(
+      ShareKitAvatarConfiguration* config);
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_SERVICE_H_
