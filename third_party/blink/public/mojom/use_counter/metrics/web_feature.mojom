@@ -4551,6 +4551,7 @@ enum WebFeature {
   kOverflowMediaQuery = 5177,
   kHasSpellingOrGrammarErrorPseudoElement = 5178,
   kDynamicRangeMediaQuery = 5179,
+  kDisplayModeMediaQuery = 5180,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -419,6 +419,9 @@ static bool MonochromeMediaFeatureEval(const MediaQueryExpValue& value,
 static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator,
                                         const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kDisplayModeMediaQuery);
+
   // isValid() is false if there is no parameter. Without parameter we should
   // return true to indicate that displayModeMediaFeature is enabled in the
   // browser.

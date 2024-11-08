@@ -23,3 +23,8 @@ features:
 - name: dynamic-range
   files:
   - dynamic-range.html
+features:
+- name: display-mode
+  files:
+  - display-mode.html
+  - display-mode.tentative.html
