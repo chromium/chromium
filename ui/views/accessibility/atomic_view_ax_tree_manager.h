@@ -33,8 +33,6 @@ class VIEWS_EXPORT AtomicViewAXTreeManager : public ui::AXPlatformTreeManager {
 
   // AXTreeManager overrides.
   bool IsView() const override;
-  ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
-                              const ui::AXNodeID node_id) const override;
   ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
   ui::AXPlatformNode* GetPlatformNodeFromTree(
       const ui::AXNodeID node_id) const override;

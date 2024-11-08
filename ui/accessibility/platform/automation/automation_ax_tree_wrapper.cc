@@ -564,13 +564,6 @@ bool AutomationAXTreeWrapper::IsTreeIgnored() {
   return false;
 }
 
-AXNode* AutomationAXTreeWrapper::GetNodeFromTree(const AXTreeID& tree_id,
-                                                 const AXNodeID node_id) const {
-  AutomationAXTreeWrapper* tree_wrapper =
-      owner_->GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  return tree_wrapper ? tree_wrapper->GetNode(node_id) : nullptr;
-}
-
 AXTreeID AutomationAXTreeWrapper::GetParentTreeID() const {
   AutomationAXTreeWrapper* parent_tree = GetParentOfTreeId(GetTreeID());
   return parent_tree ? parent_tree->GetTreeID() : AXTreeIDUnknown();

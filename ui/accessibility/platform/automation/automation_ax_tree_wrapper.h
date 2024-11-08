@@ -113,8 +113,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationAXTreeWrapper
   bool IsTreeIgnored();
 
   // AXTreeManager overrides.
-  AXNode* GetNodeFromTree(const AXTreeID& tree_id,
-                          const AXNodeID node_id) const override;
   AXTreeID GetParentTreeID() const override;
   AXNode* GetParentNodeFromParentTree() const override;
 

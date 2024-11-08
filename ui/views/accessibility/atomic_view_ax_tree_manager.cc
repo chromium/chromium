@@ -54,12 +54,6 @@ bool AtomicViewAXTreeManager::IsView() const {
   return true;
 }
 
-ui::AXNode* AtomicViewAXTreeManager::GetNodeFromTree(
-    const ui::AXTreeID& tree_id,
-    const ui::AXNodeID node_id) const {
-  return GetNode(node_id);
-}
-
 ui::AXNode* AtomicViewAXTreeManager::GetNode(const ui::AXNodeID node_id) const {
   // This here is the key to the whole thing. The AtomicViewAXTreeManager is
   // fetching and updating the AXNodeData from the View itself whenever this
