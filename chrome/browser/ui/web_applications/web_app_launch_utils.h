@@ -274,7 +274,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
 //   display mode, then that is returned.
 // - If the display mode is for a standalone PWA:
 //   - Fall back to look for the first normal browser with a tab matching
-//     `app_id`.
+//     `app_id`, unless `ignore_browser_tabs_for_standalone_apps` is set.
 //   - Otherwise set `browser` to `nullptr`.
 // - If the display mode is `kBrowser`:
 //   - Fall back to returning the first normal browser window, and `nullopt` for
@@ -289,7 +289,8 @@ struct ClientModeAndBrowser {
 };
 ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
     Profile& profile,
-    const webapps::AppId& app_id);
+    const webapps::AppId& app_id,
+    bool ignore_browser_tabs_for_standalone_apps);
 
 // Returns an AppNavigationResult with pertinent details on how to handle a
 // navigation if the web app system can do so. If not, the

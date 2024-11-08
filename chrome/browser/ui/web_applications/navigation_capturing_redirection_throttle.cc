@@ -309,7 +309,9 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
   }
 
   ClientModeAndBrowser client_mode_and_browser =
-      GetEffectiveClientModeAndBrowserForCapturing(*profile_, *target_app_id);
+      GetEffectiveClientModeAndBrowserForCapturing(
+          *profile_, *target_app_id,
+          /*ignore_browser_tabs_for_standalone_apps=*/false);
 
   // After this point:
   // - The navigation is non-user-modified.

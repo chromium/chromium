@@ -345,7 +345,8 @@ bool IsNavigationCapturingReimplExperimentEnabled(
 std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     const Profile& profile,
     const webapps::AppId& app_id,
-    blink::mojom::DisplayMode requested_display_mode) {
+    blink::mojom::DisplayMode requested_display_mode,
+    bool ignore_browser_tabs_for_standalone_apps) {
   std::optional<std::pair<Browser*, int>> first_app_browser_match;
   std::optional<std::pair<Browser*, int>> first_browser_tab_match;
   // These are the type `std::optional<std::pair<Browser*, int>>` for easy usage
@@ -421,7 +422,7 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
       if (first_app_browser_match) {
         return first_app_browser_match;
       }
-      if (first_browser_tab_match) {
+      if (first_browser_tab_match && !ignore_browser_tabs_for_standalone_apps) {
         return first_browser_tab_match;
       }
       return std::nullopt;
@@ -735,27 +736,25 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
     const webapps::AppId& app_id,
     WebAppRegistrar& registrar) {
   ClientModeAndBrowser client_mode_and_browser =
-      GetEffectiveClientModeAndBrowserForCapturing(*profile, app_id);
+      GetEffectiveClientModeAndBrowserForCapturing(
+          *profile, app_id, /*ignore_browser_tabs_for_standalone_apps=*/true);
   LaunchHandler::ClientMode client_mode =
       client_mode_and_browser.effective_client_mode;
   if (client_mode != LaunchHandler::ClientMode::kFocusExisting &&
       client_mode != LaunchHandler::ClientMode::kNavigateExisting) {
     return false;
   }
-
+  // It's impossible for GetEffectiveClientModeAndBrowserForCapturing to return
+  // one of the above two display modes without also returning an app browser &
+  // tab to navigate or focus.
   CHECK(client_mode_and_browser.browser);
+  CHECK(WebAppBrowserController::IsWebApp(client_mode_and_browser.browser));
   CHECK(client_mode_and_browser.tab_index.has_value());
 
   content::WebContents* preexisting_web_contents =
       client_mode_and_browser.browser->tab_strip_model()->GetWebContentsAt(
           *client_mode_and_browser.tab_index);
-
-  // When we are reparenting from a browser tab and no app window is open, the
-  // current browser tab (which is in a browser window) is chosen. Return early
-  // as this means 'navigate-new' behavior needs to occur.
-  if (preexisting_web_contents == contents) {
-    return false;
-  }
+  CHECK(preexisting_web_contents != contents);
 
   // We've found a browser in the background. We need to focus it and enqueue
   // launch params. But first we ensure that the contents (for which the Intent
@@ -1256,7 +1255,8 @@ void LaunchWebApp(apps::AppLaunchParams params,
 
 ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
     Profile& profile,
-    const webapps::AppId& app_id) {
+    const webapps::AppId& app_id,
+    bool ignore_browser_tabs_for_standalone_apps) {
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(&profile);
   CHECK(provider);
@@ -1272,7 +1272,8 @@ ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
   }
 
   std::optional<std::pair<Browser*, int>> app_host = GetAppHostForCapturing(
-      profile, app_id, registrar.GetAppEffectiveDisplayMode(app_id));
+      profile, app_id, registrar.GetAppEffectiveDisplayMode(app_id),
+      ignore_browser_tabs_for_standalone_apps);
   if (app_host.has_value()) {
     CHECK(app_host->first);
     result.browser = app_host->first;
@@ -1403,7 +1404,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   std::optional<ClientModeAndBrowser> client_mode_and_browser;
   if (controlling_app_id) {
     client_mode_and_browser = GetEffectiveClientModeAndBrowserForCapturing(
-        *profile, *controlling_app_id);
+        *profile, *controlling_app_id, /*ignore_browser_tabs=*/false);
     debug_data.Set(
         "effective_client_mode",
         base::ToString(client_mode_and_browser->effective_client_mode));
