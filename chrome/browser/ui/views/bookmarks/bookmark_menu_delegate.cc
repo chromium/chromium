@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -148,6 +149,11 @@ class BookmarkFolderOrURL {
       folder_or_url_;
 };
 
+BookmarkMergedSurfaceService* GetBookmarkMergedSurfaceService(
+    Profile* profile) {
+  return BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
+}
+
 // The current behavior is that the menu gets closed (see MenuController) after
 // a drop is initiated, which deletes BookmarkMenuDelegate before the drop
 // callback is run. That's why the drop callback shouldn't be tied to
@@ -162,8 +168,7 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
         drop_data_(std::move(drop_data)),
         drop_parent_(drop_parent),
         index_to_drop_at_(index_to_drop_at),
-        bookmark_service_(
-            BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)) {
+        bookmark_service_(GetBookmarkMergedSurfaceService(profile)) {
     DCHECK(drop_data_.is_valid());
     CHECK(bookmark_service_);
     bookmark_model_observation_.Observe(bookmark_service_->bookmark_model());
@@ -239,6 +244,20 @@ bool IsDropValid(const BookmarkFolderOrURL* target,
       return !drop_on_url_node;
   }
   NOTREACHED();
+}
+
+std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> GetUnderlyingNodes(
+    BookmarkMergedSurfaceService* bookmark_merged_service,
+    const BookmarkFolderOrURL& folder_or_url) {
+  if (const BookmarkNode* node = folder_or_url.GetIfBookmarkURL(); node) {
+    return {node};
+  }
+  std::vector<const BookmarkNode*> nodes =
+      bookmark_merged_service->GetUnderlyingNodes(
+          *folder_or_url.GetIfBookmarkFolder());
+  return base::ToVector(nodes, [](const BookmarkNode* node) {
+    return raw_ptr<const BookmarkNode, VectorExperimental>(node);
+  });
 }
 
 }  // namespace
@@ -356,11 +375,12 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 
   DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selection = {
-      menu_id_to_node_map_[id]};
-
   RecordBookmarkLaunch(location_,
                        profile_metrics::GetBrowserProfileType(profile_));
+
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selection =
+      GetUnderlyingNodes(GetBookmarkMergedSurfaceService(profile_),
+                         BookmarkFolderOrURL(menu_id_to_node_map_[id]));
   chrome::OpenAllIfAllowed(browser_, selection,
                            ui::DispositionFromEventFlags(mouse_event_flags),
                            false);
@@ -651,7 +671,7 @@ BookmarkMenuDelegate::GetDropParams(
   // Initial params drop on bookmark bar.
   DropParams drop_params(BookmarkParentFolder::BookmarkBarFolder(), 0);
   BookmarkMergedSurfaceService* service =
-      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_);
+      GetBookmarkMergedSurfaceService(profile_);
   switch (*position) {
     case views::MenuDelegate::DropPosition::kAfter:
       if (drop_folder && drop_folder->as_permanent_folder() ==

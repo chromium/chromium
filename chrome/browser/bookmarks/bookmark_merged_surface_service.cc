@@ -139,6 +139,18 @@ bool BookmarkMergedSurfaceService::IsPermanentNodeOfType(
   return GetIfPermanentFolderType(node) == folder;
 }
 
+std::vector<const BookmarkNode*>
+BookmarkMergedSurfaceService::GetUnderlyingNodes(
+    const BookmarkParentFolder& folder) const {
+  if (folder.HoldsNonPermanentFolder()) {
+    return {folder.as_non_permanent_folder()};
+  }
+
+  // Note: This will be updated to return account and/or local bookmark
+  // permanent node once support for account only bookmarks is added.
+  return {PermanentFolderToNode(*folder.as_permanent_folder())};
+}
+
 size_t BookmarkMergedSurfaceService::GetIndexOf(
     const bookmarks::BookmarkNode* node) const {
   CHECK(node);

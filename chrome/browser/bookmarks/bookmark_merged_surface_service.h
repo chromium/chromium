@@ -91,6 +91,13 @@ class BookmarkMergedSurfaceService : public KeyedService {
       const bookmarks::BookmarkNode* node,
       BookmarkParentFolder::PermanentFolderType folder);
 
+  // Returns underlying nodes in `folder`. This is either:
+  // - a single bookmark folder node or
+  // - two permanent folder nodes representing local and account bookmark nodes
+  //   of `*folder.as_permanent_folder()`.
+  std::vector<const bookmarks::BookmarkNode*> GetUnderlyingNodes(
+      const BookmarkParentFolder& folder) const;
+
   // Returns the index of node with respect to its parent.
   // `node` must not be null.
   // TODO(crbug.com/364594278): When account nodes are supported within this
