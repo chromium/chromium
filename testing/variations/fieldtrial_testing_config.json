@@ -11516,21 +11516,6 @@
             ]
         }
     ],
-    "IOSDisableParcelTracking": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSDisableParcelTracking"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDockingPromo": [
         {
             "platforms": [
