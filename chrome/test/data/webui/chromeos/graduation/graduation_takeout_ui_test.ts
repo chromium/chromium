@@ -15,18 +15,56 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+let graduationUi: GraduationTakeoutUi;
+
+function getBackButton(): CrButtonElement {
+  const backButton =
+      graduationUi.shadowRoot!.querySelector<CrButtonElement>('#backButton');
+  assertTrue(!!backButton);
+  return backButton;
+}
+
+function getSpinner(): PaperSpinnerLiteElement {
+  const spinner =
+      graduationUi.shadowRoot!.querySelector<PaperSpinnerLiteElement>(
+          '.spinner-container');
+  assertTrue(!!spinner);
+  return spinner;
+}
+
+function getWebview(): chrome.webviewTag.WebView {
+  const webview =
+      graduationUi.shadowRoot!.querySelector<chrome.webviewTag.WebView>(
+          'webview');
+  assertTrue(!!webview);
+  return webview;
+}
+
+function getDoneButton(): CrButtonElement {
+  const doneButton =
+      graduationUi.shadowRoot!.querySelector<CrButtonElement>('#doneButton');
+  assertTrue(!!doneButton);
+  return doneButton;
+}
+
+function assertLoadingScreenActive(): void {
+  assertFalse(getSpinner().hidden);
+  assertTrue(getWebview().hidden);
+}
+
+function assertLoadingScreenHidden(): void {
+  assertTrue(getSpinner().hidden);
+  assertFalse(getWebview().hidden);
+}
+
+function simulateAuthenticationSuccess(): void {
+  graduationUi.onAuthComplete(AuthResult.kSuccess);
+  assertLoadingScreenActive();
+}
+
 suite('GraduationTakeoutUiTest.WebviewUrl', function() {
   const isEmbeddedEndpointEnabled =
       loadTimeData.getBoolean('isEmbeddedEndpointEnabled');
-  let graduationUi: GraduationTakeoutUi;
-
-  function getWebview(): chrome.webviewTag.WebView {
-    const webview =
-        graduationUi.shadowRoot!.querySelector<chrome.webviewTag.WebView>(
-            'webview');
-    assertTrue(!!webview);
-    return webview;
-  }
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -57,54 +95,9 @@ suite('GraduationTakeoutUiTest.WebviewUrl', function() {
 });
 
 suite('GraduationTakeoutUiTest', function() {
-  let graduationUi: GraduationTakeoutUi;
-  let maxWebviewReloadAttempts: number;
-
-  function getBackButton(): CrButtonElement {
-    const backButton =
-        graduationUi.shadowRoot!.querySelector<CrButtonElement>('#backButton');
-    assertTrue(!!backButton);
-    return backButton;
-  }
-
-  function getSpinner(): PaperSpinnerLiteElement {
-    const spinner =
-        graduationUi.shadowRoot!.querySelector<PaperSpinnerLiteElement>(
-            '.spinner-container');
-    assertTrue(!!spinner);
-    return spinner;
-  }
-
-  function getWebview(): chrome.webviewTag.WebView {
-    const webview =
-        graduationUi.shadowRoot!.querySelector<chrome.webviewTag.WebView>(
-            'webview');
-    assertTrue(!!webview);
-    return webview;
-  }
-
-  function getDoneButton(): CrButtonElement {
-    const doneButton =
-        graduationUi.shadowRoot!.querySelector<CrButtonElement>('#doneButton');
-    assertTrue(!!doneButton);
-    return doneButton;
-  }
-
-  function assertLoadingScreenActive(): void {
-    assertFalse(getSpinner().hidden);
-    assertTrue(getWebview().hidden);
-  }
-
-  function assertLoadingScreenHidden(): void {
-    assertTrue(getSpinner().hidden);
-    assertFalse(getWebview().hidden);
-  }
-
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     graduationUi = new GraduationTakeoutUi();
-
-    maxWebviewReloadAttempts = WebviewReloadHelper.MAX_RELOAD_ATTEMPTS;
 
     // Set an empty webview URL to avoid an unintentional loadabort event in the
     // webview.
@@ -125,8 +118,7 @@ suite('GraduationTakeoutUiTest', function() {
         assertTrue(isVisible(getBackButton()));
         assertTrue(getDoneButton().hidden);
 
-        // Simulate that authentication has succeeded.
-        graduationUi.onAuthComplete(AuthResult.kSuccess);
+        simulateAuthenticationSuccess();
 
         assertLoadingScreenActive();
         assertTrue(isVisible(getBackButton()));
@@ -138,43 +130,6 @@ suite('GraduationTakeoutUiTest', function() {
         assertTrue(isVisible(getBackButton()));
         assertFalse(getDoneButton().hidden);
         assertTrue(getDoneButton().disabled);
-      });
-
-  test(
-      'Error screen is shown after the maximum allowed failed reload attempts',
-      function() {
-        let errorPageTriggered = false;
-        assertLoadingScreenActive();
-
-        graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
-          errorPageTriggered = true;
-        });
-
-        // Simulate that authentication has succeeded.
-        graduationUi.onAuthComplete(AuthResult.kSuccess);
-        assertLoadingScreenActive();
-
-        getWebview().dispatchEvent(new CustomEvent('loadabort'));
-
-        assertLoadingScreenActive();
-        assertFalse(errorPageTriggered);
-
-        // Every failed reload attempt up to and not including the last attempt
-        // should not surface the error screen.
-        for (let attempts = 1; attempts < maxWebviewReloadAttempts;
-             attempts++) {
-          getWebview().dispatchEvent(new CustomEvent('loadabort'));
-
-          assertLoadingScreenActive();
-          assertFalse(errorPageTriggered);
-        }
-
-        // The error screen should surface when the last allowed consecutive
-        // reload attempt fails.
-        getWebview().dispatchEvent(new CustomEvent('loadabort'));
-
-        assertLoadingScreenHidden();
-        assertTrue(errorPageTriggered);
       });
 
   test('Error screen is triggered if authentication has failed', function() {
@@ -190,29 +145,6 @@ suite('GraduationTakeoutUiTest', function() {
     assertLoadingScreenHidden();
 
     assertTrue(errorPageTriggered);
-  })
-
-  test('UI is shown if reload succeeds after a loadabort event', function() {
-    let errorPageTriggered = false;
-    assertLoadingScreenActive();
-
-    graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
-      errorPageTriggered = true;
-    });
-
-    // Simulate that authentication has succeeded.
-    graduationUi.onAuthComplete(AuthResult.kSuccess);
-    assertLoadingScreenActive();
-
-    getWebview().dispatchEvent(new CustomEvent('loadabort'));
-
-    assertLoadingScreenActive();
-    assertFalse(errorPageTriggered);
-
-    getWebview().dispatchEvent(new CustomEvent('contentload'));
-
-    assertLoadingScreenHidden();
-    assertFalse(errorPageTriggered);
   });
 
   test('Welcome page is triggered on Back button click', function() {
@@ -225,46 +157,87 @@ suite('GraduationTakeoutUiTest', function() {
     getBackButton().click();
     assertTrue(welcomePageTriggered);
   });
+});
 
-  test('Reload helpers are reset on Back button click', function() {
-    let errorPageTriggered = false;
+suite('GraduationTakeoutUiTest.WebviewReload', function() {
+  let errorPageTriggered = false;
+
+  function exhaustReloadAttempts(): void {
+    for (let attempts = 1; attempts < WebviewReloadHelper.MAX_RELOAD_ATTEMPTS;
+         attempts++) {
+      getWebview().dispatchEvent(new CustomEvent('loadabort'));
+      assertLoadingScreenActive();
+      assertFalse(errorPageTriggered);
+    }
+  }
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    graduationUi = new GraduationTakeoutUi();
+
+    // Set an empty webview URL to avoid an unintentional loadabort event in the
+    // webview.
+    loadTimeData.overrideValues({startTransferUrl: ''});
+
+    document.body.appendChild(graduationUi);
+    flush();
+  });
+
+  teardown(() => {
+    graduationUi.remove();
+  });
+
+  test('UI is shown if reload succeeds after a loadabort event', function() {
+    errorPageTriggered = false;
+    assertLoadingScreenActive();
 
     graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
       errorPageTriggered = true;
     });
 
-    // Simulate that authentication has succeeded.
-    graduationUi.onAuthComplete(AuthResult.kSuccess);
+    simulateAuthenticationSuccess();
+
+    getWebview().dispatchEvent(new CustomEvent('loadabort'));
+
     assertLoadingScreenActive();
+    assertFalse(errorPageTriggered);
 
-    assertTrue(isVisible(getBackButton()));
+    getWebview().dispatchEvent(new CustomEvent('contentload'));
 
-    // Simulate one failed load and one failed reload.
-    getWebview().dispatchEvent(new CustomEvent('loadabort'));
-    getWebview().dispatchEvent(new CustomEvent('loadabort'));
-
-    getBackButton().click();
-
-    getWebview().dispatchEvent(new CustomEvent('loadabort'));
-
-    // Clicking the back button should have cleared the reload counter, so the
-    // error screen should not be shown until the attempt limit is reached.
-    for (let attempts = 1; attempts < maxWebviewReloadAttempts; attempts++) {
-      getWebview().dispatchEvent(new CustomEvent('loadabort'));
-
-      assertFalse(errorPageTriggered);
-    }
-
-    getWebview().dispatchEvent(new CustomEvent('loadabort'));
-    assertTrue(errorPageTriggered);
+    assertLoadingScreenHidden();
+    assertFalse(errorPageTriggered);
   });
+
+  test(
+      'Error screen is shown after the maximum allowed failed reload attempts',
+      function() {
+        errorPageTriggered = false;
+        assertLoadingScreenActive();
+
+        graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
+          errorPageTriggered = true;
+        });
+
+        simulateAuthenticationSuccess();
+
+        getWebview().dispatchEvent(new CustomEvent('loadabort'));
+        assertLoadingScreenActive();
+        assertFalse(errorPageTriggered);
+
+        exhaustReloadAttempts();
+
+        // The error screen should surface when the last allowed consecutive
+        // reload attempt fails.
+        getWebview().dispatchEvent(new CustomEvent('loadabort'));
+
+        assertLoadingScreenHidden();
+        assertTrue(errorPageTriggered);
+      });
 
   test('Reload occurs on Back button click', function() {
     assertLoadingScreenActive();
 
-    // Simulate that authentication has succeeded.
-    graduationUi.onAuthComplete(AuthResult.kSuccess);
-    assertLoadingScreenActive();
+    simulateAuthenticationSuccess();
 
     getWebview().dispatchEvent(new CustomEvent('contentload'));
 
@@ -274,5 +247,29 @@ suite('GraduationTakeoutUiTest', function() {
     getBackButton().click();
 
     assertLoadingScreenActive();
+  });
+
+  test('Reload helpers are reset on Back button click', function() {
+    errorPageTriggered = false;
+
+    graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
+      errorPageTriggered = true;
+    });
+
+    simulateAuthenticationSuccess();
+
+    getWebview().dispatchEvent(new CustomEvent('loadabort'));
+    exhaustReloadAttempts();
+
+    assertTrue(isVisible(getBackButton()));
+    getBackButton().click();
+
+    // Clicking the back button should have cleared the reload counter, so the
+    // error screen should not be shown until the attempt limit is reached.
+    getWebview().dispatchEvent(new CustomEvent('loadabort'));
+    exhaustReloadAttempts();
+
+    getWebview().dispatchEvent(new CustomEvent('loadabort'));
+    assertTrue(errorPageTriggered);
   });
 });
