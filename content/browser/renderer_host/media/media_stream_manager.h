@@ -783,6 +783,10 @@ class CONTENT_EXPORT MediaStreamManager
       GetRawDeviceIdsOpenedForFrameCallback callback,
       base::flat_set<GlobalRenderFrameHostId> render_frame_host_ids) const;
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void OnVideoCaptureHostConnectionError();
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Defines a window of opportunity for the Web-application to decide
   // whether a display-surface which it's capturing should be focused.

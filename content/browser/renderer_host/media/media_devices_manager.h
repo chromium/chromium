@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/system_monitor.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/common/content_export.h"
@@ -50,6 +51,10 @@ class VideoCaptureManager;
 using MediaDeviceEnumeration =
     std::array<blink::WebMediaDeviceInfoArray,
                static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes)>;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kReleaseVideoSourceProviderIfNotInUse);
+#endif
 
 // MediaDevicesManager is responsible for doing media-device enumerations.
 // In addition it implements caching for enumeration results and device
@@ -188,11 +193,15 @@ class CONTENT_EXPORT MediaDevicesManager
     get_salt_and_origin_cb_ = std::move(callback);
   }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void UpdateVideoCaptureHostsEmptyState(bool empty);
+#endif
+
   // Implementation of video_capture::mojom::DevicesChangedObserver that
   // forwards a devices changed event to the global (process-local) instance of
   // base::DeviceMonitor.
   // Defined in a separate file video_capture_devices_changed_observer.cc
-  class VideoCaptureDevicesChangedObserver
+  class CONTENT_EXPORT VideoCaptureDevicesChangedObserver
       : public video_capture::mojom::DevicesChangedObserver {
     friend class MockVideoCaptureDevicesChangedObserver;
 
@@ -202,7 +211,8 @@ class CONTENT_EXPORT MediaDevicesManager
         base::RepeatingClosure listener_cb);
     ~VideoCaptureDevicesChangedObserver() override;
 
-    void ConnectToService();
+    void EnsureConnectedToService();
+    void DisconnectVideoSourceProvider();
 
    private:
     // video_capture::mojom::DevicesChangedObserver implementation:
@@ -380,6 +390,11 @@ class CONTENT_EXPORT MediaDevicesManager
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   void RegisterVideoCaptureDevicesChangedObserver();
+  void OnDisconectVideoSourceProviderTimer();
+  void MaybeScheduleDisconectVideoSourceProviderTimer();
+
+  bool is_video_capture_hosts_set_empty_ = true;
+  base::OneShotTimer disconnect_video_source_provider_timer_;
 #endif
 
   bool use_fake_devices_;
