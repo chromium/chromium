@@ -52,4 +52,6 @@ public class ContentFeatureList {
 
     public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
             "PrefetchBrowserInitiatedTriggers";
+
+    public static final String DIPS_TTL = "DIPSTtl";
 }

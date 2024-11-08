@@ -86,7 +86,10 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
     kCreateSpeculativeRFHDelayMs;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevToolsPrivacyUI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
+// TODO(crbug.com/364900088): Refactor DIPS feature flags and parameters into
+// their own features file.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPS);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPSTtl);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kDIPSPersistedDatabaseEnabled;
 CONTENT_EXPORT extern const base::FeatureParam<bool> kDIPSDeletionEnabled;

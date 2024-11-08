@@ -295,6 +295,10 @@ BASE_FEATURE(kDigitalGoodsApi,
 // behavior (database persistence, DIPS deletion) will be gated by params.
 BASE_FEATURE(kDIPS, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Flag used to control |interaction_ttl| separately from the kDIPS feature
+// flag.
+BASE_FEATURE(kDIPSTtl, "DIPSTtl", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Set whether DIPS persists its database to disk.
 const base::FeatureParam<bool> kDIPSPersistedDatabaseEnabled{
     &kDIPS, "persist_database", true};
@@ -323,7 +327,7 @@ const base::FeatureParam<base::TimeDelta> kDIPSTimerDelay{&kDIPS, "timer_delay",
 // NOTE: Updating this param name (to reflect WAA) is deemed unnecessary as far
 // as readability is concerned.
 const base::FeatureParam<base::TimeDelta> kDIPSInteractionTtl{
-    &kDIPS, "interaction_ttl", base::Days(45)};
+    &kDIPSTtl, "interaction_ttl", base::Days(45)};
 
 constexpr base::FeatureParam<content::DIPSTriggeringAction>::Option
     kDIPSTriggeringActionOptions[] = {

@@ -8175,6 +8175,24 @@
             ]
         }
     ],
+    "DipsForWebView": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "params": {
+                        "delete": "false"
+                    },
+                    "enable_features": [
+                        "DIPS"
+                    ]
+                }
+            ]
+        }
+    ],
     "DipsOnForegroundSequence": [
         {
             "platforms": [

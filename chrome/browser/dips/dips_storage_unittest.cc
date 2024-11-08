@@ -36,11 +36,13 @@ class TestStorage : public DIPSStorage {
   }
 };
 
-class ScopedDIPSFeatureEnabledWithParams {
+// TODO(crbug.com/376754761): Remove this class, since it no longer sets the
+// main DIPS feature
+class ScopedDIPSInteractionTtlFeatureEnabledWithParams {
  public:
-  explicit ScopedDIPSFeatureEnabledWithParams(
+  explicit ScopedDIPSInteractionTtlFeatureEnabledWithParams(
       const base::FieldTrialParams& params) {
-    features_.InitAndEnableFeatureWithParameters(features::kDIPS, params);
+    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl, params);
   }
 
  private:
@@ -246,7 +248,8 @@ class DIPSStorageTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment env_;
-  ScopedDIPSFeatureEnabledWithParams feature{{{"interaction_ttl", "inf"}}};
+  ScopedDIPSInteractionTtlFeatureEnabledWithParams feature{
+      {{"interaction_ttl", "inf"}}};
   TestStorage storage_;
   base::SimpleTestClock clock_;
 };

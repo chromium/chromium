@@ -47,6 +47,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebIdentityDigitalCredentials,
     &features::kWebNfc,
+    &features::kDIPSTtl,
 };
 
 // static

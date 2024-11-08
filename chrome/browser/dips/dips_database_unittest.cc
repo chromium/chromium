@@ -118,7 +118,7 @@ class DIPSDatabaseErrorHistogramsTest
     DIPSDatabaseTest::SetUp();
     // Use inf ttl to prevent interactions (including web authn assertions) from
     // expiring unintentionally.
-    features_.InitAndEnableFeatureWithParameters(features::kDIPS,
+    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl,
                                                  {{"interaction_ttl", "inf"}});
   }
 };
@@ -241,7 +241,7 @@ class DIPSDatabaseAllColumnTest
     DIPSDatabaseTest::SetUp();
     // Use inf ttl to prevent interactions (including webauthn assertions) from
     // expiring unintentionally.
-    features_.InitAndEnableFeatureWithParameters(features::kDIPS,
+    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl,
                                                  {{"interaction_ttl", "inf"}});
   }
 
@@ -619,7 +619,7 @@ class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
                                     public testing::WithParamInterface<bool> {
  public:
   DIPSDatabaseInteractionTest() : DIPSDatabaseTest(GetParam()) {
-    features_.InitAndEnableFeature(features::kDIPS);
+    features_.InitWithFeatures({features::kDIPSTtl, features::kDIPS}, {});
   }
 
   // This test only focuses on user interaction and WAA times, that's the
@@ -778,7 +778,7 @@ class DIPSDatabaseQueryTest
   DIPSDatabaseQueryTest() : DIPSDatabaseTest(std::get<0>(GetParam())) {
     // Test with the prod feature's parameter to ensure the tested scenarios are
     // also valid/respected within prod env.
-    features_.InitAndEnableFeature(features::kDIPS);
+    features_.InitWithFeatures({features::kDIPSTtl, features::kDIPS}, {});
   }
 
   void SetUp() override {
@@ -1187,7 +1187,7 @@ class DIPSDatabaseGarbageCollectionTest
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
     features_.InitAndEnableFeatureWithParameters(
-        features::kDIPS,
+        features::kDIPSTtl,
         {{"interaction_ttl",
           base::StringPrintf("%dh", base::Days(90).InHours())}});
 
@@ -1450,7 +1450,7 @@ class DIPSDatabaseHistogramTest : public DIPSDatabaseTest {
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
-    features_.InitAndEnableFeatureWithParameters(features::kDIPS,
+    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl,
                                                  {{"interaction_ttl", "inf"}});
   }
 
@@ -1556,7 +1556,7 @@ TEST_F(DIPSDatabaseHistogramTest, PerformanceMetrics) {
 class DIPSDatabaseInitializationTest : public testing::Test {
  public:
   DIPSDatabaseInitializationTest() {
-    features_.InitAndEnableFeatureWithParameters(features::kDIPS,
+    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl,
                                                  {{"interaction_ttl", "inf"}});
   }
 
