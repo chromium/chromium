@@ -6,23 +6,17 @@
 #define BASE_LOGGING_RUST_LOG_INTEGRATION_H_
 
 #include "base/base_export.h"
-#include "base/logging/log_severity.h"
 
 namespace logging {
 namespace internal {
 
-// Receives a log line from Rust and forwards it to base logging, because
-// logging::LogMessage is not accessible from Rust yet with our current interop
-// tools.
-//
-// TODO(danakj): Should this helper function be replaced with C-like apis next
-// to logging::LogMessage that Rust uses more directly?
+// TODO(thiruak1024@gmail.com): We need to use the existing logging severity
+// type and remove the 'RustLogSeverity' enum. https://crbug.com/372907698
+enum RustLogSeverity { INFO, WARNING, ERROR, DEBUG, TRACE };
 void BASE_EXPORT print_rust_log(const char* msg,
                                 const char* file,
                                 int line,
-                                LogSeverity severity,
-                                bool verbose);
-
+                                enum RustLogSeverity severity);
 }  // namespace internal
 }  // namespace logging
 
