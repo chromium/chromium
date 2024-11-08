@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
@@ -16,29 +18,6 @@ namespace {
 const char kAIContextBoundObjectSetUserDataKey[] = "ai_context_bound_objects";
 
 }  // namespace
-
-// This class ensures the `AIContextBoundObjectSet` and the
-// `AIContextBoundObject`s will be destroyed when the document or worker host is
-// gone.
-class AIContextBoundObjectSetSupportsUserData
-    : public AIContextBoundObjectSet,
-      public base::SupportsUserData::Data {
- public:
-  AIContextBoundObjectSetSupportsUserData() = default;
-  ~AIContextBoundObjectSetSupportsUserData() override = default;
-
-  static AIContextBoundObjectSetSupportsUserData* GetOrCreateFor(
-      base::PassKey<AIContextBoundObjectSet> pass_key,
-      base::SupportsUserData& context_user_data) {
-    if (!context_user_data.GetUserData(kAIContextBoundObjectSetUserDataKey)) {
-      context_user_data.SetUserData(
-          kAIContextBoundObjectSetUserDataKey,
-          std::make_unique<AIContextBoundObjectSetSupportsUserData>());
-    }
-    return static_cast<AIContextBoundObjectSetSupportsUserData*>(
-        context_user_data.GetUserData(kAIContextBoundObjectSetUserDataKey));
-  }
-};
 
 AIContextBoundObjectSet::AIContextBoundObjectSet() = default;
 AIContextBoundObjectSet::~AIContextBoundObjectSet() = default;
@@ -68,8 +47,13 @@ void AIContextBoundObjectSet::RemoveContextBoundObject(
 
 AIContextBoundObjectSet* AIContextBoundObjectSet::GetFromContext(
     base::SupportsUserData& context_user_data) {
-  return AIContextBoundObjectSetSupportsUserData::GetOrCreateFor(
-      base::PassKey<AIContextBoundObjectSet>(), context_user_data);
+  if (!context_user_data.GetUserData(kAIContextBoundObjectSetUserDataKey)) {
+    context_user_data.SetUserData(kAIContextBoundObjectSetUserDataKey,
+                                  // Constructor is
+                                  std::make_unique<AIContextBoundObjectSet>());
+  }
+  return static_cast<AIContextBoundObjectSet*>(
+      context_user_data.GetUserData(kAIContextBoundObjectSetUserDataKey));
 }
 
 size_t AIContextBoundObjectSet::GetSizeForTesting() {

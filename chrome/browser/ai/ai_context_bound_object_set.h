@@ -14,11 +14,12 @@
 #include "content/public/browser/document_user_data.h"
 
 // The data structure that supports adding and removing `AIContextBoundObject`.
-class AIContextBoundObjectSet {
+class AIContextBoundObjectSet : public base::SupportsUserData::Data {
  public:
+  AIContextBoundObjectSet();
   AIContextBoundObjectSet(const AIContextBoundObjectSet&) = delete;
   AIContextBoundObjectSet& operator=(const AIContextBoundObjectSet&) = delete;
-  ~AIContextBoundObjectSet();
+  ~AIContextBoundObjectSet() override;
 
   // Add an `AIContextBoundObject` into the set.
   void AddContextBoundObject(std::unique_ptr<AIContextBoundObject> object);
@@ -34,7 +35,6 @@ class AIContextBoundObjectSet {
   }
 
  protected:
-  AIContextBoundObjectSet();
   // Remove the `AIContextBoundObject` from the set.
   virtual void RemoveContextBoundObject(AIContextBoundObject* object);
 
