@@ -4549,6 +4549,7 @@ enum WebFeature {
   kCSSExponentialFunctions = 5175,
   kCSSLinearEasing = 5176,
   kOverflowMediaQuery = 5177,
+  kHasSpellingOrGrammarErrorPseudoElement = 5178,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

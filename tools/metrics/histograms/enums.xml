@@ -10861,6 +10861,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5175" label="CSSExponentialFunctions"/>
   <int value="5176" label="CSSLinearEasing"/>
   <int value="5177" label="OverflowMediaQuery"/>
+  <int value="5178" label="HasSpellingOrGrammarErrorPseudoElement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

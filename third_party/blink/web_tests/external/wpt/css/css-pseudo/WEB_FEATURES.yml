@@ -2,3 +2,8 @@ features:
 - name: target-text
   files:
   - target-text-*
+features:
+- name: spelling-grammar-error
+  files:
+  - spelling-error-*
+  - grammar-spelling-errors-*
