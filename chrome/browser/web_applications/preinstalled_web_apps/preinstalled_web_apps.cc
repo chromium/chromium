@@ -56,13 +56,13 @@ std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
 #if !BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kChatPreinstalledWebApp,
              "ChatPreinstalledWebApp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kOnlyForNewUsers,
                    &kChatPreinstalledWebApp,
                    "only_for_new_users",
-                   true);
+                   false);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

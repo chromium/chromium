@@ -12,6 +12,7 @@
   </outputs>
   <release seq="1">
     <includes>
+      <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_CHAT_ICON_192_PNG" file="internal/google_chat_192.png" type="BINDATA" />
       <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG" file="internal/google_docs_192.png" type="BINDATA" />
       <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_DRIVE_ICON_192_PNG" file="internal/google_drive_192.png" type="BINDATA" />
       <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_SHEETS_ICON_192_PNG" file="internal/google_sheets_192.png" type="BINDATA" />
