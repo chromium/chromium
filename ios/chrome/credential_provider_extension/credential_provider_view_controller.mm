@@ -967,7 +967,11 @@ UIColor* BackgroundColor() {
   }
 
   ProceduralBlock action;
-  if (_userVerificationRequired) {
+  // With the `kReauthenticate` purpose, the user will be asked to enter their
+  // Google Passowrd Manager PIN, so no need to also do a device
+  // reauthentication before showing the UI.
+  if (purpose != PasskeyWelcomeScreenPurpose::kReauthenticate &&
+      _userVerificationRequired) {
     __weak __typeof(self) weakSelf = self;
     action = ^{
       [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
