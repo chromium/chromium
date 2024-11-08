@@ -481,8 +481,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
         "EmbedderSuffixForTest",
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        should_warm_up_compositor, PreloadingHoldbackStatus::kUnspecified,
-        preloading_attempt,
+        should_warm_up_compositor, /*should_prepare_paint_tree=*/true,
+        PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
         /*url_match_predicate=*/{},
         /*prerender_navigation_handle_callback=*/{});
   }
@@ -11872,6 +11872,7 @@ PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*should_warm_up_compositor=*/false,
+          /*should_prepare_paint_tree=*/true,
           PreloadingHoldbackStatus::kUnspecified,
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{});

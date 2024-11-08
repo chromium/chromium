@@ -48,6 +48,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       base::WeakPtr<WebContents> initiator_web_contents,
       ui::PageTransition transition_type,
       bool should_warm_up_compositor,
+      bool should_prepare_paint_tree,
       base::RepeatingCallback<bool(const GURL&,
                                    const std::optional<UrlMatchType>&)>
           url_match_predicate,
@@ -112,6 +113,10 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // initial navigation. Please see crbug.com/41496019 and comments on
   // Page::should_warm_up_compositor_on_prerender_ for more details.
   bool should_warm_up_compositor = false;
+
+  // Whether to dry run paint phase to pre-build a paint tree for the page, so
+  // then the intermediate result can be reused after activation.
+  bool should_prepare_paint_tree = false;
 
   // If the caller wants to override the default holdback processing, they can
   // set this. Otherwise, it will be computed as part of

@@ -287,6 +287,7 @@ bool PrerendererImpl::MaybePrerender(
       no_vary_search_expected, &rfhi, web_contents->GetWeakPtr(),
       ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
       base::MakeRefCounted<PreloadPipelineInfo>());

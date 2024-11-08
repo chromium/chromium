@@ -395,6 +395,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   bool should_warm_up_compositor() const {
     return attributes_.should_warm_up_compositor;
   }
+  bool should_prepare_paint_tree() const {
+    return attributes_.should_prepare_paint_tree;
+  }
 
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
 

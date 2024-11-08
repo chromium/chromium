@@ -470,9 +470,12 @@ bool RenderViewHostImpl::CreateRenderView(
           prerender_host->GetHistogramSuffix();
       prerender_param->should_warm_up_compositor =
           prerender_host->should_warm_up_compositor();
+      prerender_param->should_prepare_paint_tree =
+          prerender_host->should_prepare_paint_tree();
     } else {
       prerender_param->page_metric_suffix = ".Preview";
       prerender_param->should_warm_up_compositor = false;
+      prerender_param->should_prepare_paint_tree = false;
     }
     params->prerender_param = std::move(prerender_param);
   }

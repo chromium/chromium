@@ -481,6 +481,7 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
       /*no_vary_search_expected=*/std::nullopt, rfhi, GetWeakPtr(),
       ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
       base::MakeRefCounted<PreloadPipelineInfo>()));

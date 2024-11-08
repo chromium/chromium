@@ -270,15 +270,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetActiveWebContents()->StartPrerendering(
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
@@ -315,15 +311,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_ChromeUrl) {
 
   // Start embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetActiveWebContents()->StartPrerendering(
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_FALSE(prerender_handle);
 
   histogram_tester.ExpectUniqueSample(
@@ -512,15 +504,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginMainFrameNavigation) {
 
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetActiveWebContents()->StartPrerendering(
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
@@ -569,15 +557,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetActiveWebContents()->StartPrerendering(
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
@@ -629,15 +613,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetActiveWebContents()->StartPrerendering(
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);

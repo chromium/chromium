@@ -13,4 +13,8 @@ struct PrerenderParam {
   // comments on Page::should_warm_up_compositor_on_prerender_ for more
   // details.
   bool should_warm_up_compositor;
+
+  // If true, dry run paint phase to pre-build a paint tree for the page, so
+  // then the intermediate result can be reused after activation.
+  bool should_prepare_paint_tree;
 };

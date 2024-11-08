@@ -240,6 +240,7 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       // trigger to activation), warm-up is not enabled for now on this trigger.
       // Please see crbug and its doc for more details.
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
@@ -303,6 +304,7 @@ PrerenderManager::StartPrerenderNewTabPage(
       // trigger to activation), warm-up is not enabled for now on this trigger.
       // Please see crbug and its doc for more details.
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
@@ -364,6 +366,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       /*should_warm_up_compositor=*/true,
+      /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt,
       /*url_match_predicate=*/{}, /*prerender_navigation_handle_callback=*/{});
 
@@ -404,7 +407,8 @@ void PrerenderManager::StartPrerenderSearchResult(
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/true, holdback_status_override,
+          /*should_warm_up_compositor=*/true,
+          /*should_prepare_paint_tree=*/true, holdback_status_override,
           preloading_attempt.get(), std::move(url_match_predicate),
           /*prerender_navigation_handle_callback=*/{});
 

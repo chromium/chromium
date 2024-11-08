@@ -199,6 +199,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*no_vary_search_expected=*/std::nullopt, rfh,
             contents()->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
             /*should_warm_up_compositor=*/false,
+            /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
             base::MakeRefCounted<PreloadPipelineInfo>());
@@ -212,6 +213,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
             /*should_warm_up_compositor=*/false,
+            /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
             base::MakeRefCounted<PreloadPipelineInfo>());

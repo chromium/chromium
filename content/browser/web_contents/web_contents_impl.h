@@ -970,6 +970,7 @@ class CONTENT_EXPORT WebContentsImpl
       const std::string& embedder_histogram_suffix,
       ui::PageTransition page_transition,
       bool should_warm_up_compositor,
+      bool should_prepare_paint_tree,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
       base::RepeatingCallback<bool(const GURL&,

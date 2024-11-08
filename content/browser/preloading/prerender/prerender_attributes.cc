@@ -31,6 +31,7 @@ PrerenderAttributes::PrerenderAttributes(
     base::WeakPtr<WebContents> initiator_web_contents,
     ui::PageTransition transition_type,
     bool should_warm_up_compositor,
+    bool should_prepare_paint_tree,
     base::RepeatingCallback<bool(const GURL&,
                                  const std::optional<UrlMatchType>&)>
         url_match_predicate,
@@ -47,6 +48,7 @@ PrerenderAttributes::PrerenderAttributes(
       initiator_web_contents(std::move(initiator_web_contents)),
       transition_type(transition_type),
       should_warm_up_compositor(should_warm_up_compositor),
+      should_prepare_paint_tree(should_prepare_paint_tree),
       url_match_predicate(std::move(url_match_predicate)),
       prerender_navigation_handle_callback(
           std::move(prerender_navigation_handle_callback)),
