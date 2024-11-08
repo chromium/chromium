@@ -77,7 +77,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
   // Returns the AXNode in the current tree that has the given |node_id|.
   // Returns nullptr if |node_id| is not found.
-  virtual AXNode* GetNode(const AXNodeID node_id) const;
+  virtual AXNode* GetNode(AXNodeID node_id) const;
 
   // Returns true if the manager has a tree with a valid (not unknown) ID.
   bool HasValidTreeID() const {

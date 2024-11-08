@@ -27,8 +27,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
   ~AXPlatformTreeManager() override;
 
   // Returns an AXPlatformNode with the specified and |node_id|.
-  virtual AXPlatformNode* GetPlatformNodeFromTree(
-      const AXNodeID node_id) const = 0;
+  virtual AXPlatformNode* GetPlatformNodeFromTree(AXNodeID node_id) const = 0;
 
   // Returns an AXPlatformNode that corresponds to the given |node|.
   virtual AXPlatformNode* GetPlatformNodeFromTree(const AXNode& node) const = 0;

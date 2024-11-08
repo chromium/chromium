@@ -1643,7 +1643,7 @@ void BrowserAccessibilityManager::OnAtomicUpdateFinished(
   }
 }
 
-AXNode* BrowserAccessibilityManager::GetNode(const AXNodeID node_id) const {
+AXNode* BrowserAccessibilityManager::GetNode(AXNodeID node_id) const {
   // This does not use ax_tree()->FromID(), because that uses a different map
   // that does not contain extra mac nodes from AXTableInfo.
   BrowserAccessibility* browser_accessibility = GetFromID(node_id);
@@ -1651,7 +1651,7 @@ AXNode* BrowserAccessibilityManager::GetNode(const AXNodeID node_id) const {
 }
 
 AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
-    const AXNodeID node_id) const {
+    AXNodeID node_id) const {
   BrowserAccessibility* wrapper = GetFromID(node_id);
   if (wrapper)
     return wrapper->GetAXPlatformNode();

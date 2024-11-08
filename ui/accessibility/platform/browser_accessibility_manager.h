@@ -416,12 +416,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
       const std::vector<AXTreeObserver::Change>& changes) override;
 
   // AXTreeManager overrides.
-  AXNode* GetNode(const AXNodeID node_id) const override;
+  AXNode* GetNode(AXNodeID node_id) const override;
   void UpdateAttributesOnParent(AXNode* parent) override;
 
   // AXPlatformTreeManager overrides.
-  AXPlatformNode* GetPlatformNodeFromTree(
-      const AXNodeID node_id) const override;
+  AXPlatformNode* GetPlatformNodeFromTree(AXNodeID node_id) const override;
   AXPlatformNode* GetPlatformNodeFromTree(const AXNode&) const override;
   AXPlatformNodeDelegate* RootDelegate() const override;
 

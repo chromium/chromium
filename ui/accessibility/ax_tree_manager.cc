@@ -135,7 +135,7 @@ void AXTreeManager::Initialize(const AXTreeUpdate& initial_tree) {
   }
 }
 
-AXNode* AXTreeManager::GetNode(const AXNodeID node_id) const {
+AXNode* AXTreeManager::GetNode(AXNodeID node_id) const {
   return ax_tree_ ? ax_tree_->GetFromId(node_id) : nullptr;
 }
 
