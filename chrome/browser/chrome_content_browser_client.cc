@@ -8038,11 +8038,6 @@ bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
     return false;
   }
 
-  if (base::FeatureList::GetInstance()->IsEnabled(
-          kDisableJavascriptOptimizerByDefault)) {
-    return true;
-  }
-
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
   // Special case to determine if any policy is set.
@@ -8050,6 +8045,14 @@ bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
     return map->GetDefaultContentSetting(
                ContentSettingsType::JAVASCRIPT_OPTIMIZER, nullptr) ==
            CONTENT_SETTING_BLOCK;
+  }
+
+  // Activate experiment only for users who haven't explicitly disabled v8
+  // optimization by default so that most of the users in the "experiment
+  // off" branch have v8 optimization enabled.
+  if (base::FeatureList::GetInstance()->IsEnabled(
+          kDisableJavascriptOptimizerByDefault)) {
+    return true;
   }
 
   return (map &&
