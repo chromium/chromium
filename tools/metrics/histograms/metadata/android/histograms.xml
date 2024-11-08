@@ -4665,6 +4665,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabGroupSync.WindowStateOnFailedOpen"
+    enum="TabGroupCreationFinalSelections" expires_after="2025-11-07">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    When a tab group open from the tab group pane failes because there is no
+    local id, this metric is emitted with the state that the tab is in. This
+    should help narrow down why this is happening.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabMultiSelectV2.BookmarkTabsCount" units="count"
     expires_after="2025-01-30">
   <owner>ckitagawa@chromium.org</owner>

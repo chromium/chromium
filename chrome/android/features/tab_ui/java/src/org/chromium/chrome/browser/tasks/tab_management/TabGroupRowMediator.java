@@ -15,6 +15,7 @@ import androidx.core.util.Pair;
 import androidx.core.util.Supplier;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.R;
@@ -227,7 +228,12 @@ class TabGroupRowMediator {
             String syncId = savedTabGroup.syncId;
             mTabGroupUiActionHandler.openTabGroup(syncId);
             savedTabGroup = mTabGroupSyncService.getGroup(syncId);
-            assert savedTabGroup.localId != null;
+        }
+
+        if (savedTabGroup.localId == null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TabGroupSync.WindowStateOnFailedOpen", state, GroupWindowState.COUNT);
+            return;
         }
 
         int rootId = mTabGroupModelFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);

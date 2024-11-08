@@ -1035,6 +1035,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Got JPEG thumbnail on refetch"/>
 </enum>
 
+<enum name="GroupWindowState">
+  <summary>If a tab is open in the current or another window.</summary>
+  <int value="0" label="In current"/>
+  <int value="1" label="In current closing"/>
+  <int value="2" label="In another"/>
+  <int value="3" label="Hidden"/>
+</enum>
+
 <!-- LINT.IfChange(HubPaneId) -->
 
 <enum name="HubPaneId">

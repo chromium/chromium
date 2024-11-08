@@ -16,12 +16,15 @@ import java.lang.annotation.RetentionPolicy;
  * other tab models are difficult to work with, since often tha tab model is not even loaded into
  * memory. For currently closing groups we need to special case the behavior to properly undo or
  * commit the pending operations.
+ *
+ * <p>Emitted to UMA histograms, make sure to update when adding new values.
  */
 @IntDef({
     GroupWindowState.IN_CURRENT,
     GroupWindowState.IN_CURRENT_CLOSING,
     GroupWindowState.IN_ANOTHER,
     GroupWindowState.HIDDEN,
+    GroupWindowState.COUNT,
 })
 @Retention(RetentionPolicy.SOURCE)
 @interface GroupWindowState {
@@ -29,4 +32,5 @@ import java.lang.annotation.RetentionPolicy;
     int IN_CURRENT_CLOSING = 1;
     int IN_ANOTHER = 2;
     int HIDDEN = 3;
+    int COUNT = 4;
 }
