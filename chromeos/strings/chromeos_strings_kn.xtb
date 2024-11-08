@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1116694919640316211">ಕುರಿತು</translation>
 <translation id="1118572504348554005">ನೀವು ನಮಗೆ ವರದಿ ಮಾಡುವ ದೋಷಗಳು ಮತ್ತು ಇತರ ಸಮಸ್ಯೆಗಳನ್ನು ಟ್ರಬಲ್‌ಶೂಟ್ ಮಾಡಲು ನಮ್ಮ ಪಾಲುದಾರರೊಂದಿಗೆ ಈ ಫಾರ್ಮ್ ಮೂಲಕ ಸಲ್ಲಿಸಿದ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಾವು ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಪಾಸ್‌ವರ್ಡ್‌ಗಳಂತಹ ಸೂಕ್ಷ್ಮವಾದ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಬೇಡಿ.</translation>
+<translation id="1119403468619527527">ಸರಳಗೊಳಿಸಲು ತೀರಾ ಕಡಿಮೆ ಪದಗಳಿವೆ</translation>
 <translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
 <translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3091839911843451378">ವಿಫಲವಾಗಿದೆ - ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3102119246920354026">ಸಂಗ್ರಹ</translation>
+<translation id="3112413615003385433">ನಿಮ್ಮ ಶಿಕ್ಷಕರು ಶಾಲಾ ಟೂಲ್‌ಗಳಲ್ಲಿನ ಕಂಟೆಂಟ್‌ ಅನ್ನು ತೆಗೆದುಹಾಕಿದ್ದಾರೆ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ಪೂಲ್‌ಗಳು</translation>
 <translation id="3122883569442693641">ಇನ್ನಷ್ಟು ವಿವರಗಳು</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">ಎಡಿಟ್ ಮಾಡುವುದು ಮುಗಿದಿದೆ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="3533790840489634638">ಈಜುಕೊಳ</translation>
+<translation id="3535802910192338629">ನಿಮ್ಮ ಶಿಕ್ಷಕರು ಶಾಲಾ ಟೂಲ್‌ಗಳಲ್ಲಿ ಹೊಸ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಸೇರಿಸಿದ್ದಾರೆ</translation>
 <translation id="3547264467365135390">ಫಾರ್ಮುಲಾ</translation>
 <translation id="3557205324756024651">ಸ್ಥಳೀಯ ಗುರುತು (ಐಚ್ಛಿಕ)</translation>
 <translation id="3565064564551103223">ಅನುಮತಿಸಲಾದ IP ಗಳು</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">ಸಾಧನವನ್ನು ಪರೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪರೀಕ್ಷಿಸಲು ಲ್ಯಾಪ್‌ಟಾಪ್ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ.</translation>
 <translation id="3916998944874125962">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="3923184630988645767">ಡೇಟಾ ಬಳಕೆ</translation>
+<translation id="3924445055519423964">ವೆಬ್‌ಪುಟ/PDF ಫೈಲ್ ಅನ್ನು ಸಾರಾಂಶಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="3932043219784172185">ಯಾವುದೇ ಸಾಧನವನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="3934185438132762746">ನಿಯೋಜಿಸದ <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ಹೋಸ್ಟ್ ಅನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">ನಾನು ಒಪ್ಪುತ್ತೇನೆ</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
 <translation id="4137700675046373159">ಶನಿವಾರದಂದು</translation>
+<translation id="4139326893730851150">ಫರ್ಮ್‌‌ವೇರ್‌‌ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="4143226836069425823">ಬದಲಿಸಲು ಮತ್ತೊಂದು ಕೀಬೋರ್ಡ್ ಕೀಯನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">ಪುಟಗಳು</translation>
 <translation id="4989542687859782284">ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4999333166442584738">ವರದಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="5005695757087124131">ಆಯ್ದ ಪಠ್ಯವನ್ನು ಸರಳಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="500920857929044050">ಪರೀಕ್ಷೆ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">ಥೀಮ್ ಬಣ್ಣ</translation>
@@ -1296,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ತಂಗಾಳಿಯನ್ನು ಅನುಭವಿಸಿ</translation>
 <translation id="7287310195820267359">ವಾಲ್‌ಪೇಪರ್ ಸಂಗ್ರಹಗಳು</translation>
+<translation id="7293429513719260019">ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7297226631177386107">HTTPS ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಫೈರ್‌ವಾಲ್ ಮೂಲಕ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="7297726121602187087">ಗಾಢ ಹಸಿರು</translation>
 <translation id="7301262279595293068">ಈ ಆ್ಯಪ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುತ್ತಿರುವಾಗ ಸ್ವಲ್ಪ ನಿರೀಕ್ಷಿಸಿ</translation>
@@ -1330,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ಅಪ್‌ಡೇಟ್‌ ಆಗಲು ಸಿದ್ಧವಾಗಿದೆ</translation>
 <translation id="741244894080940828">ಪರಿವರ್ತನೆ</translation>
 <translation id="7415801143053185905">ಅತ್ಯಧಿಕ HTTP ವಿಳಂಬ</translation>
+<translation id="7418738250896500352">ಸರಳಗೊಳಿಸಲು ಹಲವಾರು ಪದಗಳಿವೆ</translation>
 <translation id="7425037327577270384">ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ಈ APN ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಅಥವಾ ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಕ್ರಿಯಗೊಳಿಸಲಾದ ಸೇರಿಸಿರುವ <ph name="ATTACH" /> APN ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಅಥವಾ ತೆಗೆದುಹಾಕಲಾಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
@@ -1355,6 +1363,7 @@
 <translation id="7544853251252956727">ಶಫಲ್ ಮಾಡಿ</translation>
 <translation id="7550715992156305117">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ದಿನಚರಿಗಳು</translation>
 <translation id="7551123448725492271">ಸಾಧನವು ಆಡಿಯೋ ಸಾಧನವಾಗಿದೆ.</translation>
+<translation id="7553913964854052228">ಶಾಲಾ ಟೂಲ್‌ಗಳು ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="7559239713112547082">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7561759921596375678">ವಾಲ್ಯೂಮ್ ಆನ್ ಮಾಡಿ</translation>
@@ -1545,6 +1554,7 @@
 <translation id="8476942730579767658">ವಿಂಡೋಗಳು ಮತ್ತು ಡೆಸ್ಕ್‌ಗಳು</translation>
 <translation id="8477536061607044749">ಗ್ರಾಫಿಕ್ ಡಿಸೈನ್</translation>
 <translation id="8477551185774834963">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಸ್ವಲ್ಪ ಮೇಲಿದೆ</translation>
+<translation id="8482376765267780829">ಸರಳಗೊಳಿಸಲು ಕೆಲವು ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8483248364096924578">ಐಪಿ ವಿಳಾಸ</translation>
 <translation id="8491311378305535241">Android ಆ್ಯಪ್‌ಗಳಿಂದ ಫೈರ್‌ವಾಲ್ ಮೂಲಕ HTTP ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="8495070016475833911">ಫೆಲ್ಟ್‌</translation>
@@ -1563,6 +1573,7 @@
 <translation id="8576249514688522074">ಪ್ರಾರಂಭಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> ಫರ್ಮ್‌ವೇರ್‌ ಅನ್ನು <ph name="VERSION" /> ಗೆ ಅಪ್‌ಗ್ರೇಡ್‌ ಮಾಡಲು ರೀಬೂಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ ಹಲವಾರು ಬಾರಿ ರೀಬೂಟ್‌ ಆಗುವಂತೆ ಕಾಣಿಸಬಹುದು. ಈ ನಡವಳಿಕೆಯನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ.</translation>
 <translation id="8593058461203131755">ಮಾಧ್ಯಮವನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
+<translation id="8619169570378509764">ಶಾಲಾ ಟೂಲ್‌ಗಳು</translation>
 <translation id="8620617069779373398">ರೋಮಿಂಗ್ ಸ್ಥಿತಿ</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="86356131183441916">ತಿಳಿ ನೇರಳೆ</translation>
@@ -1673,6 +1684,7 @@
 <translation id="9082718469794970195">ಈ ವೀಡಿಯೊ ಬಳಸಿ</translation>
 <translation id="9087578468327036362">ಈ ಪ್ರಶ್ನೆಯ ಕುರಿತು ವರದಿ ಮಾಡಿ</translation>
 <translation id="9088306295921699330">ಪ್ರಸ್ತುತ ಬಳಕೆ</translation>
+<translation id="9088994563996376283">ಸರಳಗೊಳಿಸಿ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">ರೀಸೆಟ್‌ ಮಾಡಿದ ದಿನಾಂಕದ ಕುರಿತು ಹೆಚ್ಚಿನ ಮಾಹಿತಿ</translation>
 <translation id="9100765901046053179">ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>

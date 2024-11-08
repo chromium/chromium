@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Създават се изображения...</translation>
 <translation id="1116694919640316211">Информация</translation>
 <translation id="1118572504348554005">Може да споделим отзивите, изпратени чрез този формуляр, с партньорите си с цел отстраняване на програмни грешки и други проблеми, за които ни сигнализирате. Не въвеждайте поверителна информация, като например пароли.</translation>
+<translation id="1119403468619527527">Твърде малко думи за опростяване</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
 <translation id="1124772482545689468">Потребител</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Устройството не може да бъде тествано. За целта превключете към режим на лаптоп.</translation>
 <translation id="3916998944874125962">създаване на екранна снимка</translation>
 <translation id="3923184630988645767">Пренос на данни</translation>
+<translation id="3924445055519423964">Кликнете за обобщаване на уеб страницата/PDF файла</translation>
 <translation id="3932043219784172185">Няма свързано устройство</translation>
 <translation id="3934185438132762746">Незададен <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Името на хоста не бе преобразувано</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Приемам</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4137700675046373159">в събота</translation>
+<translation id="4139326893730851150">Актуализации на фърмуера</translation>
 <translation id="4143226836069425823">Докоснете друг клавиш на клавиатурата, за да замените зададения</translation>
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
 <translation id="4147897805161313378">Google Снимки</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Страници</translation>
 <translation id="4989542687859782284">Експерименти, които не са налице</translation>
 <translation id="4999333166442584738">Скриване на отчета</translation>
+<translation id="5005695757087124131">Кликнете за опростяване на избрания текст</translation>
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Цвят на темата</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Лек полъх</translation>
 <translation id="7287310195820267359">Колекции от тапети</translation>
+<translation id="7293429513719260019">Избор на език</translation>
 <translation id="7297226631177386107">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTPS</translation>
 <translation id="7297726121602187087">Тъмнозелено</translation>
 <translation id="7301262279595293068">Моля, изчакайте, докато това приложение се актуализира</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> е в готовност за актуализиране</translation>
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="7415801143053185905">Много голямо забавяне на HTTP</translation>
+<translation id="7418738250896500352">Твърде много думи за опростяване</translation>
 <translation id="7425037327577270384">Помощ при писане</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните APN за <ph name="ATTACH" /> са деактивирани или премахнати.</translation>
@@ -1357,6 +1363,7 @@
 <translation id="7544853251252956727">Разбъркване</translation>
 <translation id="7550715992156305117">Диагностични процедури</translation>
 <translation id="7551123448725492271">Устройството е за аудио.</translation>
+<translation id="7553913964854052228">School Tools използва микрофона ви</translation>
 <translation id="7559239713112547082">Визуализация на екранната снимка</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7561759921596375678">Включване на звука</translation>
@@ -1547,6 +1554,7 @@
 <translation id="8476942730579767658">Прозорци и работни кътове</translation>
 <translation id="8477536061607044749">графичен дизайн</translation>
 <translation id="8477551185774834963">Забавянето на DNS е малко над допустимия праг</translation>
+<translation id="8482376765267780829">Изберете текст, който да бъде опростен</translation>
 <translation id="8483248364096924578">IP адрес</translation>
 <translation id="8491311378305535241">През защитната стена не може да се установи връзка от приложения за Android с уебсайтове, работещи с HTTP</translation>
 <translation id="8495070016475833911">филц</translation>
@@ -1676,6 +1684,7 @@
 <translation id="9082718469794970195">Използване на този видеоклип</translation>
 <translation id="9087578468327036362">Подаване на сигнал за тази заявка</translation>
 <translation id="9088306295921699330">Текущо използване</translation>
+<translation id="9088994563996376283">Опростяване</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Още информация за датата на нулиране</translation>
 <translation id="9100765901046053179">Разширени настройки</translation>

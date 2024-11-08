@@ -630,7 +630,6 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3208321278970793882">Aplikacja</translation>
 <translation id="3213571860604332401">Zapisz link jako zakładkę</translation>
 <translation id="3217205077783620295">Dźwięk jest włączony. Kliknij, by wyciszyć.</translation>
-<translation id="3218561536255328229">Naciśnij 5 razy klawisz Esc, aby włączyć touchpad</translation>
 <translation id="3226991577105957773">i jeszcze <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Oszczędzanie baterii zostało wyłączone</translation>
@@ -759,7 +758,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3628323833346754646">Przycisk z przodu</translation>
 <translation id="3630697955794050612">wyłączono</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
-<translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
+<translation id="3633097874324966332">Otwórz ustawienia Bluetootha, aby sparować urządzenie</translation>
 <translation id="3633851487917460983">Otwórz schowek</translation>
 <translation id="363473492175527493">Zadanie, na którym chcesz się skupić: <ph name="TASK_NAME" />. Aby edytować zadanie, naciśnij Enter.</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
@@ -1272,7 +1271,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5303319262469238330">Bateria: pozostało <ph name="PERCENTAGE" />%.
 W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczone.</translation>
 <translation id="5308380583665731573">Połącz</translation>
-<translation id="5313326810920013265">Ustawienia Bluetooth</translation>
+<translation id="5313326810920013265">Ustawienia Bluetootha</translation>
 <translation id="5314219114274263156">Nagrano ekran</translation>
 <translation id="5314489738835854379">Przełączaj się wstecz między oknami</translation>
 <translation id="5316716239522500219">Wyświetl na monitorach odbicie lustrzane</translation>
@@ -1305,6 +1304,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5393156353051693207">Naciśnij i przytrzymaj dowolne miejsce, aby zmienić kolejność aplikacji</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
+<translation id="540338817371815859">Pozioma</translation>
 <translation id="540713187982329711">Przełącz hotspota. Hotspot jest włączony. Żadne urządzenie nie jest połączone.</translation>
 <translation id="5409208741270395213">Oznacz zadanie jako ukończone</translation>
 <translation id="5413656666631274079">Strona ustawień</translation>
@@ -1766,6 +1766,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6921427376813842559">Zaktualizuj urządzenie</translation>
 <translation id="6929081673585394903">Pokaż elementy sterujące</translation>
 <translation id="6931576957638141829">Zapisz w</translation>
+<translation id="6935857786205183008">Pionowa</translation>
 <translation id="6942518653766415536">Menu formatu nagrywania</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6945922087561257829">Telefon korzysta z sieci komórkowej. Upewnij się, że telefon i Chromebook są połączone z tą samą siecią Wi-Fi, a potem spróbuj ponownie. <ph name="LEARN_MORE" /></translation>
@@ -2123,7 +2124,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8142699993796781067">Sieć prywatna</translation>
 <translation id="8144760705599030999">Aby szybciej parować urządzenie <ph name="NAME" /> z innymi urządzeniami, zapisz je na koncie <ph name="EMAIL" /></translation>
 <translation id="8144914663975476336">Wybierz format nagrywania</translation>
-<translation id="8149413265954228307">Pokaż ustawienia Bluetooth. <ph name="STATE_TEXT" />.</translation>
+<translation id="8149413265954228307">Pokaż ustawienia Bluetootha. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Aby zamknąć, naciśnij CTRL + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autouzupełnianie</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – tym ustawieniem zarządza Twój administrator.</translation>
@@ -2434,6 +2435,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="98120814841227350">Przejdź na koniec dokumentu</translation>
 <translation id="987589956647469042">Mobilna transmisja danych jest włączona</translation>
 <translation id="989374776391122812">Sterowanie kamerą i dźwiękiem</translation>
+<translation id="990263227494928142">Aby włączyć touchpad, naciśnij 5 razy klawisz Shift</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> zostało zamknięte.</translation>
 <translation id="993398562350683614">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Dzięki aplikacjom możesz robić na urządzeniu <ph name="PRODUCT_NAME" /> wszystko, co chcesz. Aplikacje znajdziesz w Menu z aplikacjami. Aby przenieść na nie zaznaczenie, naciśnij Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

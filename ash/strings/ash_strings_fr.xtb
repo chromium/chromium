@@ -630,7 +630,6 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3208321278970793882">Application</translation>
 <translation id="3213571860604332401">Enregistrer le lien dans les favoris</translation>
 <translation id="3217205077783620295">Le son est activé et peut être coupé lorsque vous cliquez sur le bouton de volume.</translation>
-<translation id="3218561536255328229">Appuyez cinq fois sur Échap pour activer le pavé tactile</translation>
 <translation id="3226991577105957773">+ <ph name="COUNT" /> autres</translation>
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3233611303007751344">Économiseur de batterie désactivé</translation>
@@ -1305,6 +1304,7 @@ Aucun appareil connecté.</translation>
 <translation id="5393156353051693207">Appuyez de manière prolongée n'importe où pour réorganiser les applis</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sur <ph name="IN_PLACE_APP" />. Relâcher pour créer un dossier.</translation>
 <translation id="5397578532367286026">Le gestionnaire (<ph name="MANAGER_EMAIL" />) peut consulter les actions effectuées cet utilisateur, ainsi que son historique, sur chrome.com.</translation>
+<translation id="540338817371815859">Paysage</translation>
 <translation id="540713187982329711">Activer/Désactiver le point d'accès. Le point d'accès est activé, aucun appareil n'est connecté.</translation>
 <translation id="5409208741270395213">Marquer une tâche comme terminée</translation>
 <translation id="5413656666631274079">Page de paramètres</translation>
@@ -1767,6 +1767,7 @@ Nouvelle installation</translation>
 <translation id="6921427376813842559">Mettre à jour l'appareil</translation>
 <translation id="6929081673585394903">Afficher les commandes</translation>
 <translation id="6931576957638141829">Enregistrer sous</translation>
+<translation id="6935857786205183008">Portrait</translation>
 <translation id="6942518653766415536">Menu du format d'enregistrement</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6945922087561257829">Votre téléphone utilise un réseau mobile. Assurez-vous que votre téléphone et votre Chromebook sont connectés au même réseau Wi-Fi, puis réessayez. <ph name="LEARN_MORE" /></translation>

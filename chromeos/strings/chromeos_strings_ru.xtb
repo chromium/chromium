@@ -25,8 +25,9 @@
 <translation id="1082009148392559545">Скачивание заставки</translation>
 <translation id="1094693127011229778">IP-адрес недоступен.</translation>
 <translation id="1100902271996134409">Создание изображений…</translation>
-<translation id="1116694919640316211">О программе</translation>
+<translation id="1116694919640316211">О продукте</translation>
 <translation id="1118572504348554005">Чтобы устранять ошибки, о которых сообщают пользователи, мы можем передавать нашим партнерам отзывы, оставленные с помощью этой формы. Не указывайте в ней пароли и другую конфиденциальную информацию.</translation>
+<translation id="1119403468619527527">Выделено слишком мало слов</translation>
 <translation id="1119447706177454957">Внутренняя ошибка</translation>
 <translation id="1124772482545689468">Пользователь</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">Чтобы продолжить обновление, отключите USB-кабель устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2320295602967756579">Использовать светлую тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
+<translation id="2323755382216917952">Чтобы выполнить обновление, потребуется перезагрузить компьютер. Установка может занять несколько минут. Пока идет обновление встроенного ПО, не выключайте компьютер и не отключайте его от сети питания.</translation>
 <translation id="2324354238778375592">Плавающий режим</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Отличный (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +451,7 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">Введите запрос, например "сделай тон текста увереннее"</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
+<translation id="3188931456353313123">Это обновление предоставлено производителем устройства и не проверено Google.</translation>
 <translation id="319101249942218879">Аватар изменен</translation>
 <translation id="3192947282887913208">Аудиофайлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
@@ -507,6 +510,7 @@
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3492882532495507361">Офис: стиль – <ph name="OFFICE_STYLE" />, цвет – <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Объем использованного трафика измеряется на устройстве. Значения могут отличаться от данных оператора связи.</translation>
+<translation id="349570724365779960">Приложение School Tools доступно для учащихся.</translation>
 <translation id="3502426834823382181">посмотреть все приложения</translation>
 <translation id="3510890413042482857">Отправлять <ph name="BEGIN_LINK1" />данные отслеживания производительности<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Обновление Chrome OS</translation>
@@ -587,6 +591,7 @@
 <translation id="391412459402535266">Не удается протестировать устройство. Перейдите в режим ноутбука.</translation>
 <translation id="3916998944874125962">сделать скриншот</translation>
 <translation id="3923184630988645767">Передача данных</translation>
+<translation id="3924445055519423964">Нажмите, чтобы создать краткий пересказ веб-страницы или PDF-файла</translation>
 <translation id="3932043219784172185">Нет подключенных устройств</translation>
 <translation id="3934185438132762746">Не назначено: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Не удалось преобразовать имя хоста.</translation>
@@ -632,6 +637,7 @@
 <translation id="4130750466177569591">Принимаю</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
 <translation id="4137700675046373159">в субботу</translation>
+<translation id="4139326893730851150">Обновления встроенного ПО</translation>
 <translation id="4143226836069425823">Чтобы заменить выбранную клавишу, нажмите другую на клавиатуре</translation>
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
@@ -754,6 +760,7 @@
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
 <translation id="4771607256327216405">клавиатура сделать ярче</translation>
+<translation id="4771923071974529837">завтра</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4778082030331381943">аметист</translation>
 <translation id="4782311465517282004">Получайте определения слов, перевод или значение в других единицах измерения: достаточно нажать на текст правой кнопкой мыши или коснуться его и удерживать.</translation>
@@ -813,9 +820,11 @@
 <translation id="4988526792673242964">Страницы</translation>
 <translation id="4989542687859782284">Недоступные</translation>
 <translation id="4999333166442584738">Скрыть отчет</translation>
+<translation id="5005695757087124131">Нажмите, чтобы упростить выделенный текст</translation>
 <translation id="500920857929044050">Прекратить проверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Цвет темы</translation>
+<translation id="5037240652947866174">сегодня</translation>
 <translation id="5038292761217083259">цвета подсветки клавиатуры</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5049856988445523908">SIM-карта заблокирована (<ph name="LOCK_TYPE" />)</translation>
@@ -1298,6 +1307,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Легкий бриз</translation>
 <translation id="7287310195820267359">Коллекция обоев</translation>
+<translation id="7293429513719260019">Выбрать язык</translation>
 <translation id="7297226631177386107">Не удается подключиться к HTTPS-сайтам через брандмауэр.</translation>
 <translation id="7297726121602187087">Темно-зеленый</translation>
 <translation id="7301262279595293068">Дождитесь обновления приложения.</translation>
@@ -1332,6 +1342,7 @@
 <translation id="7405493795721832710">Устройство <ph name="DEVICE_NAME" /> готово к обновлению</translation>
 <translation id="741244894080940828">перевести в другие ед. измерения</translation>
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
+<translation id="7418738250896500352">Выделено слишком много слов</translation>
 <translation id="7425037327577270384">Генератор текстов</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не удается отключить или удалить эту точку доступа. Убедитесь, что точки доступа типа <ph name="ATTACH" /> отключены или удалены.</translation>
@@ -1357,6 +1368,7 @@
 <translation id="7544853251252956727">Перемешать</translation>
 <translation id="7550715992156305117">Программы диагностики</translation>
 <translation id="7551123448725492271">Это аудиоустройство.</translation>
+<translation id="7553913964854052228">Приложение School Tools использует ваш микрофон.</translation>
 <translation id="7559239713112547082">Предварительный просмотр скриншота</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7561759921596375678">Включить звук</translation>
@@ -1365,7 +1377,7 @@
 <translation id="757747079855995705">камень</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
-<translation id="7600430297804876776">Администратор <ph name="MANAGER" /> ограничил время использования этого устройства (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="7600430297804876776">Администратор <ph name="MANAGER" /> ограничил время использования <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Измените положение с помощью мыши или клавиш со стрелками.</translation>
 <translation id="7618774594543487847">Нейтральные цвета</translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
@@ -1547,6 +1559,7 @@
 <translation id="8476942730579767658">Окна и рабочие столы</translation>
 <translation id="8477536061607044749">графический дизайн</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
+<translation id="8482376765267780829">Выделите нужный текст</translation>
 <translation id="8483248364096924578">IP-адрес</translation>
 <translation id="8491311378305535241">Не удается подключиться к HTTPS-сайтам из приложений для Android через брандмауэр.</translation>
 <translation id="8495070016475833911">фетр</translation>
@@ -1676,6 +1689,7 @@
 <translation id="9082718469794970195">Использовать это видео</translation>
 <translation id="9087578468327036362">Сообщить о запросе</translation>
 <translation id="9088306295921699330">Используется</translation>
+<translation id="9088994563996376283">Упростить</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Подробная информация о дате сброса данных</translation>
 <translation id="9100765901046053179">Дополнительные настройки</translation>

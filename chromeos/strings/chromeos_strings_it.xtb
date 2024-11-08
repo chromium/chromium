@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Scollega il cavo USB di <ph name="DEVICE_NAME" /> per continuare il processo di aggiornamento</translation>
 <translation id="2320295602967756579">Abilita il tema chiaro</translation>
 <translation id="2323506179655536734">SALTATO</translation>
+<translation id="2323755382216917952">Per completare l'installazione di questo aggiornamento, devi riavviare il computer. Il completamento di questo aggiornamento potrebbe richiedere alcuni minuti. Durante l'aggiornamento del firmware, non scollegare o spegnere il computer.</translation>
 <translation id="2324354238778375592">Mobile</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Eccellente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Disabilita salvaschermo</translation>
 <translation id="3091839911843451378">Operazione non riuscita - Interruzione</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">Il tuo insegnante ha rimosso alcuni contenuti dagli Strumenti scolastici</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscine</translation>
 <translation id="3122883569442693641">Altri dettagli</translation>
@@ -448,6 +450,7 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Inserisci un prompt come "fa' in modo che mostri maggiore sicurezza"</translation>
 <translation id="3188257591659621405">I miei file</translation>
+<translation id="3188931456353313123">Questo aggiornamento è fornito dal produttore del dispositivo e non è stato verificato da Google.</translation>
 <translation id="319101249942218879">Immagine dell'avatar cambiata</translation>
 <translation id="3192947282887913208">File audio</translation>
 <translation id="3199982728237701504">Alimentatore di documenti (fronte e retro)</translation>
@@ -506,6 +509,7 @@
 <translation id="3488065109653206955">Attivato parzialmente</translation>
 <translation id="3492882532495507361">Un ufficio <ph name="OFFICE_STYLE" /> con toni <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">I dati vengono misurati dal tuo Chromebook e potrebbero essere diversi dai dati del fornitore.</translation>
+<translation id="349570724365779960">Strumenti scolastici è collegato agli studenti</translation>
 <translation id="3502426834823382181">Visualizza tutte le app</translation>
 <translation id="3510890413042482857">Invia <ph name="BEGIN_LINK1" />dati di rilevamento del rendimento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aggiornamento ChromeOS</translation>
@@ -513,6 +517,7 @@
 <translation id="353214771040290298">Modifica completata</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
 <translation id="3533790840489634638">piscina</translation>
+<translation id="3535802910192338629">Il tuo insegnante ha aggiunto nuovi contenuti negli Strumenti scolastici</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Identità locale (facoltativa)</translation>
 <translation id="3565064564551103223">IP consentiti</translation>
@@ -630,6 +635,7 @@
 <translation id="4130750466177569591">Accetto</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
 <translation id="4137700675046373159">sabato</translation>
+<translation id="4139326893730851150">Aggiornamenti del firmware</translation>
 <translation id="4143226836069425823">Tocca un altro tasto della tastiera per sostituire</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -752,6 +758,7 @@
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4744944742468440486">Informazioni relative al testo selezionato</translation>
 <translation id="4771607256327216405">Aumentare la luminosità della tastiera</translation>
+<translation id="4771923071974529837">domani</translation>
 <translation id="4773299976671772492">Interrotta</translation>
 <translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Ricevi definizioni, traduzioni o conversioni di unità quando tocchi e tieni premuto del testo oppure quando ci fai clic sopra con il pulsante destro del mouse.</translation>
@@ -814,6 +821,7 @@
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Colore tema</translation>
+<translation id="5037240652947866174">oggi</translation>
 <translation id="5038292761217083259">Tastiera multicolore</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5049856988445523908">SIM bloccata (<ph name="LOCK_TYPE" />)</translation>
@@ -1172,6 +1180,7 @@
 <translation id="6673898378497337661">aumenta la luminosità della tastiera</translation>
 <translation id="6692996468359469499">Ricevi informazioni correlate alla tua selezione</translation>
 <translation id="6694534975463174713">serratura</translation>
+<translation id="6700703207451721535">L'accesso a questo link non è consentito. Verifica con l'insegnante se hai bisogno dell'accesso.</translation>
 <translation id="6704062477274546131">Risoluzione DNS</translation>
 <translation id="6712933881624804031">una valle</translation>
 <translation id="6716013206176357696">fragole</translation>
@@ -1295,6 +1304,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Raccolte di sfondi</translation>
+<translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="7297226631177386107">Impossibile collegarti tramite firewall ai siti web HTTPS</translation>
 <translation id="7297726121602187087">Verde scuro</translation>
 <translation id="7301262279595293068">Attendi il termine dell'aggiornamento dell'applicazione</translation>
@@ -1354,6 +1364,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7544853251252956727">Riproduzione casuale</translation>
 <translation id="7550715992156305117">Routine diagnostiche</translation>
 <translation id="7551123448725492271">Il dispositivo è un dispositivo audio.</translation>
+<translation id="7553913964854052228">Strumenti scolastici sta usando il microfono</translation>
 <translation id="7559239713112547082">Screenshot di anteprima</translation>
 <translation id="7561454561030345039">Questa azione è gestita dall'amministratore</translation>
 <translation id="7561759921596375678">Attiva il volume</translation>
@@ -1562,6 +1573,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8576249514688522074">Non inizializzato</translation>
 <translation id="8584654835905316966">Per completare l'installazione del firmware per <ph name="DEVICE_NAME" /> alla versione <ph name="VERSION" /> è necessario eseguire il riavvio. Potrebbe sembrare che il computer si riavvii più volte. Si tratta di un comportamento normale.</translation>
 <translation id="8593058461203131755">metti in pausa i contenuti multimediali</translation>
+<translation id="8619169570378509764">Strumenti scolastici</translation>
 <translation id="8620617069779373398">Stato roaming</translation>
 <translation id="8626489604350149811">Altre azioni per <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Viola chiaro</translation>

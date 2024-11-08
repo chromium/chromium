@@ -78,10 +78,8 @@
 <translation id="228293613124499805">Большинство сайтов, которые вы посещаете, скорее всего, сохраняют на устройстве такую информацию, как ваши предпочтения или данные, которыми вы делитесь с ними. Чаще всего это делается для вашего удобства. Мы рекомендуем не отключать этот параметр.</translation>
 <translation id="2289270750774289114">Запрашивать для сайтов разрешение на поиск Bluetooth-устройств поблизости (рекомендуется)</translation>
 <translation id="2315043854645842844">Сертификат, выбранный клиентом, не поддерживается операционной системой.</translation>
-<translation id="2321958826496381788">Перемещайте ползунок, пока текст не станет удобным для чтения. После двойного нажатия на абзац текст должен быть такого размера.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2379925928934107488">Если тёмная тема активирована в Chrome, она будет использоваться для сайтов, когда это возможно.</translation>
-<translation id="2387895666653383613">Масштабирование текста</translation>
 <translation id="2390272837142897736">Увеличить масштаб</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">Разрешить JavaScript для конкретного сайта</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2677748264148917807">Закрыть</translation>
-<translation id="2678468611080193228">Попробуйте временно разрешить сторонние файлы cookie. Это снизит вашу защиту, зато функции сайта, скорее всего, будут работать.</translation>
 <translation id="2682367912565197520">Удалить сохраненный уровень масштабирования</translation>
 <translation id="2683434792633810741">Удалить и сбросить?</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Сторонние файлы cookie заблокированы</translation>
 <translation id="3448554387819310837">Когда этот параметр включен, сайты могут запрашивать разрешение на использование камеры. Когда параметр отключен, им запрещено использовать вашу камеру.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Завтра Chrome снова начнет блокировать файлы cookie}one{Через # день Chrome снова начнет блокировать файлы cookie}few{Через # дня Chrome снова начнет блокировать файлы cookie}many{Через # дней Chrome снова начнет блокировать файлы cookie}other{Через # дня Chrome снова начнет блокировать файлы cookie}}</translation>
 <translation id="3521663503435878242">Сайты с доменом <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Запретить сайтам отслеживать движения рук</translation>
 <translation id="3536227077203206203">Дано разовое разрешение</translation>
@@ -174,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}one{<ph name="RWS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}few{<ph name="RWS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}many{<ph name="RWS_MEMBERS_COUNT" /> сайтов в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}other{<ph name="RWS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}}</translation>
 <translation id="3697164069658504920">Когда этот параметр включен, сайты могут запрашивать разрешение на использование USB-устройств. Когда параметр отключен, сайтам запрещено использовать такие устройства.</translation>
 <translation id="3707034683772193706">Сайт, который вы посещаете, может сохранять небольшой объем информации в Chrome, в основном для подтверждения того, что вы не бот.</translation>
+<translation id="3709818294139939629">Доступ сайта к файлу отменен.</translation>
 <translation id="3721953990244350188">Закрыть и показать следующее доступное действие</translation>
 <translation id="3744111561329211289">Фоновая синхронизация</translation>
 <translation id="3763247130972274048">Чтобы пропустить 10 секунд, дважды нажмите слева или справа.</translation>
@@ -436,6 +433,7 @@
 <translation id="7425915948813553151">Тёмная тема для сайтов</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Когда этот параметр включен, сайты могут показывать предложения войти в аккаунт. Когда параметр отключен, сайтам запрещено это делать.</translation>
+<translation id="7553211568594248088">Покинуть страницу поиска</translation>
 <translation id="7554752735887601236">Сайт использует ваш микрофон</translation>
 <translation id="7561196759112975576">Всегда</translation>
 <translation id="757524316907819857">Запретить сайтам воспроизводить защищенный контент</translation>
@@ -478,6 +476,7 @@
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8168435359814927499">Контент</translation>
+<translation id="818487310457576362">Чтобы выйти из полноэкранного режима, проведите от левого или правого края экрана.</translation>
 <translation id="8186479265534291036">Сайт не работает? Сторонние файлы cookie заблокированы.</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />: разрешено</translation>
 <translation id="8200772114523450471">Возобновить</translation>

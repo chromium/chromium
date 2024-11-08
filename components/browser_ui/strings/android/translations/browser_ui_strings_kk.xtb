@@ -78,10 +78,8 @@
 <translation id="228293613124499805">Сіз кіретін сайттардың көпшілігі теңшелімдеріңізді немесе сайтпен бөлісетін ақпаратты сақтау арқылы тәжірибеңізді жақсарту үшін құрылғыңызға деректерді сақтауы мүмкін. Бұл параметрді қосулы ұстауды ұсынамыз.</translation>
 <translation id="2289270750774289114">Сайт маңайдағы Bluetooth құрылғыларын анықтағысы келген кезде, рұқсат сұралсын (ұсынылады).</translation>
 <translation id="2315043854645842844">Операциялық жүйе клиенттік сертификатты таңдауға қолдау көрсетпейді.</translation>
-<translation id="2321958826496381788">Сырғытпаны оқу ыңғайлы болғанға дейін сүйреңіз. Абзацты екі рет басқан кезде, мәтіннің үлкендігі осындай болуы керек.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2379925928934107488">Chrome қараңғы режим қолданғанда, сайттарға да мүмкіндігінше қараңғы режим қолданыңыз.</translation>
-<translation id="2387895666653383613">Мәтін масштабтау</translation>
 <translation id="2390272837142897736">Масштабты көбейту</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">Белгілі бір сайт үшін JavaScript бағдарламасына рұқсат беру.</translation>
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2677748264148917807">Шығу</translation>
-<translation id="2678468611080193228">Үшінші тарап cookie файлдарын уақытша рұқсат етіп көріңіз, бұл қорғаныстың аз екенін, бірақ сайт мүмкіндіктерінің жұмыс істеу ықтималдығы жоғары екенін білдіреді.</translation>
 <translation id="2682367912565197520">Сақталған масштабтау деңгейін жою</translation>
 <translation id="2683434792633810741">Жою және қайта орнату қажет пе?</translation>
 <translation id="2713106313042589954">Камераны өшіру</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Үшінші тарап cookie файлдары блокталған</translation>
 <translation id="3448554387819310837">Қосылса, сайттар камераны пайдалануға рұқсат сұрай алады. Өшірілсе, пайдалана алмайды.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Chrome ертең cookie файлдарын қайта блоктайды.}other{Chrome браузерінің cookie файлдарын қайта блоктауына # күн қалды.}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> доменіндегі сайттар</translation>
 <translation id="3523447078673133727">Сайттарға қолыңызды бақылауға рұқсат бермеу</translation>
 <translation id="3536227077203206203">Бұл жолы рұқсат берілген.</translation>
@@ -478,6 +474,7 @@
 <translation id="813082847718468539">Сайт ақпаратын көру</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8168435359814927499">Контент</translation>
+<translation id="818487310457576362">Толық экраннан шығу үшін экранның бүйірінен сүйреңіз.</translation>
 <translation id="8186479265534291036">Сайт жұмыс істемей ме? Үшінші тарап cookie файлдары блокталған</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> үшін рұқсат етілген.</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>

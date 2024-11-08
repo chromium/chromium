@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "Adam", "b": "bravo", "c": "celcius", "d": "delta", "e": "Egon", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "Ida", "j": "Julie","k": "kilo", "l": "lima", "m": "Mia", "n": "november", "o": "Ole","p": "pappa", "q": "quiz", "r": "Robert", "s": "Sigurd", "t": "tango", "u": "uniform", "v": "Viktor", "w": "whiskey","x": "Xerxes", "y": "ymer", "z": "zulu", "æ": "æble", "ø": "øre", "å": "Åse"}</translation>
 <translation id="1120938014254001895">Stryg opad med to fingre</translation>
 <translation id="1126928665165112660">Ikke kursiv</translation>
+<translation id="1133751489735776037">Klik tre gange på musen</translation>
 <translation id="113582498867142724"><ph name="TAG" />-samling med <ph name="NUM" /> elementer</translation>
 <translation id="1146441463334103638">Slå skærmen til eller fra</translation>
 <translation id="1156488781945104845">Aktuel tid</translation>
 <translation id="1161762950103988776">Hop</translation>
 <translation id="1164857107703583584">Hoppekommandoer kan bruges til at navigere effektivt på en webside.</translation>
 <translation id="1175914831232945926">Cifre</translation>
+<translation id="1186712907912748007">Træk og slip er i gang. <ph name="GESTURE" /> for at stoppe. Andre bevægelser er midlertidigt utilgængelige.</translation>
 <translation id="1188858454923323853">supplerende</translation>
 <translation id="1189258430971676908">Øveområde: Rullelister</translation>
 <translation id="1195238899008218998">Efterskrift</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">Et link</translation>
 <translation id="2363753371702255035">punkttegn</translation>
 <translation id="2365384324219615024">Du kan også trykke på Enter for at aktivere elementer. Enter kan f.eks. bruges til at indsende tekst i en formular. Tryk på Enter for at fortsætte.</translation>
+<translation id="2371402123699727805">Diktering er aktiv. <ph name="GESTURE" /> for at stoppe. Andre bevægelser er midlertidigt utilgængelige.</translation>
 <translation id="2381733276052567791">Slå tale til eller fra</translation>
 <translation id="2390264819538553347">Tryk på Enter for at gå videre. Tryk på Backspace for at gå tilbage.</translation>
 <translation id="2398579267367951220">Skriv for at søge på siden. Tryk på Enter for at gå videre til resultatet, tryk på pil op eller pil ned for at gennemse resultaterne, fortsæt med at skrive for at ændre din søgning, eller tryk på Esc for at annullere.</translation>
@@ -271,6 +274,7 @@
 <translation id="2723001399770238859">lyd</translation>
 <translation id="2737898226590637227">Der er ikke flere ARIA-orienteringspunkter</translation>
 <translation id="2749275490991666823">Markeret</translation>
+<translation id="2751454300227269244">Spids munden mod højre</translation>
 <translation id="27527859628328957">Gå til næste element, der kan fokuseres på</translation>
 <translation id="2756452585631602151">Angiv en tilpasset etiket</translation>
 <translation id="2766299274563946262">Der er ingen celle til venstre</translation>
@@ -341,7 +345,6 @@
 <translation id="311015743332597320">Stryg til højre med fire fingre</translation>
 <translation id="3112457281078985179">Tryk på Ctrl+Alt+Z for at slå ChromeVox til eller fra.</translation>
 <translation id="3115800313647508384">Vil du slukke skærmen?</translation>
-<translation id="3127625407966660979">Diktering er aktiv</translation>
 <translation id="3131002934070407451">Læs tal som:</translation>
 <translation id="3134461040845705080">skrv.bsk</translation>
 <translation id="3137663468179739624">Olivengrøn</translation>
@@ -352,6 +355,7 @@
 <translation id="3153928844647607688">Tabel <ph name="TABLENAME" />, <ph name="TABLEROWS" /> af <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navigation</translation>
+<translation id="3167446923957429259">Spids munden mod venstre</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{mellemrum}one{# mellemrum}other{# mellemrum}}</translation>
 <translation id="3179119189286472195">Ikke et link</translation>
 <translation id="3180990259147710757">Drej kæben til venstre</translation>
@@ -462,6 +466,7 @@
 <translation id="3870295413168340326">Der er ingen forrige niveau 3-overskrifter</translation>
 <translation id="3887399638190992181">Vigtige taster</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Ansigtsstyring er sat på pause. <ph name="GESTURE" /> for at genoptage. Andre bevægelser er midlertidigt utilgængelige.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgttr</translation>
 <translation id="3909320334364316587">Forrige niveau 6-overskrift</translation>
@@ -501,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{sekund}one{sekund}other{sekunder}}</translation>
 <translation id="4161663686871496107">Talefeedback via ChromeVox er klar</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
-<translation id="4176677444195790114">Træk og slip er i gang</translation>
 <translation id="4187322598335821254">Stryg op eller ned for at flytte én linje ad gangen</translation>
 <translation id="4188530942454211480">Forrige sætning</translation>
 <translation id="4191918948604314587">En knap</translation>
@@ -546,6 +550,7 @@
 <translation id="4402014469255336455">Dyb himmelblå</translation>
 <translation id="4406249099130339147">Tegnsætningsekko</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Vis alle dine tænder</translation>
 <translation id="4432457053224379116">Murstensrød</translation>
 <translation id="4432896207833262240">Markeret indhold</translation>
 <translation id="4437615272777527928">Skriv for at søge i menuerne. Brug pil op og pil ned for at gennemse resultaterne. Brug venstre- og højrepilen for at justere tekstmarkøren og vælge menuer.</translation>
@@ -698,6 +703,7 @@
 <translation id="5452267669091857717">Der er ikke flere niveau 1-overskrifter</translation>
 <translation id="5455441614648621694">Supplerende</translation>
 <translation id="5462510922370980473">Sideliste</translation>
+<translation id="5489460663499094917">Rulletilstand er aktiveret. <ph name="GESTURE" /> for at afslutte. Andre bevægelser er midlertidigt utilgængelige.</translation>
 <translation id="5495517933067991341">Vigtige taster: Shift</translation>
 <translation id="549602578321198708">Ord</translation>
 <translation id="5513242761114685513">Genvejsmenu</translation>
@@ -1110,7 +1116,6 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Autofuldførelse på linje og på liste</translation>
 <translation id="8394908167088220973">Medie: Afspil/Pause</translation>
-<translation id="8409502156784390079">Rulletilstand er aktiveret</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8428603554127842284">niveau <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1188,7 +1193,6 @@
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8989104346085848538">Tryk på Ctrl-tasten for at stoppe oplæsning i ChromeVox.</translation>
 <translation id="9014206344398081366">ChromeVox-vejledning</translation>
-<translation id="9034592733577768445">Ansigtsstyring er sat på pause</translation>
 <translation id="9040132695316389094">Overskrift 1</translation>
 <translation id="9061884144798498064">Vælg en 8-punkts brailletabel:</translation>
 <translation id="9063946545000394379">gå til forrige tegn</translation>

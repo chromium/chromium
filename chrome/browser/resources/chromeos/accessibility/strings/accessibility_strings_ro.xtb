@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{„a”: „alfa”, „ă”: „ăla”, „â”: „â din a”, „b”: „bravo”, „c”: „Charlie”, „d”: „delta”, „e”: „ecou”, „f”: „foxtrot”, „g”: „golf”, „h”: „hotel”, „i”: „India”, „î”: „început”, „j”: „Julieta”, „k”: „kilogram”, „l”: „Lima”, „m”: „Mike”, „n”: „noiembrie”, „o”: „Oscar”, „p”: „papa”, „q”: „Quebec”, „r”: „Romeo”, „s”: „sierra”, „ș”: „șarpe”, „t”: „tango”, „ț”: „țară”, „u”: „uniformă”, „v”: „Victor”, „w”: „whisky”, „x”: „xilofon”, „y”: „yankeu”, „z”: „zulu”}</translation>
 <translation id="1120938014254001895">Glisează cu două degete în sus</translation>
 <translation id="1126928665165112660">Fără cursiv</translation>
+<translation id="1133751489735776037">Dă triplu clic cu mouse-ul</translation>
 <translation id="113582498867142724">Colecția <ph name="TAG" /> cu <ph name="NUM" /> elemente</translation>
 <translation id="1146441463334103638">Pornește sau oprește ecranul</translation>
 <translation id="1156488781945104845">Ora actuală</translation>
 <translation id="1161762950103988776">Accesează</translation>
 <translation id="1164857107703583584">Comenzile de navigare pot fi folosite pentru a naviga eficient într-o pagină web.</translation>
 <translation id="1175914831232945926">Cifre</translation>
+<translation id="1186712907912748007">Tragere și plasare în curs. <ph name="GESTURE" /> pentru a încheia. Alte gesturi sunt indisponibile temporar.</translation>
 <translation id="1188858454923323853">complementar</translation>
 <translation id="1189258430971676908">Zonă pentru exersare: listele drop-down</translation>
 <translation id="1195238899008218998">Postfață</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">Un link</translation>
 <translation id="2363753371702255035">marcator</translation>
 <translation id="2365384324219615024">Poți să apeși și tasta Enter pentru a activa elemente. De exemplu, poți folosi tasta Enter pentru a trimite text într-un formular. Pentru a continua, apasă Enter.</translation>
+<translation id="2371402123699727805">Dictarea este activă. <ph name="GESTURE" /> pentru a opri. Alte gesturi sunt indisponibile temporar.</translation>
 <translation id="2381733276052567791">Activează sau dezactivează vorbirea</translation>
 <translation id="2390264819538553347">Pentru a avansa, apasă tasta Enter; pentru a reveni, apasă tasta Backspace.</translation>
 <translation id="2398579267367951220">Tastează pentru a căuta pagina. Apasă pe Enter pentru a accesa rezultatul, apasă tastele săgeată în sus sau în jos pentru a răsfoi rezultatele, continuă să tastezi pentru a căuta altceva și apasă pe Escape pentru a anula.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">Glisează cu patru degete la dreapta</translation>
 <translation id="3112457281078985179">Pentru a activa sau a dezactiva ChromeVox, folosește Ctrl + Alt + Z.</translation>
 <translation id="3115800313647508384">Oprești ecranul?</translation>
-<translation id="3127625407966660979">Dictarea este activă</translation>
 <translation id="3131002934070407451">Citește numerele ca:</translation>
 <translation id="3134461040845705080">numai în citire</translation>
 <translation id="3137663468179739624">Măsliniu</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Nu există un titlu de nivel 3 anterior</translation>
 <translation id="3887399638190992181">Taste esențiale</translation>
 <translation id="3887576927692165210">casetă text</translation>
+<translation id="3896762831164962772">Comenzile faciale au fost întrerupte. <ph name="GESTURE" /> pentru a relua. Alte gesturi sunt indisponibile temporar.</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3907138069015388678">listă grilă</translation>
 <translation id="3909320334364316587">Titlul de nivel 6 anterior</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{secundă}few{secunde}other{de secunde}}</translation>
 <translation id="4161663686871496107">Feedbackul vocal ChromeVox este configurat</translation>
 <translation id="4176463684765177261">Dezactivat</translation>
-<translation id="4176677444195790114">Tragere și plasare în curs</translation>
 <translation id="4187322598335821254">Glisați în sus sau în jos pentru a trece de la un rând la altul</translation>
 <translation id="4188530942454211480">Propoziția anterioară</translation>
 <translation id="4191918948604314587">Un buton</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">Albastru celest</translation>
 <translation id="4406249099130339147">Redare vocală a punctuației:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Arată-ți toți dinții</translation>
 <translation id="4432457053224379116">Roșu indian</translation>
 <translation id="4432896207833262240">Conținut marcat</translation>
 <translation id="4437615272777527928">Tastează pentru a căuta în meniuri. Folosește săgețile în sus și în jos pentru a răsfoi rezultatele. Folosește săgețile spre dreapta și spre stânga pentru a ajusta cursorul pentru text și pentru a trece de la un meniu la altul.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Nu există un titlu de nivel 1 următor</translation>
 <translation id="5455441614648621694">Complementar</translation>
 <translation id="5462510922370980473">Listă de pagini</translation>
+<translation id="5489460663499094917">Modul de derulare este activ. <ph name="GESTURE" /> pentru a părăsi. Alte gesturi sunt indisponibile temporar.</translation>
 <translation id="5495517933067991341">Taste esențiale: Shift</translation>
 <translation id="549602578321198708">Cuvânt</translation>
 <translation id="5513242761114685513">Meniu contextual</translation>
@@ -1112,7 +1116,6 @@
 <translation id="8378855320830505539">Regiune</translation>
 <translation id="8382679411218029383">Completare automată inline și listă</translation>
 <translation id="8394908167088220973">Redați/întrerupeți conținutul media</translation>
-<translation id="8409502156784390079">Modul de derulare este activ</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8428603554127842284">nivelul <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">bară meniu</translation>
@@ -1190,7 +1193,6 @@
 <translation id="8986362086234534611">Șterge</translation>
 <translation id="8989104346085848538">Pentru a opri citirea cu ChromeVox, apasă tasta Control.</translation>
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
-<translation id="9034592733577768445">Comenzile faciale au fost întrerupte</translation>
 <translation id="9040132695316389094">Titlu 1</translation>
 <translation id="9061884144798498064">Selectează un tabel Braille cu 8 puncte:</translation>
 <translation id="9063946545000394379">treci la caracterul anterior</translation>

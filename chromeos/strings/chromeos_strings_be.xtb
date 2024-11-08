@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Ідзе стварэнне відарысаў...</translation>
 <translation id="1116694919640316211">Інфармацыя</translation>
 <translation id="1118572504348554005">Каб знаходзіць і выпраўляць памылкі і іншыя непаладкі, аб якіх вы паведамляеце нам, мы можам абагульваць водгукі, адпраўленыя праз гэту форму, з нашымі партнёрамі. Не ўказвайце асабістую інфармацыю (напрыклад, паролі).</translation>
+<translation id="1119403468619527527">Занадта мала слоў для спрашчэння</translation>
 <translation id="1119447706177454957">Унутраная памылка</translation>
 <translation id="1124772482545689468">Карыстальнік</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Выключыць застаўку</translation>
 <translation id="3091839911843451378">Збой: работа спынена</translation>
 <translation id="3102119246920354026">Кэш</translation>
+<translation id="3112413615003385433">Выкладчык выдаліў змесціва з праграмы "Школьныя інструменты"</translation>
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3122614491980756867">вадаёмы</translation>
 <translation id="3122883569442693641">Дадатковая інфармацыя</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">Гатова</translation>
 <translation id="3532980081107202182">Прыблізны час да завяршэння: <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3533790840489634638">вадаём</translation>
+<translation id="3535802910192338629">Выкладчык дадаў новае змесціва ў праграму "Школьныя інструменты"</translation>
 <translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Лакальнае пасведчанне (неабавязкова)</translation>
 <translation id="3565064564551103223">Дазволеныя IP-адрасы</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">Не ўдаецца пратэсціраваць прыладу. Каб пачаць тэсціраванне, перайдзіце ў рэжым ноўтбука.</translation>
 <translation id="3916998944874125962">зрабіць здымак экрана</translation>
 <translation id="3923184630988645767">Выкарыстанне трафіка</translation>
+<translation id="3924445055519423964">Націсніце, каб падсумаваць змесціва вэб-старонкі ці файла PDF</translation>
 <translation id="3932043219784172185">Няма падключаных прылад</translation>
 <translation id="3934185438132762746">Не прызначана: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">Згаджаюся</translation>
 <translation id="4131410914670010031">Чорна-белы друк</translation>
 <translation id="4137700675046373159">у суботу</translation>
+<translation id="4139326893730851150">Абнаўленні ўбудаванага праграмнага забеспячэння</translation>
 <translation id="4143226836069425823">Каб замяніць выбраную раней клавішу, націсніце іншую клавішу на клавіятуры</translation>
 <translation id="4145784616224233563">Брандмаўар HTTP</translation>
 <translation id="4147897805161313378">Google Фота</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">Старонкі</translation>
 <translation id="4989542687859782284">Недаступна</translation>
 <translation id="4999333166442584738">Схаваць справаздачу</translation>
+<translation id="5005695757087124131">Спрасціць выбраны тэкст</translation>
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Колер тэмы</translation>
@@ -1148,7 +1154,7 @@
 <translation id="6595046262780525922">Уключыць функцыю расшыфроўкі і спампаваць мадэль расшыфроўкі?</translation>
 <translation id="6596816719288285829">IP-адрас</translation>
 <translation id="6599673642868607614">Дзякуй за водгук. Ён дапаможа нам палепшыць работу Chromebook і будзе разгледжаны нашай камандай. Да нас звяртаецца вялікая колькасць людзей, і таму мы не зможам адправіць вам адказ.</translation>
-<translation id="660846213831377756">Кнопкі мышы</translation>
+<translation id="660846213831377756">Клавішы кіравання мышшу</translation>
 <translation id="6618744767048954150">Выконваецца</translation>
 <translation id="6620487321149975369">Заданні друку будуць паказвацца ў гісторыі, пакуль яны не будуць выдалены ўручную</translation>
 <translation id="6624819909909965616">Нельга запампаваць файл, большы за 10 МБ</translation>
@@ -1296,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Адчуванне брызу</translation>
 <translation id="7287310195820267359">Калекцыі шпалер</translation>
+<translation id="7293429513719260019">Выбраць мову</translation>
 <translation id="7297226631177386107">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTPS</translation>
 <translation id="7297726121602187087">Цёмна-зялёны</translation>
 <translation id="7301262279595293068">Пачакайце, пакуль гэта праграма абновіцца</translation>
@@ -1328,6 +1335,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" />: гатова да абнаўлення</translation>
 <translation id="741244894080940828">перавод адзінак вымярэння</translation>
 <translation id="7415801143053185905">Вельмі вялікая затрымка HTTP-запытаў</translation>
+<translation id="7418738250896500352">Занадта многа слоў для спрашчэння</translation>
 <translation id="7425037327577270384">Дапамога з напісаннем</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не ўдалося адключыць або выдаліць гэты ідэнтыфікатар APN. Вам трэба адключыць або выдаліць APN, якія маюць тып "<ph name="ATTACH" />" і былі ўключаны.</translation>
@@ -1353,6 +1361,7 @@
 <translation id="7544853251252956727">Перамяшаць</translation>
 <translation id="7550715992156305117">Паслядоўнасці дзеянняў для дыягностыкі</translation>
 <translation id="7551123448725492271">Гэта аўдыяпрылада.</translation>
+<translation id="7553913964854052228">Праграма "Школьныя інструменты" выкарыстоўвае ваш мікрафон</translation>
 <translation id="7559239713112547082">Перадпрагляд здымка экрана</translation>
 <translation id="7561454561030345039">Гэтым дзеяннем кіруе адміністратар</translation>
 <translation id="7561759921596375678">Уключыць гук</translation>
@@ -1543,6 +1552,7 @@
 <translation id="8476942730579767658">Вокны і працоўныя сталы</translation>
 <translation id="8477536061607044749">графічны дызайн</translation>
 <translation id="8477551185774834963">Затрымка DNS крыху перавышае дапушчальнае парогавае значэнне</translation>
+<translation id="8482376765267780829">Выберыце фрагмент тэксту для спрашчэння</translation>
 <translation id="8483248364096924578">IP-адрас</translation>
 <translation id="8491311378305535241">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTP з праграм Android</translation>
 <translation id="8495070016475833911">лямец</translation>
@@ -1561,6 +1571,7 @@
 <translation id="8576249514688522074">Неініцыялізаваная</translation>
 <translation id="8584654835905316966">Для завяршэння ўсталявання абнаўлення ўбудаванага праграмнага забеспячэння да версіі <ph name="VERSION" /> трэба перазапусціць прыладу "<ph name="DEVICE_NAME" />". Ваш камп’ютар можа перазагрузіцца некалькі разоў. Гэта стандартны працэс.</translation>
 <translation id="8593058461203131755">прыпыніць медыязмесціва</translation>
+<translation id="8619169570378509764">Школьныя інструменты</translation>
 <translation id="8620617069779373398">Стан роўмінгу</translation>
 <translation id="8626489604350149811">Іншыя дзеянні з прыладай "<ph name="APN_NAME" />"</translation>
 <translation id="86356131183441916">Светла-фіялетавы</translation>
@@ -1671,6 +1682,7 @@
 <translation id="9082718469794970195">Выкарыстоўваць гэта відэа</translation>
 <translation id="9087578468327036362">Паскардзіцца на гэты запыт</translation>
 <translation id="9088306295921699330">Бягучае выкарыстанне</translation>
+<translation id="9088994563996376283">Спрасціць</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Больш падрабязна пра дату скіду</translation>
 <translation id="9100765901046053179">Дадатковыя налады</translation>

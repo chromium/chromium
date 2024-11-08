@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Vrednost vnosa za zasebni ključ mora biti veljavna pot.</translation>
 <translation id="388442998277590542">Strani z možnostmi »<ph name="OPTIONS_PAGE" />« ni bilo mogoče naložiti.</translation>
 <translation id="3984413272403535372">Med podpisovanjem razširitve je prišlo do napake.</translation>
-<translation id="4115165561519362854">Skrbnik te naprave zahteva, da je <ph name="EXTENSION_NAME" /> različice najmanj <ph name="EXTENSION_VERSION" />. Ni je mogoče omogočiti, dokler ni posodobljena na to (ali novejšo) različico.</translation>
 <translation id="4233778200880751280">Ni bilo mogoče naložiti Vizitke »<ph name="ABOUT_PAGE" />«.</translation>
 <translation id="471800408830181311">Zasebnega ključa ni bilo mogoče izdati.</translation>
 <translation id="4811956658694082538">Paketa ni bilo mogoče namestiti, ker se je pomožni proces zrušil. Znova zaženite Chrome in poskusite znova.</translation>

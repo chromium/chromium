@@ -630,7 +630,6 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3208321278970793882">App</translation>
 <translation id="3213571860604332401">Lagre link som bokmerke</translation>
 <translation id="3217205077783620295">Volumet er på. Hvis du slår det av, kuttes lyden.</translation>
-<translation id="3218561536255328229">Trykk på Esc-tasten fem ganger for å slå på styreflaten</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> til</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Batterisparing er slått av</translation>
@@ -646,7 +645,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3269597722229482060">Høyreklikk</translation>
 <translation id="3271554781793662131">Søk for å sette inn</translation>
 <translation id="3274634049061007184">Se apper fra telefonen din</translation>
-<translation id="3289364673986435196">På/av-meny</translation>
+<translation id="3289364673986435196">Av/på-meny</translation>
 <translation id="3289544412142055976">Linux-apper støttes ikke for øyeblikket</translation>
 <translation id="3289674678944039601">Lader via adapter</translation>
 <translation id="3290356915286466215">Usikret</translation>
@@ -1305,6 +1304,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5393156353051693207">Trykk og hold hvor som helst for å endre rekkefølge på appene</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oppå <ph name="IN_PLACE_APP" /> – slipp for å opprette en mappe.</translation>
 <translation id="5397578532367286026">Bruken og loggen for denne brukeren kan gjennomgås av administratoren (<ph name="MANAGER_EMAIL" />) på chrome.com</translation>
+<translation id="540338817371815859">Liggende</translation>
 <translation id="540713187982329711">Slå av/på wifi-sonen. Wifi-sonen er på. Ingen enheter er tilkoblet.</translation>
 <translation id="5409208741270395213">Merk gjøremålet som fullført</translation>
 <translation id="5413656666631274079">Innstillingssiden</translation>
@@ -1667,7 +1667,7 @@ Nylig installert</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kameraet er festet til nedre venstre hjørne. Konflikt med systemoverflaten.</translation>
 <translation id="6605415194043280389">Fokus er på</translation>
-<translation id="660846213831377756">Museknapper</translation>
+<translation id="660846213831377756">Musetaster</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="6612802754306526077">Skjermopptaksmodus er valgt</translation>
 <translation id="6612889377159412215">underoppgave</translation>
@@ -1767,6 +1767,7 @@ Nylig installert</translation>
 <translation id="6921427376813842559">Oppdater enheten</translation>
 <translation id="6929081673585394903">Vis kontroller</translation>
 <translation id="6931576957638141829">Lagre i</translation>
+<translation id="6935857786205183008">Stående</translation>
 <translation id="6942518653766415536">Meny for opptaksformat</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6945922087561257829">Telefonen bruker et mobilnettverk. Sørg for at telefonen og Chromebooken er koblet til det samme wifi-nettverket, og prøv på nytt. <ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="98120814841227350">Gå til slutten av dokumentet</translation>
 <translation id="987589956647469042">Mobildata er slått på</translation>
 <translation id="989374776391122812">Kamera- og lydkontroller</translation>
+<translation id="990263227494928142">Trykk på Shift fem ganger for å slå på styreflaten</translation>
 <translation id="990277280839877440">Vinduet <ph name="WINDOW_TITILE" /> er lukket.</translation>
 <translation id="993398562350683614">Innføringstrinn <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Bruk apper til å gjøre alt du trenger, på <ph name="PRODUCT_NAME" />. Du finner appene dine i appoversikten. Trykk på Alt + Shift + L for å fokusere på Appoversikt-knappen.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

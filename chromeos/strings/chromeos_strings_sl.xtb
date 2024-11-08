@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Ustvarjanje slik …</translation>
 <translation id="1116694919640316211">O možnostih</translation>
 <translation id="1118572504348554005">Povratne informacije, ki jih pošljete v tem obrazcu, lahko delimo z našimi partnerji in tako odpravljamo napake ter druge težave, o katerih nas obvestite. Ne vključite občutljivih podatkov, kot so gesla.</translation>
+<translation id="1119403468619527527">Premalo besed za poenostavitev</translation>
 <translation id="1119447706177454957">Notranja napaka</translation>
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Naprave ni mogoče preizkusiti. Če želite preizkusiti, preklopite v način prenosnika.</translation>
 <translation id="3916998944874125962">ustvarjanje posnetka zaslona</translation>
 <translation id="3923184630988645767">Prenesena količina podatkov</translation>
+<translation id="3924445055519423964">Kliknite, če želite povzeti spletno stran/datoteko PDF</translation>
 <translation id="3932043219784172185">Nobena naprava ni povezana</translation>
 <translation id="3934185438132762746">Nedodeljeno: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Ni bilo mogoče razrešiti gostitelja</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Strinjam se</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
 <translation id="4137700675046373159">v soboto</translation>
+<translation id="4139326893730851150">Posodobitve vdelane programske opreme</translation>
 <translation id="4143226836069425823">Dotaknite se druge tipke na tipkovnici za zamenjavo</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Strani</translation>
 <translation id="4989542687859782284">Ni na voljo</translation>
 <translation id="4999333166442584738">Skrij poročilo</translation>
+<translation id="5005695757087124131">Kliknite, če želite poenostaviti izbrano besedilo</translation>
 <translation id="500920857929044050">Ustavi preizkus</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Barva teme</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Začutite vetrič</translation>
 <translation id="7287310195820267359">Zbirke zaslonskih ozadij</translation>
+<translation id="7293429513719260019">Izbira jezika</translation>
 <translation id="7297226631177386107">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>
 <translation id="7297726121602187087">Temno zelena</translation>
 <translation id="7301262279595293068">Počakajte, da se ta aplikacija posodobi</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7405493795721832710">Naprava <ph name="DEVICE_NAME" /> je pripravljena za posodobitev</translation>
 <translation id="741244894080940828">pretvorba</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
+<translation id="7418738250896500352">Preveč besed za poenostavitev</translation>
 <translation id="7425037327577270384">Pomoč pri pisanju</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tega APN-ja ni mogoče onemogočiti ali odstraniti. Omogočeni povezani APN-ji vrste <ph name="ATTACH" /> morajo biti onemogočeni ali odstranjeni.</translation>
@@ -1357,6 +1363,7 @@
 <translation id="7544853251252956727">Naključno predvajanje</translation>
 <translation id="7550715992156305117">Rutine za diagnostiko</translation>
 <translation id="7551123448725492271">Naprava je zvočna naprava.</translation>
+<translation id="7553913964854052228">Orodja za šolo uporabljajo vaš mikrofon</translation>
 <translation id="7559239713112547082">Predogled posnetka zaslona</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7561759921596375678">Vklop glasnosti zvoka</translation>
@@ -1547,6 +1554,7 @@
 <translation id="8476942730579767658">Okna in namizja</translation>
 <translation id="8477536061607044749">grafično oblikovanje</translation>
 <translation id="8477551185774834963">Zakasnitev DNS-ja je nekoliko nad dovoljenim pragom</translation>
+<translation id="8482376765267780829">Izberite besedilo, ki ga želite poenostaviti</translation>
 <translation id="8483248364096924578">Naslov IP</translation>
 <translation id="8491311378305535241">Iz aplikacij za Android ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>
 <translation id="8495070016475833911">klobučevina</translation>
@@ -1676,6 +1684,7 @@
 <translation id="9082718469794970195">Uporabi ta videoposnetek</translation>
 <translation id="9087578468327036362">Prijavite to poizvedbo</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>
+<translation id="9088994563996376283">Poenostavi</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Več informacij o datumu ponastavitve</translation>
 <translation id="9100765901046053179">Dodatne nastavitve</translation>

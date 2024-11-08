@@ -630,7 +630,6 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3208321278970793882">Rakendus</translation>
 <translation id="3213571860604332401">Lingi salvestamine järjehoidjana</translation>
 <translation id="3217205077783620295">Helitugevus on sees, vahetamisel heli vaigistatakse.</translation>
-<translation id="3218561536255328229">Puuteplaadi lubamiseks vajutage viis korda paoklahvi</translation>
 <translation id="3226991577105957773">ja veel <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Akusäästja on välja lülitatud</translation>
@@ -1306,6 +1305,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5393156353051693207">Rakenduste järjestuse muutmiseks puudutage pikalt kus tahes</translation>
 <translation id="5395308026110844773">Rakendus <ph name="DRAGGED_APP_NAME" /> rakenduse <ph name="IN_PLACE_APP" /> kohal, kausta loomiseks vabastage.</translation>
 <translation id="5397578532367286026">Haldur (<ph name="MANAGER_EMAIL" />) saab kasutaja kasutusandmeid ja ajalugu vaadata aadressil chrome.com.</translation>
+<translation id="540338817371815859">Horisontaalpaigutus</translation>
 <translation id="540713187982329711">Kuumkoha sisse-/väljalülitamine. Kuumkoht on sisse lülitatud, ükski seade pole ühendatud.</translation>
 <translation id="5409208741270395213">Märgi ülesanne lõpetatuks</translation>
 <translation id="5413656666631274079">Leht Seaded</translation>
@@ -1768,6 +1768,7 @@ Uus installimine</translation>
 <translation id="6921427376813842559">Viige seade tagasi</translation>
 <translation id="6929081673585394903">Kuva juhtelemendid</translation>
 <translation id="6931576957638141829">Sihtkohta salvestamine</translation>
+<translation id="6935857786205183008">Vertikaalpaigutus</translation>
 <translation id="6942518653766415536">Salvestise vormingu menüü</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6945922087561257829">Teie telefon kasutab mobiilsidevõrku. Veenduge, et teie telefon ja Chromebook oleksid samas WiFi-võrgus, ning seejärel proovige uuesti. <ph name="LEARN_MORE" /></translation>
@@ -2436,6 +2437,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="98120814841227350">Dokumendi lõppu liikumine</translation>
 <translation id="987589956647469042">Mobiilne andmeside on sisse lülitatud</translation>
 <translation id="989374776391122812">Kaamera ja heli juhtnupud</translation>
+<translation id="990263227494928142">Puuteplaadi lubamiseks vajutage viis korda tõstuklahvi</translation>
 <translation id="990277280839877440">Aken <ph name="WINDOW_TITILE" /> on suletud.</translation>
 <translation id="993398562350683614">Tutvustuse toiming <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Rakendused aitavad seadmes <ph name="PRODUCT_NAME" /> teha kõike vajalikku. Rakendused leiate käivitajast. Käivitaja nupu esiletõstmiseks vajutage klahve Alt + tõstuklahv + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

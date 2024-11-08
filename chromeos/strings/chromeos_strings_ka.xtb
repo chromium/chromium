@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">მიმდინარეობს სურათების შექმნა...</translation>
 <translation id="1116694919640316211">ინფო</translation>
 <translation id="1118572504348554005">ამ ფორმის მეშვეობით წარმოდგენილი გამოხმაურება, შესაძლოა, გავუზიაროთ ჩვენს პარტნიორებს ხარვეზებისა და თქვენ მიერ ჩვენთვის შეტყობინებული სხვა პრობლემების აღმოფხვრისა მიზნით. არ მიუთითოთ სენსიტიური ინფორმაცია, მაგალითად, პაროლები.</translation>
+<translation id="1119403468619527527">მეტისმეტად ცოტა სიტყვაა გასამარტივებლად</translation>
 <translation id="1119447706177454957">შიდა შეცდომა</translation>
 <translation id="1124772482545689468">მომხმარებელი</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">მოწყობილობის შემოწმება ვერ ხერხდება. შესამოწმებლად გადადით ლეპტოპის რეჟიმზე.</translation>
 <translation id="3916998944874125962">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3923184630988645767">მონაცემთა მოხმარება</translation>
+<translation id="3924445055519423964">დააწკაპუნეთ ვებგვერდის/PDF ფაილის შეჯამებისთვის</translation>
 <translation id="3932043219784172185">დაკავშირებული მოწყობილობები არ არის</translation>
 <translation id="3934185438132762746">მიუნიჭებელი <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ჰოსტის გარდაქმნა ვერ მოხერხდა</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">ვეთანხმები</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
 <translation id="4137700675046373159">შაბათს</translation>
+<translation id="4139326893730851150">ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
 <translation id="4143226836069425823">ჩასანაცვლებლად შეეხეთ კლავიატურის სხვა კლავიშს</translation>
 <translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">გვერდები</translation>
 <translation id="4989542687859782284">მიუწვდომელია</translation>
 <translation id="4999333166442584738">ანგარიშის დამალვა</translation>
+<translation id="5005695757087124131">დააწკაპუნეთ მონიშნული ტექსტის გამარტივებისთვის</translation>
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">თემის ფერი</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ბრიზი</translation>
 <translation id="7287310195820267359">ფონების კოლექციები</translation>
+<translation id="7293429513719260019">აირჩიეთ ენა</translation>
 <translation id="7297226631177386107">ქსელის დაცვიდან HTTPS ვებსაიტებთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="7297726121602187087">მუქი მწვანე</translation>
 <translation id="7301262279595293068">მოითმინეთ, სანამ ამ აპლიკაციის განახლება მიმდინარეობს</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> მზადაა განახლებისთვის</translation>
 <translation id="741244894080940828">გარდაქმნა</translation>
 <translation id="7415801143053185905">HTTP რეაგირების დრო ზედმეტად დიდია</translation>
+<translation id="7418738250896500352">მეტისმეტად ბევრი სიტყვაა გასამარტივებლად</translation>
 <translation id="7425037327577270384">დამეხმარეთ დაწერაში</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ამ APN-ის გათიშვა ან წაშლა ვერ ხერხდება. დარწმუნდით, რომ <ph name="ATTACH" /> APN-ები, რომლებიც ჩართულია, გათიშული ან წაშლილია.</translation>
@@ -1357,6 +1363,7 @@
 <translation id="7544853251252956727">არეულად დაკვრა</translation>
 <translation id="7550715992156305117">დიაგნოსტიკის რუტინები</translation>
 <translation id="7551123448725492271">მოწყობილობა არის აუდიო მოწყობილობა.</translation>
+<translation id="7553913964854052228">სასკოლო ხელსაწყოები იყენებს თქვენს მიკროფონს</translation>
 <translation id="7559239713112547082">ეკრანის ანაბეჭდის გადახედვა</translation>
 <translation id="7561454561030345039">ამ მოქმედებას მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="7561759921596375678">ხმის ჩართვა</translation>
@@ -1547,6 +1554,7 @@
 <translation id="8476942730579767658">ფანჯრები და სამუშაო მაგიდები</translation>
 <translation id="8477536061607044749">გრაფიკული დიზაინი</translation>
 <translation id="8477551185774834963">DNS-ის რეაგირების დრო ოდნავ აღემატება დასაშვებ ზღვარს</translation>
+<translation id="8482376765267780829">გასამარტივებლად მონიშნეთ ტექსტი</translation>
 <translation id="8483248364096924578">IP მისამართი</translation>
 <translation id="8491311378305535241">ქსელის დაცვიდან Android აპების მეშვეობით HTTP ვებსაიტებთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="8495070016475833911">ფეტრი</translation>
@@ -1676,6 +1684,7 @@
 <translation id="9082718469794970195">ამ ვიდეოს გამოყენება</translation>
 <translation id="9087578468327036362">მოხსენება ამ მოთხოვნის შესახებ</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>
+<translation id="9088994563996376283">გამარტივება</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">მეტი ინფორმაცია გადაყენების თარიღზე</translation>
 <translation id="9100765901046053179">გაფართოებული პარამეტრები</translation>

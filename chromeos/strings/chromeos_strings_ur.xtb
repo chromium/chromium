@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">تصاویر تخلیق ہو رہی ہے...</translation>
 <translation id="1116694919640316211">کے بارے میں</translation>
 <translation id="1118572504348554005">ہم اس فارم کے ذریعے جمع کرائے گئے تاثرات کا اپنے پارٹنرز کے ساتھ بگز اور دیگر مسائل جن کی آپ ہمیں رپورٹ کرتے ہیں کو حل کرنے کے لیے اشتراک کر سکتے ہیں۔ پاس ورڈز جیسی حساس معلومات شامل نہ کریں۔</translation>
+<translation id="1119403468619527527">آسان بنانے کے لیے بہت کم الفاظ</translation>
 <translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1124772482545689468">صارف</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">اسکرین سیور غیر فعال کریں</translation>
 <translation id="3091839911843451378">ناکام ہو گیا - رک گیا</translation>
 <translation id="3102119246920354026">کیش</translation>
+<translation id="3112413615003385433">آپ کے استاد نے اسکول ٹولز میں موجود مواد کو ہٹا دیا ہے</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">پُولز</translation>
 <translation id="3122883569442693641">مزید تفصیلات</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">ترمیم ہو گئی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
 <translation id="3533790840489634638">پول</translation>
+<translation id="3535802910192338629">آپ کے استاد نے اسکول ٹولز میں نیا مواد شامل کیا ہے</translation>
 <translation id="3547264467365135390">فارمولہ</translation>
 <translation id="3557205324756024651">مقامی شناخت (اختیاری)</translation>
 <translation id="3565064564551103223">‏اجازت یافتہ IPs</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">آلہ کو ٹیسٹ نہیں کیا جا سکتا۔ ٹیسٹ کرنے کے لیے لیپ ٹیب موڈ پر سوئچ کریں۔</translation>
 <translation id="3916998944874125962">اسکرین شاٹ لیں</translation>
 <translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
+<translation id="3924445055519423964">‏ویب صفحہ/PDF فائل کا خلاصہ کرنے کے لیے کلک کریں</translation>
 <translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="3934185438132762746">غیر تفویض کردہ <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">میزبان کو حل کرنے میں ناکام</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">میں متفق ہوں</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
 <translation id="4137700675046373159">ہفتہ کو</translation>
+<translation id="4139326893730851150">فرم ویئر اپ ڈیٹس</translation>
 <translation id="4143226836069425823">تبدیل کرنے کے لیے کی بورڈ کی دوسری کلید پر تھپتھپائیں</translation>
 <translation id="4145784616224233563">‏HTTP فائروال</translation>
 <translation id="4147897805161313378">‏Google تصاویر</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="4989542687859782284">غیر دستیاب</translation>
 <translation id="4999333166442584738">رپورٹ چھپائیں</translation>
+<translation id="5005695757087124131">منتخب کردہ ٹیکسٹ کو آسان بنانے کے لیے کلک کریں</translation>
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
 <translation id="5035083460461104704">تھیم کا رنگ</translation>
@@ -1296,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ہوا کا جھونکا محسوس کریں</translation>
 <translation id="7287310195820267359">وال پیپر کے مجموعے</translation>
+<translation id="7293429513719260019">زبان منتخب کریں</translation>
 <translation id="7297226631177386107">‏فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
 <translation id="7297726121602187087">گہرا سبز</translation>
 <translation id="7301262279595293068">براہ کرم یہ ایپلیکیشن اپ ڈیٹ کیے جانے کے دوران انتظار کریں</translation>
@@ -1330,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> اپ ڈیٹ ہونے کے لیے تیار ہے</translation>
 <translation id="741244894080940828">تبدیلی</translation>
 <translation id="7415801143053185905">‏بہت زیادہ HTTPS تاخیر</translation>
+<translation id="7418738250896500352">آسان بنانے کے لیے بہت سارے الفاظ</translation>
 <translation id="7425037327577270384">لکھنے میں میری مدد کریں</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏اس APN کو غیر فعال یا ہٹا نہیں سکتے۔ یقینی بنائیں کہ فعال کردہ <ph name="ATTACH" /> APNs کو غیر فعال یا ہٹا دیا گیا ہے۔</translation>
@@ -1355,6 +1363,7 @@
 <translation id="7544853251252956727">شفل کریں</translation>
 <translation id="7550715992156305117">ڈائیگناسٹک روٹینز</translation>
 <translation id="7551123448725492271">آلہ ایک آڈیو آلہ ہے۔</translation>
+<translation id="7553913964854052228">سکول ٹولز آپ کا مائیکروفون استعمال کر رہا ہے۔</translation>
 <translation id="7559239713112547082">اسکرین شاٹ کا پیش منظر دیکھیں</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7561759921596375678">والیوم کو آن کریں</translation>
@@ -1545,6 +1554,7 @@
 <translation id="8476942730579767658">ونڈوز اور ڈیسکس</translation>
 <translation id="8477536061607044749">گرافک ڈیزائن</translation>
 <translation id="8477551185774834963">‏DNS تاخیر قابل اجازت حد سے تھوڑی سی زیادہ ہے</translation>
+<translation id="8482376765267780829">آسان بنانے کے لیے کچھ ٹیکسٹ منتخب کریں</translation>
 <translation id="8483248364096924578">‏IP پتہ</translation>
 <translation id="8491311378305535241">‏Android ایپس سے فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
 <translation id="8495070016475833911">نمدا</translation>
@@ -1563,6 +1573,7 @@
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> کے لیے ورزن <ph name="VERSION" /> پر فرم ویئر کی انسٹالیشن مکمل کرنے کے لیے ری اسٹارٹ کرنے کی ضرورت ہے۔ آپ کا کمپیوٹر کئی بار ریبوٹ ہوتا ہوا نظر آ سکتا ہے۔ یہ برتاؤ متوقع ہے۔</translation>
 <translation id="8593058461203131755">میڈیا موقوف کریں</translation>
+<translation id="8619169570378509764">اسکول ٹولز</translation>
 <translation id="8620617069779373398">رومنگ کی صورتحال</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> کیلئے مزید کارروائیاں</translation>
 <translation id="86356131183441916">ہلکا جامنی</translation>
@@ -1673,6 +1684,7 @@
 <translation id="9082718469794970195">یہ ویڈیو استعمال کریں</translation>
 <translation id="9087578468327036362">اس استفسار کی اطلاع دیں</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
+<translation id="9088994563996376283">آسان بنائیں</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">ری سیٹ کی تاریخ سے متعلق مزید معلومات</translation>
 <translation id="9100765901046053179">جدید ترین ترتیبات</translation>

@@ -538,6 +538,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7655455401911432608">Ваша історія веб-перегляду – перелік сайтів, які ви відвідали через Chrome на цьому пристрої.</translation>
 <translation id="7655472416356262023">Вилучити обліковий запис із Chrome</translation>
 <translation id="7658239707568436148">Скасувати</translation>
+<translation id="7659737857277959440">Адміністратор організації може бачити дані вебперегляду (зокрема закладки, історію і паролі) та керувати ними. Він не має доступу до даних вебперегляду в особистих профілях Chrome.</translation>
 <translation id="7661924425853052955">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і ще <ph name="COUNT" />.</translation>
 <translation id="7668816516367091728">Виконуйте такі завдання, як переклад, обчислення тощо, безпосередньо в адресному рядку</translation>
 <translation id="7670287553302121848">Потрібно пройти повторну автентифікацію в обліковому записі Chrome</translation>
@@ -588,6 +589,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8129812357326543296">Про &amp;Google Chrome</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>
 <translation id="8162006532256575008">Використовувати Chrome, не входячи в обліковий запис</translation>
+<translation id="8221491193165283816">Зазвичай ви блокуєте сповіщення. Натисніть тут, щоб дозволити сайту показувати їх.</translation>
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
 <translation id="8257796129973882597">У меню Chrome можна відкривати закладки, переходити в режим читання тощо</translation>
 <translation id="8267953129876836456">Веб-переглядач Chrome знайшов для вас кілька рекомендацій щодо безпеки</translation>

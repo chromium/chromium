@@ -630,7 +630,6 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3208321278970793882">Apl</translation>
 <translation id="3213571860604332401">Simpan pautan sebagai penanda halaman</translation>
 <translation id="3217205077783620295">Kelantangan dihidupkan. Tindakan menogol akan meredamkan audio.</translation>
-<translation id="3218561536255328229">Tekan Esc 5 kali untuk mendayakan pad sentuh</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Penjimat Bateri dimatikan</translation>
@@ -2437,6 +2436,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="98120814841227350">Pergi ke bahagian hujung dokumen</translation>
 <translation id="987589956647469042">Data mudah alih dihidupkan</translation>
 <translation id="989374776391122812">Kawalan kamera dan audio</translation>
+<translation id="990263227494928142">Tekan Shift 5 kali untuk mendayakan pad sentuh</translation>
 <translation id="990277280839877440">Tetingkap <ph name="WINDOW_TITILE" /> ditutup.</translation>
 <translation id="993398562350683614">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Gunakan apl untuk melakukan semua perkara yang diperlukan pada <ph name="PRODUCT_NAME" /> anda. Anda boleh menemukan apl anda dalam Pelancar. Tekan Alt + Shift + L untuk fokus pada butang Pelancar.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

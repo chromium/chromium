@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">ചിത്രങ്ങൾ സൃഷ്‌ടിക്കുന്നു...</translation>
 <translation id="1116694919640316211">വിവരം</translation>
 <translation id="1118572504348554005">ബഗുകളും നിങ്ങൾ ഞങ്ങൾക്ക് റിപ്പോർട്ട് ചെയ്യുന്ന മറ്റ് പ്രശ്‌നങ്ങളും പരിഹരിക്കാൻ, ഈ ഫോമിലൂടെ സമർപ്പിക്കുന്ന ഫീഡ്ബാക്ക് ഞങ്ങളുടെ പങ്കാളികളുമായി ഞങ്ങൾ പങ്കിട്ടേക്കാം. പാസ്‌വേഡുകൾ പോലുള്ള, സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട വിവരങ്ങൾ ഉൾപ്പെടുത്തരുത്.</translation>
+<translation id="1119403468619527527">ലളിതമാക്കാൻ കുറച്ച് വാക്കുകളേയുള്ളൂ</translation>
 <translation id="1119447706177454957">ആന്തരിക പിശക്</translation>
 <translation id="1124772482545689468">ഉപയോക്താവ്</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലാപ്‌ടോപ്പ് മോഡിലേക്ക് മാറുക.</translation>
 <translation id="3916998944874125962">സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="3923184630988645767">ഡാറ്റ ഉപയോഗം</translation>
+<translation id="3924445055519423964">വെബ്‌പേജ്/PDF ഫയൽ സംഗ്രഹിക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="3932043219784172185">ഉപകരണമൊന്നും കണക്റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> അസൈൻ ചെയ്തിട്ടില്ല</translation>
 <translation id="3941014780699102620">ഹോസ്‌റ്റ് പരിഹരിക്കാനായില്ല</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">ഞാന്‍ അംഗീകരിക്കുന്നു</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
 <translation id="4137700675046373159">ശനിയാഴ്ച</translation>
+<translation id="4139326893730851150">ഫേംവെയര്‍ അപ്ഡേറ്റുകൾ</translation>
 <translation id="4143226836069425823">പകരം മറ്റൊരു കീ നൽകാൻ ഒരു കീബോർഡ് കീയിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4145784616224233563">HTTP ഫയര്‍വാള്‍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">പേജുകള്‍</translation>
 <translation id="4989542687859782284">ലഭ്യമല്ല</translation>
 <translation id="4999333166442584738">റിപ്പോർട്ട് മറയ്‌ക്കുക</translation>
+<translation id="5005695757087124131">തിരഞ്ഞെടുത്ത ടെക്സ്റ്റ് ലളിതമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="500920857929044050">ടെസ്‌റ്റ് നിർത്തുക</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">തീമിന്റെ നിറം</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ഇളം കാറ്റ് അനുഭവിക്കൂ</translation>
 <translation id="7287310195820267359">വാൾപേപ്പർ ശേഖരങ്ങൾ</translation>
+<translation id="7293429513719260019">ഭാഷ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7297226631177386107">HTTPS വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="7297726121602187087">ഇരുണ്ട പച്ച</translation>
 <translation id="7301262279595293068">ആപ്പ് അപ്‌ഡേറ്റ് ചെയ്യുന്നത് വരെ കാത്തിരിക്കുക</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്യാൻ തയ്യാറാണ്</translation>
 <translation id="741244894080940828">പരിവർത്തനം</translation>
 <translation id="7415801143053185905">വളരെ ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
+<translation id="7418738250896500352">ലളിതമാക്കാൻ നിരവധി വാക്കുകളുണ്ട്</translation>
 <translation id="7425037327577270384">എന്നെ എഴുതാൻ സഹായിക്കൂ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ഈ APN പ്രവർത്തനരഹിതമാക്കാനോ നീക്കം ചെയ്യാനോ കഴിയില്ല. പ്രവർത്തനക്ഷമമാക്കിയ <ph name="ATTACH" /> APN-കൾ പ്രവർത്തനരഹിതമാക്കുകയോ നീക്കം ചെയ്യുകയോ ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
@@ -1357,6 +1363,7 @@
 <translation id="7544853251252956727">ഷഫിൾ ചെയ്യുക</translation>
 <translation id="7550715992156305117">പ്രശ്‌നനിർണ്ണയ ദിനചര്യകൾ</translation>
 <translation id="7551123448725492271">ഉപകരണം ഒരു ഓഡിയോ ഉപകരണമാണ്.</translation>
+<translation id="7553913964854052228">സ്‌കൂൾ ടൂളുകൾ നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
 <translation id="7559239713112547082">പ്രിവ്യൂ സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="7561454561030345039">ഈ പ്രവർത്തനം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
 <translation id="7561759921596375678">ശബ്ദം ഓണാക്കുക</translation>
@@ -1547,6 +1554,7 @@
 <translation id="8476942730579767658">വിൻഡോകളും ഡെസ്ക്കുകളും</translation>
 <translation id="8477536061607044749">ഗ്രാഫിക് ഡിസൈൻ</translation>
 <translation id="8477551185774834963">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ അൽപ്പം മുകളിലാണ്</translation>
+<translation id="8482376765267780829">ലളിതമാക്കാൻ ചില ടെക്സ്റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8483248364096924578">IP വിലാസം</translation>
 <translation id="8491311378305535241">Android ആപ്പുകളിൽ നിന്ന് HTTPS വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="8495070016475833911">കമ്പിളിത്തുണി</translation>
@@ -1676,6 +1684,7 @@
 <translation id="9082718469794970195">ഈ വീഡിയോ ഉപയോഗിക്കുക</translation>
 <translation id="9087578468327036362">ഈ ചോദ്യം റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="9088306295921699330">നിലവിലെ ഉപയോഗം</translation>
+<translation id="9088994563996376283">ലളിതമാക്കുക</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">തീയതി റീസെറ്റ് ചെയ്യുന്നതിനെ കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾ</translation>
 <translation id="9100765901046053179">വിപുലമായ ക്രമീകരണം</translation>

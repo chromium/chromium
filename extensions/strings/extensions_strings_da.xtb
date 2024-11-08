@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Indtastningsværdi for personlig nøgle skal være en gyldig sti.</translation>
 <translation id="388442998277590542">Siden med valgmuligheder '<ph name="OPTIONS_PAGE" />' kunne ikke indlæses.</translation>
 <translation id="3984413272403535372">Fejl under signering af udvidelse.</translation>
-<translation id="4115165561519362854">Administratoren af denne computer kræver, at <ph name="EXTENSION_NAME" /> har en minimumsversion af <ph name="EXTENSION_VERSION" />. Den kan ikke aktiveres, før den er blevet opdateret til den pågældende version (eller nyere).</translation>
 <translation id="4233778200880751280">Siden "<ph name="ABOUT_PAGE" />" kunne ikke indlæses.</translation>
 <translation id="471800408830181311">Den personlige nøgle kunne ikke udstedes.</translation>
 <translation id="4811956658694082538">Pakken kunne ikke installeres, da et hjælpeprogram gik ned. Prøv at genstarte Chrome, og prøv igen.</translation>

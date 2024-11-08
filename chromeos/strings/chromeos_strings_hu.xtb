@@ -632,6 +632,7 @@
 <translation id="4130750466177569591">Elfogadom</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
 <translation id="4137700675046373159">szombaton</translation>
+<translation id="4139326893730851150">Firmware-frissítések</translation>
 <translation id="4143226836069425823">A cseréhez koppintson egy másik billentyűre</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
 <translation id="4147897805161313378">Google Fotók</translation>
@@ -1174,6 +1175,7 @@
 <translation id="6673898378497337661">billentyűzet fényerejének növelése</translation>
 <translation id="6692996468359469499">Információk kérése a kiválasztott elemmel kapcsolatban</translation>
 <translation id="6694534975463174713">zárolás</translation>
+<translation id="6700703207451721535">Nem engedélyezett a hozzáférés ehhez a linkhez. Ha hozzáférésre van szüksége, szóljon a tanárnak.</translation>
 <translation id="6704062477274546131">DNS-feloldás</translation>
 <translation id="6712933881624804031">völgy</translation>
 <translation id="6716013206176357696">eprek</translation>
@@ -1297,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Érezze a szellő simogatását</translation>
 <translation id="7287310195820267359">Háttérképgyűjtemények</translation>
+<translation id="7293429513719260019">Nyelv kiválasztása</translation>
 <translation id="7297226631177386107">Nem lehet a tűzfalon keresztül HTTPS-protokollt használó webhelyekhez csatlakozni</translation>
 <translation id="7297726121602187087">Sötétzöld</translation>
 <translation id="7301262279595293068">Várjon, amíg az alkalmazás frissül</translation>
@@ -1356,6 +1359,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7544853251252956727">Keverés</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7551123448725492271">Az eszköz egy audioeszköz.</translation>
+<translation id="7553913964854052228">Az Iskolai eszközök használja a mikrofont</translation>
 <translation id="7559239713112547082">Képernyőkép előnézete</translation>
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
 <translation id="7561759921596375678">Hang bekapcsolása</translation>

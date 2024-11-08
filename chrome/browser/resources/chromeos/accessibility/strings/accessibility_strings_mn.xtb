@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"а": "аав", "б": "бар", "в": "вандуй", "г": "гал", "д": "дэлгүүр", "е": "ерөөл", "ё": "ёотон", "ж": "жил", "з": "зар", "и": "их","к": "кино", "л": "лам", "м": "монгол", "н": "нас", "о": "од","ө": "өрөө", "п": "пуужин", "р": "радио", "с": "сар", "т": "төмөр", "у": "улаан", "ү": "үндэс", "ф": "фабрик","х": "хашаа", "ц": "цэцэг", "ч": "чулуу", "ш": "шар","э": "эм", "ю": "юүлүүр", "я": "ямаа"}</translation>
 <translation id="1120938014254001895">Хоёр хурууг дээш шудрах</translation>
 <translation id="1126928665165112660">Налуу биш байна</translation>
+<translation id="1133751489735776037">Хулганыг гурав товшино уу</translation>
 <translation id="113582498867142724"><ph name="TAG" />-ын <ph name="NUM" /> зүйлс бүхий цуглуулга</translation>
 <translation id="1146441463334103638">Дэлгэцийг асаах/унтраах</translation>
 <translation id="1156488781945104845">Одоогийн цаг</translation>
 <translation id="1161762950103988776">Үсрэх</translation>
 <translation id="1164857107703583584">Үсрэх тушаалыг веб хуудсаар үр дүнтэйгээр шилжихэд ашиглах боломжтой.</translation>
 <translation id="1175914831232945926">Цифр</translation>
+<translation id="1186712907912748007">Зөөж хийж байна. Дуусгахын тулд <ph name="GESTURE" />. Бусад зангаа түр зуур боломжгүй.</translation>
 <translation id="1188858454923323853">нэмэлт</translation>
 <translation id="1189258430971676908">Дадлагын хэсэг: Эвхмэл жагсаалт</translation>
 <translation id="1195238899008218998">Төгсгөлийн үг</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">Холбоос</translation>
 <translation id="2363753371702255035">сум</translation>
 <translation id="2365384324219615024">Та мөн зүйлсийг идэвхжүүлэхийн тулд Enter-г дарах боломжтой. Жишээ нь маягтаар текст илгээхдээ Enter-г ашиглах боломжтой. Үргэлжлүүлэхийн тулд Enter-г дарна уу.</translation>
+<translation id="2371402123699727805">Дуу хоолойгоор бичих идэвхтэй байна. Зогсоохын тулд <ph name="GESTURE" />. Бусад зангаа түр зуур боломжгүй.</translation>
 <translation id="2381733276052567791">Яриаг асаах/унтраах</translation>
 <translation id="2390264819538553347">Дараагийн хуудсанд очих бол Enter товчлуурыг; буцахын тулд арилгах товчлуурыг дарна уу.</translation>
 <translation id="2398579267367951220">Хуудаснаас хайхын тулд бичнэ үү. Илэрц рүү үсэрч очихын тулд Enter, илэрцүүдийг үзэхийн тулд дээш эсвэл доош сумыг дарж, хайлтаа өөрчлөхийн тулд үргэлжлүүлэн бичнэ үү эсвэл болихын тулд escape товчийг дарна уу.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">Дөрвөн хуруугаараа баруун тийш шудрах</translation>
 <translation id="3112457281078985179">ChromeVox-г асаах/унтраахын тулд Control+Alt+Z-г ашиглана уу.</translation>
 <translation id="3115800313647508384">Дэлгэцийг унтраах уу?</translation>
-<translation id="3127625407966660979">Дуу хоолойгоор бичих идэвхтэй байна</translation>
 <translation id="3131002934070407451">Дугаарыг дараах маягаар унших:</translation>
 <translation id="3134461040845705080">Зөвхөн унших</translation>
 <translation id="3137663468179739624">Хар ногоон (Чидун жимсний өнгө)</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Өмнөх 3-р түвшний гарчиг алга байна</translation>
 <translation id="3887399638190992181">Үндсэн товчнууд</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Царайн хяналтыг түр зогсоосон. Үргэлжлүүлэхийн тулд <ph name="GESTURE" />. Бусад зангаа түр зуур боломжгүй.</translation>
 <translation id="3897092660631435901">Цэс</translation>
 <translation id="3907138069015388678">жагсаалтын тор</translation>
 <translation id="3909320334364316587">Өмнөх түвшингийн 6 гарчиг</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{секунд}other{секунд}}</translation>
 <translation id="4161663686871496107">ChromeVox ярьсан санал хүсэлт бэлэн байна</translation>
 <translation id="4176463684765177261">Хаасан</translation>
-<translation id="4176677444195790114">Зөөж хийж байна</translation>
 <translation id="4187322598335821254">Мөрөөр нь шилжүүлэхийн тулд дээш эсвэл доош шударна уу</translation>
 <translation id="4188530942454211480">Өмнөх өгүүлбэр</translation>
 <translation id="4191918948604314587">Товчлуур</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">Тэнгэрийн гүн хөх</translation>
 <translation id="4406249099130339147">Цэг таслалын дуудлага:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Бүх шүдээ ярзайлган харуулна уу</translation>
 <translation id="4432457053224379116">Гүн улаан</translation>
 <translation id="4432896207833262240">Тэмдэглэсэн контент</translation>
 <translation id="4437615272777527928">Цэсүүдийг хайхын тулд бичнэ үү. Илэрцүүдийн хооронд шилжихийн тулд дээш болон доош сумыг ашиглана уу. Текст оруулах тэмдгийг тохируулах болон цэс хооронд шилжихийн тулд зүүн болон баруун сумыг ашиглана уу.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Дараагийн 1-р түвшний гарчиг алга байна</translation>
 <translation id="5455441614648621694">Сайжруулалт</translation>
 <translation id="5462510922370980473">Хуудасны жагсаалт</translation>
+<translation id="5489460663499094917">Гүйлгэх горим идэвхтэй байна. Гарахын тулд <ph name="GESTURE" />. Бусад зангаа түр зуур боломжгүй.</translation>
 <translation id="5495517933067991341">Үндсэн товчнууд: Shift</translation>
 <translation id="549602578321198708">Үг</translation>
 <translation id="5513242761114685513">Хам сэдэв цэс</translation>
@@ -1112,7 +1116,6 @@
 <translation id="8378855320830505539">Хамрах бүс</translation>
 <translation id="8382679411218029383">Autocompletion-ны мөр ба жагсаалт</translation>
 <translation id="8394908167088220973">Медиа тоглуулах/түр зогсоох</translation>
-<translation id="8409502156784390079">Гүйлгэх горим идэвхтэй байна</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8428603554127842284">Түвшин <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1190,7 +1193,6 @@
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="8989104346085848538">ChromeVox-н одоогийн аливаа яриаг зогсоохын тулд Control товчийг дарна уу.</translation>
 <translation id="9014206344398081366">ChromeVox-н практик хичээл</translation>
-<translation id="9034592733577768445">Нүүрний хяналтыг түр зогсоосон</translation>
 <translation id="9040132695316389094">Гарчиг 1</translation>
 <translation id="9061884144798498064">8 цэгт брайлийн хүснэгтийг сонгоно уу:</translation>
 <translation id="9063946545000394379">өмнөх тэмдэгт рүү очих</translation>

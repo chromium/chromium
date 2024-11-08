@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">Приложение</translation>
 <translation id="3213571860604332401">Добавить ссылку в закладки</translation>
 <translation id="3217205077783620295">Звук включен. Нажмите эту кнопку, чтобы отключить его.</translation>
-<translation id="3218561536255328229">Чтобы включить сенсорную панель, нажмите Esc 5 раз.</translation>
 <translation id="3226991577105957773">Ещё <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Режим энергосбережения отключен.</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">Чтобы упорядочить приложения, нажмите и удерживайте в любом месте</translation>
 <translation id="5395308026110844773">Вы поместили ярлык приложения "<ph name="DRAGGED_APP_NAME" />" над ярлыком приложения "<ph name="IN_PLACE_APP" />". Чтобы создать папку, отпустите палец.</translation>
 <translation id="5397578532367286026">Менеджер (<ph name="MANAGER_EMAIL" />) может просматривать данные об использовании и историю этого профиля на сайте chrome.com.</translation>
+<translation id="540338817371815859">Горизонтальное расположение</translation>
 <translation id="540713187982329711">Включить или отключить точку доступа. Сейчас она работает. К ней не подключено ни одно устройство.</translation>
 <translation id="5409208741270395213">Отметить задачу как выполненную</translation>
 <translation id="5413656666631274079">Страница настроек</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">Установите обновления</translation>
 <translation id="6929081673585394903">Показать элементы управления</translation>
 <translation id="6931576957638141829">Сохранить в</translation>
+<translation id="6935857786205183008">Вертикальное расположение</translation>
 <translation id="6942518653766415536">Меню форматов записи</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6945922087561257829">Телефон использует мобильный интернет. Подключите его и Chromebook к одной сети Wi-Fi и повторите попытку. <ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@
 <translation id="98120814841227350">Перейти к концу документа</translation>
 <translation id="987589956647469042">Мобильный интернет включен.</translation>
 <translation id="989374776391122812">Настройки камеры и аудио</translation>
+<translation id="990263227494928142">Чтобы включить сенсорную панель, нажмите Shift 5 раз.</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>
 <translation id="993398562350683614">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. Для чего бы вы ни использовали <ph name="PRODUCT_NAME" />, выполнять все задачи вам помогут приложения. Вы найдете их на панели запуска. Чтобы перейти к ее кнопке, нажмите Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

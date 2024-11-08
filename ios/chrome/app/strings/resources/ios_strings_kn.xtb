@@ -3,6 +3,7 @@
 <translationbundle lang="kn">
 <translation id="1005023885865154304">ಆಟೋಫಿಲ್ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1005230401424685968">ವವವವ</translation>
+<translation id="1010225406377140704">ಹೊಸ ಲಿಂಕ್ ಕಳುಹಿಸುವಂತೆ ಹೇಳಲು ಕಳುಹಿಸುವವರನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="1012067394176927315">ಕಂಟೆಂಟ್‌ ಅನ್ನು ನೋಡಲು, ಮೆನುವಿನಿಂದ ಆನ್ ಮಾಡಿ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1013952917065545813">ನೀವು ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪುನಃ ತೆರೆಯಲು, ನೀವು ಇಲ್ಲಿಗೆ ಮರಳಿ ಬರಬಹುದು</translation>
 <translation id="1016495303386450659">ಐಟಂ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">ಕ್ಯಾಲೆಂಡರ್</translation>
 <translation id="1164891049599601209">ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಲಾಗಿದೆ</translation>
 <translation id="1165039591588034296">ದೋಷ</translation>
-<translation id="1172240852337942024">ಆಯ್ಕೆಯನ್ನು ತ್ಯಜಿಸಿ</translation>
 <translation id="1172898394251786223">ಮುಂದಿನ ಕ್ಷೇತ್ರ</translation>
 <translation id="1179890706672152411">ನಿಮ್ಮ ಸಂಗ್ರಹಣೆ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
+<translation id="1190609913194133056">ಅಧಿಸೂಚನೆಯ ಕೇಂದ್ರ</translation>
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
 <translation id="1204075260022434100">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಎಂಬಲ್ಲಿ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="120431140543679678">ಫಾಲೋ ಮಾಡಿ</translation>
@@ -219,6 +220,7 @@
 <translation id="1956138802718275401">ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ನಿಂದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="1959441496380398824">ದಿನಾಂಕವನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿ.</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> ಅವರು <ph name="WEBSITE" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ಹಂಚಿಕೊಂಡಿದ್ದಾರೆ</translation>
+<translation id="1962969542251276847">ಪರದೆಯನ್ನು ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="1963976881984600709">ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ</translation>
 <translation id="1966313166384086081">ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="1967461193809857427">{count,plural, =1{ನೀವು Android ನಲ್ಲಿ ಬಿಟ್ಟಿರುವ ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಕೆ?}one{ನೀವು Android ನಲ್ಲಿ ಬಿಟ್ಟಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಕೆ?}other{ನೀವು Android ನಲ್ಲಿ ಬಿಟ್ಟಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಕೆ?}}</translation>
@@ -1196,6 +1198,7 @@
 <translation id="6503077044568424649">ಅತಿಹೆಚ್ಚು ಬಾರಿ ಸಂದರ್ಶಿಸಿರುವುದು</translation>
 <translation id="6503763061813913607">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="6505334220040167806">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಕುಗ್ಗಿಸಿ.</translation>
+<translation id="6506996418997555004">"<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="6507973708545996744">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="6518133107902771759">ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6523575793810663688">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
@@ -1262,7 +1265,6 @@
 <translation id="672735642903863329">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮದೇ ಆದ ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು, ಪಾಸ್‍ವರ್ಡ್‍ಗಳು ಹಾಗೂ ಇನ್ನಷ್ಟು ಪಡೆಯಿರಿ.</translation>
 <translation id="6732087373923685049">ಕ್ಯಾಮರಾ</translation>
 <translation id="6746338529702829275">ನಿಮ್ಮ ಖಾತೆಯ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
-<translation id="6748108480210050150">ಇವರಿಂದ</translation>
 <translation id="6755200887046212842">ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6761393919622941301">ಆಡಿಯೊ</translation>
 <translation id="6779455296366983087">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
@@ -1311,7 +1313,6 @@
 <translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
 <translation id="6983306615164277634">ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಲು ನೀವು ಅಡ್ರೆಸ್ ಬಾರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿದಿಟ್ಟುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="6990519590575500580">Facetime</translation>
-<translation id="6998989275928107238">ಇವರಿಗೆ</translation>
 <translation id="7004032350256606903">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಯ ಪ್ರಕಾರ ನೀವು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಡೀಫಾಲ್ಟ್‌ ಮಾಡಿ…</translation>
@@ -1415,6 +1416,7 @@
 <translation id="750493650310597496">0 ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಲು, Touch ID, Face ID ಅಥವಾ ಪಾಸ್‌ಕೋಡ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ.</translation>
+<translation id="7512075701202892785">ನೀವು ಇಷ್ಟಪಡುವ ಬ್ರೌಸರ್ ಈಗ iPad ನಲ್ಲಿದೆ</translation>
 <translation id="7512909159512473473">ಪಾಸ್‌ಫ್ರೇಸ್‌ ಅನ್ನು ನಮೂದಿಸಿ…</translation>
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="7521117365186708026">Chrome ನಿಂದ ಹೆಚ್ಚಿನದನ್ನು ಪಡೆಯಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುವ ಸಲಹೆಗಳನ್ನು ಸೆಟಪ್‌ ಮಾಡಿ.</translation>
@@ -1690,6 +1692,7 @@
 <translation id="8694281486652655615">ಈ ಐಟಂ ಅನ್ನು ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="8696297579102085705">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8697136149718343437">ವಿಳಾಸ ಪಟ್ಟಿ‌ಯನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
+<translation id="8703372953981978786">ಈ ಲಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="8706253136355675497">ತಾಪಮಾನ</translation>
 <translation id="8709409604518538305">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="8712534545803964353">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ…</translation>
@@ -1809,7 +1812,6 @@
 <translation id="9183733013282108610">ಅಜ್ಞಾತ ಹುಡುಕಾಟ</translation>
 <translation id="9186762474139509529">ಲಾಗ್‌ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="9191031968346938109">ಇದಕ್ಕೆ ಸೇರಿಸಿ…</translation>
-<translation id="9196007736149429065">ಈ ಫೈಲ್ ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ದಿ ಹಿಂದೆ</translation>
 <translation id="9203116392574189331">ಹ್ಯಾಂಡ್ಆಫ್</translation>
 <translation id="9203951165704618409">ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಬ್ರೌಸಿಂಗ್ ಅನುಭವವನ್ನು ಪಡೆಯಲು, ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯನ್ನು ಮೇಲಿನಿಂದ ಕೆಳಕ್ಕೆ ಬದಲಾಯಿಸಿ.</translation>

@@ -349,6 +349,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5170938038195470297">Your profile cannot be used because it is from a newer version of Google Chrome.
 
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chrome.</translation>
+<translation id="5174969993834422967">You usually block notifications. To let this site notify you, click the notification icon on the right corner of your location bar.</translation>
 <translation id="5201744974236816379">Chrome update</translation>
 <translation id="521447420733633466">If you share a device, friends and family can browse separately and set up Chrome just the way they want</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -546,6 +547,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7655455401911432608">Your browsing history, a record of sites that you've visited using Chrome on this device.</translation>
 <translation id="7655472416356262023">Remove account from Chrome</translation>
 <translation id="7658239707568436148">Cancel</translation>
+<translation id="7659737857277959440">Your organisation can see and manage browsing data, such as your bookmarks, history and passwords. It can't see browsing data in personal Chrome profiles.</translation>
 <translation id="7661924425853052955">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more</translation>
 <translation id="7668816516367091728">Perform tasks like translate, calculate and more directly from the address bar</translation>
 <translation id="7670287553302121848">Chrome account requires re-authentication</translation>
@@ -596,6 +598,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8162006532256575008">Use Chrome without an account</translation>
+<translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
 <translation id="8255190535488645436">Google Chrome is using your camera and microphone.</translation>
 <translation id="8257796129973882597">You can open bookmarks, reading mode and more from the Chrome menu</translation>
 <translation id="8267953129876836456">Chrome found some safety recommendations for your review</translation>

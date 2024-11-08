@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"א": "אלף", "ב": "בועז", "ג": "גימל", "ד": "דוד", "ה": "הגר", "ו": "וו", "ז": "זאב", "ח": "חווה", "ט": "טיח", "י": "יונה","כ": "כרמל", "ל": "לאה", "מ": "משה", "נ": "נשר", "ס": "סמך","ע": "עין", "פ": "פסל", "צ": "ציפור", "ק": "קורח", "ר": "רות", "ש": "שמיר", "ת": "תלם"}</translation>
 <translation id="1120938014254001895">החלקה מעלה עם שתי אצבעות</translation>
 <translation id="1126928665165112660">לא נטוי</translation>
+<translation id="1133751489735776037">לחיצה משולשת בעכבר</translation>
 <translation id="113582498867142724">אוסף <ph name="TAG" /> עם <ph name="NUM" /> פריטים</translation>
 <translation id="1146441463334103638">הפעלה או כיבוי של המסך</translation>
 <translation id="1156488781945104845">שעה נוכחית</translation>
@@ -342,7 +343,6 @@
 <translation id="311015743332597320">החלקה ימינה עם ארבע אצבעות</translation>
 <translation id="3112457281078985179">‏כדי להפעיל או לכבות את ChromeVox, הקש על Control+Alt+Z.</translation>
 <translation id="3115800313647508384">לכבות את המסך?</translation>
-<translation id="3127625407966660979">ההכתבה פעילה</translation>
 <translation id="3131002934070407451">יש לקרוא מספרים בתור:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">זית</translation>
@@ -503,7 +503,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{שנייה}one{שניות}two{שניות}other{שניות}}</translation>
 <translation id="4161663686871496107">‏המשוב בדיבור של ChromeVox מוכן</translation>
 <translation id="4176463684765177261">מושבת</translation>
-<translation id="4176677444195790114">הגרירה והשחרור מתבצעים</translation>
 <translation id="4187322598335821254">מחליקים מעלה או מטה כדי לעבור שורה אחר שורה</translation>
 <translation id="4188530942454211480">המשפט הקודם</translation>
 <translation id="4191918948604314587">לחצן</translation>
@@ -548,6 +547,7 @@
 <translation id="4402014469255336455">כחול שמיים עמוק</translation>
 <translation id="4406249099130339147">הד של סימני פיסוק:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">מראים את כל השיניים</translation>
 <translation id="4432457053224379116">אדום הודי</translation>
 <translation id="4432896207833262240">תוכן מסומן</translation>
 <translation id="4437615272777527928">כדי לחפש בתפריטים יש להקליד כאן. בעזרת החץ למעלה והחץ למטה ניתן לעבור בין התוצאות. בעזרת החץ שמאלה והחץ ימינה ניתן לשלוט בסמן הטקסט ולעבור בין התפריטים.</translation>
@@ -1112,7 +1112,6 @@
 <translation id="8378855320830505539">אזור</translation>
 <translation id="8382679411218029383">השלמה אוטומטית מוטבעת ורשימה</translation>
 <translation id="8394908167088220973">הפעלה/השהיה של המדיה</translation>
-<translation id="8409502156784390079">מצב הגלילה פעיל</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428603554127842284">רמה <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1190,7 +1189,6 @@
 <translation id="8986362086234534611">לשכוח</translation>
 <translation id="8989104346085848538">‏כדי להפסיק את הדיבור הפעיל של ChromeVox, יש להקיש על מקש Control.</translation>
 <translation id="9014206344398081366">‏מדריך של ChromeVox</translation>
-<translation id="9034592733577768445">השליטה באמצעות תנועות הפנים הושהתה</translation>
 <translation id="9040132695316389094">כותרת 1</translation>
 <translation id="9061884144798498064">יש לבחור טבלת ברייל 8 נקודות:</translation>
 <translation id="9063946545000394379">מעבר לתו הקודם</translation>

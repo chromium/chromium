@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "ఆల్ఫా", "b": "బ్రావో", "c": "చార్లీ", "d": "డెల్టా", "e": "ఎకో", "f": "ఫాక్స్‌ట్రాట్", "g": "గోల్ఫ్", "h": "హోటల్", "i": "ఇండియా", "j": "జూలియట్","k": "కిలో", "l": "లీమా", "m": "మైక్", "n": "నవంబర్", "o": "ఆస్కార్","p": "పాపా", "q": "క్యూబెక్", "r": "రోమియో", "s": "సియెర్రా", "t": "ట్యాంగో", "u": "యూనిఫారమ్", "v": "విక్టర్", "w": "విస్కీ","x": "ఎక్స్‌రే", "y": "యాంకీ", "z": "జూలూ"}</translation>
 <translation id="1120938014254001895">రెండు వేళ్లతో పైకి స్వైప్ చేయండి</translation>
 <translation id="1126928665165112660">ఇటాలిక్ కాదు</translation>
+<translation id="1133751489735776037">మౌస్‌పై మూడుసార్లు క్లిక్ చేయండి</translation>
 <translation id="113582498867142724"><ph name="NUM" /> అంశాలు గల <ph name="TAG" /> సేకరణ</translation>
 <translation id="1146441463334103638">స్క్రీన్‌ను ఆన్, ఆఫ్ టోగుల్ చేయండి</translation>
 <translation id="1156488781945104845">ప్రస్తుత సమయం</translation>
 <translation id="1161762950103988776">దాటివేయి</translation>
 <translation id="1164857107703583584">వెబ్ పేజీ ద్వారా సమర్థవంతంగా నావిగేట్ చేయడానికి దాటవేసే కమాండ్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="1175914831232945926">అంకెలు</translation>
+<translation id="1186712907912748007">'లాగి, వదలండి' చర్య ఇంకా ప్రోగ్రెస్‌లో ఉంది. ముగించడానికి <ph name="GESTURE" />. ఇతర సంజ్ఞలు తాత్కాలికంగా అందుబాటులో లేవు.</translation>
 <translation id="1188858454923323853">బహుమానపూర్వకం</translation>
 <translation id="1189258430971676908">సాధన ప్రాంతం: డ్రాప్-డౌన్ లిస్ట్‌లు</translation>
 <translation id="1195238899008218998">చివరిమాట</translation>
@@ -209,6 +211,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2347456970887948350">లింక్</translation>
 <translation id="2363753371702255035">బులెట్</translation>
 <translation id="2365384324219615024">ఐటెమ్‌లను యాక్టివేట్ చేయడానికి మీరు ఎంటర్‌ను కూడా నొక్కవచ్చు. ఉదాహరణకు, టెక్స్ట్‌ను ఫారమ్ ద్వారా సబ్‌మిట్‌ చేయడానికి ఎంటర్‌ను ఉపయోగించవచ్చు. కొనసాగించడానికి, ఎంటర్‌ను నొక్కండి.</translation>
+<translation id="2371402123699727805">డిక్టేషన్ యాక్టివ్‌గా ఉంది. ఆపడానికి <ph name="GESTURE" />. ఇతర సంజ్ఞలు తాత్కాలికంగా అందుబాటులో లేవు.</translation>
 <translation id="2381733276052567791">ప్రసంగాన్ని ఆన్ లేదా ఆఫ్ చేయండి</translation>
 <translation id="2390264819538553347">ముందుకు వెళ్లడానికి, enter నొక్కండి; వెనుకకు వెళ్లడానికి, backspace నొక్కండి.</translation>
 <translation id="2398579267367951220">పేజీని వెతకడానికి టైప్ చేయండి. ఫలితానికి వెంటనే వెళ్లడానికి enterను నొక్కండి, 
@@ -343,7 +346,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="311015743332597320">నాలుగు వేళ్లతో కుడివైపునకు స్వైప్ చేయండి</translation>
 <translation id="3112457281078985179">ChromeVoxని ఆన్ లేదా ఆఫ్ చేయడానికి, Control+Alt+Z ఉపయోగించండి.</translation>
 <translation id="3115800313647508384">స్క్రీన్‌ను ఆఫ్ చేయాలా?</translation>
-<translation id="3127625407966660979">డిక్టేషన్ యాక్టివ్‌గా ఉంది</translation>
 <translation id="3131002934070407451">సంఖ్యలను ఇలా చదవాలి:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ఆలివ్ రంగు</translation>
@@ -465,6 +467,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3870295413168340326">మునుపటి స్థాయి 3 శీర్షిక లేదు</translation>
 <translation id="3887399638190992181">ఆవశ్యకమైన కీలు</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">ఫేస్ కంట్రోల్ పాజ్ అయింది. కొనసాగించడానికి <ph name="GESTURE" />. ఇతర సంజ్ఞలు తాత్కాలికంగా అందుబాటులో లేవు.</translation>
 <translation id="3897092660631435901">మెనూ</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">మునుపటి స్థాయి 6 శీర్షిక</translation>
@@ -504,7 +507,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4161104397932142764">{COUNT,plural, =1{సెకను}other{సెకన్‌లు}}</translation>
 <translation id="4161663686871496107">ChromeVox చదివి వినిపించే అభిప్రాయం సిద్ధంగా ఉంది</translation>
 <translation id="4176463684765177261">డిజేబుల్ చేయబడింది</translation>
-<translation id="4176677444195790114">'లాగి, వదలండి' చర్య ఇంకా ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="4187322598335821254">పంక్తుల వారీగా వెళ్లడం కోసం ఎగువకు లేదా దిగువకు స్వైప్ చేయండి</translation>
 <translation id="4188530942454211480">మునుపటి వాక్యం</translation>
 <translation id="4191918948604314587">బటన్</translation>
@@ -549,6 +551,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4402014469255336455">ముదురు ఆకాశ నీలం రంగు</translation>
 <translation id="4406249099130339147">విరామచిహ్న ప్రతిధ్వని:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">మీ దంతాలన్నింటినీ చూపించండి</translation>
 <translation id="4432457053224379116">భారతీయ ఎర్రని రంగు</translation>
 <translation id="4432896207833262240">మార్క్ చేయబడిన కంటెంట్</translation>
 <translation id="4437615272777527928">మెనూలను వెతకడానికి టైప్ చేయండి. ఫలితాలను ఒక్కొక్కటిగా చూడటానికి ఎగువ మరియు దిగువ బాణం కీలను ఉపయోగించండి. టెక్స్ట్ క్యారెట్‌ను సర్దుబాటు చేయడానికి, మెనూల మధ్య కదలడానికి ఎడమ, కుడి బాణం కీలను ఉపయోగించండి.</translation>
@@ -701,6 +704,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5452267669091857717">తర్వాత స్థాయి 1 శీర్షిక లేదు</translation>
 <translation id="5455441614648621694">బహుమానపూర్వకం</translation>
 <translation id="5462510922370980473">పేజీ లిస్ట్‌</translation>
+<translation id="5489460663499094917">స్క్రోల్ మోడ్ యాక్టివ్‌గా ఉంది. ఎగ్జిట్ కావడానికి <ph name="GESTURE" />. ఇతర సంజ్ఞలు తాత్కాలికంగా అందుబాటులో లేవు.</translation>
 <translation id="5495517933067991341">ఆవశ్యకమైన కీలు: షిఫ్ట్</translation>
 <translation id="549602578321198708">పదం</translation>
 <translation id="5513242761114685513">సందర్భ మెనూ</translation>
@@ -1113,7 +1117,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8378855320830505539">ప్రాంతం</translation>
 <translation id="8382679411218029383">స్వీయపూర్తి ఇన్‌లైన్ మరియు లిస్ట్‌</translation>
 <translation id="8394908167088220973">మీడియా ప్లే/పాజ్</translation>
-<translation id="8409502156784390079">స్క్రోల్ మోడ్ ప్రస్తుతం యాక్టివ్‌గా ఉంది</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8428603554127842284">స్థాయి <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1191,7 +1194,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8986362086234534611">మరిచిపోయారా</translation>
 <translation id="8989104346085848538">ప్రస్తుతం నడుస్తోన్న ఏ ChromeVox స్పీచ్‌ను అయినా ఆపేందుకు, కంట్రోల్ కీను నొక్కండి.</translation>
 <translation id="9014206344398081366">ChromeVox ట్యుటోరియల్</translation>
-<translation id="9034592733577768445">ఫేస్ కంట్రోల్ పాజ్ అయింది</translation>
 <translation id="9040132695316389094">శీర్షిక 1</translation>
 <translation id="9061884144798498064">8 చుక్కలు ఉన్న బ్రెయిలీ పట్టికను ఎంచుకోండి:</translation>
 <translation id="9063946545000394379">మునుపటి అక్షరానికి వెళ్లండి</translation>

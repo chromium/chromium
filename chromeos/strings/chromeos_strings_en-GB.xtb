@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Creating images…</translation>
 <translation id="1116694919640316211">About</translation>
 <translation id="1118572504348554005">We may share feedback submitted via this form with our partners to troubleshoot bugs and other issues that you report to us. Don’t include sensitive information such as passwords.</translation>
+<translation id="1119403468619527527">Too few words to simplify</translation>
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Disable screensaver</translation>
 <translation id="3091839911843451378">Failed – Stopped</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">Your teacher has removed content in School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pools</translation>
 <translation id="3122883569442693641">More details</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">Finished editing</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
 <translation id="3533790840489634638">swimming pool</translation>
+<translation id="3535802910192338629">Your teacher has added new content in School Tools</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Local identity (optional)</translation>
 <translation id="3565064564551103223">Allowed IPs</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">Can’t test device. Switch to laptop mode to test.</translation>
 <translation id="3916998944874125962">take screenshot</translation>
 <translation id="3923184630988645767">Data usage</translation>
+<translation id="3924445055519423964">Click to summarise the web page/PDF file</translation>
 <translation id="3932043219784172185">No device connected</translation>
 <translation id="3934185438132762746">Unassigned <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Failed to resolve host</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">I agree</translation>
 <translation id="4131410914670010031">Black and white</translation>
 <translation id="4137700675046373159">on Saturday</translation>
+<translation id="4139326893730851150">Firmware updates</translation>
 <translation id="4143226836069425823">Tap on another keyboard key to replace</translation>
 <translation id="4145784616224233563">HTTP firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4989542687859782284">Unavailable</translation>
 <translation id="4999333166442584738">Hide report</translation>
+<translation id="5005695757087124131">Click to simplify the selected text</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Theme colour</translation>
@@ -1172,6 +1178,7 @@
 <translation id="6673898378497337661">keyboard brightness up</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6694534975463174713">lock</translation>
+<translation id="6700703207451721535">Access isn’t allowed for this link. Check with your teacher if you need access.</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
 <translation id="6712933881624804031">valley</translation>
 <translation id="6716013206176357696">strawberries</translation>
@@ -1295,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Wallpaper collections</translation>
+<translation id="7293429513719260019">Select language</translation>
 <translation id="7297226631177386107">Can't connect through firewall to HTTPS websites</translation>
 <translation id="7297726121602187087">Dark green</translation>
 <translation id="7301262279595293068">Please wait while this application is being updated</translation>
@@ -1329,6 +1337,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> is ready to be updated</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Very high HTTP latency</translation>
+<translation id="7418738250896500352">Too many words to simplify</translation>
 <translation id="7425037327577270384">Help me write</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Can't disable or remove this APN. Make sure that enabled <ph name="ATTACH" /> APNs are disabled or removed.</translation>
@@ -1354,6 +1363,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7544853251252956727">Shuffle</translation>
 <translation id="7550715992156305117">Diagnostic routines</translation>
 <translation id="7551123448725492271">Device is an audio device.</translation>
+<translation id="7553913964854052228">School Tools is using your microphone</translation>
 <translation id="7559239713112547082">Preview screenshot</translation>
 <translation id="7561454561030345039">This action is managed by your administrator</translation>
 <translation id="7561759921596375678">Turn on volume</translation>
@@ -1544,6 +1554,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8476942730579767658">Windows and desks</translation>
 <translation id="8477536061607044749">graphic design</translation>
 <translation id="8477551185774834963">DNS latency slightly above allowable threshold</translation>
+<translation id="8482376765267780829">Select some text to simplify</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8491311378305535241">Can't connect through firewall to HTTP websites from Android apps</translation>
 <translation id="8495070016475833911">felt</translation>
@@ -1562,6 +1573,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8576249514688522074">Uninitialised</translation>
 <translation id="8584654835905316966">A restart is required to complete the installation of firmware for <ph name="DEVICE_NAME" /> to version <ph name="VERSION" />. Your computer may appear to reboot several times. This behaviour is expected.</translation>
 <translation id="8593058461203131755">pause media</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Roaming status</translation>
 <translation id="8626489604350149811">More actions for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>
@@ -1672,6 +1684,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9082718469794970195">Use this video</translation>
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
+<translation id="9088994563996376283">Simplify</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="909856219855259344">More info on reset date</translation>
 <translation id="9100765901046053179">Advanced settings</translation>

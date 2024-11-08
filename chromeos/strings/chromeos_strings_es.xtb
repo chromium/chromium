@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Creando imágenes...</translation>
 <translation id="1116694919640316211">Información</translation>
 <translation id="1118572504348554005">Es posible que compartamos con nuestros partners los comentarios enviados a través de este formulario para solucionar errores y otros problemas que nos comuniques. No incluyas información sensible, como contraseñas.</translation>
+<translation id="1119403468619527527">No hay suficientes palabras para simplificar</translation>
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">Desconecta el cable USB de tu <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
 <translation id="2320295602967756579">Habilitar tema claro</translation>
 <translation id="2323506179655536734">SALTADA</translation>
+<translation id="2323755382216917952">Esta actualización requiere que reinicies tu ordenador para completar la instalación. La actualización puede tardar varios minutos en completarse. Mientras se actualiza el firmware, no desconectes ni apagues tu ordenador.</translation>
 <translation id="2324354238778375592">Flotar</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> PPP</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +451,7 @@
 <translation id="3178532070248519384">vanguardista</translation>
 <translation id="3182676044300231689">Introduce una petición como "que suene con más seguridad"</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
+<translation id="3188931456353313123">Esta actualización la proporciona el fabricante del dispositivo y Google no la ha verificado.</translation>
 <translation id="319101249942218879">Se ha cambiado la imagen del avatar</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
@@ -507,6 +510,7 @@
 <translation id="3488065109653206955">Activación parcial</translation>
 <translation id="3492882532495507361">Una oficina <ph name="OFFICE_STYLE" /> con tonos <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Tu Chromebook mide los datos usados. Estas medidas pueden diferir de los datos de tu proveedor.</translation>
+<translation id="349570724365779960">School Tools está conectado a los alumnos</translation>
 <translation id="3502426834823382181">ver todas las aplicaciones</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimiento de rendimiento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiza Chrome OS</translation>
@@ -587,6 +591,7 @@
 <translation id="391412459402535266">No se puede probar el dispositivo. Cambia al modo Portátil para hacer la prueba.</translation>
 <translation id="3916998944874125962">hacer captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
+<translation id="3924445055519423964">Haz clic para resumir la página web o el archivo PDF</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sin asignar</translation>
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
@@ -632,6 +637,7 @@
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="4137700675046373159">el sábado</translation>
+<translation id="4139326893730851150">Actualizaciones de firmware</translation>
 <translation id="4143226836069425823">Toca otra tecla del teclado para sustituirla</translation>
 <translation id="4145784616224233563">Cortafuegos de HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -754,6 +760,7 @@
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada con tu selección</translation>
 <translation id="4771607256327216405">aumentar brillo de teclado</translation>
+<translation id="4771923071974529837">mañana</translation>
 <translation id="4773299976671772492">Detenido</translation>
 <translation id="4778082030331381943">amatista</translation>
 <translation id="4782311465517282004">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
@@ -813,9 +820,11 @@
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4989542687859782284">No disponibles</translation>
 <translation id="4999333166442584738">Ocultar informe</translation>
+<translation id="5005695757087124131">Haz clic para simplificar el texto seleccionado</translation>
 <translation id="500920857929044050">Detener prueba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Color del tema</translation>
+<translation id="5037240652947866174">hoy</translation>
 <translation id="5038292761217083259">teclado multicolor</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
@@ -1174,6 +1183,7 @@
 <translation id="6673898378497337661">aumentar brillo del teclado</translation>
 <translation id="6692996468359469499">Obtener información sobre tu selección</translation>
 <translation id="6694534975463174713">candado</translation>
+<translation id="6700703207451721535">No se permite el acceso a este enlace. Consulta con tu profesor si necesitas acceso.</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6712933881624804031">valle</translation>
 <translation id="6716013206176357696">fresas</translation>
@@ -1297,6 +1307,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Siente la brisa</translation>
 <translation id="7287310195820267359">Colecciones de fondos de pantalla</translation>
+<translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7297226631177386107">No se puede conectar con sitios web HTTPS usando un cortafuegos</translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
 <translation id="7301262279595293068">Espera mientras se actualiza esta aplicación</translation>
@@ -1331,6 +1342,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> está listo para actualizarse</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
+<translation id="7418738250896500352">Hay demasiadas palabras para simplificar</translation>
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Este APN no se puede inhabilitar ni eliminar. Asegúrate de que los APNs <ph name="ATTACH" /> habilitados se inhabiliten o eliminen.</translation>
@@ -1356,6 +1368,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7544853251252956727">Aleatorio</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">El dispositivo es un dispositivo de audio.</translation>
+<translation id="7553913964854052228">School Tools está usando tu micrófono</translation>
 <translation id="7559239713112547082">Vista previa de captura de pantalla</translation>
 <translation id="7561454561030345039">Esta acción la gestiona tu administrador</translation>
 <translation id="7561759921596375678">Activar volumen</translation>
@@ -1546,6 +1559,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8476942730579767658">Ventanas y escritorios</translation>
 <translation id="8477536061607044749">diseño gráfico</translation>
 <translation id="8477551185774834963">La latencia DNS supera ligeramente el umbral permitido</translation>
+<translation id="8482376765267780829">Selecciona texto para simplificarlo</translation>
 <translation id="8483248364096924578">Dirección IP</translation>
 <translation id="8491311378305535241">No se puede conectar con sitios web HTTPS desde aplicaciones Android usando un cortafuegos</translation>
 <translation id="8495070016475833911">fieltro</translation>
@@ -1675,6 +1689,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Uso actual</translation>
+<translation id="9088994563996376283">Simplificar</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Más información sobre la opción Fecha de reinicio</translation>
 <translation id="9100765901046053179">Configuración avanzada</translation>

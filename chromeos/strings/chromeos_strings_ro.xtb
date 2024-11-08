@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Se creează imaginile…</translation>
 <translation id="1116694919640316211">Despre</translation>
 <translation id="1118572504348554005">Este posibil să le trimitem feedback primit prin intermediul acestui formular partenerilor noștri pentru a remedia erorile și alte probleme pe care ni le raportezi. Nu include informații sensibile, cum ar fi parolele.</translation>
+<translation id="1119403468619527527">Prea puține cuvinte pentru a simplifica</translation>
 <translation id="1119447706177454957">Eroare internă</translation>
 <translation id="1124772482545689468">Utilizator</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Nu se poate testa dispozitivul. Treci la modul laptop pentru a testa.</translation>
 <translation id="3916998944874125962">fă o captură de ecran</translation>
 <translation id="3923184630988645767">Utilizarea datelor</translation>
+<translation id="3924445055519423964">Dă clic pentru a rezuma pagina web / fișierul PDF</translation>
 <translation id="3932043219784172185">Niciun dispozitiv conectat</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> neatribuit</translation>
 <translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Sunt de acord</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
 <translation id="4137700675046373159">sâmbătă</translation>
+<translation id="4139326893730851150">Actualizări de firmware</translation>
 <translation id="4143226836069425823">Atinge altă tastă de pe tastatură pentru a înlocui</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Pagini</translation>
 <translation id="4989542687859782284">Indisponibile</translation>
 <translation id="4999333166442584738">Ascunde raportul</translation>
+<translation id="5005695757087124131">Dă clic pentru a simplifica textul selectat</translation>
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Culoarea temei</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Colecții de imagini de fundal</translation>
+<translation id="7293429513719260019">Selectează limba</translation>
 <translation id="7297226631177386107">Nu se poate conecta la site-uri HTTPS prin firewall</translation>
 <translation id="7297726121602187087">Verde închis</translation>
 <translation id="7301262279595293068">Așteaptă actualizarea acestei aplicații</translation>
@@ -1332,6 +1337,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> este gata să fie actualizat</translation>
 <translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Latență foarte mare a solicitărilor HTTP</translation>
+<translation id="7418738250896500352">Prea multe cuvinte pentru a simplifica</translation>
 <translation id="7425037327577270384">Ajută-mă să scriu</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Nu se poate dezactiva sau elimina acest APN. Verifică dacă APN-urile <ph name="ATTACH" /> sunt dezactivate sau eliminate.</translation>
@@ -1357,6 +1363,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7544853251252956727">Redă aleatoriu</translation>
 <translation id="7550715992156305117">Rutine de diagnosticare</translation>
 <translation id="7551123448725492271">Dispozitivul este un dispozitiv audio.</translation>
+<translation id="7553913964854052228">School Tools folosește microfonul</translation>
 <translation id="7559239713112547082">Previzualizează captura de ecran</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
 <translation id="7561759921596375678">Activează sunetul</translation>
@@ -1547,6 +1554,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8476942730579767658">Ferestre și desktopuri</translation>
 <translation id="8477536061607044749">design grafic</translation>
 <translation id="8477551185774834963">Latența DNS depășește ușor pragul permisibil</translation>
+<translation id="8482376765267780829">Selectează textul de simplificat</translation>
 <translation id="8483248364096924578">Adresă IP</translation>
 <translation id="8491311378305535241">Nu se poate conecta la site-uri HTTPS prin firewall din aplicații pentru Android</translation>
 <translation id="8495070016475833911">pâslă</translation>
@@ -1676,6 +1684,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="9082718469794970195">Folosește videoclipul</translation>
 <translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
+<translation id="9088994563996376283">Simplifică</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Mai multe informații despre data de resetare</translation>
 <translation id="9100765901046053179">Setări avansate</translation>

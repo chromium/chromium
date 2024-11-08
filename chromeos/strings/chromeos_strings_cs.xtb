@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Deaktivovat spořič obrazovky</translation>
 <translation id="3091839911843451378">Tisk selhal – zastaveno</translation>
 <translation id="3102119246920354026">Mezipaměť</translation>
+<translation id="3112413615003385433">Váš učitel odebral obsah ze School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazény</translation>
 <translation id="3122883569442693641">Další podrobnosti</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Úpravy dokončeny</translation>
 <translation id="3532980081107202182">Zbývající minuty: <ph name="MIN_REMAINING" /></translation>
 <translation id="3533790840489634638">bazén</translation>
+<translation id="3535802910192338629">Váš učitel přidal do School Tools nový obsah</translation>
 <translation id="3547264467365135390">Vzorec</translation>
 <translation id="3557205324756024651">Místní identita (volitelné)</translation>
 <translation id="3565064564551103223">Povolené IP adresy</translation>
@@ -630,6 +632,7 @@
 <translation id="4130750466177569591">Souhlasím</translation>
 <translation id="4131410914670010031">Černobíle</translation>
 <translation id="4137700675046373159">v sobotu</translation>
+<translation id="4139326893730851150">Aktualizace firmwaru</translation>
 <translation id="4143226836069425823">Stisknutím jiné klávesy ji nahradíte</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
@@ -1172,6 +1175,7 @@
 <translation id="6673898378497337661">zvýšit jas klávesnice</translation>
 <translation id="6692996468359469499">Získejte informace týkající se vybraného obsahu</translation>
 <translation id="6694534975463174713">zámek</translation>
+<translation id="6700703207451721535">Přístup k tomuto odkazu není povolen. Pokud ho potřebujete, obraťte se na svého učitele.</translation>
 <translation id="6704062477274546131">Překlad DNS</translation>
 <translation id="6712933881624804031">údolí</translation>
 <translation id="6716013206176357696">jahody</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Šňůra</translation>
 <translation id="7287310195820267359">Sbírky tapet</translation>
+<translation id="7293429513719260019">Zvolte jazyk</translation>
 <translation id="7297226631177386107">Přes firewall se nelze připojit k webům HTTPS</translation>
 <translation id="7297726121602187087">Tmavě zelená</translation>
 <translation id="7301262279595293068">Počkejte prosím, než se tato aplikace aktualizuje</translation>
@@ -1354,6 +1359,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7544853251252956727">Přehrávat náhodně</translation>
 <translation id="7550715992156305117">Diagnostické rutiny</translation>
 <translation id="7551123448725492271">Zařízení je audiozařízení.</translation>
+<translation id="7553913964854052228">Nástroje School Tools používají váš mikrofon</translation>
 <translation id="7559239713112547082">Náhled snímku obrazovky</translation>
 <translation id="7561454561030345039">Tuto akci spravuje administrátor</translation>
 <translation id="7561759921596375678">Zapnout zvuk</translation>
@@ -1562,6 +1568,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8576249514688522074">Neinicializováno</translation>
 <translation id="8584654835905316966">K dokončení aktualizace firmwaru zařízení <ph name="DEVICE_NAME" /> na verzi <ph name="VERSION" /> je potřeba restart. Počítač se může restartovat několikrát. Jedná se o očekávané chování.</translation>
 <translation id="8593058461203131755">pozastavit médium</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
 <translation id="8626489604350149811">Další akce pro <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Světle fialová</translation>

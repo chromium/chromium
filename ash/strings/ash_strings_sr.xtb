@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">Апликација</translation>
 <translation id="3213571860604332401">Сачувај линк као обележивач</translation>
 <translation id="3217205077783620295">Звук је укључен. Можете да га искључите померањем прекидача.</translation>
-<translation id="3218561536255328229">Притисните Esc 5 пута да бисте омогућили тачпед</translation>
 <translation id="3226991577105957773">и још <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Уштеда батерије је искључена</translation>
@@ -2439,6 +2438,7 @@
 <translation id="98120814841227350">Идите на крај документа</translation>
 <translation id="987589956647469042">Мобилни подаци су укључени</translation>
 <translation id="989374776391122812">Контроле камере и звука</translation>
+<translation id="990263227494928142">Притисните shift 5 пута да бисте омогућили тачпед</translation>
 <translation id="990277280839877440">Прозор <ph name="WINDOW_TITILE" /> је затворен.</translation>
 <translation id="993398562350683614"><ph name="STEP" />. корак обиласка од <ph name="TOTAL_STEPS" />. Користите апликације да бисте обављали све потребне радње на <ph name="PRODUCT_NAME" />-у. Апликације можете да пронађете у Покретачу. Притисните Alt + Shift + L да бисте фокусирали дугме Покретача.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">इमेज बनाई जा रही हैं...</translation>
 <translation id="1116694919640316211">इसके बारे में</translation>
 <translation id="1118572504348554005">इस फ़ॉर्म की मदद से सबमिट किए गए किसी भी सुझाव, शिकायत या राय को हम अपने पार्टनर के साथ शेयर कर सकते हैं. इससे हम उन गड़बड़ियों और अन्य समस्याओं को हल कर पाते हैं जिनकी शिकायत हमसे की जाती है. इस फ़ॉर्म में, पासवर्ड जैसी संवेदनशील जानकारी न दें.</translation>
+<translation id="1119403468619527527">आसान शब्दों में समझने के लिए चुने गए शब्द बहुत कम हैं</translation>
 <translation id="1119447706177454957">आंतरिक गड़बड़ी</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए, लैपटॉप मोड पर स्विच करें.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट लें</translation>
 <translation id="3923184630988645767">डेटा खर्च</translation>
+<translation id="3924445055519423964">वेबपेज/PDF फ़ाइल की खास जानकारी देखने के लिए क्लिक करें</translation>
 <translation id="3932043219784172185">कोई भी डिवाइस कनेक्ट नहीं है</translation>
 <translation id="3934185438132762746">असाइन नहीं किया गया <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">मैं सहमत हूं</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
 <translation id="4137700675046373159">शनिवार को</translation>
+<translation id="4139326893730851150">फ़र्मवेयर से जुड़े अपडेट</translation>
 <translation id="4143226836069425823">चुने गए बटन में बदलाव करने के लिए, कीबोर्ड के किसी अन्य बटन पर टैप करें</translation>
 <translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">पेज</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4999333166442584738">रिपोर्ट छिपाएं</translation>
+<translation id="5005695757087124131">चुने गए टेक्स्ट को आसान शब्दों में समझने के लिए क्लिक करें</translation>
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">थीम का रंग</translation>
@@ -1175,6 +1179,7 @@
 <translation id="6673898378497337661">कीबोर्ड की रोशनी बढ़ाएं</translation>
 <translation id="6692996468359469499">चुनी हुई सामग्री से जुड़ी जानकारी पाएं</translation>
 <translation id="6694534975463174713">लॉक करें</translation>
+<translation id="6700703207451721535">इस लिंक को ऐक्सेस करने की अनुमति नहीं है. इसका ऐक्सेस पाने के लिए, अपने शिक्षक से संपर्क करें.</translation>
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="6712933881624804031">वादी</translation>
 <translation id="6716013206176357696">स्ट्रॉबेरी</translation>
@@ -1298,6 +1303,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">फ़ील द ब्रीज़</translation>
 <translation id="7287310195820267359">वॉलपेपर कलेक्शन</translation>
+<translation id="7293429513719260019">भाषा चुनें</translation>
 <translation id="7297226631177386107">फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>
 <translation id="7297726121602187087">गहरा हरा</translation>
 <translation id="7301262279595293068">कृपया ऐप्लिकेशन के अपडेट होने तक इंतज़ार करें</translation>
@@ -1331,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> को अपडेट किया जा सकता है</translation>
 <translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
+<translation id="7418738250896500352">आसान शब्दों में समझने के लिए चुने गए शब्द बहुत ज़्यादा हैं</translation>
 <translation id="7425037327577270384">लिखने में मेरी मदद करें</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">इस एपीएन को न तो बंद किया जा सकता है और न ही हटाया जा सकता है. पक्का करें कि जिन <ph name="ATTACH" /> एपीएन को चालू किया गया था उन्हें बंद कर दिया गया है या हटा दिया गया है.</translation>
@@ -1546,6 +1553,7 @@
 <translation id="8476942730579767658">विंडो और डेस्क</translation>
 <translation id="8477536061607044749">ग्राफ़िक डिज़ाइन</translation>
 <translation id="8477551185774834963">डीएनएस, इंतज़ार की समयसीमा से थोड़ा ऊपर है</translation>
+<translation id="8482376765267780829">आसान शब्दों में समझने के लिए, कोई टेक्स्ट चुनें</translation>
 <translation id="8483248364096924578">आईपी पता</translation>
 <translation id="8491311378305535241">Android ऐप्लिकेशन से, फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>
 <translation id="8495070016475833911">फ़ेल्ट</translation>
@@ -1675,6 +1683,7 @@
 <translation id="9082718469794970195">इस वीडियो का इस्तेमाल करें</translation>
 <translation id="9087578468327036362">इस क्वेरी की शिकायत करें</translation>
 <translation id="9088306295921699330">मौजूदा इस्तेमाल</translation>
+<translation id="9088994563996376283">आसान शब्दों में समझें</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">मोबाइल डेटा रीसेट होने की तारीख के बारे में ज़्यादा जानकारी</translation>
 <translation id="9100765901046053179">अतिरिक्त सेटिंग</translation>

@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{„a“: „ალფა“, „b“: „ბრავო“, „c“: „ცელსიუსი“, „d“: „დელტა“, „e“: „ექო“, „f“: „ფოქსტროტი“, „g“: „გოლფი“, „h“: „ჰაერი“, „i“: „ინდოეთი“, „j“: „ჯულიეტა“, „k“: „კილო“, „l“: „ლიმა“, „m“: „მაიკი“, „n“: „ნოემბერი“, „o“: „ოსკარი“, „p“: „პაპა“, „q“: „ქვებეკი“, „r“: „რომეო“, „s“: „სიერა“, „t“: „ტანგო“, „u“: „უნიფორმა“, „v“: „ვიქტორი“, „w“: „ვისკი“, „x“: „ქსეროქსი“, „y“: „იანკი“, „z“: „ზულუ“}</translation>
 <translation id="1120938014254001895">ორი თითით გადაფურცვლა ზემოთ</translation>
 <translation id="1126928665165112660">დაუხრელი</translation>
+<translation id="1133751489735776037">მაუსით სამმაგი დაწკაპუნება</translation>
 <translation id="113582498867142724"><ph name="TAG" /> კოლექცია <ph name="NUM" /> ელემენტით</translation>
 <translation id="1146441463334103638">ეკრანის ჩართვა ან გამორთვა</translation>
 <translation id="1156488781945104845">მიმდინარე დრო</translation>
 <translation id="1161762950103988776">გადასვლა</translation>
 <translation id="1164857107703583584">გადასვლის ბრძანებების მეშვეობით შესაძლებელია ეფექტური ნავიგაცია ვებგვერდზე.</translation>
 <translation id="1175914831232945926">ციფრები</translation>
+<translation id="1186712907912748007">მიმდინარეობს ჩავლებით გადატანა. დასასრულებლად გამოიყენეთ ჟესტი „<ph name="GESTURE" />“. სხვა ჟესტები ამჟამად მიუწვდომელია.</translation>
 <translation id="1188858454923323853">დამატებითი</translation>
 <translation id="1189258430971676908">პრაქტიკის არე: ჩამოსაშლელი სიები</translation>
 <translation id="1195238899008218998">ბოლოსიტყვაობა</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">ბმული</translation>
 <translation id="2363753371702255035">ბურთულა</translation>
 <translation id="2365384324219615024">ერთეულების გააქტიურება Enter კლავიშითაც შეგიძლიათ. მაგალითად, Enter კლავიშის მეშვეობით შესაძლებელია ფორმაში მითითებული ტექსტის გადაგზავნა. გასაგრძელებლად დააჭირეთ Enter-ს.</translation>
+<translation id="2371402123699727805">კარნახი აქტიურია. შესაწყვეტად გამოიყენეთ ჟესტი „<ph name="GESTURE" />“. სხვა ჟესტები ამჟამად მიუწვდომელია.</translation>
 <translation id="2381733276052567791">გახმოვანების ჩართვა ან გამორთვა</translation>
 <translation id="2390264819538553347">წინ გადასასვლელად, დააჭირეთ „Enter“-ს; უკან გადასასვლელად, დააჭირეთ „უკუშლას“.</translation>
 <translation id="2398579267367951220">აკრიფეთ ტექსტი გვერდზე ძიებისთვის. შედეგზე გადასასვლელად დააჭირეთ კლავიშს „enter“, შედეგების დასათვალიერებლად — კლავიშებს ზემოთ/ქვემოთ მიმართული ისრებით. საძიებო მოთხოვნის შესაცვლელად გააგრძელეთ ტექსტის აკრეფა, ხოლო გასაუქმებლად დააჭირეთ კლავიშს „escape“.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">ოთხი თითით გადაფურცვლა მარჯვნივ</translation>
 <translation id="3112457281078985179">ChromeVox-ის ჩასართავად ან გამოსართავად, გამოიყენეთ კლავიშთა კომბინაცია: Control + Alt + Z.</translation>
 <translation id="3115800313647508384">გსურთ ეკრანის გამორთვა?</translation>
-<translation id="3127625407966660979">კარნახი აქტიურია</translation>
 <translation id="3131002934070407451">რიცხვების წაკითხვა, როგორც:</translation>
 <translation id="3134461040845705080">მხოლოდ წაკითხვადი</translation>
 <translation id="3137663468179739624">ზეთისხილისფერი</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">წინა მე-3 დონის სათაური არ არის</translation>
 <translation id="3887399638190992181">ძირითადი კლავიშები</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">სახით მართვა დაპაუზდა. გასაგრძელებლად გამოიყენეთ ჟესტი „<ph name="GESTURE" />“. სხვა ჟესტები ამჟამად მიუწვდომელია.</translation>
 <translation id="3897092660631435901">მენიუ</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">წინა მე-6 დონის სათაური</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{წამი}other{წამი}}</translation>
 <translation id="4161663686871496107">ChromeVox-ის ხმოვანი შეფასება მზადაა</translation>
 <translation id="4176463684765177261">გამორთული</translation>
-<translation id="4176677444195790114">მიმდინარეობს ჩავლებით გადატანა</translation>
 <translation id="4187322598335821254">ხაზების მიხედვით გადასაადგილებლად გადაფურცლეთ ზემოთ ან ქვემოთ</translation>
 <translation id="4188530942454211480">წინა წინადადება</translation>
 <translation id="4191918948604314587">ღილაკი</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">გაჯერებული ცისფერი</translation>
 <translation id="4406249099130339147">პუნქტუაციის ექო:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">ყველა კბილის ჩვენება</translation>
 <translation id="4432457053224379116">ინდური წითელი</translation>
 <translation id="4432896207833262240">მონიშნული კონტენტი</translation>
 <translation id="4437615272777527928">აკრიფეთ ტექსტი მენიუებში ძიებისთვის. შედეგებში ნავიგაციისთვის გამოიყენეთ ზემოთ და ქვემოთ მიმართული ისრები. ტექსტში კურსორის კორექტირებისთვისა და მენიუებს შორის გადაადგილებისთვის გამოიყენეთ მარჯვნივ და მარცხნივ მიმართული ისრები.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">შემდეგი 1-ლი დონის სათაური არ არის</translation>
 <translation id="5455441614648621694">დამატებითი</translation>
 <translation id="5462510922370980473">გვერდების სია</translation>
+<translation id="5489460663499094917">გადაადგილების რეჟიმი აქტიურია. გასასვლელად გამოიყენეთ ჟესტი „<ph name="GESTURE" />“. სხვა ჟესტები ამჟამად მიუწვდომელია.</translation>
 <translation id="5495517933067991341">ძირითადი კლავიშები: Shift</translation>
 <translation id="549602578321198708">სიტყვა</translation>
 <translation id="5513242761114685513">კონტექსტური მენიუ</translation>
@@ -1111,7 +1115,6 @@
 <translation id="8378855320830505539">რეგიონი</translation>
 <translation id="8382679411218029383">ავტომატური შევსების თანმიმდევრობა და სია</translation>
 <translation id="8394908167088220973">მედიის დაკვრა/პაუზა</translation>
-<translation id="8409502156784390079">გადაადგილების რეჟიმი აქტიურია</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8428603554127842284">დონე <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1189,7 +1192,6 @@
 <translation id="8986362086234534611">დავიწყება</translation>
 <translation id="8989104346085848538">ChromeVox გახმოვანების შესაწყვეტად დააჭირეთ Control კლავიშს.</translation>
 <translation id="9014206344398081366">ChromeVox-ის სახელმძღვანელო</translation>
-<translation id="9034592733577768445">სახის კონტროლი დაპაუზდა</translation>
 <translation id="9040132695316389094">სათაური 1</translation>
 <translation id="9061884144798498064">აირჩიეთ 8-წერტილიანი ბრაილის ცხრილი:</translation>
 <translation id="9063946545000394379">წინა სიმბოლოზე გადასვლა</translation>

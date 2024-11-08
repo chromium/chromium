@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Özel anahtara ilişkin giriş değeri geçerli bir yol olmalıdır.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' seçenekler sayfası yüklenemedi.</translation>
 <translation id="3984413272403535372">Uzantı imzalanırken hata oluştu.</translation>
-<translation id="4115165561519362854">Bu makinenin yöneticisi, <ph name="EXTENSION_NAME" /> uzantısının en azından <ph name="EXTENSION_VERSION" /> sürümünde olmasını gerektiriyor. Bu sürüme (veya sonraki sürümlere) güncelleninceye kadar uzantı etkinleştirilemez.</translation>
 <translation id="4233778200880751280">Hakkında sayfası ("<ph name="ABOUT_PAGE" />") yüklenemedi.</translation>
 <translation id="471800408830181311">Özel anahtar oluşturulamadı.</translation>
 <translation id="4811956658694082538">Bir yardımcı program kilitlendiği için paket yüklenemedi. Chrome'u yeniden başlatın ve tekrar deneyin.</translation>

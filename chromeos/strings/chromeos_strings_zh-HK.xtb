@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">正在建立圖片…</translation>
 <translation id="1116694919640316211">關於</translation>
 <translation id="1118572504348554005">我們可能會將透過此表格提交的意見提供給合作夥伴，以便解決錯誤及你報告的其他問題。請勿輸入密碼等敏感資料。</translation>
+<translation id="1119403468619527527">字數太少，無法簡化</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">無法測試裝置。請切換至手提電腦模式以進行測試。</translation>
 <translation id="3916998944874125962">截圖</translation>
 <translation id="3923184630988645767">數據用量</translation>
+<translation id="3924445055519423964">按一下即可撮要網頁/PDF 檔案</translation>
 <translation id="3932043219784172185">未連接任何裝置</translation>
 <translation id="3934185438132762746">未指定<ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">無法解析主機</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4137700675046373159">星期六</translation>
+<translation id="4139326893730851150">韌體更新</translation>
 <translation id="4143226836069425823">㩒一下要取代嘅其他鍵盤按鍵</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相片</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">網頁</translation>
 <translation id="4989542687859782284">不受支援的實驗</translation>
 <translation id="4999333166442584738">隱藏報告</translation>
+<translation id="5005695757087124131">按一下即可簡化所選文字</translation>
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">主題顏色</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">感受微風</translation>
 <translation id="7287310195820267359">桌布收藏</translation>
+<translation id="7293429513719260019">選取語言</translation>
 <translation id="7297226631177386107">無法透過防火牆連線至 HTTPS 網站</translation>
 <translation id="7297726121602187087">深綠色</translation>
 <translation id="7301262279595293068">正在更新此應用程式，請稍候</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" />已準備好更新</translation>
 <translation id="741244894080940828">轉換</translation>
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
+<translation id="7418738250896500352">字數太多，無法簡化</translation>
 <translation id="7425037327577270384">幫我寫</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">無法停用或移除此 APN。請確保停用或移除已啟用的「<ph name="ATTACH" />」APN。</translation>
@@ -1357,6 +1363,7 @@
 <translation id="7544853251252956727">隨機播放</translation>
 <translation id="7550715992156305117">日常診斷安排</translation>
 <translation id="7551123448725492271">裝置類型係音響裝置。</translation>
+<translation id="7553913964854052228">School Tools 正在使用你的麥克風</translation>
 <translation id="7559239713112547082">預覽螢幕截圖</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7561759921596375678">開啟音量</translation>
@@ -1547,6 +1554,7 @@
 <translation id="8476942730579767658">視窗和桌面</translation>
 <translation id="8477536061607044749">平面設計</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>
+<translation id="8482376765267780829">請選取要簡化的文字</translation>
 <translation id="8483248364096924578">IP 位址</translation>
 <translation id="8491311378305535241">無法從 Android 應用程式透過防火牆連線至 HTTP 網站</translation>
 <translation id="8495070016475833911">毛氈</translation>
@@ -1676,6 +1684,7 @@
 <translation id="9082718469794970195">使用這段影片</translation>
 <translation id="9087578468327036362">報告此查詢</translation>
 <translation id="9088306295921699330">目前使用量</translation>
+<translation id="9088994563996376283">簡化</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">「重設日期」的更多詳情</translation>
 <translation id="9100765901046053179">進階設定</translation>

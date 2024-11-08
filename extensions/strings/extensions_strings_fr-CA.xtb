@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Vous devez indiquer un chemin valide comme valeur de clé privée.</translation>
 <translation id="388442998277590542">Échec de chargement de la page d'options « <ph name="OPTIONS_PAGE" /> ».</translation>
 <translation id="3984413272403535372">Une erreur s'est produite lors de la signature de l'extension.</translation>
-<translation id="4115165561519362854">L’administrateur de cette machine nécessite la version <ph name="EXTENSION_VERSION" /> ou ultérieure de <ph name="EXTENSION_NAME" />. L'activation sera impossible tant que la mise à jour vers cette version (ou une version ultérieure) n'aura pas été effectuée.</translation>
 <translation id="4233778200880751280">Impossible de charger la page « <ph name="ABOUT_PAGE" /> ».</translation>
 <translation id="471800408830181311">Échec de création de la clé privée</translation>
 <translation id="4811956658694082538">Échec de l'installation du paquet causé par le plantage d'un processus de service. Veuillez redémarrer Chrome, puis réessayer.</translation>

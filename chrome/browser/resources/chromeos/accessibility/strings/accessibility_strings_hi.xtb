@@ -28,6 +28,7 @@
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">किसी वेब पेज पर एक से दूसरी जगह जाने के लिए, आप जंप कमांड का इस्तेमाल कर सकते हैं. यह बेहतर तरीका है.</translation>
 <translation id="1175914831232945926">अंक</translation>
+<translation id="1186712907912748007">'खींचें और छोड़ें' सुविधा का इस्तेमाल किया जा रहा है. रोकने के लिए, <ph name="GESTURE" />. अन्य जेस्चर कुछ समय के लिए उपलब्ध नहीं हैं.</translation>
 <translation id="1188858454923323853">पूरक</translation>
 <translation id="1189258430971676908">प्रैक्टिस करने की जगह: ड्रॉप-डाउन सूचियां</translation>
 <translation id="1195238899008218998">उपसंहार</translation>
@@ -209,6 +210,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2347456970887948350">लिंक</translation>
 <translation id="2363753371702255035">बुलेट पॉइंट</translation>
 <translation id="2365384324219615024">आप आइटम को चालू करने के लिए Enter भी दबा सकते हैं. उदाहरण के लिए, किसी फ़ॉर्म में टेक्स्ट को सबमिट करने के लिए Enter का इस्तेमाल किया जा सकता है. जारी रखने के लिए, Enter दबाएं.</translation>
+<translation id="2371402123699727805">लिखवाने की सुविधा चालू है. रोकने के लिए, <ph name="GESTURE" />. अन्य जेस्चर कुछ समय के लिए उपलब्ध नहीं हैं.</translation>
 <translation id="2381733276052567791">बोली को चालू या बंद पर टॉगल करें</translation>
 <translation id="2390264819538553347">आगे जाने के लिए, enter दबाएं, वापस जाने के लिए, backspace दबाएं.</translation>
 <translation id="2398579267367951220">पेज खाेजने के लिए टाइप करें. नतीजे पर जाने के लिए Enter दबाएं, नतीजाें को ब्राउज़ करने के लिए, अप या डाउन ऐराे (नीचे या ऊपर की ओर तीर के निशान वाले बटन) बटन दबाएं. साथ ही, दूसरी चीज़ें खाेजने के लिए टाइप करते रहें या रद्द करने के लिए Escape दबाएं.</translation>
@@ -271,6 +273,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2723001399770238859">ऑडियो</translation>
 <translation id="2737898226590637227">आगे कोई ARIA लैंडमार्क नहीं है</translation>
 <translation id="2749275490991666823">चेक किया गया</translation>
+<translation id="2751454300227269244">अपना मुंह दाईं ओर घुमाएं</translation>
 <translation id="27527859628328957">अगले फ़ोकस करने लायक आइटम पर जंप करें</translation>
 <translation id="2756452585631602151">कोई कस्टम लेबल डालें</translation>
 <translation id="2766299274563946262">कोई बायां सेल नहीं है</translation>
@@ -341,7 +344,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="311015743332597320">चार उंगलियों से दाईं ओर स्वाइप करें</translation>
 <translation id="3112457281078985179">ChromeVox को चालू या बंद करने के लिए, Control+Alt+Z का उपयोग करें.</translation>
 <translation id="3115800313647508384">क्या आप स्क्रीन बंद करना चाहते हैं?</translation>
-<translation id="3127625407966660979">लिखवाने की सुविधा चालू है</translation>
 <translation id="3131002934070407451">नंबर इस तरह पढ़ें:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">जैतूनी</translation>
@@ -352,6 +354,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3153928844647607688">टेबल <ph name="TABLENAME" />, <ph name="TABLEROWS" /> गुणा <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">मटमैला</translation>
 <translation id="316542773973815724">मार्गदर्शक</translation>
+<translation id="3167446923957429259">अपना मुंह बाईं ओर घुमाएं</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{रिक्ति}one{# रिक्तियां}other{# रिक्तियां}}</translation>
 <translation id="3179119189286472195">लिंक नहीं है</translation>
 <translation id="3180990259147710757">जबड़े को बाईं ओर ले जाएं</translation>
@@ -462,6 +465,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3870295413168340326">पहले से कोई लेवल 3 टाइटल नहीं है</translation>
 <translation id="3887399638190992181">ज़रूरी बटन</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">फ़ेस कंट्रोल की सुविधा रोक दी गई है. फिर से शुरू करने के लिए <ph name="GESTURE" />. अन्य जेस्चर कुछ समय के लिए उपलब्ध नहीं हैं.</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">पिछले लेवल 6 का टाइटल</translation>
@@ -501,7 +505,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4161104397932142764">{COUNT,plural, =1{सेकंड}one{सेकंड}other{सेकंड}}</translation>
 <translation id="4161663686871496107">ChromeVox की बोलकर दी जाने वाली सुविधा तैयार है</translation>
 <translation id="4176463684765177261">बंद किया गया</translation>
-<translation id="4176677444195790114">'खींचें और छोड़ें' सुविधा का इस्तेमाल किया जा रहा है</translation>
 <translation id="4187322598335821254">लाइन एक-एक करके खिसकाने के लिए ऊपर या नीचे स्वाइप करें</translation>
 <translation id="4188530942454211480">पिछला वाक्य</translation>
 <translation id="4191918948604314587">बटन</translation>
@@ -698,6 +701,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5452267669091857717">आगे कोई लेवल 1 टाइटल नहीं है</translation>
 <translation id="5455441614648621694">पूरक</translation>
 <translation id="5462510922370980473">पेज सूची</translation>
+<translation id="5489460663499094917">स्क्रोल मोड चालू है. बाहर निकलने के लिए, <ph name="GESTURE" />. अन्य जेस्चर कुछ समय के लिए उपलब्ध नहीं हैं.</translation>
 <translation id="5495517933067991341">ज़रूरी बटन: Shift</translation>
 <translation id="549602578321198708">शब्‍द</translation>
 <translation id="5513242761114685513">संदर्भ मेन्यू</translation>
@@ -1109,7 +1113,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8378855320830505539">क्षेत्र</translation>
 <translation id="8382679411218029383">अपने आप पूरा होने का इनलाइन और सूची</translation>
 <translation id="8394908167088220973">मीडिया चलाएं/रोकें</translation>
-<translation id="8409502156784390079">स्क्रोल मोड चालू है</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8428603554127842284">स्तर <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1187,7 +1190,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="8989104346085848538">ChromeVox को बोलने से रोकने के लिए, Control बटन दबाएं.</translation>
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
-<translation id="9034592733577768445">फ़ेस कंट्रोल की सुविधा रोक दी गई है</translation>
 <translation id="9040132695316389094">टाइटल 1</translation>
 <translation id="9061884144798498064">8 बिंदु वाली ब्रेल टेबल चुनें:</translation>
 <translation id="9063946545000394379">पिछले वर्ण पर जाएं</translation>

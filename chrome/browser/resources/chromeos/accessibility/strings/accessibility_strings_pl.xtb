@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alfa", "b": "brawo", "c": "czarli", "d": "delta", "e": "eko", "f": "fokstrot", "g": "golf", "h": "hotel", "i": "india", "j": "dżuliet","k": "kilo", "l": "lima", "m": "majk", "n": "nowember", "o": "oskar","p": "papa", "q": "kebek", "r": "romeo", "s": "sjera", "t": "tango", "u": "juniform", "v": "wiktor", "w": "łyski","x": "eks-rej", "y": "janki", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Przesuń dwoma palcami w górę</translation>
 <translation id="1126928665165112660">Bez kursywy</translation>
+<translation id="1133751489735776037">Kliknij trzykrotnie myszą</translation>
 <translation id="113582498867142724">Kolekcja elementów <ph name="TAG" />. Liczba elementów: <ph name="NUM" /></translation>
 <translation id="1146441463334103638">Włącz/wyłącz ekran</translation>
 <translation id="1156488781945104845">Bieżąca godzina</translation>
 <translation id="1161762950103988776">Przejdź</translation>
 <translation id="1164857107703583584">Polecenia nawigacyjne ułatwiają poruszanie się po stronach internetowych.</translation>
 <translation id="1175914831232945926">Cyfry</translation>
+<translation id="1186712907912748007">Trwa przeciąganie i upuszczanie. Aby je zakończyć, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="1188858454923323853">pomocniczy</translation>
 <translation id="1189258430971676908">Obszar ćwiczenia: listy</translation>
 <translation id="1195238899008218998">Posłowie</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">Link</translation>
 <translation id="2363753371702255035">punktor</translation>
 <translation id="2365384324219615024">Możesz też aktywować elementy, naciskając Enter. Naciskając ten klawisz, możesz na przykład przesłać tekst w formularzu. Aby przejść dalej, naciśnij Enter.</translation>
+<translation id="2371402123699727805">Dyktowanie jest aktywne. Aby je zatrzymać, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="2381733276052567791">Włącz lub wyłącz mowę</translation>
 <translation id="2390264819538553347">Aby kontynuować, naciśnij Enter. Aby się cofnąć, naciśnij Backspace.</translation>
 <translation id="2398579267367951220">Wpisz, by przeszukać stronę. Naciśnij Enter, by przejść do wyniku. Naciskaj strzałki w górę i w dół, by przeglądać wyniki. Pisz dalej, by zmienić wyszukiwane hasło. Aby anulować, naciśnij Escape.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">Przesuń 4 palcami w prawo</translation>
 <translation id="3112457281078985179">Aby włączyć lub wyłączyć czytnik ChromeVox, naciśnij Ctrl + Alt + Z.</translation>
 <translation id="3115800313647508384">Wyłączyć ekran?</translation>
-<translation id="3127625407966660979">Dyktowanie jest aktywne</translation>
 <translation id="3131002934070407451">Odczytuj numery jako:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Oliwkowy</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Nie ma poprzedniego nagłówka poziomu 3</translation>
 <translation id="3887399638190992181">Klawisze podstawowe</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Sterowanie za pomocą twarzy zostało wstrzymane. Aby je wznowić, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">siatkalisty</translation>
 <translation id="3909320334364316587">Poprzedni nagłówek poziomu 6</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{sekunda}few{sekundy}many{sekund}other{sekundy}}</translation>
 <translation id="4161663686871496107">Czytnik ChromeVox jest gotowy</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
-<translation id="4176677444195790114">Trwa przeciąganie i upuszczanie</translation>
 <translation id="4187322598335821254">Przesuwaj palcem w górę lub w dół, by przechodzić z wiersza do wiersza</translation>
 <translation id="4188530942454211480">Poprzednie zdanie</translation>
 <translation id="4191918948604314587">Przycisk</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">Głęboki błękit nieba</translation>
 <translation id="4406249099130339147">Czytanie znaków interpunkcyjnych:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Pokaż wszystkie zęby</translation>
 <translation id="4432457053224379116">Indiański czerwony</translation>
 <translation id="4432896207833262240">Oznaczona treść</translation>
 <translation id="4437615272777527928">Zacznij pisać, by wyszukiwać w menu. Użyj strzałek w górę i w dół, by przeglądać wyniki. Używaj strzałek w lewo i w prawo, by ustawić kursor tekstu i poruszać się między różnymi menu.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Nie ma następnego nagłówka poziomu 1</translation>
 <translation id="5455441614648621694">Pomocniczy</translation>
 <translation id="5462510922370980473">Lista stron</translation>
+<translation id="5489460663499094917">Tryb przewijania jest aktywny. Aby go zamknąć, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="5495517933067991341">Klawisze podstawowe: Shift</translation>
 <translation id="549602578321198708">Słowo</translation>
 <translation id="5513242761114685513">Menu kontekstowe</translation>
@@ -1111,7 +1115,6 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Autouzupełnianie tekstu i listy</translation>
 <translation id="8394908167088220973">Odtwórz/wstrzymaj multimedia</translation>
-<translation id="8409502156784390079">Tryb przewijania aktywny</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8428603554127842284">poziom <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1189,7 +1192,6 @@
 <translation id="8986362086234534611">Zapomnij</translation>
 <translation id="8989104346085848538">Aby zatrzymać odczytywanie w ChromeVox, naciśnij klawisz Ctrl.</translation>
 <translation id="9014206344398081366">Samouczek ChromeVox</translation>
-<translation id="9034592733577768445">Sterowanie twarzą zostało wstrzymane</translation>
 <translation id="9040132695316389094">Nagłówek 1</translation>
 <translation id="9061884144798498064">Wybierz tabelę ośmiopunktowego pisma Braille'a:</translation>
 <translation id="9063946545000394379">przejdź do poprzedniego znaku</translation>

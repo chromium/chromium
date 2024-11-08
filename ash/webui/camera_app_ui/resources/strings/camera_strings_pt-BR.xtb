@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2244252133441425811">Ativar o seletor de QPS de vídeo</translation>
 <translation id="2271433936731426666">Ativar a síntese do desempenho do vídeo no tamanho original</translation>
-<translation id="2281736597583450397">Confira detalhes mais nítidos com o zoom aprimorado</translation>
 <translation id="2320741269052147773">Movimentar para a esquerda</translation>
 <translation id="2360840973209616515">O app de câmera é gerenciado pelo administrador.
         Para mais detalhes, entre em contato com o administrador.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5976160379964388480">Outros</translation>
 <translation id="6073451960410192870">Parar de gravar</translation>
-<translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6197807149213783179">Salvar metadados</translation>
 <translation id="6233780560267770709">3 por 3</translation>
 <translation id="6243827288366940320">Proporção áurea</translation>
@@ -122,7 +120,6 @@
 Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma foto ou um vídeo de amostra e descreva o problema. Por exemplo, a foto está escura demais ou não está focando.</translation>
 <translation id="6519884562954018934">Participar do <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Compartilhar</translation>
-<translation id="6586509689874700895">Primeiro, pressione <ph name="BUTTON_NAME" /> para aumentar o zoom. Depois de tirar uma foto, os detalhes aprimorados vão aparecer.</translation>
 <translation id="659539649712855529">Copiado: <ph name="CONTENT" />.</translation>
 <translation id="6617916774429601017">Mostrar todas as resoluções</translation>
 <translation id="6631515515009660915">Espelhamento desativado</translation>
@@ -168,7 +165,6 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8609951387004618906">Abrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Alterne o status do microfone. O microfone está desativado</translation>
-<translation id="8712637175834984815">Entendi</translation>
 <translation id="8730621377337864115">Concluir</translation>
 <translation id="8732462232047530626">Visualizar metadados</translation>
 <translation id="874854738381978209">Rede Wi-Fi detectada.</translation>

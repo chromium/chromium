@@ -180,7 +180,7 @@ Ako je stavka "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite oznak
 <translation id="8743328882720071828">Želite li dozvoliti da <ph name="CLIENT_USERNAME" /> vidi i kontrolira vaš računar?</translation>
 <translation id="8747048596626351634">Sesija je pala ili njeno pokretanje nije uspjelo. Ako ~/.chrome-remote-desktop-session postoji na udaljenom računaru, provjerite je li pokrenuo dugotrajan postupak u prednjem planu kao što je okruženje radne površine ili upravitelj prozora.</translation>
 <translation id="8804164990146287819">Pravila privatnosti</translation>
-<translation id="8906511416443321782">Pristup mikrofonu je potreban za snimanje zvuka i njegov prijenos na klijenta Chrome udaljenog računara.</translation>
+<translation id="8906511416443321782">Pristup mikrofonu je potreban za snimanje zvuka i njegov prenos na klijenta Chrome udaljenog računara.</translation>
 <translation id="9042277333359847053">Autorska prava 2024. Google LLC. Sva prava su zadržana.</translation>
 <translation id="9111855907838866522">Povezani ste s udaljenim uređajem. Da otvorite meni, dodirnite ekran s četiri prsta.</translation>
 <translation id="9126115402994542723">Nemoj ponovo tražiti PIN prilikom povezivanja na host računar s ovog uređaja.</translation>

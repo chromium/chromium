@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Vytvárajú sa obrázky…</translation>
 <translation id="1116694919640316211">Informácie</translation>
 <translation id="1118572504348554005">Spätnú väzbu odoslanú prostredníctvom tohto formulára môžeme zdieľať s našimi partnermi na účely opravy chýb a riešenia ďalších problémov, ktoré nám hlásite. Neuvádzajte citlivé údaje, ako sú heslá.</translation>
+<translation id="1119403468619527527">Príliš málo slov na zjednodušenie</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Deaktivovať šetrič obrazovky</translation>
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
 <translation id="3102119246920354026">Vyrovnávacia pamäť</translation>
+<translation id="3112413615003385433">Učiteľ odstránil obsah zo Školských nástrojov</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazény</translation>
 <translation id="3122883569442693641">Ďalšie podrobnosti</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">Dokončiť úpravy</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3533790840489634638">bazén</translation>
+<translation id="3535802910192338629">Učiteľ pridal nový obsah do Školských nástrojov</translation>
 <translation id="3547264467365135390">Vzorec</translation>
 <translation id="3557205324756024651">Miestna identita (nepovinné)</translation>
 <translation id="3565064564551103223">Povolené adresy IP</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">Zariadenie sa nedá testovať. Ak chcete testovať, prepnite na režim laptopu.</translation>
 <translation id="3916998944874125962">vytvorenie snímky obrazovky</translation>
 <translation id="3923184630988645767">Spotreba dát</translation>
+<translation id="3924445055519423964">Kliknutím zhrnúť webovú stránku alebo súbor PDF</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
 <translation id="3934185438132762746">Nepriradený ovládací prvok (<ph name="CONTROL_TYPE" />)</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">Súhlasím</translation>
 <translation id="4131410914670010031">Čiernobielo</translation>
 <translation id="4137700675046373159">v sobotu</translation>
+<translation id="4139326893730851150">Aktualizácie firmvéru</translation>
 <translation id="4143226836069425823">Ak ho chcete nahradiť, klepnite na iný kláves klávesnice</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4989542687859782284">Nedostupné</translation>
 <translation id="4999333166442584738">Skryť prehľad</translation>
+<translation id="5005695757087124131">Kliknutím zjednodušiť vybraný text</translation>
 <translation id="500920857929044050">Zastaviť test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Farba motívu</translation>
@@ -1296,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Pocíťte vánok</translation>
 <translation id="7287310195820267359">Zbierky tapiet</translation>
+<translation id="7293429513719260019">Vybrať jazyk</translation>
 <translation id="7297226631177386107">Prostredníctvom brány firewall sa nedá pripojiť k webom HTTPS</translation>
 <translation id="7297726121602187087">Tmavozelená</translation>
 <translation id="7301262279595293068">Počkajte, kým sa táto aplikácia aktualizuje</translation>
@@ -1330,6 +1337,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7405493795721832710">Zariadenie <ph name="DEVICE_NAME" /> je pripravené na aktualizáciu</translation>
 <translation id="741244894080940828">prevod</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
+<translation id="7418738250896500352">Príliš veľa slov na zjednodušenie</translation>
 <translation id="7425037327577270384">Asistent pri písaní</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tento názov prístupového bodu (APN) sa nedá deaktivovať ani odstrániť. Uistite sa, že aktivované názvy prístupových bodov (APN) <ph name="ATTACH" /> sú deaktivované alebo odstránené.</translation>
@@ -1355,6 +1363,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7544853251252956727">Náhodne prehrávať</translation>
 <translation id="7550715992156305117">Diagnostické postupy</translation>
 <translation id="7551123448725492271">Zariadenie je audio zariadenie.</translation>
+<translation id="7553913964854052228">School Tools používa váš mikrofón</translation>
 <translation id="7559239713112547082">Zobraziť ukážku snímky obrazovky</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7561759921596375678">Zapnutie zvuku</translation>
@@ -1545,6 +1554,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8476942730579767658">Okná a plochy</translation>
 <translation id="8477536061607044749">grafického dizajnu</translation>
 <translation id="8477551185774834963">Latencia servera DNS mierne prekračuje povolenú úroveň</translation>
+<translation id="8482376765267780829">Vybrať text na zjednodušenie</translation>
 <translation id="8483248364096924578">Adresa IP</translation>
 <translation id="8491311378305535241">V aplikáciách pre Android sa prostredníctvom brány firewall nedá pripojiť k webom HTTPS</translation>
 <translation id="8495070016475833911">plsť</translation>
@@ -1563,6 +1573,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8576249514688522074">Nespustené</translation>
 <translation id="8584654835905316966">Dokončenie inštalácie firmvéru zariadenia <ph name="DEVICE_NAME" /> na verziu <ph name="VERSION" /> vyžaduje reštart. Váš počítač sa môže niekoľkokrát reštartovať. Toto správanie je očakávané.</translation>
 <translation id="8593058461203131755">pozastavenie médií</translation>
+<translation id="8619169570378509764">Školské nástroje</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
 <translation id="8626489604350149811">Ďalšie akcie pre aplikáciu <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetlopurpurová</translation>
@@ -1673,6 +1684,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="9082718469794970195">Použiť toto video</translation>
 <translation id="9087578468327036362">Nahlásiť tento dopyt</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
+<translation id="9088994563996376283">Zjednodušiť</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Ďalšie informácie o dátume resetu</translation>
 <translation id="9100765901046053179">Rozšírené nastavenia</translation>

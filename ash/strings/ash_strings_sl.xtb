@@ -630,7 +630,6 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="3208321278970793882">Aplikacija</translation>
 <translation id="3213571860604332401">Shranjevanje povezave kot zaznamek</translation>
 <translation id="3217205077783620295">Glasnost je vklopljena: če to preklopite, bo zvok izklopljen.</translation>
-<translation id="3218561536255328229">Petkrat pritisnite tipko Esc, če želite omogočiti sledilno ploščico</translation>
 <translation id="3226991577105957773">in še <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Varčevanje z energijo baterije je izklopljeno</translation>
@@ -1305,6 +1304,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5393156353051693207">Če želite preurediti aplikacije, se kjer koli dotaknite in pridržite.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na <ph name="IN_PLACE_APP" />, spustite, da ustvarite mapo.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) lahko na chrome.com pregleduje uporabo in zgodovino tega uporabnika.</translation>
+<translation id="540338817371815859">Ležeče</translation>
 <translation id="540713187982329711">Preklop dostopne točke. Dostopna točka je vklopljena, nobena naprava ni povezana.</translation>
 <translation id="5409208741270395213">Označevanje opravila kot dokončanega</translation>
 <translation id="5413656666631274079">stran z nastavitvami</translation>
@@ -1767,6 +1767,7 @@ Nova namestitev</translation>
 <translation id="6921427376813842559">Posodobitev naprave</translation>
 <translation id="6929081673585394903">Prikaz kontrolnikov</translation>
 <translation id="6931576957638141829">Shrani v</translation>
+<translation id="6935857786205183008">Pokončno</translation>
 <translation id="6942518653766415536">Meni oblike zapisa posnetka</translation>
 <translation id="6945221475159498467">Izberi</translation>
 <translation id="6945922087561257829">Telefon uporablja mobilno omrežje. Poskrbite, da sta telefon in Chromebook povezana v isto omrežje Wi-Fi, nato poskusite znova. <ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@ Nova namestitev</translation>
 <translation id="98120814841227350">Premik na konec dokumenta</translation>
 <translation id="987589956647469042">Prenos podatkov v mobilnem omrežju je vklopljen</translation>
 <translation id="989374776391122812">Kontrolniki za kamero in zvok</translation>
+<translation id="990263227494928142">Petkrat pritisnite tipko Shift, če želite omogočiti sledilno ploščico</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> je zaprto.</translation>
 <translation id="993398562350683614"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Za vse, kar morate opraviti v napravi <ph name="PRODUCT_NAME" />, lahko uporabite aplikacije. Aplikacije so na voljo v zaganjalniku. Pritisnite Alt + Shift + L, če želite preklopiti na gumb za zaganjalnik.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

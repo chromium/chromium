@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">აპი</translation>
 <translation id="3213571860604332401">ბმულის შენახვა სანიშნეს სახით</translation>
 <translation id="3217205077783620295">ხმა ჩართულია, გადართვისას აუდიო დადუმდება.</translation>
-<translation id="3218561536255328229">დააჭირეთ Esc კლავიშს 5-ჯერ, რომ სენსორული პანელი ჩართოთ</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> სხვა</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
 <translation id="3233611303007751344">ბატარეის დამზოგი გამორთულია</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">აპების გადასალაგებლად დააწკაპუნეთ ხანგრძლივად შეეხეთ ნებისმიერ ადგილს</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> არის <ph name="IN_PLACE_APP" />-ის ზემოდან, აუშვით საქაღალდის შესაქმნელად.</translation>
 <translation id="5397578532367286026">ამ მომხმარებლის გამოყენების და ისტორიის დათვალიერება შესაძლებელია მენეჯერის მიერ (<ph name="MANAGER_EMAIL" />) chrome.com-ზე.</translation>
+<translation id="540338817371815859">ლანდშაფტი</translation>
 <translation id="540713187982329711">უსადენო ქსელის გადართვა. უსადენო ქსელი ჩართულია, არცერთი მოწყობილობა არ არის დაკავშირებული.</translation>
 <translation id="5409208741270395213">ამოცანის დასრულებულად მონიშვნა</translation>
 <translation id="5413656666631274079">პარამეტრების გვერდი</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">მოწყობილობის განახლება</translation>
 <translation id="6929081673585394903">მართვის საშუალებების ჩვენება</translation>
 <translation id="6931576957638141829">შენახვა აქ:</translation>
+<translation id="6935857786205183008">პორტრეტი</translation>
 <translation id="6942518653766415536">ჩანაწერის ფორმატის მენიუ</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6945922087561257829">თქვენი ტელეფონი იყენებს მობილურ ქსელს. დარწმუნდით, რომ თქვენი ტელეფონი და Chromebook ერთსა და იმავე Wi-Fi ქსელშია, შემდეგ კი ხელახლა ცადეთ. <ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@
 <translation id="98120814841227350">დოკუმენტის ბოლოში გადასვლა</translation>
 <translation id="987589956647469042">მობილური ინტერნეტი ჩართულია</translation>
 <translation id="989374776391122812">კამერისა და აუდიოს მართვის საშუალებები</translation>
+<translation id="990263227494928142">დააჭირეთ Shift კლავიშს 5-ჯერ, რომ სენსორული პანელი ჩართოთ</translation>
 <translation id="990277280839877440">ფანჯარა „<ph name="WINDOW_TITILE" />“ დაიხურა.</translation>
 <translation id="993398562350683614">ტურის ნაბიჯი <ph name="STEP" /> / <ph name="TOTAL_STEPS" />-დან. გამოიყენეთ აპები, რომლებიც <ph name="PRODUCT_NAME" />-ზე ყველაფრის შესრულებაში დაგეხმარებათ. თქვენი აპების პოვნა შეგიძლიათ გამშვებში. გამშვების ღილაკის ფოკუსში მოსაქცევად დააჭირეთ კლავიშთა კომბინაციას Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

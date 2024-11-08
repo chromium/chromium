@@ -78,10 +78,8 @@
 <translation id="228293613124499805">Большасць сайтаў, якія вы наведваеце, хутчэй за ўсё, захоўваюць на вашай прыладзе такія даныя, як звесткі пра параметры, якія вы выбіраеце, або інфармацыя, якую вы абагулілі з сайтам. Часцей за ўсё гэта робіцца, каб вам было зручней працаваць з сайтам. Мы рэкамендуем пакінуць гэту наладу ўключанай.</translation>
 <translation id="2289270750774289114">Пытацца, калі сайт спрабуе выявіць прылады Bluetooth паблізу (рэкамендуецца)</translation>
 <translation id="2315043854645842844">Аперацыйная сістэма не падтрымлівае выбар сертыфіката кліента.</translation>
-<translation id="2321958826496381788">Перацягвайце паўзунок, пакуль гэты тэкст не будзе зручна чытаць. Пасля падвойнага націскання на абзац тэкст павінен быць як мінімум такім вялікім.</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2379925928934107488">Калі Chrome выкарыстоўвае цёмную тэму, прымяняць яе да сайтаў (калі гэта магчыма)</translation>
-<translation id="2387895666653383613">Маштаб тэксту</translation>
 <translation id="2390272837142897736">Павялічыць маштаб</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">Дазвол JavaScript на канкрэтным сайце.</translation>
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2677748264148917807">Выйсці</translation>
-<translation id="2678468611080193228">Паспрабуйце часова дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць, але павысіць імавернасць таго, што функцыі сайта будуць працаваць</translation>
 <translation id="2682367912565197520">Выдаліць захаваны маштаб</translation>
 <translation id="2683434792633810741">Выдаліць і скінуць?</translation>
 <translation id="2713106313042589954">Выключыць камеру</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Староннія файлы cookie заблакіраваны</translation>
 <translation id="3448554387819310837">Калі гэты параметр уключаны, сайты могуць запытваць дазвол на выкарыстанне камеры. Калі параметр выключаны, сайты не могуць выкарыстоўваць камеру.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Заўтра Chrome зноў заблакіруе файлы cookie}one{Chrome зноў заблакіруе файлы cookie праз # дзень}few{Chrome зноў заблакіруе файлы cookie праз # дні}many{Chrome зноў заблакіруе файлы cookie праз # дзён}other{Chrome зноў заблакіруе файлы cookie праз # дня}}</translation>
 <translation id="3521663503435878242">Сайты дамена <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Не дазваляць сайтам адсочваць рухі рук</translation>
 <translation id="3536227077203206203">Гэтым разам доступ дазволены</translation>
@@ -478,6 +474,7 @@
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8168435359814927499">Змесціва</translation>
+<translation id="818487310457576362">Каб выйсці з поўнаэкраннага рэжыму, правядзіце пальцам ад бакавога краю экрана.</translation>
 <translation id="8186479265534291036">Сайт не працуе? Староннія файлы cookie заблакіраваны.</translation>
 <translation id="8197286292360124385">Дазволена: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Узнавіць</translation>

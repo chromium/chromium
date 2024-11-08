@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Invoerwaarde vir private sleutel moet 'n geldige pad wees.</translation>
 <translation id="388442998277590542">Kon nie opsiebladsy '<ph name="OPTIONS_PAGE" />' laai nie.</translation>
 <translation id="3984413272403535372">Kon nie 'n uitbreiding onderteken nie.</translation>
-<translation id="4115165561519362854">Die administrateur van hierdie masjien vereis dat <ph name="EXTENSION_NAME" /> minstens weergawe <ph name="EXTENSION_VERSION" /> moet wees. Dit kan nie geaktiveer word voordat dit tot daardie weergawe (of nuwer) opgedateer het nie.</translation>
 <translation id="4233778200880751280">Kon nie meer-oor-bladsy "<ph name="ABOUT_PAGE" />" laai nie.</translation>
 <translation id="471800408830181311">Kon nie private sleutel uitvoer nie.</translation>
 <translation id="4811956658694082538">Kon nie pakket installeer nie omdat 'n nutsproses omgeval het. Probeer om Chrome te herbegin en probeer weer.</translation>

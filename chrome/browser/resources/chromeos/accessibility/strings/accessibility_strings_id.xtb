@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "charlie", "d": "delta", "e": "eko", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oskar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "yuniform", "v": "viktor", "w": "wiski","x": "eksray", "y": "yangki", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Geser dua jari ke atas</translation>
 <translation id="1126928665165112660">Tidak miring</translation>
+<translation id="1133751489735776037">Klik tiga kali mouse</translation>
 <translation id="113582498867142724">Koleksi <ph name="TAG" /> dengan <ph name="NUM" /> item</translation>
 <translation id="1146441463334103638">Aktifkan/nonaktifkan layar</translation>
 <translation id="1156488781945104845">Waktu saat ini</translation>
 <translation id="1161762950103988776">Lompat</translation>
 <translation id="1164857107703583584">Perintah lewati dapat digunakan untuk menjelajahi halaman web secara efisien.</translation>
 <translation id="1175914831232945926">Digit</translation>
+<translation id="1186712907912748007">Tindakan tarik lalu lepas sedang berlangsung. <ph name="GESTURE" /> untuk mengakhiri. Gestur lainnya tidak tersedia untuk sementara.</translation>
 <translation id="1188858454923323853">komplementer</translation>
 <translation id="1189258430971676908">Area praktik: Menu drop-down</translation>
 <translation id="1195238899008218998">Penutup</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">Tautan</translation>
 <translation id="2363753371702255035">butir</translation>
 <translation id="2365384324219615024">Anda juga dapat menekan Enter untuk mengaktifkan item. Misalnya, Enter dapat digunakan untuk mengirim teks dalam formulir. Untuk melanjutkan, tekan Enter.</translation>
+<translation id="2371402123699727805">Dikte aktif. <ph name="GESTURE" /> untuk berhenti. Gestur lainnya tidak tersedia untuk sementara.</translation>
 <translation id="2381733276052567791">Mengaktifkan atau menonaktifkan fitur ucapan</translation>
 <translation id="2390264819538553347">Untuk melanjutkan, tekan enter; untuk kembali, tekan backspace.</translation>
 <translation id="2398579267367951220">Ketik untuk menelusuri halaman. Tekan enter untuk langsung menuju ke hasil, panah atas atau bawah untuk menjelajahi hasil, terus mengetik untuk mengubah penelusuran, atau escape untuk membatalkan.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">Geser empat jari ke kanan</translation>
 <translation id="3112457281078985179">Untuk mengaktifkan atau menonaktifkan ChromeVox, gunakan Control+Alt+Z.</translation>
 <translation id="3115800313647508384">Nonaktifkan layar?</translation>
-<translation id="3127625407966660979">Dikte aktif</translation>
 <translation id="3131002934070407451">Baca angka sebagai:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Olive</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Tidak ada judul level 3 sebelumnya</translation>
 <translation id="3887399638190992181">Tombol penting</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Fitur kontrol dengan wajah dijeda. <ph name="GESTURE" /> untuk melanjutkan. Gestur lainnya tidak tersedia untuk sementara.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Judul tingkat 6 sebelumnya</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{detik}other{detik}}</translation>
 <translation id="4161663686871496107">Respons lisan ChromeVox siap</translation>
 <translation id="4176463684765177261">Dinonaktifkan</translation>
-<translation id="4176677444195790114">Tindakan tarik lalu lepas sedang berlangsung</translation>
 <translation id="4187322598335821254">Geser ke atas atau ke bawah untuk berpindah per baris</translation>
 <translation id="4188530942454211480">Kalimat Sebelumnya</translation>
 <translation id="4191918948604314587">Tombol</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">Deep Sky Blue</translation>
 <translation id="4406249099130339147">Gema tanda baca:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Tunjukkan semua gigi Anda</translation>
 <translation id="4432457053224379116">Indian Red</translation>
 <translation id="4432896207833262240">Konten yang ditandai</translation>
 <translation id="4437615272777527928">Ketik untuk menelusuri di menu. Gunakan panah atas dan bawah untuk menjelajahi hasil. Gunakan panah kiri dan kanan untuk menyesuaikan kursor teks, dan untuk berpindah antar-menu.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Tidak ada judul level 1 berikutnya</translation>
 <translation id="5455441614648621694">Komplementer</translation>
 <translation id="5462510922370980473">Daftar halaman</translation>
+<translation id="5489460663499094917">Mode scroll aktif. <ph name="GESTURE" /> untuk keluar. Gestur lainnya tidak tersedia untuk sementara.</translation>
 <translation id="5495517933067991341">Tombol Penting: Shift</translation>
 <translation id="549602578321198708">Kata</translation>
 <translation id="5513242761114685513">Menu konteks</translation>
@@ -1111,7 +1115,6 @@
 <translation id="8378855320830505539">Kawasan</translation>
 <translation id="8382679411218029383">Pelengkapan otomatis sebaris dan daftar</translation>
 <translation id="8394908167088220973">Putar/Jeda Media</translation>
-<translation id="8409502156784390079">Mode scroll aktif</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8428603554127842284">tingkat <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1189,7 +1192,6 @@
 <translation id="8986362086234534611">Lupakan</translation>
 <translation id="8989104346085848538">Untuk menghentikan ucapan ChromeVox saat ini, tekan tombol Control.</translation>
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
-<translation id="9034592733577768445">Fitur kontrol dengan wajah dijeda</translation>
 <translation id="9040132695316389094">Judul 1</translation>
 <translation id="9061884144798498064">Pilih tabel braille 8 titik:</translation>
 <translation id="9063946545000394379">pindah ke karakter sebelumnya</translation>

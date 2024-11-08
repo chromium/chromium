@@ -78,10 +78,8 @@
 <translation id="228293613124499805">Већина сајтова које посећујете вероватно чува податке на уређају, често ради побољшања доживљаја тако што чува подешавања или информације које делите са сајтом. Препоручујемо да ово подешавање остане укључено.</translation>
 <translation id="2289270750774289114">Питај када сајт жели да открије Bluetooth уређаје у близини (препоручено)</translation>
 <translation id="2315043854645842844">Оперативни систем не подржава избор сертификата за клијента.</translation>
-<translation id="2321958826496381788">Превлачите клизач док ово не будете могли лако да прочитате. Када двапут додирнете пасус, текст треба да буде бар оволики.</translation>
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2379925928934107488">Када је то могуће, тамна тема се примењује за сајтове када је Chrome користи</translation>
-<translation id="2387895666653383613">Промена величине текста</translation>
 <translation id="2390272837142897736">Повећајте зумирање</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">Дозволите JavaScript за одређени сајт.</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2677748264148917807">Затвори</translation>
-<translation id="2678468611080193228">Пробајте привремено да дозволите колачиће треће стране, што значи слабију заштиту, али већу вероватноћу да ће функције сајта радити</translation>
 <translation id="2682367912565197520">Избриши сачувани ниво зумирања</translation>
 <translation id="2683434792633810741">Желите да избришете и ресетујете?</translation>
 <translation id="2713106313042589954">Искључи камеру</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Колачићи треће стране су блокирани</translation>
 <translation id="3448554387819310837">Када је укључено, сајтови могу да траже да користе камеру. Када је искључено, сајтови не могу да користе камеру.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Chrome ће сутра поново блокирати колачиће}one{Још # дан док Chrome поново не блокира колачиће}few{Још # дана док Chrome поново не блокира колачиће}other{Још # дана док Chrome поново не блокира колачиће}}</translation>
 <translation id="3521663503435878242">Сајтови на домену <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Не дозвољавај сајтовима да прате моје руке</translation>
 <translation id="3536227077203206203">Дозвољено овај пут</translation>
@@ -174,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}one{<ph name="RWS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}few{<ph name="RWS_MEMBERS_COUNT" /> сајта у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}other{<ph name="RWS_MEMBERS_COUNT" /> сајтова у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}}</translation>
 <translation id="3697164069658504920">Када је укључено, сајтови могу да траже да користе USB уређаје. Када је искључено, сајтови не могу да користе USB уређаје.</translation>
 <translation id="3707034683772193706">Сајт који посећујете може да сачува малу количину информација у Chrome-у, углавном да би потврдио да нисте бот</translation>
+<translation id="3709818294139939629">Уклоњен је приступ сајта фајлу</translation>
 <translation id="3721953990244350188">Одбаците и прегледајте следећу доступну радњу</translation>
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3763247130972274048">Двапут додирните видео лево или десно да бисте прескочили 10 сек</translation>
@@ -436,6 +433,7 @@
 <translation id="7425915948813553151">Тамна тема за сајтове</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Када је укључено, сајтови могу да приказују упите за пријављивање. Када је искључено, сајтови не могу да приказују упите за пријављивање.</translation>
+<translation id="7553211568594248088">Изађите из претраге у центру</translation>
 <translation id="7554752735887601236">Сајт користи микрофон</translation>
 <translation id="7561196759112975576">Увек</translation>
 <translation id="757524316907819857">Блокирај да сајтови пуштају заштићени садржај</translation>

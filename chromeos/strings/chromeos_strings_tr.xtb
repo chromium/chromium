@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Resimler üretiliyor...</translation>
 <translation id="1116694919640316211">Hakkında</translation>
 <translation id="1118572504348554005">Bize bildirdiğiniz hataları ve diğer sorunları gidermek için bu form üzerinden gönderilen geri bildirimleri iş ortaklarımızla paylaşabiliriz. Şifreler gibi hassas bilgileri eklemeyin.</translation>
+<translation id="1119403468619527527">Sadeleştirilecek çok az kelime var</translation>
 <translation id="1119447706177454957">Dahili hata</translation>
 <translation id="1124772482545689468">Kullanıcı</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Ekran koruyucuyu devre dışı bırak</translation>
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
 <translation id="3102119246920354026">Önbellek</translation>
+<translation id="3112413615003385433">Öğretmeniniz School Tools'dan içerik kaldırdı</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">havuzlar</translation>
 <translation id="3122883569442693641">Diğer ayrıntılar</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">Düzenleme tamamlandı</translation>
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
 <translation id="3533790840489634638">havuz</translation>
+<translation id="3535802910192338629">Öğretmeniniz School Tools'a yeni içerikler ekledi</translation>
 <translation id="3547264467365135390">Formül</translation>
 <translation id="3557205324756024651">Yerel kimlik (isteğe bağlı)</translation>
 <translation id="3565064564551103223">İzin verilen IP'ler</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">Cihaz test edilemiyor. Test etmek için dizüstü bilgisayar moduna geçin.</translation>
 <translation id="3916998944874125962">ekran görüntüsü al</translation>
 <translation id="3923184630988645767">Veri kullanımı</translation>
+<translation id="3924445055519423964">Web sayfasını/PDF dosyasını özetlemek için tıklayın</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
 <translation id="3934185438132762746">Atanmayan <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">Kabul ediyorum</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4137700675046373159">Cumartesi günü</translation>
+<translation id="4139326893730851150">Donanım yazılımı güncellemeleri</translation>
 <translation id="4143226836069425823">Değiştirmek için başka bir klavye tuşuna dokunun</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4147897805161313378">Google Fotoğraflar</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">Sayfalar</translation>
 <translation id="4989542687859782284">Kullanılamıyor</translation>
 <translation id="4999333166442584738">Raporu gizle</translation>
+<translation id="5005695757087124131">Seçili metni sadeleştirmek için tıklayın</translation>
 <translation id="500920857929044050">Testi durdur</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Tema rengi</translation>
@@ -1172,6 +1178,7 @@
 <translation id="6673898378497337661">klavye parlaklığını artır</translation>
 <translation id="6692996468359469499">Seçiminizle alakalı bilgi edinin</translation>
 <translation id="6694534975463174713">kilit</translation>
+<translation id="6700703207451721535">Bu bağlantıya erişim izni verilmemiş. Bağlantıya erişmeniz gerekiyorsa öğretmeninizle görüşün.</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>
 <translation id="6712933881624804031">vadi</translation>
 <translation id="6716013206176357696">çilekler</translation>
@@ -1295,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Esintiyi hissedin</translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>
+<translation id="7293429513719260019">Dil seç</translation>
 <translation id="7297226631177386107">HTTPS web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
 <translation id="7297726121602187087">Koyu yeşil</translation>
 <translation id="7301262279595293068">Lütfen bu uygulama güncellenirken bekleyin</translation>
@@ -1329,6 +1337,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> güncellenmeye hazır</translation>
 <translation id="741244894080940828">dönüştürme</translation>
 <translation id="7415801143053185905">Çok yüksek HTTP gecikmesi</translation>
+<translation id="7418738250896500352">Sadeleştirilecek çok fazla kelime var</translation>
 <translation id="7425037327577270384">Yazmama yardım et</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Bu APN devre dışı bırakılamaz veya kaldırılamaz. Etkin durumdaki <ph name="ATTACH" /> APN'lerin devre dışı bırakıldığından veya kaldırıldığından emin olun.</translation>
@@ -1354,6 +1363,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7544853251252956727">Karıştır</translation>
 <translation id="7550715992156305117">Teşhis Rutinleri</translation>
 <translation id="7551123448725492271">Cihazın türü ses sistemi.</translation>
+<translation id="7553913964854052228">School Tools, mikrofonunuzu kullanıyor</translation>
 <translation id="7559239713112547082">Ekran Görüntüsünü Önizle</translation>
 <translation id="7561454561030345039">Bu işlem, yöneticiniz tarafından yönetilir.</translation>
 <translation id="7561759921596375678">Sesi aç</translation>
@@ -1544,6 +1554,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8476942730579767658">Pencereler ve masalar</translation>
 <translation id="8477536061607044749">grafik tasarım</translation>
 <translation id="8477551185774834963">DNS gecikmesi, izin verilen eşiğin biraz üzerinde</translation>
+<translation id="8482376765267780829">Sadeleştirilecek metin seçin</translation>
 <translation id="8483248364096924578">IP adresi</translation>
 <translation id="8491311378305535241">Android uygulamalarından HTTP web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
 <translation id="8495070016475833911">keçe</translation>
@@ -1562,6 +1573,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8576249514688522074">Başlatılmamış</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> donanım yazılımının <ph name="VERSION" /> sürümüne güncellenmesini tamamlamak için cihazın yeniden başlatılması gerekiyor. Bilgisayarınız birkaç kez yeniden başlatılıyormuş gibi görünebilir. Bu, beklenen bir davranıştır.</translation>
 <translation id="8593058461203131755">medyayı duraklat</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Dolaşım durumu</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ile ilgili diğer işlemler</translation>
 <translation id="86356131183441916">Açık mor</translation>
@@ -1672,6 +1684,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="9082718469794970195">Bu videoyu kullan</translation>
 <translation id="9087578468327036362">Bu sorguyu bildirir</translation>
 <translation id="9088306295921699330">Mevcut kullanım</translation>
+<translation id="9088994563996376283">Sadeleştir</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Tarihi sıfırlamayla ilgili daha fazla bilgi</translation>
 <translation id="9100765901046053179">Gelişmiş ayarlar</translation>

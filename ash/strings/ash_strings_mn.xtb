@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">Апп</translation>
 <translation id="3213571860604332401">Холбоосыг хавчуургаар хадгалах</translation>
 <translation id="3217205077783620295">Дууг нээсэн, унтраах нь аудионы дууг хаана.</translation>
-<translation id="3218561536255328229">Мэдрэгч самбарыг идэвхжүүлэхийн тулд Esc дээр 5 удаа дарна уу</translation>
 <translation id="3226991577105957773">Бусад +<ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Батарей хэмнэгчийг унтраасан</translation>
@@ -1306,6 +1305,7 @@
 <translation id="5393156353051693207">Аппуудаа дахин эрэмбэлэхийн тулд хүссэн газраа удаан дарна уу</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />-г <ph name="IN_PLACE_APP" /> дээр тавьсан байна. Фолдер үүсгэхийн тулд чөлөөлнө үү.</translation>
 <translation id="5397578532367286026">chrome.com дээр (<ph name="MANAGER_EMAIL" />) удирдагч энэ хэрэглэгчийн хэрэглээ болон түүхийг үзэх боломжтой.</translation>
+<translation id="540338817371815859">Хөндлөн</translation>
 <translation id="540713187982329711">Сүлжээний цэгийг асаана уу/унтраана уу. Сүлжээний цэг асаалттай байна. Холбогдсон төхөөрөмж алга.</translation>
 <translation id="5409208741270395213">Ажлыг дууссан гэж тэмдэглэх</translation>
 <translation id="5413656666631274079">Тохиргооны хуудас</translation>
@@ -1768,6 +1768,7 @@
 <translation id="6921427376813842559">Төхөөрөмжийг шинэчилнэ үү</translation>
 <translation id="6929081673585394903">Тохиргоог харуулах</translation>
 <translation id="6931576957638141829">Дараахад хадгалах</translation>
+<translation id="6935857786205183008">Босоо</translation>
 <translation id="6942518653766415536">Бичлэгийн форматын цэс</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6945922087561257829">Таны утас хөдөлгөөнт холбооны сүлжээ ашиглаж байна. Таны утас болон Chromebook ижил Wi-Fi сүлжээнд байгаа эсэхийг шалгаж, дахин оролдоно уу. <ph name="LEARN_MORE" /></translation>
@@ -2437,6 +2438,7 @@
 <translation id="98120814841227350">Документын төгсгөл хэсэгт очих</translation>
 <translation id="987589956647469042">Мобайл датаг асаасан</translation>
 <translation id="989374776391122812">Камер болон аудионы тохиргоо</translation>
+<translation id="990263227494928142">Мэдрэгч самбарыг идэвхжүүлэхийн тулд Shift дээр 5 удаа дарна уу</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> цонх хаалттай байна.</translation>
 <translation id="993398562350683614">Аяллын <ph name="TOTAL_STEPS" />-н <ph name="STEP" />-р алхам. Хэрэгтэй бүх зүйлээ <ph name="PRODUCT_NAME" /> дээрээ хийхэд аппуудыг ашиглана уу. Та аппуудаа Эхлүүлэгчээс олох боломжтой. Эхлүүлэгчийн товчлуурыг сонгохын тулд Alt + Shift + L дээр дарна уу.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

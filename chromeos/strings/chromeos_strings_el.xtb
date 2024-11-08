@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Δημιουργία εικόνων…</translation>
 <translation id="1116694919640316211">Σχετικά με</translation>
 <translation id="1118572504348554005">Ενδέχεται να κοινοποιήσουμε σχόλια μέσω αυτής της φόρμας στους συνεργάτες μας για την αντιμετώπιση σφαλμάτων και άλλων ζητημάτων που μας αναφέρετε. Μην συμπεριλάβετε ευαίσθητες πληροφορίες, όπως κωδικούς πρόσβασης.</translation>
+<translation id="1119403468619527527">Πολύ λίγες λέξεις για απλοποίηση</translation>
 <translation id="1119447706177454957">Εσωτερικό σφάλμα</translation>
 <translation id="1124772482545689468">Χρήστης</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Δεν είναι δυνατή η δοκιμή της συσκευής. Μεταβείτε στη λειτουργία φορητού υπολογιστή για δοκιμή.</translation>
 <translation id="3916998944874125962">λήψη στιγμιότυπου οθόνης</translation>
 <translation id="3923184630988645767">Χρήση δεδομένων</translation>
+<translation id="3924445055519423964">Κάντε κλικ, για να συνοψίσετε την ιστοσελίδα/το αρχείο PDF</translation>
 <translation id="3932043219784172185">Δεν υπάρχει συνδεδεμένη συσκευή</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> που δεν έχει εκχωρηθεί</translation>
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Συμφωνώ</translation>
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
 <translation id="4137700675046373159">το Σάββατο</translation>
+<translation id="4139326893730851150">Ενημερώσεις υλικολογισμικού</translation>
 <translation id="4143226836069425823">Πατήστε ένα άλλο πλήκτρο του πληκτρολογίου για αντικατάσταση</translation>
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Σελίδες</translation>
 <translation id="4989542687859782284">Μη διαθέσιμο</translation>
 <translation id="4999333166442584738">Απόκρυψη αναφοράς</translation>
+<translation id="5005695757087124131">Κάντε κλικ, για να απλοποιήσετε το επιλεγμένο κείμενο</translation>
 <translation id="500920857929044050">Διακοπή δοκιμής</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Χρώμα θέματος</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Νιώστε το αεράκι</translation>
 <translation id="7287310195820267359">Συλλογές ταπετσαρίας</translation>
+<translation id="7293429513719260019">Επιλογή γλώσσας</translation>
 <translation id="7297226631177386107">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTPS</translation>
 <translation id="7297726121602187087">Σκούρο πράσινο</translation>
 <translation id="7301262279595293068">Περιμένετε μέχρι να ενημερωθεί αυτή η εφαρμογή</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7405493795721832710">Η συσκευή <ph name="DEVICE_NAME" /> είναι έτοιμη για ενημέρωση</translation>
 <translation id="741244894080940828">μετατροπή</translation>
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
+<translation id="7418738250896500352">Πάρα πολλές λέξεις για απλοποίηση</translation>
 <translation id="7425037327577270384">Βοήθησέ με να γράψω</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Δεν είναι δυνατή η απενεργοποίηση ή η κατάργηση αυτού του APN. Βεβαιωθείτε ότι τα ενεργοποιημένα APN τύπου <ph name="ATTACH" /> έχουν απενεργοποιηθεί ή καταργηθεί.</translation>
@@ -1357,6 +1363,7 @@
 <translation id="7544853251252956727">Τυχαία αναπαραγωγή</translation>
 <translation id="7550715992156305117">Ρουτίνες διαγνωστικών στοιχείων</translation>
 <translation id="7551123448725492271">Η συσκευή είναι συσκευή ήχου.</translation>
+<translation id="7553913964854052228">Το School Tools χρησιμοποιεί το μικρόφωνό σας</translation>
 <translation id="7559239713112547082">Προεπισκόπηση στιγμιότυπου οθόνης</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7561759921596375678">Ενεργοποίηση έντασης ήχου</translation>
@@ -1547,6 +1554,7 @@
 <translation id="8476942730579767658">Παράθυρα και γραφεία</translation>
 <translation id="8477536061607044749">γραφιστικού σχεδίου</translation>
 <translation id="8477551185774834963">Ο λανθάνων χρόνος DNS έχει υπερβεί ελαφρώς το επιτρεπόμενο ελάχιστο όριο.</translation>
+<translation id="8482376765267780829">Επιλέξτε κείμενο για απλοποίηση</translation>
 <translation id="8483248364096924578">Διεύθυνση IP</translation>
 <translation id="8491311378305535241">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP μέσω εφαρμογών Android</translation>
 <translation id="8495070016475833911">τσόχα</translation>
@@ -1676,6 +1684,7 @@
 <translation id="9082718469794970195">Χρήση αυτού του βίντεο</translation>
 <translation id="9087578468327036362">Υποβάλετε αναφορά για αυτό το ερώτημα.</translation>
 <translation id="9088306295921699330">Τρέχουσα χρήση</translation>
+<translation id="9088994563996376283">Απλοποίηση</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Περισσότερες πληροφορίες για την ημερομηνία επαναφοράς</translation>
 <translation id="9100765901046053179">Σύνθετες ρυθμίσεις</translation>

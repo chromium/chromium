@@ -500,9 +500,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />—<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат</translation>
-<translation id="2781658180588759579">Курама сенсордук такта өчүрүлдү. Өзгөртүүнү баскычтоп же башка көрсөтүүчү түзмөк менен ырастаңыз.
+<translation id="2781658180588759579">Курамдагы сенсордук такта өчүрүлдү. Өзгөртүүнү баскычтоп же башка көрсөтүүчү түзмөк менен ырастаңыз.
 
-Болбосо, курама сенсордук такта <ph name="TIMEOUT_SECONDS" /> кийин кайра иштетилет.</translation>
+Болбосо, курамдагы сенсордук такта <ph name="TIMEOUT_SECONDS" /> кийин кайра иштетилет.</translation>
 <translation id="2782591952652094792">Сүрөткө тартуу режиминен чыгуу</translation>
 <translation id="2785499565474703580">1 түзмөк туташып турат</translation>
 <translation id="2791421900609674576">Токтогон жериңизден улантуу үчүн сунуштарды көрөсүз. Сунуштарды өчүрүү үчүн коё бербей басып туруңуз.</translation>
@@ -600,9 +600,9 @@
 <translation id="3113492864356515707">Текчедеги мурунку нерсени бөлүп көрсөтүү</translation>
 <translation id="311799651966070385">Эстетүүнү жабуу</translation>
 <translation id="3120421559657122717">Түзмөк өчүрүлсүнбү?</translation>
-<translation id="3121411970001795539">Чычкан туташтырылгандыктан, курама сенсордук такта өчүрүлдү. Өзгөртүүнү чычкан же баскычтоп менен ырастаңыз.
+<translation id="3121411970001795539">Чычкан туташтырылгандыктан, курамдагы сенсордук такта өчүрүлдү. Өзгөртүүнү чычкан же баскычтоп менен ырастаңыз.
 
-Болбосо, курама сенсордук такта <ph name="TIMEOUT_SECONDS" /> кийин кайра иштетилет.</translation>
+Болбосо, курамдагы сенсордук такта <ph name="TIMEOUT_SECONDS" /> кийин кайра иштетилет.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Класс ишинин түрү</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">Колдонмо</translation>
 <translation id="3213571860604332401">Шилтемени кыстарма катары сактоо</translation>
 <translation id="3217205077783620295">Үнү чыгып турат, өчүрүү менен аудионун үнү басылат.</translation>
-<translation id="3218561536255328229">Сенсордук тактаны иштетүү үчүн Esc баскычын 5 жолу басыңыз</translation>
 <translation id="3226991577105957773">+ дагы <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Батареяны үнөмдөгүч өчүрүлдү</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">Колдонмолоруңуздун иретин өзгөртүү үчүн каалаган жерди басып кармап туруңуз</translation>
 <translation id="5395308026110844773">Папка түзүү үчүн, <ph name="DRAGGED_APP_NAME" /> колдонмосун <ph name="IN_PLACE_APP" /> колдонмосунун үстүнө сүйрөп барып, коё бериңиз.</translation>
 <translation id="5397578532367286026">Башкаруучу бул колдонуучунун пайдалангандарын жана таржымалын (<ph name="MANAGER_EMAIL" />) chrome.com дарегинен карап чыга алат.</translation>
+<translation id="540338817371815859">Пейзаж</translation>
 <translation id="540713187982329711">Хотспотту өчүрүү/күйгүзүү. Хотспот күйүк, бир да түзмөк туташкан жок.</translation>
 <translation id="5409208741270395213">Жасалчу ишти "бүттү" деп белгилөө</translation>
 <translation id="5413656666631274079">Параметрлер бети</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">Түзмөктү жаңыртыңыз</translation>
 <translation id="6929081673585394903">Башкаруу элементтерин көрсөтүү</translation>
 <translation id="6931576957638141829">Төмөнкүгө сактоо:</translation>
+<translation id="6935857786205183008">Портрет</translation>
 <translation id="6942518653766415536">Жаздыруунун форматынын менюсу</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
 <translation id="6945922087561257829">Телефонуңуз мобилдик тармакты колдонуп жатат. Телефонуңуз менен Chromebook бир Wi-Fi тармагына туташып турганын текшерип, кайталап көрүңүз. <ph name="LEARN_MORE" /></translation>

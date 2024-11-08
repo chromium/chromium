@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">이미지 만드는 중…</translation>
 <translation id="1116694919640316211">정보</translation>
 <translation id="1118572504348554005">신고된 버그 및 기타 문제를 해결하기 위해 이 양식을 통해 제출된 의견을 파트너와 공유할 수 있습니다. 비밀번호와 같은 민감한 정보는 포함하지 마세요.</translation>
+<translation id="1119403468619527527">단어가 너무 적어 간결하게 바꿀 수 없습니다.</translation>
 <translation id="1119447706177454957">내부 오류</translation>
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">기기를 테스트할 수 없습니다. 테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="3916998944874125962">스크린샷을 찍습니다</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
+<translation id="3924445055519423964">클릭하여 웹페이지/PDF 파일을 요약하세요.</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
 <translation id="3934185438132762746">할당되지 않은 <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">동의함</translation>
 <translation id="4131410914670010031">흑백</translation>
 <translation id="4137700675046373159">토요일</translation>
+<translation id="4139326893730851150">펌웨어 업데이트</translation>
 <translation id="4143226836069425823">교체할 다른 키보드 키를 탭하세요.</translation>
 <translation id="4145784616224233563">HTTP 방화벽</translation>
 <translation id="4147897805161313378">Google 포토</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">페이지</translation>
 <translation id="4989542687859782284">사용할 수 없음</translation>
 <translation id="4999333166442584738">보고서 숨기기</translation>
+<translation id="5005695757087124131">클릭하여 선택한 텍스트를 간결하게 바꾸세요.</translation>
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">테마 색상</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">살랑살랑 바람</translation>
 <translation id="7287310195820267359">배경화면 컬렉션</translation>
+<translation id="7293429513719260019">언어 선택</translation>
 <translation id="7297226631177386107">방화벽으로 인해 HTTPS 웹사이트에 연결할 수 없습니다.</translation>
 <translation id="7297726121602187087">진한 녹색</translation>
 <translation id="7301262279595293068">이 애플리케이션을 업데이트하는 동안 잠시 기다려 주세요.</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> 업데이트 준비 완료</translation>
 <translation id="741244894080940828">변환</translation>
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
+<translation id="7418738250896500352">단어가 너무 많아 간결하게 바꿀 수 없습니다.</translation>
 <translation id="7425037327577270384">작성 지원 기능</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정된 <ph name="ATTACH" /> APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
@@ -1357,6 +1363,7 @@
 <translation id="7544853251252956727">셔플</translation>
 <translation id="7550715992156305117">진단 루틴</translation>
 <translation id="7551123448725492271">오디오 기기입니다.</translation>
+<translation id="7553913964854052228">School Tools가 마이크를 사용 중입니다.</translation>
 <translation id="7559239713112547082">스크린샷 미리보기</translation>
 <translation id="7561454561030345039">관리자가 관리하는 작업입니다.</translation>
 <translation id="7561759921596375678">볼륨 켜기</translation>
@@ -1547,6 +1554,7 @@
 <translation id="8476942730579767658">창 및 데스크</translation>
 <translation id="8477536061607044749">그래픽 디자인</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
+<translation id="8482376765267780829">간결하게 바꿀 텍스트를 선택하세요.</translation>
 <translation id="8483248364096924578">IP 주소</translation>
 <translation id="8491311378305535241">Android 앱에서 방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>
 <translation id="8495070016475833911">펠트</translation>
@@ -1676,6 +1684,7 @@
 <translation id="9082718469794970195">이 동영상 사용</translation>
 <translation id="9087578468327036362">쿼리 보고</translation>
 <translation id="9088306295921699330">현재 사용량</translation>
+<translation id="9088994563996376283">간결하게 바꾸기</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">날짜 재설정에 대한 추가 정보</translation>
 <translation id="9100765901046053179">고급 설정</translation>

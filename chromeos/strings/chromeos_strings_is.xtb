@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Býr til myndir...</translation>
 <translation id="1116694919640316211">Upplýsingar</translation>
 <translation id="1118572504348554005">Við kunnum að deila ábendingum sem eru sendar inn í gegnum þetta eyðublað með samstarfsaðilum okkar til að leita úrræða við villum og öðrum vandamálum sem þú tilkynnir okkur um. Ekki láta viðkvæmar upplýsingar á borð við aðgangsorð fylgja með.</translation>
+<translation id="1119403468619527527">Of fá orð til að einfalda</translation>
 <translation id="1119447706177454957">Innri villa</translation>
 <translation id="1124772482545689468">Notandi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Ekki hægt að prófa tæki. Skiptu yfir í fartölvustillingu til að prófa</translation>
 <translation id="3916998944874125962">taka skjámynd</translation>
 <translation id="3923184630988645767">Gagnanotkun</translation>
+<translation id="3924445055519423964">Smelltu til að fá samantekt á vefsíðunni/PDF-skránni</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3934185438132762746">Ótiltekinn <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Ég samþykki</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="4137700675046373159">á laugardaginn</translation>
+<translation id="4139326893730851150">Uppfærslur fastbúnaðar</translation>
 <translation id="4143226836069425823">Ýttu á annan lykil á lyklaborðinu til að skipta</translation>
 <translation id="4145784616224233563">HTTP-eldveggur</translation>
 <translation id="4147897805161313378">Google-myndir</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Síður</translation>
 <translation id="4989542687859782284">Ekki tiltækt</translation>
 <translation id="4999333166442584738">Fela skýrslu</translation>
+<translation id="5005695757087124131">Smelltu til að einfalda valinn texta</translation>
 <translation id="500920857929044050">Stöðva próf</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Þemalitur</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Finndu andvarann</translation>
 <translation id="7287310195820267359">Veggfóðurssöfn</translation>
+<translation id="7293429513719260019">Velja tungumál</translation>
 <translation id="7297226631177386107">Ekki er hægt að tengjast HTTPS-vefsvæðum í gegnum eldvegg</translation>
 <translation id="7297726121602187087">Dökkgrænn</translation>
 <translation id="7301262279595293068">Hinkraðu meðan þetta forrit er uppfært</translation>
@@ -1332,6 +1337,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> er tilbúið í uppfærslu</translation>
 <translation id="741244894080940828">umreikningur</translation>
 <translation id="7415801143053185905">Mjög langur HTTP-biðtími</translation>
+<translation id="7418738250896500352">Of mörg orð til að einfalda</translation>
 <translation id="7425037327577270384">Rithjálp</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Hvorki er hægt að slökkva á né fjarlægja þennan aðgangsstað. Gakktu úr skugga um að slökkt sé á <ph name="ATTACH" />-aðgangsstöðum sem er kveikt á eða þeir fjarlægðir.</translation>
@@ -1357,6 +1363,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7544853251252956727">Stokka</translation>
 <translation id="7550715992156305117">Greiningarrútínur</translation>
 <translation id="7551123448725492271">Tækið er hljómtæki.</translation>
+<translation id="7553913964854052228">School Tools notar hljóðnemann</translation>
 <translation id="7559239713112547082">Forskoða skjámynd</translation>
 <translation id="7561454561030345039">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7561759921596375678">Kveikja á hljóði</translation>
@@ -1547,6 +1554,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8476942730579767658">Gluggar og skrifborð</translation>
 <translation id="8477536061607044749">grafískum stíl</translation>
 <translation id="8477551185774834963">DNS-biðtími er aðeins yfir leyfðum þröskuldi</translation>
+<translation id="8482376765267780829">Veldu texta sem þú vilt einfalda</translation>
 <translation id="8483248364096924578">IP-tala</translation>
 <translation id="8491311378305535241">Ekki er hægt að tengjast HTTPS-vefsvæðum úr Android forritum í gegnum eldvegg</translation>
 <translation id="8495070016475833911">filti</translation>
@@ -1676,6 +1684,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="9082718469794970195">Nota þetta myndskeið</translation>
 <translation id="9087578468327036362">Tilkynna þessa fyrirspurn</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>
+<translation id="9088994563996376283">Einfalda</translation>
 <translation id="9095775724867566971">VM-viðbót</translation>
 <translation id="909856219855259344">Nánari upplýsingar um dagsetningu endurstillingar</translation>
 <translation id="9100765901046053179">Ítarlegar stillingar</translation>

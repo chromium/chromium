@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "celje", "č": "časopis", "d": "delta", "e": "eho", "f": "fokstrot", "g": "golf", "h": "hotel", "i": "indija", "j": "julija", "k": "kilo", "l": "lima", "m": "maribor", "n": "november", "o": "oskar", "p": "postojna", "q": "quebec", "r": "romeo", "s": "sežana", "š": "štajerska", "t": "tango", "u": "uniforma", "v": "viktor", "w": "washington", "x": "iks", "y": "youtube", "z": "zulu", "ž": "žaba"}</translation>
 <translation id="1120938014254001895">Z dvema prstoma povlecite gor</translation>
 <translation id="1126928665165112660">Ni ležeče</translation>
+<translation id="1133751489735776037">Trikrat kliknite z miško</translation>
 <translation id="113582498867142724">Zbirka <ph name="TAG" /> s toliko elementi: <ph name="NUM" /></translation>
 <translation id="1146441463334103638">Vklop ali izklop zaslona</translation>
 <translation id="1156488781945104845">Trenutna ura</translation>
 <translation id="1161762950103988776">Skok</translation>
 <translation id="1164857107703583584">Z ukazi za preskakovanje se lahko učinkovito pomikate po spletni strani.</translation>
 <translation id="1175914831232945926">Števke</translation>
+<translation id="1186712907912748007">Poteka vlečenje in spuščanje. <ph name="GESTURE" />, če želite prekiniti. Druge poteze trenutno niso na voljo.</translation>
 <translation id="1188858454923323853">dopolnilno</translation>
 <translation id="1189258430971676908">Območje za vajo: Spustni seznami</translation>
 <translation id="1195238899008218998">Spremna beseda</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">Povezava</translation>
 <translation id="2363753371702255035">oznaka</translation>
 <translation id="2365384324219615024">Tipko Enter lahko pritisnete tudi za aktiviranje elementov. Z njo lahko na primer pošljete besedilo v obrazcu. Če želite nadaljevati, pritisnite tipko Enter.</translation>
+<translation id="2371402123699727805">Narek je aktiven. <ph name="GESTURE" />, če želite ustaviti. Druge poteze trenutno niso na voljo.</translation>
 <translation id="2381733276052567791">Vklop ali izklop govora</translation>
 <translation id="2390264819538553347">Če želite nadaljevati, pritisnite tipko Enter, če se želite vrniti, pritisnite vračalko.</translation>
 <translation id="2398579267367951220">Vnesite, če želite iskati na strani. Pritisnite tipko Enter, če želite skočiti na rezultat, puščični tipki gor in dol, če želite brskati po rezultatih, vnašajte naprej, če želite spremeniti iskanje, ali pritisnite tipko Escape, če želite preklicati.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">S štirimi prsti povlecite v desno</translation>
 <translation id="3112457281078985179">Če želite vklopiti ali izklopiti ChromeVox, uporabite kombinacijo tipk Control in Alt ter črke Z.</translation>
 <translation id="3115800313647508384">Ali želite izklopiti zaslon?</translation>
-<translation id="3127625407966660979">Narek je aktiven</translation>
 <translation id="3131002934070407451">Preberi številke kot:</translation>
 <translation id="3134461040845705080">samo br</translation>
 <translation id="3137663468179739624">Olivna</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Ni prejšnjega naslova na ravni 3</translation>
 <translation id="3887399638190992181">Pomembne tipke</translation>
 <translation id="3887576927692165210">el</translation>
+<translation id="3896762831164962772">Upravljanje z obrazom je začasno zaustavljeno. <ph name="GESTURE" />, če želite nadaljevati. Druge poteze trenutno niso na voljo.</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3907138069015388678">mržszn</translation>
 <translation id="3909320334364316587">Prejšnji naslov na ravni 6</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{sekunda}one{sekunde}two{sekundi}few{sekund}other{sekunde}}</translation>
 <translation id="4161663686871496107">Možnost izgovorjenih povratnih informacij ChromeVox je pripravljena</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
-<translation id="4176677444195790114">Poteka vlečenje in spuščanje</translation>
 <translation id="4187322598335821254">Povlecite gor ali dol, če se želite pomikati po vrsticah</translation>
 <translation id="4188530942454211480">Prejšnji stavek</translation>
 <translation id="4191918948604314587">Gumb</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">Temno nebesno modra</translation>
 <translation id="4406249099130339147">Odmev izgovarjanja ločil:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Pokažite vse zobe</translation>
 <translation id="4432457053224379116">Indijanska rdeča</translation>
 <translation id="4432896207833262240">Označena vsebina</translation>
 <translation id="4437615272777527928">Vnesite, če želite iskati po menijih. Po rezultatih lahko krožite s puščicama gor in dol. S puščicama levo in desno prilagodite kazalko v besedilu ter se premikate med meniji.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Ni naslednjega naslova na ravni 1</translation>
 <translation id="5455441614648621694">Dopolnilno</translation>
 <translation id="5462510922370980473">Seznam strani</translation>
+<translation id="5489460663499094917">Način pomikanja je aktiven. <ph name="GESTURE" />, če ga želite zapreti. Druge poteze trenutno niso na voljo.</translation>
 <translation id="5495517933067991341">Pomembne tipke: Shift</translation>
 <translation id="549602578321198708">Beseda</translation>
 <translation id="5513242761114685513">Priročni meni</translation>
@@ -1112,7 +1116,6 @@
 <translation id="8378855320830505539">Območje</translation>
 <translation id="8382679411218029383">Samodokončanje v vrstici in s seznama</translation>
 <translation id="8394908167088220973">Ustavitev/začasna ustavitev</translation>
-<translation id="8409502156784390079">Način pomikanja je aktiven</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8428603554127842284">raven <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">menvrst</translation>
@@ -1190,7 +1193,6 @@
 <translation id="8986362086234534611">Pozabi</translation>
 <translation id="8989104346085848538">Če želite ustaviti trenutni govor ChromeVoxa, pritisnite tipko Control.</translation>
 <translation id="9014206344398081366">Vadnica za ChromeVox</translation>
-<translation id="9034592733577768445">Upravljanje z obrazom je začasno zaustavljeno</translation>
 <translation id="9040132695316389094">Naslov 1</translation>
 <translation id="9061884144798498064">Izbira tabele za 8-točkovno braillovo pisavo:</translation>
 <translation id="9063946545000394379">premik na prejšnji znak</translation>

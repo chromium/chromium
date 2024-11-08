@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Afbeeldingen maken...</translation>
 <translation id="1116694919640316211">Over</translation>
 <translation id="1118572504348554005">We kunnen de feedback die via dit formulier wordt ingediend, delen met onze partners om bugs en andere problemen op te lossen die je aan ons meldt. Voeg geen gevoelige informatie toe, zoals wachtwoorden.</translation>
+<translation id="1119403468619527527">Te weinig woorden om te vereenvoudigen</translation>
 <translation id="1119447706177454957">Interne fout</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Kan apparaat niet testen. Schakel over naar de laptopmodus om te testen.</translation>
 <translation id="3916998944874125962">screenshot maken</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
+<translation id="3924445055519423964">Klik om de webpagina/het pdf-bestand samen te vatten</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3934185438132762746">Niet-toegewezen <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Ik ga akkoord</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
 <translation id="4137700675046373159">op zaterdag</translation>
+<translation id="4139326893730851150">Firmware-updates</translation>
 <translation id="4143226836069425823">Tik op een andere toetsenbordtoets om de toets te vervangen</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Pagina's</translation>
 <translation id="4989542687859782284">Niet beschikbaar</translation>
 <translation id="4999333166442584738">Rapport verbergen</translation>
+<translation id="5005695757087124131">Klik om de geselecteerde tekst te vereenvoudigen</translation>
 <translation id="500920857929044050">Test stoppen</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Themakleur</translation>
@@ -1298,6 +1302,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Een koel briesje</translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>
+<translation id="7293429513719260019">Taal selecteren</translation>
 <translation id="7297226631177386107">Kan geen verbinding maken met HTTPS-websites via een firewall</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
 <translation id="7301262279595293068">Een ogenblik geduld terwijl deze app wordt geüpdatet</translation>
@@ -1332,6 +1337,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> is klaar om te worden geüpdatet</translation>
 <translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Zeer hoge HTTP-vertraging</translation>
+<translation id="7418738250896500352">Te veel woorden om te vereenvoudigen</translation>
 <translation id="7425037327577270384">Help me met schrijven</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette APN's van het type <ph name="ATTACH" /> uitstaan of zijn verwijderd.</translation>
@@ -1357,6 +1363,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7544853251252956727">Shuffle</translation>
 <translation id="7550715992156305117">Diagnostische routines</translation>
 <translation id="7551123448725492271">Apparaat is een audioapparaat.</translation>
+<translation id="7553913964854052228">School Tools gebruikt je microfoon</translation>
 <translation id="7559239713112547082">Voorbeeld van screenshot bekijken</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7561759921596375678">Volume aanzetten</translation>
@@ -1547,6 +1554,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8476942730579767658">Vensters en bureaus</translation>
 <translation id="8477536061607044749">grafisch ontwerp</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
+<translation id="8482376765267780829">Selecteer tekst om te vereenvoudigen</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan geen verbinding maken met HTTP-websites via een firewall op Android-apparaten</translation>
 <translation id="8495070016475833911">vilt</translation>
@@ -1676,6 +1684,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="9082718469794970195">Deze video gebruiken</translation>
 <translation id="9087578468327036362">Deze zoekopdracht melden</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>
+<translation id="9088994563996376283">Vereenvoudigen</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Meer informatie over de resetdatum</translation>
 <translation id="9100765901046053179">Geavanceerde instellingen</translation>

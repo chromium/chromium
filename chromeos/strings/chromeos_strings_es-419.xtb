@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Creando imágenes…</translation>
 <translation id="1116694919640316211">Acerca de</translation>
 <translation id="1118572504348554005">Es posible que compartamos con nuestros socios los comentarios que se envían con este formulario para solucionar los errores y otros problemas que nos informes. No incluyas información sensible, como contraseñas.</translation>
+<translation id="1119403468619527527">Hay muy pocas palabras para simplificar</translation>
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Inhabilitar el protector de pantalla</translation>
 <translation id="3091839911843451378">Error: La impresora se detuvo</translation>
 <translation id="3102119246920354026">Caché</translation>
+<translation id="3112413615003385433">Tu profesor quitó contenido de School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscinas</translation>
 <translation id="3122883569442693641">Más detalles</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">Finalizar edición</translation>
 <translation id="3532980081107202182">Quedan aproximadamente <ph name="MIN_REMAINING" /> minutos</translation>
 <translation id="3533790840489634638">piscina</translation>
+<translation id="3535802910192338629">Tu profesor agregó contenido nuevo en School Tools</translation>
 <translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidad local (opcional)</translation>
 <translation id="3565064564551103223">IP habilitadas</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">No se puede probar el dispositivo. Cambia al modo de laptop para realizar pruebas.</translation>
 <translation id="3916998944874125962">tomar captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
+<translation id="3924445055519423964">Haz clic para resumir la página web o el archivo PDF</translation>
 <translation id="3932043219784172185">No hay ningún dispositivo conectado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sin asignar</translation>
 <translation id="3941014780699102620">no se pudo resolver el host</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="4137700675046373159">el sábado</translation>
+<translation id="4139326893730851150">Actualizaciones de Firmware</translation>
 <translation id="4143226836069425823">Presionar otra tecla del teclado para reemplazar</translation>
 <translation id="4145784616224233563">Firewall de HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4989542687859782284">No disponible</translation>
 <translation id="4999333166442584738">Ocultar informe</translation>
+<translation id="5005695757087124131">Haz clic para simplificar el texto seleccionado</translation>
 <translation id="500920857929044050">Detener la prueba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Color del tema</translation>
@@ -1296,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Siente la brisa</translation>
 <translation id="7287310195820267359">Colecciones de fondo de pantalla</translation>
+<translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7297226631177386107">No se puede establecer conexión con los sitios web HTTPS a través del firewall</translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
 <translation id="7301262279595293068">Espera mientras se actualiza esta aplicación</translation>
@@ -1330,6 +1337,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> está listo para actualizarse</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
+<translation id="7418738250896500352">Hay demasiadas palabras para simplificar</translation>
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">No se puede inhabilitar ni quitar este APN. Asegúrate de que se inhabiliten o se quiten los APN <ph name="ATTACH" /> que estén habilitados.</translation>
@@ -1355,6 +1363,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7544853251252956727">Reproducir aleatoriamente</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">El dispositivo es un dispositivo de audio.</translation>
+<translation id="7553913964854052228">School Tools está usando tu micrófono</translation>
 <translation id="7559239713112547082">Obtener vista previa de la captura de pantalla</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
 <translation id="7561759921596375678">Activar el volumen</translation>
@@ -1545,6 +1554,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8476942730579767658">Ventanas y escritorios</translation>
 <translation id="8477536061607044749">de diseño gráfico</translation>
 <translation id="8477551185774834963">la latencia de DNS supera ligeramente el umbral permitido</translation>
+<translation id="8482376765267780829">Selecciona parte del texto para simplificarlo</translation>
 <translation id="8483248364096924578">Dirección IP</translation>
 <translation id="8491311378305535241">No se puede establecer conexión a los sitios web HTTP a través del firewall desde apps para Android</translation>
 <translation id="8495070016475833911">fieltro</translation>
@@ -1563,6 +1573,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8576249514688522074">No se inicializó</translation>
 <translation id="8584654835905316966">Es necesario reiniciar el dispositivo para completar la instalación del firmware de <ph name="DEVICE_NAME" /> a la versión <ph name="VERSION" />. Es posible que la computadora parezca reiniciarse varias veces. Se espera que esto suceda.</translation>
 <translation id="8593058461203131755">pausar contenido multimedia</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Estado de roaming</translation>
 <translation id="8626489604350149811">Más acciones para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Púrpura claro</translation>
@@ -1673,6 +1684,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="9082718469794970195">Usar este video</translation>
 <translation id="9087578468327036362">Denuncia esta búsqueda</translation>
 <translation id="9088306295921699330">Uso actual</translation>
+<translation id="9088994563996376283">Simplificar</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Más información sobre la opción Restablecer la fecha</translation>
 <translation id="9100765901046053179">Configuración avanzada</translation>

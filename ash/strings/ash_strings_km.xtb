@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">កម្មវិធី</translation>
 <translation id="3213571860604332401">រក្សាទុក​តំណ​ជា​ចំណាំ</translation>
 <translation id="3217205077783620295">កម្រិត​សំឡេង​ត្រូវបានបើក ការបិទ​នឹងបិទសំឡេង។</translation>
-<translation id="3218561536255328229">ចុច Esc 5 ដង ដើម្បីបើក​ផ្ទាំងប៉ះ</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> ទៀត</translation>
 <translation id="3227137524299004712">ម៉ៃក្រូហ្វូន</translation>
 <translation id="3233611303007751344">បានបិទ​មុខងារ​សន្សំថ្ម</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">ចុចឱ្យជាប់​ត្រង់ណាក៏បាន ដើម្បីតម្រៀប​កម្មវិធីរបស់អ្នកឡើងវិញ</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> នៅលើ <ph name="IN_PLACE_APP" /> សូម​ព្រលែង ដើម្បីបង្កើត​ថត។</translation>
 <translation id="5397578532367286026">ការប្រើប្រាស់ និងប្រើ (<ph name="MANAGER_EMAIL" />) នៅលើ chrome.com។</translation>
+<translation id="540338817371815859">ផ្ដេក</translation>
 <translation id="540713187982329711">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបើក មិនបានភ្ជាប់​ឧបករណ៍ទេ។</translation>
 <translation id="5409208741270395213">សម្គាល់កិច្ចការថាបានបញ្ចប់</translation>
 <translation id="5413656666631274079">ទំព័រ​ការកំណត់</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">ប្ដូរកំណែ​ឧបករណ៍</translation>
 <translation id="6929081673585394903">បង្ហាញ​ការគ្រប់គ្រង</translation>
 <translation id="6931576957638141829">រក្សា​ទុក​ទៅ</translation>
+<translation id="6935857786205183008">បញ្ឈរ</translation>
 <translation id="6942518653766415536">ម៉ឺនុយ​ទម្រង់ថត</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="6945922087561257829">ទូរសព្ទរបស់អ្នកកំពុងប្រើបណ្តាញទូរសព្ទចល័ត។ សូមប្រាកដថា​ទូរសព្ទ និង Chromebook របស់អ្នក​ភ្ជាប់ទៅបណ្ដាញ Wi-Fi តែមួយ រួចព្យាយាមម្ដងទៀត។ <ph name="LEARN_MORE" /></translation>
@@ -2434,6 +2435,7 @@
 <translation id="98120814841227350">ទៅកាន់​ផ្នែក​បញ្ចប់​នៃ​ឯកសារ</translation>
 <translation id="987589956647469042">ទិន្នន័យ​ទូរសព្ទចល័ត​ត្រូវបានបើក</translation>
 <translation id="989374776391122812">ការគ្រប់គ្រង​កាមេរ៉ា និង​សំឡេង</translation>
+<translation id="990263227494928142">ចុច Shift 5 ដង ដើម្បីបើក​ផ្ទាំងប៉ះ</translation>
 <translation id="990277280839877440">បានបិទវិនដូ <ph name="WINDOW_TITILE" /> ។</translation>
 <translation id="993398562350683614">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ ប្រើកម្មវិធី ដើម្បី​ធ្វើអ្វីៗគ្រប់យ៉ាង​ដែលអ្នក​ត្រូវការ​នៅលើ <ph name="PRODUCT_NAME" /> របស់អ្នក។ អ្នកអាច​រកឃើញ​កម្មវិធី​របស់អ្នក​នៅក្នុង​កម្មវិធី​ចាប់ផ្ដើម។ ចុច Alt + Shift + L ដើម្បីផ្ដោតលើប៊ូតុង "កម្មវិធី​ចាប់ផ្ដើម"។</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

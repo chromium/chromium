@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "अल्फा", "b": "ब्रेव्हो", "c": "चार्ली", "d": "डेल्टा", "e": "इको", "f": "फॉक्सट्रॉट", "g": "गोल्फ", "h": "हॉटेल", "i": "इंडिया", "j": "जुलिएट","k": "किलो", "l": "लिमा", "m": "माइक", "n": "नोव्हेंबर", "o": "ऑस्कर","p": "पापा", "q": "क्वेबेक", "r": "रोमिओ", "s": "सीएरा", "t": "टँगो", "u": "युनिफॉर्म", "v": "व्हिक्टर", "w": "व्हिस्की","x": "एक्सरे", "y": "यंकी", "z": "झुलू"}</translation>
 <translation id="1120938014254001895">दोन बोटांनी वरच्या दिशेला स्वाइप करा</translation>
 <translation id="1126928665165112660">तिर्यक नाही</translation>
+<translation id="1133751489735776037">माउस तीनदा क्लिक करा</translation>
 <translation id="113582498867142724"><ph name="NUM" /> आयटमसह <ph name="TAG" /> संकलन</translation>
 <translation id="1146441463334103638">स्क्रीन सुरू किंवा बंद करा वर टॉगल करा</translation>
 <translation id="1156488781945104845">वर्तमान वेळ</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">जंप कमांड वेब पेजद्वारे चांगल्याप्रकारे नेव्हिगेट करण्यासाठी वापरल्या जाऊ शकतात.</translation>
 <translation id="1175914831232945926">अंक</translation>
+<translation id="1186712907912748007">ड्रॅग करून ड्रॉप करणे प्रगतीपथावर आहे. संपवण्यासाठी <ph name="GESTURE" />. इतर जेश्चर तात्पुरती उपलब्ध नाहीत.</translation>
 <translation id="1188858454923323853">पूरक</translation>
 <translation id="1189258430971676908">सराव क्षेत्र: ड्रॉप-डाउन सूची</translation>
 <translation id="1195238899008218998">अंतिम शब्द</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">एक लिंक</translation>
 <translation id="2363753371702255035">बुलेट</translation>
 <translation id="2365384324219615024">आयटम अ‍ॅक्टिव्हेट करण्यासाठी तुम्ही एंटरदेखील प्रेस करू शकता. उदाहरणार्थ, फॉर्ममध्ये मजकूर सबमिट करण्यासाठी एंटरचा वापर केला जाऊ शकतो. पुढे सुरू ठेवण्यासाठी एंटर प्रेस करा.</translation>
+<translation id="2371402123699727805">डिक्टेशन ॲक्टिव्ह आहे. थांबवण्यासाठी <ph name="GESTURE" />. इतर जेश्चर तात्पुरती उपलब्ध नाहीत.</translation>
 <translation id="2381733276052567791">भाषण सुरू किंवा बंद करा</translation>
 <translation id="2390264819538553347">पुढे जाण्यासाठी, एंटर प्रेस करा; मागे जाण्यासाठी, बॅकस्पेस प्रेस करा.</translation>
 <translation id="2398579267367951220">पेज शोधण्यासाठी टाइप करा. परिणामांवर जाण्यासाठी एंटर, परिणाम ब्राउझ करण्यासाठी अप किंवा डाउन अ‍ॅरो प्रेस करा, तुमचा शोध बदलण्यासाठी टाइप करणे सुरू ठेवा किंवा रद्द करण्यासाठी एस्केप प्रेस करा.</translation>
@@ -271,6 +274,7 @@
 <translation id="2723001399770238859">ऑडिओ</translation>
 <translation id="2737898226590637227">पुढील ARIA खूण नाही</translation>
 <translation id="2749275490991666823">चेक केलेले</translation>
+<translation id="2751454300227269244">तुमचे तोंड उजवीकडे हलवा</translation>
 <translation id="27527859628328957">पुढील फोकस करण्यायोग्य आयटमवर जंप करा</translation>
 <translation id="2756452585631602151">कस्टम लेबल एंटर करा</translation>
 <translation id="2766299274563946262">डावीकडे सेल नाही</translation>
@@ -341,7 +345,6 @@
 <translation id="311015743332597320">चार बोटांनी उजवीकडे स्वाइप करा</translation>
 <translation id="3112457281078985179">ChromeVox सुरू किंवा बंद करण्यासाठी, Control+Alt+Z वापरा.</translation>
 <translation id="3115800313647508384">स्क्रीन बंद करायची आहे का?</translation>
-<translation id="3127625407966660979">डिक्टेशन ॲक्टिव्ह आहे</translation>
 <translation id="3131002934070407451">संख्या याप्रमाणे वाचा:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ऑलिव्ह</translation>
@@ -352,6 +355,7 @@
 <translation id="3153928844647607688">सारणी <ph name="TABLENAME" />, <ph name="TABLEROWS" /> बाय <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">फिकट तपकिरी</translation>
 <translation id="316542773973815724">नेव्हिगेशन</translation>
+<translation id="3167446923957429259">तुमचे तोंड डावीकडे हलवा</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{जागा}other{# जागा}}</translation>
 <translation id="3179119189286472195">लिंक नाही</translation>
 <translation id="3180990259147710757">जबडा डावीकडे हलवा</translation>
@@ -462,6 +466,7 @@
 <translation id="3870295413168340326">मागील पातळी तीन शीर्षक नाही</translation>
 <translation id="3887399638190992181">अत्यावश्यक की</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">चेहरा नियंत्रण थांबवले आहे. पुन्‍हा सुरू करण्यासाठी <ph name="GESTURE" />. इतर जेश्चर तात्पुरती उपलब्ध नाहीत.</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">मागील स्तर 6 शीर्षक</translation>
@@ -501,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{सेकंद}other{सेकंद}}</translation>
 <translation id="4161663686871496107">ChromeVox वाचिक अभिप्राय तयार आहे</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
-<translation id="4176677444195790114">ड्रॅग करून ड्रॉप करणे प्रगतीपथावर आहे</translation>
 <translation id="4187322598335821254">ओळीनुसार हलवण्यासाठी वर किंवा खाली स्वाइप करा</translation>
 <translation id="4188530942454211480">मागील वाक्य</translation>
 <translation id="4191918948604314587">एक बटण</translation>
@@ -546,6 +550,7 @@
 <translation id="4402014469255336455">गडद आकाशी निळा</translation>
 <translation id="4406249099130339147">विरामचिन्हाचा इको:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">तुमचे सर्व दात दाखवा</translation>
 <translation id="4432457053224379116">लाल</translation>
 <translation id="4432896207833262240">मार्क केलेला आशय</translation>
 <translation id="4437615272777527928">मेनू शोधण्यासाठी टाइप करा. परिणामांवर जाण्यासाठी अप आणि डाउन ॲरो वापरा. मजकूर कॅरेट ॲडजस्ट करण्यासाठी आणि मेनूदरम्यान हलवण्यासाठी डावा आणि उजवा ॲरो वापरा.</translation>
@@ -698,6 +703,7 @@
 <translation id="5452267669091857717">पुढील पातळी एक शीर्षक नाही</translation>
 <translation id="5455441614648621694">पूरक</translation>
 <translation id="5462510922370980473">पेज सूची</translation>
+<translation id="5489460663499094917">स्क्रोल मोड अ‍ॅक्टिव्ह आहे. बाहेर पडण्यासाठी <ph name="GESTURE" />. इतर जेश्चर तात्पुरती उपलब्ध नाहीत.</translation>
 <translation id="5495517933067991341">अत्यावश्यक की: Shift</translation>
 <translation id="549602578321198708">शब्द</translation>
 <translation id="5513242761114685513">काँटेक्स्ट मेनू</translation>
@@ -1110,7 +1116,6 @@
 <translation id="8378855320830505539">प्रदेश</translation>
 <translation id="8382679411218029383">ऑटोकंप्लीशन इनलाइन आणि सूची</translation>
 <translation id="8394908167088220973">मीडिया प्ले करा/विराम द्या</translation>
-<translation id="8409502156784390079">स्क्रोल मोड अ‍ॅक्टिव्ह आहे</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8428603554127842284">स्तर <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1188,7 +1193,6 @@
 <translation id="8986362086234534611">विसरा</translation>
 <translation id="8989104346085848538">सध्याचे कोणतेही ChromeVox भाषण थांबवण्यासाठी कंट्रोल की प्रेस करा.</translation>
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
-<translation id="9034592733577768445">फेस नियंत्रण थांबवले</translation>
 <translation id="9040132695316389094">मथळा 1</translation>
 <translation id="9061884144798498064">8-बिंदू ब्रेल सारणी निवडा:</translation>
 <translation id="9063946545000394379">मागील वर्णावर हलवा</translation>

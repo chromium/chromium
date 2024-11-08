@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"أ": "أرنب"، "ب": "بيت"، "ت": "تفاحة"، "ث": "ثعلب"، "ج": "جزر"، "ح": "حصان"، "خ": "خوخ"، "د": "دراجة"، "ذ": "ذهب"، "ر": "ريشة"، "ز": "زرافة"، "س": "سمكة"، "ش": "شمس"، "ص": "صوص"، "ض"، "ضوء"، "ط": "طائرة"، "ظ": "ظرف"، "ع": "عصفور"، "غ": "غيمة"، "ف": "فراشة"، "ق": "قمر"، "ك": "كرة"، "ل": "ليمون"، "م": "موز"، "ن": "نجمة"، "ه": "هدية"، "و": "وردة"، "ي": "يد"}</translation>
 <translation id="1120938014254001895">التمرير السريع بإصبعين إلى الأعلى</translation>
 <translation id="1126928665165112660">غير مائل</translation>
+<translation id="1133751489735776037">النقر ثلاث مرات على الماوس</translation>
 <translation id="113582498867142724">مجموعة من <ph name="TAG" /> تشتمل على <ph name="NUM" /> من العناصر</translation>
 <translation id="1146441463334103638">التبديل بين إيقاف الشاشة وتشغيلها</translation>
 <translation id="1156488781945104845">الوقت الحالي</translation>
 <translation id="1161762950103988776">الانتقال السريع</translation>
 <translation id="1164857107703583584">استخدِم طلبات الانتقال السريع للتنقُّل بسهولة في صفحة ويب.</translation>
 <translation id="1175914831232945926">أرقام</translation>
+<translation id="1186712907912748007">جارٍ السحب والإفلات. ويمكنك <ph name="GESTURE" /> لإنهاء هذا الإجراء. الإيماءات الأخرى غير متوفّرة مؤقتًا.</translation>
 <translation id="1188858454923323853">تكميلي</translation>
 <translation id="1189258430971676908">التدريب العملي: القوائم المنسدلة</translation>
 <translation id="1195238899008218998">كلمة ختامية</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">رابط</translation>
 <translation id="2363753371702255035">رمز نقطي</translation>
 <translation id="2365384324219615024">‏يمكنك أيضًا الضغط على مفتاح Enter لتنشيط العناصر. على سبيل المثال، يمكن استخدام مفتاح Enter لإرسال نص في نموذج. للمواصلة، اضغط على مفتاح Enter.</translation>
+<translation id="2371402123699727805">ميزة "الإملاء" مفعَّلة، ويمكنك <ph name="GESTURE" /> لإيقافها. الإيماءات الأخرى غير متوفّرة مؤقتًا.</translation>
 <translation id="2381733276052567791">تفعيل ميزة تحويل النص إلى كلام أو إيقافها</translation>
 <translation id="2390264819538553347">‏للتقدم، اضغط على Enter، وللرجوع للخلف، اضغط على Backspace.</translation>
 <translation id="2398579267367951220">‏اكتب للبحث في الصفحة. اضغط على enter للحصول على النتيجة سريعًا، أو اضغط على السهم المتّجه للأسفل أو للأعلى لتصفّح النتائج، أو استمر بالكتابة لتغيير البحث، أو اضغط على escape للإلغاء.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">مرِّر سريعًا بأربعة أصابع إلى يسار الشاشة.</translation>
 <translation id="3112457281078985179">‏لتفعيل ChromeVox أو إيقاف تشغيله، استخدم Control+Alt+Z.</translation>
 <translation id="3115800313647508384">هل تريد إيقاف الشاشة؟</translation>
-<translation id="3127625407966660979">ميزة "إملاء" مفعَّلة</translation>
 <translation id="3131002934070407451">طريقة قراءة الأرقام:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">زيتوني</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">ليس هناك عنوان سابق من المستوى الثالث.</translation>
 <translation id="3887399638190992181">مفاتيح مهمّة على لوحة المفاتيح</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">تمّ إيقاف ميزة "التحكّم بالوجه" مؤقتًا. ويمكنك <ph name="GESTURE" /> لاستئناف استخدام هذه الميزة. الإيماءات الأخرى غير متوفّرة مؤقتًا.</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">عنوان المستوى السادس السابق</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{ثانية واحدة}zero{ثوانٍ}two{ثانيتان}few{ثوانٍ}many{ثانية}other{ثانية}}</translation>
 <translation id="4161663686871496107">‏تعليقات ChromeVox المنطوقة جاهزة</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
-<translation id="4176677444195790114">جارٍ السحب والإفلات</translation>
 <translation id="4187322598335821254">التمرير سريعًا للأعلى أو الأسفل للانتقال حسب السطر</translation>
 <translation id="4188530942454211480">الجملة السابقة</translation>
 <translation id="4191918948604314587">زر</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">أزرق سماوي غامق</translation>
 <translation id="4406249099130339147">صدى علامات الترقيم</translation>
 <translation id="441418754432585599">‫<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">إظهار كل أسنانك</translation>
 <translation id="4432457053224379116">أحمر هندي</translation>
 <translation id="4432896207833262240">محتوى مميز</translation>
 <translation id="4437615272777527928">اكتب للبحث في القائمة. واستخدِم السهمَين المتّجِهين للأعلى وللأسفل للتنقّل بين النتائج. واستخدِم السهمَين الأيمن والأيسر لضبط علامة إقحام النص والتنقّل بين القوائم.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">ليس هناك عنوان تالٍ من المستوى الأول.</translation>
 <translation id="5455441614648621694">تكميلي</translation>
 <translation id="5462510922370980473">قائمة صفحات</translation>
+<translation id="5489460663499094917">وضع الانتقال مفعّل. ويمكنك <ph name="GESTURE" /> للخروج من هذا الوضع. الإيماءات الأخرى غير متوفّرة مؤقتًا.</translation>
 <translation id="5495517933067991341">‏مفاتيح مهمّة على لوحة المفاتيح: Shift</translation>
 <translation id="549602578321198708">كلمة</translation>
 <translation id="5513242761114685513">قائمة السياقات</translation>
@@ -1111,7 +1115,6 @@
 <translation id="8378855320830505539">منطقة</translation>
 <translation id="8382679411218029383">إكمال تلقائي على السطر وعلى هيئة قائمة</translation>
 <translation id="8394908167088220973">تشغيل/إيقاف الوسائط</translation>
-<translation id="8409502156784390079">وضع الانتقال مفعّل</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428603554127842284">المستوى <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1189,7 +1192,6 @@
 <translation id="8986362086234534611">حذف</translation>
 <translation id="8989104346085848538">‏لإيقاف ChromeVox عن الكلام، اضغط على مفتاح Control.</translation>
 <translation id="9014206344398081366">‏البرنامج التعليمي لقارئ الشاشة ChromeVox</translation>
-<translation id="9034592733577768445">‏تمّ إيقاف ميزة FaceGaze مؤقتًا</translation>
 <translation id="9040132695316389094">العنوان الأول</translation>
 <translation id="9061884144798498064">اختيار جدول نمط برايل مكوّن من 8 نقاط:</translation>
 <translation id="9063946545000394379">الانتقال إلى الحرف السابق</translation>

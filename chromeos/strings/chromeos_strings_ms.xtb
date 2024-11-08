@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Membuat imej...</translation>
 <translation id="1116694919640316211">Mengenai</translation>
 <translation id="1118572504348554005">Kami boleh berkongsi maklum balas yang diserahkan melalui borang ini dengan rakan kongsi kami untuk menyelesaikan masalah pepijat dan masalah lain yang anda laporkan kepada kami. Jangan sertakan maklumat sensitif seperti kata laluan.</translation>
+<translation id="1119403468619527527">Terlalu sedikit perkataan untuk diringkaskan</translation>
 <translation id="1119447706177454957">Ralat dalaman</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">Cabut kabel USB <ph name="DEVICE_NAME" /> untuk meneruskan proses kemaskinian</translation>
 <translation id="2320295602967756579">Dayakan tema cerah</translation>
 <translation id="2323506179655536734">DILANGKAU</translation>
+<translation id="2323755382216917952">Anda perlu memulakan semula komputer anda untuk menyelesaikan pemasangan kemaskinian ini. Kemaskinian ini mungkin mengambil masa beberapa minit untuk diselesaikan. Semasa perisian tegar sedang dikemaskinikan, jangan cabut palam atau matikan komputer anda.</translation>
 <translation id="2324354238778375592">Apungan</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Cemerlang (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +451,7 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Masukkan gesaan seperti "buat dengan gaya yang lebih yakin"</translation>
 <translation id="3188257591659621405">Fail saya</translation>
+<translation id="3188931456353313123">Kemaskinian ini disediakan oleh pengilang peranti dan belum disahkan oleh Google.</translation>
 <translation id="319101249942218879">Imej avatar ditukar</translation>
 <translation id="3192947282887913208">Fail Audio</translation>
 <translation id="3199982728237701504">Penyuap Dokumen (Dwisisi)</translation>
@@ -507,6 +510,7 @@
 <translation id="3488065109653206955">Diaktifkan sebahagian</translation>
 <translation id="3492882532495507361">Pejabat <ph name="OFFICE_STYLE" /> dengan rona <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Data diukur oleh Chromebook anda. Hal ini mungkin berbeza daripada data penyedia.</translation>
+<translation id="349570724365779960">Alatan Sekolah disambungkan kepada pelajar</translation>
 <translation id="3502426834823382181">lihat semua apl</translation>
 <translation id="3510890413042482857">Hantar <ph name="BEGIN_LINK1" />data surih prestasi<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Kemaskinian ChromeOS</translation>
@@ -587,6 +591,7 @@
 <translation id="391412459402535266">Tidak dapat menguji peranti. Tukar kepada mod komputer riba untuk menguji.</translation>
 <translation id="3916998944874125962">ambil tangkapan skrin</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
+<translation id="3924445055519423964">Klik untuk meringkaskan halaman web/fail PDF</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> tidak ditentukan</translation>
 <translation id="3941014780699102620">Gagal untuk menyelesaikan hos</translation>
@@ -632,6 +637,7 @@
 <translation id="4130750466177569591">Saya bersetuju</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
 <translation id="4137700675046373159">pada hari Sabtu</translation>
+<translation id="4139326893730851150">Kemaskinian perisian tegar</translation>
 <translation id="4143226836069425823">Ketik kekunci papan kekunci lain untuk digantikan</translation>
 <translation id="4145784616224233563">Tembok Api HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -754,6 +760,7 @@
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4744944742468440486">Maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="4771607256327216405">cerahkan papan kekunci</translation>
+<translation id="4771923071974529837">esok</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4778082030331381943">batu kecubung</translation>
 <translation id="4782311465517282004">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks</translation>
@@ -813,9 +820,11 @@
 <translation id="4988526792673242964">Halaman</translation>
 <translation id="4989542687859782284">Tidak tersedia</translation>
 <translation id="4999333166442584738">Sembunyikan laporan</translation>
+<translation id="5005695757087124131">Klik untuk meringkaskan teks yang dipilih</translation>
 <translation id="500920857929044050">Hentikan ujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Warna tema</translation>
+<translation id="5037240652947866174">hari ini</translation>
 <translation id="5038292761217083259">berbilang warna papan kekunci</translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
@@ -1298,6 +1307,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Rasai tiupan anginnya</translation>
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
+<translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="7297226631177386107">Tidak dapat menyambung melalui tembok api ke laman web HTTPS</translation>
 <translation id="7297726121602187087">Hijau gelap</translation>
 <translation id="7301262279595293068">Sila tunggu sementara aplikasi ini dikemaskinikan</translation>
@@ -1332,6 +1342,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> bersedia untuk dikemaskinikan</translation>
 <translation id="741244894080940828">penukaran</translation>
 <translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
+<translation id="7418738250896500352">Terlalu banyak perkataan untuk diringkaskan</translation>
 <translation id="7425037327577270384">Bantu saya tulis</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tidak boleh melumpuhkan atau mengalih keluar APN ini. Pastikan APN <ph name="ATTACH" /> didayakan ini dilumpuhkan atau dialih keluar.</translation>
@@ -1373,7 +1384,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7625095758347640998">Hiasan latar AI</translation>
 <translation id="763165478673169849">Masa Terakhir Ditetapkan Semula</translation>
 <translation id="7633068090678117093">Imej latar belakang</translation>
-<translation id="7634566133970633092">Alatan sekolah disambungkan kepada pelajar</translation>
 <translation id="763873111564339966">biru nila</translation>
 <translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
 <translation id="7656388927906093505">Peranti ialah tetikus.</translation>
@@ -1549,6 +1559,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8476942730579767658">Tetingkap dan meja</translation>
 <translation id="8477536061607044749">reka bentuk grafik</translation>
 <translation id="8477551185774834963">Kependaman DNS sedikit melebihi ambang yang dibenarkan</translation>
+<translation id="8482376765267780829">Pilih beberapa teks untuk diringkaskan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8491311378305535241">Tidak dapat menyambung melalui tembok api ke laman web HTTP daripada apl Android</translation>
 <translation id="8495070016475833911">kain felt</translation>
@@ -1678,6 +1689,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="9082718469794970195">Gunakan video ini</translation>
 <translation id="9087578468327036362">Laporkan pertanyaan ini</translation>
 <translation id="9088306295921699330">Penggunaan semasa</translation>
+<translation id="9088994563996376283">Ringkaskan</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Maklumat lanjut tentang Tarikh tetapan semula</translation>
 <translation id="9100765901046053179">Tetapan terperinci</translation>

@@ -630,7 +630,6 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3208321278970793882">Programa</translation>
 <translation id="3213571860604332401">Išsaugoti nuorodą kaip žymę</translation>
 <translation id="3217205077783620295">Garsumas įjungtas; perjungiant garsas bus nutildytas.</translation>
-<translation id="3218561536255328229">Paspauskite „Esc“ penkis kartus, kad įgalintumėte jutiklinę dalį</translation>
 <translation id="3226991577105957773">Dar <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3233611303007751344">Akumuliatoriaus tausojimo priemonė išjungta</translation>
@@ -1305,6 +1304,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5393156353051693207">Norėdami pertvarkyti programas, palieskite ir palaikykite bet kur</translation>
 <translation id="5395308026110844773">„<ph name="DRAGGED_APP_NAME" />“ ant „<ph name="IN_PLACE_APP" />“, paleiskite, kad sukurtumėte aplanką.</translation>
 <translation id="5397578532367286026">Šio naudotojo naudojimo duomenis ir istoriją valdytojas (<ph name="MANAGER_EMAIL" />) gali peržiūrėti adresu chrome.com.</translation>
+<translation id="540338817371815859">Gulsčia</translation>
 <translation id="540713187982329711">Perjunkite viešosios interneto prieigos tašką. Viešosios interneto prieigos taškas įjungtas, nėra prijungto įrenginio.</translation>
 <translation id="5409208741270395213">Žymėti užduotį kaip baigtą</translation>
 <translation id="5413656666631274079">Nustatymų puslapis</translation>
@@ -1767,6 +1767,7 @@ Naujas įdiegimas</translation>
 <translation id="6921427376813842559">Įrenginio atnaujinimas</translation>
 <translation id="6929081673585394903">Rodyti valdiklius</translation>
 <translation id="6931576957638141829">Išsaugoti į</translation>
+<translation id="6935857786205183008">Stačia</translation>
 <translation id="6942518653766415536">Įrašo formato meniu</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
 <translation id="6945922087561257829">Telefone naudojamas mobiliojo ryšio tinklas. Įsitikinkite, kad telefonas ir „Chromebook“ prijungti prie to paties „Wi-Fi“ tinklo, tada bandykite dar kartą. <ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="98120814841227350">Eiti į dokumento pabaigą</translation>
 <translation id="987589956647469042">Mobiliojo ryšio duomenys įjungti</translation>
 <translation id="989374776391122812">Vaizdo kameros ir garso valdikliai</translation>
+<translation id="990263227494928142">Paspauskite „Shift“ penkis kartus, kad įgalintumėte jutiklinę dalį</translation>
 <translation id="990277280839877440">Langas „<ph name="WINDOW_TITILE" />“ uždarytas.</translation>
 <translation id="993398562350683614"><ph name="STEP" /> apžvalgos veiksmas iš <ph name="TOTAL_STEPS" />. Viską, ką reikia padaryti „<ph name="PRODUCT_NAME" />“, galite atlikti naudodamiesi programomis. Programas rasite Paleidimo priemonėje. Paspauskite „Alt“ + „Shift“ + L, kad suaktyvintumėte Paleidimo priemonės mygtuką.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

@@ -78,10 +78,8 @@
 <translation id="228293613124499805">Повеќето сајтови што ги посетувате веројатно зачувуваат податоци на вашиот уред, честопати за да го подобрат вашето доживување преку зачувување на вашите поставки или податоци што ги споделувате со сајтот. Препорачуваме да ја задржите поставкава вклучена.</translation>
 <translation id="2289270750774289114">Прашај кога некој сајт сака да открива уреди со Bluetooth во близина (се препорачува)</translation>
 <translation id="2315043854645842844">Оперативниот систем не поддржува избор на сертификат од страна на клиентот.</translation>
-<translation id="2321958826496381788">Влечете го лизгачот сѐ додека не го читате ова удобно. Текстот треба да изгледа барем олку голем по двојно допирање на пасусот.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2379925928934107488">Ако е можно, примени темна тема на сајтовите кога Chrome користи темна тема</translation>
-<translation id="2387895666653383613">Скалирање текст</translation>
 <translation id="2390272837142897736">Зумирај</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">Дозволи JavaScript за одреден сајт.</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2677748264148917807">Напушти</translation>
-<translation id="2678468611080193228">Обидете се со привремено дозволување колачиња од трети страни, што значи помала заштита, но поголема веројатност да функционираат функциите на сајтот</translation>
 <translation id="2682367912565197520">Избриши го зачуваниот степен на зум</translation>
 <translation id="2683434792633810741">Да се избрише и ресетира?</translation>
 <translation id="2713106313042589954">Исклучи ја камерата</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Колачињата од трети страни се блокирани</translation>
 <translation id="3448554387819310837">Кога е вклучено, сајтовите може да бараат да ја користат камерата. Кога е исклучено, сајтовите не може да ја користат камерата.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Chrome пак ќе блокира колачиња утре}one{Chrome пак ќе блокира колачиња по # ден}other{Chrome пак ќе блокира колачиња по # дена}}</translation>
 <translation id="3521663503435878242">Сајт под <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Не им дозволувај на сајтовите да ги следат рацете</translation>
 <translation id="3536227077203206203">Дозволено овој пат</translation>
@@ -300,6 +296,7 @@
 <translation id="5553374991681107062">Најнови</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5591840828808741583">Блокирано: <ph name="SITE_NAME" /></translation>
+<translation id="560980142378233747">Тоа значи дека функциите на сајтот би требало да функционираат според очекувањата, но може да имате пониско ниво на заштита при прелистувањето. <ph name="BEGIN_LINK" />Испратете повратни информации<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5649053991847567735">Автоматски преземања</translation>
 <translation id="5668404140385795438">Отфрли го барањето на веб-локацијата да спречи зумирање</translation>
@@ -477,6 +474,7 @@
 <translation id="813082847718468539">Прикажи информации за локација</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8168435359814927499">Содржина</translation>
+<translation id="818487310457576362">Повлечете отстрана на екранот за да излезете од цел екран.</translation>
 <translation id="8186479265534291036">Дали сајтот не функционира? Колачињата од трети страни се блокирани</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> е одобрена</translation>
 <translation id="8200772114523450471">Продолжи</translation>

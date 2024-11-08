@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">アプリ</translation>
 <translation id="3213571860604332401">リンクをブックマークとして保存する</translation>
 <translation id="3217205077783620295">音量はオンになっています。切り替えると音声がミュートされます。</translation>
-<translation id="3218561536255328229">タッチパッドを有効にするには Esc キーを 5 回押します</translation>
 <translation id="3226991577105957773">他 <ph name="COUNT" /> 件</translation>
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3233611303007751344">バッテリー セーバーがオフになりました</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">任意の場所を長押ししてアプリを並べ替えられます</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />を<ph name="IN_PLACE_APP" />の上にドラッグしました。指を離すとフォルダが作成されます。</translation>
 <translation id="5397578532367286026">このユーザーの利用状況や履歴は、chrome.com で管理者（<ph name="MANAGER_EMAIL" />）によって確認されます。</translation>
+<translation id="540338817371815859">横向き</translation>
 <translation id="540713187982329711">アクセス ポイントを切り替えます。アクセス ポイントはオンです。接続されているデバイスはありません。</translation>
 <translation id="5409208741270395213">タスクを完了としてマーク</translation>
 <translation id="5413656666631274079">設定ページ</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">デバイスを更新してください</translation>
 <translation id="6929081673585394903">コントロールを表示</translation>
 <translation id="6931576957638141829">保存先</translation>
+<translation id="6935857786205183008">縦向き</translation>
 <translation id="6942518653766415536">録画形式メニュー</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6945922087561257829">スマートフォンはモバイル ネットワークを使用しています。スマートフォンと Chromebook が同じ Wi-Fi ネットワークに接続されていることを確認してから、もう一度お試しください。<ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@
 <translation id="98120814841227350">ドキュメントの末尾に移動する</translation>
 <translation id="987589956647469042">モバイルデータはオンです</translation>
 <translation id="989374776391122812">カメラとオーディオのコントロール</translation>
+<translation id="990263227494928142">タッチパッドを有効にするには、Shift キーを 5 回押します</translation>
 <translation id="990277280839877440">「<ph name="WINDOW_TITILE" />」のウィンドウを閉じました。</translation>
 <translation id="993398562350683614">ステップ <ph name="STEP" />/<ph name="TOTAL_STEPS" />。<ph name="PRODUCT_NAME" /> では、アプリを使用してさまざまな作業を行うことができます。アプリはランチャーに表示されます。ランチャー ボタンにフォーカスを移動するには、Alt+Shift+L キーを押します。</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />、<ph name="SUBTEXT" /></translation>

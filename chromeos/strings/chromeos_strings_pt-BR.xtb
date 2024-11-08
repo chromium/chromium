@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Desativar o protetor de tela</translation>
 <translation id="3091839911843451378">Falha - Ação interrompida</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">Seu professor removeu um conteúdo do app School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscinas</translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Concluído</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
 <translation id="3533790840489634638">piscina</translation>
+<translation id="3535802910192338629">Seu professor adicionou um novo conteúdo no app School Tools</translation>
 <translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidos</translation>
@@ -630,6 +632,7 @@
 <translation id="4130750466177569591">Aceito</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4137700675046373159">no sábado</translation>
+<translation id="4139326893730851150">Atualizações de firmware</translation>
 <translation id="4143226836069425823">Toque em outra tecla para substituir</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -1262,7 +1265,7 @@
 <translation id="7129287270910503851">Seu uso de dados será redefinido todos os meses neste dia</translation>
 <translation id="7130438335435247835">Nome do ponto de acesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor de nomes}other{Servidores de nomes}}</translation>
-<translation id="7135814714616751706">Atalhos de pesquisa</translation>
+<translation id="7135814714616751706">Pesquisar atalhos</translation>
 <translation id="7141470099673912333">Transferência de conteúdo</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
@@ -1296,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sinta a brisa</translation>
 <translation id="7287310195820267359">Coleções de plano de fundo</translation>
+<translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="7297226631177386107">O firewall impediu a conexão a sites HTTPS</translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
 <translation id="7301262279595293068">Aguarde enquanto este aplicativo é atualizado</translation>
@@ -1355,6 +1359,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7544853251252956727">Ordem aleatória</translation>
 <translation id="7550715992156305117">Rotinas de diagnóstico</translation>
 <translation id="7551123448725492271">Este é um dispositivo de áudio.</translation>
+<translation id="7553913964854052228">O app School Tools está usando o microfone</translation>
 <translation id="7559239713112547082">Captura de tela da prévia</translation>
 <translation id="7561454561030345039">Essa ação é gerenciada pelo administrador</translation>
 <translation id="7561759921596375678">Ativar o som</translation>
@@ -1563,6 +1568,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8576249514688522074">Não inicializado</translation>
 <translation id="8584654835905316966">É necessário reiniciar o dispositivo para concluir a instalação do firmware do <ph name="DEVICE_NAME" /> para a versão <ph name="VERSION" />. Pode parecer que o computador está reiniciando várias vezes. Esse comportamento é esperado.</translation>
 <translation id="8593058461203131755">pausar mídia</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Status do roaming</translation>
 <translation id="8626489604350149811">Mais ações para o site <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>

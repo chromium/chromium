@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"a": "આલ્ફા", "b": "બ્રાવો", "c": "ચાર્લી", "d": "ડેલ્ટા", "e": "ઇકો", "f": "ફોક્સટ્રોટ", "g": "ગોલ્ફ", "h": "હોટલ", "i": "ઇન્ડિયા", "j": "જુલિયેટ","k": "કિલો", "l": "લીમા", "m": "માઇક", "n": "નવેમ્બર", "o": "ઑસ્કાર","p": "પાપા", "q": "ક્વેબેક", "r": "રોમિયો", "s": "સિયેરા", "t": "ટેંગો", "u": "યુનિફોર્મ", "v": "વિક્ટર", "w": "વ્હિસ્કી","x": "એક્સરે", "y": "યેંકી", "z": "ઝુલુ"}</translation>
 <translation id="1120938014254001895">બે આંગળી ઉપરની બાજુ સ્વાઇપ કરો</translation>
 <translation id="1126928665165112660">ઇટાલિક નથી</translation>
+<translation id="1133751489735776037">માઉસ પર ત્રણ વાર ક્લિક કરો</translation>
 <translation id="113582498867142724"><ph name="NUM" /> આઇટમ્સ સાથેનો <ph name="TAG" /> સંગ્રહ</translation>
 <translation id="1146441463334103638">સ્ક્રીનને ચાલુ કે બંધ એમ ટૉગલ કરો</translation>
 <translation id="1156488781945104845">હાલનો સમય</translation>
@@ -342,7 +343,6 @@
 <translation id="311015743332597320">ચાર આંગળીઓ વડે જમણે સ્વાઇપ કરો</translation>
 <translation id="3112457281078985179">ChromeVox ને ચાલુ કે બંધ કરવા માટે, Control+Alt+Z નો ઉપયોગ કરો.</translation>
 <translation id="3115800313647508384">સ્ક્રીન બંધ કરીએ?</translation>
-<translation id="3127625407966660979">ડિક્ટેશનની સુવિધા સક્રિય છે</translation>
 <translation id="3131002934070407451">નંબરને આ તરીકે વાંચો:</translation>
 <translation id="3134461040845705080">ફક્ત વાંચવા માટે</translation>
 <translation id="3137663468179739624">ઓલિવ</translation>
@@ -503,7 +503,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{સેકન્ડ}one{સેકન્ડ}other{સેકન્ડ}}</translation>
 <translation id="4161663686871496107">ChromeVox બોલાયેલો પ્રતિસાદ તૈયાર છે</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
-<translation id="4176677444195790114">ખેંચવા અને છોડવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="4187322598335821254">પંક્તિ દર પંક્તિ ઉપર અથવા નીચે કરવા માટે સ્વાઇપ કરો</translation>
 <translation id="4188530942454211480">પાછલું વાક્ય</translation>
 <translation id="4191918948604314587">બટન</translation>
@@ -548,6 +547,7 @@
 <translation id="4402014469255336455">ઘેરો આસમાની ભૂરો</translation>
 <translation id="4406249099130339147">વિરામચિહ્નનો પડઘો:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">તમારા બધા દાંત બતાવો</translation>
 <translation id="4432457053224379116">ભારતીય લાલ</translation>
 <translation id="4432896207833262240">માર્ક કરેલું કન્ટેન્ટ</translation>
 <translation id="4437615272777527928">મેનૂ શોધવા માટે ટાઇપ કરો. પરિણામો જોવા માટે ઉપર અને નીચે ઍરોનો ઉપયોગ કરો. ટેક્સ્ટ કૅરેટની ગોઠવણી કરવા અને મેનૂ વચ્ચે આવ-જા કરવા માટે ડાબા અને જમણા ઍરોનો ઉપયોગ કરો.</translation>
@@ -1112,7 +1112,6 @@
 <translation id="8378855320830505539">પ્રદેશ</translation>
 <translation id="8382679411218029383">સ્વતઃપૂર્ણ ઇનલાઇન અને સૂચિ</translation>
 <translation id="8394908167088220973">મીડિયા ચલાવો/થોભાવો</translation>
-<translation id="8409502156784390079">સ્ક્રોલ મોડ સક્રિય</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428603554127842284">સ્તર <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1190,7 +1189,6 @@
 <translation id="8986362086234534611">ભૂલી જાઓ</translation>
 <translation id="8989104346085848538">કોઈપણ વર્તમાન ChromeVox સ્પીચ રોકવા માટે, Control કી દબાવો.</translation>
 <translation id="9014206344398081366">ChromeVoxનું ટ્યૂટૉરિઅલ</translation>
-<translation id="9034592733577768445">ફેસ કન્ટ્રોલ થોભાવ્યું</translation>
 <translation id="9040132695316389094">મથાળું 1</translation>
 <translation id="9061884144798498064">8-ડૉટ બ્રેઇલ કોષ્ટક પસંદ કરો:</translation>
 <translation id="9063946545000394379">પાછલા અક્ષર પર ખસેડો</translation>

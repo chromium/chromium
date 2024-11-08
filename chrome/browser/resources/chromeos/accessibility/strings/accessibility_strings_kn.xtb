@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "ಆಲ್ಫಾ", "b": "ಬ್ರಾವೋ", "c": "ಚಾರ್ಲಿ", "d": "ಡೆಲ್ಟಾ", "e": "ಇಕೋ", "f": "ಫಾಕ್ಸ್‌ಟ್ರಾಟ್", "g": "ಗಾಲ್ಫ್", "h": "ಹೋಟೆಲ್", "i": "ಇಂಡಿಯಾ", "j": "ಜೂಲಿಯೆಟ್","k": "ಕಿಲೋ", "l": "ಲಿಮಾ", "m": "ಮೈಕ್", "n": "ನವೆಂಬರ್", "o": "ಆಸ್ಕರ್","p": "ಪಾಪಾ", "q": "ಕ್ವಿಬೆಕ್", "r": "ರೋಮಿಯೋ", "s": "ಸಿಯೆರಾ", "t": "ಟ್ಯಾಂಗೋ", "u": "ಯುನಿಫಾರ್ಮ್", "v": "ವಿಕ್ಟರ್", "w": "ವಿಸ್ಕಿ","x": "ಎಕ್ಸ್‌ರೇ", "y": "ಯಾಂಕೀ", "z": "ಜುಲು"}</translation>
 <translation id="1120938014254001895">ಎರಡು ಬೆರಳುಗಳಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="1126928665165112660">ಇಟಾಲಿಕ್ ಅಲ್ಲ</translation>
+<translation id="1133751489735776037">ಮೌಸ್ ಅನ್ನು ಟ್ರಿಪಲ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="113582498867142724"><ph name="NUM" /> ಐಟಂಗಳೊಂದಿಗೆ <ph name="TAG" /> ಸಂಗ್ರಹಣೆ</translation>
 <translation id="1146441463334103638">ಸ್ಕ್ರೀನ್ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1156488781945104845">ಪ್ರಸ್ತುತ ಸಮಯ</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">ವೆಬ್ ಪುಟ ಒಂದರ ಮೂಲಕ ಪರಿಣಾಮಕಾರಿಯಾಗಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1175914831232945926">ಅಂಕಿಗಳು</translation>
+<translation id="1186712907912748007">ಡ್ರ್ಯಾಗ್ ಅಂಡ್ ಡ್ರಾಪ್ ಮಾಡುವಿಕೆ ಪ್ರಗತಿಯಲ್ಲಿದೆ. ಅಂತ್ಯಗೊಳಿಸಲು <ph name="GESTURE" />. ಇತರ ಗೆಸ್ಚರ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="1188858454923323853">ಪೂರಕವಾಗಿ</translation>
 <translation id="1189258430971676908">ಅಭ್ಯಾಸ ಪ್ರದೇಶ: ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿಗಳು</translation>
 <translation id="1195238899008218998">ನಂತರದ</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">ಒಂದು ಲಿಂಕ್</translation>
 <translation id="2363753371702255035">ಬುಲೆಟ್</translation>
 <translation id="2365384324219615024">ಐಟಂಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನೀವು Enter ಅನ್ನೂ ಒತ್ತಬಹುದು. ಉದಾಹರಣೆಗೆ, ಫಾರ್ಮ್ ಒಂದರಲ್ಲಿ ಪಠ್ಯವನ್ನು ಸಲ್ಲಿಸಲು Enter ಕೀ ಅನ್ನು ಬಳಸಬಹುದು. ಮುಂದುವರಿಯಲು, ಎಂಟರ್ ಒತ್ತಿರಿ.</translation>
+<translation id="2371402123699727805">ಉಕ್ತಲೇಖನ ಸಕ್ರಿಯವಾಗಿದೆ. ನಿಲ್ಲಿಸಲು <ph name="GESTURE" />. ಇತರ ಗೆಸ್ಚರ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="2381733276052567791">ಧ್ವನಿ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2390264819538553347">ಮುಂದುವರಿಯಲು, ಎಂಟರ್ ಒತ್ತಿರಿ; ಹಿಂದಕ್ಕೆ ಮರಳಲು, ಬ್ಯಾಕ್‌ಸ್ಪೇಸ್‌ ಒತ್ತಿ.</translation>
 <translation id="2398579267367951220">ಪುಟವನ್ನು ಹುಡುಕಲು ಟೈಪ್ ಮಾಡಿ. ಫಲಿತಾಂಶವನ್ನು ನೋಡಲು enter, ಫಲಿತಾಂಶಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಲು ಮೇಲ್ಮುಖ ಅಥವಾ ಕೆಳಮುಖ ಬಾಣದ ಕೀಗಳನ್ನು ಒತ್ತಿರಿ, ನಿಮ್ಮ ಹುಡುಕಾಟವನ್ನು ಬದಲಾಯಿಸಲು ಟೈಪ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಿ ಅಥವಾ ರದ್ದುಗೊಳಿಸಲು ಎಸ್ಕೇಪ್ ಒತ್ತಿರಿ.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಬಲಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="3112457281078985179">ChromeVox ಅನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಲು, Control+Alt+Z ಬಳಸಿ.</translation>
 <translation id="3115800313647508384">ಸ್ಕ್ರೀನ್ ಆಫ್ ಮಾಡಬೇಕೇ?</translation>
-<translation id="3127625407966660979">ಉಕ್ತಲೇಖನ ಸಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="3131002934070407451">ಸಂಖ್ಯೆಗಳನ್ನು ಹೀಗೆ ಓದಿ:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ಆಲಿವ್</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">ಯಾವುದೇ ಹಿಂದಿನ ಹಂತ 3 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="3887399638190992181">ಅಗತ್ಯ ಕೀಗಳು</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">ಫೇಸ್‌ ಕಂಟ್ರೋಲ್‌ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ. ಪುನರಾರಂಭಿಸಲು <ph name="GESTURE" />. ಇತರ ಗೆಸ್ಚರ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="3897092660631435901">ಮೆನು</translation>
 <translation id="3907138069015388678">ಪ.ಗ್ರಿ</translation>
 <translation id="3909320334364316587">ಹಿಂದಿನ ಹಂತದ 6 ಶಿರೋನಾಮೆ</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{ಸೆಕೆಂಡು}one{ಸೆಕೆಂಡುಗಳು}other{ಸೆಕೆಂಡುಗಳು}}</translation>
 <translation id="4161663686871496107">ChromeVox ಮಾತನಾಡುವ ಪ್ರತಿಕ್ರಿಯೆಯು ಸಿದ್ಧವಾಗಿದೆ</translation>
 <translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="4176677444195790114">ಡ್ರ್ಯಾಗ್ ಅಂಡ್ ಡ್ರಾಪ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="4187322598335821254">ಸಾಲಿನ ಮೂಲಕ ಸರಿಸಲು ಮೇಲೆ ಅಥವಾ ಕೆಳಗೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="4188530942454211480">ಹಿಂದಿನ ವಾಕ್ಯ</translation>
 <translation id="4191918948604314587">ಒಂದು ಬಟನ್</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">ಗಾಢ ಆಕಾಶ ನೀಲಿ</translation>
 <translation id="4406249099130339147">ವಿರಾಮಚಿಹ್ನೆ ಪ್ರತಿಧ್ವನಿ:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">ನಿಮ್ಮ ಎಲ್ಲಾ ಹಲ್ಲುಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4432457053224379116">ಇಂಡಿಯನ್ ರೆಡ್</translation>
 <translation id="4432896207833262240">ಗುರುತಿಸಲಾದ ಕಂಟೆಂಟ್‌</translation>
 <translation id="4437615272777527928">ಮೆನುಗಳನ್ನು ಹುಡುಕಲು, ಟೈಪ್ ಮಾಡಿ. ಫಲಿತಾಂಶಗಳ ಮೂಲಕ ಸ್ಕ್ರಾಲ್ ಮಾಡಲು ಮೇಲಿನ ಮತ್ತು ಕೆಳಗಿನ ಬಾಣಗಳನ್ನು ಬಳಸಿ. ಪಠ್ಯ ಕೆರೆಟ್ ಅನ್ನು ಹೊಂದಿಸಲು ಮತ್ತು ಮೆನುಗಳ ನಡುವೆ ಸರಿಸಲು ಎಡ ಮತ್ತು ಬಲ ಬಾಣಗಳನ್ನು ಬಳಸಿ.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">ಯಾವುದೇ ಮುಂದಿನ ಹಂತ 1 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="5455441614648621694">ಪೂರಕವಾಗಿ</translation>
 <translation id="5462510922370980473">ಪುಟ ಪಟ್ಟಿ</translation>
+<translation id="5489460663499094917">ಸ್ಕ್ರಾಲ್‌ ಮೋಡ್‌ ಸಕ್ರಿಯವಾಗಿದೆ. ನಿರ್ಗಮಿಸಲು <ph name="GESTURE" />. ಇತರ ಗೆಸ್ಚರ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="5495517933067991341">ಅಗತ್ಯ ಕೀಗಳು: Shift</translation>
 <translation id="549602578321198708">ಪದ</translation>
 <translation id="5513242761114685513">ಸಂದರ್ಭದ ಮೆನು</translation>
@@ -1111,7 +1115,6 @@
 <translation id="8378855320830505539">ಪ್ರದೇಶ</translation>
 <translation id="8382679411218029383">ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆ ಇನ್‌ಲೈನ್ ಮತ್ತು ಪಟ್ಟಿ</translation>
 <translation id="8394908167088220973">ಮೀಡಿಯಾ ಪ್ಲೇ/ವಿರಾಮ</translation>
-<translation id="8409502156784390079">ಸ್ಕ್ರಾಲ್‌ ಮೋಡ್‌ ಸಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8428603554127842284">ಮಟ್ಟ <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1189,7 +1192,6 @@
 <translation id="8986362086234534611">ಮರೆತುಹೋಗು</translation>
 <translation id="8989104346085848538">ಯಾವುದೇ ಪ್ರಸ್ತುತ ChromeVox ಧ್ವನಿಯನ್ನು ನಿಲ್ಲಿಸಲು, Control ಕೀಯನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="9014206344398081366">ChromeVox ಟುಟೋರಿಯಲ್</translation>
-<translation id="9034592733577768445">ಫೇಸ್‌ ಕಂಟ್ರೋಲ್‌ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="9040132695316389094">ಶೀರ್ಷಿಕೆ 1</translation>
 <translation id="9061884144798498064">8-ಡಾಟ್ ಬ್ರೈಲ್ ಕೋಷ್ಠಕವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:</translation>
 <translation id="9063946545000394379">ಹಿಂದಿನ ಅಕ್ಷರಕ್ಕೆ ಸರಿಸಿ</translation>

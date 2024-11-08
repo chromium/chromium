@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Անջատել էկրանապահը</translation>
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
 <translation id="3102119246920354026">Հիշապահեստ</translation>
+<translation id="3112413615003385433">Ձեր ուսուցիչը բովանդակություն է հեռացրել School Tools-ից</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">լողավազաններ</translation>
 <translation id="3122883569442693641">Այլ մանրամասներ</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Խմբագրումը կատարված է</translation>
 <translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
 <translation id="3533790840489634638">լողավազան</translation>
+<translation id="3535802910192338629">Ձեր ուսուցիչը նոր բովանդակություն է ավելացրել School Tools-ում</translation>
 <translation id="3547264467365135390">Բանաձև</translation>
 <translation id="3557205324756024651">Տեղային իսկորոշում (պարտադիր չէ)</translation>
 <translation id="3565064564551103223">Թույլատրված IP-ներ</translation>
@@ -630,6 +632,7 @@
 <translation id="4130750466177569591">Համաձայն եմ</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="4137700675046373159">շաբաթ օրը</translation>
+<translation id="4139326893730851150">Ներկառուցված ծրագրի թարմացումներ</translation>
 <translation id="4143226836069425823">Հպեք այլ ստեղնի՝ փոխարինելու համար</translation>
 <translation id="4145784616224233563">HTTP հրապատ</translation>
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
@@ -1172,6 +1175,7 @@
 <translation id="6673898378497337661">ավելացնել ստեղնաշարի հետնալույսի պայծառությունը</translation>
 <translation id="6692996468359469499">Ստացեք տեղեկություններ էկրանի տարրերի վերաբերյալ</translation>
 <translation id="6694534975463174713">կողպեք</translation>
+<translation id="6700703207451721535">Այս հղումով մուտքը թույլատրված չէ։ Թույլտվության հետ կապված հարցերով դիմեք ձեր ուսուցչին։</translation>
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
 <translation id="6712933881624804031">հովիտ</translation>
 <translation id="6716013206176357696">ելակներ</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Զեփյուռ</translation>
 <translation id="7287310195820267359">Պաստառների հավաքածուներ</translation>
+<translation id="7293429513719260019">Ընտրել լեզուն</translation>
 <translation id="7297226631177386107">Չհաջողվեց միանալ HTTPS կայքերին հրապատի միջոցով։</translation>
 <translation id="7297726121602187087">Մուգ կանաչ</translation>
 <translation id="7301262279595293068">Սպասեք, մինչև հավելվածը թարմացվի</translation>
@@ -1354,6 +1359,7 @@
 <translation id="7544853251252956727">Խառնել</translation>
 <translation id="7550715992156305117">Դիագնոստիկայի ծրագրեր</translation>
 <translation id="7551123448725492271">Սարքն աուդիո սարք է։</translation>
+<translation id="7553913964854052228">School Tools հավելվածը օգտագործում է ձեր խոսափողը</translation>
 <translation id="7559239713112547082">Սքրինշոթի նախադիտում</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7561759921596375678">Միացնել ձայնը</translation>
@@ -1562,6 +1568,7 @@
 <translation id="8576249514688522074">Սկզբնավորված չէ</translation>
 <translation id="8584654835905316966">Վերագործարկեք <ph name="DEVICE_NAME" /> սարքը՝ ներկառուցված ծրագրի <ph name="VERSION" /> տարբերակով թարմացումն ավարտելու համար։ Կարող է տպավորություն ստեղծվել, որ ձեր համակարգիչը մի քանի անգամ վերաբեռնվում է։ Նման վարքագիծը նորմալ է։</translation>
 <translation id="8593058461203131755">դադարեցնել մեդիաֆայլը</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Ռոումինգի կարգավիճակը</translation>
 <translation id="8626489604350149811">Լրացուցիչ գործողություններ <ph name="APN_NAME" />-ի համար</translation>
 <translation id="86356131183441916">Բաց մանուշակագույն</translation>

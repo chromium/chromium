@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Vuốt lên trên bằng hai ngón tay</translation>
 <translation id="1126928665165112660">Không in nghiêng</translation>
+<translation id="1133751489735776037">Nhấp chuột ba lần</translation>
 <translation id="113582498867142724">Bộ sưu tập <ph name="TAG" /> có <ph name="NUM" /> mục</translation>
 <translation id="1146441463334103638">Bật hoặc tắt màn hình</translation>
 <translation id="1156488781945104845">Thời gian hiện tại</translation>
 <translation id="1161762950103988776">Nhảy</translation>
 <translation id="1164857107703583584">Bạn có thể dùng các lệnh chuyển để thao tác hiệu quả trên một trang web.</translation>
 <translation id="1175914831232945926">Chữ số</translation>
+<translation id="1186712907912748007">Đang kéo và thả. <ph name="GESTURE" /> để kết thúc. Các cử chỉ khác tạm thời không hoạt động.</translation>
 <translation id="1188858454923323853">bổ sung</translation>
 <translation id="1189258430971676908">Khu vực thực hành: Danh sách thả xuống</translation>
 <translation id="1195238899008218998">Lời bạt</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">Liên kết</translation>
 <translation id="2363753371702255035">dấu đầu dòng</translation>
 <translation id="2365384324219615024">Bạn cũng có thể nhấn phím Enter để kích hoạt các mục. Chẳng hạn, bạn có thể dùng phím Enter để gửi văn bản trong một biểu mẫu. Để tiếp tục, hãy nhấn phím Enter.</translation>
+<translation id="2371402123699727805">Tính năng nhập bằng giọng nói đang hoạt động. <ph name="GESTURE" /> để dừng. Các cử chỉ khác tạm thời không hoạt động.</translation>
 <translation id="2381733276052567791">Bật hoặc tắt giọng nói</translation>
 <translation id="2390264819538553347">Để chuyển tới trang tiếp theo, nhấn enter; để quay lại trang trước, nhấn phím xóa lùi.</translation>
 <translation id="2398579267367951220">Nhập để tìm kiếm trang. Nhấn phím Enter để xem kết quả, phím mũi tên lên hoặc xuống để duyệt qua kết quả, tiếp tục nhập để thay đổi nội dung tìm kiếm hoặc nhấn phím Escape để hủy.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">Vuốt sang phải bằng 4 ngón tay</translation>
 <translation id="3112457281078985179">Để bật hoặc tắt ChromeVox, sử dụng phím Control+Alt+Z.</translation>
 <translation id="3115800313647508384">Tắt màn hình?</translation>
-<translation id="3127625407966660979">Tính năng nhập bằng giọng nói đang hoạt động</translation>
 <translation id="3131002934070407451">Đọc số dưới dạng:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Màu xanh ô liu</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Không có tiêu đề cấp 3 nào trước đó</translation>
 <translation id="3887399638190992181">Các phím cơ bản</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Tính năng điều khiển bằng khuôn mặt đã tạm dừng. <ph name="GESTURE" /> để tiếp tục. Các cử chỉ khác tạm thời không hoạt động.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Tiêu đề cấp 6 trước</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{giây}other{giây}}</translation>
 <translation id="4161663686871496107">Tính năng phản hồi bằng giọng nói ChromeVox đã sẵn sàng</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
-<translation id="4176677444195790114">Đang kéo và thả</translation>
 <translation id="4187322598335821254">Vuốt lên hoặc xuống để di chuyển theo dòng</translation>
 <translation id="4188530942454211480">Câu trước</translation>
 <translation id="4191918948604314587">Nút</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">Màu xanh da trời đậm</translation>
 <translation id="4406249099130339147">Đọc to dấu câu:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Nhe toàn bộ răng</translation>
 <translation id="4432457053224379116">Màu đỏ Ấn Độ</translation>
 <translation id="4432896207833262240">Nội dung được đánh dấu</translation>
 <translation id="4437615272777527928">Nhập để tìm kiếm trong trình đơn. Sử dụng các mũi tên lên và xuống để chuyển qua kết quả. Sử dụng các mũi tên trái và phải để điều chỉnh điểm chèn văn bản và di chuyển giữa các trình đơn.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Không có tiêu đề cấp 1 nào tiếp theo</translation>
 <translation id="5455441614648621694">Bổ sung</translation>
 <translation id="5462510922370980473">Danh sách trang</translation>
+<translation id="5489460663499094917">Chế độ cuộn đang hoạt động. <ph name="GESTURE" /> để thoát. Các cử chỉ khác tạm thời không hoạt động.</translation>
 <translation id="5495517933067991341">Các phím cơ bản: Shift</translation>
 <translation id="549602578321198708">Từ</translation>
 <translation id="5513242761114685513">Menu ngữ cảnh</translation>
@@ -1112,7 +1116,6 @@
 <translation id="8378855320830505539">Khu vực</translation>
 <translation id="8382679411218029383">Tự động hoàn thành nội dòng và danh sách</translation>
 <translation id="8394908167088220973">Phát/Tạm dừng trình phát phương tiện</translation>
-<translation id="8409502156784390079">Chế độ cuộn đang hoạt động</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8428603554127842284">cấp <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1190,7 +1193,6 @@
 <translation id="8986362086234534611">Quên</translation>
 <translation id="8989104346085848538">Để dừng giọng đọc ChromeVox hiện tại, hãy nhấn phím Control.</translation>
 <translation id="9014206344398081366">Hướng dẫn về ChromeVox</translation>
-<translation id="9034592733577768445">Tính năng điều khiển bằng khuôn mặt đã tạm dừng</translation>
 <translation id="9040132695316389094">Tiêu đề 1</translation>
 <translation id="9061884144798498064">Chọn bảng chữ nổi 8 chấm:</translation>
 <translation id="9063946545000394379">chuyển về ký tự trước</translation>

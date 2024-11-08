@@ -3,6 +3,7 @@
 <translationbundle lang="el">
 <translation id="1005023885865154304">Άνοιγμα ρυθμίσεων Αυτόματης συμπλήρωσης κωδικών πρόσβασης</translation>
 <translation id="1005230401424685968">ΕΕΕΕ</translation>
+<translation id="1010225406377140704">Επικοινωνήστε με τον αποστολέα, για να ζητήσετε νέο σύνδεσμο</translation>
 <translation id="1012067394176927315">Για εμφάνιση περιεχομένου, από το μενού, επιλέξτε Ενεργοποίηση</translation>
 <translation id="1013952917065545813">Μπορείτε να επιστρέψετε εδώ για να ανοίξετε ξανά τις καρτέλες που κλείσατε πρόσφατα.</translation>
 <translation id="1016495303386450659">Το στοιχείο ενημερώθηκε</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">Ημερολόγιο</translation>
 <translation id="1164891049599601209">Εισήχθη σε παραπλανητικό ιστότοπο</translation>
 <translation id="1165039591588034296">Σφάλμα</translation>
-<translation id="1172240852337942024">Απόρριψη επιλογής</translation>
 <translation id="1172898394251786223">Επόμενο πεδίο</translation>
 <translation id="1179890706672152411">Ο αποθηκευτικός χώρος είναι πλήρης</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
+<translation id="1190609913194133056">Κέντρο ειδοποιήσεων</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1204075260022434100">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο {title} στον λογαριασμό {email}}other{{count} σελιδοδείκτες αποθηκεύτηκαν στον φάκελο {title} στον λογαριασμό {email}}}</translation>
 <translation id="120431140543679678">Παρακολούθηση</translation>
@@ -219,6 +220,7 @@
 <translation id="1956138802718275401">Μετάβαση στους κωδικούς πρόσβασης από την αρχική οθόνη</translation>
 <translation id="1959441496380398824">Αγγίξτε παρατεταμένα μια ημερομηνία.</translation>
 <translation id="1962348300797608157">Ο χρήστης <ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> σας κοινοποίησε έναν κωδικό πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
+<translation id="1962969542251276847">Οθόνη κλειδώματος</translation>
 <translation id="1963976881984600709">Βασική προστασία</translation>
 <translation id="1966313166384086081">δεδομένα ιστοτόπου</translation>
 <translation id="1967461193809857427">{count,plural, =1{Θέλετε να συνεχίσετε με την καρτέλα που σταματήσατε να χρησιμοποιείτε σε Android;}other{Θέλετε να συνεχίσετε με τις καρτέλες που σταματήσατε να χρησιμοποιείτε σε Android;}}</translation>
@@ -1197,6 +1199,7 @@
 <translation id="6503077044568424649">Πιο δημοφιλή</translation>
 <translation id="6503763061813913607">Ειδοποιήσεις Ελέγχου ασφαλείας</translation>
 <translation id="6505334220040167806">Σύμπτυξη ομάδας καρτελών.</translation>
+<translation id="6506996418997555004">Κοινή χρήση ομάδας καρτελών <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Συνδεθείτε για να λάβετε τη Λίστα ανάγνωσης σε όλες τις συσκευές σας.</translation>
 <translation id="6518133107902771759">Επαλήθευση</translation>
 <translation id="6523575793810663688">Οδηγίες</translation>
@@ -1263,7 +1266,6 @@
 <translation id="672735642903863329">Μεταφέρετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα σε όλες τις συσκευές σας.</translation>
 <translation id="6732087373923685049">κάμερα</translation>
 <translation id="6746338529702829275">Έλεγχος των δεδομένων του λογαριασμού σας</translation>
-<translation id="6748108480210050150">Από</translation>
 <translation id="6755200887046212842">Διαχείριση λογαριασμών</translation>
 <translation id="6761393919622941301">Ήχος</translation>
 <translation id="6779455296366983087">Τα δεδομένα περιήγησής σας θα διαγραφούν</translation>
@@ -1312,7 +1314,6 @@
 <translation id="6979737339423435258">Από την αρχή</translation>
 <translation id="6983306615164277634">Μπορείτε επίσης να αγγίξετε παρατεταμένα τη γραμμή διευθύνσεων για να αλλάξετε τη θέση.</translation>
 <translation id="6990519590575500580">Facetime</translation>
-<translation id="6998989275928107238">Προς</translation>
 <translation id="7004032350256606903">Ο οργανισμός σας απαιτεί οι περιηγήσεις σας να είναι ιδιωτικές.
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Ορισμός ως προεπιλεγμένου στις Ρυθμίσεις…</translation>
@@ -1416,6 +1417,7 @@
 <translation id="750493650310597496">0 στοιχεία επιλεγμένα</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Για να κλειδώσετε τις καρτέλες ανώνυμης περιήγησης, ρυθμίστε το Touch ID, το Face ID ή έναν κωδικό πρόσβασης.</translation>
+<translation id="7512075701202892785">Το αγαπημένο σας πρόγραμμα περιήγησης τώρα και στο iPad</translation>
 <translation id="7512909159512473473">Εισαγωγή φράσης πρόσβασης…</translation>
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7521117365186708026">Συμβουλές ρύθμισης που θα σας βοηθήσουν να αξιοποιήσετε πλήρως το Chrome.</translation>
@@ -1691,6 +1693,7 @@
 <translation id="8694281486652655615">Εμφανίζει αυτό το στοιχείο</translation>
 <translation id="8696297579102085705">Αποστολή στη συσκευή σας</translation>
 <translation id="8697136149718343437">Μετακίνηση γραμμής διευθύνσεων στο κάτω μέρος</translation>
+<translation id="8703372953981978786">Αυτός ο σύνδεσμος δεν λειτουργεί</translation>
 <translation id="8706253136355675497">Θερμοκρασία</translation>
 <translation id="8709409604518538305">Οι καρτέλες έκλεισαν</translation>
 <translation id="8712534545803964353">Εύρεση στη σελίδα…</translation>
@@ -1810,7 +1813,6 @@
 <translation id="9183733013282108610">Ανώνυμη αναζήτηση</translation>
 <translation id="9186762474139509529">Έναρξη καταγραφής</translation>
 <translation id="9191031968346938109">Προσθήκη σε…</translation>
-<translation id="9196007736149429065">Δεν ήταν δυνατό το άνοιγμα αυτού του αρχείου</translation>
 <translation id="9200875785104711666">Πριν από <ph name="TIME" /> ημ.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Μεταφέρετε τη γραμμή διευθύνσεων από το επάνω στο κάτω μέρος για μια προσαρμοσμένη εμπειρία περιήγησης.</translation>

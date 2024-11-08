@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="2244252133441425811">I-enable ang tagapili ng FPS ng video</translation>
 <translation id="2271433936731426666">I-enable ang full-sized na snapshot ng video</translation>
-<translation id="2281736597583450397">Makakuha ng mas malilinaw na detalye gamit ang pinahusay na pag-zoom</translation>
 <translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
 <translation id="2360840973209616515">Pinapamahalaan ng iyong administrator ang camera app.
         Para sa mga detalye, makipag-ugnayan sa administrator.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Mag-zoom out</translation>
 <translation id="5976160379964388480">Iba Pa</translation>
 <translation id="6073451960410192870">Ihinto ang pag-record</translation>
-<translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6197807149213783179">I-save ang metadata</translation>
 <translation id="6233780560267770709">3 by 3</translation>
 <translation id="6243827288366940320">Golden ratio</translation>
@@ -122,7 +120,6 @@
 Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng halimbawang larawan o video at ilarawan kung ano ang mali rito. (Halimbawa, masyadong madilim ang larawan o hindi naka-focus ang paksa.)</translation>
 <translation id="6519884562954018934">Sumali sa <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Ibahagi</translation>
-<translation id="6586509689874700895">Una, pindutin ang <ph name="BUTTON_NAME" /> para mag-zoom in. Pagkatapos mong kumuha ng larawan, makikita mo ang mas malilinaw na detalye.</translation>
 <translation id="659539649712855529">Nakopya ang <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Ipakita ang lahat ng resolution</translation>
 <translation id="6631515515009660915">Naka-off ang Mirror</translation>
@@ -168,7 +165,6 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8609951387004618906">Buksan ang <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">I-toggle ang pagkaka-mute ng mikropono. Naka-on ang mute</translation>
-<translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8732462232047530626">I-preview ang metadata</translation>
 <translation id="874854738381978209">May na-detect na Wi-Fi network.</translation>

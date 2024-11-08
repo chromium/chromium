@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">以雙指向上滑動</translation>
 <translation id="1126928665165112660">不是斜體文字</translation>
+<translation id="1133751489735776037">按滑鼠左鍵三下</translation>
 <translation id="113582498867142724">「<ph name="TAG" />」集 (共 <ph name="NUM" /> 個項目)</translation>
 <translation id="1146441463334103638">開啟或關閉螢幕</translation>
 <translation id="1156488781945104845">目前時間</translation>
 <translation id="1161762950103988776">導向</translation>
 <translation id="1164857107703583584">跳轉指令可用於快速瀏覽網頁。</translation>
 <translation id="1175914831232945926">數字</translation>
+<translation id="1186712907912748007">拖曳中，<ph name="GESTURE" />即可結束這個動作。目前暫時無法使用其他表情。</translation>
 <translation id="1188858454923323853">補充</translation>
 <translation id="1189258430971676908">練習區：下拉式清單</translation>
 <translation id="1195238899008218998">後記</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">連結</translation>
 <translation id="2363753371702255035">項目符號</translation>
 <translation id="2365384324219615024">你也可以按下 Enter 鍵以啟用項目。例如，Enter 鍵可用來提交表單中的文字。如要繼續，請按下 Enter 鍵。</translation>
+<translation id="2371402123699727805">「語音輸入」已啟用，<ph name="GESTURE" />即可停止。目前暫時無法使用其他表情。</translation>
 <translation id="2381733276052567791">將語音功能切換為開啟或關閉</translation>
 <translation id="2390264819538553347">如要前往下一頁，請按下 Enter 鍵；如要返回上一頁，請按下 Backspace 鍵。</translation>
 <translation id="2398579267367951220">輸入要在頁面中搜尋的字詞。按下 Enter 鍵可跳至搜尋結果；按向上或向下箭頭可瀏覽搜尋結果；繼續輸入可變更搜尋字詞；按下 Escape 鍵可取消搜尋。</translation>
@@ -271,6 +274,7 @@
 <translation id="2723001399770238859">音訊</translation>
 <translation id="2737898226590637227">沒有下一個 ARIA 位置標記</translation>
 <translation id="2749275490991666823">已勾選</translation>
+<translation id="2751454300227269244">將嘴角向右移</translation>
 <translation id="27527859628328957">跳至下一個可選擇的項目</translation>
 <translation id="2756452585631602151">輸入自訂標籤</translation>
 <translation id="2766299274563946262">左側沒有儲存格</translation>
@@ -341,7 +345,6 @@
 <translation id="311015743332597320">以四指向右滑動</translation>
 <translation id="3112457281078985179">如要開啟或關閉 ChromeVox，請使用 Control + Alt + Z 鍵</translation>
 <translation id="3115800313647508384">要關閉螢幕嗎？</translation>
-<translation id="3127625407966660979">語音輸入已啟用</translation>
 <translation id="3131002934070407451">數字朗讀方式：</translation>
 <translation id="3134461040845705080">唯讀</translation>
 <translation id="3137663468179739624">橄欖綠</translation>
@@ -352,6 +355,7 @@
 <translation id="3153928844647607688">「<ph name="TABLENAME" />」表格，含 <ph name="TABLEROWS" /> 列 <ph name="TABLECOLS" /> 欄</translation>
 <translation id="3159493096109238499">米色</translation>
 <translation id="316542773973815724">導覽</translation>
+<translation id="3167446923957429259">將嘴角向左移</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{空格}other{# 個空格}}</translation>
 <translation id="3179119189286472195">不是連結</translation>
 <translation id="3180990259147710757">將下巴往左移動</translation>
@@ -462,6 +466,7 @@
 <translation id="3870295413168340326">沒有上一個第 3 階標題</translation>
 <translation id="3887399638190992181">重要按鍵</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">「人臉操控」已暫停，<ph name="GESTURE" />即可繼續。目前暫時無法使用其他表情。</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3907138069015388678">清單格線</translation>
 <translation id="3909320334364316587">上一個第 6 階標題</translation>
@@ -501,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{秒}other{秒}}</translation>
 <translation id="4161663686871496107">ChromeVox 互動朗讀已啟用</translation>
 <translation id="4176463684765177261">已停用</translation>
-<translation id="4176677444195790114">正在拖曳</translation>
 <translation id="4187322598335821254">向上或向下滑動即可逐行瀏覽</translation>
 <translation id="4188530942454211480">上一句</translation>
 <translation id="4191918948604314587">按鈕</translation>
@@ -546,6 +550,7 @@
 <translation id="4402014469255336455">深天藍</translation>
 <translation id="4406249099130339147">標點符號語音提示：</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /> 鍵</translation>
+<translation id="4423525817792153232">露出所有牙齒</translation>
 <translation id="4432457053224379116">印度紅</translation>
 <translation id="4432896207833262240">已標示的內容</translation>
 <translation id="4437615272777527928">輸入要在選單中搜尋的字詞。使用向上/向下箭頭可切換搜尋結果，使用向左/向右箭頭可調整文字插入點，並在選單間移動。</translation>
@@ -698,6 +703,7 @@
 <translation id="5452267669091857717">沒有下一個第 1 階標題</translation>
 <translation id="5455441614648621694">互補</translation>
 <translation id="5462510922370980473">頁面清單</translation>
+<translation id="5489460663499094917">捲動模式已啟用，<ph name="GESTURE" />即可退出。目前暫時無法使用其他表情。</translation>
 <translation id="5495517933067991341">重要按鍵：Shift 鍵</translation>
 <translation id="549602578321198708">單字</translation>
 <translation id="5513242761114685513">內容選單</translation>
@@ -1110,7 +1116,6 @@
 <translation id="8378855320830505539">區域</translation>
 <translation id="8382679411218029383">自動即時查詢內嵌元素和清單</translation>
 <translation id="8394908167088220973">媒體播放/暫停</translation>
-<translation id="8409502156784390079">已啟用捲動模式</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428603554127842284">第 <ph name="DEPTH" /> 階</translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1188,7 +1193,6 @@
 <translation id="8986362086234534611">清除</translation>
 <translation id="8989104346085848538">如要停止目前的任何 ChromeVox 朗讀，請按下 Control 鍵。</translation>
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
-<translation id="9034592733577768445">人臉操控已暫停</translation>
 <translation id="9040132695316389094">標題 1</translation>
 <translation id="9061884144798498064">選取 8 點點字表：</translation>
 <translation id="9063946545000394379">移至上一個字元</translation>

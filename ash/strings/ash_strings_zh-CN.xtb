@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">应用</translation>
 <translation id="3213571860604332401">将链接保存为书签</translation>
 <translation id="3217205077783620295">已开启声音，使用切换开关可将音频静音。</translation>
-<translation id="3218561536255328229">按 Esc 键 5 次即可启用触控板</translation>
 <translation id="3226991577105957773">+另外 <ph name="COUNT" /> 条</translation>
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3233611303007751344">省电模式已关闭</translation>
@@ -1303,6 +1302,7 @@
 <translation id="5393156353051693207">若要将您的应用重新排序，请轻触并按住任意位置</translation>
 <translation id="5395308026110844773">“<ph name="DRAGGED_APP_NAME" />”已拖至“<ph name="IN_PLACE_APP" />”上，松开即可创建文件夹。</translation>
 <translation id="5397578532367286026">管理员 (<ph name="MANAGER_EMAIL" />) 可在 chrome.com 上查看该用户的使用情况和历史记录。</translation>
+<translation id="540338817371815859">横向</translation>
 <translation id="540713187982329711">开启/关闭热点。热点处于开启状态，但尚未连接任何设备。</translation>
 <translation id="5409208741270395213">将任务标记为已完成</translation>
 <translation id="5413656666631274079">“设置”页面</translation>
@@ -1765,6 +1765,7 @@
 <translation id="6921427376813842559">更新设备</translation>
 <translation id="6929081673585394903">显示控件</translation>
 <translation id="6931576957638141829">保存到</translation>
+<translation id="6935857786205183008">纵向</translation>
 <translation id="6942518653766415536">录制格式菜单</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6945922087561257829">手机使用的是移动网络。请确保您的手机和 Chromebook 已连接到同一 Wi-Fi 网络，然后重试。<ph name="LEARN_MORE" /></translation>
@@ -2433,6 +2434,7 @@
 <translation id="98120814841227350">转到文档末尾</translation>
 <translation id="987589956647469042">移动流量已开启</translation>
 <translation id="989374776391122812">摄像头和音频控件</translation>
+<translation id="990263227494928142">按 Shift 键 5 次即可启用触控板</translation>
 <translation id="990277280839877440">已关闭窗口“<ph name="WINDOW_TITILE" />”。</translation>
 <translation id="993398562350683614">导览第 <ph name="STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步。您可在 <ph name="PRODUCT_NAME" /> 上使用应用完成各种任务。可以在启动器中查找应用。按 Alt + Shift + L 键即可将焦点移至启动器按钮。</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />，<ph name="SUBTEXT" /></translation>

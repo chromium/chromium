@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="2244252133441425811">ভিডিও FPS পিকার চালু করুন</translation>
 <translation id="2271433936731426666">সম্পূর্ণ সাইজের ভিডিও স্ন্যাপশট চালু করুন</translation>
-<translation id="2281736597583450397">উন্নত জুমের সাহায্যে আরও নির্দিষ্ট করে বিবরণ পান</translation>
 <translation id="2320741269052147773">বাঁদিকে প্যান করুন</translation>
 <translation id="2360840973209616515">ক্যামেরা অ্যাপ আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে ম্যানেজ করা হয়।
         বিবরণের জন্য, অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5976160379964388480">অন্যান্য</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
-<translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6197807149213783179">মেটাডেটা সেভ করুন</translation>
 <translation id="6233780560267770709">৩ x ৩</translation>
 <translation id="6243827288366940320">গোল্ডেন অনুপাত</translation>
@@ -122,7 +120,6 @@
 যদি আপনি কোনও ছবি বা ভিডিওর কোয়ালিটির ব্যাপারে মতামত জানাতে চান, তাহলে উদাহরণস্বরূপ একটি ফটো বা ভিডিও এখানে অ্যাটাচ করুন এবং আমাদের জানান সেটিতে কোন বিষয়টি আপনার খারাপ লেগেছে। (যেমন, ফটোতে পর্যাপ্ত আলোর অভাব রয়েছে বা যার ফটো তোলা হয়েছে, তাকে ফোকাসে রেখে ফটোটি তোলা হয়নি।)</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" />-এ যোগ দিন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
-<translation id="6586509689874700895">বড় করতে প্রথমে <ph name="BUTTON_NAME" /> বোতামে প্রেস করুন। তারপর, আপনি ফটো তোলার পরে পুঙ্খানুপুঙ্খভাবে দেখতে পাবেন।</translation>
 <translation id="659539649712855529"><ph name="CONTENT" /> কপি করা হয়েছে</translation>
 <translation id="6617916774429601017">সমস্ত রেজোলিউশন দেখান</translation>
 <translation id="6631515515009660915">মিরর করার ফিচার বন্ধ করুন</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906"><ph name="URL" /> খুলুন</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন চালু আছে</translation>
-<translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8732462232047530626">মেটাডেটা প্রিভিউ করুন</translation>
 <translation id="874854738381978209">ওয়াই-ফাই নেটওয়ার্ক শনাক্ত করা হয়েছে।</translation>

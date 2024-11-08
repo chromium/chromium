@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">ပုံများကို ပြုလုပ်နေသည်…</translation>
 <translation id="1116694919640316211">အကြောင်း</translation>
 <translation id="1118572504348554005">သင်အကြောင်းကြားသော ချွတ်ယွင်းမှုနှင့် အခြားပြဿနာများကို ရှာဖွေဖြေရှင်းရန် ဤဖောင်ဖြင့် ပေးပို့ထားသည့် အကြံပြုချက်ကို ကျွန်ုပ်တို့ပါတနာများနှင့် မျှဝေနိုင်ပါသည်။ စကားဝှက်ကဲ့သို့ သတိထားရမည့် အချက်အလက်များ မထည့်ပါနှင့်။</translation>
+<translation id="1119403468619527527">ရှင်းလင်းအောင်လုပ်ရန် စကားလုံး နည်းလွန်းသည်</translation>
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် လက်ပ်တော့မုဒ်သို့ ပြောင်းပါ။</translation>
 <translation id="3916998944874125962">ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်</translation>
 <translation id="3923184630988645767">ဒေတာသုံးစွဲမှု</translation>
+<translation id="3924445055519423964">ဝဘ်စာမျက်နှာ/PDF ဖိုင်ကို အနှစ်ချုပ်ရန် နှိပ်ပါ</translation>
 <translation id="3932043219784172185">ချိတ်ဆက်ထားသော စက်မရှိပါ</translation>
 <translation id="3934185438132762746">သတ်မှတ်မထားသည့် <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ဆာဗာပင်ရင်းကို မဖြေရှင်းနိုင်ပါ</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">ကျွန်ုပ် သဘောတူ</translation>
 <translation id="4131410914670010031">အမည်း နှင့် အဖြူ</translation>
 <translation id="4137700675046373159">စနေနေ့တွင်</translation>
+<translation id="4139326893730851150">ဖာမ်းဝဲ အပ်ဒိတ်များ</translation>
 <translation id="4143226836069425823">အစားထိုးရန် အခြားကီးဘုတ်ကီးကို တို့ပါ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">စာမျက်နှာများ</translation>
 <translation id="4989542687859782284">မရရှိနိုင်ခြင်း</translation>
 <translation id="4999333166442584738">အစီရင်ခံစာကို ဖျောက်ထားရန်</translation>
+<translation id="5005695757087124131">ရွေးထားသောစာသားကို ရှင်းလင်းအောင်လုပ်ရန်အတွက် နှိပ်ရန်</translation>
 <translation id="500920857929044050">စစ်ဆေးမှု ရပ်ရန်</translation>
 <translation id="5017508259293544172">နှစ်ထက်နှစ်</translation>
 <translation id="5035083460461104704">အပြင်အဆင် အရောင်</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">လေညှင်း ခံစားရန်</translation>
 <translation id="7287310195820267359">နောက်ခံပုံ စုစည်းမှုများ</translation>
+<translation id="7293429513719260019">ဘာသာစကားရွေးချယ်ရန်</translation>
 <translation id="7297226631177386107">HTTPS ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="7297726121602187087">အစိမ်းရင့်</translation>
 <translation id="7301262279595293068">ဤအပလီကေးရှင်းကို အပ်ဒိတ်လုပ်နေချိန် ခဏစောင့်ပါ</translation>
@@ -1332,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ကို အပ်ဒိတ်လုပ်ရန် အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="741244894080940828">ပြောင်းလဲခြင်း</translation>
 <translation id="7415801143053185905">HTTP တုံ့ပြန်ချိန် အလွန်ကြာနေသည်</translation>
+<translation id="7418738250896500352">ရှင်းလင်းအောင်လုပ်ရန် စကားလုံး များလွန်းသည်</translation>
 <translation id="7425037327577270384">ကူရေးပေးပါ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ဤ APN ကို ပိတ်၍မရပါ (သို့) ဖယ်ရှား၍မရပါ။ ဖွင့်ထားသော <ph name="ATTACH" /> APN များကို ပိတ်ထားကြောင်း (သို့) ဖယ်ရှားထားကြောင်း သေချာပါစေ။</translation>
@@ -1357,6 +1363,7 @@
 <translation id="7544853251252956727">ရောသမမွှေပါ</translation>
 <translation id="7550715992156305117">အမှားရှာဖွေမှု ပုံမှန်အစီအစဉ်များ</translation>
 <translation id="7551123448725492271">ကိရိယာသည် အသံစက်ပစ္စည်းဖြစ်သည်။</translation>
+<translation id="7553913964854052228">‘ကျောင်းသုံးတူးလ်’ သည် သင့်မိုက်ခရိုဖုန်းကို သုံးနေသည်</translation>
 <translation id="7559239713112547082">ဖန်သားပြင်ဓာတ်ပုံ အစမ်းကြည့်ရှုရန်</translation>
 <translation id="7561454561030345039">ဤလုပ်ဆောင်ချက်ကို သင့်ကြီးကြပ်သူက စီမံသည်</translation>
 <translation id="7561759921596375678">အသံဖွင့်ရန်</translation>
@@ -1547,6 +1554,7 @@
 <translation id="8476942730579767658">ဝင်းဒိုးနှင့် မျက်နှာပြင်များ</translation>
 <translation id="8477536061607044749">ဂရပ်ဖစ် ဒီဇိုင်း</translation>
 <translation id="8477551185774834963">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို အနည်းငယ်ကျော်နေသည်</translation>
+<translation id="8482376765267780829">ရှင်းလင်းအောင်လုပ်ရန် စာသားအချို့ရွေးပါ</translation>
 <translation id="8483248364096924578">IP လိပ်စာ</translation>
 <translation id="8491311378305535241">Android အက်ပ်များမှ HTTP ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="8495070016475833911">သက္ကလတ်</translation>
@@ -1676,6 +1684,7 @@
 <translation id="9082718469794970195">ဤဗီဒီယိုသုံးရန်</translation>
 <translation id="9087578468327036362">ဤမေးမြန်းချက်ကို အကြောင်းကြားရန်</translation>
 <translation id="9088306295921699330">လက်ရှိ အသုံးပြုမှု</translation>
+<translation id="9088994563996376283">ရှင်းလင်းအောင်လုပ်ရန်</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">‘ပြင်ဆင်သတ်မှတ်ရန်’ ရက်စွဲအကြောင်း နောက်ထပ်အချက်အလက်</translation>
 <translation id="9100765901046053179">အဆင့်မြင့် ဆက်တင်များ</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ar">
 <translation id="1005023885865154304">فتح إعدادات "الملء التلقائي لكلمات المرور"</translation>
 <translation id="1005230401424685968">سنة</translation>
+<translation id="1010225406377140704">يُرجى التواصل مع المُرسِل لطلب رابط جديد</translation>
 <translation id="1012067394176927315">انقر على "تفعيل" في القائمة للاطّلاع على المحتوى</translation>
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">تقويم</translation>
 <translation id="1164891049599601209">تم إدخالها على موقع إلكتروني مريب.</translation>
 <translation id="1165039591588034296">الخطأ</translation>
-<translation id="1172240852337942024">إلغاء الاختيار</translation>
 <translation id="1172898394251786223">الحقل التالي</translation>
 <translation id="1179890706672152411">مساحة التخزين ممتلئة</translation>
 <translation id="1181037720776840403">إزالة</translation>
+<translation id="1190609913194133056">مركز الإشعارات</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1204075260022434100">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضِمن حسابك {email}}zero{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}two{تمّ حفظ إشارتَين مرجعيتَين ({count}) في "{title}" ضِمن حسابك {email}}few{تمّ حفظ {count} إشارات مرجعية في "{title}" ضِمن حسابك {email}}many{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}other{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}}</translation>
 <translation id="120431140543679678">متابعة</translation>
@@ -219,6 +220,7 @@
 <translation id="1956138802718275401">الوصول إلى كلمات المرور من الشاشة الرئيسية</translation>
 <translation id="1959441496380398824">انقر مع الاستمرار على تاريخ.</translation>
 <translation id="1962348300797608157">لقد تلقيّت من <ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" /></translation>
+<translation id="1962969542251276847">قفل الشاشة</translation>
 <translation id="1963976881984600709">الحماية العادية</translation>
 <translation id="1966313166384086081">بيانات الموقع الإلكتروني</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏هل تريد استئناف التصفح من علامة التبويب التي توقّفت عندها في Android؟}zero{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}two{‏هل تريد استئناف التصفح من علامتَي التبويب اللتين توقّفت عندهما في Android؟}few{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}many{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}other{‏هل تريد استئناف التصفح من علامات التبويب التي توقّفت عندها في Android؟}}</translation>
@@ -1196,6 +1198,7 @@
 <translation id="6503077044568424649">الأكثر زيارة</translation>
 <translation id="6503763061813913607">إشعارات ميزة "التحقّق من الأمان"</translation>
 <translation id="6505334220040167806">تصغير مجموعة علامات التبويب</translation>
+<translation id="6506996418997555004">مشاركة مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">سجِّل الدخول لعرض قائمة القراءة على جميع أجهزتك.</translation>
 <translation id="6518133107902771759">تحقق</translation>
 <translation id="6523575793810663688">الاطّلاع على الإرشادات</translation>
@@ -1262,7 +1265,6 @@
 <translation id="672735642903863329">الحصول على الإشارات المرجعية وكلمات المرور وإعدادات أخرى واستخدامها على جميع أجهزتك</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
 <translation id="6746338529702829275">مراجعة بيانات حسابك</translation>
-<translation id="6748108480210050150">من</translation>
 <translation id="6755200887046212842">إدارة الحسابات</translation>
 <translation id="6761393919622941301">الصوت</translation>
 <translation id="6779455296366983087">سيتم حذف بيانات التصفُّح</translation>
@@ -1311,7 +1313,6 @@
 <translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6983306615164277634">يمكنك أيضًا النقر مع الاستمرار على شريط العناوين لتغيير مكانه.</translation>
 <translation id="6990519590575500580">‏استخدام Facetime</translation>
-<translation id="6998989275928107238">إلى</translation>
 <translation id="7004032350256606903">تفرض مؤسستك سياسة التصفُّح بخصوصية تامّة.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">الضبط كمتصفِّح تلقائي من خلال "الإعدادات"…</translation>
@@ -1415,6 +1416,7 @@
 <translation id="750493650310597496">لم يتم اختيار أي إشارات</translation>
 <translation id="7506817096924591340">‎<ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
+<translation id="7512075701202892785">‏المتصفِّح المفضّل لك متوفّر الآن على جهاز iPad</translation>
 <translation id="7512909159512473473">إدخال عبارة المرور…</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7521117365186708026">‏احصل على نصائح بشأن عملية إعداد Chrome للاستفادة إلى أقصى حدّ منه.</translation>
@@ -1692,6 +1694,7 @@
 <translation id="8694281486652655615">يؤدي هذا الإجراء إلى عرض هذا العنصر</translation>
 <translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="8697136149718343437">نقل شريط العناوين إلى أسفل الشاشة</translation>
+<translation id="8703372953981978786">هذا الرابط لا يعمل</translation>
 <translation id="8706253136355675497">درجة الحرارة</translation>
 <translation id="8709409604518538305">تم إغلاق علامات التبويب</translation>
 <translation id="8712534545803964353">البحث في الصفحة…</translation>
@@ -1811,7 +1814,6 @@
 <translation id="9183733013282108610">البحث في وضع التصفُّح المتخفي</translation>
 <translation id="9186762474139509529">بدء تسجيل الدخول</translation>
 <translation id="9191031968346938109">إضافة إلى…</translation>
-<translation id="9196007736149429065">تعذَّر فتح هذا الملف</translation>
 <translation id="9200875785104711666">قبل <ph name="TIME" /> يوم</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">يمكنك نقل شريط العناوين من أعلى الشاشة إلى أسفلها لتخصيص تجربة التصفُّح.</translation>

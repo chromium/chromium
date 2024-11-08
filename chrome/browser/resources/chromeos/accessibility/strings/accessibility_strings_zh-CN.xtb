@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">向上滑动两根手指</translation>
 <translation id="1126928665165112660">非斜体</translation>
+<translation id="1133751489735776037">三击鼠标</translation>
 <translation id="113582498867142724">包含<ph name="NUM" />个项的“<ph name="TAG" />”集</translation>
 <translation id="1146441463334103638">开启或关闭屏幕</translation>
 <translation id="1156488781945104845">当前时间</translation>
 <translation id="1161762950103988776">跳转</translation>
 <translation id="1164857107703583584">跳转命令可用于在网页中高效导航。</translation>
 <translation id="1175914831232945926">数字</translation>
+<translation id="1186712907912748007">正在拖放，<ph name="GESTURE" />即可结束。暂时无法使用其他动作。</translation>
 <translation id="1188858454923323853">补充内容</translation>
 <translation id="1189258430971676908">练习区：下拉列表</translation>
 <translation id="1195238899008218998">后记</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">链接</translation>
 <translation id="2363753371702255035">项目符号</translation>
 <translation id="2365384324219615024">您还可按 Enter 键以启用所需项。例如，Enter 键可用于提交表单中的文字。请按 Enter 键以继续。</translation>
+<translation id="2371402123699727805">语音输入已启用，<ph name="GESTURE" />即可停止。暂时无法使用其他动作。</translation>
 <translation id="2381733276052567791">开启或关闭语音</translation>
 <translation id="2390264819538553347">要前进，请按 Enter 键；要后退，请按退格键。</translation>
 <translation id="2398579267367951220">输入文字即可在页面中搜索。按 Enter 键可跳至搜索结果，按向上箭头或向下箭头可浏览搜索结果，继续输入文字可更改搜索内容，按 Esc 键可取消搜索。</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">四根手指向右滑动</translation>
 <translation id="3112457281078985179">要开启或关闭 ChromeVox，请按 Ctrl+Alt+Z。</translation>
 <translation id="3115800313647508384">关闭屏幕？</translation>
-<translation id="3127625407966660979">语音输入功能处于活动状态</translation>
 <translation id="3131002934070407451">将数值读为：</translation>
 <translation id="3134461040845705080">只读</translation>
 <translation id="3137663468179739624">橄榄色</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">没有上一个 3 级标题</translation>
 <translation id="3887399638190992181">基础键</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">人脸操控已暂停，<ph name="GESTURE" />即可恢复。暂时无法使用其他动作。</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3907138069015388678">列表网格</translation>
 <translation id="3909320334364316587">上一个 6 级标题</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{秒}other{秒}}</translation>
 <translation id="4161663686871496107">ChromeVox语音反馈已就绪</translation>
 <translation id="4176463684765177261">已停用</translation>
-<translation id="4176677444195790114">正在拖放</translation>
 <translation id="4187322598335821254">用 1 根手指向上或向下滑动即可逐行移动</translation>
 <translation id="4188530942454211480">上一个句子</translation>
 <translation id="4191918948604314587">按钮</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">深天蓝色</translation>
 <translation id="4406249099130339147">标点符号语音提示：</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">露出所有牙齿</translation>
 <translation id="4432457053224379116">印度红色</translation>
 <translation id="4432896207833262240">已标记的内容</translation>
 <translation id="4437615272777527928">输入文字即可在菜单中搜索。使用向上和向下箭头键可上下浏览结果。使用向左和向右箭头键可调整文本插入符号以及切换菜单。</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">没有下一个 1 级标题</translation>
 <translation id="5455441614648621694">补充的内容</translation>
 <translation id="5462510922370980473">页面列表</translation>
+<translation id="5489460663499094917">滚动模式已启用，<ph name="GESTURE" />即可退出。暂时无法使用其他动作。</translation>
 <translation id="5495517933067991341">基础键：Shift</translation>
 <translation id="549602578321198708">逐字</translation>
 <translation id="5513242761114685513">上下文菜单</translation>
@@ -1112,7 +1116,6 @@
 <translation id="8378855320830505539">区域</translation>
 <translation id="8382679411218029383">自动填充内嵌和列表</translation>
 <translation id="8394908167088220973">媒体播放/暂停</translation>
-<translation id="8409502156784390079">滚动模式处于活动状态</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" />级</translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1190,7 +1193,6 @@
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8989104346085848538">若要停止任何当前 ChromeVox 语音，请按 Ctrl 键。</translation>
 <translation id="9014206344398081366">ChromeVox 教程</translation>
-<translation id="9034592733577768445">人脸操控已暂停</translation>
 <translation id="9040132695316389094">1 级标题标记</translation>
 <translation id="9061884144798498064">请选择一个 8 点式盲文表：</translation>
 <translation id="9063946545000394379">移到上一个字符</translation>

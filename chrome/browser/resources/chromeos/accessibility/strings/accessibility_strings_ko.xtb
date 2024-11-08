@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "fox", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">손가락 두 개를 사용하여 위로 스와이프</translation>
 <translation id="1126928665165112660">기울임꼴 아님</translation>
+<translation id="1133751489735776037">마우스 세 번 클릭</translation>
 <translation id="113582498867142724"><ph name="NUM" />개 항목을 포함한 <ph name="TAG" /> 컬렉션</translation>
 <translation id="1146441463334103638">화면 켜기 또는 끄기</translation>
 <translation id="1156488781945104845">현재 시간</translation>
 <translation id="1161762950103988776">점프</translation>
 <translation id="1164857107703583584">점프 명령어를 사용하면 웹페이지를 효율적으로 탐색할 수 있습니다.</translation>
 <translation id="1175914831232945926">숫자</translation>
+<translation id="1186712907912748007">드래그 앤 드롭이 진행 중입니다. 종료하려면 <ph name="GESTURE" /> 동작을 수행하세요. 다른 동작은 일시적으로 사용할 수 없습니다.</translation>
 <translation id="1188858454923323853">상호 보완</translation>
 <translation id="1189258430971676908">연습 영역: 드롭다운 목록</translation>
 <translation id="1195238899008218998">후기</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">링크</translation>
 <translation id="2363753371702255035">글머리기호</translation>
 <translation id="2365384324219615024">또한 Enter 키를 눌러 항목을 활성화할 수 있습니다. 예를 들어 양식에 텍스트를 제출하기 위해 Enter 키를 사용할 수 있습니다. 계속하려면 Enter 키를 누르세요.</translation>
+<translation id="2371402123699727805">음성기록을 사용하고 있습니다. 중지하려면 <ph name="GESTURE" /> 동작을 수행하세요. 다른 동작은 일시적으로 사용할 수 없습니다.</translation>
 <translation id="2381733276052567791">음성을 사용 또는 사용 중지로 전환</translation>
 <translation id="2390264819538553347">계속하려면 Enter를 누릅니다. 뒤로 돌아가려면 Backspace를 누릅니다.</translation>
 <translation id="2398579267367951220">페이지를 검색하려면 입력하세요. Enter를 눌러 결과로 바로 이동하거나 위쪽 또는 아래쪽 화살표를 사용하여 결과를 탐색할 수 있습니다. 검색어를 변경하려면 계속 입력하세요. 취소하려면 Esc를 누릅니다.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">손가락 네 개를 사용하여 오른쪽으로 스와이프</translation>
 <translation id="3112457281078985179">ChromeVox를 사용 또는 사용 중지하려면 Control+Alt+Z를 사용합니다.</translation>
 <translation id="3115800313647508384">화면을 끄시겠습니까?</translation>
-<translation id="3127625407966660979">음성기록 사용 중</translation>
 <translation id="3131002934070407451">숫자 읽는 방식:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">올리브</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">이전 수준 3 제목이 없습니다</translation>
 <translation id="3887399638190992181">필수 키</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">페이스 컨트롤이 일시중지되었습니다. 다시 시작하려면 <ph name="GESTURE" /> 동작을 수행하세요. 다른 동작은 일시적으로 사용할 수 없습니다.</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3907138069015388678">목록/그리드</translation>
 <translation id="3909320334364316587">이전 수준 6 제목</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{초}other{초}}</translation>
 <translation id="4161663686871496107">ChromeVox 음성 피드백 사용할 수 있음</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
-<translation id="4176677444195790114">드래그 앤 드롭 진행 중</translation>
 <translation id="4187322598335821254">한 줄씩 이동하려면 위나 아래로 스와이프하세요.</translation>
 <translation id="4188530942454211480">이전 문장</translation>
 <translation id="4191918948604314587">버튼</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">딥 스카이 블루</translation>
 <translation id="4406249099130339147">구두점 에코:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">모든 치아 보여주기</translation>
 <translation id="4432457053224379116">인디언 레드</translation>
 <translation id="4432896207833262240">표시된 콘텐츠</translation>
 <translation id="4437615272777527928">입력하여 메뉴를 검색합니다. 위쪽 및 아래쪽 화살표를 사용하여 다른 결과로 이동합니다. 왼쪽 및 오른쪽 화살표를 사용하여 텍스트 캐럿을 조정하고 메뉴 간에 이동합니다.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">다음 수준 1 제목이 없습니다</translation>
 <translation id="5455441614648621694">상호 보완</translation>
 <translation id="5462510922370980473">페이지 목록</translation>
+<translation id="5489460663499094917">스크롤 모드를 사용하고 있습니다. 종료하려면 <ph name="GESTURE" /> 동작을 수행하세요. 다른 동작은 일시적으로 사용할 수 없습니다.</translation>
 <translation id="5495517933067991341">필수 키: Shift 키</translation>
 <translation id="549602578321198708">단어</translation>
 <translation id="5513242761114685513">컨텍스트 메뉴</translation>
@@ -1111,7 +1115,6 @@
 <translation id="8378855320830505539">지역</translation>
 <translation id="8382679411218029383">자동완성 본문 및 목록</translation>
 <translation id="8394908167088220973">미디어 재생/일시중지</translation>
-<translation id="8409502156784390079">스크롤 모드 활성화됨</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8428603554127842284">수준 <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1189,7 +1192,6 @@
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8989104346085848538">현재 ChromeVox의 음성 안내를 중지하려면 Ctrl 키를 누르세요.</translation>
 <translation id="9014206344398081366">ChromeVox 가이드</translation>
-<translation id="9034592733577768445">얼굴 제어 일시중지됨</translation>
 <translation id="9040132695316389094">제목 1</translation>
 <translation id="9061884144798498064">8점 점자표 선택:</translation>
 <translation id="9063946545000394379">이전 문자로 이동</translation>

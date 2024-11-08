@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Input value for private key must be a valid path.</translation>
 <translation id="388442998277590542">Could not load options page '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Error while signing extension.</translation>
-<translation id="4115165561519362854">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to have a minimum version of <ph name="EXTENSION_VERSION" />. It cannot be enabled until it has updated to that version (or higher).</translation>
 <translation id="4233778200880751280">Could not load about page '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Failed to output private key.</translation>
 <translation id="4811956658694082538">Could not install package because a utility process crashed. Try restarting Chrome and trying again.</translation>

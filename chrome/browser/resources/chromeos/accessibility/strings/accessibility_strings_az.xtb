@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"a": "alma", "b": "bravo", "c": "charlie", "d": "delta", "e": "exo", "f": "fil", "g": "gilas", "h": "hotel", "i": "isti", "j": "juliet","k": "kilo", "l": "lima", "m": "mil", "n": "noyabr", "o": "oskar","p": "papa", "q": "qutu", "r": "romeo", "s": "sierra", "t": "tango", "u": "usta", "v": "viktor", "w": "whiskey","x": "xray", "y": "yaşıl", "z": "zulu"}</translation>
 <translation id="1120938014254001895">İki barmağınızla yuxarı çəkin</translation>
 <translation id="1126928665165112660">Kursiv deyil</translation>
+<translation id="1133751489735776037">Mausa üç dəfə klikləyin</translation>
 <translation id="113582498867142724"><ph name="NUM" />  element ilə <ph name="TAG" /> kolleksiyası</translation>
 <translation id="1146441463334103638">Ekranı aktiv və ya deaktiv edin</translation>
 <translation id="1156488781945104845">Cari vaxt</translation>
@@ -271,6 +272,7 @@
 <translation id="2723001399770238859">audio</translation>
 <translation id="2737898226590637227">Sonrakı ARIA orientiri yoxdur</translation>
 <translation id="2749275490991666823">Yoxlanılıb</translation>
+<translation id="2751454300227269244">Mausu sağa hərəkət etdirin</translation>
 <translation id="27527859628328957">Növbəti fokuslanan elementə keçin</translation>
 <translation id="2756452585631602151">Fərdi etiket daxil edin</translation>
 <translation id="2766299274563946262">Heç bir xana qalmadı</translation>
@@ -341,7 +343,6 @@
 <translation id="311015743332597320">Barmaqlarınızı sağa sürüşdürün</translation>
 <translation id="3112457281078985179">ChromeVox'u aktiv və ya deaktiv etmək üçün Control+Alt+Z istifadə edin.</translation>
 <translation id="3115800313647508384">Ekran deaktiv edilsin?</translation>
-<translation id="3127625407966660979">Diktə aktivdir</translation>
 <translation id="3131002934070407451">Nömrələri belə oxuyun:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Zeytun</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688"><ph name="TABLEROWS" /> və <ph name="TABLECOLS" /> ölçülü <ph name="TABLENAME" /></translation>
 <translation id="3159493096109238499">Bej</translation>
 <translation id="316542773973815724">Naviqasiya</translation>
+<translation id="3167446923957429259">Mausu sola hərəkət etdirin</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{boşluq}other{# boşluq}}</translation>
 <translation id="3179119189286472195">Link deyil</translation>
 <translation id="3180990259147710757">Çənənizi sola çevirin</translation>
@@ -501,7 +503,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{saniyə}other{saniyə}}</translation>
 <translation id="4161663686871496107">ChromeVox şifahi geri əlaqəsi hazırdır</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
-<translation id="4176677444195790114">Çəkib buraxın funksiyası icra olunur</translation>
 <translation id="4187322598335821254">Sətr üzrə hərəkət etmək üçün yuxarı və ya aşağı sürüşdürün</translation>
 <translation id="4188530942454211480">Öncəki Cümlə</translation>
 <translation id="4191918948604314587">Düymə</translation>
@@ -546,6 +547,7 @@
 <translation id="4402014469255336455">Tünd səma mavisi</translation>
 <translation id="4406249099130339147">Punktsuasiya exosu:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Bütün dişlərinizi göstərin</translation>
 <translation id="4432457053224379116">Hindu Qırmızısı</translation>
 <translation id="4432896207833262240">İşarələnmiş məzmun</translation>
 <translation id="4437615272777527928">Menyularda axtarış etmək üçün yazın. Nəticələri gözdən keçirmək üçün yuxarı və aşağı ox düymələrini basın. Mətn kursorunu tənzimləmək və menyular arasında keçid etmək üçün sol və sağ ox düymələrini basın.</translation>
@@ -1110,7 +1112,6 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Avto tamamlama sətiriçi və siyahısı</translation>
 <translation id="8394908167088220973">Medianı Oxudun/Durdurun</translation>
-<translation id="8409502156784390079">Sürüşdürmə rejimi aktivdir</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428603554127842284">səviyyə <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1188,7 +1189,6 @@
 <translation id="8986362086234534611">Unudun</translation>
 <translation id="8989104346085848538">İstənilən cari ChromeVox nitqini dayandırmaq üçün Control düyməsinə basın.</translation>
 <translation id="9014206344398081366">ChromeVox təlimatı</translation>
-<translation id="9034592733577768445">Mimika ilə idarəetmə durduruldu</translation>
 <translation id="9040132695316389094">Başlıq 1</translation>
 <translation id="9061884144798498064">8 nöqtəli brayl tabeli seçin:</translation>
 <translation id="9063946545000394379">əvvəlki simvola keçin</translation>

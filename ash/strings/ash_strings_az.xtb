@@ -630,7 +630,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3208321278970793882">Tətbiq</translation>
 <translation id="3213571860604332401">Linki əlfəcin kimi saxlayın</translation>
 <translation id="3217205077783620295">Səs səviyyəsi aktivdir, keçirdikdə audio səssiz ediləcək.</translation>
-<translation id="3218561536255328229">Taçpedi aktivləşdirmək üçün Esc üzərinə 5 dəfə basın</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Enerjiyə Qənaət deaktivdir</translation>
@@ -1305,6 +1304,7 @@ Cihaz qoşulmayıb.</translation>
 <translation id="5393156353051693207">Tətbiqləri yenidən sıralamaq üçün istənilən yerə toxunub saxlayın</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" /> tətbiqinin üzərindədir, qovluq yaratmaq üçün buraxın.</translation>
 <translation id="5397578532367286026">Bu istifadəçinin istifadəsi və tarixçəsi (<ph name="MANAGER_EMAIL" />) on chrome.com domenindəki menecer tərəfindən izlənə bilər.</translation>
+<translation id="540338817371815859">Landşaft</translation>
 <translation id="540713187982329711">Hotspotu aktiv/deaktiv edin. Hotspot aktivdir. Cihaz qoşulmayıb.</translation>
 <translation id="5409208741270395213">Tapşırığı tamamlanmış kimi işarələyin</translation>
 <translation id="5413656666631274079">Ayarlar səhifəsi</translation>
@@ -1767,6 +1767,7 @@ Yeni quraşdırma</translation>
 <translation id="6921427376813842559">Cihazı güncəlləyin</translation>
 <translation id="6929081673585394903">Nizamlayıcıları göstərin</translation>
 <translation id="6931576957638141829">Burada saxlayın:</translation>
+<translation id="6935857786205183008">Portret</translation>
 <translation id="6942518653766415536">Yazı formatı menyusu</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6945922087561257829">Telefon mobil şəbəkədən istifadə edir. Telefon və Chromebook eyni Wi-Fi şəbəkəsində olduqda yenidən cəhd edin. <ph name="LEARN_MORE" /></translation>

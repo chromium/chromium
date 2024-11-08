@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"a": "adam", "á": "dlouhé a", "b": "božena", "c": "cyril", "č": "čeněk", "d": "david", "ď": "ďáblice", "e": "emil", "ě": "e s háčkem", "é": "dlouhé e", "f": "františek", "g": "gustav", "h": "helena", "ch": "chrudim", "i": "ivan", "í": "dlouhé měkké i", "j": "josef", "k": "karel", "l": "ludvík", "m": "marie", "n": "neruda", "ň": "ňouma", "o": "otakar", "ó": "dlouhé o", "p": "petr", "q": "quido", "r": "rudolf", "ř": "řehoř", "s": "svatopluk", "š": "šimon", "t": "tomáš", "ť": "těšnov", "u": "urban", "ů": "u s kroužkem", "ú": "u s čárkou", "v": "václav", "w": "dvojité v", "x": "xaver", "y": "ypsilon", "ý": "dlouhé tvrdé y", "z": "zuzana", "ž": "žofie"}</translation>
 <translation id="1120938014254001895">Přejeďte dvěma prsty nahoru</translation>
 <translation id="1126928665165112660">Není kurzíva</translation>
+<translation id="1133751489735776037">Třikrát kliknout myší</translation>
 <translation id="113582498867142724">Sbírka <ph name="TAG" /> s <ph name="NUM" /> položkami</translation>
 <translation id="1146441463334103638">Zapnout nebo vypnout obrazovku</translation>
 <translation id="1156488781945104845">Aktuální čas</translation>
@@ -271,6 +272,7 @@
 <translation id="2723001399770238859">zvuk</translation>
 <translation id="2737898226590637227">Žádný další orientační bod ARIA není</translation>
 <translation id="2749275490991666823">Zaškrtnuto</translation>
+<translation id="2751454300227269244">Pohněte ústy doprava</translation>
 <translation id="27527859628328957">Přejít na další zaměřitelnou položku</translation>
 <translation id="2756452585631602151">Zadejte vlastní štítek</translation>
 <translation id="2766299274563946262">Vlevo není žádná buňka</translation>
@@ -341,7 +343,6 @@
 <translation id="311015743332597320">Přejeďte čtyřmi prsty doprava</translation>
 <translation id="3112457281078985179">ChromeVox zapnete nebo vypnete pomocí kláves Control + Alt + Z.</translation>
 <translation id="3115800313647508384">Vypnout obrazovku?</translation>
-<translation id="3127625407966660979">Je aktivní diktování</translation>
 <translation id="3131002934070407451">Čísla číst jako:</translation>
 <translation id="3134461040845705080">pouze ke čtení</translation>
 <translation id="3137663468179739624">Olivová</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabulka <ph name="TABLENAME" />, <ph name="TABLEROWS" /> na <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Bledě béžová</translation>
 <translation id="316542773973815724">Navigace</translation>
+<translation id="3167446923957429259">Pohněte ústy doleva</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{mezera}few{# mezery}many{# spaces}other{# mezer}}</translation>
 <translation id="3179119189286472195">Není odkaz</translation>
 <translation id="3180990259147710757">Posuňte čelist doleva</translation>
@@ -501,7 +503,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{sekunda}few{sekundy}many{sekundy}other{sekund}}</translation>
 <translation id="4161663686871496107">Hlasová odezva ChromeVox je připravena</translation>
 <translation id="4176463684765177261">Vypnuto</translation>
-<translation id="4176677444195790114">Probíhá přetahování</translation>
 <translation id="4187322598335821254">Přejetím prstem nahoru nebo dolů můžete přecházet mezi řádky</translation>
 <translation id="4188530942454211480">Předchozí věta</translation>
 <translation id="4191918948604314587">Tlačítko</translation>
@@ -546,6 +547,7 @@
 <translation id="4402014469255336455">Sytá nebeská modrá</translation>
 <translation id="4406249099130339147">Hlasová odezva interpunkce:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Ukažte všechny zuby</translation>
 <translation id="4432457053224379116">Indiánská červená</translation>
 <translation id="4432896207833262240">Označený obsah</translation>
 <translation id="4437615272777527928">Zadejte, co chcete v nabídkách vyhledat. K procházení výsledků můžete použít šipky nahoru a dolů. Pomocí šipek vlevo a vpravo můžete upravit textový kurzor a přecházet mezi nabídkami.</translation>
@@ -1109,7 +1111,6 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Přímé automatické doplňování a seznam</translation>
 <translation id="8394908167088220973">Média – přehrát/pozastavit</translation>
-<translation id="8409502156784390079">Je aktivní režim posouvání</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8428603554127842284">úroveň <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">panel nabíd</translation>
@@ -1187,7 +1188,6 @@
 <translation id="8986362086234534611">Odstranit</translation>
 <translation id="8989104346085848538">Aktuální hlasovou odezvu čtečky ChromeVox můžete kdykoliv zastavit stisknutím klávesy Control.</translation>
 <translation id="9014206344398081366">Výukový program čtečky ChromeVox</translation>
-<translation id="9034592733577768445">Ovládání obličejem je pozastaveno</translation>
 <translation id="9040132695316389094">Nadpis 1</translation>
 <translation id="9061884144798498064">Vyberte osmibodovou Braillovu tabulku:</translation>
 <translation id="9063946545000394379">přejít na předchozí znak</translation>

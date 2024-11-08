@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Création d'images en cours…</translation>
 <translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Nous pourrions partager les commentaires soumis à l'aide de ce formulaire avec nos partenaires dans le but de résoudre les bogues et les autres problèmes signalés. Veuillez ne pas inclure d'informations confidentielles telles que des mots de passe.</translation>
+<translation id="1119403468619527527">Trop peu de mots pour simplifier</translation>
 <translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Désactiver l'écran de veille</translation>
 <translation id="3091839911843451378">Échec : imprimante arrêtée</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">Votre enseignant a retiré du contenu des outils scolaires</translation>
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3122614491980756867">piscines</translation>
 <translation id="3122883569442693641">Plus de détails</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">Modification terminée</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
 <translation id="3533790840489634638">piscine</translation>
+<translation id="3535802910192338629">Votre enseignant a ajouté du nouveau contenu aux outils scolaires</translation>
 <translation id="3547264467365135390">Formule</translation>
 <translation id="3557205324756024651">Identité locale (facultative)</translation>
 <translation id="3565064564551103223">Adresses IP autorisées</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">Impossible de tester l'appareil. Passer en mode ordinateur portable pour tester.</translation>
 <translation id="3916998944874125962">faire une capture d'écran</translation>
 <translation id="3923184630988645767">Utilisation de données</translation>
+<translation id="3924445055519423964">Cliquer pour résumer la page Web/le fichier PDF</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non attribué</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">J'accepte</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4137700675046373159">samedi</translation>
+<translation id="4139326893730851150">Mises à jour du micrologiciel</translation>
 <translation id="4143226836069425823">Toucher une autre touche du clavier pour la remplacer</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4989542687859782284">Non disponible</translation>
 <translation id="4999333166442584738">Masquer le rapport</translation>
+<translation id="5005695757087124131">Cliquer pour simplifier le texte sélectionné</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Couleur du thème</translation>
@@ -1172,6 +1178,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="6673898378497337661">augmenter la luminosité du clavier</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
 <translation id="6694534975463174713">Verrouiller</translation>
+<translation id="6700703207451721535">L'accès n'est pas autorisé pour ce lien. Vérifiez auprès de votre enseignant si vous avez besoin d'avoir accès.</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6712933881624804031">vallée</translation>
 <translation id="6716013206176357696">fraises</translation>
@@ -1295,6 +1302,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Souffle de la brise</translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
+<translation id="7293429513719260019">Sélectionner la langue</translation>
 <translation id="7297226631177386107">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTPS</translation>
 <translation id="7297726121602187087">Vert foncé</translation>
 <translation id="7301262279595293068">Veuillez patienter pendant la mise à jour de cette application</translation>
@@ -1329,6 +1337,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> est prêt à être mis à jour</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
+<translation id="7418738250896500352">Trop de mots pour simplifier</translation>
 <translation id="7425037327577270384">Aide à la rédaction</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de retirer ce nom de point d'accès. Assurez-vous que les noms de points d'accès <ph name="ATTACH" /> activés sont désactivés ou retirés.</translation>
@@ -1354,6 +1363,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7544853251252956727">Aléatoire</translation>
 <translation id="7550715992156305117">Routines de diagnostic</translation>
 <translation id="7551123448725492271">L'appareil est un appareil audio.</translation>
+<translation id="7553913964854052228">School Tools utilise votre microphone</translation>
 <translation id="7559239713112547082">Capture d'écran de l'aperçu</translation>
 <translation id="7561454561030345039">C'est votre administrateur qui gère cette action</translation>
 <translation id="7561759921596375678">Activer le volume</translation>
@@ -1544,6 +1554,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8476942730579767658">Fenêtres et bureaux</translation>
 <translation id="8477536061607044749">conception graphique</translation>
 <translation id="8477551185774834963">La latence du DNS dépasse un peu le seuil acceptable</translation>
+<translation id="8482376765267780829">Sélectionner un texte à simplifier</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8491311378305535241">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTP à partir d'applications Android</translation>
 <translation id="8495070016475833911">feutre</translation>
@@ -1562,6 +1573,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8584654835905316966">Un redémarrage est nécessaire pour terminer l'installation du micrologiciel de <ph name="DEVICE_NAME" /> vers la version <ph name="VERSION" />. Il se peut que votre ordinateur semble redémarrer plusieurs fois. Ce comportement est attendu.</translation>
 <translation id="8593058461203131755">mettre le contenu multimédia en pause</translation>
+<translation id="8619169570378509764">Outils scolaires</translation>
 <translation id="8620617069779373398">État d'itinérance</translation>
 <translation id="8626489604350149811">Autres actions pour <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Mauve clair</translation>
@@ -1672,6 +1684,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="9082718469794970195">Utiliser cette vidéo</translation>
 <translation id="9087578468327036362">Signalez cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
+<translation id="9088994563996376283">Simplifier</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Plus d'informations sur la date de réinitialisation</translation>
 <translation id="9100765901046053179">Paramètres avancés</translation>

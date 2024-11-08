@@ -630,7 +630,6 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3208321278970793882">Application</translation>
 <translation id="3213571860604332401">Enregistrer le lien comme signet</translation>
 <translation id="3217205077783620295">Le son est activé et peut être coupé en cliquant sur le bouton de volume.</translation>
-<translation id="3218561536255328229">Appuyez cinq fois sur Échap pour activer le pavé tactile</translation>
 <translation id="3226991577105957773">et <ph name="COUNT" /> autres</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3233611303007751344">L'Économiseur de pile est désactivé</translation>
@@ -1304,6 +1303,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5393156353051693207">Maintenez le doigt n'importe où pour réorganiser vos applications</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> par-dessus <ph name="IN_PLACE_APP" />, puis relâchez-la pour créer un dossier.</translation>
 <translation id="5397578532367286026">Le gestionnaire (<ph name="MANAGER_EMAIL" />) peut examiner les actions effectuées par cet utilisateur, ainsi que son historique, sur chrome.com.</translation>
+<translation id="540338817371815859">Paysage</translation>
 <translation id="540713187982329711">Basculez le point d'accès sans fil. Le point d'accès sans fil est activé, aucun appareil connecté.</translation>
 <translation id="5409208741270395213">Marquer la tâche comme terminée</translation>
 <translation id="5413656666631274079">Page des paramètres</translation>
@@ -1766,6 +1766,7 @@ Nouvelle installation</translation>
 <translation id="6921427376813842559">Mettez à jour l'appareil</translation>
 <translation id="6929081673585394903">Afficher les commandes</translation>
 <translation id="6931576957638141829">Enregistrer dans</translation>
+<translation id="6935857786205183008">Portrait</translation>
 <translation id="6942518653766415536">Menu du format d'enregistrement</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6945922087561257829">Votre téléphone utilise un réseau cellulaire. Assurez-vous que votre téléphone et votre Chromebook sont sur le même réseau Wi-Fi, puis réessayez. <ph name="LEARN_MORE" /></translation>
@@ -2433,6 +2434,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="98120814841227350">Aller à la fin du document</translation>
 <translation id="987589956647469042">Les données cellulaires sont activées</translation>
 <translation id="989374776391122812">Commandes de l'appareil photo et du son</translation>
+<translation id="990263227494928142">Appuyez cinq fois sur Majuscule pour activer le pavé tactile</translation>
 <translation id="990277280839877440">La fenêtre <ph name="WINDOW_TITILE" /> a été fermée.</translation>
 <translation id="993398562350683614">Visite guidée : étape <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Utilisez des applications pour faire tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applications dans le lanceur. Appuyez sur Alt+Maj+L pour mettre en évidence le bouton du lanceur.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

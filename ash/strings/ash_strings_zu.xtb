@@ -630,7 +630,6 @@ Uma kungenjalo iphedi yokuthinta eyakhelwe ngaphakathi izonikwa amandla kabusha 
 <translation id="3208321278970793882">Uhlelo lokusebenza</translation>
 <translation id="3213571860604332401">Londoloza ilinki njengebhukhimakhi</translation>
 <translation id="3217205077783620295">Ivolomu ivuliwe, ukushintsha kuzothulisa umsindo.</translation>
-<translation id="3218561536255328229">Cindezela okuthi Esc izikhathi ezi-5 ukuze unike amandla iphedi yokuthinta</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> okuningi</translation>
 <translation id="3227137524299004712">Imakrofoni</translation>
 <translation id="3233611303007751344">Isilondolozi sebhethri sivaliwe</translation>
@@ -1305,6 +1304,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="5393156353051693207">Thinta uphinde ubambe noma yikuphi ukuze uhlele kabusha ama-app akho</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> phezu kwe-<ph name="IN_PLACE_APP" />, khulula ukuze udale ifolda.</translation>
 <translation id="5397578532367286026">Ukusetshenziswa nomlando walo msebenzisi ungabuyekezwa ngumphathi (<ph name="MANAGER_EMAIL" />) ku-chrome.com.</translation>
+<translation id="540338817371815859">Ukuvundla</translation>
 <translation id="540713187982329711">Guqula I-hotspot. I-hotspot ivuliwe, ayikho idivayisi exhunyiwe.</translation>
 <translation id="5409208741270395213">Maka umsebenzi njengosuqediwe</translation>
 <translation id="5413656666631274079">Ikhasi lamasethingi</translation>
@@ -1767,6 +1767,7 @@ Ukufaka okusha</translation>
 <translation id="6921427376813842559">Buyekeza idivayisi</translation>
 <translation id="6929081673585394903">Bonisa izilawuli</translation>
 <translation id="6931576957638141829">Londoloza ku-</translation>
+<translation id="6935857786205183008">Ukuma ngobude</translation>
 <translation id="6942518653766415536">Irekhoda imenyu yefomethi</translation>
 <translation id="6945221475159498467">Khetha</translation>
 <translation id="6945922087561257829">Ifoni yakho isebenzisa inethiwekhi yeselula. Qiniseka ukuthi ifoni yakho ne-Chromebook kunethiwekhi efanayo ye-Wi-Fi bese uyazama futhi. <ph name="LEARN_MORE" /></translation>

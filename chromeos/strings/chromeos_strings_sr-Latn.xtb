@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Prave se slike...</translation>
 <translation id="1116694919640316211">Osnovni podaci</translation>
 <translation id="1118572504348554005">Sa partnerima možemo da delimo povratne informacije poslate preko ovog obrasca radi otklanjanja grešaka i drugih problema koje nam prijavite. Nemojte da unosite osetljive informacije poput lozinki.</translation>
+<translation id="1119403468619527527">Premalo reči za pojednostavljivanje</translation>
 <translation id="1119447706177454957">Interna greška</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">Isključite USB kabl uređaja <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="2320295602967756579">Omogućite svetlu temu</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
+<translation id="2323755382216917952">Za ovo ažuriranje morate da restartujete računar da biste dovršili instalaciju. Ovo ažuriranje može da potraje nekoliko minuta. Ne prekidajte vezu računara sa izvorom napajanja niti ga isključujte dok se firmver ažurira.</translation>
 <translation id="2324354238778375592">Plutajuće</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Odličan (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +451,7 @@
 <translation id="3178532070248519384">avangarda</translation>
 <translation id="3182676044300231689">Unesite upit kao što je „neka zvuči samopouzdanije“</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
+<translation id="3188931456353313123">Ovo ažuriranje pruža proizvođač uređaja i Google ga nije verifikovao.</translation>
 <translation id="319101249942218879">Slika avatara je promenjena</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
@@ -507,6 +510,7 @@
 <translation id="3488065109653206955">Delimično aktivirano</translation>
 <translation id="3492882532495507361">Kancelarija <ph name="OFFICE_STYLE" /> sa <ph name="OFFICE_COLOR" /> nijansama</translation>
 <translation id="3493187369049186498">Podatke meri Chromebook. To može da se razlikuje od podataka dobavljača.</translation>
+<translation id="349570724365779960">Školske alatke su povezane sa učenicima</translation>
 <translation id="3502426834823382181">prikaži sve aplikacije</translation>
 <translation id="3510890413042482857">Šalji <ph name="BEGIN_LINK1" />podatke o praćenju učinka<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje Chrome OS-a</translation>
@@ -587,6 +591,7 @@
 <translation id="391412459402535266">Testiranje uređaja nije uspelo. Pređite na režim laptopa da biste ga testirali.</translation>
 <translation id="3916998944874125962">snimite ekran</translation>
 <translation id="3923184630988645767">Potrošnja podataka</translation>
+<translation id="3924445055519423964">Kliknite da biste rezimirali veb-stranicu ili PDF fajl</translation>
 <translation id="3932043219784172185">Nema povezanih uređaja</translation>
 <translation id="3934185438132762746">Nedodeljeno <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Razrešenje hosta nije uspelo</translation>
@@ -632,6 +637,7 @@
 <translation id="4130750466177569591">Prihvatam</translation>
 <translation id="4131410914670010031">Crno-belo</translation>
 <translation id="4137700675046373159">u subotu</translation>
+<translation id="4139326893730851150">Ažuriranja firmvera</translation>
 <translation id="4143226836069425823">Dodirnite drugi taster na tastaturi da biste zamenili</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
 <translation id="4147897805161313378">Google slike</translation>
@@ -754,6 +760,7 @@
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4744944742468440486">Informacije vezane za vaš izbor</translation>
 <translation id="4771607256327216405">osvetljavanje tastature</translation>
+<translation id="4771923071974529837">sutra</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
 <translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite</translation>
@@ -813,9 +820,11 @@
 <translation id="4988526792673242964">Stranice</translation>
 <translation id="4989542687859782284">Nedostupni</translation>
 <translation id="4999333166442584738">Sakrij izveštaj</translation>
+<translation id="5005695757087124131">Kliknite da biste pojednostavili izabrani tekst</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Boja teme</translation>
+<translation id="5037240652947866174">danas</translation>
 <translation id="5038292761217083259">višebojna tastatura</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
@@ -1298,6 +1307,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Osetite povetarac</translation>
 <translation id="7287310195820267359">Kolekcije pozadina</translation>
+<translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="7297226631177386107">Ne možete da se povežete sa HTTPS veb-sajtovima kroz zaštitni zid</translation>
 <translation id="7297726121602187087">Tamnozelena</translation>
 <translation id="7301262279595293068">Sačekajte da se ova aplikacija ažurira</translation>
@@ -1332,6 +1342,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> je spreman za ažuriranje</translation>
 <translation id="741244894080940828">konverziju</translation>
 <translation id="7415801143053185905">Veoma veliko HTTP kašnjenje</translation>
+<translation id="7418738250896500352">Previše reči za pojednostavljivanje</translation>
 <translation id="7425037327577270384">Pomoć pri pisanju</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Ne možete da onemogućite niti uklonite ovaj naziv pristupne tačke. Uverite se da su omogućeni nazivi pristupnih tačaka koji imaju tip <ph name="ATTACH" /> onemogućeni ili uklonjeni.</translation>
@@ -1373,7 +1384,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7625095758347640998">AI pozadine</translation>
 <translation id="763165478673169849">Vreme poslednjeg resetovanja</translation>
 <translation id="7633068090678117093">Slika u pozadini</translation>
-<translation id="7634566133970633092">Školske alatke su povezane sa učenicima</translation>
 <translation id="763873111564339966">tamnoplave</translation>
 <translation id="7648838807254605802">Veliko HTTPS kašnjenje</translation>
 <translation id="7656388927906093505">Uređaj je miš.</translation>
@@ -1549,6 +1559,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8476942730579767658">Prozori i radne površine</translation>
 <translation id="8477536061607044749">grafički dizajn</translation>
 <translation id="8477551185774834963">Kašnjenje DNS-a u manjoj meri premašuje dozvoljenu graničnu vrednost</translation>
+<translation id="8482376765267780829">Izaberite tekst za pojednostavljivanje</translation>
 <translation id="8483248364096924578">IP adresa</translation>
 <translation id="8491311378305535241">Ne možete da se povežete sa HTTP veb-sajtovima iz Android aplikacija kroz zaštitni zid</translation>
 <translation id="8495070016475833911">filca</translation>
@@ -1678,6 +1689,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="9082718469794970195">Koristi ovaj video</translation>
 <translation id="9087578468327036362">Prijavite ovaj upit</translation>
 <translation id="9088306295921699330">Trenutna iskorišćenost</translation>
+<translation id="9088994563996376283">Pojednostavi</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Više informacija o datumu resetovanja</translation>
 <translation id="9100765901046053179">Napredna podešavanja</translation>

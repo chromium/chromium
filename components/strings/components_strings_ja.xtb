@@ -63,6 +63,7 @@
 <translation id="1104409666019087579">一部の必須項目が空白です。保存する前に入力してください。</translation>
 <translation id="1104860668737945357">[パスワードを管理] ボタンです。実行すると、Chrome の設定でパスワードを表示、管理できます</translation>
 <translation id="1108464073729874771">A3x4</translation>
+<translation id="1110809716549020493">仮想カードが入力されない場合は、仮想カードの詳細をクリックして、クリップボードにコピーしてください。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" /></translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> の権限を選択します</translation>
 <translation id="1113000785583998331">IBAN を保存しますか？</translation>
 <translation id="1113869188872983271">順序変更の取り消し（&amp;U）</translation>
@@ -544,6 +545,7 @@
 <translation id="1947454675006758438">ステープル（右上）</translation>
 <translation id="1953729392594614704"><ph name="TOPIC" /> をブロックすると、関連トピックもブロックされます（これにはアクティブなトピックも含まれます）</translation>
 <translation id="1954847915560574887">A3x3</translation>
+<translation id="1955773397805078763">お支払い方法を追加</translation>
 <translation id="1956486093533522234">デバイスの位置の特定、保護、またはデータの消去を行います</translation>
 <translation id="1957274554973357626">お笑いライブ</translation>
 <translation id="1958218078413065209">ハイスコアは <ph name="SCORE" /> です。</translation>
@@ -594,7 +596,7 @@
 <translation id="2045871135676061132">6 3/4 封筒</translation>
 <translation id="2046951263634619614">書籍販売</translation>
 <translation id="2048261947532620704">ページを翻訳しています</translation>
-<translation id="2056658168519009885">パーソナライズド広告を表示するため、ウェブサイトから Chrome に情報を要求することがあります。</translation>
+<translation id="2056658168519009885">パーソナライズド広告を表示するため、ウェブサイトが Chrome に情報を要求することがあります。</translation>
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="2059202684901022309">22x34 インチ</translation>
 <translation id="2064568741209980952">クレジット、貸付</translation>
@@ -1041,7 +1043,6 @@
 <translation id="290376772003165898"><ph name="LANGUAGE" />のページではない場合</translation>
 <translation id="2904165004205947971">情報を管理</translation>
 <translation id="2905107382358353958">新しいお支払い設定に関するアラート</translation>
-<translation id="2909120679423833511">特定のプロフィールを使用してログインするよう組織 <ph name="MANAGER" /> が求めています</translation>
 <translation id="2909946352844186028">ネットワークの変更が検出されました。</translation>
 <translation id="2911255567212929079">機械学習、人工知能</translation>
 <translation id="2911973620368911614">ジョブ管理ユーザー ID</translation>
@@ -1632,6 +1633,7 @@
 <translation id="3905894480064208252">{0,plural, =1{ファイルの転送がブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルの転送がブロックされています}}</translation>
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3909899182024383590">保存した情報と <ph name="WEBSITE" /> のページは Google に送信され、この機能を改善するため、人間のレビュアーによって確認される場合があります。</translation>
 <translation id="3910231615117880630">埋め込みコンテンツの詳細</translation>
 <translation id="3915878244842478983">Chrome で情報を取得できませんでした</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> 30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。また、Chrome の設定でいつでも、ウェブサイトからの広告の提案をブロックしたり、無効にしたりすることができます。</translation>
@@ -3054,7 +3056,6 @@
 <translation id="6507117483253822672">ウェブ上のどこでも文章の作成をサポート</translation>
 <translation id="6508722015517270189">Chrome を再起動する</translation>
 <translation id="6513005815064132016">カメラ位置の追跡を要求できる</translation>
-<translation id="6514932395202175590">続行するには、<ph name="EMAIL" /> にログインしてから、新しいプロフィールを設定してください</translation>
 <translation id="6517596291481585650">警告: このポリシーはリストでないため、ポリシーで指定されているとおりにリストとして統合されませんでした。</translation>
 <translation id="6518133107902771759">確認</translation>
 <translation id="6519885440226079262">ハンド トラッキングを要求できる</translation>
@@ -3621,6 +3622,7 @@
 <translation id="7525804896095537619">名前を空白にすることはできません</translation>
 <translation id="7526934274050461096">このサイトへの接続ではプライバシーが保護されません</translation>
 <translation id="7529884293139707752">ホームスクーリング</translation>
+<translation id="7531464389616946220">カードをスキャン</translation>
 <translation id="7534987659046836932">C7 封筒</translation>
 <translation id="7535087603100972091">値</translation>
 <translation id="753556296624075801">Powered by Google</translation>
@@ -3984,7 +3986,6 @@
 <translation id="8194412401381329820">管理対象外のデバイスで、管理対象のアカウントのページを使用することはできません。このページを使用すると、このデバイスと同じエンティティが管理するアカウント（関連アカウント）を除く、すべての管理対象アカウントがロックされます。</translation>
 <translation id="8194797478851900357">移動の取り消し（&amp;U）</translation>
 <translation id="8194956568907463262">シューティング ゲーム</translation>
-<translation id="819931074683918462">特定のプロフィールを使用してログインするよう組織が求めています</translation>
 <translation id="8199437620497683918">光ディスク（光沢）</translation>
 <translation id="8199730148066603000">HTTPS 以外の URL をプレビューすることはできません。</translation>
 <translation id="8200772114523450471">再開</translation>
@@ -4421,7 +4422,7 @@
 <translation id="9004367719664099443">VR セッションが進行中</translation>
 <translation id="9005998258318286617">PDF ドキュメントを読み込めませんでした。</translation>
 <translation id="9008201768610948239">無視する</translation>
-<translation id="9014705027639070815">アクセスしたサイトから Chrome に、広告のパフォーマンスを測定するための情報を要求できます。Chrome では、限定的な種類のデータ（サイトにアクセスした後に購入したかどうかなど）をサイトが収集できるよう設定できます。</translation>
+<translation id="9014705027639070815">アクセスしたサイトが Chrome に、広告のパフォーマンスを測定するための情報を要求できます。Chrome では、限定的な種類のデータ（サイトにアクセスした後に購入したかどうかなど）をサイトが収集できるよう設定できます。</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> のセキュリティ コードを入力してください</translation>
 <translation id="901834265349196618">メール</translation>
 <translation id="90196294733273307">クレジット カード情報に関するダイアログが表示されました</translation>

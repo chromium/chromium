@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Swiep twee vingers boontoe</translation>
 <translation id="1126928665165112660">Nie skuinsdruk nie</translation>
+<translation id="1133751489735776037">Tripelklik die muis</translation>
 <translation id="113582498867142724"><ph name="TAG" /> versameling met <ph name="NUM" /> items</translation>
 <translation id="1146441463334103638">Wissel skerm aan of af</translation>
 <translation id="1156488781945104845">Huidige tyd</translation>
@@ -271,6 +272,7 @@
 <translation id="2723001399770238859">oudio</translation>
 <translation id="2737898226590637227">Geen volgende ARIA-landmerk nie</translation>
 <translation id="2749275490991666823">Nagegaan</translation>
+<translation id="2751454300227269244">Beweeg jou mond regs</translation>
 <translation id="27527859628328957">Spring na volgende fokusbare item</translation>
 <translation id="2756452585631602151">Voer 'n gepasmaakte etiket in</translation>
 <translation id="2766299274563946262">Geen sel aan die linkerkant nie</translation>
@@ -341,7 +343,6 @@
 <translation id="311015743332597320">Swiep vier vingers na regs</translation>
 <translation id="3112457281078985179">Gebruik Control+Alt+Z om ChromeVox aan of af te skakel.</translation>
 <translation id="3115800313647508384">Skakel skerm af?</translation>
-<translation id="3127625407966660979">Diktering is aktief</translation>
 <translation id="3131002934070407451">Lees getalle as:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Olyf</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabel <ph name="TABLENAME" />, <ph name="TABLEROWS" /> by <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navigasie</translation>
+<translation id="3167446923957429259">Beweeg jou mond links</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{spasie}other{# spasies}}</translation>
 <translation id="3179119189286472195">Nie skakel nie</translation>
 <translation id="3180990259147710757">Beweeg kakebeen links</translation>
@@ -501,7 +503,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{sekonde}other{sekondes}}</translation>
 <translation id="4161663686871496107">Gesproke ChromeVox-terugvoering is gereed</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
-<translation id="4176677444195790114">Sleep en los is aan die gang</translation>
 <translation id="4187322598335821254">Swiep op of af om per reël te beweeg</translation>
 <translation id="4188530942454211480">Vorige sin</translation>
 <translation id="4191918948604314587">'n Knoppie</translation>
@@ -546,6 +547,7 @@
 <translation id="4402014469255336455">Diep hemelblou</translation>
 <translation id="4406249099130339147">Leestekeneggo:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Wys al jou tande</translation>
 <translation id="4432457053224379116">Indiese rooi</translation>
 <translation id="4432896207833262240">Gemerkte inhoud</translation>
 <translation id="4437615272777527928">Tik om die kieslyste te deursoek. Gebruik die op- en afpyl om deur resultate te beweeg. Gebruik die links- en regspyl om die teksinlasteken te verstel en tussen kieslyste te beweeg.</translation>
@@ -1110,7 +1112,6 @@
 <translation id="8378855320830505539">Streek</translation>
 <translation id="8382679411218029383">Outovoltooiing inlyn en lys</translation>
 <translation id="8394908167088220973">Media speel/laat wag</translation>
-<translation id="8409502156784390079">Rolleesmodus aktief</translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8428603554127842284">vlak <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">kieslysbalk</translation>
@@ -1188,7 +1189,6 @@
 <translation id="8986362086234534611">Vergeet</translation>
 <translation id="8989104346085848538">Druk die Control-sleutel om enige ChromeVox-spraak te stop.</translation>
 <translation id="9014206344398081366">ChromeVox-tutoriaal</translation>
-<translation id="9034592733577768445">Gesigbeheer is onderbreek</translation>
 <translation id="9040132695316389094">Opskrif 1</translation>
 <translation id="9061884144798498064">Kies 'n 8-kolletje-brailletabel:</translation>
 <translation id="9063946545000394379">gaan na die vorige karakter</translation>

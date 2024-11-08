@@ -630,7 +630,6 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="3208321278970793882">Aplikacija</translation>
 <translation id="3213571860604332401">Spremanje veze kao oznake</translation>
 <translation id="3217205077783620295">Zvuk je uključen, prebacivanjem će se isključiti.</translation>
-<translation id="3218561536255328229">Pritisnite tipku Esc pet puta da biste omogućili dodirnu podlogu</translation>
 <translation id="3226991577105957773">Još <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Isključena je Štednja baterije</translation>
@@ -1305,6 +1304,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5393156353051693207">Dodirnite i držite bilo gdje da biste promijenili redoslijed svojih aplikacija</translation>
 <translation id="5395308026110844773">Aplikacija <ph name="DRAGGED_APP_NAME" /> povučena je iznad aplikacije <ph name="IN_PLACE_APP" />. Pustite je da biste izradili mapu.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) može pregledavati upotrebu i povijest tog korisnika na web-lokaciji chrome.com.</translation>
+<translation id="540338817371815859">Pejzaž</translation>
 <translation id="540713187982329711">Uključite/isključite žarišnu točku. Žarišna točka je uključena, nije povezan nijedan uređaj.</translation>
 <translation id="5409208741270395213">Označite zadatak kao izvršen</translation>
 <translation id="5413656666631274079">Stranica postavki</translation>
@@ -1767,6 +1767,7 @@ Novo instaliranje</translation>
 <translation id="6921427376813842559">Ažuriranje uređaja</translation>
 <translation id="6929081673585394903">Pokaži kontrole</translation>
 <translation id="6931576957638141829">Spremi u</translation>
+<translation id="6935857786205183008">Portret</translation>
 <translation id="6942518653766415536">Izbornik formata snimke</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6945922087561257829">Vaš telefon upotrebljava mobilnu mrežu. Provjerite jesu li telefon i Chromebook na istoj Wi-Fi mreži, a zatim pokušajte ponovno. <ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="98120814841227350">Prelazak na kraj dokumenta</translation>
 <translation id="987589956647469042">Mobilni podaci su uključeni</translation>
 <translation id="989374776391122812">Kontrole kamere i zvuka</translation>
+<translation id="990263227494928142">Pritisnite tipku Shift pet puta da biste omogućili dodirnu podlogu</translation>
 <translation id="990277280839877440">Zatvoren je prozor <ph name="WINDOW_TITILE" />.</translation>
 <translation id="993398562350683614">Korak obilaska <ph name="STEP" /> od <ph name="TOTAL_STEPS" />. Pomoću aplikacija možete raditi sve što trebate na svojem uređaju <ph name="PRODUCT_NAME" />. Svoje aplikacije možete pronaći u Pokretaču. Pritisnite Alt + Shift + L da biste fokusirali gumb Pokretača.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

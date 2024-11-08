@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">ઍપ</translation>
 <translation id="3213571860604332401">લિંકને બુકમાર્ક તરીકે સાચવો</translation>
 <translation id="3217205077783620295">વૉલ્યૂમ ચાલુ છે, ટૉગલ કરવાથી ઑડિયો મ્યૂટ થશે.</translation>
-<translation id="3218561536255328229">ટચપૅડ ચાલુ કરવા માટે, 5 વાર Esc દબાવો</translation>
 <translation id="3226991577105957773">+ વધુ <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="3233611303007751344">બૅટરી સેવર બંધ કર્યું</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">તમારી ઍપનો ક્રમ બદલવા માટે ગમે ત્યાં ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ની સૌથી ઉપર <ph name="DRAGGED_APP_NAME" /> પર, ફોલ્ડર બનાવવા માટે રિલીઝ કરો.</translation>
 <translation id="5397578532367286026">આ વપરાશકર્તાના ઉપયોગ અને ઇતિહાસની chrome.com પર સંચાલક (<ph name="MANAGER_EMAIL" />) દ્વારા સમીક્ષા કરવામાં આવી શકે છે.</translation>
+<translation id="540338817371815859">લૅન્ડસ્કેપ</translation>
 <translation id="540713187982329711">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ ચાલુ છે, કોઈ ડિવાઇસ કનેક્ટેડ નથી.</translation>
 <translation id="5409208741270395213">કાર્યને પૂર્ણ થયેલા તરીકે ચિહ્નિત કરો</translation>
 <translation id="5413656666631274079">સેટિંગ પેજ</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">ડિવાઇસ અપડેટ કરો</translation>
 <translation id="6929081673585394903">નિયંત્રણો બતાવો</translation>
 <translation id="6931576957638141829">આમાં સાચવો</translation>
+<translation id="6935857786205183008">પોર્ટ્રેટ</translation>
 <translation id="6942518653766415536">રેકોર્ડિંગ ફૉર્મેટનું મેનૂ</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6945922087561257829">તમારા ફોનમાં મોબાઇલ નેટવર્કનો ઉપયોગ થઈ રહ્યો છે. ખાતરી કરો કે તમારો ફોન અને Chromebook એક જ નેટવર્ક પર છે અને પછી ફરી પ્રયાસ કરો. <ph name="LEARN_MORE" /></translation>

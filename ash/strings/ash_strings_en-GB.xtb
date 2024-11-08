@@ -630,7 +630,6 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3208321278970793882">App</translation>
 <translation id="3213571860604332401">Save link as bookmark</translation>
 <translation id="3217205077783620295">Volume is on; toggling will mute audio.</translation>
-<translation id="3218561536255328229">Press Esc 5 times to enable the touchpad</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> more</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3233611303007751344">Battery Saver turned off</translation>
@@ -1305,6 +1304,7 @@ No devices connected.</translation>
 <translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
+<translation id="540338817371815859">Landscape</translation>
 <translation id="540713187982329711">Toggle hotspot. Hotspot is on, no device connected.</translation>
 <translation id="5409208741270395213">Mark task as completed</translation>
 <translation id="5413656666631274079">Settings page</translation>
@@ -1767,6 +1767,7 @@ New install</translation>
 <translation id="6921427376813842559">Update device</translation>
 <translation id="6929081673585394903">Show controls</translation>
 <translation id="6931576957638141829">Save to</translation>
+<translation id="6935857786205183008">Portrait</translation>
 <translation id="6942518653766415536">Recording format menu</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6945922087561257829">Your phone is using a mobile network. Make sure your phone and Chromebook are on the same Wi-Fi network and then try again. <ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="98120814841227350">Go to end of document</translation>
 <translation id="987589956647469042">Mobile data is turned on</translation>
 <translation id="989374776391122812">Camera and audio controls</translation>
+<translation id="990263227494928142">Press shift 5 times to enable the touchpad</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> closed.</translation>
 <translation id="993398562350683614">Tour step <ph name="STEP" /> of <ph name="TOTAL_STEPS" />. Use apps to do everything that you need on your <ph name="PRODUCT_NAME" />. You can find your apps in the Launcher. Press Alt + shift + L to focus on the Launcher button.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

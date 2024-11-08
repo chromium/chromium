@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Luodaan kuvia…</translation>
 <translation id="1116694919640316211">Tietoja asetuksista</translation>
 <translation id="1118572504348554005">Saatamme jakaa tämän lomakkeen kautta lähetetyn palautteen yhteistyökumppaneillemme bugien ja muiden ilmoittamiesi virheiden korjausta varten. Älä kerro arkaluontoisia tietoja, esimerkiksi salasanaa.</translation>
+<translation id="1119403468619527527">Sanoja on liian vähän yksinkertaistamista varten</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Laitetta ei voi testata. Vaihda tietokonetilaan testaamista varten.</translation>
 <translation id="3916998944874125962">ota kuvakaappaus</translation>
 <translation id="3923184630988645767">Datan käyttö</translation>
+<translation id="3924445055519423964">Tee yhteenveto verkkosivusta tai PDF-tiedostosta klikkaamalla</translation>
 <translation id="3932043219784172185">Ei yhdistettyjä laitteita</translation>
 <translation id="3934185438132762746">Määrittämätön <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Hyväksyn</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
 <translation id="4137700675046373159">lauantaina</translation>
+<translation id="4139326893730851150">Laiteohjelmiston päivitykset</translation>
 <translation id="4143226836069425823">Korvaa napauttamalla toista näppäimistön näppäintä</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
 <translation id="4147897805161313378">Google Kuvat</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Sivut</translation>
 <translation id="4989542687859782284">Ei käytettävissä</translation>
 <translation id="4999333166442584738">Piilota raportti</translation>
+<translation id="5005695757087124131">Yksinkertaista valittu teksti klikkaamalla</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Teeman väri</translation>
@@ -1298,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Tunne tuulahdus</translation>
 <translation id="7287310195820267359">Taustakuvakokoelmat</translation>
+<translation id="7293429513719260019">Valitse kieli</translation>
 <translation id="7297226631177386107">HTTPS-sivustoihin ei voi yhdistää palomuurin läpi</translation>
 <translation id="7297726121602187087">Tummanvihreä</translation>
 <translation id="7301262279595293068">Odota, sovellusta päivitetään</translation>
@@ -1332,6 +1337,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> on valmis päivitettäväksi</translation>
 <translation id="741244894080940828">muunnos</translation>
 <translation id="7415801143053185905">Erittäin suuri HTTP-viive</translation>
+<translation id="7418738250896500352">Sanoja on liian paljon yksinkertaistamista varten</translation>
 <translation id="7425037327577270384">Auta minua kirjoittamaan</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">APN:ää ei voi poistaa käytöstä tai kokonaan. Varmista, että käyttöön otetut APN:t, jotka on <ph name="ATTACH" />, on poistettu käytöstä tai kokonaan.</translation>
@@ -1357,6 +1363,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7544853251252956727">Satunnaistoisto</translation>
 <translation id="7550715992156305117">Diagnostiikkaohjelmat</translation>
 <translation id="7551123448725492271">Laite on audiolaite.</translation>
+<translation id="7553913964854052228">School Tools käyttää mikrofoniasi</translation>
 <translation id="7559239713112547082">Kuvakaappauksen esikatselu</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7561759921596375678">Laita äänet päälle</translation>
@@ -1547,6 +1554,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8476942730579767658">Windows ja työpöydät</translation>
 <translation id="8477536061607044749">graafinen suunnittelu</translation>
 <translation id="8477551185774834963">DNS-viive hieman yli sallitun rajan</translation>
+<translation id="8482376765267780829">Valitse yksinkertaistettava teksti</translation>
 <translation id="8483248364096924578">IP-osoite</translation>
 <translation id="8491311378305535241">HTTP-sivustoihin ei voi yhdistää palomuurin läpi Android-sovelluksilla</translation>
 <translation id="8495070016475833911">huopa</translation>
@@ -1676,6 +1684,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="9082718469794970195">Käytä tätä videota</translation>
 <translation id="9087578468327036362">Ilmoita tästä kyselystä</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>
+<translation id="9088994563996376283">Yksinkertaista</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Lisätietoa nollauspäivästä</translation>
 <translation id="9100765901046053179">Lisäasetukset</translation>

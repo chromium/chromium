@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Oppretter bilder …</translation>
 <translation id="1116694919640316211">Info</translation>
 <translation id="1118572504348554005">Vi kan dele tilbakemeldinger som sendes inn via dette skjemaet, med partnerne våre for å feilsøke feil og andre problemer du rapporterer til oss. Ikke skriv inn sensitiv informasjon, som passord.</translation>
+<translation id="1119403468619527527">For få ord til å forenkle</translation>
 <translation id="1119447706177454957">Intern feil</translation>
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Kan ikke teste enheten. Bytt til laptopmodus for å teste.</translation>
 <translation id="3916998944874125962">ta skjermbilde</translation>
 <translation id="3923184630988645767">Databruk</translation>
+<translation id="3924445055519423964">Klikk for å oppsummere nettsiden/PDF-filen</translation>
 <translation id="3932043219784172185">Ingen enheter er koblet til</translation>
 <translation id="3934185438132762746">Ikke-tilordnet <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Kunne ikke finne tilknytning til verten</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Godta</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="4137700675046373159">på lørdag</translation>
+<translation id="4139326893730851150">Fastvareoppdateringer</translation>
 <translation id="4143226836069425823">Trykk på en annen tast på tastaturet for å erstatte den</translation>
 <translation id="4145784616224233563">HTTP-brannmur</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Sider</translation>
 <translation id="4989542687859782284">Utilgjengelig</translation>
 <translation id="4999333166442584738">Skjul rapporten</translation>
+<translation id="5005695757087124131">Klikk for å forenkle den markerte teksten</translation>
 <translation id="500920857929044050">Stans testen</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temafarge</translation>
@@ -1150,7 +1154,7 @@
 <translation id="6595046262780525922">Vil du slå på transkripsjon og laste ned transkripsjonsmodellen?</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6599673642868607614">Takk for tilbakemeldingen. Tilbakemeldingen din hjelper oss med å gjøre Chromebook-opplevelsen bedre, og den blir gjennomgått av teamet vårt. På grunn av det store antallet rapporter kan vi ikke sende svar.</translation>
-<translation id="660846213831377756">Museknapper</translation>
+<translation id="660846213831377756">Musetaster</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6624819909909965616">Kan ikke laste opp filer som er større enn 10 MB</translation>
@@ -1174,6 +1178,7 @@
 <translation id="6673898378497337661">tastaturlysstyrke opp</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
 <translation id="6694534975463174713">lås</translation>
+<translation id="6700703207451721535">Tilgang er ikke tillatt for denne linken. Spør læreren din om du trenger tilgang.</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
 <translation id="6712933881624804031">dal</translation>
 <translation id="6716013206176357696">jordbær</translation>
@@ -1297,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Kjenn brisen</translation>
 <translation id="7287310195820267359">Samlinger av bakgrunnsbilder</translation>
+<translation id="7293429513719260019">Velg språk</translation>
 <translation id="7297226631177386107">Kan ikke koble til HTTPS-nettsteder gjennom brannmuren</translation>
 <translation id="7297726121602187087">Mørk grønn</translation>
 <translation id="7301262279595293068">Vent mens appen oppdateres</translation>
@@ -1331,6 +1337,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> er klar til å oppdateres</translation>
 <translation id="741244894080940828">omregning</translation>
 <translation id="7415801143053185905">Svært høy HTTP-tidsforsinkelse</translation>
+<translation id="7418738250896500352">For mange ord til å forenkle</translation>
 <translation id="7425037327577270384">Hjelp meg å skrive</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan ikke slå av eller fjerne dette APN-et. Sørg for å deaktivere eller fjerne aktiverte <ph name="ATTACH" />-APN.</translation>
@@ -1356,6 +1363,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7544853251252956727">Spill i tilfeldig rekkefølge</translation>
 <translation id="7550715992156305117">Diagnostikkrutiner</translation>
 <translation id="7551123448725492271">Enheten er en lydenhet.</translation>
+<translation id="7553913964854052228">Skoleverktøy bruker mikrofonen din</translation>
 <translation id="7559239713112547082">Se forhåndsvisning av skjermbildet</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
 <translation id="7561759921596375678">Slå på lyd</translation>
@@ -1546,6 +1554,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8476942730579767658">Vinduer og skrivebord</translation>
 <translation id="8477536061607044749">grafisk design</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
+<translation id="8482376765267780829">Marker tekst for å forenkle den</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
 <translation id="8491311378305535241">Kan ikke koble til HTTP-nettsteder fra Android-apper gjennom brannmuren</translation>
 <translation id="8495070016475833911">filt</translation>
@@ -1675,6 +1684,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="9082718469794970195">Bruk denne videoen</translation>
 <translation id="9087578468327036362">Rapportér dette søket</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
+<translation id="9088994563996376283">Forenkle</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Mer informasjon om tilbakestillingsdatoen</translation>
 <translation id="9100765901046053179">Avanserte innstillinger</translation>

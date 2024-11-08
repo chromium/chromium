@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Bilder werden erstellt…</translation>
 <translation id="1116694919640316211">Über</translation>
 <translation id="1118572504348554005">Wir leiten über dieses Formular gesendetes Feedback möglicherweise an unsere Partner weiter, um Fehler und andere Probleme zu beheben, die du uns meldest. Gib keine vertraulichen Daten wie Passwörter an.</translation>
+<translation id="1119403468619527527">Zu wenige Wörter zum Vereinfachen</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Bildschirmschoner deaktivieren</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">Deine Lehrkraft hat Inhalte aus den Tools der Bildungseinrichtung entfernt</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">Schwimmbecken</translation>
 <translation id="3122883569442693641">Weitere Details</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">Fertig</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="3533790840489634638">Schwimmbecken</translation>
+<translation id="3535802910192338629">Deine Lehrkraft hat neue Inhalte in den Tools der Bildungseinrichtung hinzugefügt</translation>
 <translation id="3547264467365135390">Formel</translation>
 <translation id="3557205324756024651">Lokale Identität (optional)</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">Gerät kann nicht getestet werden. Wechsle zum Testen in den Laptop-Modus.</translation>
 <translation id="3916998944874125962">Screenshot aufnehmen</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
+<translation id="3924445055519423964">Zum Zusammenfassen der Webseite/PDF-Datei klicken</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3934185438132762746">Nicht zugewiesen: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">Ich stimme zu</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
 <translation id="4137700675046373159">am Samstag</translation>
+<translation id="4139326893730851150">Firmwareupdates</translation>
 <translation id="4143226836069425823">Zum Ersetzen andere Taste drücken</translation>
 <translation id="4145784616224233563">HTTP-Firewall</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">Seiten</translation>
 <translation id="4989542687859782284">Nicht verfügbar</translation>
 <translation id="4999333166442584738">Bericht ausblenden</translation>
+<translation id="5005695757087124131">Zum Vereinfachen des ausgewählten Texts klicken</translation>
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Designfarbe</translation>
@@ -1148,7 +1154,7 @@
 <translation id="6595046262780525922">Transkriptfunktion aktivieren und Transkriptmodell herunterladen?</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>
 <translation id="6599673642868607614">Vielen Dank für das Feedback! Dein Feedback wird von unserem Team gelesen und hilft uns dabei, Chromebooks noch weiter zu verbessern. Da wir sehr viele Rückmeldungen erhalten, können wir dir nicht persönlich antworten.</translation>
-<translation id="660846213831377756">Maustasten</translation>
+<translation id="660846213831377756">Tastaturmaus</translation>
 <translation id="6618744767048954150">Läuft</translation>
 <translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
 <translation id="6624819909909965616">Dateien mit einer Größe von 10 MB oder mehr können nicht hochgeladen werden</translation>
@@ -1296,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sanfte Brise</translation>
 <translation id="7287310195820267359">Hintergrundsammlungen</translation>
+<translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="7297226631177386107">Eine Verbindung zu HTTPS-Websites durch eine Firewall ist nicht möglich</translation>
 <translation id="7297726121602187087">Dunkelgrün</translation>
 <translation id="7301262279595293068">Bitte warte, während die App aktualisiert wird</translation>
@@ -1330,6 +1337,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> kann aktualisiert werden</translation>
 <translation id="741244894080940828">Umrechnung</translation>
 <translation id="7415801143053185905">Sehr hohe HTTP-Latenz</translation>
+<translation id="7418738250896500352">Zu viele Wörter zum Vereinfachen</translation>
 <translation id="7425037327577270384">Formuliere für mich</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Dieser APN kann nicht deaktiviert oder entfernt werden. Aktivierte APNs vom Typ „<ph name="ATTACH" />“ müssen deaktiviert oder entfernt werden.</translation>
@@ -1355,6 +1363,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7544853251252956727">Zufallsmix</translation>
 <translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7551123448725492271">Das Gerät ist ein Audiogerät.</translation>
+<translation id="7553913964854052228">Tools der Bildungseinrichtung verwenden dein Mikrofon</translation>
 <translation id="7559239713112547082">Screenshot in der Vorschau anzeigen</translation>
 <translation id="7561454561030345039">Diese Aktion wird von deinem Administrator verwaltet</translation>
 <translation id="7561759921596375678">Ton einschalten</translation>
@@ -1545,6 +1554,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8476942730579767658">Fenster und Desktops</translation>
 <translation id="8477536061607044749">Grafikdesign</translation>
 <translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>
+<translation id="8482376765267780829">Text zum Vereinfachen auswählen</translation>
 <translation id="8483248364096924578">IP-Adresse</translation>
 <translation id="8491311378305535241">Eine Verbindung zu HTTP-Websites durch eine Firewall ist von Android-Apps aus nicht möglich</translation>
 <translation id="8495070016475833911">Filz</translation>
@@ -1563,6 +1573,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
 <translation id="8584654835905316966">Ein Neustart ist erforderlich, um die Installation der Firmware für <ph name="DEVICE_NAME" /> auf Version <ph name="VERSION" /> abzuschließen. Möglicherweise startet dein Computer mehrmals neu. Dieses Verhalten ist so vorgesehen.</translation>
 <translation id="8593058461203131755">Medienwiedergabe pausieren</translation>
+<translation id="8619169570378509764">Tools der Bildungseinrichtung</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
 <translation id="8626489604350149811">Weitere Aktionen für „<ph name="APN_NAME" />“</translation>
 <translation id="86356131183441916">Hellviolett</translation>
@@ -1673,6 +1684,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="9082718469794970195">Dieses Video verwenden</translation>
 <translation id="9087578468327036362">Diese Anfrage melden</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
+<translation id="9088994563996376283">Vereinfachen</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="909856219855259344">Weitere Informationen zum Datum der Zurücksetzung</translation>
 <translation id="9100765901046053179">Erweiterte Einstellungen</translation>

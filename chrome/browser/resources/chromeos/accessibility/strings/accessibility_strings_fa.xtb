@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{«ا»: «اسب»، «ب»: «بازی»، «پ»: «پروین»، «ت»: «ترانه»، «ث»: «ثریا»، «ج»: «جوجه»، «چ»: «چرخ»، «ح»: «حریم»، « خ»:«خصوصی »، « د»: «دفترچه»، «ذ»: «ذلیل»، «ر»: «روز»، «ز»: «زمان»، «ژ»: «ژولیت»، «س»: «سیاست»، «ش»: «شنبه»، «ص»: «صفحه»، «ض»: «ضروری»، «ط»: «طراوت»، «ظ»: «ظهر»، «ع»: «عصر»، « غ»: «غروب»، «ف»: «فروش»، «ق»: «قلب»، «ک»: «کودکان»، «گ»: «گوشی»، «ل»: «لوله»، «م»: «مرز»، «ن»: «نامناسب»، «و»: «ویلا»، «ه»: «هیاهو»، «ی»: «یادآور»}</translation>
 <translation id="1120938014254001895">تند کشیدن دو انگشت به بالا</translation>
 <translation id="1126928665165112660">ایتالیک نیست</translation>
+<translation id="1133751489735776037">سه‌کلیک با موشواره</translation>
 <translation id="113582498867142724">مجموعه <ph name="TAG" /> با <ph name="NUM" /> مورد</translation>
 <translation id="1146441463334103638">روشن یا خاموش کردن صفحه‌نمایش</translation>
 <translation id="1156488781945104845">زمان کنونی</translation>
 <translation id="1161762950103988776">پرش</translation>
 <translation id="1164857107703583584">از فرمان‌های پرش می‌توان برای پیمایش کارآمد در صفحه وب استفاده کرد.</translation>
 <translation id="1175914831232945926">ارقام</translation>
+<translation id="1186712907912748007">کشیدن و رها کردن درجریان است. برای پایان دادن، <ph name="GESTURE" />. اشاره‌های دیگر موقتاً دردسترس نیستند.</translation>
 <translation id="1188858454923323853">تکمیلی</translation>
 <translation id="1189258430971676908">قسمت تمرین: فهرست‌های کرکره‌ای</translation>
 <translation id="1195238899008218998">سخن پایانی</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">پیوند</translation>
 <translation id="2363753371702255035">گلوله</translation>
 <translation id="2365384324219615024">‏برای فعال کردن هر مورد، می‌توانید کلید Enter را نیز فشار دهید. برای مثال: برای ارسال نوشتار موجود در فرم، می‌توان از کلید Enter استفاده کرد. برای ادامه، کلید Enter را فشار دهید.</translation>
+<translation id="2371402123699727805">دیکته فعال است. برای متوقف کردن، <ph name="GESTURE" />. اشاره‌های دیگر موقتاً دردسترس نیستند.</translation>
 <translation id="2381733276052567791">روشن یا خاموش کردن گفتار</translation>
 <translation id="2390264819538553347">‏برای ادامه، enter را فشار دهید، برای برگشتن به عقب، پس‌بر را فشار دهید.</translation>
 <translation id="2398579267367951220">‏برای جستجو در صفحه، تایپ کنید. برای رفتن به قسمت نتایج، دکمه Enter را فشار دهید؛ برای مرور کردن نتایج، پیکان بالا یا پایین را فشار دهید؛ برای تغییر دادن نوشتار جستجو، به تایپ کردن ادامه دهید؛ برای لغو کردن، دکمه Escape را فشار دهید.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">با چهار انگشت تند به‌راست بکشید</translation>
 <translation id="3112457281078985179">‏برای روشن یا خاموش کردن ChromeVox، از Control+Alt+Z استفاده کنید.</translation>
 <translation id="3115800313647508384">صفحه‌نمایش خاموش شود؟</translation>
-<translation id="3127625407966660979">دیکته فعال است</translation>
 <translation id="3131002934070407451">خواندن شماره‌ها به‌صورت:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">زیتونی</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">عنوان سطح ۳ قبلی وجود ندارد</translation>
 <translation id="3887399638190992181">کلیدهای ضروری</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">کنترل چهره موقتاً متوقف شد. برای ازسرگیری، <ph name="GESTURE" />. اشاره‌های دیگر موقتاً دردسترس نیستند.</translation>
 <translation id="3897092660631435901">منو</translation>
 <translation id="3907138069015388678">جدول فهرست</translation>
 <translation id="3909320334364316587">عنوان قبلی سطح ۶</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{ثانیه}one{ثانیه}other{ثانیه}}</translation>
 <translation id="4161663686871496107">‏بازخورد گفتاری ChromeVox آماده است</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
-<translation id="4176677444195790114">کشیدن و رها کردن درحال انجام است</translation>
 <translation id="4187322598335821254">برای جابه‌جایی بین خطوط، تند به‌بالا یا پایین بکشید</translation>
 <translation id="4188530942454211480">جمله قبلی</translation>
 <translation id="4191918948604314587">دکمه</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">آبی آسمانی پررنگ</translation>
 <translation id="4406249099130339147">بازگویی نشانه‌های سجاوندی</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">همه دندان‌هایتان را نشان دهید</translation>
 <translation id="4432457053224379116">جگری</translation>
 <translation id="4432896207833262240">محتوای علامت‌دار</translation>
 <translation id="4437615272777527928">برای جستجو در منوها، تایپ کنید. برای جابه‌جایی بین نتایج از پیکان‌های بالا و پایین استفاده کنید. برای تنظیم کردن هشتک نوشتار و حرکت کردن بین منوها از پیکان‌های چپ و راست استفاده کنید.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">عنوان سطح ۱ بعدی وجود ندارد</translation>
 <translation id="5455441614648621694">مکمل</translation>
 <translation id="5462510922370980473">فهرست صفحه</translation>
+<translation id="5489460663499094917">حالت پیمایش فعال است. برای خارج شدن، <ph name="GESTURE" />. اشاره‌های دیگر موقتاً دردسترس نیستند.</translation>
 <translation id="5495517933067991341">‏کلیدهای ضروری: Shift</translation>
 <translation id="549602578321198708">کلمه</translation>
 <translation id="5513242761114685513">منوی بافت</translation>
@@ -1112,7 +1116,6 @@
 <translation id="8378855320830505539">منطقه</translation>
 <translation id="8382679411218029383">تکمیل خودکار به‌خط و فهرست</translation>
 <translation id="8394908167088220973">پخش/مکث رسانه</translation>
-<translation id="8409502156784390079">حالت پیمایش فعال است</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8428603554127842284">سطح <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1190,7 +1193,6 @@
 <translation id="8986362086234534611">فراموش شود</translation>
 <translation id="8989104346085848538">‏برای متوقف کردن گفتار فعلی ChromeVox، کلید Control را فشار دهید.</translation>
 <translation id="9014206344398081366">‏آموزش گام‌به‌گام ChromeVox</translation>
-<translation id="9034592733577768445">کنترل چهره موقتاً متوقف شد</translation>
 <translation id="9040132695316389094">عنوان ۱</translation>
 <translation id="9061884144798498064">انتخاب جدول بریل ۸ نقطه‌ای:</translation>
 <translation id="9063946545000394379">رفتن به نویسه قبلی</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1005023885865154304">[パスワードの自動入力] 設定を開く</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1010225406377140704">送信者に連絡して新しいリンクをリクエストしてください</translation>
 <translation id="1012067394176927315">コンテンツを表示するには、メニューから [オンにする] を選択します</translation>
 <translation id="1013952917065545813">ここでは、最近閉じたタブをもう一度開くことができます</translation>
 <translation id="1016495303386450659">更新済みのアイテム</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
 <translation id="1165039591588034296">エラー</translation>
-<translation id="1172240852337942024">選択を解除</translation>
 <translation id="1172898394251786223">次の項目</translation>
 <translation id="1179890706672152411">空き容量がありません</translation>
 <translation id="1181037720776840403">削除</translation>
+<translation id="1190609913194133056">通知センター</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1204075260022434100">{count,plural, =1{ブックマークをアカウント（{email}）の「{title}」に保存しました}other{{count} 件のブックマークをアカウント（{email}）の「{title}」に保存しました}}</translation>
 <translation id="120431140543679678">フォロー</translation>
@@ -219,6 +220,7 @@
 <translation id="1956138802718275401">ホーム画面からパスワードにアクセス</translation>
 <translation id="1959441496380398824">日付を長押しします。</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> さんが <ph name="WEBSITE" /> のパスワードをあなたと共有しました</translation>
+<translation id="1962969542251276847">画面をロック</translation>
 <translation id="1963976881984600709">標準保護機能</translation>
 <translation id="1966313166384086081">サイトデータ</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android で開いたタブを表示しますか？}other{Android で開いたタブを表示しますか？}}</translation>
@@ -1196,6 +1198,7 @@
 <translation id="6503077044568424649">よくアクセスするページ</translation>
 <translation id="6503763061813913607">安全チェックの通知</translation>
 <translation id="6505334220040167806">タブグループを閉じる。</translation>
+<translation id="6506996418997555004">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
 <translation id="6507973708545996744">ログインすると、どのデバイスでもリーディング リストを利用できます。</translation>
 <translation id="6518133107902771759">確認</translation>
 <translation id="6523575793810663688">手順を見る</translation>
@@ -1262,7 +1265,6 @@
 <translation id="672735642903863329">すべてのデバイスで同じブックマーク、パスワード、その他の設定を使用できます。</translation>
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6746338529702829275">アカウントのデータを確認する</translation>
-<translation id="6748108480210050150">From</translation>
 <translation id="6755200887046212842">アカウントを管理</translation>
 <translation id="6761393919622941301">音声</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
@@ -1311,7 +1313,6 @@
 <translation id="6979737339423435258">全期間</translation>
 <translation id="6983306615164277634">アドレスバーを長押しして位置を変更することもできます。</translation>
 <translation id="6990519590575500580">Facetime</translation>
-<translation id="6998989275928107238">To</translation>
 <translation id="7004032350256606903">組織がシークレット モードで閲覧するよう求めています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">[設定] でデフォルトにする…</translation>
@@ -1415,6 +1416,7 @@
 <translation id="750493650310597496">選択されていません</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" />（<ph name="FILESIZE" />）。</translation>
 <translation id="7508728395076009983">シークレット タブをロックするには、Touch ID、Face ID、またはパスコードを設定してください。</translation>
+<translation id="7512075701202892785">お気に入りのブラウザを iPad で</translation>
 <translation id="7512909159512473473">パスフレーズを入力…</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7521117365186708026">Chrome を最大限に活用するための設定のヒント。</translation>
@@ -1690,6 +1692,7 @@
 <translation id="8694281486652655615">このアイテムを表示</translation>
 <translation id="8696297579102085705">お使いのデバイスに送信</translation>
 <translation id="8697136149718343437">アドレスバーを一番下に移動</translation>
+<translation id="8703372953981978786">このリンクは機能していません</translation>
 <translation id="8706253136355675497">温度</translation>
 <translation id="8709409604518538305">タブを閉じました</translation>
 <translation id="8712534545803964353">ページ内を検索…</translation>
@@ -1809,7 +1812,6 @@
 <translation id="9183733013282108610">シークレット検索</translation>
 <translation id="9186762474139509529">ログ記録を開始</translation>
 <translation id="9191031968346938109">追加先…</translation>
-<translation id="9196007736149429065">このファイルを開けませんでした</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 日前</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">アドレスバーの位置を上から下に変更して、ブラウジング環境をカスタマイズできます。</translation>

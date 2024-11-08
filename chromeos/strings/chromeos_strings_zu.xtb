@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Khubaza isilondolozi sesikrini</translation>
 <translation id="3091839911843451378">Yehlulekile - Imile</translation>
 <translation id="3102119246920354026">Inqolobane</translation>
+<translation id="3112413615003385433">Uthisha ususe okuqukethwe Emathuluzini Esikole</translation>
 <translation id="3122464029669770682">I-CPU</translation>
 <translation id="3122614491980756867">amachibi okubhukuda</translation>
 <translation id="3122883569442693641">Imininingwane eyengeziwe</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Kuqediwe ukuhlela</translation>
 <translation id="3532980081107202182">Kusele cishe amaminithi angu-<ph name="MIN_REMAINING" /></translation>
 <translation id="3533790840489634638">ichibi lokubhukuda</translation>
+<translation id="3535802910192338629">Uthisha wakho ufake okuqukethwe okusha Emathuluzini Esikole</translation>
 <translation id="3547264467365135390">Ifomula</translation>
 <translation id="3557205324756024651">Ubunikazi bendawo (ongakukhetha)</translation>
 <translation id="3565064564551103223">Ama-IP avunyelwe</translation>
@@ -630,6 +632,7 @@
 <translation id="4130750466177569591">Ngiyavuma</translation>
 <translation id="4131410914670010031">Okumnyama nokumhlophe</translation>
 <translation id="4137700675046373159">ngoMgqibelo</translation>
+<translation id="4139326893730851150">Izibuyekezo ze-firmware</translation>
 <translation id="4143226836069425823">Thepha kwelinye igama elingukhiye lekhibhodi ukuze ushintshanise</translation>
 <translation id="4145784616224233563">Uhlelo lokuvikela le-HTTP</translation>
 <translation id="4147897805161313378">Izithombe ze-Google</translation>
@@ -1172,6 +1175,7 @@
 <translation id="6673898378497337661">ukukhanya kwekhibhodi kuphezulu</translation>
 <translation id="6692996468359469499">Thola ukwaziswa okuhlobene nokhetho lwakho</translation>
 <translation id="6694534975463174713">khiya</translation>
+<translation id="6700703207451721535">Ukufinyelela akuvunyelwe kule linki. Hlola nothisha wakho uma udinga ukufinyelela.</translation>
 <translation id="6704062477274546131">Ukulungiswa kwe-DNS</translation>
 <translation id="6712933881624804031">isigodi</translation>
 <translation id="6716013206176357696">ama-strawberry</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Izwa umoya</translation>
 <translation id="7287310195820267359">Amaqoqo Wesithombe Sangemuva</translation>
+<translation id="7293429513719260019">Khetha ulimi</translation>
 <translation id="7297226631177386107">Ayikwazi ukuxhuma ngohlelo lokuvikela kumawebhusayithi we-HTTPS</translation>
 <translation id="7297726121602187087">Okuluhlaza kakhulu</translation>
 <translation id="7301262279595293068">Sicela ulinde ngesikhathi i-application isabuyekeza</translation>
@@ -1354,6 +1359,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="7544853251252956727">Shova</translation>
 <translation id="7550715992156305117">Imijikelezo yokuhlola</translation>
 <translation id="7551123448725492271">Idivayisi iyidivayisi yokulalelwayo.</translation>
+<translation id="7553913964854052228">Amathuluzi Esikole asebenzisa imakrofoni yakho</translation>
 <translation id="7559239713112547082">Buka kuqala Isithombe-skrini</translation>
 <translation id="7561454561030345039">Lesi senzo siphethwe umlawuli wakho</translation>
 <translation id="7561759921596375678">Vula ivolumu</translation>
@@ -1562,6 +1568,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8576249514688522074">Akuqaliswanga</translation>
 <translation id="8584654835905316966">Kudingeka ukuqalisa kabusha ukuze uqedele ukufaka ifirmware ye-<ph name="DEVICE_NAME" /> ibe uhlobo <ph name="VERSION" />. Ikhompyutha yakho ingase ibonakale iqalisa izikhathi ezithize. Lokhu kulindelekile.</translation>
 <translation id="8593058461203131755">misa imidiya</translation>
+<translation id="8619169570378509764">Amathuluzi Esikole</translation>
 <translation id="8620617069779373398">Isimo sokuzulazula</translation>
 <translation id="8626489604350149811">Izenzo ezengeziwe ze-<ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Okunsomi okhanyayo</translation>

@@ -78,10 +78,8 @@
 <translation id="228293613124499805">तुम्ही भेट देता त्या बहुतांश साइट या तुमच्या डिव्हाइसवर डेटा सेव्ह करत असण्याची शक्यता आहे. बरेचदा तुमची प्राधान्ये किंवा तुम्ही साइटसोबत शेअर करता ती माहिती सेव्ह करून, तुमच्या अनुभवामध्ये सुधारणा करण्यासाठी हे केले जाते. हे सेटिंग सुरू ठेवण्याची आम्ही शिफारस करतो.</translation>
 <translation id="2289270750774289114">साइटला केव्हा जवळपासचे ब्लूटूथ डिव्हाइस शोधायचे आहे हे विचारा (शिफारस केलेले)</translation>
 <translation id="2315043854645842844">क्लायंट साइड प्रमाणपत्र निवडीला ऑपरेटिंग सिस्टमचा सपोर्ट नाही.</translation>
-<translation id="2321958826496381788">तुम्ही हे व्यवस्थित वाचू शकण्यापार्यंत स्लायडर ड्रॅग करा. परिच्छेदावर डबल-टॅपिंग केल्यानंतर मजकूर कमीत कमी यापेक्षा मोठा दिसावा.</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2379925928934107488">शक्य असेल तेव्हा, Chrome गडद थीम वापरते तेव्हा साइटवर गडद थीम लागू करा</translation>
-<translation id="2387895666653383613">मजकूर स्केलिग</translation>
 <translation id="2390272837142897736">झूम वाढवते</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" /> ला अनुमती दिली}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" /> ना अनुमती दिली}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">विशिष्ट साइटसाठी JavaScript ला अनुमती द्या.</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="2677748264148917807">सोडा</translation>
-<translation id="2678468611080193228">तृतीय पक्ष कुकीना तात्पुरती अनुमती देऊन पहा, ज्यामुळे कमी संरक्षण मिळेल, पण साइटची वैशिष्ट्ये काम करण्याची अधिक शक्यता आहे</translation>
 <translation id="2682367912565197520">सेव्ह केलेली झूम पातळी हटवा</translation>
 <translation id="2683434792633810741">हटवायचे आणि रीसेट करायचे आहे का?</translation>
 <translation id="2713106313042589954">कॅमेरा बंद करा</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="3448554387819310837">सुरू असताना, साइट तुमचा कॅमेरा वापरण्याची विनंती करू शकतात. बंद असताना, साइट तुमचा कॅमेरा वापरू शकत नाहीत.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Chrome उद्या पुन्हा कुकी ब्लॉक करेल}other{Chrome # दिवसांनंतर पुन्हा कुकी ब्लॉक करेल}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> अंतर्गत साइट</translation>
 <translation id="3523447078673133727">साइटना तुमचे हात ट्रॅक करण्याची अनुमती देऊ नका</translation>
 <translation id="3536227077203206203">यावेळी अनुमती दिली आहे</translation>
@@ -478,6 +474,7 @@
 <translation id="813082847718468539">साइटची माहिती पहा</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8168435359814927499">आशय</translation>
+<translation id="818487310457576362">फुल स्क्रीनमधून बाहेर पडण्यासाठी स्क्रीनच्या कडेपासून ड्रॅग करा.</translation>
 <translation id="8186479265534291036">साइट काम करत नाही का? तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ला अनुमती दिली</translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>

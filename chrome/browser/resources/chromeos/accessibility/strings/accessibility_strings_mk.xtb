@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="100421257800558142">Притиснете го копчето со стрелка надесно</translation>
 <translation id="100506692671054486">нема претходен коментар</translation>
 <translation id="1009046985747440431">Притиснете на стрелката за горе или долу за навигација, на Enter за да активирате</translation>
 <translation id="1011903154582639569">Најдете копче, а потоа подигнете го прстот за да пишувате</translation>
@@ -21,6 +22,7 @@
 <translation id="1120743664840974483">{„a“: „алфа“, „b“: „браво“, „c“: „чарли“, „d“: „делта“, „e“: „ехо“, „f“: „фокстрот“, „g“: „голф“, „h“: „хотел“, „i“: „индија“, „j“: „џулиет“,„k“: „кило“, „l“: „лима“, „m“: „мајк“, „n“: „ноември“, „o“: „оскар“,„p“: „папа“, „q“: „квебек“, „r“: „ромео“, „s“: „сиера“, „t“: „танго“, „u“: „униформа“, „v“: „виктор“, „w“: „виски“,„x“: „ексреј“, „y“: „јенки“, „z“: „зулу“}</translation>
 <translation id="1120938014254001895">Повлечете нагоре со два прста</translation>
 <translation id="1126928665165112660">Не е курзив</translation>
+<translation id="1133751489735776037">Кликнете го глувчето трипати</translation>
 <translation id="113582498867142724">Колекција <ph name="TAG" /> со ставки: <ph name="NUM" /></translation>
 <translation id="1146441463334103638">Вклучете или исклучете го екранот</translation>
 <translation id="1156488781945104845">Моментално време</translation>
@@ -59,6 +61,7 @@
 <translation id="1291286136605998134">Копче за вклучување/исклучување</translation>
 <translation id="1299774449519412690">Светла небесносина</translation>
 <translation id="1303806948938513162">Допрете со 4 прста за да влезете во менијата на ChromeVox</translation>
+<translation id="1304162325618937178">Притиснете го копчето Space</translation>
 <translation id="1313373992684326101">Одете на претходниот дел. Примерите ги вклучуваат „Фиоката за статусот“ и „Стартерот“.</translation>
 <translation id="1315077335264761176">Ориентација со допир</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, тркалезно копче за ставка на менито, неизбрано</translation>
@@ -185,9 +188,11 @@
 <translation id="2197863150503783129">Кафеава како седло</translation>
 <translation id="2199994615414171367">Претходна математика</translation>
 <translation id="2203046366315513658">Намалете ја вредноста</translation>
+<translation id="2206580811360135054">Прикажете или скријте го прегледот на прозорци</translation>
 <translation id="2216790501338699346">URL-адреса на линкот: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Преместете наназад за еден знак</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
+<translation id="2239819015858077439">Притиснете го копчето со стрелка надолу</translation>
 <translation id="2243633977138166243">Притиснете ја стрелката налево или надесно за навигација, Enter за активирање</translation>
 <translation id="224426591676115802">Не е достапен глас за јазикот: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Се запира режимот на учење</translation>
@@ -267,6 +272,7 @@
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2737898226590637227">Нема следно обележје ARIA</translation>
 <translation id="2749275490991666823">Проверено</translation>
+<translation id="2751454300227269244">Помрднете ја устата надесно</translation>
 <translation id="27527859628328957">Скокни на следната фокусирачка ставка</translation>
 <translation id="2756452585631602151">Внесете приспособена етикета</translation>
 <translation id="2766299274563946262">Нема ќелија лево</translation>
@@ -337,7 +343,6 @@
 <translation id="311015743332597320">Повлечете надесно со четири прста</translation>
 <translation id="3112457281078985179">За вклучување или исклучување на ChromeVox, користете Control+Alt+Z.</translation>
 <translation id="3115800313647508384">Да се исклучи екранот?</translation>
-<translation id="3127625407966660979">„Диктирање“ е активна</translation>
 <translation id="3131002934070407451">Читај ги броевите како:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Маслинеста</translation>
@@ -348,6 +353,7 @@
 <translation id="3153928844647607688">Табела <ph name="TABLENAME" />, <ph name="TABLEROWS" /> на <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Беж</translation>
 <translation id="316542773973815724">Навигација</translation>
+<translation id="3167446923957429259">Помрднете ја устата налево</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{празно место}one{# празно место}other{# празни места}}</translation>
 <translation id="3179119189286472195">Не е линк</translation>
 <translation id="3180990259147710757">Помрднете ја вилицата налево</translation>
@@ -498,7 +504,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{секунда}one{секунда}other{секунди}}</translation>
 <translation id="4161663686871496107">Говорните повратни информации на ChromeVox се подготвени</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
-<translation id="4176677444195790114">Влечењето и спуштањето се во тек</translation>
 <translation id="4187322598335821254">Повлечете нагоре или надолу за да преместувате по ред</translation>
 <translation id="4188530942454211480">Претходна реченица</translation>
 <translation id="4191918948604314587">Копче</translation>
@@ -543,9 +548,11 @@
 <translation id="4402014469255336455">Темна небесносина</translation>
 <translation id="4406249099130339147">Ехо на интерпункција:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Покажете ги сите ваши заби</translation>
 <translation id="4432457053224379116">Индискоцрвена</translation>
 <translation id="4432896207833262240">Означени содржини</translation>
 <translation id="4437615272777527928">Напишете текст за пребарување на менијата. Користете ги стрелките за горе и долу за да ги прелистувате резултатите. Користете ги стрелките за лево и десно за да го приспособите каретот за текст и да се движите помеѓу менијата.</translation>
+<translation id="4441677939526091190">Притиснете го копчето со стрелка нагоре</translation>
 <translation id="4453530046591759283">За да скокнете до другите делови на екранот, како алатниците или системската фиока, притиснете Control+F1. F1 е првото копче надесно од копчето Escape.</translation>
 <translation id="4457472090507035117">Изберете тековен глас:</translation>
 <translation id="4476183483923481720">нова линија</translation>
@@ -726,6 +733,7 @@
 <translation id="5653397561111110475">Користете ги функциите за пристапност на екранот на допир на Chromebook</translation>
 <translation id="5655682562155942719">Скокни наредби</translation>
 <translation id="56637627897541303">Место за текст</translation>
+<translation id="5666746275818170484">Притиснете го копчето со стрелка налево</translation>
 <translation id="5669637233317991674">Притиснете Search + стрелка надесно или Search + стрелка налево за да се движите низ лекцијава</translation>
 <translation id="5677240841070992068">Моментална локација</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -932,6 +940,7 @@
 <translation id="7161771961008409533">Копче за појавен прозорец</translation>
 <translation id="7167657087543110">ехо на знак</translation>
 <translation id="7173102181852295013">Полноќносина</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Проширено</translation>
 <translation id="7209751026933045237">Нема следен лизгач</translation>
 <translation id="7218782500591078391">Златеста</translation>

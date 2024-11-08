@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">私有密钥的输入值必须是有效的路径。</translation>
 <translation id="388442998277590542">无法加载选项页“<ph name="OPTIONS_PAGE" />”。</translation>
 <translation id="3984413272403535372">为扩展程序签名时出错。</translation>
-<translation id="4115165561519362854">此设备的管理员要求“<ph name="EXTENSION_NAME" />”的最低版本为 <ph name="EXTENSION_VERSION" />。此扩展程序必须更新到该版本（或更高版本）后才能启用。</translation>
 <translation id="4233778200880751280">无法加载简介页面“<ph name="ABOUT_PAGE" />”。</translation>
 <translation id="471800408830181311">无法输出私有密钥。</translation>
 <translation id="4811956658694082538">某个实用程序进程崩溃了，因此软件包无法安装。请重新启动 Chrome，然后重试。</translation>

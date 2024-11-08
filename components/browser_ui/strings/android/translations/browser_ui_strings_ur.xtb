@@ -78,10 +78,8 @@
 <translation id="228293613124499805">زیادہ تر سائٹس جو آپ دیکھتے ہیں شاید آپ کے آلہ پر ڈیٹا محفوظ کرتی ہیں، اکثر اپنی ترجیحات یا معلومات کو محفوظ کر کے اپنے تجربے کو بہتر بنانے کے لیے جو آپ سائٹ کے ساتھ اشتراک کرتے ہیں۔ ہم اس ترتیب کو آن رکھنے کی تجویز کرتے ہیں۔</translation>
 <translation id="2289270750774289114">اس وقت پوچھیں جب کسی سائٹ میں قریبی بلوٹوتھ آلات کو دریافت کرنا مقصود ہو (تجویز کردہ)</translation>
 <translation id="2315043854645842844">کلائنٹ سائڈ سرٹیفکیٹ کا انتخاب آپریٹنگ سسٹم کے ذریعہ تعاون یافتہ نہیں ہے۔</translation>
-<translation id="2321958826496381788">سلائیڈر کو اس وقت تک گھسیٹیں جب اسے آرام سے پڑھ سکتے ہوں۔ کسی پیراگراف پر دوبار تھپتھپانے کے بعد متن کم از کم اتنا بڑا دکھائی دینا چاہیے۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2379925928934107488">‏ممکن ہو تو سائٹس پر گہری تھیم لاگو ہوتی ہے جب Chrome کو گہری تھیم استعمال کرنے کیلئے سیٹ کیا جاتا ہے</translation>
-<translation id="2387895666653383613">متن کی پیمائش کرنا</translation>
 <translation id="2390272837142897736">زوم ان کریں</translation>
 <translation id="2402980924095424747">‎<ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">‏کسی مخصوص سائٹ کیلئے JavaScript کی اجازت دیں۔</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
-<translation id="2678468611080193228">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب کم تحفظ ہے لیکن سائٹ کی خصوصیات کے کام کرنے کا زیادہ امکان ہے</translation>
 <translation id="2682367912565197520">محفوظ شدہ زوم لیول کو حذف کریں</translation>
 <translation id="2683434792633810741">حذف اور ری سیٹ کریں؟</translation>
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953">%%‎ ‎<ph name="ZOOM_LEVEL" /></translation>
 <translation id="344449859752187052">فریق ثالث کوکیز کو مسدود کر دیا گیا</translation>
 <translation id="3448554387819310837">آن ہونے پر، سائٹس آپ کا کیمرا استعمال کرنے کیلئے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کا کیمرا استعمال نہیں کر سکتیں۔</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{‏Chrome کل کوکیز کو دوبارہ مسدود کر دے گا}other{‏Chrome کے کوکیز کو دوبارہ مسدود کرنے میں # دن باقی ہیں}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> کے تحت سائٹس</translation>
 <translation id="3523447078673133727">سائٹس کو اپنے ہاتھوں کو ٹریک کرنے کی اجازت نہ دیں</translation>
 <translation id="3536227077203206203">اس وقت اجازت ہے</translation>
@@ -478,6 +474,7 @@
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8168435359814927499">مواد</translation>
+<translation id="818487310457576362">پوری اسکرین سے باہر نکلنے کے لیے اسکرین کے سائیڈ سے گھسیٹیں۔</translation>
 <translation id="8186479265534291036">سائٹ کام نہیں کر رہی ہے؟ فریق ثالث کوکیز کو مسدود کر دیا گیا</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> کی اجازت دی گئی</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>

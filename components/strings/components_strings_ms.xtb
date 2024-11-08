@@ -545,6 +545,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1947454675006758438">Kokot atas sebelah kanan</translation>
 <translation id="1953729392594614704">Tindakan menyekat <ph name="TOPIC" /> juga akan menyekat sebarang topik yang berkaitan, walaupun topik tersebut aktif</translation>
 <translation id="1954847915560574887">A3x3</translation>
+<translation id="1955773397805078763">Tambahkan kaedah pembayaran</translation>
 <translation id="1956486093533522234">Cari, lindungi atau padamkan peranti anda</translation>
 <translation id="1957274554973357626">Komedi Langsung</translation>
 <translation id="1958218078413065209">Markah tertinggi anda ialah <ph name="SCORE" />.</translation>
@@ -1042,7 +1043,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="290376772003165898">Halaman bukan dalam <ph name="LANGUAGE" />?</translation>
 <translation id="2904165004205947971">Urus maklumat anda</translation>
 <translation id="2905107382358353958">Makluman tentang tetapan pembayaran baharu</translation>
-<translation id="2909120679423833511">Organisasi anda, <ph name="MANAGER" />, menghendaki anda untuk log masuk menggunakan profil tertentu</translation>
 <translation id="2909946352844186028">Perubahan rangkaian dikesan.</translation>
 <translation id="2911255567212929079">Pembelajaran Mesin &amp; Kecerdasan Buatan</translation>
 <translation id="2911973620368911614">ID pengguna perakaunan tugas</translation>
@@ -3057,7 +3057,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6507117483253822672">Tulis dengan lebih yakin pada mana-mana web</translation>
 <translation id="6508722015517270189">Mulakan semula Chrome</translation>
 <translation id="6513005815064132016">Boleh meminta untuk menjejak kedudukan kamera anda</translation>
-<translation id="6514932395202175590">Untuk meneruskan tindakan, log masuk ke <ph name="EMAIL" />, kemudian sediakan profil baharu</translation>
 <translation id="6517596291481585650">Amaran: Dasar ini tidak digabungkan sebagai senarai seperti yang dinyatakan oleh dasar kerana dasar ini bukan senarai.</translation>
 <translation id="6518133107902771759">Sahkan</translation>
 <translation id="6519885440226079262">Boleh meminta untuk menjejaki tangan anda</translation>
@@ -3231,6 +3230,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6831043979455480757">Terjemah</translation>
 <translation id="683108308100148227">Sembunyikan item</translation>
 <translation id="6832753933931306326">Borang telah diisi</translation>
+<translation id="6837361937093656245">Log masuk diperlukan</translation>
 <translation id="6841864657731852591">Silinder Gravur</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Penjejakan tangan dibenarkan pada masa ini</translation>
@@ -3623,6 +3623,7 @@ Butiran tambahan:
 <translation id="7525804896095537619">Nama tidak boleh dibiarkan kosong</translation>
 <translation id="7526934274050461096">Sambungan anda ke tapak ini tidak berciri peribadi</translation>
 <translation id="7529884293139707752">Persekolahan di rumah</translation>
+<translation id="7531464389616946220">Imbas kad</translation>
 <translation id="7534987659046836932">Sampul C7</translation>
 <translation id="7535087603100972091">Nilai</translation>
 <translation id="753556296624075801">Dikuasakan oleh Google</translation>
@@ -3986,7 +3987,6 @@ Butiran tambahan:
 <translation id="8194412401381329820">Anda tidak boleh menggunakan halaman ini daripada akaun terurus pada peranti tidak diurus ini. Semua akaun terurus akan dikunci jika anda menggunakan halaman ini, kecuali akaun diurus oleh entiti yang sama dengan peranti ini (akaun gabungan).</translation>
 <translation id="8194797478851900357">&amp;Buat Asal Pindahkan</translation>
 <translation id="8194956568907463262">Permainan Menembak</translation>
-<translation id="819931074683918462">Organisasi anda menghendaki anda untuk log masuk menggunakan profil tertentu.</translation>
 <translation id="8199437620497683918">Cakera Optik (Berkilat)</translation>
 <translation id="8199730148066603000">Pratonton URL bukan HTTPS tidak dibenarkan.</translation>
 <translation id="8200772114523450471">Sambung semula</translation>

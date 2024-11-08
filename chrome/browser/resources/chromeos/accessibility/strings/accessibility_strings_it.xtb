@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliett","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "x-ray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Scorri verso l'alto con due dita</translation>
 <translation id="1126928665165112660">Non corsivo</translation>
+<translation id="1133751489735776037">Fai triplo clic con il mouse</translation>
 <translation id="113582498867142724">Raccolta <ph name="TAG" /> con <ph name="NUM" /> elementi</translation>
 <translation id="1146441463334103638">Attiva o disattiva lo schermo</translation>
 <translation id="1156488781945104845">Ora corrente</translation>
@@ -271,6 +272,7 @@
 <translation id="2723001399770238859">audio</translation>
 <translation id="2737898226590637227">Nessun landmark ARIA successivo</translation>
 <translation id="2749275490991666823">Selezionato</translation>
+<translation id="2751454300227269244">Muovi la bocca verso destra</translation>
 <translation id="27527859628328957">Passa a elemento attivabile successivo</translation>
 <translation id="2756452585631602151">Inserisci un'etichetta personalizzata</translation>
 <translation id="2766299274563946262">Nessuna cella a sinistra</translation>
@@ -341,7 +343,6 @@
 <translation id="311015743332597320">Scorri verso destra con quattro dita</translation>
 <translation id="3112457281078985179">Per attivare o disattivare ChromeVox utilizza CTRL + ALT + Z.</translation>
 <translation id="3115800313647508384">Vuoi disattivare lo schermo?</translation>
-<translation id="3127625407966660979">Dettatura attiva</translation>
 <translation id="3131002934070407451">Leggi i numeri come:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Oliva</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabella <ph name="TABLENAME" />, <ph name="TABLEROWS" /> per <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navigazione</translation>
+<translation id="3167446923957429259">Muovi la bocca verso sinistra</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{spazio}other{# spazi}}</translation>
 <translation id="3179119189286472195">Non collegato</translation>
 <translation id="3180990259147710757">Sposta la mascella a sinistra</translation>
@@ -501,7 +503,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{secondo}other{secondi}}</translation>
 <translation id="4161663686871496107">La lettura vocale di ChromeVox è pronta</translation>
 <translation id="4176463684765177261">Disattivato</translation>
-<translation id="4176677444195790114">Trascinamento in corso…</translation>
 <translation id="4187322598335821254">Scorri verso l'alto o verso il basso per spostarti da una riga all'altra</translation>
 <translation id="4188530942454211480">Frase precedente</translation>
 <translation id="4191918948604314587">Un pulsante</translation>
@@ -546,6 +547,7 @@
 <translation id="4402014469255336455">Celeste intenso</translation>
 <translation id="4406249099130339147">Eco punteggiatura:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Mostra tutti i denti</translation>
 <translation id="4432457053224379116">Rosso indiano</translation>
 <translation id="4432896207833262240">Contenuti contrassegnati</translation>
 <translation id="4437615272777527928">Digita il testo da cercare nei menu. Usa i tasti Freccia su e giù per spostarti tra i risultati. Usa i tasti Freccia sinistra e destra per regolare il cursore di testo e per spostarti tra i menu.</translation>
@@ -1110,7 +1112,6 @@
 <translation id="8378855320830505539">Regione</translation>
 <translation id="8382679411218029383">Completamento automatico incorporato ed elenco</translation>
 <translation id="8394908167088220973">Play/Pausa contenuti multimediali</translation>
-<translation id="8409502156784390079">Modalità di scorrimento attiva</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428603554127842284">livello <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1188,7 +1189,6 @@
 <translation id="8986362086234534611">Elimina</translation>
 <translation id="8989104346085848538">Per interrompere qualsiasi lettura di ChromeVox, premi il tasto Ctrl.</translation>
 <translation id="9014206344398081366">Tutorial di ChromeVox</translation>
-<translation id="9034592733577768445">Controlli con il volto in pausa</translation>
 <translation id="9040132695316389094">Intestazione 1</translation>
 <translation id="9061884144798498064">Seleziona una tabella braille a otto punti:</translation>
 <translation id="9063946545000394379">passa al carattere precedente</translation>

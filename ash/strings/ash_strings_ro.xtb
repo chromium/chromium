@@ -630,7 +630,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3208321278970793882">Aplicație</translation>
 <translation id="3213571860604332401">Salvează linkul ca marcaj</translation>
 <translation id="3217205077783620295">Volumul este activat. Comutarea îl va dezactiva.</translation>
-<translation id="3218561536255328229">Apasă pe Esc de cinci ori pentru a activa touchpadul</translation>
 <translation id="3226991577105957773">+ încă <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3233611303007751344">Economisirea bateriei este dezactivată</translation>
@@ -1305,6 +1304,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5393156353051693207">Atinge lung oriunde ca să-ți reordonezi aplicațiile</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> deasupra <ph name="IN_PLACE_APP" />, eliberează pentru a crea un dosar.</translation>
 <translation id="5397578532367286026">Datele privind utilizarea și istoricul ale acestui utilizator pot fi examinate de administrator (<ph name="MANAGER_EMAIL" />) pe chrome.com.</translation>
+<translation id="540338817371815859">Peisaj</translation>
 <translation id="540713187982329711">Dezactivează hotspotul. Hotspotul este activat. Niciun dispozitiv conectat.</translation>
 <translation id="5409208741270395213">Marchează activitatea ca finalizată</translation>
 <translation id="5413656666631274079">Pagina Setări</translation>
@@ -1767,6 +1767,7 @@ Instalare nouă</translation>
 <translation id="6921427376813842559">Actualizează dispozitivul</translation>
 <translation id="6929081673585394903">Afișează comenzile</translation>
 <translation id="6931576957638141829">Salvează în</translation>
+<translation id="6935857786205183008">Portret</translation>
 <translation id="6942518653766415536">Meniu cu formatul de înregistrare</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6945922087561257829">Telefonul folosește o rețea mobilă. Verifică dacă telefonul și Chromebookul sunt în aceeași rețea Wi-Fi, apoi încearcă din nou. <ph name="LEARN_MORE" /></translation>
@@ -2435,6 +2436,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="98120814841227350">Accesează sfârșitul documentului</translation>
 <translation id="987589956647469042">Datele mobile sunt activate</translation>
 <translation id="989374776391122812">Comenzi pentru camera foto și audio</translation>
+<translation id="990263227494928142">Apasă pe Shift de cinci ori pentru a activa touchpadul</translation>
 <translation id="990277280839877440">Fereastra <ph name="WINDOW_TITILE" /> s-a închis.</translation>
 <translation id="993398562350683614">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. Folosește aplicațiile pentru a face toate activitățile necesare pe <ph name="PRODUCT_NAME" />. Aplicațiile se găsesc în Lansator. Apasă pe Alt + Shift + L pentru a focaliza pe butonul Lansator.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" /> <ph name="SUBTEXT" /></translation>

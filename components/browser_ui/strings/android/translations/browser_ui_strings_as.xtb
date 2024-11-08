@@ -78,10 +78,8 @@
 <translation id="228293613124499805">আপুনি ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা আপোনাৰ অগ্ৰাধিকাৰ অথবা তথ্য ছেভ কৰি প্ৰায়েই আপোনাৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপুনি চোৱা বেছিভাগ ছাইটে সম্ভৱতঃ আপোনাৰ ডিভাইচত ডেটা ছেভ কৰে। আমি এই ছেটিংটো অন কৰি ৰাখিবলৈ চুপাৰিছ কৰোঁ।</translation>
 <translation id="2289270750774289114">কোনো ছাইটে নিকটৱৰ্তী ডিভাইচ ব্লুটুথ ডিভাইচসমূহ পাব বিচাৰিলে সোধক (আমি চুপাৰিছ কৰোঁ)</translation>
 <translation id="2315043854645842844">অপাৰেটিং ছিষ্টেমটোৱে ক্লায়েণ্টৰ ফালৰ প্ৰমাণপত্ৰ বাছনি কৰা সুবিধাটো সমৰ্থন নকৰে।</translation>
-<translation id="2321958826496381788">আপুনি এইখিনি অনায়সে পঢ়িব নোৱাৰালৈকে স্লাইডাৰটো টানক। কোনো পেৰেগ্ৰাফত দুবাৰ টিপিলে পাঠখিনি অতি কমেও ইমানখিনি ডাঙৰ দেখা হ'ব লাগে।</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2379925928934107488">সম্ভৱ হ’লে, Chromeএ গাঢ় ৰঙৰ থীম ব্যৱহাৰ কৰাৰ সময়ত ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ কৰক</translation>
-<translation id="2387895666653383613">পাঠ মিলোৱা কাৰ্য</translation>
 <translation id="2390272837142897736">জুম বঢ়াওক</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> এম. বি.</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">নিৰ্দিষ্ট ছাইটৰ বাবে JavaScriptক অনুমতি দিয়ক।</translation>
 <translation id="2653659639078652383">দাখিল কৰক</translation>
 <translation id="2677748264148917807">ত্যাগ কৰক</translation>
-<translation id="2678468611080193228">তৃতীয় পক্ষৰ কুকিসমূহক অস্থায়ীভাৱে অনুমতি দি চাওক, যি কম সুৰক্ষিত হ’ব কিন্তু ছাইটৰ সুবিধাসমূহে কাম কৰাৰ সম্ভাৱনা অধিক থাকে</translation>
 <translation id="2682367912565197520">ছেভ কৰি থোৱা জুমৰ স্তৰ মচক</translation>
 <translation id="2683434792633810741">মচি আৰু ৰিছেট কৰিবনে?</translation>
 <translation id="2713106313042589954">কেমেৰা অফ কৰক</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="3448554387819310837">অন কৰা থাকিলে, ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Chromeএ কাইলৈ পুনৰ কুকি অৱৰোধ কৰিব}one{# দিনত Chromeএ পুনৰ কুকি অৱৰোধ কৰিব}other{# দিনত Chromeএ পুনৰ কুকি অৱৰোধ কৰিব}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" />ৰ অধীনত থকা ছাইট</translation>
 <translation id="3523447078673133727">ছাইটসমূহক আপোনাৰ হাত ট্ৰেক কৰিবলৈ নিদিব</translation>
 <translation id="3536227077203206203">এইবাৰ অনুমতি দিয়া হৈছে</translation>
@@ -478,6 +474,7 @@
 <translation id="813082847718468539">ছাইটৰ তথ্য চাওক</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
 <translation id="8168435359814927499">সমল</translation>
+<translation id="818487310457576362">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ ওলাবলৈ স্ক্ৰীনৰ কাষৰ পৰা টানি আনক।</translation>
 <translation id="8186479265534291036">ছাইটটোৱে কাম কৰা নাই নেকি? তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />ৰ অনুমতি দিয়া আছে</translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>

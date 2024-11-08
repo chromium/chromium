@@ -3,6 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1005023885865154304">Բացել գաղտնաբառերի ինքնալրացման կարգավորումները</translation>
 <translation id="1005230401424685968">ՏՏՏՏ</translation>
+<translation id="1010225406377140704">Կապվեք ուղարկողի հետ՝ խնդրելով նոր հղում ուղարկել</translation>
 <translation id="1012067394176927315">Բովանդակությունը տեսնելու համար ընտրացանկում սեղմեք «Միացնել»</translation>
 <translation id="1013952917065545813">Դուք կարող եք վերադառնալ այստեղ՝ վերջերս փակած ներդիրները նորից բացելու համար։</translation>
 <translation id="1016495303386450659">Տարրը թարմացվեց</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">Օրացույց</translation>
 <translation id="1164891049599601209">Մուտքագրել եք կասկածելի կայքում</translation>
 <translation id="1165039591588034296">Սխալ</translation>
-<translation id="1172240852337942024">Չեղարկել ընտրությունը</translation>
 <translation id="1172898394251786223">Հաջորդ դաշտը</translation>
 <translation id="1179890706672152411">Տարածքը լցված է</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
+<translation id="1190609913194133056">Ծանուցումների կենտրոն</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1204075260022434100">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}other{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="120431140543679678">Հետևել</translation>
@@ -103,6 +104,7 @@
 <translation id="143681031165817424">Հասցեն պահված է միայն այս սարքում</translation>
 <translation id="1445276840641906250">Ձեր բոլոր ներդիրները՝ մեկ դիտարկիչում</translation>
 <translation id="1450170672351507823">Սովորական պաշտպանությունը միացված է։ Ավելի շատ ապահովության համար օգտագործեք լրացուցիչ պաշտպանությունը։</translation>
+<translation id="1455660774629812862">Չթաքցնել</translation>
 <translation id="1460751212339734034">Տնտեսեք ժամանակը, մուտքագրեք ավելի քիչ</translation>
 <translation id="1466035273550360103">Բաց ներդիրներ չկան</translation>
 <translation id="1469381646033328562">Ձեր հաշիվը կառավարում է ձեր ծնողը։
@@ -218,6 +220,7 @@
 <translation id="1956138802718275401">Գաղտնաբառերի հասանելիություն հիմնական էկրանից</translation>
 <translation id="1959441496380398824">Հպեք և պահեք որևէ ամսաթիվ։</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> օգտատերը ձեզ <ph name="WEBSITE" /> կայքի համար գաղտնաբառ է ուղարկել</translation>
+<translation id="1962969542251276847">Կողպել էկրանը</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
 <translation id="1966313166384086081">կայքերի տվյալներ</translation>
 <translation id="1967461193809857427">{count,plural, =1{Բացե՞լ նույն ներդիրը, որը վերջերս օգտագործել եք Android սարքում}one{Բացե՞լ նույն ներդիրը, որը վերջերս օգտագործել եք Android սարքում}other{Բացե՞լ նույն ներդիրները, որոնք վերջերս օգտագործել եք Android սարքում}}</translation>
@@ -319,6 +322,7 @@
 Կայքերը չեն կարող օգտագործել քուքիներ՝ դիտարկիչում ձեր գործողությունները տեսնելու համար, օրինակ՝ գովազդի անհատականացման նպատակով։</translation>
 <translation id="2377336083033403521">Որոնեք ներդիրներ…</translation>
 <translation id="2381405137052800939">Հիմնական</translation>
+<translation id="2384692388811649784">Թաքցնել ինկոգնիտո ներդիրները</translation>
 <translation id="2386793615875593361">Ընտրվել է 1 էջանիշ</translation>
 <translation id="2390457533592708044">Թաքցնել «<ph name="MODULE_NAME" />» մոդուլը</translation>
 <translation id="2403129868389095715">Ձեր փաթեթը հնարավոր չէ ուղարկել</translation>
@@ -339,6 +343,7 @@
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2484459871750294497">Ինչպե՞ս միացնեմ այս գործառույթը</translation>
+<translation id="2493269659028026145">Անմիջապես կողպել <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ի միջոցով</translation>
 <translation id="2496180316473517155">Դիտարկումների պատմություն</translation>
 <translation id="2497852260688568942">Ձեր ադմինիստրատորն անջատել է համաժամացումը</translation>
 <translation id="2499505845365628575">Ձեր այցելությունների ամբողջ պատմությունը տեսնելու համար ընտրեք <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />։</translation>
@@ -931,6 +936,7 @@
 <translation id="5414763847370083940">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի։</translation>
 <translation id="5415289094036440596">Մուտքի բանալիներով հնարավոր չէ կիսվել</translation>
 <translation id="5416455648658732408">Տեղափոխել ներդիրների խումբ</translation>
+<translation id="5429624150850059322">Երբ վերադառնաք, ներդիրները կմնան շաղված, մինչև կհպեք «Շարունակել»</translation>
 <translation id="5431239785743546285">Էջեր, որոնք կարդացել եք</translation>
 <translation id="5431252637281434233">Դուք դուրս կգաք հաշվից</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
@@ -1030,6 +1036,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5817176759448082654">Գաղտնաբառերի ստուգում</translation>
 <translation id="5819208479324046259">Կառավարվում է <ph name="MANAGER" />-ի կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Համաժամացում…</translation>
+<translation id="5832166137082209907">Թաքցնել 10 րոպե հետո</translation>
 <translation id="5844284118433003733">Երբ մուտք գործեք, այս տվյալները կկապվեն ձեր Google հաշվի հետ՝ ձեզ Google-ի ծառայություններում պաշտպանելու համար, օրինակ՝ անվտանգության հետ կապված միջադեպից հետո բարձրացնելու անվտանգության մակարդակը Gmail-ում։</translation>
 <translation id="5854790677617711513">30 օր և ավելի</translation>
 <translation id="5857770089550859117">Համաժամացումը սկսելու համար անհրաժեշտ է անցաբառ:</translation>
@@ -1191,6 +1198,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6503077044568424649">Հաճախակի այցելած</translation>
 <translation id="6503763061813913607">Անվտանգության ստուգման ծանուցումներ</translation>
 <translation id="6505334220040167806">Ծալել ներդիրների խումբը։</translation>
+<translation id="6506996418997555004">Ներդիրների «<ph name="GROUP_NAME" />» խմբի ընդհանուր հասանելիություն</translation>
 <translation id="6507973708545996744">Մուտք գործեք՝ ձեր ընթերցանության ցանկը բոլոր սարքերում տեսնելու համար</translation>
 <translation id="6518133107902771759">Ստուգել</translation>
 <translation id="6523575793810663688">Ցուցադրել, թե ինչպես</translation>
@@ -1257,7 +1265,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="672735642903863329">Օգտագործեք ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում։</translation>
 <translation id="6732087373923685049">տեսախցիկ</translation>
 <translation id="6746338529702829275">Ստուգեք ձեր հաշվի տվյալները</translation>
-<translation id="6748108480210050150">Ուղարկող</translation>
 <translation id="6755200887046212842">Կառավարել հաշիվները</translation>
 <translation id="6761393919622941301">Աուդիո</translation>
 <translation id="6779455296366983087">Այցելությունների պատմությունը կջնջվի</translation>
@@ -1306,7 +1313,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
 <translation id="6983306615164277634">Կարող եք նաև հպել հասցեագոտուն և պահել՝ դիրքը փոխելու համար։</translation>
 <translation id="6990519590575500580">FaceTime</translation>
-<translation id="6998989275928107238">Ում</translation>
 <translation id="7004032350256606903">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Կարգավորումներում ընտրել որպես կանխադրված…</translation>
@@ -1410,6 +1416,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="750493650310597496">Ընտրվել է 0 էջանիշ</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)։</translation>
 <translation id="7508728395076009983">Ինկոգնիտո ներդիրները կողպելու համար սահմանեք Touch ID, Face ID կամ անցակոդ։</translation>
+<translation id="7512075701202892785">Ձեր սիրելի դիտարկիչը՝ այժմ iPad-ում</translation>
 <translation id="7512909159512473473">Մուտքագրել անցաբառը…</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7521117365186708026">Կարգավորման խորհուրդներ, որոնք օգնում են առավելագույն արդյունավետությամբ օգտագործել Chrome-ը։</translation>
@@ -1685,6 +1692,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8694281486652655615">Ցույց է տալիս այս տարրը</translation>
 <translation id="8696297579102085705">Ուղարկել իմ սարքին</translation>
 <translation id="8697136149718343437">Հասցեագոտին տեղափոխել ներքև</translation>
+<translation id="8703372953981978786">Այս հղումը չի աշխատում</translation>
 <translation id="8706253136355675497">Ջերմաստիճան</translation>
 <translation id="8709409604518538305">Ներդիրները փակվեցին</translation>
 <translation id="8712534545803964353">Գտնել էջում…</translation>
@@ -1804,7 +1812,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9183733013282108610">Որոնում ինկոգնիտո ռեժիմում</translation>
 <translation id="9186762474139509529">Սկսել գրանցումը մատյանում</translation>
 <translation id="9191031968346938109">Ավելացնել…</translation>
-<translation id="9196007736149429065">Չհաջողվեց բացել այս ֆայլը</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> օր առաջ</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Հասցեագոտին տեղափոխեք վերևից ներքև՝ անհատականացված դիտարկման համար։</translation>

@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">私密金鑰的輸入值必須是有效的路徑。</translation>
 <translation id="388442998277590542">無法載入「<ph name="OPTIONS_PAGE" />」選項頁面。</translation>
 <translation id="3984413272403535372">簽署擴充功能時出現錯誤。</translation>
-<translation id="4115165561519362854">這個裝置的管理員要求的 <ph name="EXTENSION_NAME" /> 最低版本為 <ph name="EXTENSION_VERSION" />。更新至該版本 (或以上版本) 後，才能啟用這項擴充功能。</translation>
 <translation id="4233778200880751280">無法載入簡介網頁「<ph name="ABOUT_PAGE" />」。</translation>
 <translation id="471800408830181311">匯出私密金鑰失敗。</translation>
 <translation id="4811956658694082538">公用程式處理程序當機，因此無法安裝套件。請重新啟動 Chrome，然後再試一次。</translation>

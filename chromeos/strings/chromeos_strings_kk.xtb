@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Скринсейверді өшіру</translation>
 <translation id="3091839911843451378">Сәтсіз: тоқтатылды</translation>
 <translation id="3102119246920354026">Кэш</translation>
+<translation id="3112413615003385433">Мұғаліміңіз "Мектепке арналған құралдар" бөлімінен контент өшірді.</translation>
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="3122614491980756867">бассейндер</translation>
 <translation id="3122883569442693641">Қосымша мәліметтер</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Өңдеу аяқталды</translation>
 <translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
 <translation id="3533790840489634638">бассейн</translation>
+<translation id="3535802910192338629">Мұғаліміңіз "Мектепке арналған құралдар" бөліміне жаңа контент қосты.</translation>
 <translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Жергілікті идентификация (қосымша)</translation>
 <translation id="3565064564551103223">Рұқсат етілген IP мекенжайлары</translation>
@@ -630,6 +632,7 @@
 <translation id="4130750466177569591">Мен келісемін</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
 <translation id="4137700675046373159">сенбі күні</translation>
+<translation id="4139326893730851150">Микробағдарлама жаңартулары</translation>
 <translation id="4143226836069425823">Ауыстыру үшін пернетақтаның басқа пернесін түртіңіз.</translation>
 <translation id="4145784616224233563">HTTP брандмауэрі</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -1296,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Самал жел</translation>
 <translation id="7287310195820267359">Тұсқағаз жинақтары</translation>
+<translation id="7293429513719260019">Тілді таңдау</translation>
 <translation id="7297226631177386107">Брандмауэр арқылы HTTPS веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="7297726121602187087">Қою жасыл</translation>
 <translation id="7301262279595293068">Бұл қолданба жаңартылғанша күте тұрыңыз.</translation>
@@ -1355,6 +1359,7 @@
 <translation id="7544853251252956727">Кездейсоқ</translation>
 <translation id="7550715992156305117">Диагностикалық режим</translation>
 <translation id="7551123448725492271">Бұл — аудио құрылғы.</translation>
+<translation id="7553913964854052228">Мектепке арналған құралдар микрофоныңызды пайдаланып жатыр.</translation>
 <translation id="7559239713112547082">Скриншотты алдын ала көру</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7561759921596375678">Дыбыс деңгейін қосу</translation>
@@ -1563,6 +1568,7 @@
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> құрылғысына арналған микробағдарламаны <ph name="VERSION" /> нұсқасына орнату үшін құрылғыны өшіріп қосу қажет. Компьютер бірнеше рет өшіп қосылуы мүмкін. Бұл — қалыпты жағдай.</translation>
 <translation id="8593058461203131755">мультимедианы кідірту</translation>
+<translation id="8619169570378509764">Мектепке арналған құралдар</translation>
 <translation id="8620617069779373398">Роуминг күйі</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> қосымша әрекеттері</translation>
 <translation id="86356131183441916">Ашық күлгін</translation>

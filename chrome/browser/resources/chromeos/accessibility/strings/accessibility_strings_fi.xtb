@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "aarne", "b": "bertta", "c": "celcius", "d": "daavid", "e": "eemeli", "f": "faarao", "g": "gideon", "h": "heikki", "i": "iivari", "j": "jussi","k": "kalle", "l": "lauri", "m": "matti", "n": "niilo", "o": "otto","p": "paavo", "q": "kuu", "r": "risto", "s": "sakari", "t": "tyyne", "u": "urho", "v": "vihtori", "w": "wiski","x": "äksä", "y": "yrjö", "z": "tseta", "å": "åke", "ä": "äiti", "ö": "öljy"}</translation>
 <translation id="1120938014254001895">Pyyhkäise ylös kahdella sormella</translation>
 <translation id="1126928665165112660">Ei kursiivia</translation>
+<translation id="1133751489735776037">Kolmoisklikkaa hiirtä</translation>
 <translation id="113582498867142724"><ph name="TAG" />-kokoelma, jossa <ph name="NUM" /> kohdetta</translation>
 <translation id="1146441463334103638">Laita näyttö päälle tai pois päältä</translation>
 <translation id="1156488781945104845">Nykyinen aika</translation>
 <translation id="1161762950103988776">Siirtyminen</translation>
 <translation id="1164857107703583584">Siirtymiskomentojen avulla pystyt liikkumaan verkkosivulla tehokkaasti.</translation>
 <translation id="1175914831232945926">Numerot</translation>
+<translation id="1186712907912748007">Vedä ja pudota ‑toiminto käynnissä. Lopeta tällä eleellä: <ph name="GESTURE" />. Muut eleet ovat tilapäisesti poissa käytöstä.</translation>
 <translation id="1188858454923323853">täydentävä</translation>
 <translation id="1189258430971676908">Harjoittelualue: avattavat listat</translation>
 <translation id="1195238899008218998">Jälkipuhe</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">Linkki</translation>
 <translation id="2363753371702255035">luettelomerkki</translation>
 <translation id="2365384324219615024">Voit myös aktivoida kohteita painamalla Enter-näppäintä. Enter-näppäimellä voi esimerkiksi lähettää lomakkeessa olevan tekstin. Jatka painamalla Enter.</translation>
+<translation id="2371402123699727805">Sanelu aktiivinen. Lopeta tällä eleellä: <ph name="GESTURE" />. Muut eleet ovat tilapäisesti poissa käytöstä.</translation>
 <translation id="2381733276052567791">Vaihtaa puheen päälle tai pois päältä.</translation>
 <translation id="2390264819538553347">Siirry eteenpäin painamalla Enter ja taaksepäin painamalla askelpalautinta.</translation>
 <translation id="2398579267367951220">Hae sivulta kirjoittamalla. Siirry tulokseen painamalla Enter, selaa tuloksia ylä- ja alanuolella, muuta hakua jatkamalla kirjoittamista tai peru painamalla Esc.</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">Pyyhkäise oikealle neljällä sormella</translation>
 <translation id="3112457281078985179">Käynnistä tai sulje ChromeVox painamalla Control + Alt + Z.</translation>
 <translation id="3115800313647508384">Sammutetaanko näyttö?</translation>
-<translation id="3127625407966660979">Sanelu aktiivinen</translation>
 <translation id="3131002934070407451">Numeroiden lukemismuoto:</translation>
 <translation id="3134461040845705080">vain luku</translation>
 <translation id="3137663468179739624">Oliivinvihreä</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Ei edellisiä tason 3 otsikoita</translation>
 <translation id="3887399638190992181">Tärkeät näppäimet</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Kasvo-ohjaus keskeytetty. Jatka tällä eleellä: <ph name="GESTURE" />. Muut eleet ovat tilapäisesti poissa käytöstä.</translation>
 <translation id="3897092660631435901">Valikko</translation>
 <translation id="3907138069015388678">luetteloruud.</translation>
 <translation id="3909320334364316587">Edellinen tason 6 otsikko</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{sekunti}other{sekuntia}}</translation>
 <translation id="4161663686871496107">ChromeVox-puhepalaute on valmis</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
-<translation id="4176677444195790114">Vedä ja pudota ‑toiminto käynnissä</translation>
 <translation id="4187322598335821254">Siirry rivi kerrallaan pyyhkäisemällä ylös tai alas</translation>
 <translation id="4188530942454211480">Edellinen lause</translation>
 <translation id="4191918948604314587">Painike</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">Syvä taivaansininen</translation>
 <translation id="4406249099130339147">Välimerkkien puhuminen:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Näytä kaikki hampaasi</translation>
 <translation id="4432457053224379116">Intianpunainen</translation>
 <translation id="4432896207833262240">Merkitty sisältö</translation>
 <translation id="4437615272777527928">Hae valikoista kirjoittamalla. Selaa tuloksia ylä- ja alanuolilla. Säädä tekstikursoria ja siirry valikoiden välillä vasemmalla ja oikealla nuolinäppäimellä.</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Ei seuraavia tason 1 otsikoita</translation>
 <translation id="5455441614648621694">Täydentävä</translation>
 <translation id="5462510922370980473">Sivuluettelo</translation>
+<translation id="5489460663499094917">Vieritystila aktiivinen. Lopeta tällä eleellä: <ph name="GESTURE" />. Muut eleet ovat tilapäisesti poissa käytöstä.</translation>
 <translation id="5495517933067991341">Tärkeät näppäimet: vaihto</translation>
 <translation id="549602578321198708">Sana</translation>
 <translation id="5513242761114685513">Kontekstivalikko</translation>
@@ -1112,7 +1116,6 @@
 <translation id="8378855320830505539">Alue</translation>
 <translation id="8382679411218029383">Ennakoiva tekstin syöttö upotettuna ja luettelona</translation>
 <translation id="8394908167088220973">Media: toista/keskeytä</translation>
-<translation id="8409502156784390079">Vieritystila aktiivinen</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8428603554127842284">taso <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1190,7 +1193,6 @@
 <translation id="8986362086234534611">Unohda</translation>
 <translation id="8989104346085848538">Pysäytä käynnissä oleva ChromeVox-puhe Control-näppäimellä.</translation>
 <translation id="9014206344398081366">ChromeVox-ohje</translation>
-<translation id="9034592733577768445">Kasvo-ohjaus keskeytetty</translation>
 <translation id="9040132695316389094">Otsikko 1</translation>
 <translation id="9061884144798498064">Valitse 8 pisteen pistekirjoitustaulukko:</translation>
 <translation id="9063946545000394379">siirry edelliseen merkkiin</translation>

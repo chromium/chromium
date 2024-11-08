@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> को USB केबल निकाल्नुहोस्</translation>
 <translation id="2320295602967756579">उज्यालो थिम अन गर्नुहोस्</translation>
 <translation id="2323506179655536734">स्किप गरिएको छ</translation>
+<translation id="2323755382216917952">फर्मवेयर अपडेट गर्न तपाईंले कम्प्युटर रिस्टार्ट गरेर इन्स्टल गर्ने प्रक्रिया पूरा गर्नु पर्ने हुन्छ। यो अपडेट पूरा गर्न केही मिनेट लाग्न सक्छ। फर्मवेयर अपडेट भइरहेका बेला कम्प्युटर अनप्लग वा सट डाउन नगर्नुहोस्।</translation>
 <translation id="2324354238778375592">फ्लोट</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +450,7 @@
 <translation id="3178532070248519384">अभान्त गार्ड</translation>
 <translation id="3182676044300231689">"अझ धेरै आत्मविश्वास झल्किने गरी लेख" जस्तो प्रम्प्ट हाल्नुहोस्</translation>
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
+<translation id="3188931456353313123">यो अपडेट डिभाइस उत्पादन गर्ने कम्पनीले उपलब्ध गराएको हो र Google ले यसको पुष्टि गरेको छैन।</translation>
 <translation id="319101249942218879">अवतार फोटो बदलियो</translation>
 <translation id="3192947282887913208">अडियो फाइलहरू</translation>
 <translation id="3199982728237701504">डकुमेन्ट फिडर (दुईतर्फी)</translation>
@@ -507,6 +509,7 @@
 <translation id="3488065109653206955">आंशिक रूपमा सक्रिय बनाइएको</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन भएको <ph name="OFFICE_STYLE" /> अफिस</translation>
 <translation id="3493187369049186498">Chromebook ले प्रयोग गरिने डेटा मापन गर्छ। यो डेटा सेवा प्रदायकले उपलब्ध गराउने डेटाभन्दा फरक हुन सक्छ।</translation>
+<translation id="349570724365779960">विद्यार्थीहरू School Tools सेसनमा सामेल भएका छन्</translation>
 <translation id="3502426834823382181">सबै एपहरू हेर्नुहोस्</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />पर्फर्मेन्स ट्रेस डेटा<ph name="END_LINK1" /> पठाउनुहोस्</translation>
 <translation id="3517001332549868749">ChromeOS को अपडेट</translation>
@@ -632,6 +635,7 @@
 <translation id="4130750466177569591">म सहमत गर्छु</translation>
 <translation id="4131410914670010031">कालो र सेतो</translation>
 <translation id="4137700675046373159">शनिवार</translation>
+<translation id="4139326893730851150">फर्मवेयरसम्बन्धी अपडेटहरू</translation>
 <translation id="4143226836069425823">बटन बदल्न किबोर्डको अर्को कीमा ट्याप गर्नुहोस्</translation>
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -754,6 +758,7 @@
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4744944742468440486">तपाईंले चयन गर्नुभएको पाठसम्बन्धी जानकारी</translation>
 <translation id="4771607256327216405">किबोर्डको ब्याकलाइटको चमक बढाउनुहोस्</translation>
+<translation id="4771923071974529837">भोलि</translation>
 <translation id="4773299976671772492">रोकियो</translation>
 <translation id="4778082030331381943">अमेथिस्ट</translation>
 <translation id="4782311465517282004">तपाईंले कुनै टेक्स्टमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्</translation>
@@ -816,6 +821,7 @@
 <translation id="500920857929044050">परीक्षण रोक्नुहोस्</translation>
 <translation id="5017508259293544172">छलाङ</translation>
 <translation id="5035083460461104704">थिमको रङ</translation>
+<translation id="5037240652947866174">आज</translation>
 <translation id="5038292761217083259">किबोर्डको ब्याकलाइटको एकभन्दा बढी रङ</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5049856988445523908">SIM लक गरिएको छ (<ph name="LOCK_TYPE" />)</translation>
@@ -1298,6 +1304,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">वालपेपरका सङ्ग्रहहरू</translation>
+<translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
 <translation id="7297226631177386107">फायरवाल पार गरेर HTTPS वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="7297726121602187087">गाढा हरियो</translation>
 <translation id="7301262279595293068">कृपया यो एप अपडेट हुँदै गर्दा पर्खनुहोस्</translation>
@@ -1357,6 +1364,7 @@
 <translation id="7544853251252956727">मिसाउनुहोस्</translation>
 <translation id="7550715992156305117">डायग्नोस्टिक रुटिनहरू</translation>
 <translation id="7551123448725492271">यो डिभाइस अडियो डिभाइस हो।</translation>
+<translation id="7553913964854052228">School Tools ले तपाईंको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="7559239713112547082">स्क्रिनसट प्रिभ्यू गर्नुहोस्</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
 <translation id="7561759921596375678">भोल्युम अन गर्नुहोस्</translation>

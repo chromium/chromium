@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Vrijednost unosa osobnog ključa mora biti valjana putanja.</translation>
 <translation id="388442998277590542">Nije uspjelo učitavanje stranice opcija "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Došlo je do pogreške tijekom potpisivanja proširenja.</translation>
-<translation id="4115165561519362854">Administrator ovog uređaja zahtijeva da <ph name="EXTENSION_NAME" /> ima minimalnu verziju <ph name="EXTENSION_VERSION" />. Ne može se omogućiti dok se ne ažurira na tu ili višu verziju.</translation>
 <translation id="4233778200880751280">Nije uspjelo učitavanje stranice s informacijama "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Izvoz osobnog ključa nije uspio.</translation>
 <translation id="4811956658694082538">Nije bilo moguće instalirati paket jer se uslužni proces srušio. Ponovo pokrenite Chrome i pokušajte opet.</translation>

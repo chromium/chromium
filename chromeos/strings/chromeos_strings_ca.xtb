@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
 <translation id="2320295602967756579">Activa el tema clar</translation>
 <translation id="2323506179655536734">OMÈS</translation>
+<translation id="2323755382216917952">Aquesta actualització requereix que reiniciïs l'ordinador per completar-ne la instal·lació. L'actualització pot tardar uns quants minuts a completar-se. Mentre el microprogramari s'actualitza, no desconnectis ni apaguis l'ordinador.</translation>
 <translation id="2324354238778375592">Flotant</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2346474577291266260">Excel·lent (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +450,7 @@
 <translation id="3178532070248519384">avantguardista</translation>
 <translation id="3182676044300231689">Introdueix una indicació, com ara "que soni amb més seguretat"</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
+<translation id="3188931456353313123">Aquesta actualització la proporciona el fabricant del dispositiu i Google no l'ha verificat.</translation>
 <translation id="319101249942218879">La imatge d'avatar ha canviat</translation>
 <translation id="3192947282887913208">Fitxers d'àudio</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
@@ -507,6 +509,7 @@
 <translation id="3488065109653206955">Activat parcialment</translation>
 <translation id="3492882532495507361">Oficina <ph name="OFFICE_STYLE" /> amb tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">El Chromebook mesura les dades. És possible que no coincideixin amb les dades del proveïdor.</translation>
+<translation id="349570724365779960">School Tools està connectat als alumnes</translation>
 <translation id="3502426834823382181">mostra totes les aplicacions</translation>
 <translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
@@ -632,6 +635,7 @@
 <translation id="4130750466177569591">Accepto</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4137700675046373159">dissabte</translation>
+<translation id="4139326893730851150">Actualitzacions de microprogramari</translation>
 <translation id="4143226836069425823">Toca una altra tecla del teclat per substituir</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -754,6 +758,7 @@
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
 <translation id="4771607256327216405">brillantor del teclat</translation>
+<translation id="4771923071974529837">demà</translation>
 <translation id="4773299976671772492">En pausa</translation>
 <translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret</translation>
@@ -816,6 +821,7 @@
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Color del tema</translation>
+<translation id="5037240652947866174">avui</translation>
 <translation id="5038292761217083259">teclat multicolor</translation>
 <translation id="5039804452771397117">Permet</translation>
 <translation id="5049856988445523908">SIM bloquejada (<ph name="LOCK_TYPE" />)</translation>
@@ -1174,6 +1180,7 @@
 <translation id="6673898378497337661">augmenta la brillantor del teclat</translation>
 <translation id="6692996468359469499">Obtén informació relacionada amb la teva selecció</translation>
 <translation id="6694534975463174713">cadenat</translation>
+<translation id="6700703207451721535">No es permet accedir a aquest enllaç. Consulta al professor si necessites accés.</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6712933881624804031">una vall</translation>
 <translation id="6716013206176357696">maduixes</translation>
@@ -1297,6 +1304,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sent la brisa</translation>
 <translation id="7287310195820267359">Col·leccions de fons de pantalla</translation>
+<translation id="7293429513719260019">Selecciona l'idioma</translation>
 <translation id="7297226631177386107">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc</translation>
 <translation id="7297726121602187087">Verd fosc</translation>
 <translation id="7301262279595293068">Espera mentre s'actualitza l'aplicació</translation>
@@ -1356,6 +1364,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7544853251252956727">Aleatori</translation>
 <translation id="7550715992156305117">Rutines de diagnòstic</translation>
 <translation id="7551123448725492271">El dispositiu és un dispositiu d'àudio.</translation>
+<translation id="7553913964854052228">School Tools està utilitzant el teu micròfon</translation>
 <translation id="7559239713112547082">Previsualitza la captura de pantalla</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7561759921596375678">Activa el volum</translation>

@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Swipe two fingers up</translation>
 <translation id="1126928665165112660">Not italic</translation>
+<translation id="1133751489735776037">Triple-click the mouse</translation>
 <translation id="113582498867142724"><ph name="TAG" /> collection with <ph name="NUM" /> items</translation>
 <translation id="1146441463334103638">Toggle screen on or off</translation>
 <translation id="1156488781945104845">Current time</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">Jump commands can be used to efficiently navigate through a web page.</translation>
 <translation id="1175914831232945926">Digits</translation>
+<translation id="1186712907912748007">Drag and drop in progress. <ph name="GESTURE" /> to end. Other gestures temporarily unavailable.</translation>
 <translation id="1188858454923323853">complementary</translation>
 <translation id="1189258430971676908">Practice area: drop-down lists</translation>
 <translation id="1195238899008218998">Afterword</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">A link</translation>
 <translation id="2363753371702255035">bullet</translation>
 <translation id="2365384324219615024">You can also press Enter to activate items. For example, Enter can be used to submit text in a form. To continue, press Enter.</translation>
+<translation id="2371402123699727805">Dictation active. <ph name="GESTURE" /> to stop. Other gestures temporarily unavailable.</translation>
 <translation id="2381733276052567791">Toggle speech on or off</translation>
 <translation id="2390264819538553347">To advance, press enter; to go back, press backspace.</translation>
 <translation id="2398579267367951220">Type to search the page. Press Enter to jump to the result, up or down arrows to browse results, keep typing to change your search, or Escape to cancel.</translation>
@@ -271,6 +274,7 @@
 <translation id="2723001399770238859">audio</translation>
 <translation id="2737898226590637227">No next ARIA landmark</translation>
 <translation id="2749275490991666823">Ticked</translation>
+<translation id="2751454300227269244">Move your mouth right</translation>
 <translation id="27527859628328957">Jump to next focusable item</translation>
 <translation id="2756452585631602151">Enter a custom label</translation>
 <translation id="2766299274563946262">No cell left</translation>
@@ -341,7 +345,6 @@
 <translation id="311015743332597320">Swipe four fingers right</translation>
 <translation id="3112457281078985179">To turn ChromeVox on or off, use Control+Alt+Z.</translation>
 <translation id="3115800313647508384">Turn off screen?</translation>
-<translation id="3127625407966660979">Dictation active</translation>
 <translation id="3131002934070407451">Read numbers as:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Olive</translation>
@@ -352,6 +355,7 @@
 <translation id="3153928844647607688">Table <ph name="TABLENAME" />, <ph name="TABLEROWS" /> by <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navigation</translation>
+<translation id="3167446923957429259">Move your mouth left</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{space}other{# spaces}}</translation>
 <translation id="3179119189286472195">Not link</translation>
 <translation id="3180990259147710757">Shift jaw left</translation>
@@ -462,6 +466,7 @@
 <translation id="3870295413168340326">No previous level 3 heading</translation>
 <translation id="3887399638190992181">Essential keys</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Face control paused. <ph name="GESTURE" /> to resume. Other gestures temporarily unavailable.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Previous level 6 heading</translation>
@@ -501,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{second}other{seconds}}</translation>
 <translation id="4161663686871496107">ChromeVox spoken feedback is ready</translation>
 <translation id="4176463684765177261">Disabled</translation>
-<translation id="4176677444195790114">Drag and drop in progress</translation>
 <translation id="4187322598335821254">Swipe up or down to move by line</translation>
 <translation id="4188530942454211480">Previous sentence</translation>
 <translation id="4191918948604314587">A button</translation>
@@ -546,6 +550,7 @@
 <translation id="4402014469255336455">Deep Sky Blue</translation>
 <translation id="4406249099130339147">Punctuation echo:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Show all of your teeth</translation>
 <translation id="4432457053224379116">Indian Red</translation>
 <translation id="4432896207833262240">Marked content</translation>
 <translation id="4437615272777527928">Type to search the menus. Use the up and down arrows to cycle through results. Use the left and right arrows to adjust the text caret, and to move between menus.</translation>
@@ -698,6 +703,7 @@
 <translation id="5452267669091857717">No next level 1 heading</translation>
 <translation id="5455441614648621694">Complementary</translation>
 <translation id="5462510922370980473">Page list</translation>
+<translation id="5489460663499094917">Scroll mode active. <ph name="GESTURE" /> to exit. Other gestures temporarily unavailable.</translation>
 <translation id="5495517933067991341">Essential keys: Shift</translation>
 <translation id="549602578321198708">Word</translation>
 <translation id="5513242761114685513">Context menu</translation>
@@ -1110,7 +1116,6 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Auto-completion inline and list</translation>
 <translation id="8394908167088220973">Media Play/Pause</translation>
-<translation id="8409502156784390079">Scroll mode active</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428603554127842284">level <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1188,7 +1193,6 @@
 <translation id="8986362086234534611">Forget</translation>
 <translation id="8989104346085848538">To stop any current ChromeVox speech, press the control key.</translation>
 <translation id="9014206344398081366">ChromeVox tutorial</translation>
-<translation id="9034592733577768445">Face control paused</translation>
 <translation id="9040132695316389094">Heading 1</translation>
 <translation id="9061884144798498064">Select an 8-dot braille table:</translation>
 <translation id="9063946545000394379">move to the previous character</translation>

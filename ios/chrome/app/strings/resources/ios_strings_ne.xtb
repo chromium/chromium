@@ -3,6 +3,7 @@
 <translationbundle lang="ne">
 <translation id="1005023885865154304">अटोफिल पासवर्डसम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="1005230401424685968">YYYY</translation>
+<translation id="1010225406377140704">नयाँ लिंक माग्न प्रेषकलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="1012067394176927315">सामग्री हेर्न मेनुबाट "अन गर्नुहोस्" चयन गर्नुहोस्</translation>
 <translation id="1013952917065545813">तपाईं पछि यहाँ फर्केर आफूले हालसालै बन्द गरेका ट्याबहरू पुनः खोल्न सक्नुहुन्छ</translation>
 <translation id="1016495303386450659">वस्तु अद्यावधिक गरियो</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">पात्रो</translation>
 <translation id="1164891049599601209">भ्रामक साइटमा प्रविष्टि गरिएको</translation>
 <translation id="1165039591588034296">त्रुटि</translation>
-<translation id="1172240852337942024">चयन हटाउनुहोस्</translation>
 <translation id="1172898394251786223">अर्को क्षेत्र</translation>
 <translation id="1179890706672152411">तपाईंको भण्डारण भरिएको छ</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1190609913194133056">सूचना केन्द्र</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1204075260022434100">{count,plural, =1{यो बुकमार्क तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरिएको छ}other{तपाईंको खाता ({email}) मा भएको "{title}" मा {count} वटा बुकमार्क सेभ गरिएका छन्}}</translation>
 <translation id="120431140543679678">फलो गर्नुहोस्</translation>
@@ -219,6 +220,7 @@
 <translation id="1956138802718275401">होम स्क्रिनबाट "पासवर्ड" मा जानुहोस्</translation>
 <translation id="1959441496380398824">मितिमा टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> ले तपाईंसँग <ph name="WEBSITE" /> को पासवर्ड सेयर गर्नुभएको छ</translation>
+<translation id="1962969542251276847">लक स्क्रिन</translation>
 <translation id="1963976881984600709">मानक सुरक्षा</translation>
 <translation id="1966313166384086081">साइट डेटा</translation>
 <translation id="1967461193809857427">{count,plural, =1{तपाईं आफूले Android मा खोलेको पछिल्लो ट्याब हेर्न चाहनुहुन्छ?}other{तपाईं आफूले Android मा खोलेका पछिल्ला ट्याबहरू हेर्न चाहनुहुन्छ?}}</translation>
@@ -470,6 +472,7 @@
 <translation id="3119874402040566234">तपाईंलाई साइन आउट गरिने छ र ब्राउजिङ डेटा मेटाइने छ</translation>
 <translation id="3130863904455712965">इतिहास र अन्य डेटा</translation>
 <translation id="313283613037595347">नयाँ इन्कोग्निटो ट्याब बनाउनुहोस्।</translation>
+<translation id="3138611310073113613">चयन हटाउनुहोस्</translation>
 <translation id="3143515551205905069">सिंक रद्द गर्नुहोस्</translation>
 <translation id="314837624430314508">ताजा समाचार, मूल्य ट्र्याकिङसम्बन्धी अपडेट र अन्य कुराका बारेमा जानकार रहनुहोस्।</translation>
 <translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
@@ -637,6 +640,7 @@
 <translation id="3997522473364371632">तपाईंका एड्मिनले पासवर्ड सेयर गर्ने सुविधा अफ गर्नुभएको छ।</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4004204301268239848">तपाईं आफ्ना पासवर्डहरू जुनसुकै यन्त्रमा प्रयोग गर्न सक्नुहोस् भन्नाका लागि तिनलाई तपाईंको Google खातामा सेभ गरिन्छ।</translation>
+<translation id="4011489366247192265">स्रोत भाषा</translation>
 <translation id="4018440314314549819">सेभ गरिएका पासवर्डहरू अटोफिल गर्नुहोस्</translation>
 <translation id="4021447724486050609">आफ्नो ब्राउजर अपडेट गर्नुहोस्</translation>
 <translation id="4021931095789478915">रिडिङ लिस्टमा ${url} हालियोस्</translation>
@@ -934,6 +938,7 @@
 <translation id="5414763847370083940">कुनै साइटमा यो उत्पादनको मूल्य घटेका खण्डमा तपाईंलाई अलर्ट पठाइने छ।</translation>
 <translation id="5415289094036440596">पासकीहरू सेयर गर्न मिल्दैन</translation>
 <translation id="5416455648658732408">ट्याब समूहमा सार्नुहोस्</translation>
+<translation id="542659109038405424">लक्षित भाषा</translation>
 <translation id="5429624150850059322">तपाईं फर्किँदा तपाईंले जारी राख्ने विकल्पमा ट्याप नगरेसम्म ट्याबहरू ब्लर गरिन्छन्</translation>
 <translation id="5431239785743546285">तपाईंले पढिसक्नुभएका पेजहरू</translation>
 <translation id="5431252637281434233">तपाईंलाई साइन आउट गरिने छ</translation>
@@ -1196,6 +1201,7 @@
 <translation id="6503077044568424649">सबैभन्दा धेरै भ्रमण गरिएको</translation>
 <translation id="6503763061813913607">सुरक्षा जाँच गर्ने सुविधासम्बन्धी नोटिफिकेसनहरू</translation>
 <translation id="6505334220040167806">ट्याब समूह कोल्याप्स गर्नुहोस्।</translation>
+<translation id="6506996418997555004">"<ph name="GROUP_NAME" />" ट्याब समूह सेयर गर्नुहोस्</translation>
 <translation id="6507973708545996744">आफ्ना सबै डिभाइसहरूमा "पछि पढ्न सेभ गरिएका वेबपेजको सूची" प्राप्त गर्न साइन इन गर्नुहोस्।</translation>
 <translation id="6518133107902771759">रुजू गर्नुहोस्</translation>
 <translation id="6523575793810663688">तरिका देखाउनुहोस्</translation>
@@ -1262,7 +1268,6 @@
 <translation id="672735642903863329">आफूले प्रयोग गर्ने सबै डिभाइसमा आफ्ना बुकमार्क, पासवर्डलगायतका थप कुरा प्राप्त गर्नुहोस्।</translation>
 <translation id="6732087373923685049">क्यामेरा</translation>
 <translation id="6746338529702829275">आफ्नो खातामा भएको जानकारीको समीक्षा गर्नुहोस्</translation>
-<translation id="6748108480210050150">बाट</translation>
 <translation id="6755200887046212842">खाताहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="6761393919622941301">अडियो</translation>
 <translation id="6779455296366983087">तपाईंको ब्राउजिङ डेटा मेटाइने छ</translation>
@@ -1311,7 +1316,6 @@
 <translation id="6979737339423435258">सुरूबाट नै</translation>
 <translation id="6983306615164277634">तपाईं स्थान परिवर्तन गर्न एड्रेस बार टच एण्ड होल्ड गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="6990519590575500580">Facetime</translation>
-<translation id="6998989275928107238">लाई</translation>
 <translation id="7004032350256606903">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">सेटिङमा गई यसलाई डिफल्ट ब्राउजर बनाउनुहोस्…</translation>
@@ -1415,6 +1419,7 @@
 <translation id="750493650310597496">0 चयन गरियो</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)।</translation>
 <translation id="7508728395076009983">आफ्ना इन्कोग्निटो ट्याबहरू लक गर्न Touch ID, Face ID वा पासकोड सेटअप गर्नुहोस्।</translation>
+<translation id="7512075701202892785">तपाईंलाई मन पर्ने ब्राउजर अब iPad मा उपलब्ध भएको छ</translation>
 <translation id="7512909159512473473">पासफ्रेज हाल्नुहोस्…</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7521117365186708026">Chrome बाट बढीभन्दा बढी फाइदा लिने गरी सेटअप गर्ने तरिकासम्बन्धी सुझावहरू।</translation>
@@ -1690,6 +1695,7 @@
 <translation id="8694281486652655615">यो सामग्री देखाइन्छ</translation>
 <translation id="8696297579102085705">आफ्नो डिभाइसमा पठाउनुहोस्</translation>
 <translation id="8697136149718343437">एड्रेस बार सारेर पुछारमा लैजानुहोस्</translation>
+<translation id="8703372953981978786">यो लिंकले काम गर्दैन</translation>
 <translation id="8706253136355675497">तापक्रम</translation>
 <translation id="8709409604518538305">ट्याबहरू बन्द गरिए</translation>
 <translation id="8712534545803964353">पेजमा खोज्नुहोस्…</translation>
@@ -1809,7 +1815,6 @@
 <translation id="9183733013282108610">इन्कोग्निटो खोज</translation>
 <translation id="9186762474139509529">लग गर्न थाल्नुहोस्</translation>
 <translation id="9191031968346938109">यहाँ हाल्नुहोस्…</translation>
-<translation id="9196007736149429065">यो फाइल खोल्न सकिएन</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिनअघि</translation>
 <translation id="9203116392574189331">ह्यान्डअफ</translation>
 <translation id="9203951165704618409">कस्टमाइज गरिएको ब्राउजिङ अनुभव प्राप्त गर्न एड्रेस बारलाई स्क्रिनको सिरानबाट सारेर तलपट्टि लैजानुहोस्।</translation>

@@ -22,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">以兩隻手指向上滑動</translation>
 <translation id="1126928665165112660">唔係斜體</translation>
+<translation id="1133751489735776037">連按三下滑鼠</translation>
 <translation id="113582498867142724">「<ph name="TAG" />」集 (共 <ph name="NUM" /> 個項目)</translation>
 <translation id="1146441463334103638">開或者閂螢幕</translation>
 <translation id="1156488781945104845">目前時間</translation>
 <translation id="1161762950103988776">跳轉</translation>
 <translation id="1164857107703583584">跳轉指令可用於快速瀏覽網頁。</translation>
 <translation id="1175914831232945926">數字</translation>
+<translation id="1186712907912748007">正在拖放。<ph name="GESTURE" />即可結束。其他表情暫時無法使用。</translation>
 <translation id="1188858454923323853">補充</translation>
 <translation id="1189258430971676908">練習區：下拉式清單</translation>
 <translation id="1195238899008218998">後記</translation>
@@ -209,6 +211,7 @@
 <translation id="2347456970887948350">連結</translation>
 <translation id="2363753371702255035">項目符號</translation>
 <translation id="2365384324219615024">您也可以按下 Enter 鍵以啟用項目。例如，Enter 鍵可用來提交表格中的文字。如要繼續，請按 Enter 鍵。</translation>
+<translation id="2371402123699727805">已啟用語音聽寫。<ph name="GESTURE" />即可停止。其他表情暫時無法使用。</translation>
 <translation id="2381733276052567791">開啟或關閉語音功能</translation>
 <translation id="2390264819538553347">如要前往下一頁，請按 Enter 鍵；如要返回上一頁，請按 Backspace 鍵。</translation>
 <translation id="2398579267367951220">輸入文字即可在頁面搜尋。按 Enter 鍵可跳到結果，按向上或向下鍵可瀏覽結果，繼續輸入文字可變更搜尋，按 Esc 鍵可取消。</translation>
@@ -342,7 +345,6 @@
 <translation id="311015743332597320">以四隻手指向右滑動</translation>
 <translation id="3112457281078985179">如要開啟或關閉 ChromeVox，請按 Control + Alt + Z 鍵。</translation>
 <translation id="3115800313647508384">要關閉螢幕嗎？</translation>
-<translation id="3127625407966660979">已啟用語音聽寫</translation>
 <translation id="3131002934070407451">朗讀數字方式：</translation>
 <translation id="3134461040845705080">唯讀</translation>
 <translation id="3137663468179739624">橄欖綠色</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">冇上一個第 3 級標題</translation>
 <translation id="3887399638190992181">重要按鍵</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">人臉操控已暫停。<ph name="GESTURE" />即可恢復。其他表情暫時無法使用。</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3907138069015388678">清單網格</translation>
 <translation id="3909320334364316587">上一個第 6 級標題。</translation>
@@ -503,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{秒}other{秒}}</translation>
 <translation id="4161663686871496107">ChromeVox 互動朗讀已啟用</translation>
 <translation id="4176463684765177261">已停用</translation>
-<translation id="4176677444195790114">正在拖放</translation>
 <translation id="4187322598335821254">向上或向下滑動即可在行之間移動</translation>
 <translation id="4188530942454211480">上一句</translation>
 <translation id="4191918948604314587">按鈕</translation>
@@ -548,6 +550,7 @@
 <translation id="4402014469255336455">深天藍色</translation>
 <translation id="4406249099130339147">標點符號語音提示：</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /> 鍵</translation>
+<translation id="4423525817792153232">露出所有牙齒</translation>
 <translation id="4432457053224379116">印度紅色</translation>
 <translation id="4432896207833262240">已標示的內容</translation>
 <translation id="4437615272777527928">輸入要喺選單度搵嘅字詞。用向上/向下箭咀就可以切換搜尋結果，用向左/向右箭咀就可以調整文字插入符號，同埋喺選單之間移動。</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">冇下一個第 1 級標題</translation>
 <translation id="5455441614648621694">補充</translation>
 <translation id="5462510922370980473">頁面清單</translation>
+<translation id="5489460663499094917">已啟用捲動模式。<ph name="GESTURE" />即可離開。其他表情暫時無法使用。</translation>
 <translation id="5495517933067991341">重要按鍵：Shift 鍵</translation>
 <translation id="549602578321198708">字詞</translation>
 <translation id="5513242761114685513">內容選單</translation>
@@ -1111,7 +1115,6 @@
 <translation id="8378855320830505539">區域</translation>
 <translation id="8382679411218029383">自動完成內嵌元素和清單</translation>
 <translation id="8394908167088220973">媒體播放/暫停</translation>
-<translation id="8409502156784390079">已啟用捲動模式</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428603554127842284">第 <ph name="DEPTH" /> 級</translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1189,7 +1192,6 @@
 <translation id="8986362086234534611">清除</translation>
 <translation id="8989104346085848538">如要停止目前的任何 ChromeVox 朗讀，請按下 Control 鍵。</translation>
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
-<translation id="9034592733577768445">人臉操控已暫停</translation>
 <translation id="9040132695316389094">標題 1</translation>
 <translation id="9061884144798498064">選取 8 點點字表：</translation>
 <translation id="9063946545000394379">移去上一個字元</translation>

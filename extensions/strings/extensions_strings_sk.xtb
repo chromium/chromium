@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Vstupná hodnota pre súkromný kľúč musí byť platná cesta.</translation>
 <translation id="388442998277590542">Nepodarilo sa načítať stránku s možnosťami „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Pri podpisovaní rozšírenia sa vyskytla chyba.</translation>
-<translation id="4115165561519362854">Správca tohto zariadenia vyžaduje, aby ste používali rozšírenie <ph name="EXTENSION_NAME" /> aspoň vo verzii <ph name="EXTENSION_VERSION" />. Kým nebude aktualizované na túto alebo vyššiu verziu, nedá sa povoliť.</translation>
 <translation id="4233778200880751280">Informačnú stránku <ph name="ABOUT_PAGE" /> sa nepodarilo načítať.</translation>
 <translation id="471800408830181311">Výstup súkromného kľúča zlyhal.</translation>
 <translation id="4811956658694082538">Balík sa nepodarilo nainštalovať z dôvodu zlyhania procesu nástroja. Reštartujte prehliadač Chrome a skúste to znova.</translation>

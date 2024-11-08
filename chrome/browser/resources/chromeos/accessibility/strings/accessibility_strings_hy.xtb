@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"ա": "արամ", "բ": "բերդ", "գ": "գորիս", "դ": "դդում", "ե": "երևան", "զ": "զանգակ", "է": "էպոս", "ը": "ընկույզ", "թ": "թիթեռ", "ժ": "ժիրայր","ի": "իջևան", "լ": "լուսին", "խ": "խնձոր", "ծ": "ծիրան", "կ": "կապան","հ": "հաղարջ", "ձ": "ձմերուկ", "ղ": "ղևոնդ", "ճ": "ճանճ", "մ": "մասուր", "յ": "յասաման", "ն": "նարգիզ", "շ": "շագանակ","ո": "ոզնի", "չ": "չինար", "պ": "պողոս", "ջ": "ջերմուկ", "ռ": "ռեհան", "ս": "սևան", "վ": "վարդան", "տ": "տաշիր", "ր": "րաֆֆի", "ց": "ցոլակ", "ու": "ուռենի", "փ": "փայլակ", "ք": "քաջարան", "և": "և", "օ": "օհան"}</translation>
 <translation id="1120938014254001895">Երկու մատը սահեցրեք վերև</translation>
 <translation id="1126928665165112660">Շեղն անջատված է</translation>
+<translation id="1133751489735776037">Երեք անգամ սեղմել մկնիկի ձախ կոճակը</translation>
 <translation id="113582498867142724"><ph name="TAG" />-ի հավաքածու՝ <ph name="NUM" /> տարր</translation>
 <translation id="1146441463334103638">Միացնել/անջատել էկրանը</translation>
 <translation id="1156488781945104845">Ընթացիկ ժամանակը</translation>
@@ -134,7 +135,7 @@
 <translation id="1756785467854861272">Մուգ ծիրանեգույն</translation>
 <translation id="1758693804775271377">Այս թեմայով դասերը դիտելու համար մատը սահեցրեք ձախ կամ աջ</translation>
 <translation id="1765245556747822181">Մատը սահեցրեք վերև</translation>
-<translation id="1771761307086386028">Ոլորել աջ</translation>
+<translation id="1771761307086386028">Թերթել աջ</translation>
 <translation id="1781173782405573156">Բաց թողնել սեղմումը</translation>
 <translation id="1787176709638001873">Գաղտնաբառի դաշտ</translation>
 <translation id="1795438342141780114">Վերակայել նշորդը՝ բերելով էկրանի կենտրոն</translation>
@@ -271,6 +272,7 @@
 <translation id="2723001399770238859">audio</translation>
 <translation id="2737898226590637227">Հաջորդ ARIA ուղենիշ չկա</translation>
 <translation id="2749275490991666823">Ընտրված է</translation>
+<translation id="2751454300227269244">Բերանը շարժեք դեպի աջ</translation>
 <translation id="27527859628328957">Անցնել հաջորդ ակտիվացվող տարրին</translation>
 <translation id="2756452585631602151">Մուտքագրեք հատուկ պիտակ</translation>
 <translation id="2766299274563946262">Ձախ կողմում վանդակ չկա</translation>
@@ -326,7 +328,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">2-րդ մակարդակի հաջորդ վերնագիր</translation>
 <translation id="3078740164268491126">աղյուսակ</translation>
-<translation id="3082249673510793544">Ոլորել հետ</translation>
+<translation id="3082249673510793544">Թերթել հետ</translation>
 <translation id="3084806535845658316">առանց հնչյունավորման</translation>
 <translation id="3086746722712840547">note</translation>
 <translation id="308736057934395497">Անջատում է էկրանը, որպեսզի այլ մարդիկ չկարողանան տեսնել դրա բովանդակությունը։ Այն կարող եք ցանկացած պահի նորից միացնել՝ սեղմելով Որոնում + Ավելացնել պայծառությունը։</translation>
@@ -341,7 +343,6 @@
 <translation id="311015743332597320">Չորս մատը սահեցրեք աջ</translation>
 <translation id="3112457281078985179">ChromeVox-ը միացնելու կամ անջատելու համար սեղմեք Control + Alt + Z ստեղները:</translation>
 <translation id="3115800313647508384">Անջատե՞լ էկրանը</translation>
-<translation id="3127625407966660979">Թելադրման ռեժիմն ակտիվ է</translation>
 <translation id="3131002934070407451">Կարդալ թվերը որպես՝</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Ձիթենու գույն</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Աղյուսակ <ph name="TABLENAME" />․ <ph name="TABLEROWS" /> տող, <ph name="TABLECOLS" /> սյունակ</translation>
 <translation id="3159493096109238499">Բեժ</translation>
 <translation id="316542773973815724">Նավիգացիա</translation>
+<translation id="3167446923957429259">Բերանը շարժեք դեպի ձախ</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{բացատ}one{# բացատ}other{# բացատ}}</translation>
 <translation id="3179119189286472195">Հղումն անջատված է</translation>
 <translation id="3180990259147710757">Ծնոտը ձախ տարեք</translation>
@@ -480,7 +482,7 @@
 <translation id="4002709828007663583">Մուգ խոլորձագույն</translation>
 <translation id="4004802134384979325">նշված</translation>
 <translation id="4006140876663370126">պատկեր</translation>
-<translation id="4021716437419160885">Ոլորել վար</translation>
+<translation id="4021716437419160885">Թերթել ներքև</translation>
 <translation id="4035381225449278841">Գարուն</translation>
 <translation id="4038098586530338813">կրկնել</translation>
 <translation id="4047216625641135770">Նշան</translation>
@@ -501,7 +503,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{վայրկյան}one{վայրկյան}other{վայրկյան}}</translation>
 <translation id="4161663686871496107">ChromeVox ընդլայնումը միացված է</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
-<translation id="4176677444195790114">Քաշել և թողնելն ընթացքի մեջ է</translation>
 <translation id="4187322598335821254">Սահեցրեք վերև կամ ներքև՝ տողերի միջև անցնելու համար</translation>
 <translation id="4188530942454211480">Նախորդ նախադասությունը</translation>
 <translation id="4191918948604314587">Կոճակ</translation>
@@ -540,12 +541,13 @@
 <translation id="4372705107434148843">Անջատել հնչյունավորումը</translation>
 <translation id="4376316291247992553">Փոխարկել գրաֆիկական տարրերը բրայլյան գրի</translation>
 <translation id="437809255587011096">Նշել տեքստի ոճը</translation>
-<translation id="4378308539633073595">Ոլորել առաջ</translation>
+<translation id="4378308539633073595">Թերթել առաջ</translation>
 <translation id="4384583879834880242">Հարց ու պատասխան</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Մուգ երկնագույն</translation>
 <translation id="4406249099130339147">Կետադրական նշանների արձագանք՝</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Ցույց տալ բոլոր ատամները</translation>
 <translation id="4432457053224379116">Հնդկական կարմիր</translation>
 <translation id="4432896207833262240">Նշված բովանդակություն</translation>
 <translation id="4437615272777527928">Մուտքագրեք տեքստը, որն անհրաժեշտ է գտնել ընտրացանկերում։ Մեկ արդյունքից մյուսն անցնելու համար օգտագործեք «վեր» և «վար» սլաքները։ Տեքստի նշորդը տեղաշարժելու և մեկ ընտրացանկից մյուսն անցնելու համար օգտագործեք «ձախ» և «աջ» սլաքները։</translation>
@@ -617,7 +619,7 @@
 <translation id="4911349081560453449">Նախորդ նշավանդակ չկա</translation>
 <translation id="4919186071145887492">Չհաջողվեց <ph name="COMMAND" />, նորից փորձեք</translation>
 <translation id="492295894462528572">Ներածություն</translation>
-<translation id="495046168593986294">Ոլորել վեր</translation>
+<translation id="495046168593986294">Թերթել վերև</translation>
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4953585991029886728">Տեքստի խմբագրում</translation>
 <translation id="4964701498510730546">տեքստային դաշտը դատարկ է</translation>
@@ -793,7 +795,7 @@
 <translation id="6006064078185310784">{COUNT,plural, =1{ետշեղգիծ}one{# ետշեղգիծ}other{# ետշեղգիծ}}</translation>
 <translation id="6010616110396250088">Դասավորությունը նվազման կարգով</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
-<translation id="602001110135236999">Ոլորել ձախ</translation>
+<translation id="602001110135236999">Թերթել ձախ</translation>
 <translation id="6034000775414344507">Բաց մոխրագույն</translation>
 <translation id="6036135911048686884">Ուսումնասիրեք հպումով</translation>
 <translation id="6037602951055904232">Շարժվել առաջ</translation>
@@ -1071,7 +1073,7 @@
 <translation id="8096975275316362544">Անանուխային կրեմագույն</translation>
 <translation id="8098587210054821856">Մետալիկ մոխրագույն</translation>
 <translation id="8121539003537428024">Միացնել իրադարձությունների բոլոր զտիչները</translation>
-<translation id="8123975449645947908">Ոլորել հետ</translation>
+<translation id="8123975449645947908">Թերթել հետ</translation>
 <translation id="8126355825906412872">Ժպտացեք</translation>
 <translation id="8126386426083591964">5-րդ մակարդակի նախորդ վերնագիր չկա</translation>
 <translation id="812886159861361726">«<ph name="FILE_NAME" />» ֆայլի ներբեռնումը դադարեցվեց</translation>
@@ -1110,7 +1112,6 @@
 <translation id="8378855320830505539">Մարզ</translation>
 <translation id="8382679411218029383">Ինքնալրացման ներտող և ցանկ</translation>
 <translation id="8394908167088220973">Մեդիայի նվագարկում/դադար</translation>
-<translation id="8409502156784390079">Թերթելու ռեժիմն ակտիվ է</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428603554127842284">մակարդակ <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1188,7 +1189,6 @@
 <translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="8989104346085848538">ChromeVox-ում տեքստի հնչեցումն անջատելու համար սեղմեք Ctrl ստեղնը։</translation>
 <translation id="9014206344398081366">ChromeVox-ի ուղեցույց</translation>
-<translation id="9034592733577768445">Դեմքի հետագծումը դադարեցված է</translation>
 <translation id="9040132695316389094">Վերնագիր 1</translation>
 <translation id="9061884144798498064">Ընտրեք 8 կետանի բրայլյան աղյուսակը`</translation>
 <translation id="9063946545000394379">անցնել նախորդ նիշին</translation>

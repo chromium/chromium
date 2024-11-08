@@ -63,6 +63,7 @@
 <translation id="1104409666019087579">Algunos campos obligatorios están vacíos. Rellénalos antes de guardar.</translation>
 <translation id="1104860668737945357">Botón Gestionar contraseñas: actívalo para ver y gestionar tus contraseñas en la configuración de Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
+<translation id="1110809716549020493">¿No se ha rellenado la tarjeta virtual? Haz clic en la información de la tarjeta virtual para copiarla en el portapapeles. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" /></translation>
 <translation id="1110994991967754504">Seleccionar permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">¿Guardar IBAN?</translation>
 <translation id="1113869188872983271">&amp;Deshacer reorganización</translation>
@@ -544,6 +545,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1947454675006758438">Grapado en la parte superior derecha</translation>
 <translation id="1953729392594614704">Si bloqueas <ph name="TOPIC" />, también se bloquearán los temas relacionados, aunque estén activos</translation>
 <translation id="1954847915560574887">A3x3</translation>
+<translation id="1955773397805078763">Añadir método de pago</translation>
 <translation id="1956486093533522234">Busca, protege o borra tu dispositivo</translation>
 <translation id="1957274554973357626">Monólogos de humor</translation>
 <translation id="1958218078413065209">Tu mejor puntuación es <ph name="SCORE" />.</translation>
@@ -1041,7 +1043,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="290376772003165898">¿La página no está en <ph name="LANGUAGE" />?</translation>
 <translation id="2904165004205947971">Gestionar tu información</translation>
 <translation id="2905107382358353958">Alerta sobre nueva configuración de pago</translation>
-<translation id="2909120679423833511">Tu organización, <ph name="MANAGER" />, requiere que inicies sesión con un perfil específico</translation>
 <translation id="2909946352844186028">Se ha detectado un cambio de red.</translation>
 <translation id="2911255567212929079">Aprendizaje automático e inteligencia artificial</translation>
 <translation id="2911973620368911614">ID de usuario de contabilidad de tareas</translation>
@@ -1632,6 +1633,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3905894480064208252">{0,plural, =1{No se ha podido transferir el archivo}other{No se han podido transferir <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3909899182024383590">La información guardada y la página de <ph name="WEBSITE" /> se envían a Google. Puede que las vean revisores humanos para mejorar esta función.</translation>
 <translation id="3910231615117880630">Más información sobre el contenido insertado</translation>
 <translation id="3915878244842478983">Chrome ha tenido problemas para obtener tu información</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los sitios que tienen una antigüedad superior a 30 días. Si visitas un sitio de nuevo, es posible que vuelva a aparecer en la lista. También puedes bloquear las sugerencias de anuncios de un sitio y desactivar los anuncios sugeridos por sitios en cualquier momento desde la configuración de Chrome.</translation>
@@ -3054,7 +3056,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6507117483253822672">Escribe con más confianza en cualquier lugar de la Web</translation>
 <translation id="6508722015517270189">Reinicia Chrome</translation>
 <translation id="6513005815064132016">Puede solicitar permiso para monitorizar la posición de tu cámara</translation>
-<translation id="6514932395202175590">Para continuar, inicia sesión en <ph name="EMAIL" /> y configura un perfil nuevo</translation>
 <translation id="6517596291481585650">Advertencia: Esta política no se ha combinado como lista tal como se especifica en la política porque no es una lista.</translation>
 <translation id="6518133107902771759">Verificar</translation>
 <translation id="6519885440226079262">Puede solicitar permiso para el seguimiento de manos</translation>
@@ -3228,6 +3229,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="683108308100148227">Ocultar elemento</translation>
 <translation id="6832753933931306326">El formulario se ha rellenado</translation>
+<translation id="6837361937093656245">Es necesario iniciar sesión</translation>
 <translation id="6841864657731852591">Cilindro de huecograbado</translation>
 <translation id="6842196666980060516">184x260 mm</translation>
 <translation id="6844998850832008753">Seguimiento de manos permitido esta vez</translation>
@@ -3620,6 +3622,7 @@ Más información:
 <translation id="7525804896095537619">El nombre no puede estar vacío</translation>
 <translation id="7526934274050461096">Tu conexión con este sitio web no es privada</translation>
 <translation id="7529884293139707752">Educación en casa</translation>
+<translation id="7531464389616946220">Escanear tarjeta</translation>
 <translation id="7534987659046836932">Sobre C7</translation>
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Con la tecnología de Google</translation>
@@ -3983,7 +3986,6 @@ Más información:
 <translation id="8194412401381329820">No puedes usar esta página desde una cuenta gestionada en este dispositivo no gestionado. Si utilizas esta página, se bloquearán todas las cuentas gestionadas, excepto las gestionadas por la misma entidad que este dispositivo (cuentas afiliadas).</translation>
 <translation id="8194797478851900357">&amp;Deshacer movimiento</translation>
 <translation id="8194956568907463262">Juegos de disparos</translation>
-<translation id="819931074683918462">Tu organización requiere que inicies sesión con un perfil específico.</translation>
 <translation id="8199437620497683918">Disco óptico (brillante)</translation>
 <translation id="8199730148066603000">No se permite previsualizar URLs que no sean HTTPS.</translation>
 <translation id="8200772114523450471">Reanudar</translation>

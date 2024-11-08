@@ -78,10 +78,8 @@
 <translation id="228293613124499805">اکثر سایت‌هایی که بازدید می‌کنید احتمالاً در دستگاهتان داده ذخیره می‌کنند و هدف از این کار، اغلب بهبود تجربه شما با ذخیره اولویت‌ها یا اطلاعاتی است که با سایت هم‌رسانی می‌کنید. توصیه می‌کنیم این تنظیم را روشن نگه دارید.</translation>
 <translation id="2289270750774289114">وقتی سایتی می‌خواهد دستگا‌ه‌های بلوتوث اطراف را پیدا کند، سؤال شود (توصیه می‌شود)</translation>
 <translation id="2315043854645842844">انتخاب گواهی سمت کلاینت توسط سیستم‌عامل پشتیبانی نمی‌شود.</translation>
-<translation id="2321958826496381788">لغزنده را بکشید تا زمانی که بتوانید این متن را به راحتی بخوانید. بعد از دو ضربه متوالی روی یک پاراگراف، اندازه نوشتار حداقل باید به این بزرگی باشد.</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2379925928934107488">‏استفاده از زمینه تاریک برای سایت‌ها وقتی Chrome از زمینه تاریک استفاده می‌کند (هرگاه ممکن باشد)</translation>
-<translation id="2387895666653383613">مقیاس‌گذاری نوشتار</translation>
 <translation id="2390272837142897736">افزایش بزرگ‌نمایی</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> مگابایت</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">جاوااسکریپت را برای سایتی خاص مجاز کنید.</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2677748264148917807">خروج</translation>
-<translation id="2678468611080193228">کوکی‌های شخص ثالث را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر است اما ویژگی‌های سایت به احتمال زیاد کار می‌کنند</translation>
 <translation id="2682367912565197520">حذف سطح بزرگ‌نمایی ذخیره‌شده</translation>
 <translation id="2683434792633810741">حذف و بازنشانی شود؟</translation>
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">کوکی‌های شخص ثالث مسدود شده است</translation>
 <translation id="3448554387819310837">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از دوربین را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از دوربین استفاده کنند.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{‏Chrome کوکی‌ها را فردا دوباره مسدود خواهد کرد}one{‏Chrome کوکی‌ها را # روز دیگر دوباره مسدود خواهد کرد}other{‏Chrome کوکی‌ها را # روز دیگر دوباره مسدود خواهد کرد}}</translation>
 <translation id="3521663503435878242">سایت‌های تحت <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">به سایت‌ها اجازه داده نشود دست‌هایتان را ردیابی کنند</translation>
 <translation id="3536227077203206203">این بار مجاز شد</translation>
@@ -478,6 +474,7 @@
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8168435359814927499">محتوا</translation>
+<translation id="818487310457576362">برای خروج از حالت تمام‌صفحه، از کنار صفحه‌نمایش بکشید.</translation>
 <translation id="8186479265534291036">سایت کار نمی‌کند؟ کوکی‌های شخص ثالث مسدود شده است</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> مجاز است</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>

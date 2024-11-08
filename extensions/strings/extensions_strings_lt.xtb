@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Privačiojo rakto įvesties vertė turi būti galiojantis kelias.</translation>
 <translation id="388442998277590542">Nepavyko įkelti parinkčių puslapio „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Pasirašant plėtinį įvyko klaida.</translation>
-<translation id="4115165561519362854">Šio kompiuterio administratorius reikalauja, kad „<ph name="EXTENSION_NAME" />“ būtų bent <ph name="EXTENSION_VERSION" /> versijos. Negalėsite įgalinti plėtinio, kol neatnaujinsite jo į nurodytą (ar naujesnę) versiją.</translation>
 <translation id="4233778200880751280">Nepavyko įkelti informacijos puslapio „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="471800408830181311">Privačiojo rakto išvestis nepavyko.</translation>
 <translation id="4811956658694082538">Nepavyko įdiegti paketo, nes užstrigo priemonės procesas. Bandykite iš naujo paleisti „Chrome“ ir bandykite dar kartą.</translation>

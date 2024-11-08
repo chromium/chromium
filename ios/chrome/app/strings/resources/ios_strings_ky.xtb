@@ -3,6 +3,7 @@
 <translationbundle lang="ky">
 <translation id="1005023885865154304">Сырсөздөрдү автотолтуруу параметрлерин ачыңыз</translation>
 <translation id="1005230401424685968">ЖЖЖЖ</translation>
+<translation id="1010225406377140704">Жаңы шилтемени суроо үчүн жөнөтүүчүгө кайрылыңыз</translation>
 <translation id="1012067394176927315">Контентти көрүү үчүн менюдан "күйгүзүү" параметрин тандаңыз</translation>
 <translation id="1013952917065545813">Бул жерге кайтып келип, жакында жабылган өтмөктөрдү кайра ача аласыз</translation>
 <translation id="1016495303386450659">Нерсе жаңырды</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">Жылнаама</translation>
 <translation id="1164891049599601209">Жалган сайтка киргизилди</translation>
 <translation id="1165039591588034296">Ката</translation>
-<translation id="1172240852337942024">Тандоону жоюу</translation>
 <translation id="1172898394251786223">Кийинки талаа</translation>
 <translation id="1179890706672152411">Сактагыч толуп калды</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
+<translation id="1190609913194133056">Билдирмелер борбору</translation>
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1204075260022434100">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{{count} кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
 <translation id="120431140543679678">Жазылуу</translation>
@@ -219,6 +220,7 @@
 <translation id="1956138802718275401">Башкы экрандан сырсөздөргө өтүңүз</translation>
 <translation id="1959441496380398824">Күндү коё бербей басып туруңуз.</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> сиз менен <ph name="WEBSITE" /> үчүн сырсөздү бөлүштү</translation>
+<translation id="1962969542251276847">Кулпуланган экран</translation>
 <translation id="1963976881984600709">Стандарттуу коргоо</translation>
 <translation id="1966313166384086081">сайттагы маалымат</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android'де көргөн өтмөктү ачасызбы?}other{Android'де көргөн өтмөктү ачасызбы?}}</translation>
@@ -1196,6 +1198,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6503077044568424649">Көп көрүлгөн</translation>
 <translation id="6503763061813913607">Коопсуздукту текшерүү функциясынын билдирмелери</translation>
 <translation id="6505334220040167806">Өтмөктөр тобун жыйыштыруу.</translation>
+<translation id="6506996418997555004">"<ph name="GROUP_NAME" />" өтмөктөр тобун бөлүшүү</translation>
 <translation id="6507973708545996744">Окуу тизмеңизди бардык түзмөктөрүңүздө көрүү үчүн аккаунтуңузга кириңиз.</translation>
 <translation id="6518133107902771759">Текшерүү</translation>
 <translation id="6523575793810663688">Кантип?</translation>
@@ -1262,7 +1265,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="672735642903863329">Бардык түзмөктөрүңүздө кыстармаларды, сырсөздөрдү жана башка нерселерди алыңыз.</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6746338529702829275">Аккаунтуңуздагы нерселерди карап чыгыңыз</translation>
-<translation id="6748108480210050150">Кимден</translation>
 <translation id="6755200887046212842">Аккаунттарды башкаруу</translation>
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6779455296366983087">Серептөө дайындарыңыз өчүрүлөт</translation>
@@ -1311,7 +1313,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6979737339423435258">Бардыгы</translation>
 <translation id="6983306615164277634">Ордун өзгөртүү үчүн дарек тилкесин коё бербей басып турсаңыз болот.</translation>
 <translation id="6990519590575500580">Facetime</translation>
-<translation id="6998989275928107238">Кимге</translation>
 <translation id="7004032350256606903">Уюмуңуз жекече серептөөнү талап кылат.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Параметрлерде демейки катары коюу…</translation>
@@ -1415,6 +1416,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="750493650310597496">0 тандалды</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Жашыруун өтмөктөрдү кулпулоо үчүн Touch ID, Face ID же өткөрүүчү кодду жөндөңүз.</translation>
+<translation id="7512075701202892785">Сизге жаккан серепчи эми iPad'та</translation>
 <translation id="7512909159512473473">Сыр сүйлөмдү киргизиңиз…</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7521117365186708026">Chrome'дун бардык мүмкүнчүлүктөрүн пайдалануу үчүн тууралоо боюнча кеңештер.</translation>
@@ -1690,6 +1692,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8694281486652655615">Бул нерсени көрсөтөт</translation>
 <translation id="8696297579102085705">Түзмөгүңүзгө жөнөтүү</translation>
 <translation id="8697136149718343437">Дарек тилкесин ылдый жылдыруу</translation>
+<translation id="8703372953981978786">Бул шилтеме иштебейт</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8709409604518538305">Өтмөктөр жабылды</translation>
 <translation id="8712534545803964353">Барактан табуу…</translation>
@@ -1809,7 +1812,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="9183733013282108610">Жашыруун издөө</translation>
 <translation id="9186762474139509529">Таржымалын жыйнап баштоо</translation>
 <translation id="9191031968346938109">Кошуу…</translation>
-<translation id="9196007736149429065">Бул файл ачылбай койду</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> күн мурун</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Ыңгайлуу карап чыгуу үчүн дарек тилкесин өйдө жактан ылдый жылдырыңыз.</translation>

@@ -78,10 +78,8 @@
 <translation id="228293613124499805">Таны зочилсон ихэнх сайт ихэвчлэн түүнтэй хуваалцсан сонголт эсвэл мэдээллийг хадгалснаар хэрэглээг тань сайжруулахын тулд өгөгдлийг төхөөрөмжид тань хадгалдаг байж магадгүй. Бид энэ тохиргоог асаалтай байлгахыг зөвлөдөг.</translation>
 <translation id="2289270750774289114">Сайт ойролцоох Bluetooth төхөөрөмжийг илрүүлэх хүсэлтэй үед асуух (санал болгосон)</translation>
 <translation id="2315043854645842844">Үйлчлүүлэгч талын сертификатын сонголтыг үйлдлийн системээс дэмжээгүй.</translation>
-<translation id="2321958826496381788">Уншихад тохиромжтой болох хүртэл хүрээг томруулж татна уу. Бичвэр дээр хоёр удаа товшсоны дараагаар текстийн хэмжээ томорч харагдана.</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2379925928934107488">Боломжтой бол Chrome бараан загвар ашигласан тохиолдолд сайтуудад бараан загвар ашиглана уу</translation>
-<translation id="2387895666653383613">Текстийн хэмжээс</translation>
 <translation id="2390272837142897736">Томруулалтыг нэмэх</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}}</translation>
@@ -106,7 +104,6 @@
 <translation id="2621115761605608342">JavaScript-г тодорхой сайтад зөвшөөрнө үү.</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
-<translation id="2678468611080193228">Гуравдагч талын күүкинүүдийг түр зөвшөөрч үзээрэй. Энэ нь хамгаалалт багасах хэдий ч сайтын онцлогууд ажиллах магадлал өндөр байна гэсэн үг юм</translation>
 <translation id="2682367912565197520">Хадгалсан томруулах түвшнийг устгах</translation>
 <translation id="2683434792633810741">Устгаж, шинэчлэх үү?</translation>
 <translation id="2713106313042589954">Камерыг унтраах</translation>
@@ -158,7 +155,6 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Гуравдагч талын күүкинүүдийг блоклосон</translation>
 <translation id="3448554387819310837">Асаалттай үед сайтууд таны камерыг ашиглах боломжтой. Унтраалттай үед сайтууд таны камерыг ашиглах боломжгүй.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Chrome күүкинүүдийг маргааш дахин блоклоно}other{Chrome күүкинүүдийг дахин блоклоход # хоног үлдлээ}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" />-н сайтууд</translation>
 <translation id="3523447078673133727">Сайтуудад таны гарыг хянахыг зөвшөөрөхгүй</translation>
 <translation id="3536227077203206203">Энэ удаад зөвшөөрсөн</translation>
@@ -478,6 +474,7 @@
 <translation id="813082847718468539">Сайтын мэдээллийг үзэх</translation>
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8168435359814927499">Агуулга</translation>
+<translation id="818487310457576362">Бүтэн дэлгэцээс гарахын тулд дэлгэцийн хажуу талаас чирнэ үү.</translation>
 <translation id="8186479265534291036">Сайт ажиллахгүй байна уу? Гуравдагч талын күүкинүүдийг блоклосон</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />-г зөвшөөрсөн</translation>
 <translation id="8200772114523450471">Сэргээх</translation>

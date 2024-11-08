@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">Қолданба</translation>
 <translation id="3213571860604332401">Сілтемені бетбелгі ретінде сақтау</translation>
 <translation id="3217205077783620295">Дыбыс деңгейі қосылып тұр. Түймені қайта бассаңыз, дауыс өшеді.</translation>
-<translation id="3218561536255328229">Сенсорлық тақтаны қосу үшін Esc пернесін 5 рет басыңыз.</translation>
 <translation id="3226991577105957773">Тағы <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Батареяны үнемдеу режимі өшірілді.</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">Қолданбалар ретін өзгерту үшін кез келген жерден басып тұрыңыз.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> қолданбасын <ph name="IN_PLACE_APP" /> үстіне сүйреп әкеліп қойсаңыз, қалта жасалады.</translation>
 <translation id="5397578532367286026">Бұл пайдаланушының дерек трафигі мен тарихын chrome.com мекенжайындағы басқарушысы (<ph name="MANAGER_EMAIL" />) арқылы шолуға болады.</translation>
+<translation id="540338817371815859">Альбомдық</translation>
 <translation id="540713187982329711">Хотспотты қосу/өшіру. Хотспот қосулы, ешқандай құрылғы жалғанбады.</translation>
 <translation id="5409208741270395213">Тапсырманы аяқталды деп белгілеу</translation>
 <translation id="5413656666631274079">Параметрлер беті</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">Құрылғыны жаңартыңыз</translation>
 <translation id="6929081673585394903">Басқару элементтерін көрсету</translation>
 <translation id="6931576957638141829">Сақтау орны</translation>
+<translation id="6935857786205183008">Портреттік</translation>
 <translation id="6942518653766415536">Жазба форматының мәзірі</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6945922087561257829">Телефоныңыз мобильдік желіні пайдаланып жатыр. Телефоныңыз бен Chromebook бір Wi-Fi желісінде екеніне көз жеткізіп, әрекетті қайталаңыз. <ph name="LEARN_MORE" /></translation>

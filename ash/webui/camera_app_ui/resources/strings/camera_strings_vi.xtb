@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="2244252133441425811">Bật bộ chọn FPS video</translation>
 <translation id="2271433936731426666">Cho phép ảnh chụp nhanh có kích thước đầy đủ khi quay video</translation>
-<translation id="2281736597583450397">Chi tiết trở nên sắc nét hơn nhờ tính năng thu phóng nâng cao</translation>
 <translation id="2320741269052147773">Xoay trái</translation>
 <translation id="2360840973209616515">Quản trị viên của bạn quản lý ứng dụng camera.
         Hãy liên hệ với quản trị viên để biết chi tiết.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Thu nhỏ</translation>
 <translation id="5976160379964388480">Khác</translation>
 <translation id="6073451960410192870">Dừng ghi</translation>
-<translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6197807149213783179">Lưu siêu dữ liệu</translation>
 <translation id="6233780560267770709">3 x 3</translation>
 <translation id="6243827288366940320">Tỷ lệ vàng</translation>
@@ -122,7 +120,6 @@
 Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc video, vui lòng đính kèm ví dụ về ảnh hoặc video và mô tả vấn đề bạn gặp phải. (Ví dụ: ảnh quá tối hoặc chủ thể trong ảnh không nét.)</translation>
 <translation id="6519884562954018934">Kết nối với <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
-<translation id="6586509689874700895">Trước tiên, hãy nhấn <ph name="BUTTON_NAME" /> để phóng to. Sau khi chụp ảnh, bạn sẽ thấy các chi tiết sắc nét hơn.</translation>
 <translation id="659539649712855529">Đã sao chép <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Hiện mọi độ phân giải</translation>
 <translation id="6631515515009660915">Tắt gương</translation>
@@ -168,7 +165,6 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="8609951387004618906">Mở <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Bật/tắt micrô. Chế độ tắt tiếng đang bật</translation>
-<translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8732462232047530626">Xem trước siêu dữ liệu</translation>
 <translation id="874854738381978209">Đã phát hiện mạng Wi-Fi.</translation>

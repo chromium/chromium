@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">ଇମେଜଗୁଡ଼ିକ ତିଆରି କରାଯାଉଛି...</translation>
 <translation id="1116694919640316211">ବିଷୟରେ</translation>
 <translation id="1118572504348554005">ଆପଣ ଆମକୁ ରିପୋର୍ଟ କରିଥିବା ବଗ ଏବଂ ଅନ୍ୟ ସମସ୍ୟାଗୁଡ଼ିକର ଟ୍ରବୁଲସୁଟ କରିବା ପାଇଁ ଏହି ଫର୍ମ ମାଧ୍ୟମରେ ଦାଖଲ କରାଯାଇଥିବା ମତାମତକୁ ଆମେ ଆମ ପାର୍ଟନରମାନଙ୍କ ସହ ସେୟାର କରିପାରୁ। ପାସୱାର୍ଡଗୁଡ଼ିକ ପରି ସମ୍ବେଦନଶୀଳ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
+<translation id="1119403468619527527">ସରଳ କରିବା ପାଇଁ ବହୁତ କମ ଶବ୍ଦ ଅଛି</translation>
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
 <translation id="1124772482545689468">ୟୁଜର</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">ସ୍କ୍ରିନ୍ ସେଭର୍ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3102119246920354026">କ୍ୟାଶ୍</translation>
+<translation id="3112413615003385433">ଆପଣଙ୍କର ଶିକ୍ଷକ ସ୍କୁଲ ଟୁଲରୁ ବିଷୟବସ୍ତୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ପୁଲ</translation>
 <translation id="3122883569442693641">ଅଧିକ ବିବରଣୀ</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">ଏଡିଟିଂ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="3533790840489634638">ପୁଲ</translation>
+<translation id="3535802910192338629">ଆପଣଙ୍କର ଶିକ୍ଷକ ସ୍କୁଲ ଟୁଲରେ ନୂଆ ବିଷୟବସ୍ତୁ ଯୋଗ କରିଛନ୍ତି</translation>
 <translation id="3547264467365135390">ସୂତ୍ର</translation>
 <translation id="3557205324756024651">ସ୍ଥାନୀୟ ପରିଚୟ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="3565064564551103223">ଅନୁମତି ଦିଆଯାଇଥିବା IPଗୁଡ଼ିକ</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">ଡିଭାଇସକୁ ଟେଷ୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଟେଷ୍ଟ କରିବା ପାଇଁ ଲାପଟପ ମୋଡକୁ ସ୍ୱିଚ କରନ୍ତୁ।</translation>
 <translation id="3916998944874125962">ସ୍କ୍ରିନସଟ ନିଅନ୍ତୁ</translation>
 <translation id="3923184630988645767">ଡାଟାର ବ୍ୟବହାର</translation>
+<translation id="3924445055519423964">ୱେବପୃଷ୍ଠା/PDF ଫାଇଲର ସାରାଂଶ ତିଆରି କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="3932043219784172185">କୌଣସି ଡିଭାଇସ ସଂଯୋଗ କରାଯାଇନାହିଁ</translation>
 <translation id="3934185438132762746">ଆସାଇନ କରାଯାଇନଥିବା <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">ମୁଁ ରାଜି</translation>
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4137700675046373159">ଶନିବାର ଦିନ</translation>
+<translation id="4139326893730851150">ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="4143226836069425823">ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଅନ୍ୟ ଏକ କୀବୋର୍ଡରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
 <translation id="4989542687859782284">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4999333166442584738">ରିପୋର୍ଟ ଲୁଚାନ୍ତୁ</translation>
+<translation id="5005695757087124131">ଚୟନିତ ଟେକ୍ସଟକୁ ସରଳ କରିବାକୁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">ଥିମର ରଙ୍ଗ</translation>
@@ -1172,6 +1178,7 @@
 <translation id="6673898378497337661">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="6694534975463174713">ଲକ୍ କରନ୍ତୁ</translation>
+<translation id="6700703207451721535">ଏହି ଲିଙ୍କ ପାଇଁ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଆଯାଏ ନାହିଁ। ଯଦି ଆପଣ ଆକ୍ସେସ ଆବଶ୍ୟକ କରନ୍ତି, ତେବେ ଆପଣଙ୍କ ଶିକ୍ଷକଙ୍କ ସହ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6712933881624804031">ଉପତ୍ୟକା</translation>
 <translation id="6716013206176357696">ଷ୍ଟ୍ରବେରୀ</translation>
@@ -1295,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ମୃଦୁ ପବନର ଆନନ୍ଦ ନିଅନ୍ତୁ</translation>
 <translation id="7287310195820267359">ୱାଲପେପର୍ ସଂଗ୍ରହଗୁଡ଼ିକ</translation>
+<translation id="7293429513719260019">ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7297226631177386107">ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7297726121602187087">ଗାଢ଼ ସବୁଜ</translation>
 <translation id="7301262279595293068">ଏହି ଆପ୍ଲିକେସନକୁ ଅପଡେଟ କରାଯିବା ସମୟରେ ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ</translation>
@@ -1329,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ଅପଡେଟ ହେବା ପାଇଁ ପ୍ରସ୍ତୁତ ଅଛି</translation>
 <translation id="741244894080940828">କନଭର୍ସନ୍</translation>
 <translation id="7415801143053185905">HTTPର ବହୁତ ଅଧିକ ଲାଟେନ୍ସି</translation>
+<translation id="7418738250896500352">ସରଳ କରିବା ପାଇଁ ବହୁତ ଅଧିକ ଶବ୍ଦ ଅଛି</translation>
 <translation id="7425037327577270384">ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ଏହି APNକୁ ଅକ୍ଷମ କରାଯାଇପାରିବ ନାହିଁ କିମ୍ବା କାଢ଼ି ଦିଆଯାଇପାରିବ ନାହିଁ। ସକ୍ଷମ କରାଯାଇଥିବା <ph name="ATTACH" /> APNଗୁଡ଼ିକୁ ଅକ୍ଷମ କରାଯାଇଛି କିମ୍ବା କାଢ଼ି ଦିଆଯାଇଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
@@ -1354,6 +1363,7 @@
 <translation id="7544853251252956727">ଅଦଳବଦଳ</translation>
 <translation id="7550715992156305117">ଡାଇଗ୍ନୋଷ୍ଟିକ୍ ରୁଟିନ୍</translation>
 <translation id="7551123448725492271">ଡିଭାଇସଟି ଏକ ଅଡିଓ ଡିଭାଇସ ଅଟେ।</translation>
+<translation id="7553913964854052228">ସ୍କୁଲ ଟୁଲଗୁଡ଼ିକ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7559239713112547082">ସ୍କ୍ରିନସଟର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="7561454561030345039">ଏହି କାର୍ଯ୍ୟ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
 <translation id="7561759921596375678">ଭଲ୍ୟୁମକୁ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -1544,6 +1554,7 @@
 <translation id="8476942730579767658">ୱିଣ୍ଡୋ ଏବଂ ଡେସ୍କଗୁଡ଼ିକ</translation>
 <translation id="8477536061607044749">ଗ୍ରାଫିକ ଡିଜାଇନ</translation>
 <translation id="8477551185774834963">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଅଳ୍ପ ଉପରେ ଅଛି</translation>
+<translation id="8482376765267780829">ସରଳ କରିବା ପାଇଁ କିଛି ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8483248364096924578">IP ଠିକଣା</translation>
 <translation id="8491311378305535241">Android ଆପଗୁଡ଼ିକରୁ ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTP ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8495070016475833911">ଫେଲ୍ଟ</translation>
@@ -1562,6 +1573,7 @@
 <translation id="8576249514688522074">ଆରମ୍ଭ କରାଯାଇନାହିଁ</translation>
 <translation id="8584654835905316966"><ph name="VERSION" />ଭର୍ସନରେ <ph name="DEVICE_NAME" /> ପାଇଁ ଫାର୍ମୱେର ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଏହାକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ଅନେକ ଥର ରିବୁଟ ହୋଇପାରେ। ଏହି ଆଚରଣ ଆଶା କରାଯାଏ।</translation>
 <translation id="8593058461203131755">ମିଡିଆକୁ ବିରତ କରନ୍ତୁ</translation>
+<translation id="8619169570378509764">ସ୍କୁଲ ଟୁଲ</translation>
 <translation id="8620617069779373398">ରୋମିଂ ସ୍ଥିତି</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="86356131183441916">ହାଲୁକା ବାଇଗଣୀ</translation>
@@ -1672,6 +1684,7 @@
 <translation id="9082718469794970195">ଏହି ଭିଡିଓ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9087578468327036362">ଏହି କ୍ୱେରୀ ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
+<translation id="9088994563996376283">ସରଳ କରନ୍ତୁ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">ତାରିଖ ରିସେଟ କରନ୍ତୁ ବିଷୟରେ ଅଧିକ ସୂଚନା</translation>
 <translation id="9100765901046053179">ଉନ୍ନତ ସେଟିଂସ୍</translation>

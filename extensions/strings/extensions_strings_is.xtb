@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Inntaksgildi einkalykils verður að vera gild slóð.</translation>
 <translation id="388442998277590542">Ekki var hægt að hlaða valkostasíðuna „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Villa við að undirrita viðbót.</translation>
-<translation id="4115165561519362854">Stjórnandi þessarar vélar krefst þess að útgáfa <ph name="EXTENSION_NAME" /> sé að minnsta kosti <ph name="EXTENSION_VERSION" />. Ekki er hægt að gera viðbótina virka fyrr en hún hefur verið uppfærð í þá útgáfu (eða nýrri).</translation>
 <translation id="4233778200880751280">Ekki var hægt að hlaða upplýsingasíðuna „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="471800408830181311">Mistókst að skila einkalykli.</translation>
 <translation id="4811956658694082538">Ekki tókst að setja pakkann upp vegna þess að hjálparforritsferli hrundi. Prófaðu að endurræsa Chrome og reyna aftur.</translation>

@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"a": "अल्फा", "b": "ब्राभो", "c": "चार्ली", "d": "डेल्टा", "e": "इको", "f": "फक्सट्रोट", "g": "गल्फ", "h": "होटेल", "i": "इन्डिया", "j": "जुलियट","k": "किलो", "l": "लिमा", "m": "माइक", "n": "नोभेम्बर", "o": "ओस्कार","p": "पापा", "q": "क्युबेक", "r": "रोमियो", "s": "सियरा", "t": "ट्याङ्गो", "u": "युनिफर्म", "v": "भिक्टर", "w": "ह्विस्की","x": "एक्सरे", "y": "याङ्की", "z": "जुलु"}</translation>
 <translation id="1120938014254001895">दुई औँलाले माथि स्वाइप गर्नुहोस्</translation>
 <translation id="1126928665165112660">इटालिक होइन</translation>
+<translation id="1133751489735776037">माउसमा तीन पटक क्लिक गर्नुहोस्</translation>
 <translation id="113582498867142724"><ph name="TAG" /> संग संग्रह <ph name="NUM" /> बस्तुहरू</translation>
 <translation id="1146441463334103638">टगल गरेर स्क्रिन अन वा अफ गर्नुहोस्</translation>
 <translation id="1156488781945104845">हालको समय</translation>
@@ -342,7 +343,6 @@
 <translation id="311015743332597320">चार औँलाले दायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="3112457281078985179">ChromeVox लाई सकिय वा निष्क्रिय पार्न कन्ट्रोल+Alt +Z को प्रयोग गर्नुहोस्।</translation>
 <translation id="3115800313647508384">स्क्रिन अफ गर्ने हो?</translation>
-<translation id="3127625407966660979">स्पिच-टु-टेक्स्ट अन छ</translation>
 <translation id="3131002934070407451">सङ्ख्याहरू निम्न तरिकाले पढ्नुहोस्:</translation>
 <translation id="3134461040845705080">आरडी मात्रै</translation>
 <translation id="3137663468179739624">ओलिव</translation>
@@ -503,7 +503,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{सेकेन्ड}other{सेकेन्ड}}</translation>
 <translation id="4161663686871496107">ChromeVox बोली पृष्ठपोषण तैयार छ</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
-<translation id="4176677444195790114">ड्र्याग एन्ड ड्रप गरिँदै छ</translation>
 <translation id="4187322598335821254">एउटाबाट अर्को हरफमा सर्न माथि वा तलतिर स्वाइप गर्नुहोस्</translation>
 <translation id="4188530942454211480">अघिल्लो वाक्य</translation>
 <translation id="4191918948604314587">एउटा बटन</translation>
@@ -548,6 +547,7 @@
 <translation id="4402014469255336455">गाढा आकासे निलो</translation>
 <translation id="4406249099130339147">Punctuation echo:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">आफ्ना सबै दाँत देखाउनुहोस्</translation>
 <translation id="4432457053224379116">भारतीय रातो</translation>
 <translation id="4432896207833262240">चिन्ह लगाइएको सामग्री</translation>
 <translation id="4437615272777527928">मेनुहरूमा खोज्न टाइप गर्नुहोस् नतिजाहरूमा जान अप वा डाउन एरो प्रयोग गर्नुहोस्। पाठ क्यारेट समायोजन गर्न र एक मेनुबाट अर्को मेनुमा जान लेफ्ट र राइट एरो प्रयोग गर्नुहोस्।</translation>
@@ -663,7 +663,7 @@
 <translation id="5263034204789987535">कर्नसिल्क</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">समाप्त</translation>
-<translation id="5290220123487191192">तपाईंले नियमित रूपमा प्रयोग गर्ने केही इसाराहरूका बारेमा जानौँ। तपाईं आफूले सक्रिय गर्न चाहेको कुनै वस्तुमा पुग्नुभयो भने एक औँलाले स्क्रिनमा डबल ट्याप गर्नुहोस्। जारी राख्न अहिले नै डबल ट्याप गर्नुहोस्।</translation>
+<translation id="5290220123487191192">तपाईंले नियमित रूपमा प्रयोग गर्ने केही जेस्चरका बारेमा जानौँ। तपाईं आफूले सक्रिय गर्न चाहेको कुनै वस्तुमा पुग्नुभयो भने एक औँलाले स्क्रिनमा डबल ट्याप गर्नुहोस्। जारी राख्न अहिले नै डबल ट्याप गर्नुहोस्।</translation>
 <translation id="5291860916305032607">फेस कन्ट्रोल सुचारु गर्नुहोस्</translation>
 <translation id="5302089807023311274">ग्रन्थसूचीको सन्दर्भ</translation>
 <translation id="530391007967514163">तल दिइएको टेक्स्टमा नेभिगेट गर्न एउटा शीर्षकबाट अर्को शीर्षकमा जाने प्रयास गर्नुहोस्।</translation>
@@ -1112,7 +1112,6 @@
 <translation id="8378855320830505539">क्षेत्र</translation>
 <translation id="8382679411218029383">स्वत: पूर्णता रेखा र सूची</translation>
 <translation id="8394908167088220973">मिडिया प्ले/पज</translation>
-<translation id="8409502156784390079">स्क्रोल मोड अन छ</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428603554127842284">तह <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1190,7 +1189,6 @@
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>
 <translation id="8989104346085848538">ChromeVox मा अन रहेको जुनसुकै वाक् सुविधा अफ गर्न Control की थिच्नुहोस्।</translation>
 <translation id="9014206344398081366">ChromeVox को ट्युटोरियल</translation>
-<translation id="9034592733577768445">फेस कन्ट्रोल पज गरिएको छ</translation>
 <translation id="9040132695316389094">शीर्षक 1</translation>
 <translation id="9061884144798498064">८ डट भएको ब्रेल तालिका चयन गर्नुहोस्‌:</translation>
 <translation id="9063946545000394379">कर्सर सारेर अघिल्लो वर्णमा लगियोस्</translation>

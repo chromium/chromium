@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="2244252133441425811">Auswahl für die fps (Bilder pro Sekunde) von Videos aktivieren</translation>
 <translation id="2271433936731426666">Video-Momentaufnahme in Originalgröße aktivieren</translation>
-<translation id="2281736597583450397">Schärfere Details mit erweitertem Zoom</translation>
 <translation id="2320741269052147773">Nach links schwenken</translation>
 <translation id="2360840973209616515">Die Kamera-App wird von deinem Administrator verwaltet.
         Wende dich an diesen, um weitere Informationen zu erhalten.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5976160379964388480">Sonstige</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
-<translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6197807149213783179">Metadaten speichern</translation>
 <translation id="6233780560267770709">3 mal 3</translation>
 <translation id="6243827288366940320">Goldener Schnitt</translation>
@@ -122,7 +120,6 @@
 Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte als Beispiel ein Foto oder Video an und beschreibe den Fehler. (Beispielsweise "Das Foto ist zu dunkel" oder "Das Motiv ist nicht im Fokus".)</translation>
 <translation id="6519884562954018934">Mit <ph name="WIFINAME" /> verbinden</translation>
 <translation id="6527303717912515753">Teilen</translation>
-<translation id="6586509689874700895">Drücke zuerst auf <ph name="BUTTON_NAME" />, um heranzuzoomen. Nachdem du ein Foto aufgenommen hast, siehst du dann verbesserte Details.</translation>
 <translation id="659539649712855529">„<ph name="CONTENT" />“ wurde kopiert</translation>
 <translation id="6617916774429601017">Alle Auflösungen anzeigen</translation>
 <translation id="6631515515009660915">Spiegelung deaktivieren</translation>
@@ -168,7 +165,6 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="8609951387004618906">„<ph name="URL" />“ öffnen</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonstummschaltung einschalten. Stummschaltung ist aktiviert.</translation>
-<translation id="8712637175834984815">Ok</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8732462232047530626">Vorschau der Metadaten anzeigen</translation>
 <translation id="874854738381978209">WLAN gefunden.</translation>

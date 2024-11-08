@@ -630,7 +630,6 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="3208321278970793882">Programu</translation>
 <translation id="3213571860604332401">Hifadhi kiungo kiwe alamisho</translation>
 <translation id="3217205077783620295">Umewasha sauti, Ukigeuza swichi utazima sauti.</translation>
-<translation id="3218561536255328229">Bonyeza Esc mara 5 ili uwashe padi ya kugusa</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> zaidi</translation>
 <translation id="3227137524299004712">Maikrofoni</translation>
 <translation id="3233611303007751344">Kiokoa Betri kimezimwa</translation>
@@ -1305,6 +1304,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5393156353051693207">Gusa na ushikilie sehemu yoyote ili upange tena programu zako</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> iko juu ya <ph name="IN_PLACE_APP" />, achilia ili ufungue folda mpya.</translation>
 <translation id="5397578532367286026">Matumizi na historia ya mtumiaji huyu yanaweza kukaguliwa na msimamizi ( <ph name="MANAGER_EMAIL" /> ) kwenye chrome.com.</translation>
+<translation id="540338817371815859">Mlalo</translation>
 <translation id="540713187982329711">Kipengele cha kuwasha au kuzima mtandao pepe. Mtandao pepe umewashwa, hakuna kifaa kilichounganishwa.</translation>
 <translation id="5409208741270395213">Weka alama kuonyesha kuwa umekamilisha jukumu</translation>
 <translation id="5413656666631274079">Ukurasa wa mipangilio</translation>
@@ -1767,6 +1767,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6921427376813842559">Sasisha kifaa</translation>
 <translation id="6929081673585394903">Onyesha vidhibiti</translation>
 <translation id="6931576957638141829">Hifadhi kwenye</translation>
+<translation id="6935857786205183008">Wima</translation>
 <translation id="6942518653766415536">Menyu ya muundo wa kurekodi</translation>
 <translation id="6945221475159498467">Chagua</translation>
 <translation id="6945922087561257829">Simu yako inatumia mtandao wa simu. Hakikisha simu na Chromebook yako vimeunganishwa kwenye mtandao mmoja wa Wi-Fi kisha ujaribu tena. <ph name="LEARN_MORE" /></translation>
@@ -2436,6 +2437,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="98120814841227350">Nenda hadi mwisho wa hati</translation>
 <translation id="987589956647469042">Umewasha data ya mtandao wa simu</translation>
 <translation id="989374776391122812">Vidhibiti vya kamera na sauti</translation>
+<translation id="990263227494928142">Bonyeza Shift mara 5 ili uwashe padi ya kugusa</translation>
 <translation id="990277280839877440">Dirisha la <ph name="WINDOW_TITILE" /> limefungwa.</translation>
 <translation id="993398562350683614">Hatua ya <ph name="STEP" /> kati ya <ph name="TOTAL_STEPS" />. Tumia programu kufanya kila kitu unachohitaji kwenye <ph name="PRODUCT_NAME" /> yako. Unaweza kupata programu zako kwenye Kifungua Programu. Bonyeza Alt + Shift + L ili uangazie kitufe cha Kifungua Programu.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

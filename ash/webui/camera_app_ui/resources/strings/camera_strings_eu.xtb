@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR kodea</translation>
 <translation id="2244252133441425811">Gailu bideoaren FPS hautatzailea</translation>
 <translation id="2271433936731426666">Gaitu tamaina osoko bideo-laburpen</translation>
-<translation id="2281736597583450397">Lortu xehetasun garbiagoak zoom hobetuarekin</translation>
 <translation id="2320741269052147773">Mugitu ezkerrera</translation>
 <translation id="2360840973209616515">Administratzaileak kudeatzen du Kamera aplikazioa.
         Xehetasunak lortzeko, jarri administratzailearekin harremanetan.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Txikitu</translation>
 <translation id="5976160379964388480">Gehiago</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
-<translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6197807149213783179">Gorde metadatuak</translation>
 <translation id="6233780560267770709">3 × 3</translation>
 <translation id="6243827288366940320">Urrezko proportzioa</translation>
@@ -122,7 +120,6 @@
 Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazki edo bideo bat lagin gisa eta azal iezaguzu zein den arazoa (adibidez, argazkia ilunegia da edo subjektua ez dago fokuratuta).</translation>
 <translation id="6519884562954018934">Konektatu <ph name="WIFINAME" /> wifi-sarera</translation>
 <translation id="6527303717912515753">Partekatu</translation>
-<translation id="6586509689874700895">Hasteko, sakatu <ph name="BUTTON_NAME" /> handitzeko. Gero, argazkia atera ondoren, xehetasun hobetuak ikusiko dituzu.</translation>
 <translation id="659539649712855529">Kopiatu da <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Erakutsi bereizmen guztiak</translation>
 <translation id="6631515515009660915">Ispilu modua desaktibatuta</translation>
@@ -168,7 +165,6 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="8609951387004618906">Ireki <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktibatu edo desaktibatu mikrofonoa. Mikrofonoa desaktibatuta dago.</translation>
-<translation id="8712637175834984815">Ados</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8732462232047530626">Aurreikusi metadatuak</translation>
 <translation id="874854738381978209">Wifi-sare bat hauteman da.</translation>

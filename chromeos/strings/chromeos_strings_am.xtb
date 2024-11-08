@@ -632,6 +632,7 @@
 <translation id="4130750466177569591">እስማማለሁ</translation>
 <translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
 <translation id="4137700675046373159">ቅዳሜ ላይ</translation>
+<translation id="4139326893730851150">የፊርምዌር ዝማኔዎች</translation>
 <translation id="4143226836069425823">ለመተካት ሌላ የቁልፍ ሰሌዳ ቁልፍ መታ ያድርጉ</translation>
 <translation id="4145784616224233563">የHTTP ኬላ</translation>
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
@@ -1174,6 +1175,7 @@
 <translation id="6673898378497337661">የቁልፍ ሰሌዳ ብሩህነት መጨመሪያ</translation>
 <translation id="6692996468359469499">ከእርስዎ ምርጫ ጋር የተገናኘ መረጃ ያግኙ</translation>
 <translation id="6694534975463174713">ቁልፍ</translation>
+<translation id="6700703207451721535">ለዚህ አገናኝ መዳረሻ አይፈቀድም። መዳረሻ ካስፈለገዎት አስተማሪዎን ያነጋግሩ።</translation>
 <translation id="6704062477274546131">የዲኤንኤስ መፍትሔ</translation>
 <translation id="6712933881624804031">ሸለቆ</translation>
 <translation id="6716013206176357696">ኢንጆሪዎች</translation>
@@ -1297,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ነፋሱ ይሰማዎት</translation>
 <translation id="7287310195820267359">የልጣፍ ስብስቦች</translation>
+<translation id="7293429513719260019">ቋንቋ ይምረጡ</translation>
 <translation id="7297226631177386107">በኬላ በኩል ወደ ኤችቲቲፒኤስ ድር ጣቢያዎች መገናኘት አልተቻለም</translation>
 <translation id="7297726121602187087">ጠቆር ያለ አረንጓዴ</translation>
 <translation id="7301262279595293068">ይህ መተግበሪያ በመዘመን ላይ ሲሆን እባክዎ ይጠብቁ</translation>
@@ -1356,6 +1359,7 @@
 <translation id="7544853251252956727">በውዝ</translation>
 <translation id="7550715992156305117">የምርመራ የዕለት ተዕለት ሥራዎች</translation>
 <translation id="7551123448725492271">መሣሪያ የኦዲዮ መሣሪያ ነው።</translation>
+<translation id="7553913964854052228">የተማሪ መሣሪያዎች ማይክሮፎንዎን እየተጠቀመ ነው</translation>
 <translation id="7559239713112547082">የቅጸበታዊ ገፅ ቅድመ ዕይታ</translation>
 <translation id="7561454561030345039">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="7561759921596375678">ድምጽን አብራ</translation>

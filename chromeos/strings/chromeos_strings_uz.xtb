@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Rasmlar yaratilmoqda...</translation>
 <translation id="1116694919640316211">Brauzer haqida</translation>
 <translation id="1118572504348554005">Bizga xabar berilgan xatolar va boshqa muammolarni yechish uchun bu shakl orqali yuborilgan fikr-mulohazalarni hamkorlarga berishimiz mumkin. Parol kabi maxfiy axborotlarni kiritmang.</translation>
+<translation id="1119403468619527527">Juda kam soʻzlar belgilangan</translation>
 <translation id="1119447706177454957">Ichki xatolik</translation>
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Qurilmani sinash imkonsiz. Sinash uchun laptop rejimiga oʻting</translation>
 <translation id="3916998944874125962">skrinshot olish</translation>
 <translation id="3923184630988645767">Trafik sarfi</translation>
+<translation id="3924445055519423964">Veb-sahifa yoki PDF faylni xulosalash uchun bosing</translation>
 <translation id="3932043219784172185">Hech qaysi qurilma ulanmagan!</translation>
 <translation id="3934185438132762746">Tayinlanmagan: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
@@ -632,6 +634,7 @@
 <translation id="4130750466177569591">Men roziman</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
 <translation id="4137700675046373159">Shanba kuni</translation>
+<translation id="4139326893730851150">Mikrodastur yangilanishlari</translation>
 <translation id="4143226836069425823">Almashtirish uchun boshqa klaviatura tugmasini bosing</translation>
 <translation id="4145784616224233563">HTTP Fayrvol</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -813,6 +816,7 @@
 <translation id="4988526792673242964">Sahifalar</translation>
 <translation id="4989542687859782284">Mavjud emas</translation>
 <translation id="4999333166442584738">Hisobotni yopish</translation>
+<translation id="5005695757087124131">Belgilangan matnni soddalashtirish uchun bosing</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Mavzu rangi</translation>
@@ -1174,6 +1178,7 @@
 <translation id="6673898378497337661">klaviatura yorqinligini oshirish</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
 <translation id="6694534975463174713">qulf</translation>
+<translation id="6700703207451721535">Bu havolaga ruxsat yopiq. Ruxsat olish uchun oʻqituvchiga murojaat qiling.</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
 <translation id="6712933881624804031">vodiy</translation>
 <translation id="6716013206176357696">qulupnaylar</translation>
@@ -1297,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Qadab ilinadigan</translation>
 <translation id="7287310195820267359">Fon rasmlari termasi</translation>
+<translation id="7293429513719260019">Til tanlash</translation>
 <translation id="7297226631177386107">HTTPS saytlarga himoya devori orqali ulanish imkonsiz</translation>
 <translation id="7297726121602187087">Toʻq yashil</translation>
 <translation id="7301262279595293068">Ilova yangilanishini kuting</translation>
@@ -1331,6 +1337,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> yangilanishga tayyor</translation>
 <translation id="741244894080940828">konversiya</translation>
 <translation id="7415801143053185905">HTTP kechikishi juda yuqori</translation>
+<translation id="7418738250896500352">Juda koʻp soʻzlar belgilangan</translation>
 <translation id="7425037327577270384">Yozishda yordam ber</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Bu APN faolsizlantirilmadi yoki olib tashlanmadi. <ph name="ATTACH" /> APN nuqtalari faolsizlantirilishi yoki olib tashlanishi kerak</translation>
@@ -1356,6 +1363,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7544853251252956727">Tasodifiy</translation>
 <translation id="7550715992156305117">Diagnostika dasturlari</translation>
 <translation id="7551123448725492271">Qurilma — audio qurilma.</translation>
+<translation id="7553913964854052228">School Tools mikrofondan foydalanmoqda</translation>
 <translation id="7559239713112547082">Skrinshotga razm solish</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7561759921596375678">Tovushni yoqish</translation>
@@ -1546,6 +1554,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8476942730579767658">Oynalar va ish stollari</translation>
 <translation id="8477536061607044749">grafik dizayn</translation>
 <translation id="8477551185774834963">DNS kutish vaqti ruxsat etilgan chegaradan biroz baland</translation>
+<translation id="8482376765267780829">Kerakli matnni belgilang</translation>
 <translation id="8483248364096924578">IP manzil</translation>
 <translation id="8491311378305535241">Android ilovalardan HTTPS saytlarga himoya devori orqali ulanish imkonsiz</translation>
 <translation id="8495070016475833911">kigiz</translation>
@@ -1675,6 +1684,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="9082718469794970195">Bu videodan foydalanish</translation>
 <translation id="9087578468327036362">Bu soʻrov haqida xabar berish</translation>
 <translation id="9088306295921699330">Joriy faollik</translation>
+<translation id="9088994563996376283">Soddalashtirish</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Tiklash sanasi haqida batafsil</translation>
 <translation id="9100765901046053179">Kengaytirilgan sozlamalar</translation>

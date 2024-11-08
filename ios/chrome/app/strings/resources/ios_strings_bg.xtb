@@ -3,6 +3,7 @@
 <translationbundle lang="bg">
 <translation id="1005023885865154304">Отваряне на настройките за автоматично попълване на паролите</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
+<translation id="1010225406377140704">Свържете се с подателя, за да поискате нова връзка</translation>
 <translation id="1012067394176927315">За да виждате съдържание, изберете опцията за включване в менюто</translation>
 <translation id="1013952917065545813">Можете да се върнете тук, за да отворите отново разделите, които сте затворили наскоро</translation>
 <translation id="1016495303386450659">Елементът е актуализиран</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1164891049599601209">Въведена в измамнически сайт</translation>
 <translation id="1165039591588034296">Грешка</translation>
-<translation id="1172240852337942024">Отхвърляне на избора</translation>
 <translation id="1172898394251786223">Следващото поле</translation>
 <translation id="1179890706672152411">Хранилището ви е пълно</translation>
 <translation id="1181037720776840403">Премахване</translation>
+<translation id="1190609913194133056">Център за известия</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1204075260022434100">{count,plural, =1{Отметката е запазена в папката „{title}“ в профила ви {email}}other{{count} отметки са запазени в папката „{title}“ в профила ви {email}}}</translation>
 <translation id="120431140543679678">Следене</translation>
@@ -219,6 +220,7 @@
 <translation id="1956138802718275401">Достъп до паролите от началния екран</translation>
 <translation id="1959441496380398824">Докоснете и задръжте дата.</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> сподели с вас парола за <ph name="WEBSITE" /></translation>
+<translation id="1962969542251276847">Заключване на екрана</translation>
 <translation id="1963976881984600709">Стандартна защита</translation>
 <translation id="1966313166384086081">данни за сайтовете</translation>
 <translation id="1967461193809857427">{count,plural, =1{Да се продължи ли от раздела, в който сте прекъснали на устройството си с Android?}other{Да се продължи ли от разделите, в които сте прекъснали на устройството си с Android?}}</translation>
@@ -1196,6 +1198,7 @@
 <translation id="6503077044568424649">Ползвани</translation>
 <translation id="6503763061813913607">Известия от „Проверка на безопасността“</translation>
 <translation id="6505334220040167806">Свиване на групата раздели.</translation>
+<translation id="6506996418997555004">Споделяне на групата раздели „<ph name="GROUP_NAME" />“</translation>
 <translation id="6507973708545996744">Влезте в профила си, за да получите списъка си за четене на всичките си устройства.</translation>
 <translation id="6518133107902771759">Потвърждаване</translation>
 <translation id="6523575793810663688">Покажете ми как</translation>
@@ -1262,7 +1265,6 @@
 <translation id="672735642903863329">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6746338529702829275">Преглед на данните за профила ви</translation>
-<translation id="6748108480210050150">От</translation>
 <translation id="6755200887046212842">Управление на профилите</translation>
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6779455296366983087">Данните за сърфирането ви ще бъдат изтрити</translation>
@@ -1311,7 +1313,6 @@
 <translation id="6979737339423435258">За цялото време</translation>
 <translation id="6983306615164277634">Можете също да докоснете и задържите адресната лента, за да промените позицията.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
-<translation id="6998989275928107238">До</translation>
 <translation id="7004032350256606903">Организацията ви изисква да сърфирате частно.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Задаване като браузър по подразбиране в настройките…</translation>
@@ -1415,6 +1416,7 @@
 <translation id="750493650310597496">Избрахте 0</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">За да заключите разделите си в режим „инкогнито“, настройте Touch ID, Face ID или код за достъп.</translation>
+<translation id="7512075701202892785">Любимият ви браузър вече и за iPad</translation>
 <translation id="7512909159512473473">Въвеждане на пропуск…</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7521117365186708026">Съвети за настройване, с чиято помощ да се възползвате максимално от Chrome.</translation>
@@ -1690,6 +1692,7 @@
 <translation id="8694281486652655615">Показва този елемент</translation>
 <translation id="8696297579102085705">Изпращане до устройството ви</translation>
 <translation id="8697136149718343437">Преместване на адресната лента в долната част</translation>
+<translation id="8703372953981978786">Тази връзка не работи</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8709409604518538305">Разделите бяха затворени</translation>
 <translation id="8712534545803964353">Търсене в страницата…</translation>
@@ -1809,7 +1812,6 @@
 <translation id="9183733013282108610">Търсене в режим „инкогнито“</translation>
 <translation id="9186762474139509529">Стартиране на регистрирането</translation>
 <translation id="9191031968346938109">Добавяне към…</translation>
-<translation id="9196007736149429065">Този файл не се отвори</translation>
 <translation id="9200875785104711666">Преди <ph name="TIME" /> дни</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Превключете адресната лента от горната към долната част за персонализирано сърфиране.</translation>

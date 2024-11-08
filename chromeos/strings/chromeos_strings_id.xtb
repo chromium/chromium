@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Membuat gambar...</translation>
 <translation id="1116694919640316211">Tentang</translation>
 <translation id="1118572504348554005">Kami mungkin membagikan masukan yang dikirim melalui formulir ini kepada partner kami untuk memecahkan masalah bug dan masalah lain yang Anda laporkan kepada kami. Jangan sertakan informasi sensitif seperti sandi.</translation>
+<translation id="1119403468619527527">Terlalu sedikit kata untuk disederhanakan</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">Nonaktifkan screen saver</translation>
 <translation id="3091839911843451378">Gagal - Berhenti</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">Pengajar Anda telah menghapus konten di School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">kolam renang</translation>
 <translation id="3122883569442693641">Detail selengkapnya</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">Selesai mengedit</translation>
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
 <translation id="3533790840489634638">kolam renang</translation>
+<translation id="3535802910192338629">Pengajar Anda telah menambahkan konten baru di School Tools</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Identitas lokal (opsional)</translation>
 <translation id="3565064564551103223">IP yang diizinkan</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">Tidak dapat menguji perangkat. Beralih ke mode laptop untuk menguji.</translation>
 <translation id="3916998944874125962">ambil screenshot</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
+<translation id="3924445055519423964">Klik untuk meringkas halaman web/file PDF</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> yang tidak ditetapkan</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">Saya setuju</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
 <translation id="4137700675046373159">pada hari Sabtu</translation>
+<translation id="4139326893730851150">Update firmware</translation>
 <translation id="4143226836069425823">Ketuk tombol keyboard lain untuk mengganti</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">Halaman</translation>
 <translation id="4989542687859782284">Tidak Tersedia</translation>
 <translation id="4999333166442584738">Sembunyikan laporan</translation>
+<translation id="5005695757087124131">Klik untuk menyederhanakan teks yang dipilih</translation>
 <translation id="500920857929044050">Hentikan pengujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Warna tema</translation>
@@ -1296,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Rasakan angin sepoi-sepoi</translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>
+<translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="7297226631177386107">Tidak dapat terhubung melewati firewall ke situs HTTPS</translation>
 <translation id="7297726121602187087">Hijau tua</translation>
 <translation id="7301262279595293068">Harap tunggu, aplikasi ini sedang diupdate</translation>
@@ -1330,6 +1337,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> siap diupdate</translation>
 <translation id="741244894080940828">konversi</translation>
 <translation id="7415801143053185905">Latensi HTTP sangat tinggi</translation>
+<translation id="7418738250896500352">Terlalu banyak kata untuk disederhanakan</translation>
 <translation id="7425037327577270384">Bantu tulis</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tidak dapat menonaktifkan atau menghapus APN ini. Pastikan APN <ph name="ATTACH" /> aktif telah dinonaktifkan atau dihapus.</translation>
@@ -1355,6 +1363,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7544853251252956727">Acak</translation>
 <translation id="7550715992156305117">Rutinitas Diagnostik</translation>
 <translation id="7551123448725492271">Perangkat adalah perangkat audio.</translation>
+<translation id="7553913964854052228">School Tools menggunakan mikrofon Anda</translation>
 <translation id="7559239713112547082">Pratinjau Screenshot</translation>
 <translation id="7561454561030345039">Tindakan ini dikelola oleh administrator Anda</translation>
 <translation id="7561759921596375678">Aktifkan volume</translation>
@@ -1545,6 +1554,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8476942730579767658">Jendela dan desktop</translation>
 <translation id="8477536061607044749">desain grafis</translation>
 <translation id="8477551185774834963">Latensi DNS sedikit melebihi ambang batas yang diizinkan</translation>
+<translation id="8482376765267780829">Pilih beberapa teks untuk disederhanakan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8491311378305535241">Tidak dapat terhubung melewati firewall ke situs HTTP dari aplikasi Android</translation>
 <translation id="8495070016475833911">kain felt</translation>
@@ -1563,6 +1573,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8576249514688522074">Tidak diinisialisasi</translation>
 <translation id="8584654835905316966">Perangkat harus dimulai ulang untuk menyelesaikan penginstalan firmware untuk <ph name="DEVICE_NAME" /> ke versi <ph name="VERSION" />. Komputer Anda mungkin terlihat dimulai ulang beberapa kali. Namun, perilaku ini normal.</translation>
 <translation id="8593058461203131755">jeda media</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Status roaming</translation>
 <translation id="8626489604350149811">Tindakan lainnya untuk <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ungu muda</translation>
@@ -1673,6 +1684,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="9082718469794970195">Gunakan video ini</translation>
 <translation id="9087578468327036362">Laporkan kueri ini</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>
+<translation id="9088994563996376283">Sederhanakan</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Info selengkapnya tentang Tanggal reset</translation>
 <translation id="9100765901046053179">Setelan lanjutan</translation>

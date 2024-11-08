@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">กำลังสร้างรูปภาพ...</translation>
 <translation id="1116694919640316211">เกี่ยวกับ</translation>
 <translation id="1118572504348554005">เราอาจแชร์ความคิดเห็นที่ส่งมาทางแบบฟอร์มนี้กับพาร์ทเนอร์เพื่อแก้ไขข้อบกพร่องและปัญหาอื่นๆ ที่คุณรายงานให้ทราบ อย่าใส่ข้อมูลที่ละเอียดอ่อน เช่น รหัสผ่าน</translation>
+<translation id="1119403468619527527">มีคำน้อยเกินไปที่จะย่อความ</translation>
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
 <translation id="1124772482545689468">ผู้ใช้</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">ถอดสาย USB ของ <ph name="DEVICE_NAME" /> เพื่ออัปเดตต่อ</translation>
 <translation id="2320295602967756579">เปิดใช้ธีมสว่าง</translation>
 <translation id="2323506179655536734">ข้าม</translation>
+<translation id="2323755382216917952">การอัปเดตนี้กำหนดให้คุณต้องรีสตาร์ทคอมพิวเตอร์เพื่อให้การติดตั้งเสร็จสมบูรณ์ การอัปเดตนี้อาจใช้เวลาสักครู่จึงจะเรียบร้อย ขณะอัปเดตเฟิร์มแวร์ โปรดอย่าถอดปลั๊กหรือปิดคอมพิวเตอร์</translation>
 <translation id="2324354238778375592">ลอย</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">ดีมาก (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +451,7 @@
 <translation id="3178532070248519384">อาวองการ์ด</translation>
 <translation id="3182676044300231689">ป้อนพรอมต์ เช่น "ทำให้ดูมั่นใจมากขึ้น"</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
+<translation id="3188931456353313123">การอัปเดตนี้ให้บริการโดยผู้ผลิตอุปกรณ์และไม่ได้รับการยืนยันจาก Google</translation>
 <translation id="319101249942218879">เปลี่ยนรูปโปรไฟล์แล้ว</translation>
 <translation id="3192947282887913208">ไฟล์เสียง</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
@@ -507,6 +510,7 @@
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
 <translation id="3492882532495507361">สำนักงาน <ph name="OFFICE_STYLE" /> ที่มีโทนสี <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">ข้อมูลนี้วัดโดย Chromebook ของคุณ ซึ่งอาจแตกต่างกับข้อมูลจากผู้ให้บริการ</translation>
+<translation id="349570724365779960">School Tools เชื่อมต่อกับนักเรียนแล้ว</translation>
 <translation id="3502426834823382181">ดูแอปทั้งหมด</translation>
 <translation id="3510890413042482857">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลการติดตามประสิทธิภาพ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">การอัปเดต Chrome OS</translation>
@@ -587,6 +591,7 @@
 <translation id="391412459402535266">ทดสอบอุปกรณ์ไม่ได้ เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="3916998944874125962">จับภาพหน้าจอ</translation>
 <translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
+<translation id="3924445055519423964">คลิกเพื่อสรุปหน้าเว็บ/ไฟล์ PDF</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
 <translation id="3934185438132762746">ยกเลิกการกำหนด <ph name="CONTROL_TYPE" /> แล้ว</translation>
 <translation id="3941014780699102620">แก้ไขโฮสต์ไม่สำเร็จ</translation>
@@ -632,6 +637,7 @@
 <translation id="4130750466177569591">ฉันยอมรับ</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
 <translation id="4137700675046373159">ในวันเสาร์</translation>
+<translation id="4139326893730851150">การอัปเดตเฟิร์มแวร์</translation>
 <translation id="4143226836069425823">แตะคีย์อื่นบนแป้นพิมพ์เพื่อแทนที่</translation>
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -754,6 +760,7 @@
 <translation id="473775607612524610">อัปเดต</translation>
 <translation id="4744944742468440486">ข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก</translation>
 <translation id="4771607256327216405">เพิ่มความสว่างของแป้นพิมพ์</translation>
+<translation id="4771923071974529837">พรุ่งนี้</translation>
 <translation id="4773299976671772492">หยุดแล้ว</translation>
 <translation id="4778082030331381943">อเมทิสต์</translation>
 <translation id="4782311465517282004">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
@@ -813,9 +820,11 @@
 <translation id="4988526792673242964">หน้า</translation>
 <translation id="4989542687859782284">ไม่มี</translation>
 <translation id="4999333166442584738">ซ่อนรายงาน</translation>
+<translation id="5005695757087124131">คลิกเพื่อย่อความข้อความที่เลือก</translation>
 <translation id="500920857929044050">หยุดการทดสอบ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">สีของธีม</translation>
+<translation id="5037240652947866174">วันนี้</translation>
 <translation id="5038292761217083259">แป้นพิมพ์หลากสี</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5049856988445523908">ล็อกซิมแล้ว (<ph name="LOCK_TYPE" />)</translation>
@@ -1298,6 +1307,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">สัมผัสสายลมเย็น</translation>
 <translation id="7287310195820267359">คอลเล็กชันภาพวอลเปเปอร์</translation>
+<translation id="7293429513719260019">เลือกภาษา</translation>
 <translation id="7297226631177386107">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTPS</translation>
 <translation id="7297726121602187087">สีเขียวเข้ม</translation>
 <translation id="7301262279595293068">โปรดรอขณะที่แอปพลิเคชันนี้กำลังอัปเดต</translation>
@@ -1332,6 +1342,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> พร้อมอัปเดตแล้ว</translation>
 <translation id="741244894080940828">การแปลง</translation>
 <translation id="7415801143053185905">เวลาในการตอบสนองของ HTTP สูงมาก</translation>
+<translation id="7418738250896500352">มีคำมากเกินไปที่จะย่อความ</translation>
 <translation id="7425037327577270384">ช่วยฉันเขียน</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ปิดใช้หรือนํา APN นี้ออกไม่ได้ ตรวจสอบว่า APN แบบ <ph name="ATTACH" /> ที่เปิดใช้อยู่ถูกปิดใช้หรือนำออกแล้ว</translation>
@@ -1357,6 +1368,7 @@
 <translation id="7544853251252956727">สุ่มเพลง</translation>
 <translation id="7550715992156305117">กิจวัตรในการวินิจฉัย</translation>
 <translation id="7551123448725492271">อุปกรณ์เป็นอุปกรณ์เสียง</translation>
+<translation id="7553913964854052228">School Tools กำลังใช้ไมโครโฟนของคุณ</translation>
 <translation id="7559239713112547082">ดูตัวอย่างภาพหน้าจอ</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7561759921596375678">เปิดระดับเสียง</translation>
@@ -1547,6 +1559,7 @@
 <translation id="8476942730579767658">หน้าต่างและเดสก์</translation>
 <translation id="8477536061607044749">การออกแบบกราฟิก</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
+<translation id="8482376765267780829">เลือกข้อความบางส่วนเพื่อย่อความ</translation>
 <translation id="8483248364096924578">ที่อยู่ IP</translation>
 <translation id="8491311378305535241">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTP จากแอป Android</translation>
 <translation id="8495070016475833911">ผ้าสักหลาด</translation>
@@ -1676,6 +1689,7 @@
 <translation id="9082718469794970195">ใช้วิดีโอนี้</translation>
 <translation id="9087578468327036362">โปรดรายงานการค้นหานี้</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
+<translation id="9088994563996376283">ย่อความ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">ข้อมูลเพิ่มเติมเกี่ยวกับวันที่รีเซ็ต</translation>
 <translation id="9100765901046053179">การตั้งค่าขั้นสูง</translation>

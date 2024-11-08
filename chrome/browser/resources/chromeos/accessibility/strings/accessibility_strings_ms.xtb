@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">Langkau</translation>
 <translation id="1164857107703583584">Perintah lompat boleh digunakan untuk menavigasi halaman web dengan cekap.</translation>
 <translation id="1175914831232945926">Digit</translation>
+<translation id="1186712907912748007">Seret dan lepas sedang berlangsung. <ph name="GESTURE" /> untuk menamatkan proses. Gerak isyarat lain tidak tersedia untuk sementara waktu.</translation>
 <translation id="1188858454923323853">pelengkap</translation>
 <translation id="1189258430971676908">Kawasan latihan: Senarai lungsur</translation>
 <translation id="1195238899008218998">Kata hujungan</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">Pautan</translation>
 <translation id="2363753371702255035">titik tumpu khas</translation>
 <translation id="2365384324219615024">Anda juga boleh menekan Enter untuk mengaktifkan item. Sebagai contoh, Enter boleh digunakan untuk menyerahkan teks dalam borang. Untuk meneruskan, tekan Enter.</translation>
+<translation id="2371402123699727805">Pengimlakan aktif. <ph name="GESTURE" /> untuk berhenti. Gerak isyarat lain tidak tersedia untuk sementara waktu.</translation>
 <translation id="2381733276052567791">Togol pertuturan kepada hidup atau mati</translation>
 <translation id="2390264819538553347">Untuk bergerak ke hadapan, tekan enter; untuk bergerak ke belakang, tekan backspace.</translation>
 <translation id="2398579267367951220">Taip untuk mencari dalam halaman. Tekan kekunci Enter untuk melangkau ke hasil carian, anak panah ke atas atau ke bawah untuk menyemak imbas hasil carian, teruskan menaip untuk menukar istilah carian anda atau tekan kekunci Esc untuk membatalkan carian.</translation>
@@ -343,7 +345,6 @@
 <translation id="311015743332597320">Leret empat jari ke kanan</translation>
 <translation id="3112457281078985179">Untuk menghidupkan atau mematikan ChromeVox, gunakan Control+Alt+Z.</translation>
 <translation id="3115800313647508384">Matikan skrin?</translation>
-<translation id="3127625407966660979">Pengimlakan aktif</translation>
 <translation id="3131002934070407451">Baca nombor sebagai:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Hijau Buah Zaitun</translation>
@@ -465,6 +466,7 @@
 <translation id="3870295413168340326">Tiada tajuk tahap 3 sebelumnya</translation>
 <translation id="3887399638190992181">Kekunci penting</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Kawalan wajah dijeda. <ph name="GESTURE" /> untuk menyambung semula. Gerak isyarat lain tidak tersedia untuk sementara waktu.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Tajuk tahap 6 sebelumnya</translation>
@@ -504,7 +506,6 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{saat}other{saat}}</translation>
 <translation id="4161663686871496107">Maklum balas pertuturan ChromeVox sudah sedia</translation>
 <translation id="4176463684765177261">Dilumpuhkan</translation>
-<translation id="4176677444195790114">Seret dan lepas sedang berlangsung</translation>
 <translation id="4187322598335821254">Leret ke atas atau ke bawah untuk mengalih mengikut baris</translation>
 <translation id="4188530942454211480">Ayat Sebelumnya</translation>
 <translation id="4191918948604314587">Butang</translation>
@@ -702,6 +703,7 @@
 <translation id="5452267669091857717">Tiada tajuk tahap 1 seterusnya</translation>
 <translation id="5455441614648621694">Percuma</translation>
 <translation id="5462510922370980473">Senarai halaman</translation>
+<translation id="5489460663499094917">Mod tatal aktif. <ph name="GESTURE" /> untuk keluar. Gerak isyarat lain tidak tersedia untuk sementara waktu.</translation>
 <translation id="5495517933067991341">Kekunci Penting: Shift</translation>
 <translation id="549602578321198708">Perkataan</translation>
 <translation id="5513242761114685513">Menu konteks</translation>
@@ -1114,7 +1116,6 @@
 <translation id="8378855320830505539">Wilayah</translation>
 <translation id="8382679411218029383">Autolengkap sebaris dan senarai</translation>
 <translation id="8394908167088220973">Main/Jeda Media</translation>
-<translation id="8409502156784390079">Mod tatal aktif</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8428603554127842284">tahap <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1192,7 +1193,6 @@
 <translation id="8986362086234534611">Lupa</translation>
 <translation id="8989104346085848538">Untuk menghentikan sebarang pertuturan ChromeVox semasa, tekan kekunci Control.</translation>
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
-<translation id="9034592733577768445">Kawalan wajah dijeda</translation>
 <translation id="9040132695316389094">Tajuk 1</translation>
 <translation id="9061884144798498064">Pilih jadual braille 8 titik:</translation>
 <translation id="9063946545000394379">beralih ke aksara sebelumnya</translation>

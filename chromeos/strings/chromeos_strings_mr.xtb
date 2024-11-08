@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">इमेज तयार करत आहे...</translation>
 <translation id="1116694919640316211">बद्दल</translation>
 <translation id="1118572504348554005">बग आणि तुम्ही आमच्याकडे तक्रार केलेल्या इतर समस्यांचे निराकरण करण्यासाठी या फॉर्मद्वारे सबमिट केलेला फीडबॅक आम्ही आमच्या भागीदारांसोबत शेअर करू शकतो. पासवर्डसारखी संवेदनशील माहिती समाविष्ट करू नका.</translation>
+<translation id="1119403468619527527">सोपे करण्यासाठी खूप कमी शब्द आहेत</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
 <translation id="1124772482545689468">वापरकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -431,6 +432,7 @@
 <translation id="3084958266922136097">स्क्रीन सेव्हर बंद करा</translation>
 <translation id="3091839911843451378">अयशस्वी झाले - थांबले आहे</translation>
 <translation id="3102119246920354026">कॅशे  </translation>
+<translation id="3112413615003385433">तुमच्या शिक्षकांनी School Tools मधील आशय काढून टाकला आहे</translation>
 <translation id="3122464029669770682">सीपीयू</translation>
 <translation id="3122614491980756867">तलाव</translation>
 <translation id="3122883569442693641">आणखी तपशील</translation>
@@ -513,6 +515,7 @@
 <translation id="353214771040290298">संपादन पूर्ण झाले</translation>
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
 <translation id="3533790840489634638">तलाव</translation>
+<translation id="3535802910192338629">तुमच्या शिक्षकांनी School Tools मध्ये नवीन आशय जोडला आहे</translation>
 <translation id="3547264467365135390">फॉर्म्युला</translation>
 <translation id="3557205324756024651">स्थानिक आयडेंटिटी (पर्यायी)</translation>
 <translation id="3565064564551103223">आयपीना अनुमती दिली</translation>
@@ -585,6 +588,7 @@
 <translation id="391412459402535266">डिव्हाइसची चाचणी करू शकत नाही. चाचणी करण्यासाठी लॅपटॉप मोडवर स्विच करा.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट घ्या</translation>
 <translation id="3923184630988645767">डेटा वापर</translation>
+<translation id="3924445055519423964">वेबपेज/PDF फाइलचा सारांश देण्यासाठी क्लिक करा</translation>
 <translation id="3932043219784172185">कोणतेही डिव्हाइस कनेक्ट केले नाही</translation>
 <translation id="3934185438132762746">असाइन न केलेले <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
@@ -630,6 +634,7 @@
 <translation id="4130750466177569591">मला मान्य आहे</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="4137700675046373159">शनिवारी</translation>
+<translation id="4139326893730851150">फर्मवेअर अपडेट</translation>
 <translation id="4143226836069425823">बदलण्यासाठी दुसऱ्या कीबोर्ड की वर टॅप करा</translation>
 <translation id="4145784616224233563">HTTP फायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -811,6 +816,7 @@
 <translation id="4988526792673242964">पेज</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4999333166442584738">अहवाल लपवा</translation>
+<translation id="5005695757087124131">निवडलेला मजकूर सोपा करण्यासाठी क्लिक करा</translation>
 <translation id="500920857929044050">चाचणी थांबवा</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">थीमचा रंग</translation>
@@ -1172,6 +1178,7 @@
 <translation id="6673898378497337661">कीबोर्डचा ब्राइटनेस वाढवा</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6694534975463174713">लॉक</translation>
+<translation id="6700703207451721535">या लिंकसाठी अ‍ॅक्सेसला अनुमती नाही. तुम्हाला अ‍ॅक्सेस हवा असल्यास, तुमच्या शिक्षकांशी संपर्क साधा.</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
 <translation id="6712933881624804031">दरी</translation>
 <translation id="6716013206176357696">स्ट्रॉबेरी</translation>
@@ -1295,6 +1302,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">वाहणाऱ्या मंद वाऱ्याचा आनंद घ्या</translation>
 <translation id="7287310195820267359">वॉलपेपरचा संग्रह</translation>
+<translation id="7293429513719260019">भाषा निवडा</translation>
 <translation id="7297226631177386107">फायरवॉलद्वारे HTTPS वेबसाइटशी कनेक्ट करू शकत नाही</translation>
 <translation id="7297726121602187087">गडद हिरवा</translation>
 <translation id="7301262279595293068">हे ॲप्लिकेशन अपडेट केले जाईपर्यंत कृपया प्रतीक्षा करा</translation>
@@ -1329,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> हे अपडेट केले जाण्यासाठी तयार आहे</translation>
 <translation id="741244894080940828">रूपांतर</translation>
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
+<translation id="7418738250896500352">सोपे करण्यासाठी खूप जास्त शब्द आहेत</translation>
 <translation id="7425037327577270384">मला लिहिण्यात मदत करा</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">हे APN बंद करू शकत नाही किंवा काढून टाकू शकत नाही. सुरू केलेली <ph name="ATTACH" /> APNs बंद केल्याची किंवा काढून टाकल्याची खात्री करा.</translation>
@@ -1354,6 +1363,7 @@
 <translation id="7544853251252956727">शफल करा</translation>
 <translation id="7550715992156305117">निदानाशी संबंधित रूटीन</translation>
 <translation id="7551123448725492271">डिव्हाइस हे ऑडिओ डिव्हाइस आहे.</translation>
+<translation id="7553913964854052228">School Tools तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="7559239713112547082">स्क्रीनशॉटचे पूर्वावलोकन करा</translation>
 <translation id="7561454561030345039">ही कृती तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केली जाते</translation>
 <translation id="7561759921596375678">व्हॉल्यूम सुरू करा</translation>
@@ -1544,6 +1554,7 @@
 <translation id="8476942730579767658">विंडो आणि डेस्क</translation>
 <translation id="8477536061607044749">ग्राफिक डिझाइन</translation>
 <translation id="8477551185774834963">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा किंचित जास्त आहे</translation>
+<translation id="8482376765267780829">सोपे करण्यासाठी काही मजकूर निवडा</translation>
 <translation id="8483248364096924578">IP पत्ता</translation>
 <translation id="8491311378305535241">Android अ‍ॅप्सवरून HTTPS वेबसाइटशी फायरवॉलद्वारे कनेक्ट करू शकत नाही</translation>
 <translation id="8495070016475833911">फेल्ट</translation>
@@ -1562,6 +1573,7 @@
 <translation id="8576249514688522074">सुरुवात केलेली नाही</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> साठी <ph name="VERSION" /> आवृत्तीवर फर्मवेअरचे इंस्टॉलेशन पूर्ण करण्यासाठी रीस्‍टार्टची आवश्‍यकता आहे. तुमचा काँप्युटर अनेक वेळा रीबूट होताना दिसेल. हे वर्तन अपेक्षित आहे.</translation>
 <translation id="8593058461203131755">मीडिया थांबवा</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">रोमिंग स्थिती</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> साठी आणखी कृती</translation>
 <translation id="86356131183441916">फिकट जांभळा</translation>
@@ -1672,6 +1684,7 @@
 <translation id="9082718469794970195">हा व्हिडिओ वापरा</translation>
 <translation id="9087578468327036362">या क्वेरीची तक्रार करा</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
+<translation id="9088994563996376283">सोपे करा</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">तारीख रीसेट करण्याशी संबंधित अधिक माहिती</translation>
 <translation id="9100765901046053179">प्रगत सेटिंग्ज</translation>

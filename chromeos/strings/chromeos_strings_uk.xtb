@@ -632,6 +632,7 @@
 <translation id="4130750466177569591">Прийняти</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4137700675046373159">у суботу</translation>
+<translation id="4139326893730851150">Оновлення мікропрограми</translation>
 <translation id="4143226836069425823">Для заміни натисніть іншу клавішу клавіатури</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
@@ -1174,6 +1175,7 @@
 <translation id="6673898378497337661">збільшити яскравість клавіатури</translation>
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
 <translation id="6694534975463174713">блокування</translation>
+<translation id="6700703207451721535">Доступ до цього посилання заборонено. Якщо він вам потрібен, зверніться до викладача.</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
 <translation id="6712933881624804031">долина</translation>
 <translation id="6716013206176357696">полуниця</translation>
@@ -1297,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Бриз</translation>
 <translation id="7287310195820267359">Колекції фонових малюнків</translation>
+<translation id="7293429513719260019">Вибрати мову</translation>
 <translation id="7297226631177386107">Не вдається підключитися до веб-сайтів HTTPS через брандмауер</translation>
 <translation id="7297726121602187087">Темно-зелений</translation>
 <translation id="7301262279595293068">Зачекайте, поки цей додаток оновлюється</translation>
@@ -1356,6 +1359,7 @@
 <translation id="7544853251252956727">Перемішати</translation>
 <translation id="7550715992156305117">Послідовності дій для діагностики</translation>
 <translation id="7551123448725492271">Це аудіопристрій.</translation>
+<translation id="7553913964854052228">Додаток School Tools використовує ваш мікрофон</translation>
 <translation id="7559239713112547082">Попередній перегляд знімка екрана</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7561759921596375678">Увімкнути звук</translation>

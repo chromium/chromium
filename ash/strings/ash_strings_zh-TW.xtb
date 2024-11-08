@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">應用程式</translation>
 <translation id="3213571860604332401">將連結儲存為書籤</translation>
 <translation id="3217205077783620295">音量已開啟；使用切換鈕可設為靜音。</translation>
-<translation id="3218561536255328229">按 Esc 鍵 5 次即可啟用觸控板</translation>
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 則</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3233611303007751344">省電模式已關閉</translation>
@@ -1302,6 +1301,7 @@
 <translation id="5393156353051693207">按住任一處即可將應用程式重新排序</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」已拖曳到「<ph name="IN_PLACE_APP" />」上方，放開滑鼠即可建立資料夾。</translation>
 <translation id="5397578532367286026">管理員 (<ph name="MANAGER_EMAIL" />) 可以在 chrome.com 瞭解這名使用者的使用情形和記錄。</translation>
+<translation id="540338817371815859">橫向</translation>
 <translation id="540713187982329711">切換無線基地台。無線基地台已開啟，目前沒有任何裝置連線。</translation>
 <translation id="5409208741270395213">將工作標示為完成</translation>
 <translation id="5413656666631274079">設定頁面</translation>
@@ -1763,6 +1763,7 @@
 <translation id="6921427376813842559">更新裝置</translation>
 <translation id="6929081673585394903">顯示控制選項</translation>
 <translation id="6931576957638141829">儲存至</translation>
+<translation id="6935857786205183008">直向</translation>
 <translation id="6942518653766415536">錄製內容格式選單</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6945922087561257829">手機目前使用的是行動網路。請確定你的手機和 Chromebook 已連上同一個 Wi-Fi 網路，然後再試一次。<ph name="LEARN_MORE" /></translation>
@@ -2430,6 +2431,7 @@
 <translation id="98120814841227350">前往文件結尾</translation>
 <translation id="987589956647469042">行動數據已開啟</translation>
 <translation id="989374776391122812">攝影機和音訊控制選項</translation>
+<translation id="990263227494928142">按 Shift 鍵 5 次即可啟用觸控板</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 已關閉。</translation>
 <translation id="993398562350683614">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。你可以在 <ph name="PRODUCT_NAME" /> 上使用應用程式處理大小事。如要尋找應用程式，可以使用啟動器。按下 Alt + Shift + L 鍵可將焦點移到啟動鍵。</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />，<ph name="SUBTEXT" /></translation>

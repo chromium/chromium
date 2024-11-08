@@ -3,6 +3,7 @@
 <translationbundle lang="pt-BR">
 <translation id="1005023885865154304">Abrir as configurações do preenchimento automático de senhas</translation>
 <translation id="1005230401424685968">AAAA</translation>
+<translation id="1010225406377140704">Entre em contato com o remetente para pedir um novo link</translation>
 <translation id="1012067394176927315">Para acessar o conteúdo, selecione Ativar no menu</translation>
 <translation id="1013952917065545813">Você pode voltar aqui para abrir guias fechadas recentemente</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
@@ -39,10 +40,10 @@
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1164891049599601209">Inserida em fraudulento</translation>
 <translation id="1165039591588034296">Erro</translation>
-<translation id="1172240852337942024">Descartar as mudanças</translation>
 <translation id="1172898394251786223">Próximo campo</translation>
 <translation id="1179890706672152411">O armazenamento está cheio</translation>
 <translation id="1181037720776840403">Remover</translation>
+<translation id="1190609913194133056">Central de Notificações</translation>
 <translation id="1201402288615127009">Próxima</translation>
 <translation id="1204075260022434100">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{{count} favorito salvo em "{title}" na conta {email}}other{{count} favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="120431140543679678">Seguir</translation>
@@ -219,6 +220,7 @@
 <translation id="1956138802718275401">Acessar as senhas na tela inicial</translation>
 <translation id="1959441496380398824">Toque em uma data e a mantenha pressionada.</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> compartilhou uma senha para <ph name="WEBSITE" /> com você.</translation>
+<translation id="1962969542251276847">Tela de bloqueio</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
 <translation id="1966313166384086081">dados do site</translation>
 <translation id="1967461193809857427">{count,plural, =1{Continuar usando a guia que você deixou no Android?}one{Continuar usando a guia que você deixou no Android?}other{Continuar usando as guias que você deixou no Android?}}</translation>
@@ -1196,6 +1198,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6503077044568424649">Mais visitados</translation>
 <translation id="6503763061813913607">Notificações da Confirmação de segurança</translation>
 <translation id="6505334220040167806">Fechar grupo de guias.</translation>
+<translation id="6506996418997555004">Compartilhar o grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Faça login para ter sua Lista de leitura em todos os seus dispositivos.</translation>
 <translation id="6518133107902771759">Confirmar</translation>
 <translation id="6523575793810663688">Me ajude a fazer isso</translation>
@@ -1262,7 +1265,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="672735642903863329">Acesse seus favoritos, senhas e mais em todos seus dispositivos.</translation>
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6746338529702829275">Analisar os dados da sua conta</translation>
-<translation id="6748108480210050150">De</translation>
 <translation id="6755200887046212842">Gerenciar contas</translation>
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6779455296366983087">Os dados de navegação serão excluídos</translation>
@@ -1311,7 +1313,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6979737339423435258">Todo o período</translation>
 <translation id="6983306615164277634">Você também pode tocar na barra de endereço e mantê-la pressionada para mudar a posição.</translation>
 <translation id="6990519590575500580">Converse por FaceTime</translation>
-<translation id="6998989275928107238">Para</translation>
 <translation id="7004032350256606903">Sua organização requer o uso do modo de navegação privada.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Definir como padrão nas Configurações…</translation>
@@ -1415,6 +1416,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="750493650310597496">0 selecionados</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear suas guias anônimas, configure o Touch ID, o Face ID ou uma senha.</translation>
+<translation id="7512075701202892785">O navegador que você adora agora no iPad</translation>
 <translation id="7512909159512473473">Digite a senha longa…</translation>
 <translation id="7514365320538308">Baixar</translation>
 <translation id="7521117365186708026">Escolha dicas que ajudam você a aproveitar o Chrome ao máximo.</translation>
@@ -1690,6 +1692,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8694281486652655615">Mostra este item</translation>
 <translation id="8696297579102085705">Enviar para seu dispositivo</translation>
 <translation id="8697136149718343437">Mover barra de endereço para baixo</translation>
+<translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8709409604518538305">As guias foram fechadas</translation>
 <translation id="8712534545803964353">Localizar na página…</translation>
@@ -1809,7 +1812,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9183733013282108610">Pesquisa anônima</translation>
 <translation id="9186762474139509529">Iniciar registro</translation>
 <translation id="9191031968346938109">Adicionar a…</translation>
-<translation id="9196007736149429065">Não foi possível abrir o arquivo</translation>
 <translation id="9200875785104711666"><ph name="TIME" />d atrás</translation>
 <translation id="9203116392574189331">Transição</translation>
 <translation id="9203951165704618409">Mude sua barra de endereço da parte de cima para a parte de baixo da tela e tenha uma experiência de navegação personalizada.</translation>

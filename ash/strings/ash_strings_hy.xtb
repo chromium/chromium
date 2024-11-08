@@ -239,7 +239,7 @@
 <translation id="1757857692711134412">Անջատված է մինչև մայրամուտ</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ․ (միջակետ) ստեղնային դյուրանցումը փոփոխվել է։ Insert ստեղնն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace։</translation>
 <translation id="1770726142253415363">Տեղափոխվեց տող <ph name="ROW_NUMBER" />, սյունակ <ph name="COLUMN_NUMBER" />։</translation>
-<translation id="1771761307086386028">Ոլորել աջ</translation>
+<translation id="1771761307086386028">Թերթել աջ</translation>
 <translation id="17722141032474077">Հաշվարկներ</translation>
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="178347895271755507">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և ծանուցումների դիտումը</translation>
@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">Հավելված</translation>
 <translation id="3213571860604332401">Պահել հղումը որպես էջանիշ</translation>
 <translation id="3217205077783620295">Ձայնը միացված է։ Անջատելու համար սեղմեք այս կոճակը։</translation>
-<translation id="3218561536255328229">5 անգամ սեղմեք Esc՝ հպահարթակը միացնելու համար</translation>
 <translation id="3226991577105957773">Եվս <ph name="COUNT" /> ծանուցում</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="3233611303007751344">Մարտկոցի տնտեսումն անջատվեց</translation>
@@ -871,7 +870,7 @@
 <translation id="4015144849380506405">Դադարեցնել/վերագործարկել մկնիկի ստեղները, երբ այն միացված է</translation>
 <translation id="4017989525502048489">Լազերային ցուցիչ</translation>
 <translation id="401993194061514265">Նշիչը հասանելի չէ։ Նորից բացեք Screencast-ը։</translation>
-<translation id="4021716437419160885">Ոլորել վար</translation>
+<translation id="4021716437419160885">Թերթել ներքև</translation>
 <translation id="4022497978915111141">Կողպել սարքը</translation>
 <translation id="4024840464866786680">Եթե մոռացել եք ձեր PIN կոդը և գաղտնաբառը կամ վերջերս փոխել եք Google հաշվի գաղտնաբառը, փորձեք վերականգնել այս օգտատիրոջը։</translation>
 <translation id="4026843240379844265">Տեղափոխել ակտիվ պատուհանը էկրանների միջև</translation>
@@ -1161,7 +1160,7 @@
 <translation id="4938176435186993759">Թաքցնել բոլոր առաջարկները</translation>
 <translation id="4945196315133970626">Անջատել ծանուցումները</translation>
 <translation id="4946376291507881335">Լուսանկարել</translation>
-<translation id="495046168593986294">Ոլորել վեր</translation>
+<translation id="495046168593986294">Թերթել վերև</translation>
 <translation id="4950800194215951939">Հարմարեցրեք խաղային ընթացքը</translation>
 <translation id="4952936045814352993">«Հեռախոսի տեղորոշում» գործառույթն անհասանելի է, երբ ծանուցումների ազդանշաններն անջատված են</translation>
 <translation id="4953585991029886728">Տեքստի խմբագրում</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">Հպեք էկրանի ցանկացած հատվածին և պահեք՝ հավելվածները վերադասավորելու համար</translation>
 <translation id="5395308026110844773">«<ph name="DRAGGED_APP_NAME" />» հավելվածը «<ph name="IN_PLACE_APP" />» հավելվածի վրա է: Բաց թողեք՝ պանակ ստեղծելու համար:</translation>
 <translation id="5397578532367286026">Այս օգտատիրոջ օգտագործման տվյալները և պատմությունը կարող են վերահսկվել chrome.com-ի կառավարիչի (<ph name="MANAGER_EMAIL" />) կողմից:</translation>
+<translation id="540338817371815859">Հորիզոնական</translation>
 <translation id="540713187982329711">Միացնել/անջատել թեժ կետը։ Թեժ կետը միացված է, սակայն ոչ մի սարք միացած չէ դրան։</translation>
 <translation id="5409208741270395213">Առաջադրանքը նշել որպես կատարված</translation>
 <translation id="5413656666631274079">Կարգավորումների էջ</translation>
@@ -1488,7 +1488,7 @@
 <translation id="6015573907265691211">Նշել որպես կատարված</translation>
 <translation id="6018164090099858612">Ելք հայելային ռեժիմից</translation>
 <translation id="6019566113895157499">Ստեղնաշարային դյուրանցումներ</translation>
-<translation id="602001110135236999">Ոլորել ձախ</translation>
+<translation id="602001110135236999">Թերթել ձախ</translation>
 <translation id="6020147141355393792">Կարգավորել հեռախոսի ծանուցումների և հավելվածների դիտումը</translation>
 <translation id="6022924867608035986">Մաքրել որոնման դաշտի տեքստը</translation>
 <translation id="602472752137106327">Բոլոր աշխատասեղանների պատուհանների ցուցադրում, ընտրված է կետակոճակը</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">Թարմացրեք սարքը</translation>
 <translation id="6929081673585394903">Ցույց տալ կառավարման տարրերը</translation>
 <translation id="6931576957638141829">Պահել…</translation>
+<translation id="6935857786205183008">Ուղղաձիգ</translation>
 <translation id="6942518653766415536">Տեսագրման ձևաչափի ընտրացանկ</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6945922087561257829">Ձեր հեռախոսը բջջային ցանց է օգտագործում։ Համոզվեք, որ ձեր հեռախոսն ու Chromebook-ը միացած են նույն Wi-Fi ցանցին, և նորից փորձեք։ <ph name="LEARN_MORE" /></translation>

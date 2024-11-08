@@ -630,7 +630,6 @@
 <translation id="3208321278970793882">एप</translation>
 <translation id="3213571860604332401">यो लिंकलाई बुकमार्कका रूपमा सेभ गर्नुहोस्</translation>
 <translation id="3217205077783620295">भोल्युम सक्रिय छ, टगल गर्नुले अडियो म्युट गर्ने छ।</translation>
-<translation id="3218561536255328229">टचप्याड अन गर्न Esc की ५ पटक थिच्नुहोस्</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> थप</translation>
 <translation id="3227137524299004712">माइक्रोफोन</translation>
 <translation id="3233611303007751344">ब्याट्री सेभर अफ गरिएको छ</translation>
@@ -1305,6 +1304,7 @@
 <translation id="5393156353051693207">तपाईं आफ्ना एपहरूको क्रम पुनः मिलाउन चाहनुहुन्छ भने कुनै पनि ठाउँमा टच एण्ड होल्ड गर्नुहोस्</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> का माथि <ph name="DRAGGED_APP_NAME" />, फोल्डर सिर्जना गर्न विमोचन गर्नुहोस्।</translation>
 <translation id="5397578532367286026">यो प्रयोगकर्ताको उपयोग र इतिहासलाई व्यवस्थापक (<ph name="MANAGER_EMAIL" />) ले chrome.com मा पुनरीक्षण गर्न सक्छ।</translation>
+<translation id="540338817371815859">ल्यान्डस्केप</translation>
 <translation id="540713187982329711">हटस्पट टगल गर्नुहोस्। हटस्पट अन छ, कुनै पनि डिभाइस कनेक्ट गरिएको छैन।</translation>
 <translation id="5409208741270395213">यो कार्यलाई सम्पन्न गरिएको कार्यका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="5413656666631274079">सेटिङको पेज</translation>
@@ -1767,6 +1767,7 @@
 <translation id="6921427376813842559">डिभाइस अपडेट गर्नुहोस्</translation>
 <translation id="6929081673585394903">सेटिङ देखाउनुहोस्</translation>
 <translation id="6931576957638141829">यसमा सेभ गर्नुहोस्</translation>
+<translation id="6935857786205183008">पोर्ट्रेट</translation>
 <translation id="6942518653766415536">रेकर्डिङको फर्म्याटसम्बन्धी मेनु</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6945922087561257829">तपाईंको फोनमा मोबाइल नेटवर्क प्रयोग गरिराखिएको छ। तपाईंको फोन र Chromebook एउटै Wi-Fi नेटवर्कमा कनेक्ट गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="LEARN_MORE" /></translation>

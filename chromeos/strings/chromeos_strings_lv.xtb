@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Atspējot ekrānsaudzētāju</translation>
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
 <translation id="3102119246920354026">Kešatmiņa</translation>
+<translation id="3112413615003385433">Jūsu skolotājs noņēma saturu lietotnē Skolas rīki.</translation>
 <translation id="3122464029669770682">Maksa par daļas vienību</translation>
 <translation id="3122614491980756867">pludmales peļķes</translation>
 <translation id="3122883569442693641">Plašāka informācija</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Pabeigt rediģēšanu</translation>
 <translation id="3532980081107202182">Atlikušas aptuveni <ph name="MIN_REMAINING" /> minūtes</translation>
 <translation id="3533790840489634638">pludmales peļķe</translation>
+<translation id="3535802910192338629">Jūsu skolotājs pievienoja jaunu saturu lietotnē School Tools.</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokālā identitāte (neobligāti)</translation>
 <translation id="3565064564551103223">Atļautās IP adreses</translation>
@@ -630,6 +632,7 @@
 <translation id="4130750466177569591">Piekrītu</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
 <translation id="4137700675046373159">sestdien</translation>
+<translation id="4139326893730851150">Aparātprogrammatūras atjauninājumi</translation>
 <translation id="4143226836069425823">Lai aizstātu, pieskarieties citam tastatūras taustiņam.</translation>
 <translation id="4145784616224233563">HTTP ugunsmūris</translation>
 <translation id="4147897805161313378">Google fotoattēli</translation>
@@ -1172,6 +1175,7 @@
 <translation id="6673898378497337661">palielināt tastatūras spilgtumu</translation>
 <translation id="6692996468359469499">Iespēja saņemt informāciju par atlasīto saturu</translation>
 <translation id="6694534975463174713">bloķēt</translation>
+<translation id="6700703207451721535">Piekļuve šai saitei nav atļauta. Ja ir nepieciešama piekļuve, sazinieties ar skolotāju.</translation>
 <translation id="6704062477274546131">DNS atrise</translation>
 <translation id="6712933881624804031">ieleja</translation>
 <translation id="6716013206176357696">zemenes</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Vējš</translation>
 <translation id="7287310195820267359">Fona tapešu kolekcijas</translation>
+<translation id="7293429513719260019">Atlasīt valodu</translation>
 <translation id="7297226631177386107">Nevar izveidot savienojumu ar HTTPS vietnēm, ja ir iespējots ugunsmūris</translation>
 <translation id="7297726121602187087">Tumši zaļa</translation>
 <translation id="7301262279595293068">Lūdzu, uzgaidiet, kamēr tiek atjaunināta šī lietojumprogramma.</translation>
@@ -1354,6 +1359,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7544853251252956727">Sajaukt</translation>
 <translation id="7550715992156305117">Diagnostikas pārbaudes</translation>
 <translation id="7551123448725492271">Ierīce ir audio ierīce.</translation>
+<translation id="7553913964854052228">School Tools izmanto jūsu mikrofonu.</translation>
 <translation id="7559239713112547082">Priekšskatīt ekrānuzņēmumu</translation>
 <translation id="7561454561030345039">Šo darbību pārvalda administrators</translation>
 <translation id="7561759921596375678">Ieslēgt skaņu</translation>
@@ -1562,6 +1568,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8576249514688522074">Pārbaude nav sākta</translation>
 <translation id="8584654835905316966">Lai pabeigtu <ph name="DEVICE_NAME" /> aparātprogrammatūras versijas <ph name="VERSION" /> instalēšanu, ir nepieciešama restartēšana. Iespējams, dators vairākas reizes tiks palaists atkārtoti. Šāda darbība ir sagaidāma.</translation>
 <translation id="8593058461203131755">apturēt multivides satura atskaņošanu</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Viesabonēšanas statuss</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />: citas darbības</translation>
 <translation id="86356131183441916">Gaiši violeta</translation>

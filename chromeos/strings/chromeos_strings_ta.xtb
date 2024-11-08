@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">ஸ்கிரீன் சேவரை முடக்குதல்</translation>
 <translation id="3091839911843451378">பிரிண்டர் நிறுத்தப்பட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="3102119246920354026">தற்காலிகச் சேமிப்பு</translation>
+<translation id="3112413615003385433">School Toolsஸில் உங்கள் ஆசிரியர் உள்ளடக்கத்தை அகற்றியுள்ளார்</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">நீச்சல் குளங்கள்</translation>
 <translation id="3122883569442693641">கூடுதல் விவரங்கள்</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">திருத்தம் முடிந்தது</translation>
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="3533790840489634638">நீச்சல்குளம்</translation>
+<translation id="3535802910192338629">School Toolsஸில் உங்கள் ஆசிரியர் புதிய உள்ளடக்கத்தைச் சேர்த்துள்ளார்</translation>
 <translation id="3547264467365135390">சூத்திரம்</translation>
 <translation id="3557205324756024651">அக அடையாளம் (விருப்பத்தேர்வு)</translation>
 <translation id="3565064564551103223">அனுமதிக்கப்படும் IPகள்</translation>
@@ -630,6 +632,7 @@
 <translation id="4130750466177569591">நான் ஏற்கிறேன்</translation>
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
 <translation id="4137700675046373159">சனிக்கிழமை அன்று</translation>
+<translation id="4139326893730851150">நிலைபொருள் புதுப்பிப்புகள்</translation>
 <translation id="4143226836069425823">மாற்ற கீபோர்டில் வேறொரு பட்டன் மீது தட்டவும்</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -1172,6 +1175,7 @@
 <translation id="6673898378497337661">கீபோர்டு ஒளிர்வை அதிகரிப்பதற்கான ஐகான்</translation>
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
 <translation id="6694534975463174713">பூட்டு</translation>
+<translation id="6700703207451721535">இந்த இணைப்பிற்கு அணுகல் அனுமதிக்கப்படவில்லை. உங்களுக்கு அணுகல் தேவையென்றால் உங்கள் ஆசிரியரிடம் கேட்கவும்.</translation>
 <translation id="6704062477274546131">DNS ரெசல்யூஷன்</translation>
 <translation id="6712933881624804031">பள்ளத்தாக்கு</translation>
 <translation id="6716013206176357696">ஸ்ட்ராபெர்ரிகள்</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">மனதை வருடும் நினைவுகள்</translation>
 <translation id="7287310195820267359">வால்பேப்பர் தொகுப்புகள்</translation>
+<translation id="7293429513719260019">மொழியைத் தேர்ந்தெடு</translation>
 <translation id="7297226631177386107">HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="7297726121602187087">அடர் பச்சை</translation>
 <translation id="7301262279595293068">இந்த ஆப்ஸ் புதுப்பிக்கப்படும் வரை காத்திருக்கவும்</translation>
@@ -1354,6 +1359,7 @@
 <translation id="7544853251252956727">கலை</translation>
 <translation id="7550715992156305117">பிழை கண்டறிதலுக்கான வழக்கங்கள்</translation>
 <translation id="7551123448725492271">சாதனம் ஒரு ஆடியோ சாதனம்.</translation>
+<translation id="7553913964854052228">உங்கள் மைக்ரோஃபோனை School Tools பயன்படுத்துகிறது</translation>
 <translation id="7559239713112547082">ஸ்கிரீன்ஷாட்டின் மாதிரிக்காட்சி</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7561759921596375678">ஒலியளவை இயக்கும்</translation>
@@ -1562,6 +1568,7 @@
 <translation id="8576249514688522074">ஆரம்பிக்கப்படவில்லை</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" />க்கான நிலைபொருளின் <ph name="VERSION" /> பதிப்பை நிறுவ சாதனத்தை மீண்டும் தொடங்க வேண்டும். உங்கள் கம்ப்யூட்டர் சில முறை மறுபடி தொடங்கப்படலாம். இது வழக்கமானதே.</translation>
 <translation id="8593058461203131755">மீடியாவை இடைநிறுத்துவதற்கான ஐகான்</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">ரோமிங் நிலை</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />க்கான கூடுதல் செயல்கள்</translation>
 <translation id="86356131183441916">வெளிர் ஊதா</translation>
