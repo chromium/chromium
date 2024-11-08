@@ -1007,6 +1007,7 @@ Browser* CreateWebAppWindowFromNavigationParams(
 
 content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params) {
+  nav_params.pwa_navigation_capturing_force_off = true;
   if (nav_params.browser->app_controller() &&
       nav_params.browser->app_controller()->IsUrlInHomeTabScope(
           nav_params.url)) {
@@ -1364,7 +1365,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   // Below here handles the states outlined in
   // https://bit.ly/pwa-navigation-capturing
-  if (params.started_from_context_menu) {
+  if (params.started_from_context_menu ||
+      params.pwa_navigation_capturing_force_off) {
     return AppNavigationResult::CapturingDisabled();
   }
 

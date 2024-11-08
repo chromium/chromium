@@ -358,6 +358,12 @@ struct NavigateParams {
   blink::mojom::SystemEntropy suggested_system_entropy =
       blink::mojom::SystemEntropy::kNormal;
 
+  // This option forces PWA navigation capturing (which captures some
+  // navigations into PWA windows or tabs) off. This is only recommended to be
+  // used if the navigation MUST not be captured. See
+  // https://bit.ly/pwa-navigation-capturing.
+  bool pwa_navigation_capturing_force_off = false;
+
  private:
   NavigateParams();
 };
