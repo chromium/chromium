@@ -14,7 +14,9 @@ bool TracingDelegate::OnBackgroundTracingActive(bool requires_anonymized_data) {
   return false;
 }
 
-bool TracingDelegate::OnBackgroundTracingIdle(bool requires_anonymized_data) {
+void TracingDelegate::OnBackgroundTracingIdle() {}
+
+bool TracingDelegate::CanFinalizeTrace(bool requires_anonymized_data) {
   return false;
 }
 

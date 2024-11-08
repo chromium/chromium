@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/token.h"
 #include "base/trace_event/trace_config.h"
+#include "base/unguessable_token.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/common/content_export.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
@@ -142,7 +143,10 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     // A stop rule was triggered and the tracing session is stopping.
     kStopping,
     // An upload rule was triggered and the tracing session is finalizing.
-    kFinalizing
+    kFinalizing,
+    // A nested upload rule was triggered and the tracing session is being
+    // cloned.
+    kCloning
   };
 
   // The delegate gets notified of state transitions and receives traces.
@@ -152,8 +156,11 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     // true if tracing is allowed to begin.
     virtual bool OnScenarioActive(TracingScenario* scenario) = 0;
     // Called when |scenario| becomes idle again. Returns true if tracing is
-    // allowed to finalize.
+    // allowed to save.
     virtual bool OnScenarioIdle(TracingScenario* scenario) = 0;
+    // Called when a trace from |scenario| is cloned,  returns true if tracing
+    // is allowed to save.
+    virtual bool OnScenarioCloned(TracingScenario* scenario) = 0;
     // Called when |scenario| starts recording a trace.
     virtual void OnScenarioRecording(TracingScenario* scenario) = 0;
     // Called when a trace was collected.
@@ -225,6 +232,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   void OnTracingError(perfetto::TracingError error);
   void OnTracingStop();
   void OnTracingStart();
+  void OnTracingCloned();
   void OnFinalizingDone(base::Token trace_uuid,
                         std::string&& serialized_trace,
                         TracingSession tracing_session,
@@ -267,6 +275,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   raw_ptr<Delegate> scenario_delegate_;
   TracingSession tracing_session_;
   base::Token session_id_;
+  base::UnguessableToken session_unguessable_name_;
   raw_ptr<const BackgroundTracingRule> triggered_rule_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

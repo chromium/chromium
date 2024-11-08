@@ -53,8 +53,7 @@ class AwTracingDelegateTest : public testing::Test {
 TEST_F(AwTracingDelegateTest, IsAllowedToBegin) {
   EXPECT_TRUE(delegate_->OnBackgroundTracingActive(
       /*requires_anonymized_data=*/false));
-  EXPECT_TRUE(delegate_->OnBackgroundTracingIdle(
-      /*requires_anonymized_data=*/false));
+  delegate_->OnBackgroundTracingIdle();
 }
 
 TEST_F(AwTracingDelegateTest, IsAllowedToBeginSessionEndedUnexpectedly) {

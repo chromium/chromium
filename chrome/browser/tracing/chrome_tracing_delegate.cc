@@ -192,12 +192,13 @@ bool ChromeTracingDelegate::OnBackgroundTracingActive(
   return true;
 }
 
-bool ChromeTracingDelegate::OnBackgroundTracingIdle(
-    bool requires_anonymized_data) {
+void ChromeTracingDelegate::OnBackgroundTracingIdle() {
   BackgroundTracingStateManager& state =
       BackgroundTracingStateManager::GetInstance();
   state.OnTracingStopped();
+}
 
+bool ChromeTracingDelegate::CanFinalizeTrace(bool requires_anonymized_data) {
   return IsActionAllowed(BackgroundScenarioAction::kUploadTrace,
                          requires_anonymized_data);
 }

@@ -9679,6 +9679,7 @@ features through Chrome Labs. -->
   </summary>
   <token key="Event">
     <variant name="Active"/>
+    <variant name="Clone"/>
     <variant name="Idle"/>
     <variant name="Recording"/>
     <variant name="SaveTrace"/>

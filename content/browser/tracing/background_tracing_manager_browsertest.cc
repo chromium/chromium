@@ -527,23 +527,15 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   constexpr const char kScenarioConfig[] = R"pb(
     scenarios: {
       scenario_name: "test_scenario"
-      start_rules: {
-        name: "start_trigger"
-        manual_trigger_name: "start_trigger"
-      }
+      start_rules: { manual_trigger_name: "start_trigger" }
+      stop_rules: { manual_trigger_name: "stop_trigger" }
       trace_config: {
         data_sources: { config: { name: "org.chromium.trace_metadata" } }
       }
       nested_scenarios: {
         scenario_name: "nested_scenario"
-        start_rules: {
-          name: "nested_start_trigger"
-          manual_trigger_name: "nested_start_trigger"
-        }
-        upload_rules: {
-          name: "nested_upload_trigger"
-          manual_trigger_name: "nested_upload_trigger"
-        }
+        start_rules: { manual_trigger_name: "nested_start_trigger" }
+        upload_rules: { manual_trigger_name: "nested_upload_trigger" }
       }
     }
   )pb";
@@ -555,13 +547,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
-
-  observer.ExpectOnScenarioIdle("test_scenario");
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_upload_trigger"));
-  observer.WaitForScenarioIdle();
 
   observer.WaitForTraceReceived();
   EXPECT_TRUE(observer.trace_received());
+
+  observer.ExpectOnScenarioIdle("test_scenario");
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+  observer.WaitForScenarioIdle();
 }
 
 // This tests that non-allowlisted args get stripped if required.

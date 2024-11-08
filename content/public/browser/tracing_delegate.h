@@ -23,8 +23,10 @@ class CONTENT_EXPORT TracingDelegate {
   // started. Returns true if the tracing session is allowed to begin.
   virtual bool OnBackgroundTracingActive(bool requires_anonymized_data);
   // Notifies that a tracing session stopped and background tracing became idle
-  // again. Returns true if the tracing session is allowed finalize.
-  virtual bool OnBackgroundTracingIdle(bool requires_anonymized_data);
+  // again.
+  virtual void OnBackgroundTracingIdle();
+  // Returns true if the tracing session is allowed finalize.
+  virtual bool CanFinalizeTrace(bool requires_anonymized_data);
 
   // Specifies whether traces that aren't uploaded should still be saved.
   virtual bool ShouldSaveUnuploadedTrace() const;

@@ -651,13 +651,24 @@ bool BackgroundTracingManagerImpl::OnScenarioIdle(
   for (EnabledStateTestObserver* observer : background_tracing_observers_) {
     observer->OnScenarioIdle(idle_scenario->scenario_name());
   }
-  bool is_allowed_finalization =
-      !delegate_ || delegate_->OnBackgroundTracingIdle(
-                        idle_scenario->privacy_filter_enabled());
+  if (delegate_) {
+    delegate_->OnBackgroundTracingIdle();
+  }
   for (auto& scenario : enabled_scenarios_) {
     scenario->Enable();
   }
-  return is_allowed_finalization;
+  return !delegate_ ||
+         delegate_->CanFinalizeTrace(idle_scenario->privacy_filter_enabled());
+}
+
+bool BackgroundTracingManagerImpl::OnScenarioCloned(
+    TracingScenario* cloned_scenario) {
+  DCHECK_EQ(active_scenario_, cloned_scenario);
+  base::UmaHistogramSparse(
+      "Tracing.Background.Scenario.Clone",
+      variations::HashName(cloned_scenario->scenario_name()));
+  return !delegate_ ||
+         delegate_->CanFinalizeTrace(cloned_scenario->privacy_filter_enabled());
 }
 
 void BackgroundTracingManagerImpl::OnScenarioRecording(

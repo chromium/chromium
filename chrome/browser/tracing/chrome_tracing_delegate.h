@@ -46,10 +46,13 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   // trace and will allow tracing to run next time.
   bool OnBackgroundTracingActive(bool requires_anonymized_data) override;
 
-  // Returns true if tracing is allowed to end. Also updates the background
-  // tracing state in prefs using BackgroundTracingStateManager when returning
-  // true. This is required to be called before stopping background tracing.
-  bool OnBackgroundTracingIdle(bool requires_anonymized_data) override;
+  // Updates the background tracing state in prefs using
+  // BackgroundTracingStateManager. This is required to be called before
+  // stopping background tracing.
+  void OnBackgroundTracingIdle() override;
+
+  // Returns true if tracing is allowed to end.
+  bool CanFinalizeTrace(bool requires_anonymized_data) override;
 
   bool ShouldSaveUnuploadedTrace() const override;
 

@@ -73,11 +73,10 @@ bool AwTracingDelegate::OnBackgroundTracingActive(
   return true;
 }
 
-bool AwTracingDelegate::OnBackgroundTracingIdle(bool requires_anonymized_data) {
+void AwTracingDelegate::OnBackgroundTracingIdle() {
   tracing::BackgroundTracingStateManager& state =
       tracing::BackgroundTracingStateManager::GetInstance();
   state.OnTracingStopped();
-  return true;
 }
 
 }  // namespace android_webview
