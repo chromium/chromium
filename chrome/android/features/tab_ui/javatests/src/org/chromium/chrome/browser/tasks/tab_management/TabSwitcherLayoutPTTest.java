@@ -33,10 +33,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -66,6 +68,7 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH})
+@EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherLayoutPTTest {
@@ -220,8 +223,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
-    @RequiresRestart("Disable batching while re-enabling other tests.")
     public void testRenderGrid_Incognito() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Prepare some incognito tabs and enter tab switcher.
@@ -249,8 +250,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
-    @RequiresRestart("Disable batching while re-enabling other tests")
     public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
