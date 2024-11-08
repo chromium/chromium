@@ -147,8 +147,9 @@ language_detection::Prediction LanguageDetectionModel::DetectLanguage(
     model_predictions.emplace_back(DetectTopLanguage(sampled_str));
   }
 
-  const auto top_language_result =
-      std::max_element(model_predictions.begin(), model_predictions.end());
+  const auto top_language_result = std::max_element(
+      model_predictions.begin(), model_predictions.end(),
+      [](auto& left, auto& right) { return left.second < right.second; });
   base::UmaHistogramTimes(
       "LanguageDetection.TFLiteModel.DetectPageLanguage.Duration",
       timer.Elapsed());
