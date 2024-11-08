@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
-#include "third_party/icu/source/common/unicode/char16ptr.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "v8/include/v8.h"
 
@@ -56,8 +56,7 @@ void NotifyTimezoneChangeOnWorkerThread(WorkerThread* worker_thread) {
 String GetTimezoneId(const icu::TimeZone& timezone) {
   icu::UnicodeString unicode_timezone_id;
   timezone.getID(unicode_timezone_id);
-  return String(icu::toUCharPtr(unicode_timezone_id.getBuffer()),
-                static_cast<unsigned>(unicode_timezone_id.length()));
+  return String(WTF::unicode::ToSpan(unicode_timezone_id));
 }
 
 String GetCurrentTimezoneId() {
