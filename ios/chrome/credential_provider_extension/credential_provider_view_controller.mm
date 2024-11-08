@@ -947,6 +947,14 @@ UIColor* BackgroundColor() {
             (PasskeyWelcomeScreenPurpose)purpose
                                    primaryButtonAction:
                                        (ProceduralBlock)primaryButtonAction {
+  if (!self.presentingView.view.window) {
+    // If the view of the presenting view controller doesn't have any window, it
+    // means that it is currently not visible and that the CPE hasn't been
+    // prepared to show some UI.
+    [self exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
+    return;
+  }
+
   ProceduralBlock action;
   if (_userVerificationRequired) {
     __weak __typeof(self) weakSelf = self;
