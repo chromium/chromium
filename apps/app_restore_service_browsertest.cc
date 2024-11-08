@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "apps/app_restore_service.h"
-
+#include "iostream"
 #include "apps/app_restore_service_factory.h"
 #include "apps/saved_files_service.h"
 #include "base/files/file_util.h"
