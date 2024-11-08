@@ -157,7 +157,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // embedder notifies the animation manager upon a gesture's start. This is
   // used to ensure the navigation is initiated at gesture end, even if the
   // animation had to be terminated sooner.
-  int destination_entry_id_ = -1;
+  NavigationTransitionData::UniqueId destination_entry_id_ =
+      NavigationTransitionData::kInvalidId;
 
   // The actual implementation of the animation manager that manages the history
   // navigation animation. One instance per gesture.

@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -425,7 +426,8 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     BackForwardTransitionAnimationManagerAndroid* animation_manager)
     : nav_direction_(nav_direction),
       initiating_edge_(initiating_edge),
-      destination_entry_id_(destination_entry->GetUniqueID()),
+      destination_entry_id_(
+          destination_entry->navigation_transition_data().unique_id()),
       animation_manager_(animation_manager),
       is_copied_from_embedder_(destination_entry->navigation_transition_data()
                                    .is_copied_from_embedder()),
@@ -1520,13 +1522,14 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
     SkBitmap embedder_content) {
   NavigationControllerImpl* nav_controller =
       animation_manager_->navigation_controller();
-  auto* destination_entry =
-      nav_controller->GetEntryWithUniqueID(destination_entry_id_);
+  int entry_index =
+      NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+          nav_controller, destination_entry_id_);
+  auto* destination_entry = nav_controller->GetEntryAtIndex(entry_index);
   CHECK(destination_entry);
   auto* preview = static_cast<NavigationEntryScreenshot*>(
       destination_entry->GetUserData(NavigationEntryScreenshot::kUserDataKey));
-  CHECK(fallback_ux_ ||
-        preview->navigation_entry_id() == destination_entry_id_);
+  CHECK(fallback_ux_ || preview->unique_id() == destination_entry_id_);
 
   // The layers can be reused. We need to make sure there is no ongoing
   // transform on the layer of the current `WebContents`'s view.
@@ -1625,7 +1628,9 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
   NavigationControllerImpl* nav_controller =
       animation_manager_->navigation_controller();
 
-  int index = nav_controller->GetEntryIndexWithUniqueID(destination_entry_id_);
+  int index =
+      NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+          nav_controller, destination_entry_id_);
   if (index == -1) {
     return false;
   }
@@ -1679,7 +1684,10 @@ void BackForwardTransitionAnimator::TrackRequest(
   // the entry.
   CHECK(created_request->GetNavigationEntry());
 
-  int request_entry_id = created_request->GetNavigationEntry()->GetUniqueID();
+  auto request_entry_id =
+      static_cast<NavigationEntryImpl*>(created_request->GetNavigationEntry())
+          ->navigation_transition_data()
+          .unique_id();
 
   // `destination_entry_id_` is initialized in the same stack as
   // `GoToIndexAndReturnAllRequests()`. Thus they must equal.

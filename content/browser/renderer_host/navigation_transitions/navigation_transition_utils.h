@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_TRANSITION_UTILS_H_
 
 #include "base/functional/callback.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -16,6 +17,7 @@ class Size;
 
 namespace content {
 
+class NavigationControllerImpl;
 class NavigationRequest;
 
 class NavigationTransitionUtils {
@@ -54,6 +56,10 @@ class NavigationTransitionUtils {
       NavigationRequest& navigation_request,
       std::optional<blink::SameDocNavigationScreenshotDestinationToken>
           destination_token);
+
+  static int FindEntryIndexForNavigationTransitionID(
+      NavigationControllerImpl* controller,
+      NavigationTransitionData::UniqueId id);
 
   // Used by tests to deterministically validate the memory budgeting / eviction
   // logic.

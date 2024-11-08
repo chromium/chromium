@@ -8,6 +8,7 @@
 #include "base/supports_user_data.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
 
 class SkBitmap;
@@ -51,7 +52,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   static void SetDisableCompressionForTesting(bool disable);
 
   NavigationEntryScreenshot(const SkBitmap& bitmap,
-                            int navigation_entry_id,
+                            NavigationTransitionData::UniqueId unique_id,
                             bool supports_etc_non_power_of_two);
   NavigationEntryScreenshot(const NavigationEntryScreenshot&) = delete;
   NavigationEntryScreenshot& operator=(const NavigationEntryScreenshot&) =
@@ -78,7 +79,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
     return dimensions_without_compression_;
   }
 
-  int navigation_entry_id() const { return navigation_entry_id_; }
+  NavigationTransitionData::UniqueId unique_id() const { return unique_id_; }
 
   SkBitmap GetBitmapForTesting() const;
   size_t CompressedSizeForTesting() const;
@@ -107,9 +108,9 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // cache from a different `NavigationController`.
   raw_ptr<NavigationEntryScreenshotCache> cache_ = nullptr;
 
-  // This screenshot is cached for the navigation entry of
-  // `navigation_entry_id_`.
-  const int navigation_entry_id_;
+  // This screenshot is cached for the navigation entry, whose
+  // `navigation_transition_data()` has `unique_id_`.
+  const NavigationTransitionData::UniqueId unique_id_;
 
   const gfx::Size dimensions_without_compression_;
 

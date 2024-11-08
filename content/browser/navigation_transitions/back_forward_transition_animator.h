@@ -435,9 +435,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // The ID of the destination `NavigationEntry`. Constant through out the
   // lifetime of a gesture so we are guaranteed to target the correct entry.
-  // This is also guaranteed to be equal to `screenshot_->navigation_entry_id()`
-  // once `screenshot_` is set.
-  const int destination_entry_id_;
+  // This is also guaranteed to be equal to `screenshot_->unique_id()` once
+  // `screenshot_` is set.
+  const NavigationTransitionData::UniqueId destination_entry_id_;
 
   // The manager back-pointer. Guaranteed to outlive the impl.
   const raw_ptr<BackForwardTransitionAnimationManagerAndroid>

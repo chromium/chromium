@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
@@ -66,8 +67,9 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
   // Each previous gesture should finished with `OnGestureCancelled()` or
   // `OnGestureInvoked()`. In both cases we reset `destination_entry_id_` to
   // -1.
-  CHECK_EQ(destination_entry_id_, -1);
-  destination_entry_id_ = destination_entry->GetUniqueID();
+  CHECK_EQ(destination_entry_id_, NavigationTransitionData::kInvalidId);
+  destination_entry_id_ =
+      destination_entry->navigation_transition_data().unique_id();
 
   if (animator_) {
     // It's possible for a user to start a second gesture when the first gesture
@@ -115,27 +117,28 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureProgressed(
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureCancelled() {
-  CHECK_NE(destination_entry_id_, -1);
+  CHECK_NE(destination_entry_id_, NavigationTransitionData::kInvalidId);
   if (animator_) {
     animator_->OnGestureCancelled();
     MaybeDestroyAnimator();
   }
-  destination_entry_id_ = -1;
+  destination_entry_id_ = NavigationTransitionData::kInvalidId;
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
-  CHECK_NE(destination_entry_id_, -1);
+  CHECK_NE(destination_entry_id_, NavigationTransitionData::kInvalidId);
   if (animator_) {
     animator_->OnGestureInvoked();
     MaybeDestroyAnimator();
   } else {
-    int index = navigation_controller_->GetEntryIndexWithUniqueID(
-        destination_entry_id_);
+    int index =
+        NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+            navigation_controller_, destination_entry_id_);
     if (index != -1) {
       navigation_controller_->GoToIndex(index);
     }
   }
-  destination_entry_id_ = -1;
+  destination_entry_id_ = NavigationTransitionData::kInvalidId;
 }
 
 void BackForwardTransitionAnimationManagerAndroid::

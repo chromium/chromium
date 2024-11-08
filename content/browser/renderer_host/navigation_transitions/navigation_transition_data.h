@@ -88,10 +88,10 @@ class NavigationTransitionData {
     kMaxValue = kCacheMissNonPrimaryMainFrame
   };
 
-  NavigationTransitionData() = default;
+  NavigationTransitionData();
   ~NavigationTransitionData() = default;
   NavigationTransitionData(NavigationTransitionData&&) = delete;
-  NavigationTransitionData& operator=(NavigationTransitionData&&) = default;
+  NavigationTransitionData& operator=(NavigationTransitionData&&) = delete;
   NavigationTransitionData(const NavigationTransitionData&) = delete;
   NavigationTransitionData& operator=(const NavigationTransitionData&) = delete;
 
@@ -103,6 +103,10 @@ class NavigationTransitionData {
   same_document_navigation_entry_screenshot_token() const {
     return same_document_navigation_entry_screenshot_token_;
   }
+
+  using UniqueId = base::StrongAlias<class NavigationTransitionDataIdTag, int>;
+  constexpr static UniqueId kInvalidId = UniqueId(-1);
+  UniqueId unique_id() const { return unique_id_; }
 
   void set_is_copied_from_embedder(bool is_copied_from_embedder) {
     is_copied_from_embedder_ = is_copied_from_embedder;
@@ -128,6 +132,15 @@ class NavigationTransitionData {
   void set_favicon(const SkBitmap& favicon) { favicon_ = favicon; }
 
  private:
+  // A unique ID for this struct. This is synonymous to the owning
+  // `NavigationEntry::GetUniqueID()`, and is used to uniquely identify a
+  // screenshot and its owning navigation entry.
+  //
+  // See crbug.com/376944343: the navigation entry's unique ID is actually not
+  // unique (`NavigationEntryImpl::set_unique_id()`), which leads to unexpected
+  // behavior.
+  const UniqueId unique_id_;
+
   // Whether this screenshot is supplied by the embedder.
   bool is_copied_from_embedder_ = false;
 
