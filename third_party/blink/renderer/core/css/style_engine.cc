@@ -3118,7 +3118,7 @@ void StyleEngine::PropertyRegistryChanged() {
 
 void StyleEngine::EnvironmentVariableChanged() {
   MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
-      style_change_reason::kPropertyRegistration));
+      style_change_reason::kEnvironmentVariableChanged));
   if (resolver_) {
     resolver_->InvalidateMatchedPropertiesCache();
   }
