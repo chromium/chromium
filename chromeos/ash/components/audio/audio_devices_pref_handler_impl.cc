@@ -446,6 +446,17 @@ void AudioDevicesPrefHandlerImpl::SetVoiceIsolationState(
                            voice_isolation_state);
 }
 
+uint32_t AudioDevicesPrefHandlerImpl::GetVoiceIsolationPreferredEffect() const {
+  return static_cast<uint32_t>(
+      local_state_->GetInteger(prefs::kInputVoiceIsolationPreferredEffect));
+}
+
+void AudioDevicesPrefHandlerImpl::SetVoiceIsolationPreferredEffect(
+    uint32_t effect) {
+  local_state_->SetInteger(prefs::kInputVoiceIsolationPreferredEffect,
+                           static_cast<int>(effect));
+}
+
 bool AudioDevicesPrefHandlerImpl::GetNoiseCancellationState() {
   return local_state_->GetBoolean(prefs::kInputNoiseCancellationEnabled);
 }
@@ -681,6 +692,7 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesGainPercent);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesMute);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
+  registry->RegisterIntegerPref(prefs::kInputVoiceIsolationPreferredEffect, 0);
   registry->RegisterBooleanPref(prefs::kInputVoiceIsolationEnabled, false);
   registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
   registry->RegisterBooleanPref(prefs::kInputStyleTransferEnabled, false);

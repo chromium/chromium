@@ -10,6 +10,7 @@
 
 import '../icons.html.js';
 import '../settings_shared.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
@@ -87,6 +88,19 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
       showVoiceIsolationSubsection_: {
         type: Boolean,
+      },
+      /**
+       * Enum values for the
+       * 'ash.input_voice_isolation_preferred_effect' preference. These
+       * values map to cras::AudioEffectType, and are written to prefs.
+       */
+      voiceIsolationEffectModePrefValues_: {
+        readOnly: true,
+        type: Object,
+        value: {
+          STYLE_TRANSFER: AudioEffectType.kStyleTransfer,
+          BEAMFORMING: AudioEffectType.kBeamforming,
+        },
       },
 
       outputVolume_: {
@@ -166,6 +180,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private batteryStatus_: BatteryStatus|undefined;
   private powerSoundsHidden_: boolean;
   private isHfpMicSrSupported_: boolean;
+  private voiceIsolationEffectModePrefValues_: {[key: string]: number};
 
   constructor() {
     super();
@@ -469,6 +484,11 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     }
   }
 
+  private shouldShowVoiceIsolationEffectModeOptions_(
+      effectModeOptions: number, voiceIsolationEnabled: boolean): boolean {
+    return effectModeOptions !== 0 && voiceIsolationEnabled;
+  }
+
   private toggleHfpMicSrEnabled_(e: CustomEvent<boolean>): void {
     this.crosAudioConfig_.setHfpMicSrEnabled(e.detail);
   }
@@ -497,6 +517,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
   private onVoiceIsolationRowClicked_(): void {
     this.crosAudioConfig_.refreshVoiceIsolationState();
+  }
+
+  private onVoiceIsolationEffectModeChanged_(): void {
+    this.crosAudioConfig_.refreshVoiceIsolationPreferredEffect();
   }
 
   private onSpatialAudioRowClicked_(): void {

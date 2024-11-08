@@ -262,6 +262,15 @@ bool FakeCrasAudioClient::GetVoiceIsolationUIEnabled() {
   return voice_isolation_ui_enabled_;
 }
 
+void FakeCrasAudioClient::SetVoiceIsolationUIPreferredEffect(
+    uint32_t effect_mode) {
+  voice_isolation_preferred_effect_ = effect_mode;
+}
+
+uint32_t FakeCrasAudioClient::GetVoiceIsolationUIPreferredEffect() {
+  return voice_isolation_preferred_effect_;
+}
+
 void FakeCrasAudioClient::SetNoiseCancellationSupported(
     bool noise_cancellation_supported) {
   noise_cancellation_supported_ = noise_cancellation_supported;

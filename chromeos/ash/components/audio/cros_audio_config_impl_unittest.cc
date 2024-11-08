@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 
 namespace ash::audio_config {
 
@@ -232,6 +233,12 @@ class CrosAudioConfigImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SimulateRefreshVoiceIsolationPreferredEffect() {
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
+    remote_->RefreshVoiceIsolationPreferredEffect();
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SimulateSetNoiseCancellationEnabled(bool enabled) {
     // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetNoiseCancellationEnabled(enabled);
@@ -347,6 +354,25 @@ class CrosAudioConfigImplTest : public testing::Test {
 
   void RefreshVoiceIsolationState() {
     cras_audio_handler_->RefreshVoiceIsolationState();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  uint32_t GetVoiceIsolationPreferredEffectPref() {
+    return audio_pref_handler_->GetVoiceIsolationPreferredEffect();
+  }
+
+  void SetVoiceIsolationPreferredEffectPref(uint32_t effect) {
+    audio_pref_handler_->SetVoiceIsolationPreferredEffect(
+        /*effect=*/effect);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  uint32_t GetVoiceIsolationPreferredEffect() {
+    return cras_audio_handler_->GetVoiceIsolationPreferredEffect();
+  }
+
+  void RefreshVoiceIsolationPreferredEffect() {
+    cras_audio_handler_->RefreshVoiceIsolationPreferredEffect();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -776,6 +802,22 @@ TEST_F(CrosAudioConfigImplTest, SetVoiceIsolationState) {
   SimulateRefreshVoiceIsolationState();
   ASSERT_FALSE(GetVoiceIsolationStatePref());
   ASSERT_FALSE(GetVoiceIsolationState());
+}
+
+TEST_F(CrosAudioConfigImplTest, RefreshVoiceIsolationPreferredEffect) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // By default voice isolation preferred effect is 0.
+  ASSERT_EQ(GetVoiceIsolationPreferredEffectPref(), 0u);
+  ASSERT_EQ(GetVoiceIsolationPreferredEffect(), 0u);
+
+  // Simulate trying to set voice isolation preferred effect.
+  const uint32_t kExpectedEffect =
+      static_cast<uint32_t>(cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER);
+  SetVoiceIsolationPreferredEffectPref(/*effect=*/kExpectedEffect);
+  SimulateRefreshVoiceIsolationPreferredEffect();
+  ASSERT_EQ(GetVoiceIsolationPreferredEffectPref(), kExpectedEffect);
+  ASSERT_EQ(GetVoiceIsolationPreferredEffect(), kExpectedEffect);
 }
 
 TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {

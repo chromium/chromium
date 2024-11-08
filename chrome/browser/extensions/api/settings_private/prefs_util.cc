@@ -1072,6 +1072,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::ash::prefs::kInputVoiceIsolationEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::ash::prefs::kInputVoiceIsolationPreferredEffect] =
+      settings_api::PrefType::kNumber;
 
   // Native Printing settings.
   (*s_allowlist)[::prefs::kUserPrintersAllowed] =

@@ -358,6 +358,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
         settings::PeripheralDataAccessHandler::GetPrefState());
 
     CrasAudioHandler::Get()->RefreshVoiceIsolationState();
+    CrasAudioHandler::Get()->RefreshVoiceIsolationPreferredEffect();
 
     MediaNotificationProvider::Get()->OnPrimaryUserSessionStarted();
     if (base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle)) {

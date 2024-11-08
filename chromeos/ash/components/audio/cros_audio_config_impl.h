@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void SetActiveDevice(uint64_t device_id) override;
   void SetInputMuted(bool muted) override;
   void RefreshVoiceIsolationState() override;
+  void RefreshVoiceIsolationPreferredEffect() override;
   void SetNoiseCancellationEnabled(bool enabled) override;
   void SetForceRespectUiGainsEnabled(bool enabled) override;
   void SetHfpMicSrEnabled(bool enabled) override;

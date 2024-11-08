@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/dbus/audio/floss_media_client.h"
 #include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -636,6 +637,27 @@ void CrasAudioHandler::RequestVoiceIsolationUIAppearance() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void CrasAudioHandler::ResetVoiceIsolationPreferredEffectIfNeeded() {
+  uint32_t effect_mode_options =
+      voice_isolation_ui_appearance_.effect_mode_options;
+  bool pref_is_zero = !audio_pref_handler_->GetVoiceIsolationPreferredEffect();
+  if (effect_mode_options != 0 && pref_is_zero) {
+    // Default preferred effect is Style Transfer.
+    // Currently Style Transfer is always in effect_mode_options if it's not 0.
+    audio_pref_handler_->SetVoiceIsolationPreferredEffect(
+        cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER);
+    RefreshVoiceIsolationPreferredEffect();
+  }
+
+  // Reset to NONE if the preferred effect is not in the effect_mode_options.
+  if (!(effect_mode_options &
+        audio_pref_handler_->GetVoiceIsolationPreferredEffect())) {
+    audio_pref_handler_->SetVoiceIsolationPreferredEffect(
+        cras::AudioEffectType::EFFECT_TYPE_NONE);
+    RefreshVoiceIsolationPreferredEffect();
+  }
+}
+
 void CrasAudioHandler::HandleGetVoiceIsolationUIAppearance(
     std::optional<VoiceIsolationUIAppearance> appearance) {
   if (!appearance.has_value()) {
@@ -643,6 +665,7 @@ void CrasAudioHandler::HandleGetVoiceIsolationUIAppearance(
                   "appearance.";
   } else {
     voice_isolation_ui_appearance_ = appearance.value();
+    ResetVoiceIsolationPreferredEffectIfNeeded();
   }
 
   for (auto& observer : observers_) {
@@ -663,6 +686,15 @@ void CrasAudioHandler::RefreshVoiceIsolationState() {
   // Refresh should only update the state in CRAS and leave the preference
   // as-is.
   CrasAudioClient::Get()->SetVoiceIsolationUIEnabled(GetVoiceIsolationState());
+}
+
+uint32_t CrasAudioHandler::GetVoiceIsolationPreferredEffect() const {
+  return audio_pref_handler_->GetVoiceIsolationPreferredEffect();
+}
+
+void CrasAudioHandler::RefreshVoiceIsolationPreferredEffect() {
+  CrasAudioClient::Get()->SetVoiceIsolationUIPreferredEffect(
+      GetVoiceIsolationPreferredEffect());
 }
 
 bool CrasAudioHandler::IsNoiseCancellationSupportedForDevice(

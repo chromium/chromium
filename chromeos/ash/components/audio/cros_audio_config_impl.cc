@@ -409,6 +409,10 @@ void CrosAudioConfigImpl::RefreshVoiceIsolationState() {
   CrasAudioHandler::Get()->RefreshVoiceIsolationState();
 }
 
+void CrosAudioConfigImpl::RefreshVoiceIsolationPreferredEffect() {
+  CrasAudioHandler::Get()->RefreshVoiceIsolationPreferredEffect();
+}
+
 void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
 

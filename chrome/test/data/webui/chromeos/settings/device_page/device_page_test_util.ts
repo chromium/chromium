@@ -62,6 +62,16 @@ export function getFakePrefs() {
           value: GeolocationAccessLevel.ALLOWED,
         },
       },
+      input_voice_isolation_enabled: {
+        key: 'ash.input_voice_isolation_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      input_voice_isolation_preferred_effect: {
+        key: 'ash.input_voice_isolation_preferred_effect',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 0,
+      },
     },
     gdata: {
       disabled: {

@@ -295,6 +295,11 @@ inline constexpr char kHasHotspotUsedBefore[] = "ash.hotspot.has_used_before";
 inline constexpr char kInputVoiceIsolationEnabled[] =
     "ash.input_voice_isolation_enabled";
 
+// An integer pref which indicates the preferred mode for voice isolation.
+// This maps to cras::AudioEffectType.
+inline constexpr char kInputVoiceIsolationPreferredEffect[] =
+    "ash.input_voice_isolation_preferred_effect";
+
 // A boolean pref that controls whether input noise cancellation is enabled.
 inline constexpr char kInputNoiseCancellationEnabled[] =
     "ash.input_noise_cancellation_enabled";

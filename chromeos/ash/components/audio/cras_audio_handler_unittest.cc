@@ -36,6 +36,7 @@
 #include "services/media_session/public/mojom/media_controller.mojom-test-utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
@@ -1759,6 +1760,37 @@ TEST_P(CrasAudioHandlerTest, RefreshVoiceIsolationState) {
   cras_audio_handler_->RefreshVoiceIsolationState();
   EXPECT_FALSE(fake_cras_audio_client()->GetVoiceIsolationUIEnabled());
   EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
+}
+
+TEST_P(CrasAudioHandlerTest, RefreshVoiceIsolationPreferredEffect) {
+  SetUpCrasAudioHandlerWithVoiceIsolationState(false);
+
+  // Default 0
+  cras_audio_handler_->RefreshVoiceIsolationPreferredEffect();
+  EXPECT_EQ(fake_cras_audio_client()->GetVoiceIsolationUIPreferredEffect(), 0u);
+
+  fake_cras_audio_client()->SetVoiceIsolationUIAppearance(
+      VoiceIsolationUIAppearance(
+          cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER,
+          cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER |
+              cras::AudioEffectType::EFFECT_TYPE_BEAMFORMING,
+          false));
+  // When new appearance has effect mode options, and preferred effect is 0 in
+  // pref, default preferred effect will be set to Style Transfer.
+  cras_audio_handler_->RequestVoiceIsolationUIAppearance();
+  cras_audio_handler_->RefreshVoiceIsolationPreferredEffect();
+  EXPECT_EQ(
+      fake_cras_audio_client()->GetVoiceIsolationUIPreferredEffect(),
+      static_cast<uint32_t>(cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER));
+
+  fake_cras_audio_client()->SetVoiceIsolationUIAppearance(
+      VoiceIsolationUIAppearance(
+          cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER, 0, false));
+  // When new appearance has no effect mode options, and preferred effect is not
+  // 0 in pref, default preferred effect will be reset to 0.
+  cras_audio_handler_->RequestVoiceIsolationUIAppearance();
+  cras_audio_handler_->RefreshVoiceIsolationPreferredEffect();
+  EXPECT_EQ(fake_cras_audio_client()->GetVoiceIsolationUIPreferredEffect(), 0u);
 }
 
 TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefEnabledNoNC) {

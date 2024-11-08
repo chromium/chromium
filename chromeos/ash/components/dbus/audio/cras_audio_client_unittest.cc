@@ -196,6 +196,15 @@ void ExpectUint64AndInt32Arguments(uint64_t expected_uint64,
   EXPECT_FALSE(reader->HasMoreData());
 }
 
+// Expect the reader to have an uint32_t.
+void ExpectUint32Argument(uint32_t expected_value,
+                          dbus::MessageReader* reader) {
+  uint32_t value;
+  ASSERT_TRUE(reader->PopUint32(&value));
+  EXPECT_EQ(expected_value, value);
+  EXPECT_FALSE(reader->HasMoreData());
+}
+
 // Expect the reader to have an uint64_t.
 void ExpectUint64Argument(uint64_t expected_value,
                           dbus::MessageReader* reader) {
@@ -1694,6 +1703,21 @@ TEST_F(CrasAudioClientTest, SetVoiceIsolationUIEnabled) {
       response.get());
   // Call method.
   client()->SetVoiceIsolationUIEnabled(kVoiceIsolationOn);
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, SetVoiceIsolationUIPreferredEffect) {
+  const uint32_t kPreferredEffect = 4;
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(
+      "SetVoiceIsolationUIPreferredEffect",
+      base::BindRepeating(&ExpectUint32Argument, kPreferredEffect),
+      response.get());
+  // Call method.
+  client()->SetVoiceIsolationUIPreferredEffect(kPreferredEffect);
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }

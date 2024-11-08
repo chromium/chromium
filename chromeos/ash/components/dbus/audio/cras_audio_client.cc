@@ -410,6 +410,18 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void SetVoiceIsolationUIPreferredEffect(uint32_t effect_mode) override {
+    VLOG(1) << "cras_audio_client: Setting voice isolation preferred effect: "
+            << effect_mode;
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 "SetVoiceIsolationUIPreferredEffect");
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(effect_mode);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
   void SetNoiseCancellationEnabled(bool noise_cancellation_on) override {
     VLOG(1) << "cras_audio_client: Setting noise cancellation state: "
             << noise_cancellation_on;

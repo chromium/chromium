@@ -3731,6 +3731,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the allowance of style transfer toggle under the input section in audio settings subpage.">
     Apply noise cancellation and audio improvements.
   </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE" desc="In Device Settings, the section title of the effect mode options.">
+    Effect mode
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE_STYLE_TRANSFER_TITLE" desc="In Device Settings, the title of the style transfer effect mode option under the input section in audio settings subpage.">
+    Area voice
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the style transfer effect mode option under the input section in audio settings subpage.">
+    Improve audio quality so voices sound natural and clear.
+  </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_BEAMFORMING_TITLE" desc="In Device Settings, the title of the beamforming toggle under the input section in audio settings subpage.">
     Focused voice
   </message>

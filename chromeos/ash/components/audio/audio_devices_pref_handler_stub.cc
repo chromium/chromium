@@ -128,6 +128,15 @@ void AudioDevicesPrefHandlerStub::SetVoiceIsolationState(
   voice_isolation_state_ = voice_isolation_state;
 }
 
+uint32_t AudioDevicesPrefHandlerStub::GetVoiceIsolationPreferredEffect() const {
+  return voice_isolation_preferred_effect_;
+}
+
+void AudioDevicesPrefHandlerStub::SetVoiceIsolationPreferredEffect(
+    uint32_t effect) {
+  voice_isolation_preferred_effect_ = effect;
+}
+
 bool AudioDevicesPrefHandlerStub::GetNoiseCancellationState() {
   return noise_cancellation_state_;
 }

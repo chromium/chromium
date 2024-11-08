@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   // Sets the input voice isolation in profile prefs.
   virtual void SetVoiceIsolationState(bool voice_isolation_state) = 0;
 
+  virtual uint32_t GetVoiceIsolationPreferredEffect() const = 0;
+  virtual void SetVoiceIsolationPreferredEffect(uint32_t effect) = 0;
+
   // Reads whether input noise cancellation is on from profile prefs.
   virtual bool GetNoiseCancellationState() = 0;
   // Sets the input noise cancellation in profile prefs.

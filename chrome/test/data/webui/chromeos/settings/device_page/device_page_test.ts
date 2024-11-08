@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsAudioElement, SettingsDevicePageElement, SettingsPerDeviceKeyboardElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {ControlledRadioButtonElement, CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsAudioElement, SettingsDevicePageElement, SettingsPerDeviceKeyboardElement, SettingsRadioGroupElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -535,6 +535,20 @@ suite('<settings-device-page>', () => {
           fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceBF,
     };
 
+    const effectModeOptionsAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalFrontMic,
+      ],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceEffectMode,
+    };
+
     const hfpMicSrNotSupportedAudioSystemProperties:
         crosAudioConfigMojom.AudioSystemProperties = {
       outputVolumePercent: 0,
@@ -980,13 +994,14 @@ suite('<settings-device-page>', () => {
     });
 
     suite('voice isolation', () => {
-      let voiceIsolationToggleSection: SettingsToggleButtonElement|null;
+      let voiceIsolationToggleSection: SettingsToggleButtonElement;
 
       setup(async () => {
-        voiceIsolationToggleSection =
+        let toggleSection =
             audioPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
                 '#audioInputVoiceIsolationToggleSection');
-        assertTrue(!!voiceIsolationToggleSection);
+        assertTrue(!!toggleSection);
+        voiceIsolationToggleSection = toggleSection;
       });
 
       async function assertVoiceIsolationVisibilityForSystemProperties(
@@ -995,6 +1010,20 @@ suite('<settings-device-page>', () => {
         crosAudioConfig.setAudioSystemProperties(properties);
         await flushTasks();
         assertEquals(isVisible(voiceIsolationToggleSection), visible);
+      }
+
+      function getEffectModeSection(): SettingsRadioGroupElement|null {
+        return audioPage.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+            '#voiceIsolationEffectModeOptions');
+      }
+
+      function getEffectModeRadioButton(id: string):
+          ControlledRadioButtonElement {
+        const radioButton: ControlledRadioButtonElement|null =
+            audioPage.shadowRoot!.querySelector<ControlledRadioButtonElement>(
+                id);
+        assertTrue(!!radioButton);
+        return radioButton;
       }
 
       test('section visibility - style transfer', async () => {
@@ -1022,7 +1051,6 @@ suite('<settings-device-page>', () => {
         // Set system properties with Style Transfer.
         crosAudioConfig.setAudioSystemProperties(
             effectStyleTransferAudioSystemProperties);
-        assertTrue(!!voiceIsolationToggleSection);
         assertFalse(voiceIsolationToggleSection.checked);
 
         // Toggle on
@@ -1068,6 +1096,72 @@ suite('<settings-device-page>', () => {
         assertEquals(
             /* expected_call_count */ 0,
             setVoiceIsolationEnabled['calls_'].length);
+      });
+
+      test('effect mode - visibility', async () => {
+        crosAudioConfig.setAudioSystemProperties(
+            effectModeOptionsAudioSystemProperties);
+        await flushTasks();
+
+        // The section is visible only when the toggle is on.
+        assertFalse(voiceIsolationToggleSection.checked);
+        let effectModeSection = getEffectModeSection();
+        assertFalse(!!effectModeSection);
+        assertFalse(isVisible(effectModeSection));
+        // Turn on voice isolation.
+        await voiceIsolationToggleSection.click();
+        assertTrue(voiceIsolationToggleSection.checked);
+        effectModeSection = getEffectModeSection();
+        assertTrue(!!effectModeSection);
+        assertTrue(isVisible(effectModeSection));
+
+        // Change to properties that shouldn't show the effect mode options.
+        crosAudioConfig.setAudioSystemProperties(
+            effectStyleTransferAudioSystemProperties);
+        await flushTasks();
+        assertFalse(isVisible(effectModeSection));
+      });
+
+      test('effect mode - select', async () => {
+        crosAudioConfig.setAudioSystemProperties(
+            effectModeOptionsAudioSystemProperties);
+        await flushTasks();
+        await voiceIsolationToggleSection.click();
+        let effectModeSection = getEffectModeSection();
+        assertTrue(!!effectModeSection);
+        assertTrue(isVisible(effectModeSection));
+
+        // Pref is default 0.
+        // effectModeSection should be connected with pref.
+        assertEquals(
+            effectModeSection.selected,
+            String(crosAudioConfigMojom.AudioEffectType.kNone));
+        // cras_audio_handler would set default to Style Transfer when the
+        // effect mode section becomes visible. But this test is not using
+        // cras_audio_handler. Manually set pref to Style Transfer.
+        audioPage.setPrefValue(
+            'ash.input_voice_isolation_preferred_effect',
+            crosAudioConfigMojom.AudioEffectType.kStyleTransfer);
+        assertEquals(
+            effectModeSection.selected,
+            String(crosAudioConfigMojom.AudioEffectType.kStyleTransfer));
+
+        // Click Beamforming radio button.
+        let beamformingRadioButton =
+            getEffectModeRadioButton('#voiceIsolationEffectModeBeamforming');
+        await beamformingRadioButton.click();
+        assertEquals(
+            audioPage.getPref('ash.input_voice_isolation_preferred_effect')
+                .value,
+            crosAudioConfigMojom.AudioEffectType.kBeamforming);
+        // Click Style Transfer radio button.
+        let styleTransferRadioButton =
+            getEffectModeRadioButton('#voiceIsolationEffectModeStyleTransfer');
+        await styleTransferRadioButton.click();
+        assertEquals(
+            audioPage.getPref('ash.input_voice_isolation_preferred_effect')
+                .value,
+            crosAudioConfigMojom.AudioEffectType.kStyleTransfer);
       });
     });
 

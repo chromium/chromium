@@ -40,6 +40,10 @@
     padding-inline-start: 0;
   }
 
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
   :host([is-output-muted_]) #outputVolumeSlider {
     --cr-slider-active-color: var(--cros-slider-color-inactive);
     --cr-slider-container-color: var(--cros-slider-track-color-inactive);
@@ -205,13 +209,46 @@
     </div>
     <settings-toggle-button id="audioInputVoiceIsolationToggleSection"
         hidden="[[!showVoiceIsolationSubsection_]]"
-        class="settings-box"
         pref="{{prefs.ash.input_voice_isolation_enabled}}"
         label="[[getVoiceIsolationToggleTitle_(audioSystemProperties_.voiceIsolationUiAppearance)]]"
         sub-label="[[getVoiceIsolationToggleDescription_(audioSystemProperties_.voiceIsolationUiAppearance)]]"
         learn-more-url="$i18n{voiceIsolationLearnMoreLink}"
         on-change="onVoiceIsolationRowClicked_">
     </settings-toggle-button>
+    <template is="dom-if" if="[[shouldShowVoiceIsolationEffectModeOptions_(
+          audioSystemProperties_.voiceIsolationUiAppearance.effectModeOptions,
+          prefs.ash.input_voice_isolation_enabled.value
+        )]]">
+      <div class="sub-item">
+        <span>
+          $i18n{audioInputEffectMode}
+        </span>
+        <settings-radio-group id="voiceIsolationEffectModeOptions"
+            pref="{{prefs.ash.input_voice_isolation_preferred_effect}}"
+            on-change="onVoiceIsolationEffectModeChanged_">
+          <controlled-radio-button
+              id="voiceIsolationEffectModeStyleTransfer"
+              name="[[voiceIsolationEffectModePrefValues_.STYLE_TRANSFER]]"
+              pref="[[prefs.ash.input_voice_isolation_preferred_effect]]"
+              label="$i18n{audioInputEffectModeStyleTransferTitle}"
+              aria-description="$i18n{audioInputEffectModeStyleTransferDescription}">
+            <div class="cr-secondary-text">
+              <span>$i18n{audioInputEffectModeStyleTransferDescription}</span>
+            </div>
+          </controlled-radio-button>
+          <controlled-radio-button
+              id="voiceIsolationEffectModeBeamforming"
+              name="[[voiceIsolationEffectModePrefValues_.BEAMFORMING]]"
+              pref="[[prefs.ash.input_voice_isolation_preferred_effect]]"
+              label="$i18n{audioInputBeamformingTitle}"
+              aria-description="$i18n{audioInputBeamformingDescription}">
+            <div class="cr-secondary-text">
+              <span>$i18n{audioInputBeamformingDescription}</span>
+            </div>
+          </controlled-radio-button>
+        </settings-radio-group>
+      </div>
+    </template>
     <div id="audioInputAllowAGCSubsection" class="settings-box"
         hidden="[[!showAllowAGC]]">
       <div id="audioInputAllowAGCLabel" class="settings-box-text start">

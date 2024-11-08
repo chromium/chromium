@@ -22,6 +22,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 
 namespace ash {
 
@@ -529,6 +530,24 @@ TEST_P(AudioDevicesPrefHandlerTest, InputVoiceIsolationPrefRegistered) {
   EXPECT_TRUE(audio_pref_handler_->GetVoiceIsolationState());
   audio_pref_handler_->SetVoiceIsolationState(false);
   EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
+}
+
+TEST_P(AudioDevicesPrefHandlerTest,
+       InputVoiceIsolationPreferredEffectPrefRegistered) {
+  // Default 0
+  EXPECT_EQ(audio_pref_handler_->GetVoiceIsolationPreferredEffect(), 0u);
+
+  const uint32_t kExpectedEffects[] = {
+      cras::AudioEffectType::EFFECT_TYPE_NOISE_CANCELLATION,
+      cras::AudioEffectType::EFFECT_TYPE_HFP_MIC_SR,
+      cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER,
+      cras::AudioEffectType::EFFECT_TYPE_BEAMFORMING,
+      cras::AudioEffectType::EFFECT_TYPE_NONE,
+  };
+  for (uint32_t effect : kExpectedEffects) {
+    audio_pref_handler_->SetVoiceIsolationPreferredEffect(effect);
+    EXPECT_EQ(audio_pref_handler_->GetVoiceIsolationPreferredEffect(), effect);
+  }
 }
 
 TEST_P(AudioDevicesPrefHandlerTest, InputNoiseCancellationPrefRegistered) {

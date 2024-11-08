@@ -144,6 +144,14 @@ export const fakeVoiceIsolationUIAppearanceBF: VoiceIsolationUIAppearance = {
   showEffectFallbackMessage: false,
 };
 
+export const fakeVoiceIsolationUIAppearanceEffectMode:
+    VoiceIsolationUIAppearance = {
+      toggleType: AudioEffectType.kStyleTransfer,
+      effectModeOptions:
+          AudioEffectType.kStyleTransfer | AudioEffectType.kBeamforming,
+      showEffectFallbackMessage: false,
+    };
+
 export interface FakePropertiesObserverInterface {
   onPropertiesUpdated(properties: AudioSystemProperties): void;
 }
@@ -229,6 +237,8 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
 
   /** Handle updating voice isolation state. */
   refreshVoiceIsolationState(): void {}
+
+  refreshVoiceIsolationPreferredEffect(): void {}
 
   /** Handle updating active input device noise cancellation state. */
   setNoiseCancellationEnabled(enabled: boolean): void {

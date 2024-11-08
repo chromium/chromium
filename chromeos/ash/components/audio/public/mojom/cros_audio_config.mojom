@@ -175,6 +175,9 @@ interface CrosAudioConfig {
   // Refreshes voice isolation enabled state, source of truth is Prefs.
   RefreshVoiceIsolationState();
 
+  // Refreshes the preferred effect mode of voice isolation.
+  RefreshVoiceIsolationPreferredEffect();
+
   // Sets whether noise cancellation is enabled or not. This is shared between
   // different input devices, so changing the active input device will keep the
   // enabled state from the previous active input device.
