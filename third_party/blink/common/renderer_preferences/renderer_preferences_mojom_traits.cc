@@ -115,9 +115,6 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
     return false;
   }
 
-  out->prefixed_fullscreen_video_api_availability =
-      data.prefixed_fullscreen_video_api_availability();
-
   return true;
 }
 

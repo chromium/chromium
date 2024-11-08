@@ -175,13 +175,4 @@ struct RendererPreferences {
   bool selection_clipboard_buffer_available = false;
 
   array<uint16> explicitly_allowed_network_ports;
-
-  // Whether the prefixed video-specific fullscreen APIs (e.g.
-  // video.webkitEnterFullscreen() and others) are available or not.
-  // - If not set, the availability of the APIs is determined by the
-  //   PrefixedVideoFullscreen RuntimeEnabled feature.
-  // - If set, enables/disables the APIs by overriding the
-  //   PrefixedVideoFullscreen RuntimeEnabled feature.
-  // TODO(crbug.com/40352864): Remove this when the APIs are removed for good.
-  bool? prefixed_fullscreen_video_api_availability;
 };

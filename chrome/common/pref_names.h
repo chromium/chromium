@@ -1575,10 +1575,6 @@ inline constexpr char kEnableReferrers[] = "enable_referrers";
 inline constexpr char kEnableEncryptedMedia[] =
     "webkit.webprefs.encrypted_media_enabled";
 
-// Whether the deprecated PrefixedFullscreenVideo API is enabled or not.
-inline constexpr char kPrefixedVideoFullscreenApiAvailability[] =
-    "media.prefixed_fullscreen_video_api_availability";
-
 // Boolean that specifies whether to import the form data for autofill from the
 // default browser on first run.
 inline constexpr char kImportAutofillFormData[] = "import_autofill_form_data";

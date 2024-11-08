@@ -1110,6 +1110,10 @@ constexpr char kRestoreLastLockScreenNote[] =
     "settings.restore_last_lock_screen_note";
 #endif
 
+// Deprecated 11/2024
+inline constexpr char kPrefixedVideoFullscreenApiAvailability[] =
+    "media.prefixed_fullscreen_video_api_availability";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1553,6 +1557,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kNoteTakingAppsLockScreenToastShown);
   registry->RegisterBooleanPref(kRestoreLastLockScreenNote, false);
 #endif
+
+  // Deprecated 11/2024
+  registry->RegisterStringPref(kPrefixedVideoFullscreenApiAvailability, "");
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2874,6 +2881,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNoteTakingAppsLockScreenToastShown);
   profile_prefs->ClearPref(kRestoreLastLockScreenNote);
 #endif
+
+  // Added 11/2024
+  profile_prefs->ClearPref(kPrefixedVideoFullscreenApiAvailability);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
