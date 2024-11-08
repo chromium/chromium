@@ -403,8 +403,7 @@ ContentSetting PermissionUtil::PermissionStatusToContentSetting(
       return CONTENT_SETTING_BLOCK;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CONTENT_SETTING_DEFAULT;
+  NOTREACHED();
 }
 
 blink::mojom::PermissionStatus PermissionUtil::ContentSettingToPermissionStatus(
@@ -423,8 +422,7 @@ blink::mojom::PermissionStatus PermissionUtil::ContentSettingToPermissionStatus(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::PermissionStatus::DENIED;
+  NOTREACHED();
 }
 
 bool PermissionUtil::IsPermissionBlockedInPartition(
@@ -501,7 +499,7 @@ bool PermissionUtil::CanPermissionRequestIgnoreStatus(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // static

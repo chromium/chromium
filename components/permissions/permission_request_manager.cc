@@ -1562,7 +1562,7 @@ void PermissionRequestManager::DoAutoResponseForTesting() {
       Dismiss();
       break;
     case NONE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -358,7 +358,7 @@ std::string PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucketString(
     case BUCKET_GT20:
       return "GT20";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
