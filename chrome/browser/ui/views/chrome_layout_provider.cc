@@ -187,9 +187,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON:
       return 6;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON:
-      return 12;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_MENU_BUTTON:
-      return 12;
+      return 10;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL:
       return 16;
   }
