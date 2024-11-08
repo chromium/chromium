@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -347,6 +348,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                   *attribution_reporting::AttributionScopesData::Create(
                       attribution_reporting::AttributionScopesSet({"a"}),
                       /*attribution_scope_limit=*/3, /*max_event_states=*/3))
+              .SetAggregatableNamedBudgetDefs(
+                  *attribution_reporting::AggregatableNamedBudgetDefs::
+                      FromBudgetMap({
+                          {"a", 65536},
+                      }))
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))
               .SetSourceId(StoredSource::Id(2))
@@ -471,11 +477,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         tds[18]?.children[0]?.children[1]?.innerText === '17' &&
         // Remaining Aggregatable Attribution Budget
         tds[20]?.innerText === '1300 / 65536' &&
+        // Aggregatable Named Budgets
+        tds[21]?.innerText === '{\n   \"a\": {\n      \"original_budget\": 65536,\n      \"remaining_budget\": 65536\n   }\n}\n' &&
         // Aggregation Keys
-        tds[21]?.innerText === '{\n "a": "0x1"\n}' &&
+        tds[22]?.innerText === '{\n "a": "0x1"\n}' &&
         // Aggregatable Dedup Keys
-        tds[22]?.children[0]?.children[0]?.innerText === '14' &&
-        tds[22]?.children[0]?.children[1]?.innerText === '18'
+        tds[23]?.children[0]?.children[0]?.innerText === '14' &&
+        tds[23]?.children[0]?.children[1]?.innerText === '18'
       ) {
         if (obs) {
           obs.disconnect();

@@ -34,6 +34,7 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
@@ -74,6 +75,19 @@ using ReportStatusPtr = ::attribution_internals::mojom::ReportStatusPtr;
 using ::attribution_internals::mojom::WebUIAggregatableDebugReport;
 using ::attribution_internals::mojom::WebUIDebugReport;
 
+std::string SerializeBudgetsMap(
+    const StoredSource::AggregatableNamedBudgets& map) {
+  base::Value::Dict dict;
+  for (const auto& [key, value] : map) {
+    base::Value::Dict inner_dict;
+    inner_dict.Set("original_budget", value.original_budget());
+    inner_dict.Set("remaining_budget", value.remaining_budget());
+    dict.Set(key, std::move(inner_dict));
+  }
+
+  return SerializeAttributionJson(dict, /*pretty_print=*/true);
+}
+
 attribution_internals::mojom::WebUISourcePtr WebUISource(
     const StoredSource& source,
     Attributability attributability) {
@@ -107,6 +121,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
           ? SerializeAttributionJson(source.attribution_scopes_data()->ToJson(),
                                      /*pretty_print=*/true)
           : "null",
+      SerializeBudgetsMap(source.aggregatable_named_budgets()),
       attributability);
 }
 
