@@ -125,6 +125,17 @@ the generic promo launch. -->
   <int value="2" label="Disabled"/>
 </enum>
 
+<!-- LINT.IfChange(IncognitoLockSettingInteractionType) -->
+
+<enum name="IncognitoLockSettingInteractionType">
+  <int value="0" label="User selected Don't hide in settings"/>
+  <int value="1"
+      label="User selected hide with reauth method option in settings"/>
+  <int value="2" label="User selected wide with soft lock option in settings"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h:IncognitoLockSettingInteraction) -->
+
 <enum name="IOSAnnotationType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Date"/>

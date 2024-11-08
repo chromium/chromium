@@ -16,6 +16,7 @@ source_set("incognito") {
     ":incognito_ui",
     "//base",
     "//components/prefs",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs",
@@ -79,8 +80,11 @@ source_set("eg2_tests") {
   sources = [ "incognito_lock_egtest.mm" ]
 
   deps = [
+    "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

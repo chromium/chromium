@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -46,6 +50,21 @@ id<GREYMatcher> elementIsSelectedMatcher(bool selected) {
              : grey_not(grey_accessibilityTrait(UIAccessibilityTraitSelected));
 }
 
+// Asserts if the IOS.IncognitoLockSettingInteraction histogram for bucket of
+// `action` was logged once.
+void ExpectIncognitoLockSettingInteractionHistogram(
+    IncognitoLockSettingInteraction action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(action)
+          forHistogram:base::SysUTF8ToNSString(
+                           kIncognitoLockSettingInteractionHistogram)],
+      @"IOS.IncognitoLockSettingInteraction histogram for action %d was not "
+      @"logged.",
+      static_cast<int>(action));
+}
+
 }  // namespace
 
 // Test Incognito lock settings page.
@@ -54,6 +73,20 @@ id<GREYMatcher> elementIsSelectedMatcher(bool selected) {
 @end
 
 @implementation IncognitoLockSettingTestCase
+
+- (void)setUp {
+  [super setUp];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+}
+
+- (void)tearDownHelper {
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+  [super tearDownHelper];
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -94,6 +127,10 @@ id<GREYMatcher> elementIsSelectedMatcher(bool selected) {
   [[EarlGrey selectElementWithMatcher:hideWithReauthCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
 
+  // Ensure interaction metric is correctly logged.
+  ExpectIncognitoLockSettingInteractionHistogram(
+      IncognitoLockSettingInteraction::kDoNotHideSelected);
+
   // Select Hide with Soft Lock option.
   [[EarlGrey selectElementWithMatcher:hideWithSoftLockCellMatcher()]
       performAction:grey_tap()];
@@ -113,6 +150,10 @@ id<GREYMatcher> elementIsSelectedMatcher(bool selected) {
       assertWithMatcher:elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:hideWithReauthCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
+
+  // Ensure interaction metric is correctly logged.
+  ExpectIncognitoLockSettingInteractionHistogram(
+      IncognitoLockSettingInteraction::kHideWithSoftLockSelected);
 
   // Select Hide with Reauth option.
   [[EarlGrey selectElementWithMatcher:hideWithReauthCellMatcher()]
@@ -134,6 +175,10 @@ id<GREYMatcher> elementIsSelectedMatcher(bool selected) {
       assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:hideWithReauthCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
+
+  // Ensure interaction metric is correctly logged.
+  ExpectIncognitoLockSettingInteractionHistogram(
+      IncognitoLockSettingInteraction::kHideWithReauthSelected);
 }
 
 #pragma mark - Helpers

@@ -1787,6 +1787,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.IncognitoLockSettingInteraction"
+    enum="IncognitoLockSettingInteractionType" expires_after="2025-03-31">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Logged when the user changes settings for Hide Incognito tabs.
+  </summary>
+</histogram>
+
 <histogram name="IOS.IsDefaultBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 

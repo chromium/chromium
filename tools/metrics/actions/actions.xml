@@ -14797,6 +14797,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.Settings.IncognitoLock.DoNotHide">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the Don't Hide option in Incognito lock settings
+    on iOS.
+  </description>
+</action>
+
+<action name="IOS.Settings.IncognitoLock.HideWithReauth">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the Hide immediatly with reauthentication method
+    option in Incognito lock settings on iOS.
+  </description>
+</action>
+
+<action name="IOS.Settings.IncognitoLock.HideWithSoftLock">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the Hide after 10 minutes option in Incognito
+    lock settings on iOS.
+  </description>
+</action>
+
 <action name="IOS.StartSurface.HideShortcuts">
   <owner>gogerald@chromium.org</owner>
   <description>

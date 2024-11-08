@@ -20,4 +20,21 @@ enum class IncognitoLockState {
   kSoftLock,
 };
 
+// Histogram name for Incognito lock setting interactions.
+const char kIncognitoLockSettingInteractionHistogram[] =
+    "IOS.IncognitoLockSettingInteraction";
+
+// Enum for the IOS.IncognitoLockSettingInteraction histogram.
+// LINT.IfChange(IncognitoLockSettingInteraction)
+enum class IncognitoLockSettingInteraction {
+  // User selected Don't hide option in settings.
+  kDoNotHideSelected = 0,
+  // User selected hide with reauth method option in settings.
+  kHideWithReauthSelected,
+  // User selected wide with soft lock option in settings
+  kHideWithSoftLockSelected,
+  kMaxValue = kHideWithSoftLockSelected,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IncognitoLockSettingInteractionType)
+
 #endif  // IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_CONSTANTS_H_
