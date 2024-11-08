@@ -9,10 +9,14 @@
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -26,6 +30,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 
 namespace {
@@ -468,6 +474,23 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
       !notification_metadata[kSafetyCheckUpdateChromeNotificationID] &&
       !notification_metadata[kSafetyCheckPasswordNotificationID]) {
     NOTREACHED();
+  }
+
+  if (IsProvisionalNotificationAlertEnabled()) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(
+            GetSceneLevelForegroundActiveBrowser()->GetProfile());
+    id<SystemIdentity> identity =
+        authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+    if (!push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kSafetyCheck, gaiaID)) {
+      PushNotificationService* service =
+          GetApplicationContext()->GetPushNotificationService();
+      service->SetPreference(base::SysUTF8ToNSString(gaiaID),
+                             PushNotificationClientId::kSafetyCheck, true);
+    }
   }
 
   id<ApplicationCommands> applicationHandler =

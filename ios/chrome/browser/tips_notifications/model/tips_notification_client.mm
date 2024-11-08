@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -19,6 +20,8 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -175,6 +178,19 @@ void TipsNotificationClient::HandleNotificationInteraction(
           base::CallbackToBlock(
               base::BindOnce(&TipsNotificationClient::ShowUIForNotificationType,
                              weak_ptr_factory_.GetWeakPtr(), type, browser))];
+
+  if (IsProvisionalNotificationAlertEnabled() && !permitted_) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(
+            GetSceneLevelForegroundActiveBrowser()->GetProfile());
+    id<SystemIdentity> identity =
+        authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+    PushNotificationService* service =
+        GetApplicationContext()->GetPushNotificationService();
+    service->SetPreference(base::SysUTF8ToNSString(gaiaID),
+                           PushNotificationClientId::kTips, true);
+  }
 }
 
 std::optional<UIBackgroundFetchResult>

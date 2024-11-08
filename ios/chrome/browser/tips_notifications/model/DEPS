@@ -8,4 +8,5 @@ include_rules = [
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/ui/content_suggestions",
   "+ios/chrome/browser/ui/lens",
+  "+ios/chrome/browser/signin/model",
 ]
