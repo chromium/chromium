@@ -893,10 +893,12 @@ class XcodeLogParserTest(test_runner_test.TestCase):
   @mock.patch('shutil.copy')
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
+  @mock.patch('os.makedirs')
   @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
   @mock.patch('xcode_util.using_xcode_16_or_higher')
   def testStdoutCopiedInExportDiagnosticData(self, mock_xcode_version,
                                              mock_xcresulttool_get,
+                                             mock_makedirs,
                                              mock_path_exists, mock_process,
                                              mock_copy, _):
     mock_xcode_version.return_value = False
@@ -928,6 +930,14 @@ class XcodeLogParserTest(test_runner_test.TestCase):
           'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID2/StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt',
           'test_data/attempt_0/../attempt_0_simulator#0_StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt'
       )
+    mock_copy.assert_any_call(
+      'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/StandardOutputAndStandardError.txt',
+      'test_data/attempt_0/../attempt_0_simulator#1_StandardOutputAndStandardError.txt'
+    )
+    mock_copy.assert_any_call(
+      'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/ios_internal_chrome_ui_eg2tests_module-Runner-2024-11-07-105813.ips',
+      'test_data/attempt_0/../Crash Reports/ios_internal_chrome_ui_eg2tests_module-Runner-2024-11-07-105813.ips'
+    )
 
   @mock.patch('os.path.exists', autospec=True)
   def testCollectTestResults_interruptedTests(self, mock_path_exists):

@@ -562,8 +562,19 @@ class XcodeLogParser(object):
       # generate an index for same name files produced from Xcode parallel
       # testing.
       name_count = {}
+      ips_regex = re.compile(r'ios_.*chrome.+\.ips')
       for root, dirs, files in os.walk(diagnostic_folder):
         for filename in files:
+          if ips_regex.match(filename):
+            # TODO(crbug.com/378086419): Improve IPS crash report logging
+            crash_reports_dir = os.path.join(output_path, os.pardir,
+                                             'Crash Reports')
+            os.makedirs(crash_reports_dir, exist_ok=True)
+            output_filepath = os.path.join(crash_reports_dir, filename)
+            # crash report files with the same name from previous attempt_#'s
+            # will be overwritten
+            shutil.copy(os.path.join(root, filename), output_filepath)
+
           if 'StandardOutputAndStandardError' in filename:
             file_index = name_count.get(filename, 0)
             output_filename = (
