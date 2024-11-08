@@ -411,7 +411,7 @@ void MimeUtil::AddSupportedMediaFormats() {
   bool can_play_hls = false;
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  can_play_hls |= base::FeatureList::IsEnabled(kHlsPlayer);
+  can_play_hls = true;
 #endif
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   can_play_hls |= base::FeatureList::IsEnabled(kBuiltInHlsPlayer);

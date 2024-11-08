@@ -390,7 +390,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaDrmPersistentLicense);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaDrmPreprovisioning);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaDrmPreprovisioningAtStartup);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaDrmGetStatusForPolicy);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kHlsPlayer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kRequestSystemAudioFocus);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAudioLatencyFromHAL);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaCodecSoftwareDecoder);
@@ -398,12 +397,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaCodecCallsInSeparateProcess);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-// The feature |kHlsPlayer| enables the use of Android's builtin media-player
-// based HLS implementation, which chrome currently relies on when playing
-// on android, while this feature enabled chrome's built-in HLS parser and
-// demuxer. When this feature is enabled, the media-player based HLS player
-// will NOT be used. This will roll out first on android, but will eventually
-// land in desktop chrome as well.
+// This feature enables chrome's built-in HLS parser and demuxer instead of
+// Android's MediaPlayer based implementation. When this feature is enabled,
+// the media-player based HLS player will NOT be used. This will roll out first
+// on android, but will eventually land in desktop chrome as well.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBuiltInHlsPlayer);
 
 // This feature enables the buildin hls player to play and demux additional

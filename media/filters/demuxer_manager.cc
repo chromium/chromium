@@ -101,14 +101,9 @@ HlsFallbackImplementation SelectHlsFallbackImplementation() {
     return HlsFallbackImplementation::kBuiltinHlsPlayer;
   }
 #endif
-
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kHlsPlayer)) {
-    return HlsFallbackImplementation::kMediaPlayer;
-  }
+  return HlsFallbackImplementation::kMediaPlayer;
 #endif
-
-  return HlsFallbackImplementation::kNone;
 }
 
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
