@@ -210,8 +210,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40939916): Re-enable the test after fixing on Lacros.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
@@ -260,7 +258,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsFullscreen());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class FileSystemAccessBrowserSlowLoadTest : public FileSystemAccessBrowserTest {
  public:

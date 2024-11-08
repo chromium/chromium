@@ -58,9 +58,6 @@
 
 using media_session::mojom::MediaSessionAction;
 
-// Global Media Controls are not supported on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 class TestWebContentsPresentationManager
@@ -1119,5 +1116,3 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh2->GetLifecycleState());
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

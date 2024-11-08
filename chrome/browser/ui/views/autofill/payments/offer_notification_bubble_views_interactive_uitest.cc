@@ -477,14 +477,8 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
-// TODO(crbug.com/343099568): Flaky failures on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Logging_LostFocus DISABLED_Logging_LostFocus
-#else
-#define MAYBE_Logging_LostFocus Logging_LostFocus
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_Logging_LostFocus) {
+                       Logging_LostFocus) {
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
