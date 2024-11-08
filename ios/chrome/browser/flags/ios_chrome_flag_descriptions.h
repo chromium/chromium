@@ -115,6 +115,11 @@ extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 
+// Title and description for the flag to enable the V2 of the Autofill Payments
+// Sheet.
+extern const char kAutofillPaymentsSheetV2Name[];
+extern const char kAutofillPaymentsSheetV2Description[];
+
 // Title and description for the flag that enables the password suggestion
 // bottom sheet V2.
 extern const char kPasswordSuggestionBottomSheetV2Name[];

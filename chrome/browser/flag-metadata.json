@@ -807,6 +807,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-payments-sheet-v2",
+    "owners": [ "vincb@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "autofill-remove-payments-butter-dropdown",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 140
