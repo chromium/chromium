@@ -8424,3 +8424,6 @@ crbug.com/377938333 external/wpt/webdriver/tests/classic/execute_async_script/ar
 crbug.com/377938333 external/wpt/webdriver/tests/classic/find_element/find.py [ Failure Pass Timeout ]
 crbug.com/377938333 external/wpt/webdriver/tests/classic/navigate_to/file.py [ Failure Pass Timeout ]
 crbug.com/377938333 external/wpt/webdriver/tests/interop/beforeunload_prompt.py [ Failure Pass Timeout ]
+
+# Gardener 2024-11-08
+crbug.com/377927602 external/wpt/selection/caret/collapse-pre-linestart-1.html [ Failure Pass ]
