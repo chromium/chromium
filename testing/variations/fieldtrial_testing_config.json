@@ -10539,6 +10539,21 @@
             ]
         }
     ],
+    "GraduationUseEmbeddedTransferEndpoint": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GraduationUseEmbeddedTransferEndpoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "GroupedHistoryAllLocales": [
         {
             "platforms": [
