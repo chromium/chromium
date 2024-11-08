@@ -559,7 +559,68 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseWindowRemoveTwoChips) {
   CloseBrowserSynchronously(browser());
 
   // Two chips are removed.
-  EXPECT_EQ(GetBirchChipsNum(), 0u);
+  EXPECT_EQ(0u, GetBirchChipsNum());
+}
+
+// Tests that closing a desk removes all coral chips.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseDeskRemoveAllChips) {
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+
+  // Create a browser containing 8 tabs.
+  test::CreateAndShowBrowser(
+      primary_profile,
+      {GURL("https://mail.google.com"), GURL("https://youtube.com"),
+       GURL("https://google.com"), GURL("https://earth.google.com"),
+       GURL("https://maps.google.com"), GURL("https://docs.google.com"),
+       GURL("https://calendar.google.com"), GURL("https://chat.google.com")});
+
+  test::InstallSystemAppsForTesting(primary_profile);
+
+  // Open a File window and a PWA window.
+  test::CreateSystemWebApp(primary_profile, SystemWebAppType::FILE_MANAGER);
+  test::InstallAndLaunchPWA(primary_profile, GURL("https://www.youtube.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"YouTube");
+
+  // Create two fake coral groups.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"mail.google.com", GURL("https://mail.google.com")},
+                       {"youtube.com", GURL("https://youtube.com")},
+                       {"google.com", GURL("https://google.com")},
+                       {"YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"}},
+                      "Coral desk 1", /*id=*/base::Token(1, 2)));
+  test_groups.push_back(CreateTestGroup(
+      {{"maps.google.com", GURL("https://maps.google.com")},
+       {"docs.google.com", GURL("https://docs.google.com")},
+       {"calendar.google.com", GURL("https://calendar.google.com")},
+       {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
+      "Coral desk 2", /*id=*/base::Token(2, 3)));
+
+  OverrideTestResponse(std::move(test_groups));
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  NewDesk();
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with two coral chips.
+  ASSERT_EQ(GetBirchChipsNum(), 2u);
+
+  // Closing the active desk removes all chips.
+  RemoveDesk(GetActiveDesk(), DeskCloseType::kCloseAllWindows);
+  SimulateWaitForCloseAll();
+
+  // Two chips are removed.
+  EXPECT_EQ(0u, GetBirchChipsNum());
 }
 
 // Tests that the same coral chip will not show up again if we just created a

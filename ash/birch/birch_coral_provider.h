@@ -123,8 +123,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   void HandleEmbeddingResult(bool success);
 
-  // Observes all the valid app windows associated with `response_`.
-  void ObserveAppWindows();
+  // Observes all the valid app and browser windows associated with `response_`.
+  void ObserveAllWindowsInResponse();
 
   // Removes the entity corresponding to the given `entity_identifier` from
   // current in-session `response_`.
@@ -153,7 +153,7 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   ScopedSessionObserver session_observer_{this};
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      app_windows_observation_{this};
+      windows_observation_{this};
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observation_{this};

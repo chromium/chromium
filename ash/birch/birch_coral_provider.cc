@@ -375,9 +375,12 @@ void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
 }
 
 void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {
-  // Modify in-session groups when a valid associated tab is removed.
+  // Modify in-session groups when a valid associated tab being observed by
+  // window observation is removed.
   if (!response_ || response_->source() == CoralSource::kPostLogin ||
-      response_->groups().empty() || !IsValidTab(tab_item)) {
+      response_->groups().empty() ||
+      !windows_observation_.IsObservingSource(
+          tab_item->current_info().browser_window)) {
     return;
   }
 
@@ -387,8 +390,10 @@ void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {
   // removed.
   if (base::ranges::count_if(
           Shell::Get()->tab_cluster_ui_controller()->tab_items(),
-          [&url](const auto& tab) {
-            return IsValidTab(tab.get()) && tab->current_info().source == url;
+          [&](const auto& tab) {
+            return windows_observation_.IsObservingSource(
+                       tab->current_info().browser_window) &&
+                   tab->current_info().source == url;
           }) > 1) {
     return;
   }
@@ -410,12 +415,16 @@ void BirchCoralProvider::TitleUpdated(const base::Token& id,
 }
 
 void BirchCoralProvider::OnWindowDestroyed(aura::Window* window) {
-  const std::string app_id = *(window->GetProperty(kAppIDKey));
-  app_windows_observation_.RemoveObservation(window);
+  windows_observation_.RemoveObservation(window);
+
+  if (IsBrowserWindow(window)) {
+    return;
+  }
 
   // Don't modify groups if there are multiple of the same app on the active
   // desk.
-  if (base::ranges::count_if(app_windows_observation_.sources(),
+  const std::string app_id = *(window->GetProperty(kAppIDKey));
+  if (base::ranges::count_if(windows_observation_.sources(),
                              [&app_id](const auto& app_window) {
                                return *(app_window->GetProperty(kAppIDKey)) ==
                                       app_id;
@@ -430,7 +439,7 @@ void BirchCoralProvider::OnOverviewModeEnded() {
   // Clear the in-session `response_` and reset the app windows observation.
   if (response_ && response_->source() == CoralSource::kInSession) {
     response_.reset();
-    app_windows_observation_.RemoveAllObservations();
+    windows_observation_.RemoveAllObservations();
   }
 }
 
@@ -549,7 +558,7 @@ void BirchCoralProvider::HandleCoralResponse(
   std::vector<BirchCoralItem> items;
   response_ = std::move(response);
   if (!ShouldShowResponse(response_.get())) {
-    app_windows_observation_.RemoveAllObservations();
+    windows_observation_.RemoveAllObservations();
     Shell::Get()->birch_model()->SetCoralItems(items);
     return;
   }
@@ -577,7 +586,7 @@ void BirchCoralProvider::HandleCoralResponse(
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
 
-  ObserveAppWindows();
+  ObserveAllWindowsInResponse();
 }
 
 void BirchCoralProvider::FilterCoralContentItems(
@@ -621,33 +630,51 @@ void BirchCoralProvider::HandleEmbeddingResult(bool success) {
   // TODO(conniekxu) Add metrics.
 }
 
-void BirchCoralProvider::ObserveAppWindows() {
-  // Reset apps window observation.
-  app_windows_observation_.RemoveAllObservations();
+void BirchCoralProvider::ObserveAllWindowsInResponse() {
+  // Reset windows observation.
+  windows_observation_.RemoveAllObservations();
 
-  // Only observe the apps in in-session response.
+  // Only observe the windows in in-session response.
   if (response_->source() != CoralSource::kInSession) {
     return;
   }
 
-  auto mru_windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-
-  // Observe all the apps with the app id in the groups of response.
+  // Find all urls and app ids in the response.
+  base::flat_set<std::string> urls;
+  base::flat_set<std::string> app_ids;
   for (const auto& group : response_->groups()) {
     for (const auto& entity : group->entities) {
-      if (!entity->is_app()) {
-        continue;
-      }
-
-      const std::string app_id = entity->get_app()->id;
-      for (auto& window : mru_windows) {
-        if (IsValidApp(window) && *(window->GetProperty(kAppIDKey)) == app_id) {
-          app_windows_observation_.AddObservation(window);
-        }
+      if (entity->is_tab()) {
+        urls.emplace(entity->get_tab()->url.possibly_invalid_spec());
+      } else if (entity->is_app()) {
+        app_ids.emplace(entity->get_app()->id);
       }
     }
   }
+
+  // Observe browser windows containing the tabs with the same urls in the
+  // response.
+  base::ranges::for_each(
+      Shell::Get()->tab_cluster_ui_controller()->tab_items(),
+      [&](const auto& tab_item) {
+        if (IsValidTab(tab_item.get()) &&
+            urls.contains(tab_item->current_info().source)) {
+          const auto& window = tab_item->current_info().browser_window;
+          if (!windows_observation_.IsObservingSource(window)) {
+            windows_observation_.AddObservation(window);
+          }
+        }
+      });
+
+  // Observe all the apps with the app id in the response.
+  base::ranges::for_each(
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
+      [&](const auto& window) {
+        if (IsValidApp(window) &&
+            app_ids.contains(*(window->GetProperty(kAppIDKey)))) {
+          windows_observation_.AddObservation(window);
+        }
+      });
 }
 
 void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {
