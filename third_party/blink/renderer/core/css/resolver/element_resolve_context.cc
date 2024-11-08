@@ -22,10 +22,13 @@
 
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 
 namespace blink {
 
@@ -59,6 +62,31 @@ ElementResolveContext::BuildPseudoElementAncestors(Element* element) {
   return pseudo_element_ancestors;
 }
 
+namespace {
+EInsideLink GetLinkStateForElement(Element& element) {
+  if (!element.GetDocument().IsActive()) {
+    // When requested from SelectorQuery, element can be in inactive document.
+    return EInsideLink::kNotInsideLink;
+  }
+
+  bool force_visited = false;
+  probe::ForcePseudoState(&element, CSSSelector::kPseudoVisited,
+                          &force_visited);
+  if (force_visited) {
+    return EInsideLink::kInsideVisitedLink;
+  }
+
+  bool force_link = false;
+  probe::ForcePseudoState(&element, CSSSelector::kPseudoLink, &force_link);
+  if (force_link) {
+    return EInsideLink::kInsideUnvisitedLink;
+  }
+
+  return element.GetDocument().GetVisitedLinkState().DetermineLinkState(
+      element);
+}
+}  // namespace
+
 ElementResolveContext::ElementResolveContext(Element& element)
     : element_(&element),
       ultimate_originating_element_(
@@ -66,13 +94,7 @@ ElementResolveContext::ElementResolveContext(Element& element)
               ? To<PseudoElement>(element_)->UltimateOriginatingElement()
               : element_),
       pseudo_element_(element_->IsPseudoElement() ? element_ : nullptr),
-      element_link_state_(
-          element.GetDocument()
-                  .IsActive()  // When requested from SelectorQuery, element can
-                               // be in inactive document.
-              ? element.GetDocument().GetVisitedLinkState().DetermineLinkState(
-                    element)
-              : EInsideLink::kNotInsideLink),
+      element_link_state_(GetLinkStateForElement(element)),
       pseudo_element_ancestors_(BuildPseudoElementAncestors(&element)) {
   parent_element_ = LayoutTreeBuilderTraversal::ParentElement(element);
   layout_parent_ = LayoutTreeBuilderTraversal::LayoutParentElement(element);

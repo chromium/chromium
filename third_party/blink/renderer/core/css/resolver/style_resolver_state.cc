@@ -24,14 +24,12 @@
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
-#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
-#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -132,14 +130,6 @@ EInsideLink StyleResolverState::InsideLink() const {
   }
   if (element_type_ != ElementType::kPseudoElement && GetElement().IsLink()) {
     inside_link_ = ElementLinkState();
-    if (inside_link_ != EInsideLink::kNotInsideLink) {
-      bool force_visited = false;
-      probe::ForcePseudoState(&GetElement(), CSSSelector::kPseudoVisited,
-                              &force_visited);
-      if (force_visited) {
-        inside_link_ = EInsideLink::kInsideVisitedLink;
-      }
-    }
   } else if (uses_highlight_pseudo_inheritance_) {
     // Highlight pseudo-elements acquire the link status of the originating
     // element. Note that highlight pseudo-elements do not *inherit* from
