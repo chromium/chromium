@@ -181,7 +181,12 @@
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
                 action:^{
                   [weakSelf dismissActionSheetCoordinator];
-                  // TODO(crbug.com/377270834): Add functionality to save.
+                  AutofillEditProfileBottomSheetCoordinator* strongSelf =
+                      weakSelf;
+                  if (strongSelf) {
+                    [strongSelf->_autofillProfileEditMediator
+                            saveChangesForDismiss];
+                  }
                 }
                  style:UIAlertActionStyleDefault];
 

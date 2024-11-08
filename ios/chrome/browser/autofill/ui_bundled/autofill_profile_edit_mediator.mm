@@ -155,6 +155,11 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   return !_errorSectionPresented && [_editedFields count] > 0;
 }
 
+- (void)saveChangesForDismiss {
+  CHECK(_dynamicallyLoadInputFieldsEnabled);
+  [self didSaveProfileFromModal];
+}
+
 #pragma mark - AutofillSettingsProfileEditTableViewControllerDelegate
 
 - (void)didEditAutofillProfileFromSettings {

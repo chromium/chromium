@@ -582,6 +582,9 @@ id<GREYMatcher> EditProfileBottomSheet() {
   id<GREYMatcher> saveChangesAlert = grey_text(
       l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:saveChangesAlert];
+
+  [[EarlGrey selectElementWithMatcher:saveChangesAlert]
+      performAction:grey_tap()];
 }
 
 @end

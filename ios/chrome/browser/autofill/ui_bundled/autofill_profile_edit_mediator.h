@@ -48,6 +48,9 @@ class PersonalDataManager;
 // dismissed.
 - (BOOL)shouldShowConfirmationDialogOnDismissBySwiping;
 
+// Saves the profile and dismisses the view.
+- (void)saveChangesForDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_PROFILE_EDIT_MEDIATOR_H_
