@@ -507,7 +507,7 @@ void DefaultProvider::RecordHistogramMetrics() {
           prefs_->GetInteger(GetPrefName(ContentSettingsType::ANTI_ABUSE))),
       CONTENT_SETTING_NUM_SETTINGS);
   base::UmaHistogramEnumeration(
-      "ContentSettings.RegularProfile.DefaultJavascriptOptimizationSetting",
+      "ContentSettings.RegularProfile.DefaultJavaScriptOptimizationSetting",
       IntToContentSetting(prefs_->GetInteger(
           GetPrefName(ContentSettingsType::JAVASCRIPT_OPTIMIZER))),
       CONTENT_SETTING_NUM_SETTINGS);
