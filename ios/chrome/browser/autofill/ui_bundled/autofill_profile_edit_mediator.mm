@@ -72,6 +72,9 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
   // Stores the required field names whose values are empty;
   NSMutableSet<NSString*>* _requiredFieldsWithEmptyValue;
+
+  // Stores the value displayed in the fields.
+  NSMutableDictionary<NSString*, NSString*>* _currentValuesMap;
 }
 
 - (instancetype)initWithDelegate:
@@ -106,7 +109,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   _consumer = consumer;
 
   [self fetchAndSetInputAddressFields];
-  [self sendAutofillProfileDataToConsumer];
+  [self populateCurrentValuesMap];
   [self fetchAndUpdateFieldRequirements];
 
   [_consumer setAccountProfile:[self isAccountProfile]];
@@ -131,8 +134,9 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 - (void)didEditAutofillProfileFromSettings {
   _personalDataManager->address_data_manager().UpdateProfile(*_autofillProfile);
 
-  // Push the saved profile data to the consumer.
-  [self sendAutofillProfileDataToConsumer];
+  // Populate the current values map so that the newly saved values are
+  // displayed.
+  [self populateCurrentValuesMap];
 }
 
 - (BOOL)isMinimumAddress {
@@ -143,8 +147,9 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   _personalDataManager->address_data_manager().MigrateProfileToAccount(
       *_autofillProfile);
 
-  // Push the saved profile data to the consumer.
-  [self sendAutofillProfileDataToConsumer];
+  // Populate the current values map so that the newly saved values are
+  // displayed.
+  [self populateCurrentValuesMap];
 }
 
 #pragma mark - AutofillProfileEditTableViewControllerDelegate
@@ -224,6 +229,15 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
 - (void)resetRequiredFieldsWithEmptyValuesCount {
   [_requiredFieldsWithEmptyValue removeAllObjects];
+}
+
+- (void)setCurrentValueForType:(NSString*)autofillFieldType
+                     withValue:(NSString*)value {
+  _currentValuesMap[autofillFieldType] = value;
+}
+
+- (NSString*)currentValueForType:(NSString*)autofillFieldType {
+  return _currentValuesMap[autofillFieldType];
 }
 
 #pragma mark - Private
@@ -371,26 +385,26 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   _inputAddressFields = addressFields;
 }
 
-// Informs the consumer of the profile's data.
-- (void)sendAutofillProfileDataToConsumer {
+// Populates `_currentValuesMap` on the basis of values in `_autofillProfile`.
+- (void)populateCurrentValuesMap {
   int totalFieldCount =
       [self.inputAddressFields count] + kStaticFieldsTypes.size();
-  NSMutableDictionary<NSString*, NSString*>* fieldValueMap =
+  NSMutableDictionary<NSString*, NSString*>* fieldValuesMap =
       [[NSMutableDictionary alloc] initWithCapacity:totalFieldCount];
   for (AutofillProfileAddressField* field in self.inputAddressFields) {
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
         [self typeNameToFieldType:field.fieldType],
         GetApplicationContext() -> GetApplicationLocale()));
-    fieldValueMap[field.fieldType] = fieldValue;
+    fieldValuesMap[field.fieldType] = fieldValue;
   }
 
   for (const auto& field_type : kStaticFieldsTypes) {
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
         field_type, GetApplicationContext()->GetApplicationLocale()));
-    fieldValueMap[[self fieldTypeToTypeName:field_type]] = fieldValue;
+    fieldValuesMap[[self fieldTypeToTypeName:field_type]] = fieldValue;
   }
 
-  [self.consumer setFieldValuesMap:fieldValueMap];
+  _currentValuesMap = fieldValuesMap;
 }
 
 // Returns YES if `autofillProfile` is an account profile.

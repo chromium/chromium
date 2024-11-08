@@ -45,6 +45,13 @@
 // Returns the list of the address fields.
 - (NSArray<AutofillProfileAddressField*>*)inputAddressFields;
 
+// Setter to store current field value for `autofillFieldType`.
+- (void)setCurrentValueForType:(NSString*)autofillFieldType
+                     withValue:(NSString*)value;
+
+// Getter of the current field value for `autofillFieldType`.
+- (NSString*)currentValueForType:(NSString*)autofillFieldType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_

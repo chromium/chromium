@@ -38,10 +38,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @interface AutofillProfileEditTableViewController () <
     AutofillEditProfileButtonFooterDelegate>
 
-// Stores the value displayed in the fields.
-@property(nonatomic, strong)
-    NSMutableDictionary<NSString*, NSString*>* fieldValuesMap;
-
 // YES, if the profile's record type is
 // autofill::AutofillProfile::RecordType::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
@@ -420,8 +416,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [_controller reconfigureCellsForItems:@[ tableViewItem ]];
 
   // Record new value in current state.
-  self.fieldValuesMap[((AutofillProfileEditItem*)tableViewItem)
-                          .autofillFieldType] = tableViewItem.textFieldValue;
+  [_delegate setCurrentValueForType:((AutofillProfileEditItem*)tableViewItem)
+                                        .autofillFieldType
+                          withValue:tableViewItem.textFieldValue];
 }
 
 #pragma mark - AutofillProfileEditConsumer
@@ -451,7 +448,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   // Reload the table view with the new fields.
   [_controller.tableView reloadData];
 
-  self.fieldValuesMap[[self countryFieldKeyValue]] = country;
+  [_delegate setCurrentValueForType:[self countryFieldKeyValue]
+                          withValue:country];
   [self findRequiredFieldsWithEmptyValues];
 }
 
@@ -568,7 +566,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       initWithType:AutofillProfileDetailsItemTypeTextField];
   item.fieldNameLabelText = fieldLabel;
   item.autofillFieldType = autofillType;
-  item.textFieldValue = self.fieldValuesMap[item.autofillFieldType];
+  item.textFieldValue = [_delegate currentValueForType:item.autofillFieldType];
   item.textFieldEnabled = [self showEditView];
   item.hideIcon = (_dynamicallyLoadInputFieldsEnabled && !_settingsView) ||
                   ![self showEditView];
@@ -865,10 +863,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the currently selected country value.
 - (NSString*)countryFieldCurrentValue {
-  return self.fieldValuesMap[[self countryFieldKeyValue]];
+  return [_delegate currentValueForType:[self countryFieldKeyValue]];
 }
 
-// Returns the key in the `self.fieldValuesMap` for the country field.
+// Returns the key for the country field.
 - (NSString*)countryFieldKeyValue {
   return base::SysUTF8ToNSString(
       autofill::FieldTypeToString(autofill::ADDRESS_HOME_COUNTRY));

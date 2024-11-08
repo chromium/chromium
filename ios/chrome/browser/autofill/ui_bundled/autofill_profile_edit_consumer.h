@@ -13,10 +13,6 @@
 // Called when the country is selected from the dropdown.
 - (void)didSelectCountry:(NSString*)country;
 
-// Notifies the class that conforms this delegate to set the corresponding data.
-- (void)setFieldValuesMap:
-    (NSMutableDictionary<NSString*, NSString*>*)fieldValueMap;
-
 // Notifies the class that conforms this delegate to set whether the profile is
 // an account profile or not.
 - (void)setAccountProfile:(BOOL)accountProfile;
