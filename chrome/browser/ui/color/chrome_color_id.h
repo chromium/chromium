@@ -76,6 +76,7 @@
   /* Batch Upload colors. */ \
   E_CPONLY(kColorBatchUploadBackground) \
   E_CPONLY(kColorBatchUploadDataBackground) \
+  E_CPONLY(kColorBatchUploadDataSeparator) \
   /* Compose colors */ \
   E_CPONLY(kColorComposeDialogBackground) \
   E_CPONLY(kColorComposeDialogDivider) \

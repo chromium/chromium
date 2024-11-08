@@ -45,6 +45,12 @@ suite('BatchUploadViewTest', function() {
     dataSectionElement = document.createElement('data-section');
     dataSectionElement.dataContainer = TEST_DATA;
     document.body.append(dataSectionElement);
+
+    // Set the separator color explicitly because the C++ variable may not be
+    // read directly, and a border without a color will be considered invisible.
+    // Setting an arbitrary color for it to behave regularly.
+    document.documentElement.style.setProperty(
+        '--color-batch-upload-data-separator', 'white');
   });
 
   test('MainSectionComponents', function() {

@@ -59,7 +59,7 @@
 }
 
 #email {
-  color: var(--cr-primary-text-color);
+  color: var(--cr-secondary-text-color);
   font-size: 0.8125rem;
   margin-inline-start: 8px;
 }
