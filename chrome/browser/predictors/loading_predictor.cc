@@ -532,7 +532,8 @@ void LoadingPredictor::PrefetchFinished(std::unique_ptr<PrefetchStats> stats) {
 void LoadingPredictor::PreconnectURLIfAllowed(
     const GURL& url,
     bool allow_credentials,
-    const net::NetworkAnonymizationKey& network_anonymization_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_))
     return;
 
@@ -543,8 +544,7 @@ void LoadingPredictor::PreconnectURLIfAllowed(
   }
 
   preconnect_manager()->StartPreconnectUrl(
-      url, allow_credentials, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      url, allow_credentials, network_anonymization_key, traffic_annotation);
 }
 
 void LoadingPredictor::MaybePrewarmResources(

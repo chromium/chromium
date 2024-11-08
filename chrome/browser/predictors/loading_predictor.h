@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
+#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -128,12 +129,16 @@ class LoadingPredictor : public KeyedService,
     return active_hints_;
   }
 
-  // May start a preconnect for |url|, if the current profile settings allow to
-  // perform preresolve and preconnect actions.
+  // May start a preconnect for `url`, if the current profile settings allow to
+  // perform preresolve and preconnect actions. When `traffic_annotation` is
+  // set, it will use the value over the default
+  // `kLoadingPredictorPreconnectTrafficAnnotation`, later passed on to //net.
   void PreconnectURLIfAllowed(
       const GURL& url,
       bool allow_credentials,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation =
+          kLoadingPredictorPreconnectTrafficAnnotation);
 
   void MaybePrewarmResources(const std::optional<url::Origin>& initiator_origin,
                              const GURL& top_frame_main_resource_url);
