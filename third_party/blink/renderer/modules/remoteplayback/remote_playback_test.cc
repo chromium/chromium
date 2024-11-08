@@ -30,7 +30,7 @@ namespace blink {
 
 namespace {
 
-class MockFunction : public ScriptFunction::Callable {
+class MockFunction : public ScriptFunction {
  public:
   MockFunction() = default;
   MOCK_METHOD2(Call, ScriptValue(ScriptState*, ScriptValue));
@@ -254,7 +254,7 @@ TEST_F(RemotePlaybackTest, DisableRemotePlaybackCancelsAvailabilityCallbacks) {
 
   V8RemotePlaybackAvailabilityCallback* availability_callback =
       V8RemotePlaybackAvailabilityCallback::Create(
-          funcs.ExpectNoCall()->V8Function());
+          funcs.ExpectNoCall()->ToV8Function(scope.GetScriptState()));
 
   ScriptPromiseTester promise_tester(
       scope.GetScriptState(), remote_playback.watchAvailability(
@@ -275,9 +275,7 @@ TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
   MockFunction* callback_function = MakeGarbageCollected<MockFunction>();
   V8RemotePlaybackAvailabilityCallback* availability_callback =
       V8RemotePlaybackAvailabilityCallback::Create(
-          MakeGarbageCollected<ScriptFunction>(scope.GetScriptState(),
-                                               callback_function)
-              ->V8Function());
+          callback_function->ToV8Function(scope.GetScriptState()));
 
   const int kNumberCallbacks = 10;
   for (int i = 0; i < kNumberCallbacks; ++i) {
@@ -339,7 +337,7 @@ TEST_F(RemotePlaybackTest, WatchAvailabilityWorksWhenBackendDisabled) {
 
   V8RemotePlaybackAvailabilityCallback* availability_callback =
       V8RemotePlaybackAvailabilityCallback::Create(
-          funcs.ExpectNoCall()->V8Function());
+          funcs.ExpectNoCall()->ToV8Function(scope.GetScriptState()));
 
   ScriptPromiseTester promise_tester(
       scope.GetScriptState(), remote_playback.watchAvailability(
@@ -371,9 +369,7 @@ TEST_F(RemotePlaybackTest, IsListening) {
   MockFunction* callback_function = MakeGarbageCollected<MockFunction>();
   V8RemotePlaybackAvailabilityCallback* availability_callback =
       V8RemotePlaybackAvailabilityCallback::Create(
-          MakeGarbageCollected<ScriptFunction>(scope.GetScriptState(),
-                                               callback_function)
-              ->V8Function());
+          callback_function->ToV8Function(scope.GetScriptState()));
 
   // The initial call upon registering will not happen as it's posted on the
   // message loop.

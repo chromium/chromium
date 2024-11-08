@@ -624,12 +624,9 @@ void ReadableByteStreamController::CallPullIfNeeded(
     const Member<ReadableByteStreamController> controller_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), pull_promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(controller)));
+  StreamThenPromise(script_state, pull_promise,
+                    MakeGarbageCollected<ResolveFunction>(controller),
+                    MakeGarbageCollected<RejectFunction>(controller));
 }
 
 ReadableByteStreamController::PullIntoDescriptor*
@@ -897,12 +894,9 @@ void ReadableByteStreamController::SetUp(
     const Member<ReadableByteStreamController> controller_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), start_promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(controller)));
+  StreamThenPromise(script_state, start_promise,
+                    MakeGarbageCollected<ResolveFunction>(controller),
+                    MakeGarbageCollected<RejectFunction>(controller));
 }
 
 void ReadableByteStreamController::SetUpFromUnderlyingSource(

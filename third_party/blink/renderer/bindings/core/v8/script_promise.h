@@ -97,11 +97,11 @@ struct ToV8Traits<IDLPromise<T>> {
 template <typename IDLType,
           typename Derived,
           typename ThenReturnType = IDLUndefined>
-class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
+class CORE_EXPORT ThenCallable : public ScriptFunction {
  public:
   ~ThenCallable() override = default;
 
-  void SetTypingFailureCallable(ScriptFunction::Callable* callable) {
+  void SetTypingFailureCallable(ScriptFunction* callable) {
     typing_failure_callable_ = callable;
   }
 
@@ -110,7 +110,7 @@ class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
   }
 
   void Trace(Visitor* visitor) const override {
-    ScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Trace(visitor);
     visitor->Trace(typing_failure_callable_);
   }
 
@@ -167,7 +167,7 @@ class CORE_EXPORT ThenCallable : public ScriptFunction::Callable {
     return return_value;
   }
 
-  Member<ScriptFunction::Callable> typing_failure_callable_;
+  Member<ScriptFunction> typing_failure_callable_;
   ExceptionContext context_ =
       ExceptionContext(v8::ExceptionContext::kUnknown, nullptr, nullptr);
 };
@@ -284,7 +284,7 @@ class ScriptPromise {
     v8::Local<v8::Promise> v8_promise =
         V8Promise()
             ->Then(script_state->GetContext(),
-                   GetV8Function(script_state, on_fulfilled))
+                   on_fulfilled->ToV8Function(script_state))
             .FromMaybe(v8::Local<v8::Promise>());
     return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
         script_state->GetIsolate(), v8_promise);
@@ -305,8 +305,8 @@ class ScriptPromise {
     v8::Local<v8::Promise> v8_promise =
         V8Promise()
             ->Then(script_state->GetContext(),
-                   GetV8Function(script_state, on_fulfilled),
-                   GetV8Function(script_state, on_rejected))
+                   on_fulfilled->ToV8Function(script_state),
+                   on_rejected->ToV8Function(script_state))
             .FromMaybe(v8::Local<v8::Promise>());
     return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
         script_state->GetIsolate(), v8_promise);
@@ -323,7 +323,7 @@ class ScriptPromise {
     v8::Local<v8::Promise> v8_promise =
         V8Promise()
             ->Then(script_state->GetContext(),
-                   GetV8Function(script_state, on_fulfilled))
+                   on_fulfilled->ToV8Function(script_state))
             .FromMaybe(v8::Local<v8::Promise>());
     return ScriptPromise<ReturnPromiseResolveType>::FromV8Promise(
         script_state->GetIsolate(), v8_promise);
@@ -335,7 +335,7 @@ class ScriptPromise {
                  on_fulfilled) const {
     CHECK(!IsEmpty());
     std::ignore = V8Promise()->Then(script_state->GetContext(),
-                                    GetV8Function(script_state, on_fulfilled));
+                                    on_fulfilled->ToV8Function(script_state));
   }
 
   template <typename ResolveClass, typename RejectClass>
@@ -346,8 +346,8 @@ class ScriptPromise {
     CHECK(!IsEmpty());
     on_fulfilled->SetTypingFailureCallable(on_rejected);
     std::ignore = V8Promise()->Then(script_state->GetContext(),
-                                    GetV8Function(script_state, on_fulfilled),
-                                    GetV8Function(script_state, on_rejected));
+                                    on_fulfilled->ToV8Function(script_state),
+                                    on_rejected->ToV8Function(script_state));
   }
 
   template <typename ResolveClass, typename RejectClass>
@@ -357,8 +357,8 @@ class ScriptPromise {
       ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
     CHECK(!IsEmpty());
     std::ignore = V8Promise()->Then(script_state->GetContext(),
-                                    GetV8Function(script_state, on_fulfilled),
-                                    GetV8Function(script_state, on_rejected));
+                                    on_fulfilled->ToV8Function(script_state),
+                                    on_rejected->ToV8Function(script_state));
   }
 
   template <typename RejectClass>
@@ -367,7 +367,7 @@ class ScriptPromise {
       ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
     CHECK(!IsEmpty());
     std::ignore = V8Promise()->Catch(script_state->GetContext(),
-                                     GetV8Function(script_state, on_rejected));
+                                     on_rejected->ToV8Function(script_state));
   }
 
  private:
@@ -376,13 +376,6 @@ class ScriptPromise {
 
   ScriptPromise(v8::Isolate* isolate, v8::Local<v8::Promise> promise)
       : isolate_(isolate), promise_(isolate, promise) {}
-
-  static v8::Local<v8::Function> GetV8Function(
-      ScriptState* script_state,
-      ScriptFunction::Callable* callable) {
-    return MakeGarbageCollected<ScriptFunction>(script_state, callable)
-        ->V8Function();
-  }
 
   v8::Isolate* isolate_ = nullptr;
   WorldSafeV8Reference<v8::Promise> promise_;

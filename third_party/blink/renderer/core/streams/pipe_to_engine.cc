@@ -601,16 +601,12 @@ v8::Local<v8::Promise> PipeToEngine::ThenPromise(v8::Local<v8::Promise> promise,
                                                  PromiseReaction on_fulfilled,
                                                  PromiseReaction on_rejected) {
   return StreamThenPromise(
-      script_state_->GetContext(), promise,
+      script_state_, promise,
       on_fulfilled
-          ? MakeGarbageCollected<ScriptFunction>(
-                script_state_, MakeGarbageCollected<WrappedPromiseReaction>(
-                                   this, on_fulfilled))
+          ? MakeGarbageCollected<WrappedPromiseReaction>(this, on_fulfilled)
           : nullptr,
       on_rejected
-          ? MakeGarbageCollected<ScriptFunction>(
-                script_state_,
-                MakeGarbageCollected<WrappedPromiseReaction>(this, on_rejected))
+          ? MakeGarbageCollected<WrappedPromiseReaction>(this, on_rejected)
           : nullptr);
 }
 

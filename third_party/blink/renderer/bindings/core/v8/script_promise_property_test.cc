@@ -146,7 +146,7 @@ class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
   Member<Property> property_;
 };
 
-class ScriptPromisePropertyResetter : public ScriptFunction::Callable {
+class ScriptPromisePropertyResetter : public ScriptFunction {
  public:
   using Property = ScriptPromiseProperty<GarbageCollectedScriptWrappable,
                                          GarbageCollectedScriptWrappable>;
@@ -156,7 +156,7 @@ class ScriptPromisePropertyResetter : public ScriptFunction::Callable {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(property_);
-    ScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Trace(visitor);
   }
 
   ScriptValue Call(ScriptState*, ScriptValue arg) override {
@@ -614,10 +614,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
                              MainScriptState(), resolution)
                              .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
-        MakeGarbageCollected<ScriptFunction>(
-            MainScriptState(),
-            MakeGarbageCollected<ScriptPromisePropertyResetter>(GetProperty()))
-            ->V8Function(),
+        MakeGarbageCollected<ScriptPromisePropertyResetter>(GetProperty())
+            ->ToV8Function(MainScriptState()),
         v8::Undefined(GetIsolate()));
     ASSERT_EQ(
         v8::Just(true),
@@ -634,10 +632,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
                               OtherScriptState(), resolution)
                               .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
-        MakeGarbageCollected<ScriptFunction>(
-            OtherScriptState(),
-            MakeGarbageCollected<ScriptPromisePropertyResetter>(GetProperty()))
-            ->V8Function(),
+        MakeGarbageCollected<ScriptPromisePropertyResetter>(GetProperty())
+            ->ToV8Function(OtherScriptState()),
         v8::Undefined(GetIsolate()));
     ASSERT_EQ(
         v8::Just(true),

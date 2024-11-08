@@ -36,7 +36,7 @@ class PlaneLayout;
 
 base::ScopedClosureRunner MakeScopedGarbageCollectionRequest(v8::Isolate*);
 
-class FakeFunction : public ScriptFunction::Callable {
+class FakeFunction : public ScriptFunction {
  public:
   explicit FakeFunction(std::string name);
 

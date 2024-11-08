@@ -190,9 +190,9 @@ void TransformStreamDefaultController::SetUp(
     Member<TransformStream> stream_;
   };
 
-  controller->reject_function_ = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<PerformTransformRejectFunction>(
-                        controller->controlled_transform_stream_));
+  controller->reject_function_ =
+      MakeGarbageCollected<PerformTransformRejectFunction>(
+          controller->controlled_transform_stream_);
 }
 
 v8::Local<v8::Value> TransformStreamDefaultController::SetUpFromTransformer(
@@ -357,9 +357,9 @@ v8::Local<v8::Promise> TransformStreamDefaultController::PerformTransform(
     v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "invalid realm");
     v8::MaybeLocal<v8::Value> result_maybe =
-        controller->reject_function_->V8Function()->Call(
-            script_state->GetContext(),
-            v8::Undefined(script_state->GetIsolate()), 1, &error);
+        controller->reject_function_->ToV8Function(script_state)
+            ->Call(script_state->GetContext(),
+                   v8::Undefined(script_state->GetIsolate()), 1, &error);
     v8::Local<v8::Value> result;
     if (!result_maybe.ToLocal(&result)) {
       result = v8::Local<v8::Promise>();
@@ -377,9 +377,8 @@ v8::Local<v8::Promise> TransformStreamDefaultController::PerformTransform(
   DCHECK(!transform_promise.IsEmpty());
 
   // 2. Return the result of transforming transformPromise ...
-  v8::Local<v8::Promise> streamed_promise =
-      StreamThenPromise(script_state->GetContext(), transform_promise, nullptr,
-                        controller->reject_function_);
+  v8::Local<v8::Promise> streamed_promise = StreamThenPromise(
+      script_state, transform_promise, nullptr, controller->reject_function_);
   v8::Local<v8::Value> escapable_streamed_promise =
       scope.Escape(streamed_promise);
   return escapable_streamed_promise.As<v8::Promise>();

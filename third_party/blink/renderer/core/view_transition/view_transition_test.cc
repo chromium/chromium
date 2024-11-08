@@ -222,8 +222,8 @@ TEST_P(ViewTransitionTest, LayoutShift) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -269,10 +269,10 @@ TEST_P(ViewTransitionTest, TransitionCreatesNewObject) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* first_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
-  auto* second_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* first_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
+  auto* second_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* first_transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), first_callback,
@@ -295,8 +295,8 @@ TEST_P(ViewTransitionTest, TransitionReadyPromiseResolves) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -342,8 +342,8 @@ TEST_P(ViewTransitionTest, PrepareTransitionElementsWantToBeComposited) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -477,8 +477,8 @@ TEST_P(ViewTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -508,8 +508,8 @@ TEST_P(ViewTransitionTest, RenderingPausedTest) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -548,8 +548,8 @@ TEST_P(ViewTransitionTest, Abandon) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,

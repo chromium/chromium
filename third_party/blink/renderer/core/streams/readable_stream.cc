@@ -1119,13 +1119,9 @@ ScriptPromise<IDLUndefined> ReadableStream::Cancel(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   StreamThenPromise(
-      script_state->GetContext(), source_cancel_promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<ResolveUndefinedFunction>(resolver, kResolve)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<ResolveUndefinedFunction>(resolver, kReject)));
+      script_state, source_cancel_promise,
+      MakeGarbageCollected<ResolveUndefinedFunction>(resolver, kResolve),
+      MakeGarbageCollected<ResolveUndefinedFunction>(resolver, kReject));
   return resolver->Promise();
 }
 

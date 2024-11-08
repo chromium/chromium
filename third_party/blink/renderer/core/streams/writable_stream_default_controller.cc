@@ -210,12 +210,9 @@ void WritableStreamDefaultController::SetUp(
     Member<WritableStream> stream_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), start_promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolvePromiseFunction>(stream)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectPromiseFunction>(stream)));
+  StreamThenPromise(script_state, start_promise,
+                    MakeGarbageCollected<ResolvePromiseFunction>(stream),
+                    MakeGarbageCollected<RejectPromiseFunction>(stream));
 
   class ProcessWriteResolveFunction final : public PromiseHandler {
    public:
@@ -304,12 +301,12 @@ void WritableStreamDefaultController::SetUp(
     Member<WritableStreamDefaultController> controller_;
   };
 
-  controller->resolve_function_ = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<ProcessWriteResolveFunction>(
-                        controller->controlled_writable_stream_, controller));
-  controller->reject_function_ = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<ProcessWriteRejectFunction>(
-                        controller->controlled_writable_stream_, controller));
+  controller->resolve_function_ =
+      MakeGarbageCollected<ProcessWriteResolveFunction>(
+          controller->controlled_writable_stream_, controller);
+  controller->reject_function_ =
+      MakeGarbageCollected<ProcessWriteRejectFunction>(
+          controller->controlled_writable_stream_, controller);
 }
 
 // TODO(ricea): Should this be a constructor?
@@ -646,12 +643,9 @@ void WritableStreamDefaultController::ProcessClose(
     Member<WritableStream> stream_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), sinkClosePromise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolveFunction>(stream)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(stream)));
+  StreamThenPromise(script_state, sinkClosePromise,
+                    MakeGarbageCollected<ResolveFunction>(stream),
+                    MakeGarbageCollected<RejectFunction>(stream));
 }
 
 void WritableStreamDefaultController::ProcessWrite(
@@ -670,7 +664,7 @@ void WritableStreamDefaultController::ProcessWrite(
   const auto sinkWritePromise =
       controller->write_algorithm_->Run(script_state, 1, &chunk);
 
-  StreamThenPromise(script_state->GetContext(), sinkWritePromise,
+  StreamThenPromise(script_state, sinkWritePromise,
                     controller->resolve_function_,
                     controller->reject_function_);
 }

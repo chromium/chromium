@@ -36,7 +36,7 @@ constexpr uint64_t kChangeCount = 2;
 constexpr base::TimeDelta kDelayTime = base::Seconds(1);
 constexpr base::TimeDelta kPenaltyDuration = base::Seconds(4);
 
-class ClosureRunnerCallable final : public ScriptFunction::Callable {
+class ClosureRunnerCallable final : public ScriptFunction {
  public:
   explicit ClosureRunnerCallable(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
@@ -83,7 +83,7 @@ class ThenClosureRunner final
 // }
 // /* Later on */
 // const observer = new PressureObserver(PressureRecordAccumulator);
-class PressureRecordAccumulator final : public ScriptFunction::Callable {
+class PressureRecordAccumulator final : public ScriptFunction {
  public:
   ScriptValue Call(ScriptState*, ScriptValue script_value) override {
     {
@@ -101,7 +101,7 @@ class PressureRecordAccumulator final : public ScriptFunction::Callable {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(pressure_records_);
-    ScriptFunction::Callable::Trace(visitor);
+    ScriptFunction::Trace(visitor);
   }
 
  private:
@@ -132,9 +132,7 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
   auto* pressure_record_accumulator =
       MakeGarbageCollected<PressureRecordAccumulator>();
   auto* callback = V8PressureUpdateCallback::Create(
-      MakeGarbageCollected<ScriptFunction>(scope.GetScriptState(),
-                                           pressure_record_accumulator)
-          ->V8Function());
+      pressure_record_accumulator->ToV8Function(scope.GetScriptState()));
 
   constexpr size_t kNumPressureStates =
       static_cast<size_t>(PressureState::kMaxValue) + 1U;
@@ -275,11 +273,10 @@ TEST(PressureObserverTest, PressureObserverDisconnectBeforePenaltyEnd) {
 
   base::RunLoop callback_run_loop;
 
-  auto* callback_function = MakeGarbageCollected<ScriptFunction>(
-      scope.GetScriptState(), MakeGarbageCollected<ClosureRunnerCallable>(
-                                  callback_run_loop.QuitClosure()));
-  auto* callback =
-      V8PressureUpdateCallback::Create(callback_function->V8Function());
+  auto* callback_function = MakeGarbageCollected<ClosureRunnerCallable>(
+      callback_run_loop.QuitClosure());
+  auto* callback = V8PressureUpdateCallback::Create(
+      callback_function->ToV8Function(scope.GetScriptState()));
 
   V8PressureSource source(V8PressureSource::Enum::kCpu);
   auto* options = PressureObserverOptions::Create();
@@ -328,11 +325,10 @@ TEST(PressureObserverTest, PressureObserverUnobserveBeforePenaltyEnd) {
 
   base::RunLoop callback_run_loop;
 
-  auto* callback_function = MakeGarbageCollected<ScriptFunction>(
-      scope.GetScriptState(), MakeGarbageCollected<ClosureRunnerCallable>(
-                                  callback_run_loop.QuitClosure()));
-  auto* callback =
-      V8PressureUpdateCallback::Create(callback_function->V8Function());
+  auto* callback_function = MakeGarbageCollected<ClosureRunnerCallable>(
+      callback_run_loop.QuitClosure());
+  auto* callback = V8PressureUpdateCallback::Create(
+      callback_function->ToV8Function(scope.GetScriptState()));
 
   V8PressureSource source(V8PressureSource::Enum::kCpu);
   auto* options = PressureObserverOptions::Create();
