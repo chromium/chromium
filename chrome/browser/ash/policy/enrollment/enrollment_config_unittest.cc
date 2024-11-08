@@ -90,9 +90,36 @@ TEST_F(
             EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
 }
 
+TEST_F(
+    EnrollmentConfigTest,
+    TokenEnrollmentModeWithRemoteDeploymentSourceYieldsRemoteDeploymentMode) {
+  const char kRemoteDeploymentFlexOobeConfig[] = R"({
+    "enrollmentToken": "test-enrollment-token",
+    "source": "REMOTE_DEPLOYMENT"
+  })";
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig(
+      kRemoteDeploymentFlexOobeConfig);
+  auto state_dict = base::Value::Dict().Set(
+      kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+
+  const EnrollmentConfig config = GetPrescribedConfig();
+
+  EXPECT_EQ(config.mode,
+            EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED);
+  EXPECT_TRUE(config.should_enroll());
+  EXPECT_TRUE(config.is_forced());
+  EXPECT_TRUE(config.is_mode_with_manual_fallback());
+  EXPECT_TRUE(config.is_automatic_enrollment());
+  EXPECT_EQ(config.GetManualFallbackConfig().mode,
+            EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK);
+}
+
 struct EnrollmentConfigOOBEConfigSourceTestCase {
   const char* json_source;
   OOBEConfigSource expected_oobe_config_source;
+  EnrollmentConfig::Mode expected_mode;
 };
 
 class EnrollmentConfigOOBEConfigSourceTest
@@ -101,10 +128,14 @@ class EnrollmentConfigOOBEConfigSourceTest
           EnrollmentConfigOOBEConfigSourceTestCase> {};
 
 const EnrollmentConfigOOBEConfigSourceTestCase test_cases[] = {
-    {"", OOBEConfigSource::kNone},
-    {"UNKNOWN_VALUE", OOBEConfigSource::kUnknown},
-    {"REMOTE_DEPLOYMENT", OOBEConfigSource::kRemoteDeployment},
-    {"PACKAGING_TOOL", OOBEConfigSource::kPackagingTool},
+    {"", OOBEConfigSource::kNone,
+     EnrollmentConfig::Mode::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED},
+    {"UNKNOWN_VALUE", OOBEConfigSource::kUnknown,
+     EnrollmentConfig::Mode::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED},
+    {"REMOTE_DEPLOYMENT", OOBEConfigSource::kRemoteDeployment,
+     EnrollmentConfig::Mode::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED},
+    {"PACKAGING_TOOL", OOBEConfigSource::kPackagingTool,
+     EnrollmentConfig::Mode::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED},
 };
 
 TEST_P(EnrollmentConfigOOBEConfigSourceTest,
@@ -124,10 +155,9 @@ TEST_P(EnrollmentConfigOOBEConfigSourceTest,
 
   const EnrollmentConfig config = GetPrescribedConfig();
 
-  EXPECT_EQ(config.mode,
-            EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED);
   EXPECT_EQ(config.enrollment_token, test::kEnrollmentToken);
   EXPECT_EQ(config.oobe_config_source, test_case.expected_oobe_config_source);
+  EXPECT_EQ(config.mode, test_case.expected_mode);
 }
 
 INSTANTIATE_TEST_SUITE_P(TokenEnrollmentModeWithTokenAndOOBEConfigSource,
