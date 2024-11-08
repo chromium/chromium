@@ -1479,3 +1479,11 @@ crbug.com/354579691 fast/events/touch/gesture/long-press-drag-drop-touch-editing
 
 # Slow because it is transfering a lot of data to catch non-spec compliant behavior with large buffers
 crbug.com/356963272 external/wpt/webrtc/RTCDataChannel-send-close.html [ Slow ]
+
+# Flaky timeouts - assuming the test is slow.
+crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-004.html [ Slow ]
+crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-010.html [ Slow ]
+crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-016.html [ Slow ]
+crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-018.html [ Slow ]
+crbug.com/374035637 [ Mac14 Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-019.html [ Slow ]
+crbug.com/374045525 [ Mac14 Debug ] webaudio/AudioParam/audioparam-rate-change-357391257.html [ Slow ]
