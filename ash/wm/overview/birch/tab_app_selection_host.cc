@@ -190,6 +190,9 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
         },
         GetWeakPtr());
 
+    // Update the bounds before showing up.
+    SetBounds(GetDesiredBoundsInScreen());
+
     // Slide the widget out of the coral chip. We apply a clip as well since the
     // contents view is almost always taller than the coral chip.
     const gfx::Rect chip_bounds = owner_->GetBoundsInScreen();
