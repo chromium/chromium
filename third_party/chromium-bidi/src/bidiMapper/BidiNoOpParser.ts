@@ -38,6 +38,21 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Bluetooth.HandleRequestDevicePromptParameters {
     return params as Bluetooth.HandleRequestDevicePromptParameters;
   }
+  parseSimulateAdapterParameters(
+    params: unknown,
+  ): Bluetooth.SimulateAdapterParameters {
+    return params as Bluetooth.SimulateAdapterParameters;
+  }
+  parseSimulateAdvertisementParameters(
+    params: unknown,
+  ): Bluetooth.SimulateAdvertisementParameters {
+    return params as Bluetooth.SimulateAdvertisementParameters;
+  }
+  parseSimulatePreconnectedPeripheralParameters(
+    params: unknown,
+  ): Bluetooth.SimulatePreconnectedPeripheralParameters {
+    return params as Bluetooth.SimulatePreconnectedPeripheralParameters;
+  }
   // keep-sorted end
 
   // Browser domain

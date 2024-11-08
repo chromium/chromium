@@ -407,4 +407,29 @@ export namespace Bluetooth {
         .HandleRequestDevicePromptParametersSchema,
     ) as Protocol.Bluetooth.HandleRequestDevicePromptParameters;
   }
+  export function parseSimulateAdapterParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateAdapterParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.SimulateAdapterParametersSchema,
+    ) as Protocol.Bluetooth.SimulateAdapterParameters;
+  }
+  export function parseSimulateAdvertisementParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateAdvertisementParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisementParametersSchema,
+    ) as Protocol.Bluetooth.SimulateAdvertisementParameters;
+  }
+  export function parseSimulatePreconnectedPeripheralParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulatePreconnectedPeripheralParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth
+        .SimulatePreconnectedPeripheralParametersSchema,
+    ) as Protocol.Bluetooth.SimulatePreconnectedPeripheralParameters;
+  }
 }

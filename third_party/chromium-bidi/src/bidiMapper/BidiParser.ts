@@ -34,6 +34,15 @@ export interface BidiCommandParameterParser {
   parseHandleRequestDevicePromptParams(
     params: unknown,
   ): Bluetooth.HandleRequestDevicePromptParameters;
+  parseSimulateAdapterParameters(
+    params: unknown,
+  ): Bluetooth.SimulateAdapterParameters;
+  parseSimulateAdvertisementParameters(
+    params: unknown,
+  ): Bluetooth.SimulateAdvertisementParameters;
+  parseSimulatePreconnectedPeripheralParameters(
+    params: unknown,
+  ): Bluetooth.SimulatePreconnectedPeripheralParameters;
   // keep-sorted end
 
   // Browser domain
