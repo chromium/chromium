@@ -217,6 +217,8 @@ bool ShouldCollectFineGrainedExceptionHistograms(ContentSettingsType type) {
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::ADS:
     case ContentSettingsType::STORAGE_ACCESS:
+    case ContentSettingsType::JAVASCRIPT_JIT:
+    case ContentSettingsType::JAVASCRIPT_OPTIMIZER:
       return true;
     default:
       return false;

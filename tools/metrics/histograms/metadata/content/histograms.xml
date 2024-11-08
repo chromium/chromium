@@ -864,6 +864,8 @@ chromium-metrics-reviews@google.com.
     <variant name="installed-web-app-metadata"
         summary="Installed web app metadata"/>
     <variant name="javascript" summary="JavaScript exceptions"/>
+    <variant name="javascript-jit" summary="JavaScript JIT"/>
+    <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
     <variant name="keygen" summary="Keygen exceptions"/>
     <variant name="media-engagement" summary="Media engagement exceptions"/>
     <variant name="media-stream-camera" summary="Camera exceptions"/>

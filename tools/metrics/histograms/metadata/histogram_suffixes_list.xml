@@ -747,6 +747,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="TemporaryAllowThirdParty"
       label="Third-party cookies temporarily allowed on a domain"/>
   <affected-histogram name="ContentSettings.RegularProfile.Exceptions.cookies"/>
+  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.javascript-jit"/>
+  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.javascript-optimizer"/>
   <affected-histogram name="ContentSettings.RegularProfile.Exceptions.popups"/>
   <affected-histogram
       name="ContentSettings.RegularProfile.Exceptions.storage-access"/>
