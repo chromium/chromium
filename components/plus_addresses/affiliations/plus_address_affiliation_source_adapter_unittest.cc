@@ -44,7 +44,8 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
         /*webdata_service=*/nullptr,
         &plus_environment_
              .affiliation_service(), /*feature_enabled_for_profile_check=*/
-        base::BindRepeating(&base::FeatureList::IsEnabled));
+        base::BindRepeating(&base::FeatureList::IsEnabled),
+        /*launch_hats_survey=*/base::DoNothing());
     adapter_ =
         std::make_unique<PlusAddressAffiliationSourceAdapter>(service_.get());
   }

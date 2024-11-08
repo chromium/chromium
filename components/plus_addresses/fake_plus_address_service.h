@@ -98,6 +98,7 @@ class FakePlusAddressService : public PlusAddressService {
                                 bool is_off_the_record) const override;
   void SavePlusProfile(const PlusProfile& profile) override;
   bool IsEnabled() const override;
+  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type) override;
 
   // Resets the state of the class.
   void ClearState();
@@ -163,11 +164,16 @@ class FakePlusAddressService : public PlusAddressService {
     return did_fill_plus_address_suggestion_;
   }
 
+  std::optional<hats::SurveyType> get_triggered_survey_type() {
+    return triggered_survey_;
+  }
+
  private:
   PlusAddressRequestCallback on_confirmed_;
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
   std::vector<PlusProfile> plus_profiles_;
+  std::optional<hats::SurveyType> triggered_survey_;
   bool is_confirmed_ = false;
   bool should_fail_to_confirm_ = false;
   bool should_fail_to_reserve_ = false;

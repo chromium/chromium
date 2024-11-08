@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -15,8 +16,6 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -32,6 +31,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
@@ -39,6 +39,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::SizeIs;
 
 constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
@@ -71,11 +72,9 @@ class PlusAddressCreationControllerDesktopEnabledTest
   PlusAddressCreationControllerDesktopEnabledTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    features_.InitWithFeatures(
-        {features::kPlusAddressesEnabled,
-         features::kPlusAddressUserOnboardingEnabled,
-         features::kPlusAddressAcceptedFirstTimeCreateSurvey},
-        {});
+    features_.InitWithFeatures({features::kPlusAddressesEnabled,
+                                features::kPlusAddressUserOnboardingEnabled},
+                               {});
   }
 
   void SetUp() override {
@@ -90,8 +89,6 @@ class PlusAddressCreationControllerDesktopEnabledTest
         base::BindRepeating(&PlusAddressCreationControllerDesktopEnabledTest::
                                 PlusAddressSettingServiceTestFactory,
                             base::Unretained(this)));
-    HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(&BuildMockHatsService));
   }
 
   void TearDown() override {
@@ -109,11 +106,6 @@ class PlusAddressCreationControllerDesktopEnabledTest
     return *static_cast<FakePlusAddressSettingService*>(
         PlusAddressSettingServiceFactory::GetForBrowserContext(
             browser_context()));
-  }
-
-  MockHatsService& hats_service() {
-    return *static_cast<MockHatsService*>(HatsServiceFactory::GetForProfile(
-        profile(), /*create_if_necessary=*/false));
   }
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
@@ -155,9 +147,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
-  EXPECT_CALL(hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
-                           _, _, IsEmpty(), SizeIs(2)));
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
@@ -174,6 +163,8 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time::Now());
+  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
+              Optional(hats::SurveyType::kAcceptedFirstTimeCreate));
 }
 
 // Tests the scenario when the user confirms the first plus address creation
@@ -201,9 +192,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   plus_address_service().set_should_fail_to_confirm(true);
 
   task_environment()->FastForwardBy(kDuration);
-  // Feature perception surveys shown after the first plus address creation
-  // flow should not be triggered if the plus address wasn't confirmed.
-  EXPECT_CALL(hats_service(), LaunchSurvey).Times(0);
 
   controller->OnConfirmed();
 
@@ -228,6 +216,9 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time());
+  // Feature perception surveys shown after the first plus address creation
+  // flow should not be triggered if the plus address wasn't confirmed.
+  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
@@ -248,7 +239,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
-  EXPECT_CALL(hats_service(), LaunchSurvey).Times(0);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
@@ -265,6 +255,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time());
+  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnConfirmedError) {

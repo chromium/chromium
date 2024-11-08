@@ -14,6 +14,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 
 namespace url {
@@ -116,6 +117,9 @@ class PlusAddressService : public KeyedService,
 
   // Returns true if the feature is supported for the user.
   virtual bool IsEnabled() const = 0;
+
+  // Triggers the HaTS survey of the `survey_type`.
+  virtual void TriggerUserPerceptionSurvey(hats::SurveyType survey_type) = 0;
 };
 
 }  // namespace plus_addresses

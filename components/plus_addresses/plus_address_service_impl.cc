@@ -30,6 +30,7 @@
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_blocklist_data.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_jit_allocator.h"
@@ -117,7 +118,8 @@ PlusAddressServiceImpl::PlusAddressServiceImpl(
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
     scoped_refptr<PlusAddressWebDataService> webdata_service,
     affiliations::AffiliationService* affiliation_service,
-    FeatureEnabledForProfileCheck feature_enabled_for_profile_check)
+    FeatureEnabledForProfileCheck feature_enabled_for_profile_check,
+    LaunchHatsSurvey launch_hats_survey)
     : pref_service_(CHECK_DEREF(pref_service)),
       identity_manager_(CHECK_DEREF(identity_manager)),
       setting_service_(CHECK_DEREF(setting_service)),
@@ -129,7 +131,8 @@ PlusAddressServiceImpl::PlusAddressServiceImpl(
       webdata_service_(std::move(webdata_service)),
       plus_address_match_helper_(this, affiliation_service),
       feature_enabled_for_profile_check_(
-          std::move(feature_enabled_for_profile_check)) {
+          std::move(feature_enabled_for_profile_check)),
+      launch_hats_survey_(launch_hats_survey) {
   // The allocator is created in the body of the constructor to avoid that it
   // calls into `this` before all members are assigned.
   plus_address_allocator_ =
@@ -433,6 +436,11 @@ bool PlusAddressServiceImpl::IsEnabled() const {
          identity_manager_
                  ->GetErrorStateOfRefreshTokenForAccount(primary_account_id)
                  .state() == GoogleServiceAuthError::State::NONE;
+}
+
+void PlusAddressServiceImpl::TriggerUserPerceptionSurvey(
+    hats::SurveyType survey_type) {
+  launch_hats_survey_.Run(survey_type);
 }
 
 void PlusAddressServiceImpl::OnWebDataChangedBySync(

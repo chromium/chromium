@@ -300,6 +300,11 @@ bool FakePlusAddressService::IsEnabled() const {
   return true;
 }
 
+void FakePlusAddressService::TriggerUserPerceptionSurvey(
+    hats::SurveyType survey_type) {
+  triggered_survey_ = survey_type;
+}
+
 void FakePlusAddressService::ClearState() {
   is_confirmed_ = false;
   should_fail_to_confirm_ = false;

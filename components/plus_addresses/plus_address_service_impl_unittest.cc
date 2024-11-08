@@ -261,7 +261,8 @@ class PlusAddressServiceTest : public ::testing::Test {
                      /*affiliation_service=*/
                      &affiliation_service(),
                      /*feature_enabled_for_profile_check=*/
-                     base::BindRepeating(&base::FeatureList::IsEnabled));
+                     base::BindRepeating(&base::FeatureList::IsEnabled),
+                     /*launch_hats_survey=*/base::DoNothing());
   }
 
  private:
@@ -956,7 +957,8 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
         plus_webdata_service_,
         /*affiliation_service=*/&plus_environment_.affiliation_service(),
         /*feature_enabled_for_profile_check=*/
-        base::BindRepeating(&base::FeatureList::IsEnabled));
+        base::BindRepeating(&base::FeatureList::IsEnabled),
+        /*lauch_hats_survey=*/base::DoNothing());
   }
 
   signin::IdentityManager* identity_manager() {

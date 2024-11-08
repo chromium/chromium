@@ -19,6 +19,12 @@ inline constexpr char kLastPlusAddressFillingTime[] =
     "Time passed since the user has filled a plus address the last time, in "
     "seconds";
 
+// Specifies the type of feature perception flow to launch for the user.
+enum class SurveyType {
+  // Triggered after the user has created their first plus address.
+  kAcceptedFirstTimeCreate = 1,
+};
+
 std::map<std::string, std::string> GetPlusAddressHatsData(
     PrefService* pref_service);
 

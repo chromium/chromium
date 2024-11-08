@@ -18,15 +18,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -260,7 +256,7 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
         browser->window()->MaybeShowFeaturePromo(
             feature_engagement::kIPHPlusAddressFirstSaveFeature);
       }
-      MaybeTriggerUserPerceptionSurvey();
+      TriggerUserPerceptionSurvey(hats::SurveyType::kAcceptedFirstTimeCreate);
     }
 
     RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalConfirmed,
@@ -277,26 +273,13 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   }
 }
 
-void PlusAddressCreationControllerDesktop::MaybeTriggerUserPerceptionSurvey() {
-  if (!base::FeatureList::IsEnabled(
-          features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
+void PlusAddressCreationControllerDesktop::TriggerUserPerceptionSurvey(
+    hats::SurveyType survey_type) {
+  PlusAddressService* plus_address_service = GetPlusAddressService();
+  if (!plus_address_service) {
     return;
   }
-  Profile* profile =
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
-  if (!hats_service) {
-    return;
-  }
-
-  hats_service->LaunchSurvey(
-      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
-      /*success_callback=*/base::DoNothing(),
-      /*failure_callback=*/base::DoNothing(),
-      /*product_specific_bits_data=*/{},
-      /*product_specific_string_data=*/
-      hats::GetPlusAddressHatsData(profile->GetPrefs()));
+  plus_address_service->TriggerUserPerceptionSurvey(survey_type);
 }
 
 bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {

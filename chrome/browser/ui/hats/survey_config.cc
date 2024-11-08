@@ -73,8 +73,6 @@ constexpr char kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut[] =
     "performance-high-efficiency-opt-out";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
     "performance-battery-saver-opt-out";
-constexpr char kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate[] =
-    "plus-address-accepted-first-time-create";
 // The permission prompt trigger permits configuring multiple triggers
 // simultaneously. Each trigger increments a counter at the end -->
 // "permission-prompt0", "permission-prompt1", ...
@@ -139,6 +137,8 @@ constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
 constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
+constexpr char kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate[] =
+    "plus-address-accepted-first-time-create";
 constexpr char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[] =
     "privacy-sandbox-sentiment-survey";
 

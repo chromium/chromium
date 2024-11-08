@@ -59,6 +59,7 @@ class PlusAddressServiceImpl : public PlusAddressService,
  public:
   using FeatureEnabledForProfileCheck =
       base::RepeatingCallback<bool(const base::Feature&)>;
+  using LaunchHatsSurvey = base::RepeatingCallback<void(hats::SurveyType)>;
 
   PlusAddressServiceImpl(
       PrefService* pref_service,
@@ -67,7 +68,8 @@ class PlusAddressServiceImpl : public PlusAddressService,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
       scoped_refptr<PlusAddressWebDataService> webdata_service,
       affiliations::AffiliationService* affiliation_service,
-      FeatureEnabledForProfileCheck feature_enabled_for_profile_check);
+      FeatureEnabledForProfileCheck feature_enabled_for_profile_check,
+      LaunchHatsSurvey launch_hats_survey);
   ~PlusAddressServiceImpl() override;
 
   // autofill::AutofillPlusAddressDelegate:
@@ -151,6 +153,7 @@ class PlusAddressServiceImpl : public PlusAddressService,
                                 bool is_off_the_record) const override;
   void SavePlusProfile(const PlusProfile& profile) override;
   bool IsEnabled() const override;
+  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type) override;
 
  private:
   // signin::IdentityManager::Observer:
@@ -220,6 +223,9 @@ class PlusAddressServiceImpl : public PlusAddressService,
   // Allows checking whether a group-controlled feature is enabled for the
   // profile associated with this `KeyedService`.
   const FeatureEnabledForProfileCheck feature_enabled_for_profile_check_;
+
+  // Allows launching feature perception surveys.
+  const LaunchHatsSurvey launch_hats_survey_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
