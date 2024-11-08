@@ -4097,6 +4097,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageSerialization.Mhtml.Fetched.{ResourceType}"
+    enum="BooleanSuccess" expires_after="2025-01-29">
+  <owner>harringtond@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Reports whether a resource fetch was successful while saving a page to
+    MHTML. Reported for each resource fetched.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Font" summary="Font resource"/>
+    <variant name="Style" summary="CSS resource"/>
+  </token>
+</histogram>
+
+<histogram name="PageSerialization.Mhtml.FrameSerializerTime" units="ms"
+    expires_after="2025-01-29">
+  <owner>harringtond@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Reports the time taken to serialize a single frame of an MHTML file.
+    Includes only time taken by frame_serializer.cc. Reported when frame
+    serialization completes.
+  </summary>
+</histogram>
+
 <histogram name="PageSerialization.MhtmlLoading.LoadResult"
     enum="MhtmlLoadResult" expires_after="2023-04-23">
   <owner>sclittle@chromium.org</owner>

@@ -32,7 +32,10 @@
 
 #include <optional>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
@@ -187,7 +190,9 @@ class MultiResourcePacker;
 class ResourceWaiter : public GarbageCollected<ResourceWaiter>,
                        public RawResourceClient {
  public:
-  explicit ResourceWaiter(MultiResourcePacker* packer) : packer_(packer) {}
+  explicit ResourceWaiter(MultiResourcePacker* packer,
+                          mojom::blink::RequestContextType context_type)
+      : packer_(packer), context_type_(context_type) {}
 
   void NotifyFinished(Resource* resource) override;
 
@@ -202,6 +207,7 @@ class ResourceWaiter : public GarbageCollected<ResourceWaiter>,
  private:
   Member<MultiResourcePacker> packer_;
   std::optional<SerializedResource> serialized_resource_;
+  mojom::blink::RequestContextType context_type_;
 };
 
 // Stores the list of serialized resources which constitute the frame. The
@@ -285,6 +291,34 @@ class MultiResourcePacker : public GarbageCollected<MultiResourcePacker> {
                    font.Url());
   }
 
+  // Fetch `url` and add it to the list of resources. Only adds the resource if
+  // `ShouldAddURL()` returns true. The resource is fetched async, and won't be
+  // available until after `Finish()` completes. If the fetch fails, no resource
+  // is added.
+  void FetchAndAddResource(Document& document,
+                           const KURL& url,
+                           mojom::blink::RequestContextType context_type,
+                           mojom::blink::FetchCacheMode fetch_cache_mode) {
+    if (!ShouldAddURL(url)) {
+      return;
+    }
+    // Add a resource entry pointing to the new `ResourceWaiter`.
+    ResourceEntry entry;
+    entry.waiter_index = resource_waiters_.size();
+    resources_.push_back(std::move(entry));
+
+    // Start fetching the resource data.
+    ResourceLoaderOptions loader_options(
+        document.GetExecutionContext()->GetCurrentWorld());
+    ResourceRequest request(url);
+    request.SetCacheMode(fetch_cache_mode);
+    request.SetRequestContext(context_type);
+    FetchParameters fetch_params(std::move(request), loader_options);
+    auto* waiter = MakeGarbageCollected<ResourceWaiter>(this, context_type);
+    RawResource::Fetch(fetch_params, document.Fetcher(), waiter);
+    resource_waiters_.push_back(waiter);
+  }
+
   void AddFontToResources(Document& document, FontResource& font) {
     if (!MHTMLImprovementsEnabled()) {
       OldAddFontToResources(font);
@@ -297,33 +331,14 @@ class MultiResourcePacker : public GarbageCollected<MultiResourcePacker> {
       return;
     }
 
-    if (!ShouldAddURL(font.Url())) {
-      return;
-    }
-
-    // Add a resource entry pointing to the new `ResourceWaiter`.
-    ResourceEntry entry;
-    entry.waiter_index = resource_waiters_.size();
-    resources_.push_back(std::move(entry));
-
-    // Start fetching the font data.
-    ResourceLoaderOptions loader_options(
-        document.GetExecutionContext()->GetCurrentWorld());
-    loader_options.synchronous_policy =
-        SynchronousPolicy::kRequestAsynchronously;
-    ResourceRequest request(font.Url());
     // MHTML serialization is run frequently on Android Chrome to save pages
     // after they are loaded, so that they can be restored later without an
     // internet connection. `kForceCache` avoids adding additional network
     // requests that could impact performance. If a font isn't cached, the
     // fallback font is typically usable.
-    request.SetCacheMode(mojom::blink::FetchCacheMode::kForceCache);
-    request.SetRequestContext(mojom::blink::RequestContextType::FONT);
-    FetchParameters fetch_params(std::move(request), loader_options);
-    auto* waiter = MakeGarbageCollected<ResourceWaiter>(this);
-    RawResource::Fetch(fetch_params, document.Fetcher(), waiter);
-
-    resource_waiters_.push_back(waiter);
+    FetchAndAddResource(document, font.Url(),
+                        mojom::blink::RequestContextType::FONT,
+                        mojom::blink::FetchCacheMode::kForceCache);
   }
 
   void Finish(base::OnceCallback<void(Deque<SerializedResource>)>
@@ -365,10 +380,13 @@ class MultiResourcePacker : public GarbageCollected<MultiResourcePacker> {
         }
       }
       resources_.clear();
+      base::UmaHistogramTimes("PageSerialization.Mhtml.FrameSerializerTime",
+                              timer_.Elapsed());
       std::move(resources_ready_callback_).Run(std::move(resources));
     }
   }
 
+  base::ElapsedTimer timer_;
   // This hashset is only used for de-duplicating resources to be serialized.
   HashSet<KURL> resource_urls_;
   Deque<ResourceEntry> resources_;
@@ -387,10 +405,16 @@ void ResourceWaiter::Trace(Visitor* visitor) const {
 }
 
 void ResourceWaiter::NotifyFinished(Resource* resource) {
-  if (!resource->ErrorOccurred() && resource->ResourceBuffer()) {
+  bool fetched = !resource->ErrorOccurred() && resource->ResourceBuffer();
+  if (fetched) {
     serialized_resource_ =
         SerializedResource(resource->Url(), resource->GetResponse().MimeType(),
                            resource->ResourceBuffer());
+  }
+  if (context_type_ == mojom::blink::RequestContextType::FONT) {
+    base::UmaHistogramBoolean("PageSerialization.Mhtml.Fetched.Font", fetched);
+  } else if (context_type_ == mojom::blink::RequestContextType::STYLE) {
+    base::UmaHistogramBoolean("PageSerialization.Mhtml.Fetched.Style", fetched);
   }
   packer_->ResourceFetchComplete();
   resource->RemoveClient(this);
@@ -1026,7 +1050,12 @@ function main(metadata) {
       if (CSSStyleSheet* sheet = link->sheet()) {
         KURL sheet_url =
             document.CompleteURL(link->FastGetAttribute(html_names::kHrefAttr));
-        SerializeCSSStyleSheet(*sheet, sheet_url);
+        if (MHTMLImprovementsEnabled()) {
+          SerializeCSSResources(*sheet);
+          SerializeCSSFile(document, sheet_url);
+        } else {
+          SerializeCSSStyleSheet(*sheet, sheet_url);
+        }
       }
     } else if (const auto* style = DynamicTo<HTMLStyleElement>(element)) {
       if (CSSStyleSheet* sheet = style->sheet()) {
@@ -1072,6 +1101,19 @@ function main(metadata) {
           builder.Append(text.Substring(2));
           return builder.ReleaseString();
         });
+  }
+
+  void SerializeCSSFile(Document& document, const KURL& url) {
+    if (!url.IsValid() || !url.ProtocolIsInHTTPFamily()) {
+      return;
+    }
+
+    resource_serializer_->FetchAndAddResource(
+        document, url, mojom::blink::RequestContextType::STYLE,
+        // A missing CSS file will usually have a large impact on page
+        // appearance. Allow fetching from the cache or network to improve the
+        // chances of getting the resource.
+        mojom::blink::FetchCacheMode::kDefault);
   }
 
   // Attempts to serialize a stylesheet, if necessary. Does a couple things:
@@ -1164,10 +1206,12 @@ function main(metadata) {
         DCHECK(sheet_base_url.IsValid());
         KURL import_url = KURL(sheet_base_url, import_rule->href());
         if (import_rule->styleSheet()) {
-          // TODO(crbug.com/363289333): When MHTMLImprovementsEnabled(), we
-          // should avoid serializing the imported stylesheet, and instead fetch
-          // the raw CSS resource.
-          SerializeCSSStyleSheet(*import_rule->styleSheet(), import_url);
+          if (MHTMLImprovementsEnabled()) {
+            SerializeCSSResources(*import_rule->styleSheet());
+            SerializeCSSFile(document, import_url);
+          } else {
+            SerializeCSSStyleSheet(*import_rule->styleSheet(), import_url);
+          }
         }
         break;
       }
