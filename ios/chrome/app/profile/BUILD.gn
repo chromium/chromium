@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("profile") {
   sources = [
     "observing_profile_agent.h",
@@ -33,8 +35,10 @@ source_set("profile_controller") {
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
+    ":application_storage_metrics",
     ":certificate_policy_profile_agent",
     ":docking_promo_profile_agent",
+    ":features",
     ":first_run_profile_agent",
     ":identity_confirmation_app_agent",
     ":post_restore_profile_agent",
@@ -42,12 +46,53 @@ source_set("profile_controller") {
     ":search_engine_choice_profile_agent",
     "//base",
     "//ios/chrome/app",
+    "//ios/chrome/app:task_names",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
+    "//ios/chrome/browser/enterprise/model/idle",
+    "//ios/chrome/browser/external_files/model",
+    "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
+    "//ios/chrome/browser/search_engines/model:extension_search_engine_data_updater",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/sessions/model:session_restoration_service",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/device_orientation",
+    "//ios/components/cookie_util",
+  ]
+
+  if (ios_enable_credential_provider_extension) {
+    deps += [
+      "//ios/chrome/browser/credential_provider/model",
+      "//ios/chrome/browser/passwords/model",
+      "//ios/chrome/browser/sync/model",
+    ]
+  }
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("application_storage_metrics") {
+  sources = [
+    "application_storage_metrics.h",
+    "application_storage_metrics.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/optimization_guide/core:features",
+    "//ios/chrome/browser/shared/model/paths",
   ]
 }
 
