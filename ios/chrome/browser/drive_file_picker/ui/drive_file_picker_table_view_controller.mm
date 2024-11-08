@@ -367,12 +367,12 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 - (void)updateEditableItems {
   NSMutableSet<NSString*>* editableItems = [NSMutableSet set];
   for (DriveFilePickerItem* primaryItem in _primaryItems) {
-    if (primaryItem.type == DriveItemType::kFile && primaryItem.enabled) {
+    if (primaryItem.type == DriveItemType::kFile) {
       [editableItems addObject:primaryItem.identifier];
     }
   }
   for (DriveFilePickerItem* secondaryItem in _secondaryItems) {
-    if (secondaryItem.type == DriveItemType::kFile && secondaryItem.enabled) {
+    if (secondaryItem.type == DriveItemType::kFile) {
       [editableItems addObject:secondaryItem.identifier];
     }
   }
@@ -928,7 +928,6 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
   NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
   [snapshot reconfigureItemsWithIdentifiers:identifiersToReconfigure];
-  [self updateEditableItems];
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
