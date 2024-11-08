@@ -3854,7 +3854,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
       &autofill_field));
   ASSERT_TRUE(form_structure);
 
-  const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
+  const std::vector<AutofillField::FieldLogEventType> focus_field_log_events =
       autofill_field->field_log_events();
   ASSERT_EQ(u"First Name", autofill_field->parseable_label());
   const TriggerFillFieldLogEvent* trigger_fill_field_log_event =

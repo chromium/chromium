@@ -16,6 +16,11 @@ namespace autofill {
 // The origin of an AutofillDataModel created or modified in the settings page.
 extern const char kSettingsOrigin[];
 
+// The maximum number of `FieldLogEvent` objects that we store per field. We
+// assume that fields that would have more than this number of events are not
+// interesting for Autofill's purpose.
+inline constexpr size_t kMaxLogEventsPerField = 1000;
+
 // The maximum number of Addresses and CreditCards considered while trying to
 // determine the possible field types of AutofillField's by looking at the
 // submitted value.

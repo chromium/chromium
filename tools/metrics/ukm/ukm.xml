@@ -2938,7 +2938,8 @@ be describing additional metrics about the same event.
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     All information about a specific field, recorded at form submission or form
-    destruction time (whatever comes first).
+    destruction time (whatever comes first). (As of M132) Info are recorded only
+    for fields that have at most `autofill::kMaxLogEventsPerField` events.
   </summary>
   <metric name="AutocompleteState" enum="AutofillAutocompleteState">
     <summary>
