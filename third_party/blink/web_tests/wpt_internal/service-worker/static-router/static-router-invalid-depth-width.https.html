@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Static Router: raise promise error on invalid rule depth and width.
+</title>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js">
+</script>
+<script src="/service-workers/service-worker/resources/static-router-helpers.sub.js">
+</script>
+<body>
+<script>
+const INVALID_OR_CONDITION_DEPTH_ROUTER_KEY =
+    'condition-invalid-or-condition-depth';
+const INVALID_NOT_CONDITION_DEPTH_ROUTER_KEY =
+    'condition-invalid-not-condition-depth';
+const INVALID_ROUTER_SIZE_ROUTER_KEY =
+    'condition-invalid-router-size';
+
+const SW_SCRIPT = 'resources/static-router-sw.js';
+const SW_SCOPE = 'resources/';
+
+promise_test(async t => {
+  const worker = await registerAndActivate(t, INVALID_OR_CONDITION_DEPTH_ROUTER_KEY, SW_SCRIPT, SW_SCOPE);
+  const data = await get_info_from_worker(worker);
+  assert_equals(data.errors.length, 1);
+}, 'addRoutes should raise if or condition exceeds the depth limit');
+promise_test(async t => {
+  const worker = await registerAndActivate(t, INVALID_NOT_CONDITION_DEPTH_ROUTER_KEY, SW_SCRIPT, SW_SCOPE);
+  const data = await get_info_from_worker(worker);
+  assert_equals(data.errors.length, 1);
+}, 'addRoutes should raise if not condition exceeds the depth limit');
+promise_test(async t => {
+  const worker = await registerAndActivate(t, INVALID_ROUTER_SIZE_ROUTER_KEY, SW_SCRIPT, SW_SCOPE);
+  const data = await get_info_from_worker(worker);
+  assert_equals(data.errors.length, 1);
+}, 'addRoutes should raise if the number of router rules exceeds the length limit');
+</script>
+</body>
