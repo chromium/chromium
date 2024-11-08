@@ -312,7 +312,6 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     base::Value::Dict message;
     message.Set("type", "finishInkStroke");
     plugin_->client_->PostMessage(std::move(message));
-    plugin_->SetPluginCanSave(true);
   }
 
   void UpdateInkCursorImage(SkBitmap bitmap) override {

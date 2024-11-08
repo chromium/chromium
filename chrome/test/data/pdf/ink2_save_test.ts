@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {PluginController, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {finishInkStroke, getRequiredElement, setupTestMockPluginForInk} from './test_util.js';
@@ -15,33 +14,6 @@ const mockPlugin = setupTestMockPluginForInk();
 
 function getDownloadControls() {
   return getRequiredElement(viewerToolbar, 'viewer-download-controls');
-}
-
-// Test saving with annotations. The download control's action menu should be
-// opened.
-async function testSaveWithAnnotations() {
-  const downloadControls = getDownloadControls();
-  const actionMenu = downloadControls.$.menu;
-
-  // The download menu should be shown.
-  await eventToPromise('download-menu-shown-for-testing', downloadControls);
-  chrome.test.assertTrue(mockPlugin.findMessage('save') === undefined);
-  chrome.test.assertTrue(actionMenu.open);
-
-  const onSave = eventToPromise('save', viewer);
-
-  // Click on "Edited".
-  const buttons = actionMenu.querySelectorAll('button');
-  assert(buttons);
-  assert(buttons.length);
-  buttons[0].click();
-
-  // A message should be sent to the plugin to save as annotated.
-  await onSave;
-  const saveMessage = mockPlugin.findMessage('save');
-  chrome.test.assertTrue(saveMessage !== undefined);
-  chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ANNOTATION);
-  chrome.test.assertFalse(actionMenu.open);
 }
 
 chrome.test.runTests([
@@ -75,15 +47,19 @@ chrome.test.runTests([
     mockPlugin.clearMessages();
 
     const downloadControls = getDownloadControls();
+    const downloadButton = downloadControls.$.download;
     const actionMenu = downloadControls.$.menu;
 
     chrome.test.assertFalse(actionMenu.open);
 
     finishInkStroke(controller);
     await microtasksFinished();
-    downloadControls.$.download.click();
+    downloadButton.click();
 
-    await testSaveWithAnnotations();
+    // The download menu should be shown.
+    await eventToPromise('download-menu-shown-for-testing', downloadControls);
+    chrome.test.assertTrue(mockPlugin.findMessage('save') === undefined);
+    chrome.test.assertTrue(actionMenu.open);
     chrome.test.succeed();
   },
 
@@ -96,13 +72,17 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
-    mockPlugin.clearMessages();
-
     const downloadControls = getDownloadControls();
-    downloadControls.$.menu.close();
-    downloadControls.$.download.click();
+    const downloadButton = downloadControls.$.download;
+    const actionMenu = downloadControls.$.menu;
+    actionMenu.close();
 
-    await testSaveWithAnnotations();
+    downloadButton.click();
+
+    // The download menu should be shown.
+    await eventToPromise('download-menu-shown-for-testing', downloadControls);
+    chrome.test.assertTrue(mockPlugin.findMessage('save') === undefined);
+    chrome.test.assertTrue(actionMenu.open);
     chrome.test.succeed();
   },
 
