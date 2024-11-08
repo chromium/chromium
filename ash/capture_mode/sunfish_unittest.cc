@@ -1149,6 +1149,27 @@ TEST_F(SunfishTest, NoCrashOnTabKeyEvent) {
   EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(), GetCloseButton());
 }
 
+// Tests that the cursor is re-shown after performing Capture and Search
+// in quick succession.
+TEST_F(SunfishTest, IsCursorVisible) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+
+  // Immediately capture the image, before the Search button and panel
+  // loads.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+  CaptureModeSessionTestApi session_test_api(session);
+  controller->CaptureScreenshotsOfAllDisplays();
+  controller->PerformImageSearch(PerformCaptureType::kSearch);
+  WaitForCaptureFileToBeSaved();
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
 class ScannerTest : public AshTestBase {
  public:
   ScannerTest() = default;

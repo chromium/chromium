@@ -1888,13 +1888,15 @@ void CaptureModeController::OnImageCapturedForSearch(
       on_image_captured_for_search_callback_for_test_.Run(capture_type);
     }
   };
+  // From here on, no matter where the function exits, the cursor must be
+  // unlocked and re-shown.
+  MaybeUnlockCursor(was_cursor_originally_blocked);
   // Capture mode session may end before the `jpeg_bytes` are received, no-op if
   // the session is no longer active.
   if (!IsActive()) {
     return;
   }
   capture_mode_session_->OnPerformCaptureForSearchEnded(capture_type);
-  MaybeUnlockCursor(was_cursor_originally_blocked);
 
   const SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
   if (ShouldPerformTextDetection(capture_type)) {
