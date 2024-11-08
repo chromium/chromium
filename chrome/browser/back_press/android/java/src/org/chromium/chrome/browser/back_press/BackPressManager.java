@@ -16,7 +16,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -89,7 +88,6 @@ public class BackPressManager implements Destroyable {
         @Override
         public void handleOnBackPressed() {
             if (mOnBackPressed != null) mOnBackPressed.run();
-            recordSystemBackCountIfBeforeFirstVisibleContent();
             mLastCalledHandlerType = -1;
             if (ChromeFeatureList.sLockBackPressHandlerAtStart.isEnabled()
                     && mActiveHandler != null) {
@@ -166,8 +164,6 @@ public class BackPressManager implements Destroyable {
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerType = -1;
-    private boolean mBackBeforeFirstVisibleContentRecorded;
-    private Supplier<Boolean> mIsFirstVisibleContentDrawnSupplier;
     private Runnable mOnBackPressed;
     private Supplier<Boolean> mIsGestureNavEnabledSupplier = () -> false;
 
@@ -302,26 +298,9 @@ public class BackPressManager implements Destroyable {
         mHasSystemBackArm = hasSystemBackArm;
     }
 
-    /** Set a supplier to provide whether first visible content has been drawn. */
-    public void setIsFirstVisibleContentDrawnSupplier(Supplier<Boolean> supplier) {
-        mIsFirstVisibleContentDrawnSupplier = supplier;
-    }
-
     /** Set a supplier to provide whether gesture nav mode is on when called. */
     public void setIsGestureNavEnabledSupplier(Supplier<Boolean> supplier) {
         mIsGestureNavEnabledSupplier = supplier;
-    }
-
-    /**
-     * Record if back press occurs before first visible content is drawn. TODO(crbug.com/40944523):
-     * remove after it is fixed.
-     */
-    public void recordSystemBackCountIfBeforeFirstVisibleContent() {
-        if (mBackBeforeFirstVisibleContentRecorded) return;
-        if (mIsFirstVisibleContentDrawnSupplier != null
-                && mIsFirstVisibleContentDrawnSupplier.get()) return;
-        mBackBeforeFirstVisibleContentRecorded = true;
-        RecordUserAction.record("SystemBackBeforeFirstVisibleContent");
     }
 
     private void backPressStateChanged() {

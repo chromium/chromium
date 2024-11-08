@@ -74,6 +74,7 @@ public class LegacyTabStartupMetricsTracker {
     private boolean mFirstVisibleContent2Recorded;
     private boolean mVisibleContentRecorded;
     private boolean mBackPressOccurred;
+    private boolean mBackBeforeFirstVisibleContentRecorded;
 
     // Records whether StartupPaintPreview's first paint was recorded pre-the app being in the
     // foreground. Used for investigating crbug.com/1273097.
@@ -190,19 +191,18 @@ public class LegacyTabStartupMetricsTracker {
         mShouldTrackStartupMetrics = false;
     }
 
-    /**
-     * TODO(crbug.com/40944523): This is exposed in order to investigate whether back press will
-     * interrupt the recording of first visible content related histograms. Remove this once a
-     * definitive conclusion is reached.
-     *
-     * @return Whether first visible content related histogram is recorded.
-     */
-    public boolean isFirstVisibleContentRecorded() {
-        return mFirstVisibleContent2Recorded;
-    }
-
+    /** Record if back press occurs before first visible content is drawn. */
     public void onBackPressed() {
         mBackPressOccurred = true;
+
+        if (!mShouldTrackStartupMetrics
+                || mBackBeforeFirstVisibleContentRecorded
+                || mFirstVisibleContent2Recorded) {
+            return;
+        }
+
+        mBackBeforeFirstVisibleContentRecorded = true;
+        RecordUserAction.record("SystemBackBeforeFirstVisibleContent2");
     }
 
     public void destroy() {
