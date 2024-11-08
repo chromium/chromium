@@ -8,6 +8,8 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
@@ -185,6 +187,8 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  base::RecordAction(
+      base::UserMetricsAction("Signin_AccountMenu_Dismissed_By_User"));
   // We assume the dismiss was done by the user.
   self.mediator.signinCoordinatorResult = SigninCoordinatorResultCanceledByUser;
   // UIShutdownNoDismiss because the UI is already dismissed.

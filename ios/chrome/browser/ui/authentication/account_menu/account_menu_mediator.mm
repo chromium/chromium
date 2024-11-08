@@ -8,6 +8,8 @@
 #import <string>
 
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -310,25 +312,43 @@
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate: {
       if (_authenticationService->HasCachedMDMErrorForIdentity(
               _primaryIdentity)) {
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
         [self.delegate openMDMErrodDialogWithSystemIdentity:_primaryIdentity];
       } else {
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Reauth"));
         [self.delegate openPrimaryAccountReauthDialog];
       }
       break;
     }
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Passphrase"));
       [self.delegate openPassphraseDialogWithModalPresentation:YES];
       break;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_TrustedVaultForPasswords"));
+      [self.delegate openTrustedVaultReauthForFetchKeys];
+      break;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_TrustedVaultForEverything"));
       [self.delegate openTrustedVaultReauthForFetchKeys];
       break;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForPasswords"));
+      [self.delegate openTrustedVaultReauthForDegradedRecoverability];
+      break;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForEverything"));
       [self.delegate openTrustedVaultReauthForDegradedRecoverability];
       break;
     case syncer::SyncService::UserActionableError::kNone:

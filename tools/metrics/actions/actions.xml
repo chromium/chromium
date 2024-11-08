@@ -36982,6 +36982,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountMenu_Dismissed_By_User">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user dismissed by swipe-down or tapping out of the account
+    menu. iOS only.
+  </description>
+</action>
+
 <action name="Signin_AccountMenu_EditAccountList">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -36991,12 +37000,66 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_AccountMenu_ErrorButton">
+<action name="Signin_AccountMenu_ErrorButton_MDM">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>
-    Recorded when the user taps on &quot;Error&quot; button in the account menu.
-    iOS only.
+    Recorded when the user taps on &quot;Error&quot; (MDM error) button in the
+    account menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_ErrorButton_Passphrase">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Error&quot; (missing passphrase) button
+    in the account menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_ErrorButton_Reauth">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Error&quot; (Reauth needed) button in
+    the account menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForEverything">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Error&quot; (degraded trusted vault for
+    everything) button in the account menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForPasswords">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Error&quot; (degraded trusted vault for
+    passwords) button in the account menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_ErrorButton_TrustedVaultForEverything">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Error&quot; (trusted vault for
+    everything) button in the account menu. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountMenu_ErrorButton_TrustedVaultForPasswords">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Error&quot; (trusted vault for
+    passwords) button in the account menu. iOS only.
   </description>
 </action>
 
@@ -39504,6 +39567,126 @@ should be able to be added at any place in this file.
   <owner>arthurmilchior@chromium.org</owner>
   <description>
     Recorded when the user signs out. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Cancel">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user cancels signing-out and we are not in one of the
+    other cancelling case explicitly mentioned here. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Cancel_Managed_ClearDataOnSignout">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user cancels signing-out from a managed account and
+    ClearDeviceDataOnSignoutForManaged is enabled. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Cancel_Regular_UNO">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded, when UNO is enabled, and the user rejects sign-out from a regular
+    account after being told there is unsynced data. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Confirm_ForcedSignin">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user confirms they accept to sign-out after being warned
+    their device requires them to be signed-in. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Confirm_Managed_ClearDataOnSignout">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user confirms they accept to sign-out from a managed
+    account and ClearDeviceDataOnSignoutForManaged is enabled. Recorded for iOS
+    only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Confirm_Managed_NotSyncing">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user confirms they accept to sign-out, from a managed
+    account with sync turned off. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Confirm_Managed_Syncing">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user confirms they accept to sign-out from a managed
+    account, were using UNO, and accept to clear data. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Confirm_Regular_NotSyncing">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user confirms they accept to sign-out from a regular
+    account and sync was disabled. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Confirm_Regular_Syncing_KeepData">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user confirms they accept to sign-out from a regular
+    account, sync was enabled and they want to keep data. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Confirm_Regular_Syncing_RemoveData">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user confirms sign-out from a regular account, sync was
+    enabled and they want to remove data. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_Confirm_Regular_UNO">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded, when UNO is enabled, and the user confirms they accept to sign-out
+    from a regular account with unsynced data. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_ConfirmationRequestNotPresented">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when sign-out can proceed without requesting confirmation. Needed
+    in crash report for debugging, which is why it’s not marked as
+    `not_user_triggered`. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_ConfirmationRequestPresented">
+  <owner>chrome-signin-team@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when an alert is presented to the user due to sign-out. Needed in
+    crash report for debugging, which is why it’s not marked as
+    `not_user_triggered`. Recorded for iOS only.
   </description>
 </action>
 

@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/browser_sync/sync_to_signin_migration.h"
@@ -352,6 +353,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     }
     [self startActionSheetCoordinatorForSignout];
   } else {
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_Signout_ConfirmationRequestNotPresented"));
     [self handleSignOutWithForceClearData:NO];
   }
 }
@@ -385,6 +388,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_UNO"));
                       [weakSelf signoutWithForceClearData:NO
                                           recordHistogram:
                                               SignoutDataLossAlertReason::
@@ -394,6 +399,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Cancel_Regular_UNO"));
                       [weakSelf cancelSignoutAndRecordHistogram:
                                     SignoutDataLossAlertReason::
                                         kSignoutWithUnsyncedData];
@@ -408,6 +415,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_ForcedSignin"));
                       [weakSelf handleSignOutForForcedSigninUsers];
                     }
                      style:UIAlertActionStyleDestructive];
@@ -423,6 +432,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Managed_ClearDataOnSignout"));
                       // `clearData` should not be set
                       // based on the useer choice, but based on the account
                       // state in `AuthenticationService`.
@@ -436,6 +447,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Cancel_Managed_ClearDataOnSignout"));
                       [weakSelf cancelSignoutAndRecordHistogram:
                                     SignoutDataLossAlertReason::
                                         kSignoutWithClearDataForManagedUser];
@@ -454,6 +467,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Managed_Syncing"));
                       // Note that it doesn't really make a difference whether
                       // `forceClearData` is set to YES or NO here - based on
                       // the account's state, AuthenticationService will decide
@@ -469,6 +484,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Managed_NotSyncing"));
                       [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
@@ -482,12 +499,16 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_Syncing_KeepData"));
                       [weakSelf signoutWithForceClearData:YES];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
           addItemWithTitle:keepOnDeviceTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_Syncing_RemoveData"));
                       [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDefault];
@@ -499,18 +520,27 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_NotSyncing"));
                       [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
     }
   }
+  // This CANCEL item is ignored in the few cases were a more specific cancel
+  // item was added above.
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
+                  base::RecordAction(
+                      base::UserMetricsAction("Signin_Signout_Cancel"));
                   [weakSelf cancelSignout];
                 }
                  style:UIAlertActionStyleCancel];
+
+  base::RecordAction(
+      base::UserMetricsAction("Signin_Signout_ConfirmationRequestPresented"));
   [self.actionSheetCoordinator start];
 }
 

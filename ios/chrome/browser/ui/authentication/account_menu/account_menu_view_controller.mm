@@ -498,8 +498,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       case RowIdentifierErrorExplanation:
         break;
       case RowIdentifierErrorButton:
-        base::RecordAction(
-            base::UserMetricsAction("Signin_AccountMenu_ErrorButton"));
         [self.mutator didTapErrorButton];
         break;
       case RowIdentifierSignOut:

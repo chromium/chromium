@@ -294,7 +294,6 @@ TEST_F(AccountMenuViewControllerTest, TestSetError) {
 
   OCMExpect([mutator_ didTapErrorButton]);
   SelectCell(path_for_error_button);
-  EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_ErrorButton"));
 }
 
 // Tests that adding an account adds an extra row in the secondary account

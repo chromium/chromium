@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/task_environment.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -142,6 +143,7 @@ class AccountMenuMediatorTest : public PlatformTest {
   raw_ptr<AuthenticationService> authentication_service_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  base::UserActionTester user_actions_;
 
  private:
   // Signs in kPrimaryIdentity as primary identity.
@@ -455,6 +457,8 @@ TEST_F(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   setPassphraseRequired();
   OCMExpect([delegate_ openPassphraseDialogWithModalPresentation:YES]);
   [mediator_ didTapErrorButton];
+  EXPECT_EQ(1, user_actions_.GetActionCount(
+                   "Signin_AccountMenu_ErrorButton_Passphrase"));
 }
 
 // Tests the effect of didTapManageYourGoogleAccount.
