@@ -4,13 +4,23 @@
 
 package org.chromium.chrome.test.transit;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import java.util.Objects;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
+import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabThumbnailCondition;
 
@@ -132,5 +142,70 @@ public class Journeys {
             }
         }
         return (T) currentPage;
+    }
+
+    /**
+     * Merge all tabs in the current TabModel from a TabSwitcherStation into a single tab group.
+     *
+     * @param tabSwitcher the TabSwitcherStation we will be merging tabs for.
+     * @return the facility representing the tab group card created as a result of merging tabs.
+     */
+    public static TabSwitcherGroupCardFacility mergeAllTabsToNewGroup(
+            TabSwitcherStation tabSwitcher) {
+        TabModel tabModel = tabSwitcher.getTabModelSelectorSupplier().get().getCurrentModel();
+        List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabModel);
+        return mergeTabsToNewGroup(tabSwitcher, tabs);
+    }
+
+    /**
+     * Merge a list of tabs in the current TabModel from a TabSwitcherStation into a single tab
+     * group.
+     *
+     * @param tabSwitcher the TabSwitcherStation we will be merging tabs for.
+     * @param tabs a list of tabs to be merged.
+     * @return the facility representing the tab group card created as a result of merging tabs.
+     */
+    public static TabSwitcherGroupCardFacility mergeTabsToNewGroup(
+            TabSwitcherStation tabSwitcher, List<Tab> tabs) {
+        assert !tabs.isEmpty();
+        TabModel currentModel = tabSwitcher.getTabModelSelectorSupplier().get().getCurrentModel();
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        for (Tab tab : tabs) {
+            int index = currentModel.indexOf(tab);
+            int tabId = tab.getId();
+            editor = editor.addTabToSelection(index, tabId);
+        }
+
+        TabSwitcherGroupCardFacility groupCard = editor.openAppMenuWithEditor()
+                .groupTabs().pressDone();
+
+        verifyTabGroupMergeSuccessful(tabs, currentModel);
+        return groupCard;
+    }
+
+    /**
+     * Verifies that the merger of several tabs into a tab group is correct.
+     *
+     * @param tabs the list of tabs that have been merged.
+     * @param currentModel the TabModel containing the list of tabs that have been merged.
+     */
+    private static void verifyTabGroupMergeSuccessful(List<Tab> tabs, TabModel currentModel) {
+        List<Token> tabGroupIdsOfGroupedTabs = new ArrayList<>();
+        for (Tab tab : tabs) {
+            int id = tab.getId();
+            Tab tabById = currentModel.getTabById(id);
+            if (tabById != null) {
+                Token tabGroupId = tabById.getTabGroupId();
+                tabGroupIdsOfGroupedTabs.add(tabGroupId);
+            }
+        }
+
+        assert tabGroupIdsOfGroupedTabs.size() == tabs.size();
+
+        // Assert all tokens are the same.
+        Token baseToken = tabGroupIdsOfGroupedTabs.get(0);
+        for (Token token : tabGroupIdsOfGroupedTabs) {
+            assert Objects.equals(baseToken, token);
+        }
     }
 }

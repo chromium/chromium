@@ -7,6 +7,7 @@ package org.chromium.chrome.test.transit.hub;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Transition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AppMenuFacility;
@@ -63,6 +64,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
      * @return the "New tab group" dialog as a Facility.
      */
     public NewTabGroupDialogFacility groupTabs() {
+        assert ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled();
         return mGroupWithParityMenuItem.scrollToAndSelect();
     }
 
