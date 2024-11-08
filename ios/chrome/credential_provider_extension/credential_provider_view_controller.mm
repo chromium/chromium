@@ -53,7 +53,8 @@ UIColor* BackgroundColor() {
     CredentialResponseHandler,
     PasskeyKeychainProviderBridgeDelegate,
     PasskeyWelcomeScreenViewControllerDelegate,
-    SuccessfulReauthTimeAccessor>
+    SuccessfulReauthTimeAccessor,
+    UIAdaptivePresentationControllerDelegate>
 
 // Interface for the persistent credential store.
 @property(nonatomic, strong) id<CredentialStore> credentialStore;
@@ -537,6 +538,13 @@ UIColor* BackgroundColor() {
   UpdateUMACountForKey(app_group::kCredentialExtensionReauthCount);
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
+}
+
 #pragma mark - Private
 
 - (void)reauthenticateIfNeededWithCompletionHandler:
@@ -727,6 +735,7 @@ UIColor* BackgroundColor() {
   staleCredentialsViewController.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
   staleCredentialsViewController.actionHandler = self;
+  staleCredentialsViewController.presentationController.delegate = self;
   [self presentViewController:staleCredentialsViewController
                      animated:YES
                    completion:nil];
@@ -806,6 +815,7 @@ UIColor* BackgroundColor() {
       savingEnterpriseDisabledViewController =
           [[SavingEnterpriseDisabledViewController alloc] init];
   savingEnterpriseDisabledViewController.actionHandler = self;
+  savingEnterpriseDisabledViewController.presentationController.delegate = self;
   [self presentViewController:savingEnterpriseDisabledViewController
                      animated:YES
                    completion:nil];
@@ -817,6 +827,7 @@ UIColor* BackgroundColor() {
   SignedOutUserViewController* signedOutUserViewController =
       [[SignedOutUserViewController alloc] init];
   signedOutUserViewController.actionHandler = self;
+  signedOutUserViewController.presentationController.delegate = self;
   [self presentViewController:signedOutUserViewController
                      animated:YES
                    completion:nil];
