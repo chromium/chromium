@@ -247,20 +247,22 @@ class XcodeLogParser(object):
           running xcodebuild.
 
     Returns:
-      (str) Formatted app side failure message or a message saying failure
-        reason is missing
+      (str, list) Formatted app side failure message or a message saying failure
+        reason is missing and a list of tuples of log file name and log file
+        path
     """
     attempt_num = output_path.split('/')[-1]
     app_side_failure_message = ''
-    parent_output_dir = os.path.join(output_path, os.pardir)
+    parent_output_dir = os.path.realpath(os.path.join(output_path, os.pardir))
     files = os.listdir(parent_output_dir)
-    log_file_name = ''
+    logs = []
 
     for file in files:
       # the '-' is important since it distinguishes the app side log file from
       # the test app log file
       if ('StandardOutputAndStandardError-' in file and
           file.startswith(attempt_num)):
+        logs.append((file, os.path.join(parent_output_dir, file)))
         with open(os.path.join(parent_output_dir, file), 'r') as f:
           fmt_test_name = test_name.replace('/', ' ')
           lines = f.readlines()
@@ -274,16 +276,18 @@ class XcodeLogParser(object):
                   'Standard output and standard error from' in line):
                 # test name is only expected to appear in a single log file
                 # so it's safe to return early
-                log_file_name = file
                 break
               else:
                 app_side_failure_message += line
 
+    log_files = ', '.join(list(map(lambda x: x[0], logs)))
+
     if not app_side_failure_message:
-      failure_reason_missing = 'App side failure reason not found for ' + \
-        'crashed test: %s. For complete logs see CAS outputs, which can be ' + \
-        'found in the swarming task of the shard this test ran on.\n'
-      return failure_reason_missing % test_name
+      failure_reason_missing = \
+        f'{constants.CRASH_MESSAGE}\n' + \
+        f'App side failure reason not found for {test_name}.\n' + \
+        f'For complete logs see {log_files} in Artifacts.\n'
+      return (failure_reason_missing, logs)
 
     # omit layout constraint warnings since they can clutter logs and make the
     # actual reason why the app crashed difficult to find
@@ -295,11 +299,11 @@ class XcodeLogParser(object):
         app_side_failure_message,
         flags=re.DOTALL)
 
-    app_crashed_message = '%s\nShowing logs from application under test. ' + \
-      'For complete logs see %s in CAS outputs, which can be found in the ' + \
-      'swarming task of the shard this test ran on.\n\n%s\n'
-    return app_crashed_message % (constants.CRASH_MESSAGE, log_file_name,
-                                  app_side_failure_message)
+    app_crashed_message = \
+      f'{constants.CRASH_MESSAGE}\n' + \
+      f'Showing logs from application under test. For complete logs see ' + \
+      f'{log_files} in Artifacts.\n\n{app_side_failure_message}\n'
+    return (app_crashed_message, logs)
 
   @staticmethod
   def _get_test_statuses(output_path, xcode_parallel_enabled):
@@ -374,6 +378,7 @@ class XcodeLogParser(object):
                     xcresult, test['summaryRef']['id']['_value']))
 
             failure_message = 'Logs from "failureSummaries" in .xcresult:\n'
+            app_logs = []
             # On rare occasions rootFailure doesn't have 'failureSummaries'.
             for failure in summary_ref.get('failureSummaries',
                                            {}).get('_values', []):
@@ -385,15 +390,19 @@ class XcodeLogParser(object):
               failure_message += failure_location + '\n'
 
               if (constants.CRASH_MESSAGE in failure['message']['_value']):
-                failure_message += \
-                  XcodeLogParser._get_app_side_failure(
-                    test_name, output_path)
+                msg, app_logs = \
+                  XcodeLogParser._get_app_side_failure(test_name, output_path)
+                failure_message += msg
               else:
                 failure_message += _sanitize_str(
                     failure['message']['_value']) + '\n'
 
             attachments = XcodeLogParser._extract_artifacts_for_test(
                 test_name, summary_ref, xcresult)
+
+            # upload app side log as an attachment if the test crashed
+            for log_file_name, log_file_path in app_logs:
+              attachments[log_file_name] = log_file_path
 
             result.add_test_result(
                 TestResult(

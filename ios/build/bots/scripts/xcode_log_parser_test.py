@@ -546,7 +546,7 @@ Standard output and standard error from com.google.chrome.unittests.dev with pro
 """
 
 APP_SIDE_FAILURE_LOG_EXPECTED = f"""App crashed and disconnected.
-Showing logs from application under test. For complete logs see attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt in CAS outputs, which can be found in the swarming task of the shard this test ran on.
+Showing logs from application under test. For complete logs see attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt in Artifacts.
 
 Starting test: -[SmokeTestCase testOpenTab]
 2023-10-09 09:25:00.318076-0700 ios_chrome_eg2tests[56690:4719583] [LayoutConstraints] {constants.LAYOUT_CONSTRAINT_MSG}.
@@ -573,6 +573,10 @@ more of the stack trace and crash report logs...
 
 """
 
+APP_SIDE_FAILURE_LOG_MISSING_EXPECTED = """App crashed and disconnected.
+App side failure reason not found for SmokeTestCase/testOpenTab.
+For complete logs see attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt in Artifacts.
+"""
 
 def _xcresulttool_get_side_effect(xcresult_path, ref_id=None):
   """Side effect for _xcresulttool_get in XcodeLogParser tested."""
@@ -962,16 +966,45 @@ class XcodeLogParserTest(test_runner_test.TestCase):
       'builtins.open', new=mock.mock_open(read_data=APP_SIDE_FAILURE_LOG))
   def testLogAppSideFailureReason(self, mock_listdir):
     test_name = 'SmokeTestCase/testOpenTab'
+    expected_log_file_name = 'attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt'
     mock_listdir.return_value = [
         'run_1696864672.xctestrun', 'attempt_0.xcresult.zip',
         'attempt_0.xcresult_diagnostic.zip',
-        'attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt',
+        expected_log_file_name,
         'attempt_0_simulator#0_StandardOutputAndStandardError.txt',
     ]
-    app_side_failure_message = \
+    app_side_failure_message, logs = \
       xcode_log_parser.XcodeLogParser()._get_app_side_failure(
         test_name, OUTPUT_PATH)
     self.assertEqual(app_side_failure_message, APP_SIDE_FAILURE_LOG_EXPECTED)
+    self.assertEqual(len(logs), 1)
+    self.assertEqual(logs[0][0], expected_log_file_name)
+    expected_path = os.path.realpath(
+      os.path.join(OUTPUT_PATH, os.pardir, expected_log_file_name))
+    self.assertEqual(logs[0][1], expected_path)
+
+  @mock.patch('os.listdir')
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=""))
+  def testLogAppSideFailureReasonMissing(self, mock_listdir):
+    test_name = 'SmokeTestCase/testOpenTab'
+    expected_log_file_name = 'attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt'
+    mock_listdir.return_value = [
+        'run_1696864672.xctestrun', 'attempt_0.xcresult.zip',
+        'attempt_0.xcresult_diagnostic.zip',
+        expected_log_file_name,
+        'attempt_0_simulator#0_StandardOutputAndStandardError.txt',
+    ]
+    app_side_failure_message, logs = \
+      xcode_log_parser.XcodeLogParser()._get_app_side_failure(
+        test_name, OUTPUT_PATH)
+    self.assertEqual(app_side_failure_message,
+      APP_SIDE_FAILURE_LOG_MISSING_EXPECTED)
+    self.assertEqual(len(logs), 1)
+    self.assertEqual(logs[0][0], expected_log_file_name)
+    expected_path = os.path.realpath(
+      os.path.join(OUTPUT_PATH, os.pardir, expected_log_file_name))
+    self.assertEqual(logs[0][1], expected_path)
 
 
 if __name__ == '__main__':
