@@ -82,8 +82,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   };
 
   // content::BrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
+  void SetUpOnMainThread() override;
 
+  const Extension* LoadExtension(const base::FilePath& path);
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 

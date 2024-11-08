@@ -43,6 +43,12 @@ ExtensionPlatformApiTest::~ExtensionPlatformApiTest() = default;
 
 void ExtensionPlatformApiTest::SetUpOnMainThread() {
   ExtensionPlatformBrowserTest::SetUpOnMainThread();
+
+  test_data_dir_ = test_data_dir_.AppendASCII("api_test");
+
+  base::PathService::Get(DIR_TEST_DATA, &shared_test_data_dir_);
+  shared_test_data_dir_ = shared_test_data_dir_.AppendASCII("api_test");
+
   DCHECK(!test_config_.get()) << "Previous test did not clear config state.";
   test_config_ = std::make_unique<base::Value::Dict>();
   test_config_->Set(kTestDataDirectory,
@@ -144,12 +150,6 @@ void ExtensionPlatformApiTest::SetCustomArg(std::string_view custom_arg) {
 void ExtensionPlatformApiTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   ExtensionPlatformBrowserTest::SetUpCommandLine(command_line);
-
-  test_data_dir_ = test_data_dir_.AppendASCII("api_test");
-
-  RegisterPathProvider();
-  base::PathService::Get(DIR_TEST_DATA, &shared_test_data_dir_);
-  shared_test_data_dir_ = shared_test_data_dir_.AppendASCII("api_test");
 
   // Backgrounded renderer processes run at a lower priority, causing the
   // tests to take more time to complete. Disable backgrounding so that the

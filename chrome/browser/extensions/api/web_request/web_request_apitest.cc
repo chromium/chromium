@@ -36,39 +36,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/devtools/url_constants.h"
-#include "chrome/browser/extensions/error_console/error_console.h"
-#include "chrome/browser/extensions/error_console/error_console_test_observer.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
-#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
-#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/search/search.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/search/ntp_test_utils.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -141,9 +118,39 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/error_console/error_console_test_observer.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
+#include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
+#include "chrome/browser/ui/login/login_handler.h"       // nogncheck
+#include "chrome/browser/ui/search/ntp_test_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/webui/untrusted_web_ui_browsertest_util.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -160,6 +167,7 @@ namespace {
 constexpr char kOriginTrialPublicKeyForTesting[] =
     "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
 
+#if !BUILDFLAG(IS_ANDROID)
 // Observer that listens for messages from chrome.test.sendMessage to allow them
 // to be used to trigger browser initiated naviagations from the javascript for
 // testing purposes.
@@ -316,14 +324,20 @@ void WaitForExtraHeadersListener(base::WaitableEvent* event,
       FROM_HERE,
       base::BindOnce(&WaitForExtraHeadersListener, event, browser_context));
 }
-
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
-class ExtensionWebRequestApiTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
+class ExtensionWebRequestApiTest : public ExtensionApiTestBase {
  public:
   explicit ExtensionWebRequestApiTest(
       ContextType context_type = ContextType::kFromManifest)
-      : ExtensionApiTest(context_type) {
+      : ExtensionApiTestBase(context_type) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
@@ -337,13 +351,17 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
   ~ExtensionWebRequestApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/371324825): Enable NavigateTabMessageHandler on Android
+    // build.
     navigationHandler_ = std::make_unique<NavigateTabMessageHandler>(profile());
+#endif
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kGaiaUrl, "http://gaia.com");
     command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
                                     kOriginTrialPublicKeyForTesting);
@@ -390,9 +408,42 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   std::vector<TestExtensionDir> test_dirs_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
+#endif
 };
 
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       WebRequestApiClearsBindingOnFirstListener) {
+  // Skip if the proxy is forced since the bindings will never be cleared in
+  // that case.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest)) {
+    return;
+  }
+
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
+      CreateURLLoaderFactory());
+  bool has_connection_error = false;
+  loader_factory.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { has_connection_error = true; }));
+  InstallWebRequestExtension("extension1");
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  EXPECT_TRUE(has_connection_error);
+  loader_factory.reset();
+
+  // The second time there should be no connection error.
+  loader_factory.Bind(CreateURLLoaderFactory());
+  has_connection_error = false;
+  loader_factory.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { has_connection_error = true; }));
+  InstallWebRequestExtension("extension2");
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  EXPECT_FALSE(has_connection_error);
+}
+
+// TODO(crbug.com/371324825): Enable more tests for Android build.
+#if !BUILDFLAG(IS_ANDROID)
 using ContextType = ExtensionBrowserTest::ContextType;
 
 enum class BackgroundResourceFetchTestCase {
@@ -2412,36 +2463,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                 initiator_listener.message());
     }
   }
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       WebRequestApiClearsBindingOnFirstListener) {
-  // Skip if the proxy is forced since the bindings will never be cleared in
-  // that case.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kForceWebRequestProxyForTest)) {
-    return;
-  }
-
-  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
-      CreateURLLoaderFactory());
-  bool has_connection_error = false;
-  loader_factory.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { has_connection_error = true; }));
-
-  InstallWebRequestExtension("extension1");
-  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
-  EXPECT_TRUE(has_connection_error);
-  loader_factory.reset();
-
-  // The second time there should be no connection error.
-  loader_factory.Bind(CreateURLLoaderFactory());
-  has_connection_error = false;
-  loader_factory.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { has_connection_error = true; }));
-  InstallWebRequestExtension("extension2");
-  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
-  EXPECT_FALSE(has_connection_error);
 }
 
 // Regression test for http://crbug.com/878366.
@@ -7130,9 +7151,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
           ukm_entry, "DeclarativeWebRequestPermissionCount",
           ukm::GetExponentialBucketMin(1u, kBucketSpacing));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }
-
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace extensions

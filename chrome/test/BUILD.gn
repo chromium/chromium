@@ -1699,10 +1699,17 @@ if (is_android) {
         "../browser/extensions/api/alarms/alarms_apitest.cc",
         "../browser/extensions/api/i18n/i18n_apitest.cc",
         "../browser/extensions/api/idle/idle_apitest.cc",
+        "../browser/extensions/api/web_request/web_request_apitest.cc",
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
       ]
 
-      deps += [ "//extensions/common/api" ]
+      deps += [
+        "//components/embedder_support",
+        "//components/proxy_config",
+        "//components/web_package",
+        "//components/web_package/test_support",
+        "//extensions/common/api",
+      ]
     }
   }
 

@@ -4,11 +4,13 @@
 
 #include "chrome/browser/extensions/extension_platform_browsertest.h"
 
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/platform_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "extensions/common/extension_paths.h"
 
 namespace extensions {
 
@@ -18,23 +20,25 @@ ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
 
 ExtensionPlatformBrowserTest::~ExtensionPlatformBrowserTest() = default;
 
-void ExtensionPlatformBrowserTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  // TODO(crbug.com/373434594): Move this to SetUpOnMainThread()?
+void ExtensionPlatformBrowserTest::SetUpOnMainThread() {
+  PlatformBrowserTest::SetUpOnMainThread();
+
+  RegisterPathProvider();
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
   test_data_dir_ = test_data_dir_.AppendASCII("extensions");
+}
+
+const Extension* ExtensionPlatformBrowserTest::LoadExtension(
+    const base::FilePath& path) {
+  return LoadExtension(path, {});
 }
 
 const Extension* ExtensionPlatformBrowserTest::LoadExtension(
     const base::FilePath& path,
     const LoadOptions& options) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-  base::FilePath test_dir;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
-  base::FilePath extension_path = test_dir.Append(path);
 
-  Profile* profile = chrome_test_utils::GetProfile(this);
-  PlatformTestExtensionLoader loader(profile);
+  PlatformTestExtensionLoader loader(profile());
   loader.set_allow_incognito_access(options.allow_in_incognito);
   loader.set_allow_file_access(options.allow_file_access);
   loader.set_ignore_manifest_warnings(options.ignore_manifest_warnings);
@@ -48,8 +52,7 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
   // wait_for_registration_stored option.
   CHECK(!options.wait_for_registration_stored);
 
-  scoped_refptr<const Extension> extension =
-      loader.LoadExtension(extension_path);
+  scoped_refptr<const Extension> extension = loader.LoadExtension(path);
   last_loaded_extension_id_ = extension->id();
   return extension.get();
 }
