@@ -5208,6 +5208,11 @@ const char kNtpDummyModulesDescription[] =
     "enabled.";
 #endif
 
+const char kNtpMicrosoftAuthenticationModuleName[] =
+    "NTP Microsoft Authentication Module";
+const char kNtpMicrosoftAuthenticationModuleDescription[] =
+    "Shows the Microsoft Authentication Module on the New Tab Page.";
+
 const char kNtpMostRelevantTabResumptionModuleName[] =
     "NTP Most Relevant Tab Resumption Module";
 const char kNtpMostRelevantTabResumptionModuleDescription[] =

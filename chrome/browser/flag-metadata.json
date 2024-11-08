@@ -6203,6 +6203,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "ntp-microsoft-authentication-module",
+    "owners": [ "pauladedeji@google.com", "rtatum@google.com", "tiborg@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-middle-slot-promo-dismissal",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 111

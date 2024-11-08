@@ -294,6 +294,11 @@ BASE_FEATURE(kNtpMobilePromo,
              "NtpMobilePromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the Microsoft Authentication module will be shown.
+BASE_FEATURE(kNtpMicrosoftAuthenticationModule,
+             "NtpMicrosoftAuthenticationModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =

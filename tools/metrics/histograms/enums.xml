@@ -16268,6 +16268,7 @@ from previous Chrome versions.
   <int value="-1608717313" label="TabStripCollectionStorage:enabled"/>
   <int value="-1608259870"
       label="ClearLoginDatabaseForAllMigratedUPMUsers:disabled"/>
+  <int value="-1608016244" label="NtpMicrosoftAuthenticationModule:enabled"/>
   <int value="-1607953813"
       label="AndroidPartnerCustomizationPhenotype:enabled"/>
   <int value="-1607691647" label="MojoVideoEncodeAccelerator:disabled"/>
@@ -22067,6 +22068,7 @@ from previous Chrome versions.
       label="AccessibilityOverscrollSettingFeature:disabled"/>
   <int value="737195667" label="AutofillPageLanguageDetection:enabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
+  <int value="738325581" label="NtpMicrosoftAuthenticationModule:disabled"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>
   <int value="738962107" label="ExoOrdinalMotion:disabled"/>
   <int value="739906838" label="CrOSLateBootAudioFlexibleLoopback:disabled"/>

@@ -73,6 +73,7 @@ BASE_DECLARE_FEATURE(kNtpWallpaperSearchButton);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimation);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimationShownThreshold);
 BASE_DECLARE_FEATURE(kNtpMobilePromo);
+BASE_DECLARE_FEATURE(kNtpMicrosoftAuthenticationModule);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
