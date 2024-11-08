@@ -591,73 +591,15 @@ void TraceEventDataSource::SetupStartupTracing(
   NOTREACHED() << "This is not expected to run in SDK build.";
 }
 
-void TraceEventDataSource::AbortStartupTracing() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
-  std::unique_ptr<perfetto::TraceWriter> trace_writer;
-  PerfettoProducer* producer;
-  uint32_t session_id;
-  {
-    AutoLockWithDeferredTaskPosting lock(lock_);
-    if (!IsStartupTracingActive()) {
-      return;
-    }
-
-    producer = producer_;
-
-    // Prevent recreation of ThreadLocalEventSinks after flush.
-    producer_ = nullptr;
-    target_buffer_ = 0;
-    flushing_trace_log_ = true;
-    trace_writer = std::move(trace_writer_);
-
-    // Increment the session id to make sure that any subsequent tracing session
-    // uses fresh trace writers.
-    session_id = IncrementSessionIdOrClearStartupFlagWhileLocked();
-  }
-  if (trace_writer) {
-    ReturnTraceWriter(std::move(trace_writer));
-  }
-  producer->AbortStartupTracingForReservation(session_id);
-  auto* trace_log = base::trace_event::TraceLog::GetInstance();
-  trace_log->SetDisabled();
-  trace_log->Flush(base::BindRepeating(&TraceEventDataSource::OnFlushFinished,
-                                       base::Unretained(this)),
-                   /*use_worker_thread=*/false);
-}
-
 uint32_t
 TraceEventDataSource::IncrementSessionIdOrClearStartupFlagWhileLocked() {
   // Protected by |lock_| for CreateThreadLocalEventSink() and
   // SetStartupTracingFlagsWhileLocked().
   lock_.AssertAcquired();
   SessionFlags flags = session_flags_.load(std::memory_order_relaxed);
-  if (flags.is_startup_tracing) {
-    // Don't increment the session ID if startup tracing was active for this
-    // session. This way, the sinks that were created while startup tracing for
-    // the current session won't be cleared away (resetting such sinks could
-    // otherwise cause data buffered in their potentially still unbound
-    // StartupTraceWriters to be lost).
-    flags.is_startup_tracing = false;
-  } else {
-    flags.session_id++;
-  }
-  session_flags_.store(flags, std::memory_order_relaxed);
-  return flags.session_id;
-}
-
-void TraceEventDataSource::SetStartupTracingFlagsWhileLocked() {
-  // Protected by |lock_| for CreateThreadLocalEventSink() and
-  // IncrementSessionIdOrClearStartupFlagWhileLocked().
-  lock_.AssertAcquired();
-  SessionFlags flags = session_flags_.load(std::memory_order_relaxed);
-  flags.is_startup_tracing = true;
   flags.session_id++;
   session_flags_.store(flags, std::memory_order_relaxed);
-}
-
-bool TraceEventDataSource::IsStartupTracingActive() const {
-  SessionFlags flags = session_flags_.load(std::memory_order_relaxed);
-  return flags.is_startup_tracing;
+  return flags.session_id;
 }
 
 void TraceEventDataSource::OnFlushFinished(
@@ -743,13 +685,6 @@ void TraceEventDataSource::ClearIncrementalState() {
 std::unique_ptr<perfetto::TraceWriter>
 TraceEventDataSource::CreateTraceWriterLocked() {
   lock_.AssertAcquired();
-
-  if (IsStartupTracingActive()) {
-    DCHECK(producer_);
-    uint32_t session_id =
-        session_flags_.load(std::memory_order_relaxed).session_id;
-    return producer_->CreateStartupTraceWriter(session_id);
-  }
 
   // |producer_| is reset when tracing is stopped, and trace writer creation can
   // happen in parallel on any thread.
@@ -869,16 +804,8 @@ void TraceEventDataSource::ReturnTraceWriter(
     AutoLockWithDeferredTaskPosting lock(lock_);
 
     // If we don't have a task runner yet, we cannot create the task runner
-    // safely, because the thread pool may not have been brought up yet. This
-    // should only happen during startup tracing.
-    if (!PerfettoTracedProcess::GetTaskRunner()->HasTaskRunner()) {
-      DCHECK(IsStartupTracingActive());
-      // It's safe to destroy the TraceWriter on the current sequence, as the
-      // destruction won't post tasks or make mojo calls, because the arbiter
-      // wasn't bound yet.
-      trace_writer.reset();
-      return;
-    }
+    // safely, because the thread pool may not have been brought up yet.
+    DCHECK(PerfettoTracedProcess::GetTaskRunner()->HasTaskRunner());
   }
 
   // Return the TraceWriter on the sequence that the PerfettoProducers run on.

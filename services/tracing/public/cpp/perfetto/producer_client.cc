@@ -169,7 +169,7 @@ void ProducerClient::NewDataSourceAdded(
 
 bool ProducerClient::IsTracingActive() {
   base::AutoLock lock(lock_);
-  return data_sources_tracing_ > 0 || IsStartupTracingActive();
+  return data_sources_tracing_ > 0;
 }
 
 void ProducerClient::OnTracingStart() {
@@ -205,9 +205,6 @@ void ProducerClient::StartDataSource(
         base::AutoLock lock(lock_);
         ++data_sources_tracing_;
       }
-      // Now that a data source is active, mark the startup tracing session as
-      // taken over by the service.
-      OnStartupTracingComplete();
       // ProducerClient should never be denied permission to start, but it will
       // only start tracing once the callback passed below is called.
       bool result = PerfettoTracedProcess::Get()->CanStartTracing(

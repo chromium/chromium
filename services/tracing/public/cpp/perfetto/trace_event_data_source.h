@@ -137,9 +137,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
     : public PerfettoTracedProcess::DataSourceBase {
  public:
   struct SessionFlags {
-    // True if startup tracing is enabled for the current tracing session.
-    bool is_startup_tracing : 1;
-
     // This ID is incremented whenever a new tracing session is started (either
     // when startup tracing is enabled or when the service tells us to start the
     // session otherwise).
@@ -170,7 +167,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   void SetupStartupTracing(PerfettoProducer* producer,
                            const base::trace_event::TraceConfig& trace_config,
                            bool privacy_filtering_enabled) override;
-  void AbortStartupTracing() override;
 
   // Deletes TraceWriter safely on behalf of a ThreadLocalEventSink.
   void ReturnTraceWriter(std::unique_ptr<perfetto::TraceWriter> trace_writer);
@@ -221,7 +217,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   void EmitTrackDescriptor();
 
   uint32_t IncrementSessionIdOrClearStartupFlagWhileLocked();
-  void SetStartupTracingFlagsWhileLocked();
   bool IsStartupTracingActive() const;
 
   bool disable_interning_ = false;
@@ -230,8 +225,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
 
   // Incremented and accessed atomically but without memory order guarantees.
   static constexpr uint32_t kInvalidSessionID = 0;
-  std::atomic<SessionFlags> session_flags_{
-      SessionFlags{false, kInvalidSessionID}};
+  std::atomic<SessionFlags> session_flags_{SessionFlags{kInvalidSessionID}};
 
   // To avoid lock-order inversion, this lock should not be held while making
   // calls to mojo interfaces or posting tasks, or calling any other code path

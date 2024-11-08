@@ -318,24 +318,6 @@ PerfettoTracedProcess::data_sources() {
   return data_sources_;
 }
 
-bool PerfettoTracedProcess::SetupStartupTracing(
-    PerfettoProducer* producer,
-    const base::trace_event::TraceConfig& trace_config,
-    bool privacy_filtering_enabled) {
-  if (producer_client_->IsTracingActive() ||
-      (system_producer_ && system_producer_->IsTracingActive())) {
-    LOG(WARNING) << "Cannot setup startup tracing - tracing is already active";
-    return false;
-  }
-
-  if (!producer->SetupStartupTracing(trace_config, privacy_filtering_enabled)) {
-    LOG(ERROR) << "Failed to setup startup tracing for this process";
-    return false;
-  }
-
-  return true;
-}
-
 void PerfettoTracedProcess::RequestStartupTracing(
     const perfetto::TraceConfig& config,
     const perfetto::Tracing::SetupStartupTracingOpts& opts) {
@@ -398,10 +380,6 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {
   thread_pool_started_ = true;
   SetupClientLibrary(enable_consumer);
-
-  producer_client_->OnThreadPoolAvailable();
-  if (system_producer_)
-    system_producer_->OnThreadPoolAvailable();
 
   if (startup_tracing_needed_) {
     perfetto::Tracing::SetupStartupTracingBlocking(saved_config_, saved_opts_);
@@ -486,7 +464,6 @@ void PerfettoTracedProcess::SetupSystemTracing(
   // the system producer too.
   if (!GetTaskRunner()->HasTaskRunner())
     return;
-  system_producer_->OnThreadPoolAvailable();
   GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce([]() {
         PerfettoTracedProcess* traced_process = PerfettoTracedProcess::Get();
