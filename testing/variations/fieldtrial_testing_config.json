@@ -13405,6 +13405,22 @@
             ]
         }
     ],
+    "LobsterDogfood": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "LobsterDogfood",
+                        "LobsterRightClickMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "LocalPasswordsAndroidAccessLossWarning": [
         {
             "platforms": [
