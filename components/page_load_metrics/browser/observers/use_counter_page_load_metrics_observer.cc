@@ -515,6 +515,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kHasChUnits, WebDXFeature::kCh},
           {WebFeature::kHasRchUnits, WebDXFeature::kRch},
           {WebFeature::kHasRexUnits, WebDXFeature::kRex},
+          {WebFeature::kCSSColorFunction, WebDXFeature::kColorFunction},
       }};
 
   return *kMap;

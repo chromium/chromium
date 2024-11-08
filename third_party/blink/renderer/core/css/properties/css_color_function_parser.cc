@@ -524,6 +524,10 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     return nullptr;
   }
 
+  if (function_id == CSSValueID::kColor) {
+    context.Count(WebFeature::kCSSColorFunction);
+  }
+
   std::optional<Color> resolved_color;
   bool has_alpha = false;
   {
