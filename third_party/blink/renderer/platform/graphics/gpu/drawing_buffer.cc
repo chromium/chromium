@@ -828,11 +828,13 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   // TODO(xidachen): Create a small pool of recycled textures from
   // ImageBitmapRenderingContext's transferFromImageBitmap, and try to use them
   // in DrawingBuffer.
+  const bool is_origin_top_left =
+      client_si->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_si), sk_image_sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info,
       transferable_resource.texture_target(),
-      /* is_origin_top_left = */ opengl_flip_y_extension_,
+      /*is_origin_top_left=*/is_origin_top_left,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback),
@@ -882,10 +884,12 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
     color_buffer->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   }
 
+  const bool is_origin_top_left =
+      color_buffer->shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return ExternalCanvasResource::Create(
       color_buffer->shared_image, resource, viz::ReleaseCallback(),
       context_provider_->GetWeakPtr(), resource_provider, filter_quality_,
-      /*is_origin_top_left=*/opengl_flip_y_extension_);
+      /*is_origin_top_left=*/is_origin_top_left);
 }
 
 scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
@@ -910,11 +914,13 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   // * FinishPrepareTransferableResourceGpu() always populates `client_si` if it
   //   returns true
   CHECK(client_si);
+  const bool is_origin_top_left =
+      client_si->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return ExternalCanvasResource::Create(
       client_si, out_resource, std::move(out_release_callback),
       context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr,
       filter_quality_,
-      /*is_origin_top_left=*/opengl_flip_y_extension_);
+      /*is_origin_top_left=*/is_origin_top_left);
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(
