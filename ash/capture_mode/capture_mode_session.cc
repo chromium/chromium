@@ -1465,9 +1465,11 @@ void CaptureModeSession::AddScannerActionButtons(
         base::BindRepeating(&CaptureModeSession::OnScannerActionButtonPressed,
                             weak_ptr_factory_.GetWeakPtr(), std::move(action));
 
-    capture_mode_util::AddActionButton(
-        std::move(pressed_callback), std::move(text), &icon,
-        ActionButtonRank{ActionButtonType::kScanner, i});
+    if (ActionButtonView* action_button =
+            AddActionButton(std::move(pressed_callback), std::move(text), &icon,
+                            ActionButtonRank{ActionButtonType::kScanner, i})) {
+      action_button->set_show_throbber_when_pressed(true);
+    }
   }
 }
 
@@ -1525,6 +1527,12 @@ void CaptureModeSession::OnScannerActionButtonPressed(
   scanner_action.ExecuteAction(
       base::BindOnce(&CaptureModeSession::OnScannerActionExecuted,
                      weak_ptr_factory_.GetWeakPtr()));
+  // We need to update the action container widget bounds since a loading
+  // throbber will be added to the action button when it is pressed.
+  // TODO(crbug.com/378023303): The loading throbber is only temporary and will
+  // be removed once the finalized loading animation is implemented. Remove the
+  // below call when the loading throbber is removed.
+  UpdateActionContainerWidget();
 }
 
 void CaptureModeSession::OnScannerActionExecuted(bool success) {
