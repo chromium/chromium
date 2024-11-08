@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_consumer.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation SetUpListDefaultBrowserPromoMediator {
@@ -43,19 +44,41 @@
   _deviceSwitcherResultDispatcher = nullptr;
 }
 
+// Retrieves the title for the animated animated Default Browser Promo.
+- (NSString*)retrievePromoTitle {
+  return l10n_util::GetNSString(
+      GetDefaultBrowserGenericPromoTitleStringID(_userSegment));
+}
+
 - (void)setConsumer:(id<DefaultBrowserScreenConsumer>)consumer {
   _consumer = consumer;
-  if (_consumer) {
-    // Sets the Default Browser screen view title to the consumer with targeted
-    // messaging based on the user's segment.
+
+  if (!_consumer) {
+    return;
+  }
+
+  // Sets the Default Browser static view title and subtitle to the consumer
+  // with targeted messaging based on the user's segment.
+  if (IsSegmentedDefaultBrowserPromoEnabled() &&
+      (SegmentedDefaultBrowserExperimentTypeEnabled() ==
+       SegmentedDefaultBrowserExperimentType::kStaticPromo)) {
     [_consumer setPromoTitle:l10n_util::GetNSString(
                                  GetFirstRunDefaultBrowserScreenTitleStringID(
                                      _userSegment))];
+
     [_consumer
         setPromoSubtitle:l10n_util::GetNSString(
                              GetFirstRunDefaultBrowserScreenSubtitleStringID(
                                  _userSegment))];
   }
+}
+
+- (void)didTapPrimaryActionButton {
+  // TODO(crbug.com/377327840): Log metrics for user interactions
+  [[UIApplication sharedApplication]
+                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
+                options:{}
+      completionHandler:nil];
 }
 
 #pragma mark - Private

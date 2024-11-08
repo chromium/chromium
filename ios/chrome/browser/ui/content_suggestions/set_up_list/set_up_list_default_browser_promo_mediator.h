@@ -39,6 +39,12 @@ class DeviceSwitcherResultDispatcher;
 // Sets the user segment retrieved from the Segmentation Platform.
 - (void)retrieveUserSegmentWithCompletion:(ProceduralBlock)completion;
 
+// Handles user tap on primary action. Allows the user to open the iOS settings.
+- (void)didTapPrimaryActionButton;
+
+// Returns the personalized messaging for the animated Default Browser Promo.
+- (NSString*)retrievePromoTitle;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SET_UP_LIST_SET_UP_LIST_DEFAULT_BROWSER_PROMO_MEDIATOR_H_

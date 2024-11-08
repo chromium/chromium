@@ -1163,23 +1163,14 @@ using segmentation_platform::TipIdentifier;
   // dismiss a previous instance and then clicks the item again the
   // previous instance may not have been stopped yet due to the animation.
   [_defaultBrowserPromoCoordinator stop];
-  if (IsSegmentedDefaultBrowserPromoEnabled()) {
-    _defaultBrowserPromoCoordinator =
-        [[SetUpListDefaultBrowserPromoCoordinator alloc]
-                initWithBaseViewController:[self viewController]
-                                   browser:self.browser
-                               application:[UIApplication sharedApplication]
-                       segmentationService:_segmentationService
-            deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
-  } else {
-    _defaultBrowserPromoCoordinator =
-        [[SetUpListDefaultBrowserPromoCoordinator alloc]
-                initWithBaseViewController:[self viewController]
-                                   browser:self.browser
-                               application:[UIApplication sharedApplication]
-                       segmentationService:nullptr
-            deviceSwitcherResultDispatcher:nullptr];
-  }
+
+  _defaultBrowserPromoCoordinator =
+      [[SetUpListDefaultBrowserPromoCoordinator alloc]
+              initWithBaseViewController:self.viewController
+                                 browser:self.browser
+                             application:[UIApplication sharedApplication]
+                     segmentationService:_segmentationService
+          deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
   _defaultBrowserPromoCoordinator.delegate = self;
   [_defaultBrowserPromoCoordinator start];
 }

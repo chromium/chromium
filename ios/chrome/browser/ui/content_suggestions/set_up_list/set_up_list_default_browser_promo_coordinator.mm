@@ -5,30 +5,40 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_mediator.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+
+@interface SetUpListDefaultBrowserPromoCoordinator () <
+    ConfirmationAlertActionHandler>
+@end
 
 using base::RecordAction;
 using base::UmaHistogramEnumeration;
 using base::UserMetricsAction;
 
 @implementation SetUpListDefaultBrowserPromoCoordinator {
-  // The view controller that displays the default browser promo.
-  DefaultBrowserScreenViewController* _viewController;
+  // The Default Browser view controller.
+  UIViewController* _viewController;
 
   // Application is used to open the OS settings for this app.
   UIApplication* _application;
@@ -105,17 +115,40 @@ using base::UserMetricsAction;
                                           SetUpListItemType::kDefaultBrowser);
     };
   }
+
   [_viewController dismissViewControllerAnimated:YES completion:completion];
-  _viewController.delegate = nil;
+
+  _viewController = nil;
   _application = nil;
   _transparentView = nil;
   _segmentationService = nullptr;
   _deviceSwitcherResultDispatcher = nullptr;
-  _mediator.consumer = nil;
+  if (![self shouldAnimate]) {
+    _mediator.consumer = nil;
+  }
   [_mediator disconnect];
   _mediator = nil;
-  _viewController = nil;
   self.delegate = nil;
+
+  [super stop];
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  [_mediator didTapPrimaryActionButton];
+  _markItemComplete = YES;
+
+  [self.delegate setUpListDefaultBrowserPromoDidFinish:YES];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  _markItemComplete = YES;
+  [self.delegate setUpListDefaultBrowserPromoDidFinish:NO];
+}
+
+- (void)confirmationAlertTertiaryAction {
+  [self.delegate setUpListDefaultBrowserPromoDidFinish:NO];
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
@@ -173,15 +206,51 @@ using base::UserMetricsAction;
 - (void)showPromo {
   [_transparentView removeFromSuperview];
   _transparentView = nil;
-  _viewController = [[DefaultBrowserScreenViewController alloc] init];
-  _viewController.delegate = self;
-  if (IsSegmentedDefaultBrowserPromoEnabled()) {
-    _mediator.consumer = _viewController;
+
+  if ([self shouldAnimate]) {
+    DefaultBrowserInstructionsViewController* animatedViewController = [self
+        createAnimatedViewControllerWithTitle:[_mediator retrievePromoTitle]];
+
+    CHECK(animatedViewController);
+    CHECK(!_transparentView);
+
+    _viewController = animatedViewController;
+  } else {
+    DefaultBrowserScreenViewController* staticViewController =
+        [[DefaultBrowserScreenViewController alloc] init];
+    staticViewController.delegate = self;
+
+    if (IsSegmentedDefaultBrowserPromoEnabled()) {
+      _mediator.consumer = staticViewController;
+    }
+
+    _viewController = staticViewController;
   }
+
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
+
   _viewController.presentationController.delegate = self;
+}
+
+// Create the animated View Controller.
+- (DefaultBrowserInstructionsViewController*)
+    createAnimatedViewControllerWithTitle:(NSString*)promoTitle {
+  return [[DefaultBrowserInstructionsViewController alloc]
+      initWithDismissButton:YES
+           hasRemindMeLater:NO
+                   hasSteps:NO
+              actionHandler:self
+                  titleText:promoTitle];
+}
+
+// Determine which version of the Default Browser Promo should be shown.
+// Returns `YES` if the animated Default Browser Promo should be shown.
+- (BOOL)shouldAnimate {
+  return (IsSegmentedDefaultBrowserPromoEnabled() &&
+          (SegmentedDefaultBrowserExperimentTypeEnabled() ==
+           SegmentedDefaultBrowserExperimentType::kAnimatedPromo));
 }
 
 @end
