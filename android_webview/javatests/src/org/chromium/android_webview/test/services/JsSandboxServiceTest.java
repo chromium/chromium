@@ -12,7 +12,7 @@ import android.os.ParcelFileDescriptor;
 
 import androidx.javascriptengine.EvaluationFailedException;
 import androidx.javascriptengine.EvaluationResultSizeLimitExceededException;
-import androidx.javascriptengine.FileDescriptorIOException;
+import androidx.javascriptengine.DataInputException;
 import androidx.javascriptengine.IsolateStartupParameters;
 import androidx.javascriptengine.IsolateTerminatedException;
 import androidx.javascriptengine.JavaScriptConsoleCallback;
@@ -328,8 +328,7 @@ public class JsSandboxServiceTest {
                     jsSandbox.isFeatureSupported(
                             JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
 
-            boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
-            Assert.assertTrue(provideNamedDataReturn);
+            jsIsolate.provideNamedData("id-1", bytes);
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
@@ -481,7 +480,7 @@ public class JsSandboxServiceTest {
                     Assert.fail("Should have thrown.");
                 } catch (ExecutionException e) {
                     Assert.assertTrue(
-                            e.getCause().getClass().equals(FileDescriptorIOException.class));
+                            e.getCause().getClass().equals(DataInputException.class));
                 }
             }
         } finally {
@@ -603,7 +602,7 @@ public class JsSandboxServiceTest {
                     Assert.fail("Should have thrown.");
                 } catch (ExecutionException e) {
                     Assert.assertTrue(
-                            e.getCause().getClass().equals(FileDescriptorIOException.class));
+                            e.getCause().getClass().equals(DataInputException.class));
                 }
             }
         } finally {
@@ -638,8 +637,7 @@ public class JsSandboxServiceTest {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_WASM_COMPILATION));
 
-            boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
-            Assert.assertTrue(provideNamedDataReturn);
+            jsIsolate.provideNamedData("id-1", bytes);
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
@@ -1085,8 +1083,7 @@ public class JsSandboxServiceTest {
                 final long memoryUseFactor = 2;
                 final long allocationsToTry = memoryUseFactor * maxHeapSize / LARGE_NAMED_DATA_SIZE;
                 for (int i = 0; i < allocationsToTry; i++) {
-                    boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-" + i, bytes);
-                    Assert.assertTrue(provideNamedDataReturn);
+                    jsIsolate.provideNamedData("id-" + i, bytes);
                     final String code =
                             ""
                                     + "android.consumeNamedDataAsArrayBuffer('id-' + "
@@ -1175,8 +1172,7 @@ public class JsSandboxServiceTest {
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
-                boolean provideNamedDataReturn = jsIsolate.provideNamedData("test", bytes);
-                Assert.assertTrue(provideNamedDataReturn);
+                jsIsolate.provideNamedData("test", bytes);
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 // Execution time may be unstable if the GC kicks in, so go with 60 seconds.
                 String result = resultFuture.get(60, TimeUnit.SECONDS);
@@ -1285,12 +1281,8 @@ public class JsSandboxServiceTest {
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
-                boolean provideNamedDataLargeReturn =
-                        jsIsolate.provideNamedData("large", largeBytes);
-                Assert.assertTrue(provideNamedDataLargeReturn);
-                boolean provideNamedDataSmallReturn =
-                        jsIsolate.provideNamedData("small", smallBytes);
-                Assert.assertTrue(provideNamedDataSmallReturn);
+                jsIsolate.provideNamedData("large", largeBytes);
+                jsIsolate.provideNamedData("small", smallBytes);
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 String result = resultFuture.get(5, TimeUnit.SECONDS);
                 Assert.assertEquals(provideString, result);
@@ -1316,9 +1308,7 @@ public class JsSandboxServiceTest {
             for (int i = 0; i < numIsolates; i++) {
                 try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                     for (int j = 0; j < numNames; j++) {
-                        boolean provideNamedDataReturn =
-                                jsIsolate.provideNamedData("id-" + j, bytes);
-                        Assert.assertTrue(provideNamedDataReturn);
+                        jsIsolate.provideNamedData("id-" + j, bytes);
                     }
                 }
             }
