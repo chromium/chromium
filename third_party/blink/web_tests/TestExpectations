@@ -2612,6 +2612,7 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/377977965 [ Linux ] external/wpt/webdriver/tests/bidi/browser/get_client_windows/get_client_windows.py [ Failure ]
 crbug.com/377943753 [ Mac14 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby.tentative.html [ Timeout ]
 crbug.com/377943754 [ Mac14 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate-timing.https.html [ Timeout ]
 crbug.com/377572928 external/wpt/css/css-masking/clip-path/clip-path-shape-hline-vline-keywords.tentative.html [ Failure ]
