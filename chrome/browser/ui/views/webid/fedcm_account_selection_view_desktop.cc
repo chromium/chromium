@@ -76,6 +76,7 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
     return;
   }
   input_protector_->VisibilityChanged(true);
+  GetDialogWidget()->Show();
   // An active widget would steal the focus when displayed, this would lead
   // to some unexpected consequences. e.g.
   //   1. links/buttons from the web contents area would require two clicks,
@@ -84,7 +85,18 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   //   gated by user gesture would take the focus
   // TODO(crbug.com/41482141): figure out how to address this issue without
   // causing additional problems such as obscuring other browser UIs.
-  GetDialogWidget()->Show();
+  // This temporarily resolves the Mac-only two-clicks issue by giving the focus
+  // back. For users who have turned on screen readers, until we figure out how
+  // to handle the FedCM stealing focus issue, it's better to keep it focused
+  // because otherwise it's hard for them to understand or interact with the
+  // FedCM UI.
+#if BUILDFLAG(IS_MAC)
+  // `parent()` may return nullptr in tests.
+  if (!accessibility_state_utils::IsScreenReaderEnabled() &&
+      GetDialogWidget()->parent()) {
+    GetDialogWidget()->parent()->Activate();
+  }
+#endif  // IS_MAC
 }
 
 bool FedCmAccountSelectionView::Show(
