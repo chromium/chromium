@@ -86,7 +86,8 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   NSArray<NSString*>* array = @[
     @"accessibilityDisclosedByRow", @"accessibilityDisclosedRows",
     @"accessibilityDisclosureLevel", @"accessibilitySortDirection",
-    @"isAccessibilityDisclosed", @"isAccessibilityFocused"
+    @"isAccessibilityDisclosed", @"isAccessibilityExpanded",
+    @"isAccessibilityFocused"
   ];
 
   AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc] initWithNode:nil];
@@ -337,6 +338,50 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilitySortDirectionOtherOnColumnHeader) {
   EXPECT_EQ([node internalRole], ax::mojom::Role::kColumnHeader);
   EXPECT_EQ([node accessibilitySortDirection],
             NSAccessibilitySortDirectionUnknown);
+}
+
+// A menu item with the expanded state should return true for
+// `isAccessibilityExpanded`.
+TEST_P(AXPlatformNodeCocoaTest, IsAccessibilityExpandedSetToExpanded) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kMenuItem;
+  root.AddState(ax::mojom::State::kExpanded);
+  Init(root);
+  TestAXNodeWrapper* wrapper =
+      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
+  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
+      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  EXPECT_TRUE([node isAccessibilityExpanded]);
+}
+
+// A menu item with the collpased state should return false for
+// `isAccessibilityExpanded`.
+TEST_P(AXPlatformNodeCocoaTest, IsAccessibilityExpandedSetToCollapsed) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kMenuItem;
+  root.AddState(ax::mojom::State::kCollapsed);
+  Init(root);
+  TestAXNodeWrapper* wrapper =
+      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
+  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
+      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  EXPECT_FALSE([node isAccessibilityExpanded]);
+}
+
+// A menu item without the expanded or collapsed state should return false for
+// `isAccessibilityExpanded`.
+TEST_P(AXPlatformNodeCocoaTest, IsAccessibilityExpandedNotSet) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kMenuItem;
+  Init(root);
+  TestAXNodeWrapper* wrapper =
+      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
+  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
+      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  EXPECT_FALSE([node isAccessibilityExpanded]);
 }
 
 }  // namespace ui

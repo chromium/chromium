@@ -581,6 +581,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityElement) {
   RunTypedTest<kMacMethods>("is-accessibility-element.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityExpanded) {
+  Migration_RunTypedTest<kMacMethods>("is-accessibility-expanded.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityFocused) {
   Migration_RunTypedTest<kMacMethods>("is-accessibility-focused.html");
 }

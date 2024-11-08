@@ -717,6 +717,7 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSNumber*)expanded {
+  // Keep logic consistent with `-[AXPlatformNodeCocoa isAccessibilityExpanded]`
   if (![self instanceActive])
     return nil;
   return @(GetState(_owner, ax::mojom::State::kExpanded));

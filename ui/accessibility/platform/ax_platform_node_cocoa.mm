@@ -281,6 +281,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
       @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
       @"isAccessibilityDisclosed" : NSAccessibilityDisclosingAttribute,
+      @"isAccessibilityExpanded" : NSAccessibilityExpandedAttribute,
       @"isAccessibilityFocused" : NSAccessibilityFocusedAttribute,
     };
   });
@@ -1963,6 +1964,14 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (NSNumber*)AXEnabled {
   return
       @(_node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled);
+}
+
+- (BOOL)isAccessibilityExpanded {
+  // Keep logic consistent with `-[BrowserAccessibilityCocoa expanded]`
+  if (![self instanceActive]) {
+    return NO;
+  }
+  return _node->HasState(ax::mojom::State::kExpanded);
 }
 
 - (NSNumber*)AXFocused {

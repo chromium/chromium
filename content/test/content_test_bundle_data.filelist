@@ -5597,6 +5597,8 @@ data/accessibility/mac/methods/is-accessibility-disclosed-expected.txt
 data/accessibility/mac/methods/is-accessibility-disclosed.html
 data/accessibility/mac/methods/is-accessibility-element-expected.txt
 data/accessibility/mac/methods/is-accessibility-element.html
+data/accessibility/mac/methods/is-accessibility-expanded-expected.txt
+data/accessibility/mac/methods/is-accessibility-expanded.html
 data/accessibility/mac/methods/is-accessibility-focused-expected.txt
 data/accessibility/mac/methods/is-accessibility-focused.html
 data/accessibility/mac/methods/is-accessibility-selector-allowed-expected.txt
