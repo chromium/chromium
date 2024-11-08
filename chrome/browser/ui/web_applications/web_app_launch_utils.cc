@@ -773,6 +773,9 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
     Navigate(&nav_params);
   }
 
+  RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
+                      apps::LaunchSource::kFromOmnibox, launch_url,
+                      preexisting_web_contents);
   EnqueueLaunchParams(preexisting_web_contents, app_id, launch_url,
                       /*wait_for_navigation_to_complete=*/client_mode ==
                           LaunchHandler::ClientMode::kNavigateExisting);
