@@ -226,8 +226,7 @@ TranslatePolicyValidationResultSeverity(
     case ValueValidationIssue::Severity::kError:
       return issue::VALUE_VALIDATION_ISSUE_SEVERITY_ERROR;
   }
-  NOTREACHED_IN_MIGRATION();
-  return issue::VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED;
+  NOTREACHED();
 }
 
 em::PolicyValidationReportRequest_Action TranslateValidationReportAction(
@@ -1710,7 +1709,7 @@ void CloudPolicyClient::RemoveJob(const DeviceManagementService::Job* job) {
   }
   // This job was already deleted from our list, somehow. This shouldn't
   // happen since deleting the job should cancel the callback.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CloudPolicyClient::OnReportUploadCompleted(ResultCallback callback,

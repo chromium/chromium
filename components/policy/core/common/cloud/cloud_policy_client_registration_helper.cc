@@ -207,9 +207,7 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
   // CloudPolicyClient and make requests to DMServer.
   if (client_->is_registered()) {
     // Client should not be registered yet.
-    NOTREACHED_IN_MIGRATION();
-    RequestCompleted();
-    return;
+    NOTREACHED();
   }
 
   // Kick off registration of the CloudPolicyClient with our newly minted

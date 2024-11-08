@@ -171,7 +171,7 @@ void PolicyStatisticsCollector::CollectStatistics() {
         RecordPolicyUse(details->id, kRecommended);
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     source |= SimplifyPolicySource(policy_entry->source, it.key());
   }

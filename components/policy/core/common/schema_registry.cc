@@ -168,7 +168,7 @@ void CombinedSchemaRegistry::UnregisterComponent(const PolicyNamespace& ns) {
     own_schema_map_ = new SchemaMap(std::move(map));
     Combine(false);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -186,7 +186,7 @@ void CombinedSchemaRegistry::OnSchemaRegistryShuttingDown(
     if (registry->schema_map()->HasComponents())
       Combine(false);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -136,8 +136,7 @@ std::string GetMachineName() {
 #elif BUILDFLAG(IS_ANDROID)
   return std::string();
 #elif BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 #else
 #error Unsupported platform
 #endif

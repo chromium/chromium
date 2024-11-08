@@ -284,8 +284,7 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
         TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER:
     case DeviceManagementService::JobConfiguration::
         TYPE_ACTIVE_DIRECTORY_PLAY_ACTIVITY:
-      NOTREACHED_IN_MIGRATION() << "Invalid job type: " << type;
-      return "";
+      NOTREACHED() << "Invalid job type: " << type;
   }
 }
 
@@ -679,8 +678,7 @@ int DeviceManagementService::JobImpl::GetRetryDelay(RetryMethod method) {
     case RETRY_IMMEDIATELY:
       return 0;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

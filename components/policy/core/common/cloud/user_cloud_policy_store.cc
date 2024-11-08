@@ -238,7 +238,7 @@ void DesktopCloudPolicyStore::OnPolicyLoaded(PolicyLoadResult result) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

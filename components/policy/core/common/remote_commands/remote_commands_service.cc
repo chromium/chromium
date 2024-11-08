@@ -77,8 +77,7 @@ RemoteCommandsService::MetricReceivedRemoteCommand RemoteCommandMetricFromType(
 
   // None of possible types matched. May indicate that there is new unhandled
   // command type.
-  NOTREACHED_IN_MIGRATION() << "Unknown command type to record: " << type;
-  return Metric::kUnknownType;
+  NOTREACHED() << "Unknown command type to record: " << type;
 }
 
 const char* RemoteCommandTypeToString(em::RemoteCommand_Type type) {
@@ -121,8 +120,7 @@ const char* RemoteCommandTypeToString(em::RemoteCommand_Type type) {
       return "FetchSupportPacket";
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unknown command type: " << type;
-  return "";
+  NOTREACHED() << "Unknown command type: " << type;
 }
 
 std::string ToString(
@@ -153,10 +151,8 @@ const char* RemoteCommandsService::GetMetricNameReceivedRemoteCommand(
     case PolicyInvalidationScope::kCBCM:
       return kMetricCBCMRemoteCommandReceived;
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected instance of remote commands service with "
-             "device local account scope.";
-      return "";
+      NOTREACHED() << "Unexpected instance of remote commands service with "
+                      "device local account scope.";
   }
 }
 
