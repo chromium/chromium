@@ -12,9 +12,9 @@ import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_SHOP
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,7 +58,7 @@ public class CommerceBottomSheetContentRenderTest {
 
     private ModelList mModelList;
     private View mContentView;
-    private ListView mListView;
+    private RecyclerView mRecyclerView;
     private CommerceBottomSheetContentCoordinator mCoordinator;
 
     private PropertyModel createPropertyModel(int type, boolean hasTitle) {
@@ -95,7 +96,7 @@ public class CommerceBottomSheetContentRenderTest {
                                     getActivity(), mBottomSheetController);
 
                     mContentView = mCoordinator.getContentViewForTesting();
-                    mListView = mCoordinator.getListViewForTesting();
+                    mRecyclerView = mCoordinator.getRecyclerViewForTesting();
                     mModelList = mCoordinator.getModelListForTesting();
                     rootView.addView(mContentView);
                 });
@@ -109,6 +110,7 @@ public class CommerceBottomSheetContentRenderTest {
                 () -> {
                     mModelList.add(new ListItem(0, createPropertyModel(0, true)));
                 });
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
         mRenderTestRule.render(mContentView, "single_content");
     }
 
@@ -122,6 +124,7 @@ public class CommerceBottomSheetContentRenderTest {
                     mModelList.add(new ListItem(0, createPropertyModel(1, false)));
                     mModelList.add(new ListItem(0, createPropertyModel(2, false)));
                 });
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
         mRenderTestRule.render(mContentView, "multiple_content");
     }
 }
