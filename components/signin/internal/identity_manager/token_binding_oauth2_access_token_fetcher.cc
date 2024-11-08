@@ -54,8 +54,8 @@ void TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion(
   if (assertion.empty()) {
     // Even if the assertion failed, we want to make a server request because
     // the server doesn't verify assertions during dark launch.
-    // TODO(b/263253212): fail here immediately after the feature is fully
-    // launched.
+    // TODO(crbug.com/377942773): fail here immediately after the feature is
+    // fully launched.
     assertion = kAssertionFailedPlaceholder;
   } else if (ephemeral_key.has_value()) {
     fetcher_->SetTokenDecryptor(

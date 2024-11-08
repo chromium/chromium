@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -102,6 +103,9 @@ signin::LoadCredentialsState LoadCredentialsStateFromTokenResult(
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+constexpr std::string_view kTokenBindingAssertionDestinationUrl =
+    "https://accounts.google.com/accountmanager";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(BoundTokenPrevalence)
@@ -336,7 +340,7 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
             std::move(fetcher));
     token_binding_helper_->GenerateBindingKeyAssertion(
         account_id, token_binding_challenge,
-        GURL("https://accounts.google.com/accountmanager"),
+        GURL(kTokenBindingAssertionDestinationUrl),
         base::BindOnce(
             &TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion,
             fetcher_wrapper->GetWeakPtr()));
@@ -378,6 +382,12 @@ std::string MutableProfileOAuth2TokenServiceDelegate::GetRefreshToken(
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+bool MutableProfileOAuth2TokenServiceDelegate::IsRefreshTokenBound(
+    const CoreAccountId& account_id) const {
+  return token_binding_helper_ &&
+         token_binding_helper_->HasBindingKey(account_id);
+}
+
 std::vector<uint8_t>
 MutableProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
     const CoreAccountId& account_id) const {
@@ -386,6 +396,20 @@ MutableProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
   }
 
   return token_binding_helper_->GetWrappedBindingKey(account_id);
+}
+
+void MutableProfileOAuth2TokenServiceDelegate::
+    GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+        const CoreAccountId& account_id,
+        std::string_view challenge,
+        TokenBindingHelper::GenerateAssertionCallback callback) {
+  if (!token_binding_helper_ || GetTokenForMultilogin(account_id).empty()) {
+    std::move(callback).Run(std::string(), std::nullopt);
+  }
+
+  token_binding_helper_->GenerateBindingKeyAssertion(
+      account_id, challenge, GURL(kTokenBindingAssertionDestinationUrl),
+      std::move(callback));
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

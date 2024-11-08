@@ -55,7 +55,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "base/test/test_future.h"
 #include "components/signin/internal/identity_manager/token_binding_helper.h"  // nogncheck
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -1632,6 +1634,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
        UpdateBoundToken) {
   InitializeOAuth2ServiceDelegateWithTokenBinding();
   const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  EXPECT_FALSE(oauth2_service_delegate_->IsRefreshTokenBound(account_id));
   EXPECT_TRUE(
       oauth2_service_delegate_->GetWrappedBindingKey(account_id).empty());
 
@@ -1641,6 +1644,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       account_id, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
       kFakeWrappedBindingKey);
+  EXPECT_TRUE(oauth2_service_delegate_->IsRefreshTokenBound(account_id));
   EXPECT_EQ(oauth2_service_delegate_->GetWrappedBindingKey(account_id),
             kFakeWrappedBindingKey);
 
@@ -1650,12 +1654,14 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       account_id, "refresh_token2",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
       kFakeWrappedBindingKey2);
+  EXPECT_TRUE(oauth2_service_delegate_->IsRefreshTokenBound(account_id));
   EXPECT_EQ(oauth2_service_delegate_->GetWrappedBindingKey(account_id),
             kFakeWrappedBindingKey2);
 
   // Invalidate bound refresh token.
   oauth2_service_delegate_->UpdateCredentials(
       account_id, GaiaConstants::kInvalidRefreshToken);
+  EXPECT_FALSE(oauth2_service_delegate_->IsRefreshTokenBound(account_id));
   EXPECT_TRUE(
       oauth2_service_delegate_->GetWrappedBindingKey(account_id).empty());
 }
@@ -1818,6 +1824,30 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   EXPECT_FALSE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(kSecondaryAccount));
   EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
+       GenerateRefreshTokenBindingKeyAssertionForMultilogin) {
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+
+  const CoreAccountId kAccountId =
+      account_tracker_service_.SeedAccountInfo("account_id", "test@google.com");
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+
+  oauth2_service_delegate_->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
+
+  base::test::TestFuture<std::string, std::optional<HybridEncryptionKey>>
+      future;
+  oauth2_service_delegate_
+      ->GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+          kAccountId, "challenge", future.GetCallback());
+  // The test uses fake binding keys, so we cannot verify assertion contents.
+  // TODO(alexilin): convert this test file to use the real unexportable key
+  // service with `ScopedMockUnexportableKeyProvider` to increase coverage.
+  EXPECT_TRUE(future.Wait());
 }
 
 class MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest

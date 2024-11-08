@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,6 +16,7 @@
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/device_id_helper.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -26,7 +28,12 @@
 
 namespace {
 
-using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+constexpr std::string_view kTokenBindingAssertionSentinel =
+    "DBSC_CHALLENGE_IF_REQUIRED";
+constexpr std::string_view kTokenBindingAssertionFailedPlaceholder =
+    "SIGNATURE_FAILED";
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 }  // namespace
 
@@ -147,7 +154,8 @@ ProfileOAuth2TokenService::StartRequest(
 }
 
 void ProfileOAuth2TokenService::StartRequestForMultilogin(
-    signin::OAuthMultiloginTokenRequest& request) {
+    signin::OAuthMultiloginTokenRequest& request,
+    const std::string& token_binding_challenge) {
   std::string refresh_token =
       delegate_->GetTokenForMultilogin(request.account_id());
   if (refresh_token.empty()) {
@@ -157,13 +165,50 @@ void ProfileOAuth2TokenService::StartRequestForMultilogin(
                                     {GaiaConstants::kOAuth1LoginScope});
     return;
   }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  bool is_bound = delegate_->IsRefreshTokenBound(request.account_id());
+
+  // Sign `token_binding_challenge` asynchronously if it's required.
+  if (is_bound && !token_binding_challenge.empty()) {
+    auto create_response_callback = base::BindOnce(
+        [](std::string token, std::string assertion,
+           std::optional<HybridEncryptionKey> ephemeral_key) {
+          if (assertion.empty()) {
+            // Even if the assertion failed, we want to make a server request
+            // because the server doesn't verify assertions during dark launch.
+            // TODO(crbug.com/377942773): fail here immediately after the
+            // feature is fully launched.
+            assertion = kTokenBindingAssertionFailedPlaceholder;
+          }
+          return signin::OAuthMultiloginTokenResponse(
+              std::move(token), std::move(assertion), std::move(ephemeral_key));
+        },
+        std::move(refresh_token));
+    auto notify_request_callback =
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &signin::OAuthMultiloginTokenRequest::InvokeCallbackWithResult,
+            request.AsWeakPtr()));
+    delegate_->GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+        request.account_id(), token_binding_challenge,
+        std::move(create_response_callback)
+            .Then(std::move(notify_request_callback)));
+    return;
+  }
+
+  signin::OAuthMultiloginTokenResponse response(
+      std::move(refresh_token),
+      is_bound ? std::string(kTokenBindingAssertionSentinel) : std::string());
+#else
+  signin::OAuthMultiloginTokenResponse response(std::move(refresh_token));
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   // Create multilogin token response from the refresh token.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &signin::OAuthMultiloginTokenRequest::InvokeCallbackWithResult,
-          request.AsWeakPtr(),
-          signin::OAuthMultiloginTokenResponse(std::move(refresh_token))));
+          request.AsWeakPtr(), std::move(response)));
 }
 
 std::unique_ptr<OAuth2AccessTokenManager::Request>

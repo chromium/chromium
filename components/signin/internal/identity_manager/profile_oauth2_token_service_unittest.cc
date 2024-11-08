@@ -9,6 +9,7 @@
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -547,9 +548,13 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     signin::OAuthMultiloginTokenRequest request(account_id_,
                                                 future.GetCallback());
     token_service.StartRequestForMultilogin(request);
+    EXPECT_FALSE(future.IsReady());
     EXPECT_EQ(future.Get<0>(), &request);
     ASSERT_TRUE(future.Get<1>().has_value());
     EXPECT_EQ(future.Get<1>()->oauth_token(), "refreshToken");
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    EXPECT_EQ(future.Get<1>()->token_binding_assertion(), std::string());
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   }
 
   {
@@ -559,6 +564,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     signin::OAuthMultiloginTokenRequest request(account_id_2,
                                                 future.GetCallback());
     token_service.StartRequestForMultilogin(request);
+    EXPECT_FALSE(future.IsReady());
     EXPECT_EQ(future.Get<0>(), &request);
     ASSERT_FALSE(future.Get<1>().has_value());
     EXPECT_EQ(future.Get<1>().error(),
@@ -573,6 +579,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     signin::OAuthMultiloginTokenRequest request(
         CoreAccountId::FromGaiaId("unknown_account"), future.GetCallback());
     token_service.StartRequestForMultilogin(request);
+    EXPECT_FALSE(future.IsReady());
     EXPECT_EQ(future.Get<0>(), &request);
     ASSERT_FALSE(future.Get<1>().has_value());
     EXPECT_EQ(
@@ -580,6 +587,118 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
         GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP));
   }
 }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+TEST_F(ProfileOAuth2TokenServiceTest,
+       StartRequestForMultiloginDesktopBoundToken) {
+  ProfileOAuth2TokenService token_service(
+      &prefs_,
+      std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>());
+
+  token_service.GetDelegate()->UpdateCredentials(
+      account_id_, "refreshToken",
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin,
+      /*wrapped_binding_key=*/{1, 2, 3});
+
+  {
+    base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
+                           signin::OAuthMultiloginTokenRequest::Result>
+        future;
+    signin::OAuthMultiloginTokenRequest request(account_id_,
+                                                future.GetCallback());
+    token_service.StartRequestForMultilogin(
+        request, /*token_binding_challenge=*/std::string());
+    EXPECT_FALSE(future.IsReady());
+    EXPECT_EQ(future.Get<0>(), &request);
+    ASSERT_TRUE(future.Get<1>().has_value());
+    EXPECT_EQ(future.Get<1>()->oauth_token(), "refreshToken");
+    EXPECT_EQ(future.Get<1>()->token_binding_assertion(),
+              "DBSC_CHALLENGE_IF_REQUIRED");
+  }
+
+  {
+    base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
+                           signin::OAuthMultiloginTokenRequest::Result>
+        future;
+    signin::OAuthMultiloginTokenRequest request(account_id_,
+                                                future.GetCallback());
+    token_service.StartRequestForMultilogin(request, "challenge");
+    EXPECT_FALSE(future.IsReady());
+    EXPECT_EQ(future.Get<0>(), &request);
+    ASSERT_TRUE(future.Get<1>().has_value());
+    EXPECT_EQ(future.Get<1>()->oauth_token(), "refreshToken");
+    // `FakeProfileOAuth2TokenServiceDelegate` "signs" challenges by appending
+    // ".signed" string.
+    EXPECT_EQ(future.Get<1>()->token_binding_assertion(), "challenge.signed");
+  }
+}
+
+TEST_F(ProfileOAuth2TokenServiceTest,
+       StartRequestForMultiloginBoundTokenWithAuthError) {
+  ProfileOAuth2TokenService token_service(
+      &prefs_,
+      std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>());
+
+  token_service.GetDelegate()->UpdateCredentials(
+      account_id_, "refreshToken",
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin,
+      /*wrapped_binding_key=*/{2, 3, 4});
+  token_service.GetDelegate()->UpdateAuthError(
+      account_id_,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
+                         signin::OAuthMultiloginTokenRequest::Result>
+      future;
+  signin::OAuthMultiloginTokenRequest request(account_id_,
+                                              future.GetCallback());
+  token_service.StartRequestForMultilogin(request, "challenge");
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(future.Get<0>(), &request);
+  ASSERT_FALSE(future.Get<1>().has_value());
+  EXPECT_EQ(
+      future.Get<1>().error(),
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+}
+
+class FakeProfileOAuth2TokenServiceDelegateDesktopFailsBindingAssertion
+    : public FakeProfileOAuth2TokenServiceDelegateDesktop {
+  void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+      const CoreAccountId& account_id,
+      std::string_view challenge,
+      TokenBindingHelper::GenerateAssertionCallback callback) override {
+    std::move(callback).Run(std::string(), std::nullopt);
+  }
+};
+
+TEST_F(ProfileOAuth2TokenServiceTest,
+       StartRequestForMultiloginBoundTokenAssertionFails) {
+  ProfileOAuth2TokenService token_service(
+      &prefs_,
+      std::make_unique<
+          FakeProfileOAuth2TokenServiceDelegateDesktopFailsBindingAssertion>());
+
+  token_service.GetDelegate()->UpdateCredentials(
+      account_id_, "refreshToken",
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin,
+      /*wrapped_binding_key=*/{1, 2, 3});
+
+  base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
+                         signin::OAuthMultiloginTokenRequest::Result>
+      future;
+  signin::OAuthMultiloginTokenRequest request(account_id_,
+                                              future.GetCallback());
+  token_service.StartRequestForMultilogin(request, "challenge");
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(future.Get<0>(), &request);
+  ASSERT_TRUE(future.Get<1>().has_value());
+  EXPECT_EQ(future.Get<1>()->oauth_token(), "refreshToken");
+  EXPECT_EQ(future.Get<1>()->token_binding_assertion(), "SIGNATURE_FAILED");
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginMobile) {
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
@@ -600,6 +719,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginMobile) {
       network::TestURLLoaderFactory::Redirects(),
       network::TestURLLoaderFactory::kResponseDefault);
 
+  EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(future.Get<0>(), &request);
   ASSERT_TRUE(future.Get<1>().has_value());
   EXPECT_EQ(future.Get<1>()->oauth_token(), "second token");

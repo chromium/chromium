@@ -128,9 +128,12 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       OAuth2AccessTokenManager::Consumer* consumer);
 
   // Try to get refresh token from delegate. If it is accessible (i.e. not
-  // empty), return it directly, otherwise start request to get access token.
+  // empty), return it directly (possibly after asynchronously signing
+  // `token_binding_challenge`), otherwise start request to get access token.
   // Used for getting tokens to send to Gaia Multilogin endpoint.
-  void StartRequestForMultilogin(signin::OAuthMultiloginTokenRequest& request);
+  void StartRequestForMultilogin(
+      signin::OAuthMultiloginTokenRequest& request,
+      const std::string& token_binding_challenge = std::string());
 
   // This method does the same as |StartRequest| except it uses |client_id| and
   // |client_secret| to identify OAuth client app instead of using

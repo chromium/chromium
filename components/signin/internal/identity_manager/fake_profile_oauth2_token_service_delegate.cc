@@ -6,10 +6,12 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -42,12 +44,26 @@ bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable(
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+bool FakeProfileOAuth2TokenServiceDelegate::IsRefreshTokenBound(
+    const CoreAccountId& account_id) const {
+  auto it = wrapped_binding_keys_.find(account_id);
+  return it != wrapped_binding_keys_.end() && !it->second.empty();
+}
+
 std::vector<uint8_t>
 FakeProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
     const CoreAccountId& account_id) const {
   auto it = wrapped_binding_keys_.find(account_id);
   return it != wrapped_binding_keys_.end() ? it->second
                                            : std::vector<uint8_t>();
+}
+
+void FakeProfileOAuth2TokenServiceDelegate::
+    GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+        const CoreAccountId& account_id,
+        std::string_view challenge,
+        TokenBindingHelper::GenerateAssertionCallback callback) {
+  std::move(callback).Run(base::StrCat({challenge, ".signed"}), std::nullopt);
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
