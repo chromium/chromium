@@ -67,10 +67,6 @@ export class ExtensionsKeyboardShortcutsElement extends
     return command.isExtensionAction || !command.isActive;
   }
 
-  private onCloseButtonClick_() {
-    this.fire('close');
-  }
-
   protected onScopeChanged_(event: Event) {
     const target = event.target as HTMLSelectElement;
     const extensionId = target.dataset['extensionId']!;

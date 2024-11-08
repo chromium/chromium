@@ -6,9 +6,9 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=../shared_style_lit.css.js
+ * #import=../shared_style.css.js
  * #import=../shared_vars.css.js
- * #include=cr-shared-style-lit shared-style-lit
+ * #include=cr-shared-style-lit shared-style
  * #css_wrapper_metadata_end */
 
 #clear-activities-button {

@@ -261,7 +261,7 @@ export class ExtensionsRuntimeHostPermissionsElement extends CrLitElement {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.ActionMenuOpened');
     const index = getEventTargetIndex(e);
-    this.actionMenuModel_ = this.getRuntimeHosts_()[index];
+    this.actionMenuModel_ = this.getRuntimeHosts_()[index] || null;
     this.actionMenuAnchorElement_ = e.target as HTMLElement;
     this.$.hostActionMenu.showAt(e.target as HTMLElement);
   }
@@ -305,13 +305,13 @@ export class ExtensionsRuntimeHostPermissionsElement extends CrLitElement {
 
   protected onEditHostClick_(e: Event) {
     const index = getEventTargetIndex(e);
-    const item = this.getRuntimeHosts_()[index];
+    const item = this.getRuntimeHosts_()[index]!;
     this.doShowHostDialog_(e.target as HTMLElement, item);
   }
 
   protected onDeleteHostClick_(e: Event) {
     const index = getEventTargetIndex(e);
-    const item = this.getRuntimeHosts_()[index];
+    const item = this.getRuntimeHosts_()[index]!;
     this.delegate.removeRuntimeHostPermission(this.itemId, item);
   }
 

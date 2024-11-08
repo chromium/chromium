@@ -24,6 +24,12 @@ function visibleLineCount(totalCount: number, oppositeCount: number): number {
 
 // TODO (rbpotter): Rename back to ExtensionsCodeSectionElement when .html.ts
 // files are checked in.
+export interface CodeSectionElement {
+  $: {
+    'scroll-container': HTMLElement,
+  };
+}
+
 const CodeSectionElementBase = I18nMixinLit(CrLitElement);
 
 export class CodeSectionElement extends CodeSectionElementBase {

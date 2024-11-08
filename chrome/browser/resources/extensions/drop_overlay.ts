@@ -36,7 +36,6 @@ export class DropOverlayElement extends CrLitElement {
 
   dragEnabled: boolean = false;
   private dragWrapperHandler_: DragAndDropHandler;
-  private dragWrapper_: DragWrapper;
 
   constructor() {
     super();
@@ -57,7 +56,7 @@ export class DropOverlayElement extends CrLitElement {
       this.dispatchEvent(new CustomEvent(
           'load-error', {bubbles: true, composed: true, detail: e.detail}));
     });
-    this.dragWrapper_ = new DragWrapper(dragTarget, this.dragWrapperHandler_);
+    new DragWrapper(dragTarget, this.dragWrapperHandler_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {

@@ -88,7 +88,8 @@ export class ExtensionsPackDialogElement extends CrLitElement {
   delegate: PackDialogDelegate = new DummyPackDialogDelegate();
   protected packDirectory_: string = '';
   protected keyFile_: string = '';
-  protected lastResponse_: chrome.developerPrivate.PackDirectoryResponse|null;
+  protected lastResponse_: chrome.developerPrivate.PackDirectoryResponse|null =
+      null;
 
   protected onKeyFileChanged_(e: CustomEvent<{value: string}>) {
     this.keyFile_ = e.detail.value;

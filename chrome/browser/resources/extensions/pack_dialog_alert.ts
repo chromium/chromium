@@ -38,7 +38,6 @@ export class ExtensionsPackDialogAlertElement extends CrLitElement {
       cancelLabel_: {type: String},
       confirmLabel_: {type: String},
       title_: {type: String},
-      message_: {type: String},
     };
   }
 
@@ -53,7 +52,6 @@ export class ExtensionsPackDialogAlertElement extends CrLitElement {
   /** This needs to be initialized to trigger data-binding. */
   protected confirmLabel_: string|null = '';
   protected title_: string = '';
-  private message_: string = '';
 
   get returnValue(): string {
     return this.$.dialog.getNative().returnValue;

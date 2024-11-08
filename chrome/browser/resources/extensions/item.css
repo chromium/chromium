@@ -9,9 +9,9 @@
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=chrome://resources/cr_elements/action_link_lit.css.js
- * #import=./shared_style_lit.css.js
+ * #import=./shared_style.css.js
  * #import=./shared_vars.css.js
- * #include=cr-icons-lit cr-hidden-style-lit cr-shared-style-lit action-link-lit shared-style-lit
+ * #include=cr-icons-lit cr-hidden-style-lit cr-shared-style-lit action-link-lit shared-style
  * #css_wrapper_metadata_end */
 
 .layout-horizontal-center {

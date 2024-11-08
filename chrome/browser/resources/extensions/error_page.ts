@@ -146,7 +146,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   }
 
   getSelectedError(): ManifestError|RuntimeError {
-    return this.entries_[this.selectedEntry_];
+    return this.entries_[this.selectedEntry_]!;
   }
 
   /**
@@ -327,14 +327,14 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
         (e.target as HTMLElement).parentElement!.querySelectorAll('li');
 
     for (let i = 0; i < list.length; ++i) {
-      if (list[i].classList.contains('selected')) {
+      if (list[i]!.classList.contains('selected')) {
         const index =
             Number((e.currentTarget as HTMLElement).dataset['errorIndex']);
         const item = this.entries_[index] as RuntimeError;
         const frame = item.stackTrace[i + direction];
         if (frame) {
           this.updateSelected_(frame);
-          list[i + direction].focus();  // Preserve focus.
+          list[i + direction]!.focus();  // Preserve focus.
         }
         return;
       }

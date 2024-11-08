@@ -21,7 +21,6 @@ class AsyncMapDirective<T> extends AsyncDirective {
   private renderedItems_: T[] = [];
   private renderStartTime_: number = 0;
   private targetElapsedTime_: number = 50;  // 20fps
-  private eventTarget_: EventTarget|null = null;
   private requestId_: number|null = null;
   private timeout_: number|null = null;
 

@@ -18,7 +18,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './runtime_hosts_dialog.html.js';
-import {getCss as getSharedStyleCss} from './shared_style_lit.css.js';
+import {getCss as getSharedStyleCss} from './shared_style.css.js';
 import {sitePermissionsPatternRegExp} from './site_permissions/site_permissions_edit_url_dialog.js';
 import {SiteSettingsMixin} from './site_permissions/site_settings_mixin.js';
 
@@ -83,7 +83,7 @@ export function getMatchingUserSpecifiedSites(
 
     // Check if host names match. If `matchAllSubdomains` is specified, check
     // that `newHostRes[4]` is a suffix of `siteRes[3]`
-    if (matchAllSubdomains && !siteRes[3].endsWith(newHostRes[4])) {
+    if (matchAllSubdomains && !siteRes[3]!.endsWith(newHostRes[4]!)) {
       return false;
     }
     if (!matchAllSubdomains && siteRes[3] !== newHostRes[4]) {
@@ -311,7 +311,8 @@ export class ExtensionsRuntimeHostsDialogElement extends
     return this.matchingRestrictedSites_.length ?
         this.i18n(
             'matchingRestrictedSitesWarning',
-            this.matchingRestrictedSites_[0]) :
+            this.matchingRestrictedSites_[0]!,
+            ) :
         '';
   }
 }

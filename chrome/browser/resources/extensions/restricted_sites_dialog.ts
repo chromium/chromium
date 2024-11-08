@@ -12,7 +12,7 @@ import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './restricted_sites_dialog.html.js';
-import {getCss as getSharedStyleCss} from './shared_style_lit.css.js';
+import {getCss as getSharedStyleCss} from './shared_style.css.js';
 
 export interface ExtensionsRestrictedSitesDialogElement {
   $: {

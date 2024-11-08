@@ -81,7 +81,7 @@ export class SitePermissionsSiteGroupElement extends CrLitElement {
 
   protected getDisplayUrl_(): string {
     return this.data.sites.length === 1 ?
-        this.getSiteWithoutSubdomainSpecifier_(this.data.sites[0].site) :
+        this.getSiteWithoutSubdomainSpecifier_(this.data.sites[0]!.site) :
         this.data.etldPlusOne;
   }
 
@@ -92,7 +92,7 @@ export class SitePermissionsSiteGroupElement extends CrLitElement {
     if (this.data.sites.length === 0) {
       return '';
     }
-    const siteSet = this.data.sites[0].siteSet;
+    const siteSet = this.data.sites[0]!.siteSet;
     const isSiteSetConsistent =
         this.data.sites.every(site => site.siteSet === siteSet);
     if (!isSiteSetConsistent) {
@@ -113,7 +113,7 @@ export class SitePermissionsSiteGroupElement extends CrLitElement {
   }
 
   protected etldOrFirstSiteMatchesSubdomains_(): boolean {
-    const site = this.data.sites.length === 1 ? this.data.sites[0].site :
+    const site = this.data.sites.length === 1 ? this.data.sites[0]!.site :
                                                 this.data.etldPlusOne;
     return matchesSubdomains(site);
   }
@@ -147,7 +147,7 @@ export class SitePermissionsSiteGroupElement extends CrLitElement {
   }
 
   protected onEditSiteClick_() {
-    this.siteToEdit_ = this.data.sites[0];
+    this.siteToEdit_ = this.data.sites[0] || null;
     this.showEditSitePermissionsDialog_ = true;
   }
 
