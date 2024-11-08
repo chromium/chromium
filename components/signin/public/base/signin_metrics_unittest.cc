@@ -215,8 +215,7 @@ class SigninMetricsTest : public ::testing::Test {
       case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
         return "DriveFilePickerIOS";
       case AccessPoint::ACCESS_POINT_MAX:
-        NOTREACHED_IN_MIGRATION();
-        return "";
+        NOTREACHED();
     }
   }
 };

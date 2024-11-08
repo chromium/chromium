@@ -421,12 +421,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
           base::UserMetricsAction("Signin_Signin_FromNTPFeedTopPromo"));
       break;
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-      NOTREACHED_IN_MIGRATION()
-          << "Access point " << static_cast<int>(access_point)
-          << " is only used to trigger non-sync sign-in and this"
-          << " action should only be triggered for sync-enabled"
-          << " sign-ins.";
-      break;
+      NOTREACHED() << "Access point " << static_cast<int>(access_point)
+                   << " is only used to trigger non-sync sign-in and this"
+                   << " action should only be triggered for sync-enabled"
+                   << " sign-ins.";
     case AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
@@ -443,10 +441,8 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
     case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
-      NOTREACHED_IN_MIGRATION()
-          << "Access point " << static_cast<int>(access_point)
-          << " is not supposed to log signin user actions.";
-      break;
+      NOTREACHED() << "Access point " << static_cast<int>(access_point)
+                   << " is not supposed to log signin user actions.";
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
       VLOG(1) << "Signin_Signin_From* user action is not recorded "
               << "for access point " << static_cast<int>(access_point);
@@ -548,8 +544,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
           base::UserMetricsAction("Signin_Signin_FromAddressBubble"));
       break;
     case AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -724,10 +719,9 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION() << "Signin_Impression_From* user actions"
-                                << " are not recorded for access point "
-                                << static_cast<int>(access_point);
-      break;
+      NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
+                      "for access point "
+                   << static_cast<int>(access_point);
   }
 }
 

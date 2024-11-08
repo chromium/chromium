@@ -294,8 +294,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
         delegate_->OnManageAccounts();
       break;
     case signin::GAIA_SERVICE_TYPE_NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // WKWebView loads a blank page even if the response code is 204

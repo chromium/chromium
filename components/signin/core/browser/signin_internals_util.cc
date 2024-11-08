@@ -26,8 +26,7 @@ std::string SigninStatusFieldToString(UntimedSigninStatusField field) {
     ENUM_CASE(USERNAME);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string SigninStatusFieldToString(TimedSigninStatusField field) {
@@ -37,12 +36,10 @@ std::string SigninStatusFieldToString(TimedSigninStatusField field) {
     ENUM_CASE(LAST_SIGNIN_ACCESS_POINT);
     ENUM_CASE(LAST_SIGNOUT_SOURCE);
     case TIMED_FIELDS_END:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 } //  namespace signin_internals_util

@@ -131,7 +131,7 @@ void OAuthMultiloginTokenFetcher::EraseRequest(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Request not found";
+  NOTREACHED() << "Request not found";
 }
 
 }  // namespace signin

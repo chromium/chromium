@@ -54,7 +54,7 @@ GoogleServiceAuthError GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
     case kAuthenticationErrorCategoryUnknownIdentityErrors:
       return GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
   }
-  NOTREACHED_IN_MIGRATION() << "unsupported error: " << static_cast<int>(error);
+  NOTREACHED() << "unsupported error: " << static_cast<int>(error);
 }
 
 // Converts a DeviceAccountsProvider::AccountInfo to an AccountInfo.
@@ -260,9 +260,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected call to UpdateCredentials when using shared "
-         "authentication.";
+  NOTREACHED() << "Unexpected call to UpdateCredentials when using shared "
+                  "authentication.";
 }
 
 void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentialsInternal(

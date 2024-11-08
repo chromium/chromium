@@ -106,7 +106,7 @@ class TestSupportAndroid {
 
   void SimulateIssueAccessTokenPersistentError(
       const CoreAccountInfo& account_info) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

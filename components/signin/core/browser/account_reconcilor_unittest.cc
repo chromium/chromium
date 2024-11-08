@@ -192,12 +192,10 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
         return std::make_unique<signin::DiceAccountReconcilorDelegate>(
             identity_manager, client);
 #else
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
 #endif
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 
@@ -685,8 +683,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       if (PickAccountIdForAccount(account.gaia_id, account.email) == account_id)
         return account;
     }
-    NOTREACHED_IN_MIGRATION();
-    return Account();
+    NOTREACHED();
   }
 
   // Simulates the effect of a Multilogin call on the cookies.
@@ -2981,8 +2978,7 @@ TEST_P(AccountReconcilorMethodParamTest,
       break;
     }
     case signin::AccountConsistencyMethod::kDisabled:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
