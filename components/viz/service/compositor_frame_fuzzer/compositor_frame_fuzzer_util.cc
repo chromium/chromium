@@ -237,7 +237,6 @@ CompositorRenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
   return data_.frame.render_pass_list.back()->id;
 }
 
-// TODO(crbug.com/40219248): Move proto::DrawQuad to SkColor4f
 void FuzzedCompositorFrameBuilder::AddSolidColorDrawQuad(
     CompositorRenderPass* pass,
     const gfx::Rect& rect,
@@ -246,9 +245,12 @@ void FuzzedCompositorFrameBuilder::AddSolidColorDrawQuad(
   auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
   ConfigureSharedQuadState(shared_quad_state, quad_spec);
   auto* quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, rect, visible_rect,
-               GetColorFromProtobuf(quad_spec.solid_color_quad().color()),
-               quad_spec.solid_color_quad().force_anti_aliasing_off());
+  quad->shared_quad_state = shared_quad_state;
+  quad->rect = rect;
+  quad->visible_rect = visible_rect;
+  quad->color = GetColorFromProtobuf(quad_spec.solid_color_quad().color());
+  quad->force_anti_aliasing_off =
+      quad_spec.solid_color_quad().force_anti_aliasing_off();
 }
 
 void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
@@ -278,13 +280,18 @@ void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
   auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
   ConfigureSharedQuadState(shared_quad_state, quad_spec);
   auto* quad = pass->CreateAndAppendDrawQuad<TileDrawQuad>();
-  quad->SetNew(
-      shared_quad_state, rect, visible_rect,
-      quad_spec.tile_quad().needs_blending(), transferable_resource.id,
-      gfx::RectF(GetRectFromProtobuf(quad_spec.tile_quad().tex_coord_rect())),
-      tile_size, quad_spec.tile_quad().is_premultiplied(),
-      quad_spec.tile_quad().nearest_neighbor(),
-      quad_spec.tile_quad().force_anti_aliasing_off());
+  quad->shared_quad_state = shared_quad_state;
+  quad->rect = rect;
+  quad->visible_rect = visible_rect;
+  quad->needs_blending = quad_spec.tile_quad().needs_blending();
+  quad->resources.ids[0] = transferable_resource.id;
+  quad->tex_coord_rect =
+      gfx::RectF(GetRectFromProtobuf(quad_spec.tile_quad().tex_coord_rect()));
+  quad->texture_size = tile_size;
+  quad->is_premultiplied = quad_spec.tile_quad().is_premultiplied();
+  quad->nearest_neighbor = quad_spec.tile_quad().nearest_neighbor();
+  quad->force_anti_aliasing_off =
+      quad_spec.tile_quad().force_anti_aliasing_off();
 
   data_.frame.resource_list.push_back(transferable_resource);
 }
@@ -336,51 +343,47 @@ void FuzzedCompositorFrameBuilder::TryAddRenderPassDrawQuad(
   auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
   ConfigureSharedQuadState(shared_quad_state, quad_spec);
   auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
-  quad->SetNew(shared_quad_state, rect, visible_rect, child_pass_id,
-               /*mask_resource_id=*/ResourceId(),
-               /*mask_uv_rect=*/gfx::RectF(),
-               /*mask_texture_size=*/gfx::Size(),
-               /*filters_scale=*/gfx::Vector2dF(),
-               /*filters_origin=*/gfx::PointF(),
-               /*tex_coord_rect=*/tex_coord_rect,
-               /*force_anti_aliasing_off=*/false,
-               /*backdrop_filter_quality=*/1.0);
+  quad->shared_quad_state = shared_quad_state;
+  quad->rect = rect;
+  quad->visible_rect = visible_rect;
+  quad->render_pass_id = child_pass_id;
+  quad->tex_coord_rect = tex_coord_rect;
 }
 
 void FuzzedCompositorFrameBuilder::ConfigureSharedQuadState(
     SharedQuadState* shared_quad_state,
     const proto::DrawQuad& quad_spec) {
   if (quad_spec.has_sqs()) {
-    std::optional<gfx::Rect> clip_rect;
+    shared_quad_state->quad_to_target_transform =
+        GetTransformFromProtobuf(quad_spec.sqs().transform());
+    shared_quad_state->quad_layer_rect =
+        GetRectFromProtobuf(quad_spec.sqs().layer_rect());
+    shared_quad_state->visible_quad_layer_rect =
+        GetRectFromProtobuf(quad_spec.sqs().visible_rect());
     if (quad_spec.sqs().is_clipped()) {
-      clip_rect = GetRectFromProtobuf(quad_spec.sqs().clip_rect());
+      shared_quad_state->clip_rect =
+          GetRectFromProtobuf(quad_spec.sqs().clip_rect());
     }
-    shared_quad_state->SetAll(
-        GetTransformFromProtobuf(quad_spec.sqs().transform()),
-        GetRectFromProtobuf(quad_spec.sqs().layer_rect()),
-        GetRectFromProtobuf(quad_spec.sqs().visible_rect()),
-        gfx::MaskFilterInfo(), clip_rect, quad_spec.sqs().are_contents_opaque(),
-        Normalize(quad_spec.sqs().opacity()), SkBlendMode::kSrcOver,
-        quad_spec.sqs().sorting_context_id(), /*layer_id=*/0u,
-        /*fast_rounded_corner*/ false);
+    shared_quad_state->are_contents_opaque =
+        quad_spec.sqs().are_contents_opaque();
+    shared_quad_state->opacity = Normalize(quad_spec.sqs().opacity());
+    shared_quad_state->blend_mode = SkBlendMode::kSrcOver;
+    shared_quad_state->sorting_context_id =
+        quad_spec.sqs().sorting_context_id();
   } else {
-    gfx::Transform transform;
-
     if (quad_spec.quad_case() == proto::DrawQuad::kRenderPassQuad &&
         quad_spec.render_pass_quad()
             .render_pass()
             .has_transform_to_root_target()) {
-      transform = GetTransformFromProtobuf(quad_spec.render_pass_quad()
-                                               .render_pass()
-                                               .transform_to_root_target());
+      shared_quad_state->quad_to_target_transform =
+          GetTransformFromProtobuf(quad_spec.render_pass_quad()
+                                       .render_pass()
+                                       .transform_to_root_target());
     }
 
-    shared_quad_state->SetAll(
-        transform, GetRectFromProtobuf(quad_spec.rect()),
-        GetRectFromProtobuf(quad_spec.visible_rect()), gfx::MaskFilterInfo(),
-        /*clip_rect=*/std::nullopt, /*are_contents_opaque=*/true,
-        /*opacity=*/1.0, SkBlendMode::kSrcOver, /*sorting_context_id=*/0,
-        /*layer_id=*/0u, /*fast_rounded_corner*/ false);
+    shared_quad_state->quad_layer_rect = GetRectFromProtobuf(quad_spec.rect());
+    shared_quad_state->visible_quad_layer_rect =
+        GetRectFromProtobuf(quad_spec.visible_rect());
   }
 }
 
