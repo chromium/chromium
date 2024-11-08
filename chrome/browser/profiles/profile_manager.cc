@@ -1439,7 +1439,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   if ((!base::CommandLine::ForCurrentProcess()->HasSwitch(
            switches::kDisableLoginScreenApps) &&
        ash::ProfileHelper::IsSigninProfile(profile)) ||
-      ash::ProfileHelper::IsLockScreenAppProfile(profile) ||
       ash::IsShimlessRmaAppBrowserContext(profile)) {
     extensions_enabled = true;
   }

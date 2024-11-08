@@ -300,8 +300,7 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 

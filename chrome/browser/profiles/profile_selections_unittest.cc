@@ -46,9 +46,6 @@ TEST_F(ProfileSelectionsTest, DefaultConstructor) {
 
   TestProfileSelection(selections, lockscreen_profile(), nullptr);
   TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
-
-  TestProfileSelection(selections, lockscreenapp_profile(), nullptr);
-  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -78,10 +75,6 @@ TEST_F(ProfileSelectionsTest, CustomImplementation) {
 
   TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
   TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
-
-  TestProfileSelection(selections, lockscreenapp_profile(),
-                       lockscreenapp_profile());
-  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -105,9 +98,6 @@ TEST_F(ProfileSelectionsTest, OnlyRegularProfile) {
 
   TestProfileSelection(selections, lockscreen_profile(), nullptr);
   TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
-
-  TestProfileSelection(selections, lockscreenapp_profile(), nullptr);
-  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -132,9 +122,6 @@ TEST_F(ProfileSelectionsTest, RegularAndIncognito) {
 
   TestProfileSelection(selections, lockscreen_profile(), nullptr);
   TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
-
-  TestProfileSelection(selections, lockscreenapp_profile(), nullptr);
-  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -159,9 +146,6 @@ TEST_F(ProfileSelectionsTest, RedirectedInIncognito) {
 
   TestProfileSelection(selections, lockscreen_profile(), nullptr);
   TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
-
-  TestProfileSelection(selections, lockscreenapp_profile(), nullptr);
-  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -185,8 +169,5 @@ TEST_F(ProfileSelectionsTest, NoProfiles) {
 
   TestProfileSelection(selections, lockscreen_profile(), nullptr);
   TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
-
-  TestProfileSelection(selections, lockscreenapp_profile(), nullptr);
-  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)s
 }

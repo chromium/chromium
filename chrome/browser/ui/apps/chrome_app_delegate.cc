@@ -214,7 +214,6 @@ ChromeAppDelegate::NewWindowContentsDelegate::OpenURLFromTab(
 ChromeAppDelegate::ChromeAppDelegate(Profile* profile, bool keep_alive)
     : has_been_shown_(false),
       is_hidden_(true),
-      for_lock_screen_app_(false),
       profile_(profile),
       new_window_contents_delegate_(new NewWindowContentsDelegate()) {
   if (keep_alive) {

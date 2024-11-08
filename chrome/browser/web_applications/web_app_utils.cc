@@ -297,7 +297,6 @@ bool AreWebAppsEnabled(Profile* profile) {
   // Web Apps should not be installed to the ChromeOS system profiles except the
   // lock screen app profile.
   if (!ash::ProfileHelper::IsUserProfile(original_profile) &&
-      !ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
       !ash::IsShimlessRmaAppBrowserContext(profile)) {
     return false;
   }
@@ -326,9 +325,6 @@ bool AreWebAppsUserInstallable(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
   if (IsWebAppsCrosapiEnabled()) {
-    return false;
-  }
-  if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     return false;
   }
 #endif

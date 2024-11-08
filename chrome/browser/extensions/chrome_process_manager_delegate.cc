@@ -91,11 +91,6 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
            IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 
-  if (ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
-      !profile->IsOffTheRecord()) {
-    return extension.permissions_data()->HasAPIPermission(
-        mojom::APIPermissionID::kLockScreen);
-  }
 #endif
 
   return AreBackgroundPagesAllowedForContext(context);

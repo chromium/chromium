@@ -249,12 +249,6 @@ base::WeakPtr<Kcer> KcerFactoryAsh::GetKcerImpl(Profile* profile) {
     return ExtraInstances::GetDeviceKcer();
   }
 
-  if (ash::IsLockScreenAppBrowserContext(profile)) {
-    // Returning an empty Kcer here is not a strict requirement, but seem to be
-    // the status quo for now.
-    return ExtraInstances::GetEmptyKcer();
-  }
-
   if (!ash::IsUserBrowserContext(profile)) {
     return ExtraInstances::GetEmptyKcer();
   }

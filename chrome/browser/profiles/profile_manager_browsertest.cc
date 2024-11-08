@@ -219,16 +219,14 @@ class PasswordStoreConsumerVerifier
   base::WeakPtrFactory<PasswordStoreConsumerVerifier> weak_ptr_factory_{this};
 };
 
-base::FilePath GetFirstNonSigninNonLockScreenAppProfile(
-    ProfileAttributesStorage* storage) {
+base::FilePath GetFirstNonSigninProfile(ProfileAttributesStorage* storage) {
   std::vector<ProfileAttributesEntry*> entries =
       storage->GetAllProfilesAttributesSortedByNameWithCheck();
 #if BUILDFLAG(IS_CHROMEOS)
   for (ProfileAttributesEntry* entry : entries) {
     base::FilePath profile_path = entry->GetPath();
     std::string base_name = profile_path.BaseName().value();
-    if (base_name != ash::kSigninBrowserContextBaseName &&
-        base_name != ash::kLockScreenAppBrowserContextBaseName) {
+    if (base_name != ash::kSigninBrowserContextBaseName) {
       return profile_path;
     }
   }
@@ -541,8 +539,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, SwitchToProfile) {
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
   size_t initial_profile_count = profile_manager->GetNumberOfProfiles();
-  base::FilePath path_profile1 =
-      GetFirstNonSigninNonLockScreenAppProfile(&storage);
+  base::FilePath path_profile1 = GetFirstNonSigninProfile(&storage);
 
   ASSERT_NE(0U, initial_profile_count);
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
@@ -587,8 +584,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
       profile_manager->GetProfileAttributesStorage();
   size_t initial_profile_count = profile_manager->GetNumberOfProfiles();
 
-  base::FilePath path_profile1 =
-      GetFirstNonSigninNonLockScreenAppProfile(&storage);
+  base::FilePath path_profile1 = GetFirstNonSigninProfile(&storage);
   ASSERT_NE(0U, initial_profile_count);
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   base::FilePath path_profile2 =
@@ -648,8 +644,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
   size_t initial_profile_count = profile_manager->GetNumberOfProfiles();
-  base::FilePath path_profile1 =
-      GetFirstNonSigninNonLockScreenAppProfile(&storage);
+  base::FilePath path_profile1 = GetFirstNonSigninProfile(&storage);
 
   ASSERT_NE(0U, initial_profile_count);
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());

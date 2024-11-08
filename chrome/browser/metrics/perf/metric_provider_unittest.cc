@@ -334,10 +334,8 @@ class MetricProviderSyncSettingsTest : public testing::Test {
     // user profile(s).
     testing_profile_manager_->CreateTestingProfile(
         ash::kSigninBrowserContextBaseName);
-    // Also add two non-regular profiles that might appear on ChromeOS. They
-    // always disable sync and are skipped when getting sync settings.
-    testing_profile_manager_->CreateTestingProfile(
-        ash::kLockScreenAppBrowserContextBaseName);
+    // Also add a non-regular profile that might appear on ChromeOS. It always
+    // disables sync and is skipped when getting sync settings.
     testing_profile_manager_->CreateTestingProfile(
         ash::kLockScreenBrowserContextBaseName);
     metric_provider_ = std::make_unique<TestMetricProvider>(

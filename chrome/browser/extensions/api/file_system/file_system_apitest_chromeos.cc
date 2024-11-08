@@ -159,8 +159,7 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -283,8 +282,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 

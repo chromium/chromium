@@ -1091,8 +1091,7 @@ bool ProfileImpl::IsChild() const {
 
 bool ProfileImpl::AllowsBrowserWindows() const {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ash::ProfileHelper::IsSigninProfile(this) ||
-      ash::ProfileHelper::IsLockScreenAppProfile(this)) {
+  if (ash::ProfileHelper::IsSigninProfile(this)) {
     return false;
   }
 #endif

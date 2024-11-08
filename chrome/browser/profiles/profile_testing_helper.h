@@ -38,9 +38,6 @@ class ProfileTestingHelper {
 
   TestingProfile* lockscreen_profile() { return lockscreen_profile_; }
   Profile* lockscreen_profile_otr() { return lockscreen_profile_otr_; }
-
-  TestingProfile* lockscreenapp_profile() { return lockscreenapp_profile_; }
-  Profile* lockscreenapp_profile_otr() { return lockscreenapp_profile_otr_; }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
@@ -64,9 +61,6 @@ class ProfileTestingHelper {
 
   raw_ptr<TestingProfile, DanglingUntriaged> lockscreen_profile_ = nullptr;
   raw_ptr<Profile, DanglingUntriaged> lockscreen_profile_otr_ = nullptr;
-
-  raw_ptr<TestingProfile, DanglingUntriaged> lockscreenapp_profile_ = nullptr;
-  raw_ptr<Profile, DanglingUntriaged> lockscreenapp_profile_otr_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

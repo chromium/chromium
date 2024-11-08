@@ -692,12 +692,8 @@ KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
 
 bool ChromeExtensionsBrowserClient::IsLockScreenContext(
     content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS)
-  return ash::ProfileHelper::IsLockScreenAppProfile(
-      Profile::FromBrowserContext(context));
-#else
+  // TODO(crbug.com/376354347): Remove this method.
   return false;
-#endif
 }
 
 std::string ChromeExtensionsBrowserClient::GetApplicationLocale() {

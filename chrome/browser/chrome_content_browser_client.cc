@@ -4066,8 +4066,7 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
 bool CanPromptWithNonmatchingCertificates(const Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::ProfileHelper::IsSigninProfile(profile) ||
-      ash::ProfileHelper::IsLockScreenProfile(profile) ||
-      ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
+      ash::ProfileHelper::IsLockScreenProfile(profile)) {
     // On non-regular profiles (e.g. sign-in profile or lock-screen profile),
     // never show certificate selection to the user. A client certificate is an
     // identifier that can be stable for a long time, so only the administrator

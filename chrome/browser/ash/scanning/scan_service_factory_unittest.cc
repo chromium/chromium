@@ -80,13 +80,4 @@ TEST(ScanServiceFactoryTest, SigninProfileNoService) {
             ScanServiceFactory::GetForBrowserContext(signin_profile.get()));
 }
 
-// Test that the ScanService cannot be created on the lock screen.
-TEST(ScanServiceFactoryTest, LockScreenProfileNoService) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<Profile> lockscreen_profile =
-      CreateProfile(ash::kLockScreenAppBrowserContextBaseName);
-  EXPECT_EQ(nullptr,
-            ScanServiceFactory::GetForBrowserContext(lockscreen_profile.get()));
-}
-
 }  // namespace ash

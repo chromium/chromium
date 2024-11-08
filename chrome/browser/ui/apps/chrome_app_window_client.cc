@@ -49,15 +49,6 @@ extensions::AppWindow* ChromeAppWindowClient::CreateAppWindow(
 #endif
 }
 
-extensions::AppWindow*
-ChromeAppWindowClient::CreateAppWindowForLockScreenAction(
-    content::BrowserContext* context,
-    const extensions::Extension* extension,
-    extensions::api::app_runtime::ActionType action) {
-  // TODO(crbug.com/376354347): Remove this method.
-  return nullptr;
-}
-
 std::unique_ptr<extensions::NativeAppWindow>
 ChromeAppWindowClient::CreateNativeAppWindow(
     extensions::AppWindow* window,

@@ -22,13 +22,6 @@ AppWindow* ShellAppWindowClient::CreateAppWindow(
                        extension);
 }
 
-AppWindow* ShellAppWindowClient::CreateAppWindowForLockScreenAction(
-    content::BrowserContext* context,
-    const Extension* extension,
-    api::app_runtime::ActionType action) {
-  return nullptr;
-}
-
 void ShellAppWindowClient::OpenDevToolsWindow(
     content::WebContents* web_contents,
     base::OnceClosure callback) {

@@ -76,17 +76,5 @@ void ProfileTestingHelper::SetUp() {
   ASSERT_FALSE(ash::IsUserBrowserContext(lockscreen_profile_otr_));
   ASSERT_TRUE(lockscreen_profile_otr_->IsOffTheRecord());
 
-  lockscreenapp_profile_ =
-      manager_.CreateTestingProfile(ash::kLockScreenAppBrowserContextBaseName);
-  ASSERT_TRUE(lockscreenapp_profile_);
-  ASSERT_TRUE(ash::IsLockScreenAppBrowserContext(lockscreenapp_profile_));
-  ASSERT_FALSE(ash::IsUserBrowserContext(lockscreenapp_profile_));
-  ASSERT_FALSE(lockscreenapp_profile_->IsOffTheRecord());
-  lockscreenapp_profile_otr_ =
-      lockscreenapp_profile_->GetPrimaryOTRProfile(true);
-  ASSERT_TRUE(lockscreenapp_profile_otr_);
-  ASSERT_TRUE(ash::IsLockScreenAppBrowserContext(lockscreenapp_profile_otr_));
-  ASSERT_FALSE(ash::IsUserBrowserContext(lockscreenapp_profile_otr_));
-  ASSERT_TRUE(lockscreenapp_profile_otr_->IsOffTheRecord());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

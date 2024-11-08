@@ -205,8 +205,7 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
   }
 
   if (!profile || profile->IsChild() || profile->IsOffTheRecord() ||
-      ash::ProfileHelper::IsEphemeralUserProfile(profile) ||
-      ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
+      ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
     VLOG(1) << "Profile is not allowed to run crostini.";
     *reason = "This user session is not allowed to run crostini";
     return false;

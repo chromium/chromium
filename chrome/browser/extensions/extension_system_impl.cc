@@ -200,8 +200,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   bool autoupdate_enabled =
       !profile_->IsGuestSession() && !profile_->IsSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!extensions_enabled ||
-      ash::ProfileHelper::IsLockScreenAppProfile(profile_)) {
+  if (!extensions_enabled) {
     autoupdate_enabled = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

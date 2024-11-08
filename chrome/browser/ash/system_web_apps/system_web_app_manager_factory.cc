@@ -68,11 +68,6 @@ bool SystemWebAppManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 
 content::BrowserContext* SystemWebAppManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  if (ash::ProfileHelper::IsLockScreenAppProfile(
-          Profile::FromBrowserContext(context))) {
-    return nullptr;
-  }
-
   // SWAM is guarded by the feature flag in kiosk mode, disabled by default.
   if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps) &&
       chromeos::IsKioskSession()) {

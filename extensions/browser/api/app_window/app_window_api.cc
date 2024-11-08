@@ -80,10 +80,6 @@ constexpr char kImeWindowMustBeImeWindow[] =
 #endif
 constexpr char kShowInShelfWindowKeyNotSet[] =
     "The \"showInShelf\" option requires the \"id\" option to be set.";
-constexpr char kLockScreenActionRequiresLockScreenContext[] =
-    "The lockScreenAction option requires lock screen app context.";
-constexpr char kLockScreenActionRequiresLockScreenPermission[] =
-    "The lockScreenAction option requires lockScreen permission.";
 constexpr char kAppWindowCreationFailed[] = "Failed to create the app window.";
 constexpr char kPrematureWindowClose[] =
     "App window is closed before ready to commit first navigation.";
@@ -370,35 +366,11 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
   }
 
-  api::app_runtime::ActionType action_type =
-      api::app_runtime::ActionType::kNone;
-  if (options &&
-      options->lock_screen_action != api::app_runtime::ActionType::kNone) {
-    if (source_context_type() != mojom::ContextType::kLockscreenExtension) {
-      return RespondNow(Error(
-          app_window_constants::kLockScreenActionRequiresLockScreenContext));
-    }
-
-    if (!extension()->permissions_data()->HasAPIPermission(
-            mojom::APIPermissionID::kLockScreen)) {
-      return RespondNow(Error(
-          app_window_constants::kLockScreenActionRequiresLockScreenPermission));
-    }
-
-    action_type = options->lock_screen_action;
-    create_params.show_on_lock_screen = true;
-  }
-
   create_params.creator_process_id = source_process_id();
 
   AppWindow* app_window = nullptr;
-  if (action_type == api::app_runtime::ActionType::kNone) {
-    app_window =
-        AppWindowClient::Get()->CreateAppWindow(browser_context(), extension());
-  } else {
-    app_window = AppWindowClient::Get()->CreateAppWindowForLockScreenAction(
-        browser_context(), extension(), action_type);
-  }
+  app_window =
+      AppWindowClient::Get()->CreateAppWindow(browser_context(), extension());
 
   // App window client might refuse to create an app window, e.g. when the app
   // attempts to create a lock screen action handler window when the action was

@@ -425,8 +425,7 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -506,8 +505,7 @@ class MultiProfileDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -591,8 +589,7 @@ class LocalAndDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 

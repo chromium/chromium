@@ -114,16 +114,6 @@ bool ProfileHelper::IsSigninProfile(const Profile* profile) {
 }
 
 // static
-bool ProfileHelper::IsLockScreenAppProfile(const Profile* profile) {
-  return ash::IsLockScreenAppBrowserContext(const_cast<Profile*>(profile));
-}
-
-// static
-base::FilePath ProfileHelper::GetLockScreenAppProfilePath() {
-  return BrowserContextHelper::Get()->GetLockScreenAppBrowserContextPath();
-}
-
-// static
 base::FilePath ProfileHelper::GetLockScreenProfileDir() {
   return BrowserContextHelper::Get()->GetLockScreenBrowserContextPath();
 }
