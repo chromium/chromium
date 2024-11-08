@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -267,6 +268,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 mBottomControlsStacker.getTotalHeight(),
                 mBottomControlsStacker.getTotalMinHeight());
 
+        FrameLayout.LayoutParams hairlineLayoutParams =
+                mControlContainer.mutateHairlineLayoutParams();
+        hairlineLayoutParams.topMargin =
+                mCurrentPosition == ControlsPosition.TOP ? controlContainerHeight : 0;
         CoordinatorLayout.LayoutParams layoutParams = mControlContainer.mutateLayoutParams();
         int verticalGravity =
                 mCurrentPosition == ControlsPosition.TOP ? Gravity.TOP : Gravity.BOTTOM;

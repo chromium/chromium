@@ -18,6 +18,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -181,6 +182,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 (CoordinatorLayout.LayoutParams) getLayoutParams();
         setLayoutParams(layoutParams);
         return layoutParams;
+    }
+
+    @Override
+    public FrameLayout.LayoutParams mutateHairlineLayoutParams() {
+        FrameLayout.LayoutParams hairlineParams = (LayoutParams) mToolbarHairline.getLayoutParams();
+        mToolbarHairline.setLayoutParams(hairlineParams);
+        return hairlineParams;
     }
 
     @Override

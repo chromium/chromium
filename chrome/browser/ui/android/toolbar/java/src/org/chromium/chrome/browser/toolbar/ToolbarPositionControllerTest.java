@@ -14,6 +14,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -203,6 +205,7 @@ public class ToolbarPositionControllerTest {
             new CoordinatorLayout.LayoutParams(400, TOOLBAR_HEIGHT);
     private CoordinatorLayout.LayoutParams mProgressBarLayoutParams =
             new CoordinatorLayout.LayoutParams(400, 5);
+    private FrameLayout.LayoutParams mHairlineLayoutParams = new LayoutParams(400, 5);
     @Mock private ControlContainer mControlContainer;
     @Mock private View mControlContainerView;
     @Mock private View mProgressBarContainer;
@@ -241,6 +244,8 @@ public class ToolbarPositionControllerTest {
     public void setUp() {
         doReturn(TOOLBAR_HEIGHT).when(mControlContainer).getToolbarHeight();
         doReturn(mControlContainerLayoutParams).when(mControlContainer).mutateLayoutParams();
+        mHairlineLayoutParams.topMargin = TOOLBAR_HEIGHT;
+        doReturn(mHairlineLayoutParams).when(mControlContainer).mutateHairlineLayoutParams();
         doReturn(mControlContainerView).when(mControlContainer).getView();
         doReturn(CONTROL_CONTAINER_ID).when(mControlContainerView).getId();
         doReturn(mProgressBarLayoutParams).when(mProgressBarContainer).getLayoutParams();
@@ -484,6 +489,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(mBrowserControlsSizer.getControlsPosition(), ControlsPosition.BOTTOM);
         assertEquals(mBrowserControlsSizer.getTopControlsHeight(), 0);
         assertEquals(mBrowserControlsSizer.getBottomControlsHeight(), TOOLBAR_HEIGHT);
+        assertEquals(mHairlineLayoutParams.topMargin, 0);
         assertEquals(mControlContainerLayoutParams.gravity, Gravity.START | Gravity.BOTTOM);
         assertEquals(mProgressBarLayoutParams.gravity, Gravity.BOTTOM);
         assertEquals(mProgressBarLayoutParams.anchorGravity, Gravity.NO_GRAVITY);
@@ -494,6 +500,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(mBrowserControlsSizer.getControlsPosition(), ControlsPosition.TOP);
         assertEquals(mBrowserControlsSizer.getTopControlsHeight(), TOOLBAR_HEIGHT);
         assertEquals(mBrowserControlsSizer.getBottomControlsHeight(), 0);
+        assertEquals(mHairlineLayoutParams.topMargin, TOOLBAR_HEIGHT);
         assertEquals(mControlContainerLayoutParams.gravity, Gravity.START | Gravity.TOP);
         assertEquals(mProgressBarLayoutParams.gravity, Gravity.TOP);
         assertEquals(mProgressBarLayoutParams.anchorGravity, Gravity.BOTTOM);
