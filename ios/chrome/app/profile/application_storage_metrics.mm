@@ -17,15 +17,13 @@
 #import "base/task/thread_pool.h"
 #import "components/history/core/browser/history_constants.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
+#import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 
 // The etension used for all snapshot images.
 constexpr std::string_view kSnapshotImageExtension = ".jpg";
 // The label appended to the snapshot filename for grey snapshot images.
 constexpr std::string_view kGreySnapshotImageIdentifier = "Grey";
-
-// The path, relative to the profile directory, where tab state is stored.
-const base::FilePath::CharType kSessionsPath[] = FILE_PATH_LITERAL("Sessions");
 
 // The path, relative to the profile directory, where snapshots are stored.
 const base::FilePath::CharType kSnapshotsPath[] =
@@ -208,6 +206,14 @@ void LogOptimizationGuideModelDownloadsMetrics(
       "IOS.SandboxMetrics.OptimizationGuideModelDownloadedItems", items);
 }
 
+// Returns the size of the sessions for `profile_path`, including both the
+// legacy and optimized storage.
+int64_t GetSessionStorageSize(const base::FilePath& profile_path) {
+  return CalculateTotalSize(profile_path.Append(kLegacySessionsDirname)) +
+         CalculateTotalSize(profile_path.Append(kLegacyWebSessionsDirname)) +
+         CalculateTotalSize(profile_path.Append(kSessionRestorationDirname));
+}
+
 // Logs the total amount of storage used by the regular and OTR tabs for both
 // tab state and snapshots and the total size of the Application Support
 // directory excluding the storage used by tabs.
@@ -215,13 +221,11 @@ void LogApplicationSupportDirectorySize(
     base::FilePath profile_path,
     base::FilePath otr_profile_path,
     scoped_refptr<base::SequencedTaskRunner>) {
-  base::FilePath session_storage_dir = profile_path.Append(kSessionsPath);
-  int64_t regular_tabs_size_bytes = CalculateTotalSize(session_storage_dir);
+  int64_t regular_tabs_size_bytes = GetSessionStorageSize(profile_path);
   UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.TotalRegularSessionSize",
                                  regular_tabs_size_bytes / 1024 / 1024);
 
-  base::FilePath otr_storage_dir = otr_profile_path.Append(kSessionsPath);
-  int64_t otr_tabs_size_bytes = CalculateTotalSize(otr_storage_dir);
+  int64_t otr_tabs_size_bytes = GetSessionStorageSize(otr_profile_path);
   UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.TotalOTRSessionSize",
                                  otr_tabs_size_bytes / 1024 / 1024);
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/sessions/model/session_service_ios.h"
+
 #import <Foundation/Foundation.h>
 
 #import <memory>
@@ -16,7 +18,6 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/sessions/model/session_service_ios.h"
 #import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/sessions/model/session_window_ios_factory.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"

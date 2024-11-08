@@ -92,6 +92,7 @@ source_set("application_storage_metrics") {
     "//base",
     "//components/history/core/browser",
     "//components/optimization_guide/core:features",
+    "//ios/chrome/browser/sessions/model:session_constants",
     "//ios/chrome/browser/shared/model/paths",
   ]
 }
