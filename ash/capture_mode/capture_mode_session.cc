@@ -2669,6 +2669,10 @@ void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
     dimensions_label_widget_ = std::make_unique<views::Widget>();
     dimensions_label_widget_->Init(
         CreateWidgetParams(parent, gfx::Rect(), "CaptureModeDimensionsLabel"));
+    // Disable the default hide animation so that the dimensions label is
+    // hidden immediately when destroyed.
+    dimensions_label_widget_->SetVisibilityAnimationTransition(
+        views::Widget::VisibilityTransition::ANIMATE_SHOW);
 
     auto size_label = std::make_unique<views::Label>();
     size_label->SetEnabledColorId(kColorAshTextColorPrimary);
