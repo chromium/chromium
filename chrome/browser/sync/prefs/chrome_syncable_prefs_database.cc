@@ -369,6 +369,8 @@ enum {
   kDesktopToiOSNtpPromoAppearanceTimestamps = 100308,
   kDesktopToiOSNtpPromoDismissed = 100309,
   kPrivacySandboxFakeNoticePromptShownTimeSync = 100310,
+  kAccessibilityBounceKeysDelay = 100311,
+  kAccessibilitySlowKeysDelay = 100312,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -589,6 +591,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityAutoclickStabilizePosition,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityBounceKeysDelay,
+     {syncable_prefs_ids::kAccessibilityBounceKeysDelay, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityColorCorrectionEnabled,
      {syncable_prefs_ids::kAccessibilityColorCorrectionEnabled,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
@@ -665,6 +671,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {ash::prefs::kAccessibilitySelectToSpeakWordHighlight,
      {syncable_prefs_ids::kAccessibilitySelectToSpeakWordHighlight,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilitySlowKeysDelay,
+     {syncable_prefs_ids::kAccessibilitySlowKeysDelay, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilitySwitchAccessAutoScanEnabled,
      {syncable_prefs_ids::kAccessibilitySwitchAccessAutoScanEnabled,

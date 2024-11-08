@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/constants/ash_constants.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "ui/events/event_rewriter.h"
@@ -17,9 +18,6 @@ namespace ash {
 // EventRewriter that delays or cancels some keyboard events.
 class ASH_EXPORT FilterKeysEventRewriter : public ui::EventRewriter {
  public:
-  static constexpr base::TimeDelta kDefaultBounceKeysDelay =
-      base::Milliseconds(500);
-
   FilterKeysEventRewriter();
   FilterKeysEventRewriter(const FilterKeysEventRewriter&) = delete;
   FilterKeysEventRewriter& operator=(const FilterKeysEventRewriter&) = delete;
@@ -46,7 +44,7 @@ class ASH_EXPORT FilterKeysEventRewriter : public ui::EventRewriter {
   // Enables bounce keys functionality.
   bool bounce_keys_enabled_ = false;
   // Delay until subsequent key strokes are accepted for bounce keys.
-  base::TimeDelta bounce_keys_delay_ = kDefaultBounceKeysDelay;
+  base::TimeDelta bounce_keys_delay_ = kDefaultAccessibilityBounceKeysDelay;
 
   // The last key that had a key pressed event.
   // Used to reset bounce keys delay when a different key is pressed.

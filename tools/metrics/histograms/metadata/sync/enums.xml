@@ -683,6 +683,8 @@ chromium-metrics-reviews@google.com.
   <int value="100308" label="DesktopToiOSNtpPromoAppearanceTimestamps"/>
   <int value="100309" label="DesktopToiOSNtpPromoDismissed"/>
   <int value="100310" label="PrivacySandboxFakeNoticePromptShownTimeSync"/>
+  <int value="100311" label="AccessibilityBounceKeysDelay"/>
+  <int value="100312" label="AccessibilitySlowKeysDelay"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

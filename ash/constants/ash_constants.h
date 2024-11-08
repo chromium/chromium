@@ -91,6 +91,14 @@ constexpr base::TimeDelta kDefaultKeyAutoRepeatInterval =
 const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
 const char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
 
+// The default delay between last key release and accepting a new key press.
+inline constexpr base::TimeDelta kDefaultAccessibilityBounceKeysDelay =
+    base::Milliseconds(500);
+
+// The default delay before accepting a held key press.
+inline constexpr base::TimeDelta kDefaultAccessibilitySlowKeysDelay =
+    base::Milliseconds(500);
+
 // The default value for audio strategy in ChromeVox.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDefaultAccessibilityChromeVoxAudioStrategy[];

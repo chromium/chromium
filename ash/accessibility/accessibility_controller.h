@@ -256,6 +256,7 @@ class ASH_EXPORT AccessibilityController
   // Getters for the corresponding features.
   Feature& always_show_scrollbar() const;
   Feature& autoclick() const;
+  Feature& bounce_keys() const;
   Feature& caret_highlight() const;
   Feature& color_correction() const;
   Feature& cursor_color() const;
@@ -273,6 +274,7 @@ class ASH_EXPORT AccessibilityController
   Feature& reduced_animations() const;
   Feature& spoken_feedback() const;
   Feature& select_to_speak() const;
+  Feature& slow_keys() const;
   Feature& sticky_keys() const;
   Feature& switch_access() const;
   Feature& virtual_keyboard() const;
@@ -765,6 +767,8 @@ class ASH_EXPORT AccessibilityController
   void UpdateAutoclickStabilizePositionFromPref();
   void UpdateAutoclickMovementThresholdFromPref();
   void UpdateAutoclickMenuPositionFromPref();
+  void UpdateBounceKeysDelayFromPref();
+  void UpdateSlowKeysDelayFromPref();
   void UpdateMouseKeysDisableInTextFieldsFromPref();
   void UpdateMouseKeysAccelerationFromPref();
   void UpdateMouseKeysMaxSpeedFromPref();

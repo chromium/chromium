@@ -13,6 +13,7 @@ namespace ash {
 enum class A11yFeatureType {
   kAlwaysShowScrollbar = 0,
   kAutoclick,
+  kBounceKeys,
   kCaretHighlight,
   kColorCorrection,
   kCursorColor,
@@ -32,6 +33,7 @@ enum class A11yFeatureType {
   kMouseKeys,
   kReducedAnimations,
   kSelectToSpeak,
+  kSlowKeys,
   kSpokenFeedback,
   kStickyKeys,
   kSwitchAccess,

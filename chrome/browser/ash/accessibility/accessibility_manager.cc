@@ -636,9 +636,8 @@ bool AccessibilityManager::ShouldShowAccessibilityMenu() {
   // enabled inside the session. http://crbug.com/755631
   std::vector<Profile*> profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
-  for (std::vector<Profile*>::iterator it = profiles.begin();
-       it != profiles.end(); ++it) {
-    PrefService* prefs = (*it)->GetPrefs();
+  for (Profile* profile : profiles) {
+    PrefService* prefs = profile->GetPrefs();
     if (prefs->GetBoolean(prefs::kAccessibilityStickyKeysEnabled) ||
         prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled) ||
         prefs->GetBoolean(::prefs::kLiveCaptionEnabled) ||
@@ -656,7 +655,9 @@ bool AccessibilityManager::ShouldShowAccessibilityMenu() {
         prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled) ||
         prefs->GetBoolean(prefs::kAccessibilityDictationEnabled) ||
         prefs->GetBoolean(prefs::kDockedMagnifierEnabled) ||
-        prefs->GetBoolean(prefs::kAccessibilityColorCorrectionEnabled)) {
+        prefs->GetBoolean(prefs::kAccessibilityColorCorrectionEnabled) ||
+        prefs->GetBoolean(prefs::kAccessibilityBounceKeysEnabled) ||
+        prefs->GetBoolean(prefs::kAccessibilitySlowKeysEnabled)) {
       return true;
     }
   }
