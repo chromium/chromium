@@ -324,8 +324,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // with a WebGPUMailboxTexture.
   bool OverwriteImage(const gpu::Mailbox& shared_image_mailbox,
                       const gfx::Rect& copy_rect,
-                      bool unpack_flip_y,
-                      bool unpack_premultiply_alpha,
                       const gpu::SyncToken& ready_sync_token,
                       gpu::SyncToken& completion_sync_token);
 

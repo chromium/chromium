@@ -240,15 +240,11 @@ bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
   if (!IsValid())
     return false;
 
-  const bool unpack_flip_y =
-      (IsOriginTopLeft() != resource_provider->IsOriginTopLeft());
-
   const gpu::SyncToken& ready_sync_token = mailbox_ref_->sync_token();
   gpu::SyncToken completion_sync_token;
-  if (!resource_provider->OverwriteImage(
-          shared_image_->mailbox(), copy_rect, unpack_flip_y,
-          /*unpack_premultiply_alpha=*/false, ready_sync_token,
-          completion_sync_token)) {
+  if (!resource_provider->OverwriteImage(shared_image_->mailbox(), copy_rect,
+                                         ready_sync_token,
+                                         completion_sync_token)) {
     return false;
   }
 

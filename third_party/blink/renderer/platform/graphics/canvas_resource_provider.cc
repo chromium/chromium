@@ -1519,8 +1519,6 @@ void CanvasResourceProvider::NotifyWillTransfer(
 bool CanvasResourceProvider::OverwriteImage(
     const gpu::Mailbox& shared_image_mailbox,
     const gfx::Rect& copy_rect,
-    bool unpack_flip_y,
-    bool unpack_premultiply_alpha,
     const gpu::SyncToken& ready_sync_token,
     gpu::SyncToken& completion_sync_token) {
   gpu::raster::RasterInterface* raster = RasterInterface();
