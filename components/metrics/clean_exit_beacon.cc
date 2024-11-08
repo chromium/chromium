@@ -5,6 +5,7 @@
 #include "components/metrics/clean_exit_beacon.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -37,7 +38,6 @@
 #endif
 
 namespace metrics {
-
 namespace {
 
 using ::variations::prefs::kVariationsCrashStreak;
@@ -90,6 +90,8 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
                                base::Value* beacon_file_contents,
                                PrefService* local_state) {
   int num_crashes;
+  int local_state_num_crashes = local_state->GetInteger(kVariationsCrashStreak);
+
   if (beacon_file_contents) {
     std::optional<int> crash_streak =
         beacon_file_contents->GetDict().FindInt(kVariationsCrashStreak);
@@ -97,10 +99,13 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
     // MaybeGetFileContents().
     DCHECK(crash_streak);
     num_crashes = crash_streak.value();
+    base::UmaHistogramCounts100(
+        "Variations.SafeMode.CrashStreakDiscrepancy",
+        std::abs(local_state_num_crashes - num_crashes));
   } else {
     // TODO(crbug.com/40850830): Consider not falling back to Local State for
     // clients on platforms that support the beacon file.
-    num_crashes = local_state->GetInteger(kVariationsCrashStreak);
+    num_crashes = local_state_num_crashes;
   }
 
   if (!did_previous_session_exit_cleanly) {
