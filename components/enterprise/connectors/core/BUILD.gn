@@ -63,6 +63,21 @@ source_set("core") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "reporting_test_utils.cc",
+    "reporting_test_utils.h",
+  ]
+
+  deps = [
+    ":core",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

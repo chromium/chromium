@@ -7,6 +7,7 @@
 #import "base/json/json_reader.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
+#import "components/enterprise/connectors/core/reporting_test_utils.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #import "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -193,14 +194,7 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
-  prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
-                                         R"([
-                                              {
-                                                "service_provider": "google"
-                                              }
-                                            ])",
-                                         base::JSON_ALLOW_TRAILING_COMMAS));
-  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_MACHINE);
+  test::SetOnSecurityEventReporting(prefs(), /*enabled=*/true);
 
   auto settings = service.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
@@ -213,7 +207,9 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
   auto provider_names = service.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
 
-  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_USER);
+  test::SetOnSecurityEventReporting(
+      prefs(), /*enabled=*/true, /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{}, /*machine_scope=*/false);
 
   settings = service.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
@@ -235,19 +231,14 @@ TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
-  prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
-                                         R"([
-                                              {
-                                                "service_provider": "google"
-                                              }
-                                            ])",
-                                         base::JSON_ALLOW_TRAILING_COMMAS));
-  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_MACHINE);
+  test::SetOnSecurityEventReporting(prefs(), /*enabled=*/true);
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
-  prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_USER);
+  test::SetOnSecurityEventReporting(
+      prefs(), /*enabled=*/true, /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{}, /*machine_scope=*/false);
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());

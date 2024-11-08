@@ -17,6 +17,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -322,14 +323,6 @@ void SetAnalysisConnector(PrefService* prefs,
                           AnalysisConnector connector,
                           const std::string& pref_value,
                           bool machine_scope = true);
-void SetOnSecurityEventReporting(
-    PrefService* prefs,
-    bool enabled,
-    const std::set<std::string>& enabled_event_names = std::set<std::string>(),
-    const std::map<std::string, std::vector<std::string>>&
-        enabled_opt_in_events =
-            std::map<std::string, std::vector<std::string>>(),
-    bool machine_scope = true);
 void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

@@ -943,25 +943,6 @@ EventReportValidator EventReportValidatorHelper::CreateValidator() {
   return EventReportValidator(client_.get());
 }
 
-base::Value::List CreateOptInEventsList(
-    const std::map<std::string, std::vector<std::string>>&
-        enabled_opt_in_events) {
-  base::Value::List enabled_opt_in_events_list;
-  for (const auto& enabled_opt_in_event : enabled_opt_in_events) {
-    base::Value::Dict event_value;
-    event_value.Set(kKeyOptInEventName, enabled_opt_in_event.first);
-
-    base::Value::List url_patterns_list;
-    for (const auto& url_pattern : enabled_opt_in_event.second) {
-      url_patterns_list.Append(url_pattern);
-    }
-    event_value.Set(kKeyOptInEventUrlPatterns, std::move(url_patterns_list));
-
-    enabled_opt_in_events_list.Append(std::move(event_value));
-  }
-  return enabled_opt_in_events_list;
-}
-
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void SetAnalysisConnector(PrefService* prefs,
                           AnalysisConnector connector,
@@ -975,43 +956,6 @@ void SetAnalysisConnector(PrefService* prefs,
   settings_list->Append(*base::JSONReader::Read(pref_value));
   prefs->SetInteger(
       AnalysisConnectorScopePref(connector),
-      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
-}
-
-void SetOnSecurityEventReporting(
-    PrefService* prefs,
-    bool enabled,
-    const std::set<std::string>& enabled_event_names,
-    const std::map<std::string, std::vector<std::string>>&
-        enabled_opt_in_events,
-    bool machine_scope) {
-  ScopedListPrefUpdate settings_list(prefs, kOnSecurityEventPref);
-  settings_list->clear();
-  prefs->ClearPref(kOnSecurityEventScopePref);
-  if (!enabled) {
-    return;
-  }
-
-  base::Value::Dict settings;
-
-  settings.Set(kKeyServiceProvider, base::Value("google"));
-  if (!enabled_event_names.empty()) {
-    base::Value::List enabled_event_name_list;
-    for (const auto& enabled_event_name : enabled_event_names) {
-      enabled_event_name_list.Append(enabled_event_name);
-    }
-    settings.Set(kKeyEnabledEventNames, std::move(enabled_event_name_list));
-  }
-
-  if (!enabled_opt_in_events.empty()) {
-    settings.Set(kKeyEnabledOptInEvents,
-                 CreateOptInEventsList(enabled_opt_in_events));
-  }
-
-  settings_list->Append(std::move(settings));
-
-  prefs->SetInteger(
-      kOnSecurityEventScopePref,
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 

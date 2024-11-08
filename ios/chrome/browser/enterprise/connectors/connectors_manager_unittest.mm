@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/enterprise/connectors/connectors_manager.h"
 
-#import "base/json/json_reader.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/reporting_constants.h"
+#import "components/enterprise/connectors/core/reporting_test_utils.h"
 #import "components/enterprise/connectors/core/service_provider_config.h"
 #import "components/prefs/testing_pref_service.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -42,13 +42,7 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
   EXPECT_FALSE(manager.GetReportingSettings());
   EXPECT_TRUE(manager.GetReportingServiceProviderNames().empty());
 
-  prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
-                                         R"([
-                                              {
-                                                "service_provider": "google"
-                                              }
-                                            ])",
-                                         base::JSON_ALLOW_TRAILING_COMMAS));
+  test::SetOnSecurityEventReporting(prefs(), /*enabled=*/true);
 
   EXPECT_TRUE(manager.IsReportingConnectorEnabled());
   auto settings = manager.GetReportingSettings();
@@ -60,30 +54,15 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
   auto provider_names = manager.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
 
-  prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
-                                         R"([{
-                                              "service_provider": "google",
-                                              "enabled_event_names": [
-                                                "passwordReuseEvent",
-                                                "interstitialEvent"
-                                              ],
-                                              "enabled_opt_in_events": [
-                                                {
-                                                  "name": "loginEvent",
-                                                  "url_patterns": [
-                                                    "foo.com",
-                                                    "bar.com"
-                                                  ]
-                                                },
-                                                {
-                                                  "name": "passwordBreachEvent",
-                                                  "url_patterns": [
-                                                    "baz.com"
-                                                  ]
-                                                }
-                                              ]
-                                              }])",
-                                         base::JSON_ALLOW_TRAILING_COMMAS));
+  test::SetOnSecurityEventReporting(
+      prefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{"passwordReuseEvent", "interstitialEvent"},
+      /*enabled_opt_in_events=*/
+      {
+          {"loginEvent", {"foo.com", "bar.com"}},
+          {"passwordBreachEvent", {"baz.com"}},
+      },
+      /*machine_scope=*/false);
 
   EXPECT_TRUE(manager.IsReportingConnectorEnabled());
   settings = manager.GetReportingSettings();

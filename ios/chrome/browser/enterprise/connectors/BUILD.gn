@@ -59,6 +59,7 @@ source_set("unit_tests") {
     "//base",
     "//components/enterprise:test_support",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:test_support",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
