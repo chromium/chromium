@@ -3951,6 +3951,7 @@ class CSSMathExpressionNodeParser {
           op = CSSMathOperator::kRem;
         }
         DCHECK_EQ(nodes.size(), 2u);
+        context_.Count(WebFeature::kCSSRoundModRemFunctions);
         return CSSMathExpressionOperation::CreateSteppedValueFunction(
             std::move(nodes), op);
       }
