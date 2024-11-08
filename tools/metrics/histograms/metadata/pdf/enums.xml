@@ -102,6 +102,10 @@ chromium-metrics-reviews@google.com.
   <int value="72" label="Paste"/>
   <int value="73" label="FindInPageFirst"/>
   <int value="74" label="FindInPage"/>
+  <int value="75" label="CopySearchifiedFirst"/>
+  <int value="76" label="CopySearchified"/>
+  <int value="77" label="FindInPageSearchifiedFirst"/>
+  <int value="78" label="FindInPageSearchified"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

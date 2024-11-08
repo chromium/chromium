@@ -204,7 +204,7 @@ export enum UserAction {
   SELECT_SIDENAV_ATTACHMENT_FIRST = 65,
   SELECT_SIDENAV_ATTACHMENT = 66,
 
-  // Recorded cut/copy/paste commands.
+  // Recorded cut/copy/paste/find commands.
   CUT_FIRST = 67,
   CUT = 68,
   COPY_FIRST = 69,
@@ -214,7 +214,13 @@ export enum UserAction {
   FIND_IN_PAGE_FIRST = 73,
   FIND_IN_PAGE = 74,
 
-  NUMBER_OF_ACTIONS = 75,
+  // Recorded copy/find commands for searchified PDFs.
+  COPY_SEARCHIFIED_FIRST = 75,
+  COPY_SEARCHIFIED = 76,
+  FIND_IN_PAGE_SEARCHIFIED_FIRST = 77,
+  FIND_IN_PAGE_SEARCHIFIED = 78,
+
+  NUMBER_OF_ACTIONS = 79,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {

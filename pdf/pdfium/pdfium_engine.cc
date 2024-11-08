@@ -578,14 +578,19 @@ PDFiumEngine::~PDFiumEngine() {
     base::UmaHistogramLongTimes("PDF.EngineLifetime",
                                 base::TimeTicks::Now() - engine_creation_time_);
   }
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // `searchifier_` is created when at least one page needs searchify.
+  if (searchifier_) {
+    base::UmaHistogramBoolean("PDF.SearchifySuccessful", has_searchify_text_);
+  }
+
+  // Should be reset before document is unloaded.
+  searchifier_.reset();
+#endif
 
   // Clear all the containers that can prevent unloading.
   find_results_.clear();
   selection_.clear();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Should be reset before document is unloaded.
-  searchifier_.reset();
-#endif
 
   for (auto& page : pages_)
     page->Unload();

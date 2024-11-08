@@ -290,6 +290,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected twoUpViewEnabled_: boolean = false;
   protected viewportZoom_: number = 1;
   protected zoomBounds_: ZoomBounds = {min: 0, max: 0};
+  private hasSearchifyText_: boolean = false;
 
   // <if expr="enable_ink">
   private inkController_: InkController = InkController.getInstance();
@@ -864,6 +865,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             return;
           case 'Copy':
             record(UserAction.COPY);
+            if (this.hasSearchifyText_) {
+              record(UserAction.COPY_SEARCHIFIED);
+            }
             return;
           case 'Paste':
             record(UserAction.PASTE);
@@ -913,13 +917,17 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.hasEdits_ = true;
         return;
       case 'setHasSearchifyText':
-        // TODO(crbug.com/360803943): Add separate metrics for searchified PDFs.
+        // TODO(crbug.com/360803943): Add test for metrics.
+        this.hasSearchifyText_ = true;
         return;
       case 'showSearchifyInProgress':
         // TODO(crbug.com/360803943): Trigger showing/hiding searchify progress.
         return;
       case 'startedFindInPage':
         record(UserAction.FIND_IN_PAGE);
+        if (this.hasSearchifyText_) {
+          record(UserAction.FIND_IN_PAGE_SEARCHIFIED);
+        }
         return;
       case 'touchSelectionOccurred':
         this.sendScriptingMessage({
