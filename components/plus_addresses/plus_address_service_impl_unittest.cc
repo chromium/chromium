@@ -705,6 +705,7 @@ TEST_F(PlusAddressServiceRequestsTest,
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
 
   EXPECT_CALL(callback, Run).Times(0);
@@ -719,6 +720,9 @@ TEST_F(PlusAddressServiceRequestsTest,
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressInlineSuggested, 1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("PlusAddresses.CreateSuggestionShown"),
+      1);
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 }
 
@@ -1471,6 +1475,55 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForCreateNewPlusAddress) {
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
+}
+
+// Tests that a user action is recorded when a create plus address suggestion is
+// shown to the user, and the user has never accepted the notice.
+TEST_F(PlusAddressSuggestionsTest,
+       RecordCreateSuggestionUserActionFirstTimeNotice) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressUserOnboardingEnabled};
+  setting_service().set_has_accepted_notice(false);
+  const auto origin = url::Origin::Create(GURL("https://foo.com"));
+
+  // We offer creation if the field is empty.
+  FormFieldData focused_field;
+  FetchPlusAddressSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.CreateSuggestionFirstTimeNoticeShown"),
+            1);
+}
+
+// Tests that a user action is recorded when a create plus address suggestion is
+// shown to the user, and the user has already accepted the notice.
+TEST_F(PlusAddressSuggestionsTest, RecordCreateSuggestionUserAction) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressUserOnboardingEnabled};
+  setting_service().set_has_accepted_notice(true);
+  const auto origin = url::Origin::Create(GURL("https://foo.com"));
+
+  // We offer creation if the field is empty.
+  FormFieldData focused_field;
+  FetchPlusAddressSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormClassification(),
+      focused_field,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kCreateNewPlusAddressSuggested, 1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("PlusAddresses.CreateSuggestionShown"),
+      1);
 }
 
 // Tests that a create plus address suggestion is offered regardless of the

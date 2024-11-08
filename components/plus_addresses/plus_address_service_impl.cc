@@ -541,6 +541,7 @@ bool PlusAddressServiceImpl::IsSupportedOrigin(
 void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
     SuggestionEvent suggestion_event) {
   metrics::RecordAutofillSuggestionEvent(suggestion_event);
+
   using enum autofill::AutofillPlusAddressDelegate::SuggestionEvent;
   switch (suggestion_event) {
     case kRefreshPlusAddressInlineClicked:
@@ -550,8 +551,24 @@ void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
       base::RecordAction(base::UserMetricsAction(
           "PlusAddresses.StandaloneFillSuggestionShown"));
       return;
-    case kCreateNewPlusAddressSuggested:
+    case kCreateNewPlusAddressSuggested: {
+      const bool user_acepted_notice =
+          setting_service_->GetHasAcceptedNotice() ||
+          !base::FeatureList::IsEnabled(
+              features::kPlusAddressUserOnboardingEnabled);
+      if (user_acepted_notice) {
+        base::RecordAction(
+            base::UserMetricsAction("PlusAddresses.CreateSuggestionShown"));
+      } else {
+        base::RecordAction(base::UserMetricsAction(
+            "PlusAddresses.CreateSuggestionFirstTimeNoticeShown"));
+      }
+      return;
+    }
     case kCreateNewPlusAddressInlineSuggested:
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.CreateSuggestionShown"));
+      return;
     case kErrorDuringReserve:
     case kExistingPlusAddressChosen:
     case kCreateNewPlusAddressChosen:
