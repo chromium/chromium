@@ -563,11 +563,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-caret-extraction",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 132
-  },
-  {
     "name": "autofill-content-editables",
     "owners": [ "jkeitel@chromium.org", "schwering@google.com" ],
     "expiry_milestone": 125
