@@ -1290,7 +1290,9 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesAutoDarkWebContent() {
         testExpectedPreferences(
-                SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT, BINARY_TOGGLE, BINARY_TOGGLE);
+                SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
+                BINARY_TOGGLE,
+                BINARY_TOGGLE_WITH_EXCEPTION);
     }
 
     @Test
@@ -2250,6 +2252,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
                         ContentSettingsType.AUTO_DARK_WEB_CONTENT,
                         true)
+                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
         Assert.assertEquals(
                 "<" + histogramName + "> should be recorded for SITE_SETTINGS_GLOBAL.",

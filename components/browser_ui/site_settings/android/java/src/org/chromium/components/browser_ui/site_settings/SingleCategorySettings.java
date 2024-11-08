@@ -744,76 +744,54 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         prefService.setInteger(COOKIE_CONTROLS_MODE, mode);
     }
 
-    private String getAddExceptionDialogMessage() {
+    private boolean isCategoryEnabled() {
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
-        int resource = 0;
+        return WebsitePreferenceBridge.isCategoryEnabled(
+                browserContextHandle, mCategory.getContentSettingsType());
+    }
+
+    private int getAddExceptionDialogMessageResourceId() {
         switch (mCategory.getType()) {
             case SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS:
-                resource = R.string.website_settings_add_site_description_automatic_downloads;
-                break;
+                return isCategoryEnabled()
+                        ? 0
+                        : R.string.website_settings_add_site_description_automatic_downloads;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
-                resource = R.string.website_settings_add_site_description_background_sync;
-                break;
+                return isCategoryEnabled()
+                        ? 0
+                        : R.string.website_settings_add_site_description_background_sync;
             case SiteSettingsCategory.Type.JAVASCRIPT:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle, ContentSettingsType.JAVASCRIPT)
-                                ? R.string.website_settings_add_site_description_javascript_block
-                                : R.string.website_settings_add_site_description_javascript_allow;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_javascript_block
+                        : R.string.website_settings_add_site_description_javascript_allow;
             case SiteSettingsCategory.Type.SOUND:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle, ContentSettingsType.SOUND)
-                                ? R.string.website_settings_add_site_description_sound_block
-                                : R.string.website_settings_add_site_description_sound_allow;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_sound_block
+                        : R.string.website_settings_add_site_description_sound_allow;
             case SiteSettingsCategory.Type.SITE_DATA:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle, ContentSettingsType.COOKIES)
-                                ? R.string
-                                        .website_settings_site_data_page_add_block_exception_description
-                                : R.string
-                                        .website_settings_site_data_page_add_allow_exception_description;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_site_data_page_add_block_exception_description
+                        : R.string.website_settings_site_data_page_add_allow_exception_description;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
-                resource =
-                        getCookieControlsMode() == CookieControlsMode.OFF
-                                ? R.string
-                                        .website_settings_third_party_cookies_page_add_block_exception_description
-                                : R.string
-                                        .website_settings_third_party_cookies_page_add_allow_exception_description;
-                break;
+                return (getCookieControlsMode() == CookieControlsMode.OFF)
+                        ? 0
+                        : R.string
+                                .website_settings_third_party_cookies_page_add_allow_exception_description;
             case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
-                assert WebsitePreferenceBridge.isCategoryEnabled(
-                        browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT);
-                resource = R.string.website_settings_add_site_description_auto_dark_block;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_auto_dark_block
+                        : 0;
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle,
-                                        ContentSettingsType.FEDERATED_IDENTITY_API)
-                                ? R.string
-                                        .website_settings_add_site_description_federated_identity_block
-                                : R.string
-                                        .website_settings_add_site_description_federated_identity_allow;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_federated_identity_block
+                        : R.string.website_settings_add_site_description_federated_identity_allow;
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle,
-                                        ContentSettingsType.REQUEST_DESKTOP_SITE)
-                                ? R.string
-                                        .website_settings_blocked_group_heading_request_desktop_site
-                                : R.string
-                                        .website_settings_allowed_group_heading_request_desktop_site;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_blocked_group_heading_request_desktop_site
+                        : R.string.website_settings_allowed_group_heading_request_desktop_site;
         }
-        assert resource > 0;
-        return getString(resource);
+        return 0;
     }
 
     // OnPreferenceClickListener:
@@ -903,9 +881,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         configureGlobalToggles();
 
-        BrowserContextHandle browserContextHandle =
-                getSiteSettingsDelegate().getBrowserContextHandle();
-        @ContentSettingsType.EnumType int type = mCategory.getContentSettingsType();
         boolean allowSpecifyingExceptions = false;
 
         switch (mCategory.getType()) {
@@ -918,8 +893,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 break;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
             case SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS:
-                allowSpecifyingExceptions =
-                        !WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, type);
+                allowSpecifyingExceptions = !isCategoryEnabled();
+                break;
+            case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
+                allowSpecifyingExceptions = isCategoryEnabled();
                 break;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
                 allowSpecifyingExceptions = getCookieControlsMode() != CookieControlsMode.OFF;
@@ -927,13 +904,16 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             default:
                 break;
         }
+
+        int exceptionDialogMessageResourceId = getAddExceptionDialogMessageResourceId();
+        assert allowSpecifyingExceptions == (exceptionDialogMessageResourceId != 0);
         if (allowSpecifyingExceptions) {
             getPreferenceScreen()
                     .addPreference(
                             new AddExceptionPreference(
                                     getStyledContext(),
                                     ADD_EXCEPTION_KEY,
-                                    getAddExceptionDialogMessage(),
+                                    getString(exceptionDialogMessageResourceId),
                                     mCategory,
                                     this));
         }
