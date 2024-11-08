@@ -21,6 +21,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -806,11 +807,15 @@ namespace chrome {
 
 // Declared in browser_dialogs.h.
 task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
-  return task_manager::TaskManagerMac::Show();
+  return base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+             ? ShowTaskManagerViews(browser)
+             : task_manager::TaskManagerMac::Show();
 }
 
 void HideTaskManager() {
-  task_manager::TaskManagerMac::Hide();
+  base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+      ? HideTaskManagerViews()
+      : task_manager::TaskManagerMac::Hide();
 }
 
 }  // namespace chrome

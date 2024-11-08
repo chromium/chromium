@@ -4744,6 +4744,8 @@ static_library("ui") {
       "views/tabs/window_finder.h",
       "views/tabs/z_orderable_tab_container_element.cc",
       "views/tabs/z_orderable_tab_container_element.h",
+      "views/task_manager_view.cc",
+      "views/task_manager_view.h",
       "views/theme_copying_widget.cc",
       "views/theme_copying_widget.h",
       "views/title_origin_label.cc",
@@ -5121,8 +5123,6 @@ static_library("ui") {
       sources += [
         "views/create_application_shortcut_view.cc",
         "views/create_application_shortcut_view.h",
-        "views/task_manager_view.cc",
-        "views/task_manager_view.h",
       ]
     }
 
