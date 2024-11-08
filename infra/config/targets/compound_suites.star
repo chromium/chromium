@@ -101,7 +101,7 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "gpu_nexus5x_telemetry_tests_v8",
+    name = "gpu_telemetry_tests_v8",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_validating_telemetry_tests",

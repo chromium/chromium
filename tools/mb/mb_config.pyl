@@ -149,7 +149,7 @@
     },
 
     'client.v8.fyi': {
-      'Android V8 FYI Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64_reclient',
+      'Android V8 FYI Release': 'gpu_tests_android_release_trybot_arm64_reclient',
       'Linux ASAN Builder': 'asan_lsan_release_trybot_reclient',
       'Linux Debug Builder': 'debug_bot_blink',
       'Linux V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbols_reclient',

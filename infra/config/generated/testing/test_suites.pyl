@@ -2818,7 +2818,7 @@
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
     ],
 
-    'gpu_nexus5x_telemetry_tests_v8': [
+    'gpu_telemetry_tests_v8': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_validating_telemetry_tests',
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests',

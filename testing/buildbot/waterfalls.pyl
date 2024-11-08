@@ -1066,15 +1066,15 @@
     'name': 'client.v8.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Android V8 FYI Release (Nexus 5X)': {
+      'Android V8 FYI Release': {
         'browser_config': 'android-chromium',
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'chromium_nexus_5x_oreo',
+          'chromium_pixel_2_pie',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_nexus5x_telemetry_tests_v8',
+          'gpu_telemetry_tests': 'gpu_telemetry_tests_v8',
         },
       },
       'Linux ASAN Builder': {

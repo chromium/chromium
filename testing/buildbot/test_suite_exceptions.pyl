@@ -184,7 +184,7 @@
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
-      'Android V8 FYI Release (Nexus 5X)': {
+      'Android V8 FYI Release': {
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
@@ -193,7 +193,7 @@
   },
   'info_collection_tests': {
     'remove_from': [
-      'Android V8 FYI Release (Nexus 5X)',
+      'Android V8 FYI Release',
       'Linux V8 FYI Release (NVIDIA)',
       'Linux V8 FYI Release - pointer compression (NVIDIA)',
       'Mac V8 FYI Release (Intel)',
@@ -354,7 +354,7 @@
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
-      'Android V8 FYI Release (Nexus 5X)': {
+      'Android V8 FYI Release': {
         'args': {
           '--git-revision': '${got_cr_revision}',
         },

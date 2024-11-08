@@ -1,5 +1,5 @@
 {
-  "Android V8 FYI Release (Nexus 5X)": {
+  "Android V8 FYI Release": {
     "gn_args": {
       "dcheck_always_on": true,
       "debuggable_apks": false,
