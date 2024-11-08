@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "ash/accessibility/caption_bubble_context_ash.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
 #include "chrome/browser/ash/boca/babelorca/babel_orca_translation_dispatcher_impl.h"
+#include "chrome/browser/ash/boca/babelorca/caption_bubble_context_boca.h"
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -47,7 +47,7 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     bool is_consumer) {
   // Passing `DoNothing` since we do not currently show settings for BabelOrca.
   auto caption_bubble_context =
-      std::make_unique<captions::CaptionBubbleContextAsh>(base::DoNothing());
+      std::make_unique<babelorca::CaptionBubbleContextBoca>(base::DoNothing());
   if (is_consumer) {
     auto babel_orca_translator =
         std::make_unique<babelorca::BabelOrcaCaptionTranslator>(

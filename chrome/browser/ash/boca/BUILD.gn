@@ -19,7 +19,6 @@ static_library("boca") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash",
     "//ash/constants",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",

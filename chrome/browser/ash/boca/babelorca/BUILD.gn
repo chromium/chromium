@@ -12,11 +12,14 @@ static_library("babelorca") {
     "babel_orca_speech_recognizer_impl.h",
     "babel_orca_translation_dispatcher_impl.cc",
     "babel_orca_translation_dispatcher_impl.h",
+    "caption_bubble_context_boca.cc",
+    "caption_bubble_context_boca.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash",
     "//chrome/browser/ash/accessibility/live_caption",
     "//chromeos/ash/components/boca/babelorca",
     "//components/live_caption",
