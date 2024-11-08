@@ -181,6 +181,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -481,7 +482,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // insets.
         rootView.setFitsSystemWindows(false);
 
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (BuildInfo.getInstance().isAutomotive
+                || EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             mBaseChromeLayout = new FrameLayout(this);
         }
 
@@ -825,11 +827,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // https://crbug.com/639352.
             TraceEvent.begin("setContentView(R.layout.main)");
             if (mBaseChromeLayout != null) {
-                // Automotive devices override ChromeBaseAppCompatActivity#setContentView to add
-                // the automotive back button toolbar. This doesn't work if the layout uses
-                // <merge> tags, so we need to wrap R.layout.main in a ViewGroup first.
-                getLayoutInflater().inflate(R.layout.main, mBaseChromeLayout, true);
-                setContentView(mBaseChromeLayout);
+                setContentViewToBaseLayout();
             } else {
                 setContentView(R.layout.main);
             }
@@ -861,6 +859,21 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
             onInitialLayoutInflationComplete();
         }
+    }
+
+    /**
+     * In some situations, Chrome must use a base layout to show certain ui components entirely
+     * outside of the main content view. This happens on automotive, to show the automotive back
+     * button toolbar along the side or top edge. This also happens if edge-to-edge-everywhere is
+     * enabled, as Chrome must potentially draw in status and navigation bars to pad content.
+     *
+     * <p>Wrapping the main layout in ChromeBaseAppCompatActivity#setContentView to add a base
+     * wrapper layout doesn't work if the main layout uses <merge> tags, so R.layout.main must be
+     * wrapped in a ViewGroup first.
+     */
+    private void setContentViewToBaseLayout() {
+        getLayoutInflater().inflate(R.layout.main, mBaseChromeLayout, /* attachToRoot= */ true);
+        setContentView(mBaseChromeLayout);
     }
 
     @Override
@@ -1752,6 +1765,21 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         ModalDialogManager.ModalDialogType.APP,
                         getEdgeToEdgeStateProvider());
         return dialogManager;
+    }
+
+    @Override
+    protected boolean supportsEdgeToEdge() {
+        // TODO (crbug.com/377959826): Check whether bottom chin is implemented once top insets are
+        //  properly accounted for in the edge-to-edge logic. Return false when bottom chin is
+        //  enabled, true otherwise.
+        return false;
+    }
+
+    @Override
+    protected boolean shouldContentFitWindowInsets() {
+        return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
+                && !EdgeToEdgeUtils.isEdgeToEdgeWebOptInEnabled();
     }
 
     /**

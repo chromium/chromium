@@ -8,6 +8,7 @@ android_library("java") {
   resources_package = "org.chromium.components.browser_ui.edge_to_edge"
   sources = [
     "java/src/org/chromium/components/browser_ui/edge_to_edge/BaseSystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeManager.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgePadAdjuster.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeStateProvider.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSupplier.java",
@@ -21,6 +22,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -35,6 +37,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   testonly = true
   sources = [
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeManagerUnitTest.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeStateProviderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSystemBarColorHelperUnitTest.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/WindowSystemBarColorHelperUnitTest.java",

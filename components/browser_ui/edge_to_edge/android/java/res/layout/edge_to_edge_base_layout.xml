@@ -12,10 +12,4 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/window_background_color">
-
-  <ViewStub
-      android:id="@+id/original_layout"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"/>
-
 </org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeBaseLayout>

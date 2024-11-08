@@ -8,9 +8,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewStub;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
@@ -39,18 +37,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
             @NonNull Activity activity, @Nullable InsetObserver insetObserver) {
         mActivity = activity;
         mInsetObserver = insetObserver;
-    }
-
-    /**
-     * @see Activity#setContentView(int)
-     */
-    public View wrapContentView(@LayoutRes int contentLayoutRes) {
-        ensureInitialized();
-        ViewStub stub = mView.findViewById(R.id.original_layout);
-        stub.setLayoutResource(contentLayoutRes);
-        stub.inflate();
-
-        return mView;
     }
 
     /**

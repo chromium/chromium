@@ -1084,6 +1084,16 @@ public class FirstRunIntegrationTest {
         waitForActivity(ChromeTabbedActivity.class);
     }
 
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    // TODO(crbug.com/378133407): Extend tests
+    public void testEdgeToEdgeEverywhere() {
+        FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
+        initializePreferences(testCase);
+        launchFirstRunActivity();
+    }
+
     private void clickButton(final Activity activity, final int id, final String message) {
         CriteriaHelper.pollUiThread(
                 () -> {
