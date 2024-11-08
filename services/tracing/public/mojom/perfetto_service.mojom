@@ -131,6 +131,7 @@ struct DataSourceConfig {
   string legacy_config;
   mojo_base.mojom.ByteString track_event_config_raw;
   mojo_base.mojom.ByteString etw_config_raw;
+  mojo_base.mojom.ByteString system_metrics_config_raw;
 };
 
 struct DataSourceRegistration {

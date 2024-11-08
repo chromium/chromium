@@ -14,6 +14,8 @@
 #include "base/trace_event/trace_event.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h"
+#include "third_party/perfetto/protos/perfetto/config/chrome/system_metrics.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -26,7 +28,7 @@ namespace tracing {
 
 namespace {
 
-constexpr base::TimeDelta kSamplingInterval = base::Seconds(5);
+constexpr base::TimeDelta kDefaultSamplingInterval = base::Seconds(5);
 
 #if BUILDFLAG(IS_WIN)
 // Returns memory in bytes from pages count.
@@ -38,38 +40,57 @@ size_t GetTotalMemory(size_t num_pages, size_t page_size) {
 
 }  // namespace
 
-void SystemMetricsSampler::Register() {
+void SystemMetricsSampler::Register(bool system_wide) {
   perfetto::DataSourceDescriptor desc;
   desc.set_name(tracing::mojom::kSystemMetricsSourceName);
-  perfetto::DataSource<SystemMetricsSampler>::Register(desc);
+  perfetto::DataSource<SystemMetricsSampler>::Register(desc, system_wide);
 }
 
-SystemMetricsSampler::SystemMetricsSampler() = default;
+SystemMetricsSampler::SystemMetricsSampler(bool system_wide)
+    : system_wide_(system_wide), sampling_interval_(kDefaultSamplingInterval) {}
 SystemMetricsSampler::~SystemMetricsSampler() = default;
 
-void SystemMetricsSampler::OnSetup(const SetupArgs& args) {}
+void SystemMetricsSampler::OnSetup(const SetupArgs& args) {
+  if (args.config->chromium_system_metrics_raw().empty()) {
+    return;
+  }
+  perfetto::protos::gen::ChromiumSystemMetricsConfig config;
+  if (!config.ParseFromString(args.config->chromium_system_metrics_raw())) {
+    DLOG(ERROR) << "Failed to parse chromium_system_metrics";
+    return;
+  }
+  if (config.has_sampling_interval_ms()) {
+    sampling_interval_ = base::Milliseconds(config.sampling_interval_ms());
+  }
+}
 
 void SystemMetricsSampler::OnStart(const StartArgs&) {
-  sampler_ = base::SequenceBound<Sampler>(
-      base::ThreadPool::CreateSequencedTaskRunner({}));
+  if (system_wide_) {
+    system_sampler_ = base::SequenceBound<SystemSampler>(
+        base::ThreadPool::CreateSequencedTaskRunner({}), sampling_interval_);
+  }
+  process_sampler_ = base::SequenceBound<ProcessSampler>(
+      base::ThreadPool::CreateSequencedTaskRunner({}), sampling_interval_);
 }
 
 void SystemMetricsSampler::OnStop(const StopArgs&) {
-  sampler_.Reset();
+  system_sampler_.Reset();
+  process_sampler_.Reset();
 }
 
-SystemMetricsSampler::Sampler::Sampler()
+SystemMetricsSampler::SystemSampler::SystemSampler(
+    base::TimeDelta sampling_interval)
     : cpu_probe_{system_cpu::CpuProbe::Create()} {
   cpu_probe_->StartSampling();
-  sample_timer_.Start(FROM_HERE, kSamplingInterval, this,
-                      &Sampler::SampleSystemMetrics);
+  sample_timer_.Start(FROM_HERE, sampling_interval, this,
+                      &SystemSampler::SampleSystemMetrics);
 }
 
-SystemMetricsSampler::Sampler::~Sampler() = default;
+SystemMetricsSampler::SystemSampler::~SystemSampler() = default;
 
-void SystemMetricsSampler::Sampler::SampleSystemMetrics() {
+void SystemMetricsSampler::SystemSampler::SampleSystemMetrics() {
   cpu_probe_->RequestSample(
-      base::BindOnce(&Sampler::OnCpuProbeResult, base::Unretained(this)));
+      base::BindOnce(&SystemSampler::OnCpuProbeResult, base::Unretained(this)));
   std::optional<base::CpuThroughputEstimationResult> cpu_throughput =
       base::EstimateCpuThroughput();
   if (cpu_throughput) {
@@ -91,7 +112,7 @@ void SystemMetricsSampler::Sampler::SampleSystemMetrics() {
 }
 
 #if BUILDFLAG(IS_WIN)
-void SystemMetricsSampler::Sampler::SampleMemoryMetrics() {
+void SystemMetricsSampler::SystemSampler::SampleMemoryMetrics() {
   PERFORMANCE_INFORMATION performance_info = {};
   performance_info.cb = sizeof(performance_info);
   bool get_performance_info_result =
@@ -116,7 +137,7 @@ void SystemMetricsSampler::Sampler::SampleMemoryMetrics() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void SystemMetricsSampler::Sampler::OnCpuProbeResult(
+void SystemMetricsSampler::SystemSampler::OnCpuProbeResult(
     std::optional<system_cpu::CpuSample> cpu_sample) {
   if (!cpu_sample) {
     return;
@@ -125,6 +146,25 @@ void SystemMetricsSampler::Sampler::OnCpuProbeResult(
       TRACE_DISABLED_BY_DEFAULT("system_metrics"),
       perfetto::CounterTrack("SystemCpuUsage", perfetto::Track::Global(0)),
       cpu_sample->cpu_utilization);
+}
+
+SystemMetricsSampler::ProcessSampler::ProcessSampler(
+    base::TimeDelta sampling_interval) {
+  process_metrics_ = base::ProcessMetrics::CreateCurrentProcessMetrics();
+  SampleProcessMetrics();
+  sample_timer_.Start(FROM_HERE, sampling_interval, this,
+                      &ProcessSampler::SampleProcessMetrics);
+}
+
+SystemMetricsSampler::ProcessSampler::~ProcessSampler() = default;
+
+void SystemMetricsSampler::ProcessSampler::SampleProcessMetrics() {
+  auto cpu_usage = process_metrics_->GetPlatformIndependentCPUUsage();
+  if (!cpu_usage.has_value()) {
+    return;
+  }
+  TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "CpuUsage",
+                *cpu_usage);
 }
 
 }  // namespace tracing

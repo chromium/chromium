@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_SYSTEM_METRICS_SAMPLER_H_
 
 #include "base/component_export.h"
+#include "base/process/process_metrics.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "base/timer/timer.h"
@@ -19,9 +20,10 @@ namespace tracing {
 class COMPONENT_EXPORT(TRACING_CPP) SystemMetricsSampler final
     : public perfetto::DataSource<SystemMetricsSampler> {
  public:
-  static void Register();
+  // `system_wide` enables recording system wide metrics (e.g. total cpu).
+  static void Register(bool system_wide);
 
-  SystemMetricsSampler();
+  explicit SystemMetricsSampler(bool system_wide);
   ~SystemMetricsSampler() override;
 
   SystemMetricsSampler(const SystemMetricsSampler& other) = delete;
@@ -32,14 +34,14 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemMetricsSampler final
   void OnStop(const StopArgs&) override;
 
  private:
-  // Samples process metrics on the sampling thread.
-  class Sampler {
+  // Samples system metrics on the sampling thread.
+  class SystemSampler {
    public:
-    Sampler();
-    ~Sampler();
+    explicit SystemSampler(base::TimeDelta sampling_interval);
+    ~SystemSampler();
 
-    Sampler(const Sampler& other) = delete;
-    Sampler& operator=(const Sampler& other) = delete;
+    SystemSampler(const SystemSampler& other) = delete;
+    SystemSampler& operator=(const SystemSampler& other) = delete;
 
    private:
     void SampleSystemMetrics();
@@ -52,8 +54,26 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemMetricsSampler final
     base::RepeatingTimer sample_timer_;
     std::unique_ptr<system_cpu::CpuProbe> cpu_probe_;
   };
+  // Samples process metrics on the sampling thread.
+  class ProcessSampler {
+   public:
+    explicit ProcessSampler(base::TimeDelta sampling_interval);
+    ~ProcessSampler();
 
-  base::SequenceBound<Sampler> sampler_;
+    ProcessSampler(const ProcessSampler& other) = delete;
+    ProcessSampler& operator=(const ProcessSampler& other) = delete;
+
+   private:
+    void SampleProcessMetrics();
+
+    base::RepeatingTimer sample_timer_;
+    std::unique_ptr<base::ProcessMetrics> process_metrics_;
+  };
+
+  bool system_wide_;
+  base::TimeDelta sampling_interval_;
+  base::SequenceBound<SystemSampler> system_sampler_;
+  base::SequenceBound<ProcessSampler> process_sampler_;
 };
 
 }  // namespace tracing

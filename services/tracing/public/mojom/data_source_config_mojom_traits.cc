@@ -15,13 +15,15 @@ bool StructTraits<tracing::mojom::DataSourceConfigDataView,
                   perfetto::DataSourceConfig>::
     Read(tracing::mojom::DataSourceConfigDataView data,
          perfetto::DataSourceConfig* out) {
-  std::string name, legacy_config, track_event_config_raw, etw_config_raw;
+  std::string name, legacy_config, track_event_config_raw, etw_config_raw,
+      system_metrics_config_raw;
   perfetto::ChromeConfig chrome_config;
   std::optional<perfetto::protos::gen::InterceptorConfig> interceptor_config;
   if (!data.ReadName(&name) || !data.ReadChromeConfig(&chrome_config) ||
       !data.ReadLegacyConfig(&legacy_config) ||
       !data.ReadTrackEventConfigRaw(&track_event_config_raw) ||
       !data.ReadEtwConfigRaw(&etw_config_raw) ||
+      !data.ReadSystemMetricsConfigRaw(&system_metrics_config_raw) ||
       !data.ReadInterceptorConfig(&interceptor_config)) {
     return false;
   }
@@ -43,6 +45,9 @@ bool StructTraits<tracing::mojom::DataSourceConfigDataView,
     out->set_track_event_config_raw(track_event_config_raw);
   if (!etw_config_raw.empty()) {
     out->set_etw_config_raw(etw_config_raw);
+  }
+  if (!system_metrics_config_raw.empty()) {
+    out->set_chromium_system_metrics_raw(system_metrics_config_raw);
   }
   return true;
 }

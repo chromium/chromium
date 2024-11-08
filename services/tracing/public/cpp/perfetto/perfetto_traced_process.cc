@@ -21,7 +21,6 @@
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
-#include "services/tracing/public/cpp/process_metrics_sampler.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "services/tracing/public/cpp/system_metrics_sampler.h"
 #include "services/tracing/public/cpp/trace_startup.h"
@@ -383,13 +382,9 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   tracing::TriggersDataSource::Register();
   tracing::MetadataDataSource::Register();
   tracing::TracingSamplerProfiler::RegisterDataSource();
-  // ProcessMetricsSampler and SystemMetricsSampler register the same name.
-  // Both will be started when enabling kSystemMetricsSourceName.
-  tracing::ProcessMetricsSampler::Register();
-  if (enable_consumer) {
-    // SystemMetricsSampler only needs to be installed in the browser process.
-    tracing::SystemMetricsSampler::Register();
-  }
+  // SystemMetricsSampler will be started when enabling
+  // kSystemMetricsSourceName.
+  tracing::SystemMetricsSampler::Register(/*system_wide=*/enable_consumer);
 #if BUILDFLAG(IS_WIN)
   if (enable_consumer) {
     // Etw Data Source only needs to be installed in the browser process.
