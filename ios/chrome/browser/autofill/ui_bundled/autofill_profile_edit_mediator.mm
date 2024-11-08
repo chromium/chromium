@@ -43,9 +43,6 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 @property(nonatomic, strong, readonly)
     NSArray<AutofillProfileAddressField*>* inputAddressFields;
 
-// Yes, if the error section has been presented.
-@property(nonatomic, assign) BOOL errorSectionPresented;
-
 @end
 
 @implementation AutofillProfileEditMediator {
@@ -84,6 +81,9 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
   // Stores the fields that were edited.
   NSMutableSet<NSString*>* _editedFields;
+
+  // Yes, if the error section has been presented.
+  BOOL _errorSectionPresented;
 }
 
 - (instancetype)initWithDelegate:
@@ -147,12 +147,12 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
 - (BOOL)canDismissImmediately {
   CHECK(_dynamicallyLoadInputFieldsEnabled);
-  return !self.errorSectionPresented && ![_editedFields count];
+  return !_errorSectionPresented && ![_editedFields count];
 }
 
 - (BOOL)shouldShowConfirmationDialogOnDismissBySwiping {
   CHECK(_dynamicallyLoadInputFieldsEnabled);
-  return !self.errorSectionPresented && [_editedFields count] > 0;
+  return !_errorSectionPresented && [_editedFields count] > 0;
 }
 
 #pragma mark - AutofillSettingsProfileEditTableViewControllerDelegate
@@ -186,7 +186,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 }
 
 - (void)didSaveProfileFromModal {
-  if (self.errorSectionPresented) {
+  if (_errorSectionPresented) {
     return;
   }
 
@@ -274,9 +274,9 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 - (void)validateFieldsAndUpdateButtonStatus {
   BOOL shouldShowError = ([self requiredFieldsWithEmptyValuesCount] > 0);
 
-  if (shouldShowError != self.errorSectionPresented) {
+  if (shouldShowError != _errorSectionPresented) {
     [_consumer updateErrorStatus:shouldShowError];
-    self.errorSectionPresented = shouldShowError;
+    _errorSectionPresented = shouldShowError;
   } else if (shouldShowError) {
     [_consumer updateErrorMessageIfRequired];
   }
@@ -449,7 +449,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
 // Populates `_currentValuesMap` on the basis of values in `_autofillProfile`.
 - (void)populateCurrentValuesMap {
-  CHECK(!self.errorSectionPresented);
+  CHECK(!_errorSectionPresented);
   int totalFieldCount =
       [self.inputAddressFields count] + kStaticFieldsTypes.size();
   NSMutableDictionary<NSString*, NSString*>* fieldValuesMap =
