@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/responsiveness_calculator_delegate.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -104,18 +105,20 @@ class CONTENT_EXPORT Calculator {
   // the specific congested slices.
   // Exposed for testing.
   void EmitResponsivenessTraceEvents(CongestionType congestion_type,
+                                     StartupStage startup_stage,
                                      base::TimeTicks start_time,
                                      base::TimeTicks end_time,
                                      const std::set<int>& congested_slices);
 
   // Exposed for testing.
   virtual void EmitCongestedIntervalsMeasurementTraceEvent(
+      StartupStage startup_stage,
       base::TimeTicks start_time,
-      base::TimeTicks end_time,
-      size_t amount_of_slices);
+      base::TimeTicks end_time);
 
   // Exposed for testing.
-  virtual void EmitCongestedIntervalTraceEvent(base::TimeTicks start_time,
+  virtual void EmitCongestedIntervalTraceEvent(CongestionType congestion_type,
+                                               base::TimeTicks start_time,
                                                base::TimeTicks end_time);
 
   // Exposed for testing.
@@ -214,6 +217,8 @@ class CONTENT_EXPORT Calculator {
 
   // Used to record embedder-specific responsiveness metrics.
   std::unique_ptr<ResponsivenessCalculatorDelegate> delegate_;
+
+  perfetto::NamedTrack congestion_track_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Listener for changes in application state, unregisters itself when

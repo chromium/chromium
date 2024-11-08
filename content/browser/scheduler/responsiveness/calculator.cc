@@ -35,9 +35,29 @@ constexpr auto kSuspendInterval = base::Seconds(30);
 constexpr char kLatencyEventCategory[] = "latency";
 
 // The names emitted for CongestedIntervals measurement events.
-constexpr char kCongestedIntervalEvent[] = "CongestedInterval";
-constexpr char kCongestedIntervalsMeasurementEvent[] =
-    "CongestedIntervals measurement period";
+constexpr char kCongestionTrack[] = "MainThreadsCongestion";
+
+perfetto::StaticString GetCongestedIntervalEvent(
+    Calculator::CongestionType congestion_type) {
+  switch (congestion_type) {
+    case Calculator::CongestionType::kExecutionOnly:
+      return "CongestedInterval.RunningOnly";
+    case Calculator::CongestionType::kQueueAndExecution:
+      return "CongestedInterval";
+  }
+}
+
+perfetto::StaticString GetCongestedIntervalsMeasurementEvent(
+    Calculator::StartupStage startup_stage) {
+  switch (startup_stage) {
+    case Calculator::StartupStage::kFirstInterval:
+    case Calculator::StartupStage::kFirstIntervalDoneWithoutFirstIdle:
+    case Calculator::StartupStage::kFirstIntervalAfterFirstIdle:
+      return "MainThreadsCongestion.Initial";
+    case Calculator::StartupStage::kPeriodic:
+      return "MainThreadsCongestion.Periodic";
+  }
+}
 
 // Given a |congestion|, finds each congested slice between |start_time| and
 // |end_time|, and adds it to |congested_slices|.
@@ -77,7 +97,10 @@ Calculator::Calculator(
     std::unique_ptr<ResponsivenessCalculatorDelegate> delegate)
     : last_calculation_time_(base::TimeTicks::Now()),
       most_recent_activity_time_(last_calculation_time_),
-      delegate_(std::move(delegate))
+      delegate_(std::move(delegate)),
+      congestion_track_(
+          kCongestionTrack,
+          static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this)))
 #if BUILDFLAG(IS_ANDROID)
       ,
       application_status_listener_(
@@ -199,19 +222,28 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
 
 void Calculator::EmitResponsivenessTraceEvents(
     CongestionType congestion_type,
+    StartupStage startup_stage,
     base::TimeTicks start_time,
     base::TimeTicks end_time,
     const std::set<int>& congested_slices) {
   // Only output kCongestedIntervalsMeasurementEvent event when there are
   // congested slices during the measurement.
-  if (congested_slices.empty() ||
-      congestion_type != CongestionType::kQueueAndExecution)
+  if (congested_slices.empty()) {
     return;
+  }
 
   // Emit a trace event to highlight the duration of congested intervals
   // measurement.
-  EmitCongestedIntervalsMeasurementTraceEvent(start_time, end_time,
-                                              congested_slices.size());
+  if (congestion_type == CongestionType::kQueueAndExecution) {
+    EmitCongestedIntervalsMeasurementTraceEvent(startup_stage, start_time,
+                                                end_time);
+    // Since a lot of startup tasks are queue and then released, queuing
+    // congestion is very noisy and thus ignored before OnFirstIdle().
+    if (startup_stage == StartupStage::kFirstInterval ||
+        startup_stage == StartupStage::kFirstIntervalDoneWithoutFirstIdle) {
+      return;
+    }
+  }
 
   // |congested_slices| contains the id of congested slices, e.g.
   // {3,6,7,8,41,42}. As such if the slice following slice x is x+1, we coalesce
@@ -234,31 +266,28 @@ void Calculator::EmitResponsivenessTraceEvents(
 
     // Output a trace event for the range [start_slice, current_slice[.
     EmitCongestedIntervalTraceEvent(
-        start_time + start_slice * kCongestionThreshold,
+        congestion_type, start_time + start_slice * kCongestionThreshold,
         start_time + current_slice * kCongestionThreshold);
   }
 }
 
 void Calculator::EmitCongestedIntervalsMeasurementTraceEvent(
+    StartupStage startup_stage,
     base::TimeTicks start_time,
-    base::TimeTicks end_time,
-    size_t amount_of_slices) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      kLatencyEventCategory, kCongestedIntervalsMeasurementEvent,
-      TRACE_ID_LOCAL(this), start_time, "amount_of_slices", amount_of_slices);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kLatencyEventCategory, kCongestedIntervalsMeasurementEvent,
-      TRACE_ID_LOCAL(this), end_time);
+    base::TimeTicks end_time) {
+  TRACE_EVENT_BEGIN(kLatencyEventCategory,
+                    GetCongestedIntervalsMeasurementEvent(startup_stage),
+                    congestion_track_, start_time);
+  TRACE_EVENT_END(kLatencyEventCategory, congestion_track_, end_time);
 }
 
-void Calculator::EmitCongestedIntervalTraceEvent(base::TimeTicks start_time,
+void Calculator::EmitCongestedIntervalTraceEvent(CongestionType congestion_type,
+                                                 base::TimeTicks start_time,
                                                  base::TimeTicks end_time) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kLatencyEventCategory, kCongestedIntervalEvent, TRACE_ID_LOCAL(this),
-      start_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kLatencyEventCategory, kCongestedIntervalEvent, TRACE_ID_LOCAL(this),
-      end_time);
+  TRACE_EVENT_BEGIN(kLatencyEventCategory,
+                    GetCongestedIntervalEvent(congestion_type),
+                    congestion_track_, start_time);
+  TRACE_EVENT_END(kLatencyEventCategory, congestion_track_, end_time);
 }
 
 base::TimeTicks Calculator::GetLastCalculationTime() {
@@ -333,11 +362,11 @@ void Calculator::CalculateResponsivenessIfNecessary(
     delegate_->OnMeasurementIntervalEnded();
   }
 
-  CalculateResponsiveness(CongestionType::kExecutionOnly,
-                          std::move(execution_congestion_from_multiple_threads),
-                          last_calculation_time_, new_calculation_time);
   CalculateResponsiveness(CongestionType::kQueueAndExecution,
                           std::move(congestion_from_multiple_threads),
+                          last_calculation_time_, new_calculation_time);
+  CalculateResponsiveness(CongestionType::kExecutionOnly,
+                          std::move(execution_congestion_from_multiple_threads),
                           last_calculation_time_, new_calculation_time);
 
   if (startup_stage_ == StartupStage::kFirstInterval)
@@ -391,10 +420,8 @@ void Calculator::CalculateResponsiveness(
     bool latency_category_enabled;
     TRACE_EVENT_CATEGORY_GROUP_ENABLED(kLatencyEventCategory,
                                        &latency_category_enabled);
-    if (latency_category_enabled &&
-        (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle ||
-         startup_stage_ == StartupStage::kPeriodic)) {
-      EmitResponsivenessTraceEvents(congestion_type, start_time,
+    if (latency_category_enabled) {
+      EmitResponsivenessTraceEvents(congestion_type, startup_stage_, start_time,
                                     current_interval_end_time,
                                     congested_slices);
     }
