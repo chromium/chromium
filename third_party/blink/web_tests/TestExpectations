@@ -2610,6 +2610,8 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby.tentative.html [ Timeout ]
+[ Mac14 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate-timing.https.html [ Timeout ]
 crbug.com/377572928 external/wpt/css/css-masking/clip-path/clip-path-shape-hline-vline-keywords.tentative.html [ Failure ]
 crbug.com/377576485 [ Mac13 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
 crbug.com/377576485 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
@@ -8408,15 +8410,15 @@ crbug.com/376931817 virtual/fsa-incognito/external/wpt/file-system-access/local_
 crbug.com/376931817 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemFileHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
 
 # Gardener 2024-11-07
-crbug.com/377172757 [ Linux ] external/wpt/event-timing/selection-autoscroll.html [ Timeout Pass ]
-crbug.com/377777852 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/shared-storage-filtering-id-sends-report.https.window.html [ Timeout Pass ]
+crbug.com/377172757 [ Linux ] external/wpt/event-timing/selection-autoscroll.html [ Pass Timeout ]
+crbug.com/377777852 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/shared-storage-filtering-id-sends-report.https.window.html [ Pass Timeout ]
 crbug.com/377909956 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/interrupt-hidden-smooth-scroll.html [ Failure Pass ]
 crbug.com/377927602 external/wpt/selection/caret/collapse-pre-linestart-2.html [ Failure Pass ]
 crbug.com/377927602 external/wpt/selection/caret/editing-host-has-only-invisible-br.html [ Failure Pass Timeout ]
-crbug.com/377938333 external/wpt/webdriver/tests/bidi/browsing_context/context_created/original_opener.py [ Timeout Failure Pass ]
-crbug.com/377938333 external/wpt/webdriver/tests/bidi/browsing_context/print/page.py [ Timeout Failure Pass ]
-crbug.com/377938333 external/wpt/webdriver/tests/classic/element_clear/disabled.py [ Timeout Failure Pass ]
-crbug.com/377938333 external/wpt/webdriver/tests/classic/execute_async_script/arguments.py [ Timeout Failure Pass ]
-crbug.com/377938333 external/wpt/webdriver/tests/classic/find_element/find.py [ Timeout Failure Pass ]
-crbug.com/377938333 external/wpt/webdriver/tests/classic/navigate_to/file.py [ Timeout Failure Pass ]
-crbug.com/377938333 external/wpt/webdriver/tests/interop/beforeunload_prompt.py [ Timeout Failure Pass ]
+crbug.com/377938333 external/wpt/webdriver/tests/bidi/browsing_context/context_created/original_opener.py [ Failure Pass Timeout ]
+crbug.com/377938333 external/wpt/webdriver/tests/bidi/browsing_context/print/page.py [ Failure Pass Timeout ]
+crbug.com/377938333 external/wpt/webdriver/tests/classic/element_clear/disabled.py [ Failure Pass Timeout ]
+crbug.com/377938333 external/wpt/webdriver/tests/classic/execute_async_script/arguments.py [ Failure Pass Timeout ]
+crbug.com/377938333 external/wpt/webdriver/tests/classic/find_element/find.py [ Failure Pass Timeout ]
+crbug.com/377938333 external/wpt/webdriver/tests/classic/navigate_to/file.py [ Failure Pass Timeout ]
+crbug.com/377938333 external/wpt/webdriver/tests/interop/beforeunload_prompt.py [ Failure Pass Timeout ]

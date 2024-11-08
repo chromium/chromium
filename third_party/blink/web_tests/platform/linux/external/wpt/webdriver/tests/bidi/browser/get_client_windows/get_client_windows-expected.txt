@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_open_and_close
+  AttributeError: 'Browser' object has no attribute 'get_client_windows'
+[FAIL] test_activate_client_windows
+  AttributeError: 'Browser' object has no attribute 'get_client_windows'
+Harness: the test ran to completion.
