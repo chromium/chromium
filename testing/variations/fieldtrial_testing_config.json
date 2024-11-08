@@ -16451,6 +16451,24 @@
             ]
         }
     ],
+    "PartitionAllocShadowMetadata": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "enabled-processes": "renderer-only"
+                    },
+                    "enable_features": [
+                        "PartitionAllocShadowMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocUnretainedDanglingPtr": [
         {
             "platforms": [
