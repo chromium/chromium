@@ -6836,6 +6836,9 @@
                     },
                     "enable_features": [
                         "CrOSLateBootSplitGenerations"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootMglruConservativeMm"
                     ]
                 },
                 {
@@ -6849,30 +6852,49 @@
                     ]
                 },
                 {
-                    "name": "EnabledSwappiness140",
+                    "name": "EnabledSwappiness185",
                     "params": {
-                        "Swappiness": "140"
+                        "Swappiness": "185"
                     },
                     "enable_features": [
                         "CrOSLateBootSplitGenerations"
-                    ]
-                },
-                {
-                    "name": "EnabledSwappiness180",
-                    "params": {
-                        "Swappiness": "180"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootSplitGenerations"
-                    ]
-                },
-                {
-                    "name": "EnabledConservativeMm",
-                    "enable_features": [
-                        "CrOSLateBootMglruConservativeMm"
                     ],
                     "disable_features": [
+                        "CrOSLateBootMglruConservativeMm"
+                    ]
+                },
+                {
+                    "name": "EnabledSwappiness185ConservativeMm",
+                    "params": {
+                        "Swappiness": "185"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootMglruConservativeMm",
                         "CrOSLateBootSplitGenerations"
+                    ]
+                },
+                {
+                    "name": "EnabledSwappiness170",
+                    "params": {
+                        "Swappiness": "170"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSplitGenerations"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootMglruConservativeMm"
+                    ]
+                },
+                {
+                    "name": "EnabledSwappiness150",
+                    "params": {
+                        "Swappiness": "150"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSplitGenerations"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootMglruConservativeMm"
                     ]
                 }
             ]
