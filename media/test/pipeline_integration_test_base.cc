@@ -73,7 +73,13 @@ class TestDataSourceFactory
   ~TestDataSourceFactory() override = default;
   void CreateDataSource(GURL uri, bool, DataSourceCb callback) override {
     auto file_data_source = std::make_unique<FileDataSource>();
-    base::FilePath file_path(uri.GetContent());
+    base::FilePath file_path(
+#if BUILDFLAG(IS_WIN)
+        base::UTF8ToWide(uri.GetContent())
+#else
+        uri.GetContent()
+#endif
+    );
     CHECK(file_data_source->Initialize(file_path))
         << "Is " << file_path.value() << " missing?";
     std::move(callback).Run(std::move(file_data_source));

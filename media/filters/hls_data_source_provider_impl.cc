@@ -51,8 +51,6 @@ void OnMultiBufferReadComplete(
 
 }  // namespace
 
-HlsDataSourceProviderImpl::DataSourceFactory::~DataSourceFactory() = default;
-
 HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
     std::unique_ptr<DataSourceFactory> factory)
     : data_source_factory_(std::move(factory)) {}
