@@ -154,6 +154,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kTabCompareSettings,
     optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
+  { policy::key::kDownloadRestrictions,
+    policy::policy_prefs::kDownloadRestrictions,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 

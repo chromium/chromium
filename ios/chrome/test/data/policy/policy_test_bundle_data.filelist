@@ -79,3 +79,4 @@
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedAnonymizedDataCollectionEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedMetricsAllowed.json
 //ios/chrome/test/data/policy/pref_mapping/WebAnnotations.json
+//ios/chrome/test/data/policy/pref_mapping/DownloadRestrictions.json

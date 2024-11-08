@@ -28,6 +28,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- ios
 items:
 - caption: No special restrictions. Default.
   name: DefaultDownloadSecurity

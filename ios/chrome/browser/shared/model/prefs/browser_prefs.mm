@@ -965,6 +965,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kIosSaveToDriveDownloadManagerPolicySettings,
       static_cast<int>(SaveToDrivePolicySettings::kEnabled));
 
+  // Preferences related to download restrictions enterprise policy.
+  registry->RegisterIntegerPref(policy::policy_prefs::kDownloadRestrictions, 0);
+
   // Preferences related to parcel tracking.
   registry->RegisterBooleanPref(
       prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, false);
