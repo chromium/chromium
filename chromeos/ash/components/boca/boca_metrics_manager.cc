@@ -6,9 +6,25 @@
 
 #include <algorithm>
 
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 
 namespace ash::boca {
+namespace {
+
+int CalculateNumOfActiveStudents(const ::boca::Session* session) {
+  int num_of_active_students = 0;
+  if (session) {
+    for (const auto& [student, student_status] : session->student_statuses()) {
+      if (student_status.state() == ::boca::StudentStatus::ACTIVE) {
+        ++num_of_active_students;
+      }
+    }
+  }
+  return num_of_active_students;
+}
+
+}  // namespace
 
 BocaMetricsManager::BocaMetricsManager(bool is_producer)
     : is_producer_(is_producer) {}
@@ -34,8 +50,12 @@ void BocaMetricsManager::OnSessionEnded(const std::string& session_id) {
   if (is_producer_) {
     RecordOnTaskLockedStateDurationPercentage(
         unlocked_mode_cumulative_duration_, locked_mode_cumulative_duration_);
-    RecordOnTaskNumOfStudentsJoinedViaCodeDuringSession(
+    RecordNumOfStudentsJoinedViaCodeDuringSession(
         students_join_via_code_.size());
+    const ::boca::Session* const session =
+        BocaAppClient::Get()->GetSessionManager()->GetPreviousSession();
+    RecordNumOfActiveStudentsWhenSessionEnded(
+        CalculateNumOfActiveStudents(session));
     RecordOnTaskNumOfTabsWhenSessionEnded(num_of_tabs_);
     RecordOnTaskMaxNumOfTabsDuringSession(max_num_of_tabs_);
   }

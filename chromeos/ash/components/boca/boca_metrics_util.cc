@@ -25,10 +25,15 @@ void RecordOnTaskLockedStateDurationPercentage(
                            percentage_unlocked);
 }
 
-void RecordOnTaskNumOfStudentsJoinedViaCodeDuringSession(
+void RecordNumOfStudentsJoinedViaCodeDuringSession(
     int num_of_students_joined_via_code) {
-  UMA_HISTOGRAM_COUNTS_1000(kBocaOnTaskNumOfStudentsJoinedViaCodeDuringSession,
+  UMA_HISTOGRAM_COUNTS_1000(kBocaNumOfStudentsJoinedViaCodeDuringSession,
                             num_of_students_joined_via_code);
+}
+
+void RecordNumOfActiveStudentsWhenSessionEnded(int num_of_active_students) {
+  UMA_HISTOGRAM_COUNTS_1000(kBocaNumOfActiveStudentsWhenSessionEnded,
+                            num_of_active_students);
 }
 
 void RecordOnTaskNumOfTabsWhenSessionEnded(int num_of_tabs) {

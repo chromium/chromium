@@ -116,7 +116,8 @@ class BocaSessionManager
 
     // Notifies when boca app reloaded.
     virtual void OnAppReloaded();
-    // Notifies when consumer acitivity updated. Will emit when only elements
+
+    // Notifies when consumer activity updated. Will emit when only elements
     // order changed in the vector too.
     virtual void OnConsumerActivityUpdated(
         const std::map<std::string, ::boca::StudentStatus>& activities);

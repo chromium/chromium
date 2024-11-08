@@ -10,6 +10,10 @@
 namespace ash::boca {
 inline constexpr char kBocaActionOfStudentJoinedSession[] =
     "Ash.Boca.StudentJoinedSession";
+inline constexpr char kBocaNumOfActiveStudentsWhenSessionEnded[] =
+    "Ash.Boca.NumberOfActiveStudentsWhenSessionEnded";
+inline constexpr char kBocaNumOfStudentsJoinedViaCodeDuringSession[] =
+    "Ash.Boca.NumberOfStudentsJoinedViaCodeDuringSession";
 inline constexpr char kBocaOnTaskLockedSessionDurationPercentage[] =
     "Ash.Boca.OnTask.LockedSessionDurationPercentage";
 inline constexpr char kBocaOnTaskUnlockedSessionDurationPercentage[] =
@@ -18,8 +22,6 @@ inline constexpr char kBocaOnTaskNumOfTabsWhenSessionEnded[] =
     "Ash.Boca.OnTask.NumberOfTabsWhenSessionEnded";
 inline constexpr char kBocaOnTaskMaxNumOfTabsDuringSession[] =
     "Ash.Boca.OnTask.MaxNumberOfTabsDuringSession";
-inline constexpr char kBocaOnTaskNumOfStudentsJoinedViaCodeDuringSession[] =
-    "Ash.Boca.OnTask.NumberOfStudentsJoinedViaCodeDuringSession";
 
 // Records the percentage of the duration that a session was in a particular
 // locked or unlocked state.
@@ -28,8 +30,11 @@ void RecordOnTaskLockedStateDurationPercentage(
     base::TimeDelta locked_state_duration);
 
 // Records the number of students joined via code in a session.
-void RecordOnTaskNumOfStudentsJoinedViaCodeDuringSession(
+void RecordNumOfStudentsJoinedViaCodeDuringSession(
     int num_of_students_joined_via_code);
+
+// Records the number of active students left when a session ends.
+void RecordNumOfActiveStudentsWhenSessionEnded(int num_of_active_students);
 
 // Records the number of tabs sent by the provider when a session ends.
 void RecordOnTaskNumOfTabsWhenSessionEnded(int num_of_tabs);

@@ -1203,6 +1203,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Boca.NumberOfActiveStudentsWhenSessionEnded"
+    units="students" expires_after="2025-04-04">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the number of active students left when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Boca.NumberOfStudentsJoinedViaCodeDuringSession"
+    units="students" expires_after="2025-04-04">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the number of students joined via code throughout a session.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Boca.OnTask.MaxNumberOfTabsDuringSession" units="tabs"
     expires_after="2025-04-04">
   <owner>caott@google.com</owner>
@@ -1210,15 +1228,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the maximum number of tabs shared by the provider throughout a
     session.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Boca.OnTask.NumberOfStudentsJoinedViaCodeDuringSession"
-    units="students" expires_after="2025-04-04">
-  <owner>caott@google.com</owner>
-  <owner>cros-edu-eng@google.com</owner>
-  <summary>
-    Records the number of students joined via code throughout a session.
   </summary>
 </histogram>
 
