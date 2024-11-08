@@ -68,10 +68,6 @@ extern const base::FeatureParam<bool> kAppMenuChipColorPrimary;
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
 bool IsExtensionMenuInRootAppMenu();
 
-#if !defined(ANDROID)
-BASE_DECLARE_FEATURE(kAccessCodeCastUI);
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 #endif

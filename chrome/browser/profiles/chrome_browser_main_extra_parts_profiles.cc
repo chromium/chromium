@@ -947,9 +947,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
   MediaDeviceSaltServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
-    media_router::AccessCodeCastSinkServiceFactory::GetInstance();
-  }
+  media_router::AccessCodeCastSinkServiceFactory::GetInstance();
 #endif
   media_router::ChromeLocalPresentationManagerFactory::GetInstance();
   media_router::ChromeMediaRouterFactory::GetInstance();

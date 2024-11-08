@@ -466,8 +466,7 @@ void CastDialogView::RecordSinkCount() {
 }
 
 bool CastDialogView::IsAccessCodeCastingEnabled() const {
-  return base::FeatureList::IsEnabled(features::kAccessCodeCastUI) &&
-         GetAccessCodeCastEnabledPref(profile_);
+  return GetAccessCodeCastEnabledPref(profile_);
 }
 
 BEGIN_METADATA(CastDialogView)

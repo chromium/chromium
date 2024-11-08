@@ -109,11 +109,9 @@ AccessCodeCastIntegrationBrowserTest::AccessCodeCastIntegrationBrowserTest()
                         kDiscoveryServicePath),
       mock_cast_socket_service_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   // TODO(crbug.com/323780452): Remove performance manager feature after deflake
-  feature_list_.InitWithFeatures(
-      {features::kAccessCodeCastUI,
-       performance_manager::features::
-           kBackgroundTabLoadingFromPerformanceManager},
-      {});
+  feature_list_.InitAndEnableFeature(
+      performance_manager::features::
+          kBackgroundTabLoadingFromPerformanceManager);
   task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 }
 

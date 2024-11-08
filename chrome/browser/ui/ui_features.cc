@@ -90,13 +90,6 @@ bool IsExtensionMenuInRootAppMenu() {
   return base::FeatureList::IsEnabled(kExtensionsMenuInAppMenu);
 }
 
-#if !defined(ANDROID)
-// Enables "Access Code Cast" UI.
-BASE_FEATURE(kAccessCodeCastUI,
-             "AccessCodeCastUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables the feature to remove the last confirmation dialog when relaunching
 // to update Chrome.
