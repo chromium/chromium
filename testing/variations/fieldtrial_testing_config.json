@@ -25534,24 +25534,6 @@
             ]
         }
     ],
-    "WebApkAllowIconUpdate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_WebApkAllowIconUpdate",
-                    "params": {
-                        "shell_version": "166"
-                    },
-                    "enable_features": [
-                        "WebApkAllowIconUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkBackupAndRestore": [
         {
             "platforms": [

@@ -72,8 +72,6 @@ webapk::WebApk_UpdateReason ConvertUpdateReasonToProtoEnum(
       return webapk::WebApk::DARK_THEME_COLOR_DIFFERS;
     case WebApkUpdateReason::PRIMARY_ICON_CHANGE_BELOW_THRESHOLD:
       return webapk::WebApk::PRIMARY_ICON_CHANGE_BELOW_THRESHOLD;
-    case WebApkUpdateReason::PRIMARY_ICON_CHANGE_SHELL_UPDATE:
-      return webapk::WebApk::PRIMARY_ICON_CHANGE_SHELL_UPDATE;
   }
 }
 

@@ -329,7 +329,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kVoiceSearchAudioCapturePolicy,
     &kWebOtpCrossDeviceSimpleString,
-    &kWebApkAllowIconUpdate,
     &kWebApkMinShellVersion,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
@@ -1049,10 +1048,6 @@ BASE_FEATURE(kVoiceSearchAudioCapturePolicy,
 // a descriptive text.
 BASE_FEATURE(kWebOtpCrossDeviceSimpleString,
              "WebOtpCrossDeviceSimpleString",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebApkAllowIconUpdate,
-             "WebApkAllowIconUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace android

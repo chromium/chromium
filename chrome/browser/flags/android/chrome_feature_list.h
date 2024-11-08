@@ -186,7 +186,6 @@ BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kUserMediaScreenCapturing);
 BASE_DECLARE_FEATURE(kVoiceSearchAudioCapturePolicy);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
-BASE_DECLARE_FEATURE(kWebApkAllowIconUpdate);
 
 // For FeatureParam, Alphabetical:
 constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
