@@ -2826,11 +2826,6 @@ BASE_FEATURE(kSunfishFeature,
              "SunfishFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Suppresses the first end of life warning shown 180 days before the AUE date.
-BASE_FEATURE(kSuppressFirstEolWarning,
-             "SuppressFirstEolWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable the suspend state machine to better handle suspend accelerators.
 BASE_FEATURE(kSuspendStateMachine,
              "SuspendStateMachine",
