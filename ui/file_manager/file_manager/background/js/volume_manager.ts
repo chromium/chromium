@@ -243,15 +243,6 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
   }
 
   /**
-   * Gets the 'fusebox-only' filter state: true if enabled, false if disabled.
-   * The filter is only enabled by the SelectFileAsh (Lacros) file picker, and
-   * implemented by {FilteredVolumeManager} override.
-   */
-  getFuseBoxOnlyFilterEnabled(): boolean {
-    return false;
-  }
-
-  /**
    * Gets the 'media-store-files-only' filter state: true if enabled, false if
    * disabled. The filter is only enabled by the Android (ARC) file picker, and
    * implemented by {FilteredVolumeManager} override.

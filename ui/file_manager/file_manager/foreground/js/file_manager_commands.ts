@@ -569,16 +569,6 @@ export class DeleteCommand extends FilesCommand {
       return;
     }
 
-    // Block fusebox volumes in SelectFileAsh (Lacros) file picker mode.
-    if (fileManager.volumeManager.getFuseBoxOnlyFilterEnabled()) {
-      // TODO(crbug/1292825) Make it work with fusebox volumes: MTP, etc.
-      if (fileManager.directoryModel.isOnFuseBox()) {
-        event.canExecute = false;
-        event.command.setHidden(true);
-        return;
-      }
-    }
-
     event.canExecute = this.canDeleteEntries_(entries, fileManager);
 
     // Remove if nothing is selected, e.g. user clicked in an empty
@@ -1137,16 +1127,6 @@ export class RenameCommand extends FilesCommand {
   }
 
   override canExecute(event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
-    // Block fusebox volumes in SelectFileAsh (Lacros) file picker mode.
-    if (fileManager.volumeManager.getFuseBoxOnlyFilterEnabled()) {
-      // TODO(crbug/1292825) Make it work with fusebox volumes: MTP, etc.
-      if (fileManager.directoryModel.isOnFuseBox()) {
-        event.canExecute = false;
-        event.command.setHidden(true);
-        return;
-      }
-    }
-
     if (isOnTrashRoot(fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
