@@ -32275,6 +32275,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.CreateSuggestionAccepted">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    The user accepted the option to create a plus address suggestion. Notably on
+    Desktop this is only recorded if the user has never accepted the notice.
+  </description>
+</action>
+
 <action name="PlusAddresses.CreateSuggestionFirstTimeNoticeShown">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>

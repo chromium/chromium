@@ -1519,7 +1519,7 @@ TEST_F(PlusAddressSuggestionsTest, RecordExistingPlusAddressChosenUserAction) {
 
 // Tests that a user action is recorded when a create plus address suggestion is
 // shown to the user, and the user has already accepted the notice.
-TEST_F(PlusAddressSuggestionsTest, RecordCreateSuggestionUserAction) {
+TEST_F(PlusAddressSuggestionsTest, RecordCreateSuggestionUserActionShown) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   base::test::ScopedFeatureList feature_list{
@@ -1539,6 +1539,17 @@ TEST_F(PlusAddressSuggestionsTest, RecordCreateSuggestionUserAction) {
   EXPECT_EQ(
       user_action_tester.GetActionCount("PlusAddresses.CreateSuggestionShown"),
       1);
+}
+
+// Tests that a user action is recorded when the user selects the plus address
+// creation option.
+TEST_F(PlusAddressSuggestionsTest, RecordCreateSuggestionUserActionChosen) {
+  base::UserActionTester user_action_tester;
+  service().RecordAutofillSuggestionEvent(
+      SuggestionEvent::kCreateNewPlusAddressChosen);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.CreateSuggestionAccepted"),
+            1);
 }
 
 // Tests that a create plus address suggestion is offered regardless of the

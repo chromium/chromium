@@ -573,12 +573,15 @@ void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
       base::RecordAction(base::UserMetricsAction(
           "PlusAddresses.FillStandaloneSuggestionAccepted"));
       return;
+    case kCreateNewPlusAddressChosen:
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.CreateSuggestionAccepted"));
+      return;
     case kCreateNewPlusAddressInlineChosen:
       base::RecordAction(
           base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
       return;
     case kErrorDuringReserve:
-    case kCreateNewPlusAddressChosen:
     case kCreateNewPlusAddressInlineReserveLoadingStateShown:
       return;
   }
