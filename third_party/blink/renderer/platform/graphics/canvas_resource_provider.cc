@@ -259,15 +259,17 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
     if (!output_resource)
       return nullptr;
 
-    auto paint_image = MakeImageSnapshot(reason);
-    if (!paint_image)
+    FlushCanvas(reason);
+
+    auto sk_image = GetSkSurface()->makeImageSnapshot();
+    if (!sk_image) {
       return nullptr;
-    DCHECK(!paint_image.IsTextureBacked());
+    }
 
     // Note that the resource *must* be a CanvasResourceSharedBitmap as this
     // class creates CanvasResourceSharedBitmap instances exclusively.
     static_cast<CanvasResourceSharedBitmap*>(output_resource.get())
-        ->TakeSkImage(paint_image.GetSwSkImage());
+        ->TakeSkImage(std::move(sk_image));
 
     return output_resource;
   }
