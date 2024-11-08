@@ -10,10 +10,9 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/enterprise_companion/dm_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/event_logger.h"
 
 namespace enterprise_companion {
-
-class EventLoggerManager;
 
 // The core of the Enterprise Companion App. All functions and callbacks must be
 // called on the same sequence.
@@ -28,7 +27,7 @@ class EnterpriseCompanionService {
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(
     std::unique_ptr<DMClient> dm_client,
-    std::unique_ptr<EventLoggerManager> event_logger_manager,
+    scoped_refptr<EnterpriseCompanionEventLogger> logger,
     base::OnceClosure shutdown_callback);
 
 }  // namespace enterprise_companion

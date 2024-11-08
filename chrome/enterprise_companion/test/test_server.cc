@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
-#include "chrome/enterprise_companion/proto/log_request.pb.h"
+#include "chrome/enterprise_companion/telemetry_logger/proto/log_request.pb.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -56,7 +56,7 @@ std::unique_ptr<HttpResponse> TestServer::HandleRequest(
   if (request_matcher_groups_.empty()) {
     VLOG(0) << "Unexpected request.";
     ADD_FAILURE() << "Unexpected request with URL: " << request.GetURL();
-    response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+    response->set_code(net::HTTP_EXPECTATION_FAILED);
     return response;
   }
   if (!base::ranges::all_of(
@@ -64,7 +64,7 @@ std::unique_ptr<HttpResponse> TestServer::HandleRequest(
           [&request](Matcher matcher) { return matcher.Run(request); })) {
     VLOG(0) << "Request did not match.";
     ADD_FAILURE() << "Unmatched request to " << request.GetURL();
-    response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+    response->set_code(net::HTTP_EXPECTATION_FAILED);
     return response;
   }
 
@@ -92,16 +92,17 @@ Matcher CreateEventLogMatcher(
           return false;
         }
 
-        proto::LogRequest log_request;
+        telemetry_logger::proto::LogRequest log_request;
         if (!log_request.ParseFromString(request.content)) {
           return false;
         }
 
         // The following values should match for all event pings.
         EXPECT_EQ(log_request.client_info().client_type(),
-                  proto::ClientInfo_ClientType_CHROME_ENTERPRISE_COMPANION);
+                  telemetry_logger::proto::
+                      ClientInfo_ClientType_CHROME_ENTERPRISE_COMPANION);
         EXPECT_EQ(log_request.log_source(),
-                  proto::CHROME_ENTERPRISE_COMPANION_APP);
+                  telemetry_logger::proto::CHROME_ENTERPRISE_COMPANION_APP);
         if (log_request.log_event().size() != 1) {
           ADD_FAILURE() << "Malformed event log proto, wrong number of events.";
           return false;
@@ -132,7 +133,7 @@ Matcher CreatePacUrlMatcher(const TestServer& test_server) {
 }
 
 std::string CreateLogResponse(base::TimeDelta next_request_wait) {
-  proto::LogResponse response;
+  telemetry_logger::proto::LogResponse response;
   response.set_next_request_wait_millis(next_request_wait.InMilliseconds());
   return response.SerializeAsString();
 }

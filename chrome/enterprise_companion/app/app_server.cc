@@ -166,8 +166,7 @@ class AppServer : public App {
         CreateEnterpriseCompanionServiceStub(CreateEnterpriseCompanionService(
             CreateDMClient(
                 GetDefaultCloudPolicyClientProvider(url_loader_factory)),
-            CreateEventLoggerManager(
-                CreateEventLogUploader(url_loader_factory)),
+            EnterpriseCompanionEventLogger::Create(url_loader_factory),
             base::BindOnce(&AppServer::Shutdown, weak_ptr_factory_.GetWeakPtr(),
                            EnterpriseCompanionStatus::Success())));
   }

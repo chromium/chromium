@@ -73,12 +73,13 @@ class MockServer : public base::RefCountedThreadSafe<MockServer> {
     EXPECT_FALSE(expected_requests_.empty())
         << "request not expected: " << request_body;
 
-    proto::LogRequest request;
+    telemetry_logger::proto::LogRequest request;
     EXPECT_TRUE(request.ParseFromString(request_body))
         << " cannot parse request.";
     EXPECT_TRUE(request.has_client_info());
     EXPECT_EQ(request.client_info().client_type(),
-              proto::ClientInfo_ClientType_CHROME_ENTERPRISE_COMPANION);
+              telemetry_logger::proto::
+                  ClientInfo_ClientType_CHROME_ENTERPRISE_COMPANION);
     EXPECT_EQ(request.log_source(), 1234);
     EXPECT_EQ(request.log_event_size(), 1);
     EXPECT_EQ(request.log_event(0).source_extension(),
@@ -308,7 +309,7 @@ TEST_F(TelemetryLoggerTest, DelayedUpload) {
         std::make_unique<TestDelegate>(server));
 
     TestEvent event_batch1[] = {TestEvent(1, 0, "e1")};
-    proto::LogResponse response;
+    telemetry_logger::proto::LogResponse response;
     response.set_next_request_wait_millis(20000);
     server->ExpectRequest(
         SerializeEvents(event_batch1),
@@ -337,7 +338,7 @@ TEST_F(TelemetryLoggerTest, CooldownTime) {
         std::make_unique<TestDelegate>(server));
 
     TestEvent event_batch1[] = {TestEvent(1, 0, "e1")};
-    proto::LogResponse response;
+    telemetry_logger::proto::LogResponse response;
     response.set_next_request_wait_millis(5000);
     server->ExpectRequest(
         SerializeEvents(event_batch1),

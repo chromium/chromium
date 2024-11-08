@@ -15,6 +15,7 @@
 #include "chrome/enterprise_companion/dm_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/event_logger.h"
+#include "chrome/enterprise_companion/telemetry_logger/telemetry_logger.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,39 +31,33 @@ class MockDMClient final : public DMClient {
 
   MOCK_METHOD(void,
               RegisterPolicyAgent,
-              (scoped_refptr<EventLogger> event_logger,
+              (scoped_refptr<EnterpriseCompanionEventLogger> event_logger,
                StatusCallback callback),
               (override));
   MOCK_METHOD(void,
               FetchPolicies,
-              (scoped_refptr<EventLogger> event_logger,
+              (scoped_refptr<EnterpriseCompanionEventLogger> event_logger,
                StatusCallback callback),
               (override));
 };
 
-class MockEventLoggerManager : public EventLoggerManager {
+class MockLogger final : public EnterpriseCompanionEventLogger {
  public:
-  scoped_refptr<EventLogger> CreateEventLogger() override {
-    return base::MakeRefCounted<MockEventLogger>();
+  void LogRegisterPolicyAgentEvent(
+      base::Time start_time,
+      StatusCallback callback,
+      const EnterpriseCompanionStatus& status) override {
+    std::move(callback).Run(status);
   }
+  void LogPolicyFetchEvent(base::Time start_time,
+                           StatusCallback callback,
+                           const EnterpriseCompanionStatus& status) override {
+    std::move(callback).Run(status);
+  }
+  void Flush(base::OnceClosure callback) override { std::move(callback).Run(); }
 
- private:
-  class MockEventLogger : public EventLogger {
-   public:
-    // Overrides for EventLogger.
-    void Flush() override {}
-
-    OnEnrollmentFinishCallback OnEnrollmentStart() override {
-      return base::DoNothing();
-    }
-
-    OnPolicyFetchFinishCallback OnPolicyFetchStart() override {
-      return base::DoNothing();
-    }
-
-   private:
-    ~MockEventLogger() override = default;
-  };
+ protected:
+  ~MockLogger() override = default;
 };
 
 }  // namespace
@@ -76,10 +71,9 @@ TEST_F(EnterpriseCompanionServiceTest, Shutdown) {
   base::MockCallback<base::OnceClosure> shutdown_callback;
   base::RunLoop service_run_loop;
   std::unique_ptr<EnterpriseCompanionService> service =
-      CreateEnterpriseCompanionService(
-          std::make_unique<MockDMClient>(),
-          std::make_unique<MockEventLoggerManager>(),
-          service_run_loop.QuitClosure());
+      CreateEnterpriseCompanionService(std::make_unique<MockDMClient>(),
+                                       base::MakeRefCounted<MockLogger>(),
+                                       service_run_loop.QuitClosure());
 
   EXPECT_CALL(shutdown_callback, Run()).Times(1);
   service->Shutdown(shutdown_callback.Get());
@@ -90,18 +84,20 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesSuccess) {
   std::unique_ptr<MockDMClient> mock_dm_client_ =
       std::make_unique<MockDMClient>();
   EXPECT_CALL(*mock_dm_client_, RegisterPolicyAgent)
-      .WillOnce([](scoped_refptr<EventLogger>, StatusCallback callback) {
+      .WillOnce([](scoped_refptr<EnterpriseCompanionEventLogger>,
+                   StatusCallback callback) {
         std::move(callback).Run(EnterpriseCompanionStatus::Success());
       });
   EXPECT_CALL(*mock_dm_client_, FetchPolicies)
-      .WillOnce([](scoped_refptr<EventLogger>, StatusCallback callback) {
+      .WillOnce([](scoped_refptr<EnterpriseCompanionEventLogger>,
+                   StatusCallback callback) {
         std::move(callback).Run(EnterpriseCompanionStatus::Success());
       });
 
   std::unique_ptr<EnterpriseCompanionService> service =
-      CreateEnterpriseCompanionService(
-          std::move(mock_dm_client_),
-          std::make_unique<MockEventLoggerManager>(), base::DoNothing());
+      CreateEnterpriseCompanionService(std::move(mock_dm_client_),
+                                       base::MakeRefCounted<MockLogger>(),
+                                       base::DoNothing());
 
   base::RunLoop run_loop;
   service->FetchPolicies(
@@ -115,7 +111,8 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesRegistrationFail) {
   std::unique_ptr<MockDMClient> mock_dm_client_ =
       std::make_unique<MockDMClient>();
   EXPECT_CALL(*mock_dm_client_, RegisterPolicyAgent)
-      .WillOnce([](scoped_refptr<EventLogger>, StatusCallback callback) {
+      .WillOnce([](scoped_refptr<EnterpriseCompanionEventLogger>,
+                   StatusCallback callback) {
         std::move(callback).Run(
             EnterpriseCompanionStatus::FromDeviceManagementStatus(
                 policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
@@ -123,9 +120,9 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesRegistrationFail) {
   EXPECT_CALL(*mock_dm_client_, FetchPolicies).Times(0);
 
   std::unique_ptr<EnterpriseCompanionService> service =
-      CreateEnterpriseCompanionService(
-          std::move(mock_dm_client_),
-          std::make_unique<MockEventLoggerManager>(), base::DoNothing());
+      CreateEnterpriseCompanionService(std::move(mock_dm_client_),
+                                       base::MakeRefCounted<MockLogger>(),
+                                       base::DoNothing());
 
   base::RunLoop run_loop;
   service->FetchPolicies(
@@ -140,20 +137,22 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesFail) {
   std::unique_ptr<MockDMClient> mock_dm_client_ =
       std::make_unique<MockDMClient>();
   EXPECT_CALL(*mock_dm_client_, RegisterPolicyAgent)
-      .WillOnce([](scoped_refptr<EventLogger>, StatusCallback callback) {
+      .WillOnce([](scoped_refptr<EnterpriseCompanionEventLogger>,
+                   StatusCallback callback) {
         std::move(callback).Run(EnterpriseCompanionStatus::Success());
       });
   EXPECT_CALL(*mock_dm_client_, FetchPolicies)
-      .WillOnce([](scoped_refptr<EventLogger>, StatusCallback callback) {
+      .WillOnce([](scoped_refptr<EnterpriseCompanionEventLogger>,
+                   StatusCallback callback) {
         std::move(callback).Run(
             EnterpriseCompanionStatus::FromDeviceManagementStatus(
                 policy::DM_STATUS_HTTP_STATUS_ERROR));
       });
 
   std::unique_ptr<EnterpriseCompanionService> service =
-      CreateEnterpriseCompanionService(
-          std::move(mock_dm_client_),
-          std::make_unique<MockEventLoggerManager>(), base::DoNothing());
+      CreateEnterpriseCompanionService(std::move(mock_dm_client_),
+                                       base::MakeRefCounted<MockLogger>(),
+                                       base::DoNothing());
 
   base::RunLoop run_loop;
   service->FetchPolicies(

@@ -145,6 +145,7 @@ class GlobalConstantsImpl : public GlobalConstants {
   void ApplyOverride(const base::Value::Dict& overrides,
                      const std::string& key,
                      GURL& value) {
+    VLOG(2) << __func__ << ": " << key << " = " << value;
     const std::string* str = overrides.FindString(key);
     if (str) {
       value = GURL(*str);
@@ -154,6 +155,7 @@ class GlobalConstantsImpl : public GlobalConstants {
   void ApplyOverride(const base::Value::Dict& overrides,
                      const std::string& key,
                      base::TimeDelta& value) {
+    VLOG(2) << __func__ << ": " << key << " = " << value;
     std::optional<int> override_val = overrides.FindInt(key);
     if (override_val) {
       value = base::Seconds(*override_val);
@@ -164,6 +166,7 @@ class GlobalConstantsImpl : public GlobalConstants {
   void ApplyOverride(const base::Value::Dict& overrides,
                      const std::string& key,
                      std::wstring& value) {
+    VLOG(2) << __func__ << ": " << key << " = " << value;
     const std::string* str = overrides.FindString(key);
     if (str) {
       value = base::ASCIIToWide(*str);

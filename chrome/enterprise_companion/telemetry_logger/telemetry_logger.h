@@ -92,6 +92,7 @@ class TelemetryLogger
   // server-instructed cooldowns. `Flush` may be used to trigger a transmission
   // immediately, if the client is not on a cool-down.
   void Log(const T& event) {
+    VLOG(2) << __func__;
     owning_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&TelemetryLogger<T>::DoLog,
                                   base::WrapRefCounted(this), event));
@@ -133,6 +134,7 @@ class TelemetryLogger
   }
 
   void DoLog(const T& event) {
+    VLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     events_.push_back(event);
   }
@@ -143,9 +145,10 @@ class TelemetryLogger
     proto::LogRequest request;
     request.set_request_time_ms(now_ms);
     request.mutable_client_info()->set_client_type(
-        proto::ClientInfo_ClientType_CHROME_ENTERPRISE_COMPANION);
+        telemetry_logger::proto::
+            ClientInfo_ClientType_CHROME_ENTERPRISE_COMPANION);
     request.set_log_source(delegate_->GetLogIdentifier());
-    proto::LogEvent* log_event = request.add_log_event();
+    telemetry_logger::proto::LogEvent* log_event = request.add_log_event();
     log_event->set_event_time_ms(now_ms);
     log_event->set_source_extension(
         delegate_->AggregateAndSerializeEvents(events));
@@ -154,6 +157,11 @@ class TelemetryLogger
 
   void Transmit(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (is_transmitting_) {
+      VLOG(2) << "Transmit skipped when there's an active one.";
+      std::move(callback).Run();
+      return;
+    }
     if (cooldown_timer_.IsRunning()) {
       VLOG(2) << "Transmit skipped in cool down period.";
       std::move(callback).Run();
@@ -177,6 +185,7 @@ class TelemetryLogger
 
     VLOG(2) << "Transmitting " << upload_queue_.size() << " events at "
             << base::Time::Now();
+    is_transmitting_ = true;
     delegate_->DoPostRequest(
         BuildRequestString(upload_queue_),
         base::BindOnce(&TelemetryLogger::OnResponseReceived,
@@ -198,12 +207,13 @@ class TelemetryLogger
                           std::optional<std::string> response_body) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__ << ": status=" << http_status.value_or(0);
+    is_transmitting_ = false;
     if (ShouldDeleteUploadQueue(http_status)) {
       VLOG(2) << "Clearing the upload queue.";
       upload_queue_.clear();
     }
 
-    proto::LogResponse response;
+    telemetry_logger::proto::LogResponse response;
     if (!response_body || !response.ParseFromString(*response_body)) {
       LOG(ERROR) << "Failed to parse log response proto, response body: "
                  << response_body.value_or("");
@@ -252,6 +262,7 @@ class TelemetryLogger
   friend class base::RefCountedDeleteOnSequence<TelemetryLogger<T>>;
   friend class base::DeleteHelper<TelemetryLogger<T>>;
 
+  bool is_transmitting_ = false;
   std::unique_ptr<Delegate> delegate_;
   std::vector<T> events_;
   std::vector<T> upload_queue_;

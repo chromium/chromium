@@ -11,6 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/event_logger.h"
+#include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
@@ -23,8 +25,6 @@ class CloudPolicyClient;
 }  // namespace policy
 
 namespace enterprise_companion {
-
-class EventLogger;
 
 extern const char kGoogleUpdateMachineLevelAppsPolicyType[];
 
@@ -49,12 +49,14 @@ class DMClient {
   virtual ~DMClient() = default;
 
   // Register the companion app with the enrollment token from storage.
-  virtual void RegisterPolicyAgent(scoped_refptr<EventLogger> event_logger,
-                                   StatusCallback callback) = 0;
+  virtual void RegisterPolicyAgent(
+      scoped_refptr<EnterpriseCompanionEventLogger> logger,
+      StatusCallback callback) = 0;
 
   // Fetch policies using the DM token from storage.
-  virtual void FetchPolicies(scoped_refptr<EventLogger> event_logger,
-                             StatusCallback callback) = 0;
+  virtual void FetchPolicies(
+      scoped_refptr<EnterpriseCompanionEventLogger> logger,
+      StatusCallback callback) = 0;
 };
 
 CloudPolicyClientProvider GetDefaultCloudPolicyClientProvider(
