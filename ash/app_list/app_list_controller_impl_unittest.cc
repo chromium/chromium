@@ -10,6 +10,7 @@
 #include "ash/app_list/app_list_badge_controller.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
@@ -23,7 +24,9 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
@@ -48,12 +51,14 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/auto_reset.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/session_manager/session_manager_types.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -503,6 +508,40 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
   Shell::Get()->app_list_controller()->ClearActiveModel();
   updated_model.reset();
   // Test that there is no crash on ~AppListModel() when the test finishes.
+}
+
+TEST_F(AppListControllerImplTest,
+       SunfishButtonHiddenWhenPreferenceChangedToFalse) {
+  base::AutoReset<bool> ignore_sunfish_secret_key =
+      switches::SetIgnoreSunfishSecretKeyForTest();
+  base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  prefs->SetBoolean(prefs::kSunfishEnabled, true);
+  SearchBoxModel* search_box_model =
+      AppListModelProvider::Get()->search_model()->search_box();
+  search_box_model->SetShowSunfishButton(true);
+
+  prefs->SetBoolean(prefs::kSunfishEnabled, false);
+
+  EXPECT_FALSE(search_box_model->show_sunfish_button());
+}
+
+TEST_F(AppListControllerImplTest,
+       SunfishButtonHiddenWhenPreferenceChangedToTrue) {
+  base::AutoReset<bool> ignore_sunfish_secret_key =
+      switches::SetIgnoreSunfishSecretKeyForTest();
+  base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  prefs->SetBoolean(prefs::kSunfishEnabled, false);
+  SearchBoxModel* search_box_model =
+      AppListModelProvider::Get()->search_model()->search_box();
+  search_box_model->SetShowSunfishButton(false);
+
+  prefs->SetBoolean(prefs::kSunfishEnabled, true);
+
+  EXPECT_TRUE(search_box_model->show_sunfish_button());
 }
 
 class AppListControllerImplTestWithNotificationBadging

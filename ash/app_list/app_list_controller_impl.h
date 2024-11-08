@@ -39,6 +39,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "components/prefs/pref_member.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -551,6 +552,10 @@ class ASH_EXPORT AppListControllerImpl
 
   // Sub-controller to handle app collections page.
   std::unique_ptr<AppsCollectionsController> apps_collections_controller_;
+
+  // Responsible for calling `UpdateSearchBoxUiVisibilities` when the Sunfish
+  // enabled pref changes.
+  std::unique_ptr<BooleanPrefMember> sunfish_enabled_;
 
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};

@@ -4,6 +4,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 
+#include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -72,6 +73,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/compositor.h"
@@ -441,6 +443,12 @@ bool AppListControllerImpl::IsVisible() {
 
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  sunfish_enabled_ = std::make_unique<BooleanPrefMember>();
+  sunfish_enabled_->Init(
+      prefs::kSunfishEnabled, pref_service,
+      base::BindRepeating(&AppListControllerImpl::UpdateSearchBoxUiVisibilities,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   if (IsKioskSession())
     return;
 
