@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -20,12 +22,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
@@ -47,6 +51,8 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DisplayCutoutControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Tab mTab;
 
     @Mock private WebContents mWebContents;
@@ -56,6 +62,7 @@ public class DisplayCutoutControllerTest {
     @Mock private Window mWindow;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentObserverCaptor;
 
     @Mock private ChromeActivity mChromeActivity;
 
@@ -70,8 +77,6 @@ public class DisplayCutoutControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mActivityRef = new WeakReference<>(mChromeActivity);
 
         when(mChromeActivity.getWindow()).thenReturn(mWindow);
@@ -107,10 +112,8 @@ public class DisplayCutoutControllerTest {
         mController.destroy();
         mController.maybeAddObservers();
 
-        ArgumentCaptor<WebContentsObserver> captor =
-                ArgumentCaptor.forClass(WebContentsObserver.class);
-        verify(mWebContents, times(2)).addObserver(captor.capture());
-        WebContentsObserver webContentsObserver = captor.getValue();
+        verify(mWebContents, times(2)).addObserver(mWebContentObserverCaptor.capture());
+        WebContentsObserver webContentsObserver = mWebContentObserverCaptor.getValue();
         webContentsObserver.didToggleFullscreenModeForTab(true, false);
         verify(mController, description("Should update layout when entering fullscreen"))
                 .maybeUpdateLayout();
@@ -298,5 +301,36 @@ public class DisplayCutoutControllerTest {
                 DisplayCutoutController.getSafeAreaInsetsTracker(mTab).isViewportFitCover());
 
         reset(mTab);
+    }
+
+    @Test
+    public void testObserverUpdateOnContentChange() {
+        // First, make sure observer is attached at the beginning.
+        verify(mWebContents, atLeastOnce()).addObserver(mWebContentObserverCaptor.capture());
+        WebContentsObserver observer = mWebContentObserverCaptor.getValue();
+        Assert.assertEquals(observer, mController.getWebContentObserverForTesting());
+
+        when(mTab.getWebContents()).thenReturn(null);
+        mController.onContentChanged();
+        verify(mWebContents).removeObserver(observer);
+        Assert.assertNull(mController.getWebContentObserverForTesting());
+
+        clearInvocations(mWebContents);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        mController.onContentChanged();
+        verify(mWebContents, atLeastOnce()).addObserver(mWebContentObserverCaptor.capture());
+        WebContentsObserver observer2 = mWebContentObserverCaptor.getValue();
+        Assert.assertEquals(observer2, mController.getWebContentObserverForTesting());
+    }
+
+    @Test
+    public void testCreateWithNullWebContent() {
+        when(mTab.getWebContents()).thenReturn(null);
+
+        // Reset the controller so we'll need to create a new one.
+        mTabDataHost.removeUserData(DisplayCutoutController.class);
+        mDisplayCutoutTabHelper = new DisplayCutoutTabHelper(mTab);
+        Assert.assertNull(
+                mDisplayCutoutTabHelper.mCutoutController.getWebContentObserverForTesting());
     }
 }
