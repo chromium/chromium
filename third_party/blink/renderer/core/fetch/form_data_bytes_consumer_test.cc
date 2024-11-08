@@ -156,6 +156,14 @@ class FormDataBytesConsumerTest : public PageTestBase {
     return consumer->DrainAsFormData();
   }
 
+  scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(
+      scoped_refptr<EncodedFormData> input_form_data) {
+    auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+        GetFrame().DomWindow(), input_form_data);
+    return consumer->DrainAsBlobDataHandle(
+        BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize);
+  }
+
  private:
   std::unique_ptr<FileBackedBlobFactoryTestHelper> file_factory_helper_;
 };
@@ -532,8 +540,18 @@ void AppendDataPipe(scoped_refptr<EncodedFormData> data, String content) {
   data->AppendDataPipe(std::move(wrapped));
 }
 
+scoped_refptr<BlobDataHandle> CreateBlobHandle(const String& content) {
+  auto blob_data = std::make_unique<BlobData>();
+  blob_data->AppendText(content, false);
+  auto size = blob_data->length();
+  return BlobDataHandle::Create(std::move(blob_data), size);
+}
+
 scoped_refptr<EncodedFormData> CreateDataPipeData() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
+  Vector<char> boundary;
+  boundary.Append("\0", 1);
+  data->SetBoundary(boundary);
 
   data->AppendData("foo", 3);
   AppendDataPipe(data, " hello world");
@@ -545,38 +563,50 @@ TEST_F(FormDataBytesConsumerTest, InvalidType1) {
   ASSERT_EQ(kExpected, DrainAsString(CreateDataPipeData()));
 
   scoped_refptr<EncodedFormData> data = CreateDataPipeData();
-  data->AppendFileRange("/foo/bar/baz", 3, 4,
-                        base::Time::FromSecondsSinceUnixEpoch(5));
+  scoped_refptr<BlobDataHandle> handle = CreateBlobHandle("bar");
+  data->AppendBlob(handle->Uuid(), handle);
   ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
 
-  EXPECT_EQ(kExpected, DrainAsString(data));
+  // sizeof("foo" + "bar") ignoring the mid "hello world" datapipe.
+  // TODO(crbug.com/374124998): Unfortunately BytesConsumerTestReader can not
+  // work with blob to drain string. We should fix it.
+  EXPECT_EQ(6u, DrainAsBlobDataHandle(data)->size());
 }
 
 scoped_refptr<EncodedFormData> CreateBlobData() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
-
-  data->AppendData("foo", 3);
-  auto blob_data = std::make_unique<BlobData>();
-  blob_data->AppendText("hello", false);
-  auto size = blob_data->length();
-  scoped_refptr<BlobDataHandle> blob_data_handle =
-      BlobDataHandle::Create(std::move(blob_data), size);
-  data->AppendBlob(blob_data_handle->Uuid(), blob_data_handle);
   Vector<char> boundary;
   boundary.Append("\0", 1);
   data->SetBoundary(boundary);
+
+  data->AppendData("foo", 3);
+  scoped_refptr<BlobDataHandle> handle = CreateBlobHandle("bar");
+  data->AppendBlob(handle->Uuid(), handle);
   return data;
 }
 
-TEST_F(FormDataBytesConsumerTest, InvaidType2) {
+TEST_F(FormDataBytesConsumerTest, InvalidType2) {
   scoped_refptr<EncodedFormData> data = CreateBlobData();
-  AppendDataPipe(data, " hello world!");
+  AppendDataPipe(data, " datapipe");
   ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
 
   auto* consumer =
       MakeGarbageCollected<FormDataBytesConsumer>(GetFrame().DomWindow(), data);
-  EXPECT_TRUE(consumer->DrainAsFormData());
+  Vector<char> str;
+  {
+    base::span<const char> buffer;
+    EXPECT_EQ(BytesConsumer::Result::kOk, consumer->BeginRead(buffer));
+    str.AppendSpan(buffer);
+    EXPECT_EQ(BytesConsumer::Result::kOk, consumer->EndRead(buffer.size()));
+  }
+  EXPECT_EQ("foo", BytesConsumerTestUtil::CharVectorToString(str));
+
+  {
+    base::span<const char> buffer;
+    EXPECT_EQ(BytesConsumer::Result::kError, consumer->BeginRead(buffer));
+  }
 }
+// TODO(crbug.com/374124998): We should add more testing.
 
 }  // namespace
 }  // namespace blink
