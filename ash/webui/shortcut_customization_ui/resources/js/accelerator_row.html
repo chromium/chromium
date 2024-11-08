@@ -103,10 +103,10 @@
           [[i18n('noShortcutAssigned')]]
         </div>
         <template is="dom-if" if="[[!isLocked]]">
-          <div class="edit-icon-container"
-            aria-label="[[getEditButtonAriaLabel(description)]]">
+          <div class="edit-icon-container">
             <cr-icon-button class="edit-button" class="clickable-button"
                 iron-icon="shortcut-customization:edit"
+                aria-label="[[getEditButtonAriaLabel(description)]]"
                 on-click="onEditIconClicked">
             </cr-icon-button>
           </div>
