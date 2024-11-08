@@ -421,6 +421,49 @@ TEST_F(BrightnessControllerChromeosTest,
       1);
 }
 
+TEST_F(BrightnessControllerChromeosTest,
+       Prefs_OnLogin_DoNotSaveBrightnessWhenLidClosed) {
+  // Set initial brightness.
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Clear user sessions and reset to the primary login screen.
+  ClearLogin();
+
+  // On the login screen, focus a user
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // Create a KnownUser for this Local State
+  user_manager::KnownUser known_user(local_state());
+
+  // Verify no brightness preference exists yet
+  EXPECT_FALSE(HasBrightnessPrefValue(known_user, account_id));
+
+  system::BrightnessControllerChromeos* brightness_controller =
+      static_cast<system::BrightnessControllerChromeos*>(
+          brightness_control_delegate());
+  {
+    // Simulate lid closed and verify that brightness pref is not saved.
+    power_manager_client()->set_screen_brightness_percent(0.0);
+    brightness_controller->LidEventReceived(
+        chromeos::PowerManagerClient::LidState::CLOSED, base::TimeTicks::Now());
+    brightness_controller->OnActiveUserSessionChanged(account_id);
+    run_loop_.RunUntilIdle();
+    EXPECT_FALSE(HasBrightnessPrefValue(known_user, account_id))
+        << "Brightness should not be saved to preferences when lid is closed";
+  }
+  {
+    // Simulate lid open and verify that brightness pref is saved.
+    power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+    brightness_controller->LidEventReceived(
+        chromeos::PowerManagerClient::LidState::OPEN, base::TimeTicks::Now());
+    brightness_controller->OnActiveUserSessionChanged(account_id);
+    run_loop_.RunUntilIdle();
+    EXPECT_TRUE(HasBrightnessPrefValue(known_user, account_id))
+        << "Brightness should be saved to preferences when lid is open";
+  }
+}
+
 TEST_F(BrightnessControllerChromeosTest, HistogramTest_LoginSecondary) {
   // Metric count should start at 0.
   histogram_tester_->ExpectTotalCount(
