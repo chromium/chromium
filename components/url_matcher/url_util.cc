@@ -131,17 +131,9 @@ class EmbeddedURLExtractor {
     }
 
     // Check for "www.google.TLD/amp/" URLs.
-    if (google_util::IsGoogleDomainUrl(
-            url, google_util::DISALLOW_SUBDOMAIN,
-            google_util::DISALLOW_NON_STANDARD_PORTS)) {
-      std::string s;
-      std::string embedded;
-      if (re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_, &s,
-                              &embedded)) {
-        // The embedded URL may be percent-encoded. Undo that.
-        embedded = base::UnescapeBinaryURLComponent(embedded);
-        return BuildURL(!s.empty(), embedded);
-      }
+    if (GURL google_amp_embedded_url = GetGoogleAmpViewerEmbeddedURL(url);
+        !google_amp_embedded_url.is_empty()) {
+      return google_amp_embedded_url;
     }
 
     // Check for Google web cache URLs
@@ -186,6 +178,24 @@ class EmbeddedURLExtractor {
         // The embedded URL may or may not include a scheme. Fix it if
         // necessary.
         return url_formatter::FixupURL(embedded, /*desired_tld=*/std::string());
+      }
+    }
+
+    return GURL();
+  }
+
+  GURL GetGoogleAmpViewerEmbeddedURL(const GURL& url) const {
+    // Check for "www.google.TLD/amp/" URLs.
+    if (google_util::IsGoogleDomainUrl(
+            url, google_util::DISALLOW_SUBDOMAIN,
+            google_util::DISALLOW_NON_STANDARD_PORTS)) {
+      std::string s;
+      std::string embedded;
+      if (re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_, &s,
+                              &embedded)) {
+        // The embedded URL may be percent-encoded. Undo that.
+        embedded = base::UnescapeBinaryURLComponent(embedded);
+        return BuildURL(!s.empty(), embedded);
       }
     }
 
@@ -242,6 +252,11 @@ GURL Normalize(const GURL& url) {
 
 GURL GetEmbeddedURL(const GURL& url) {
   return EmbeddedURLExtractor::GetInstance()->GetEmbeddedURL(url);
+}
+
+GURL GetGoogleAmpViewerEmbeddedURL(const GURL& url) {
+  return EmbeddedURLExtractor::GetInstance()->GetGoogleAmpViewerEmbeddedURL(
+      url);
 }
 
 size_t GetMaxFiltersAllowed() {

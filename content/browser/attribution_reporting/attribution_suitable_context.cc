@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/url_matcher/url_util.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
@@ -100,6 +101,9 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
       attribution_host->GetMostRecentNavigationInputEvent(),
       AttributionOsLevelManager::GetAttributionReportingOsRegistrars(
           web_contents),
+      !url_matcher::util::GetGoogleAmpViewerEmbeddedURL(
+           initiator_root_frame->GetLastCommittedURL())
+           .is_empty(),
       data_host_manager->AsWeakPtr());
 }
 
@@ -111,10 +115,12 @@ AttributionSuitableContext AttributionSuitableContext::CreateForTesting(
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
     ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
-    AttributionDataHostManager* attribution_data_host_manager) {
+    AttributionDataHostManager* attribution_data_host_manager,
+    bool is_context_google_amp_viewer) {
   return AttributionSuitableContext(
       std::move(context_origin), is_nested_within_fenced_frame,
       root_render_frame_id, last_navigation_id, last_input_event, os_registrars,
+      is_context_google_amp_viewer,
       attribution_data_host_manager ? attribution_data_host_manager->AsWeakPtr()
                                     : nullptr);
 }
@@ -138,6 +144,7 @@ AttributionSuitableContext::AttributionSuitableContext(
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
     ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
+    bool is_context_google_amp_viewer,
     base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager)
     : context_origin_(std::move(context_origin)),
       is_nested_within_fenced_frame_(is_nested_within_fenced_frame),
@@ -145,6 +152,7 @@ AttributionSuitableContext::AttributionSuitableContext(
       last_navigation_id_(last_navigation_id),
       last_input_event_(std::move(last_input_event)),
       os_registrars_(os_registrars),
+      is_context_google_amp_viewer_(is_context_google_amp_viewer),
       attribution_data_host_manager_(attribution_data_host_manager) {}
 
 AttributionSuitableContext::AttributionSuitableContext(

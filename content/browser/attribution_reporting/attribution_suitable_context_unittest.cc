@@ -87,6 +87,7 @@ TEST_F(AttributionSuitableContextTest,
   EXPECT_EQ(context->context_origin(), *SuitableOrigin::Create(context_url));
   EXPECT_EQ(context->last_navigation_id(),
             test_web_contents()->GetPrimaryMainFrame()->navigation_id());
+  EXPECT_FALSE(context->is_context_google_amp_viewer());
 }
 
 TEST_F(AttributionSuitableContextTest,
@@ -194,6 +195,25 @@ TEST_F(AttributionSuitableContextTest, InsecureSubframeOrigin_NonSuitable) {
   // We cannot have a subframe within an insecure url within a secure context.
   ASSERT_EQ(subframe->GetLastCommittedOrigin(),
             url::Origin::Create(context_url));
+}
+
+TEST_F(AttributionSuitableContextTest,
+       SecureContextCreatedFromGoogleAmpViewer) {
+  const GURL context_url("https://google.com/amp/s/example.com");
+
+  test_web_contents()->NavigateAndCommit(context_url);
+
+  GlobalRenderFrameHostId id =
+      test_web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+  auto context = AttributionSuitableContext::Create(id);
+  ASSERT_TRUE(context.has_value());
+
+  EXPECT_FALSE(context->is_nested_within_fenced_frame());
+  EXPECT_EQ(context->root_render_frame_id(), id);
+  EXPECT_EQ(context->context_origin(), *SuitableOrigin::Create(context_url));
+  EXPECT_EQ(context->last_navigation_id(),
+            test_web_contents()->GetPrimaryMainFrame()->navigation_id());
+  EXPECT_TRUE(context->is_context_google_amp_viewer());
 }
 
 }  // namespace

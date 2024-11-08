@@ -131,6 +131,7 @@ source_set("browser") {
     "//components/ukm",
     "//components/ukm/debug:util",
     "//components/url_formatter",
+    "//components/url_matcher",
     "//components/variations",
     "//components/variations/net",
     "//components/version_info",

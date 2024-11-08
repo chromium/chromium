@@ -28,6 +28,11 @@ chromium-metrics-reviews@google.com.
   <variant name="NoContextID."/>
 </variants>
 
+<variants name="AttributionReportingRegistrationType">
+  <variant name="Source"/>
+  <variant name="Trigger"/>
+</variants>
+
 <histogram
     name="Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-03">
@@ -638,6 +643,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.GoogleAmpViewer.{Type}" enum="Boolean"
+    expires_after="2025-05-04">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many {Type} registrations are registered from Google AMP
+    viewer. Recorded for every registration to be processed by the attribution
+    manager.
+  </summary>
+  <token key="Type" variants="AttributionReportingRegistrationType"/>
+</histogram>
+
 <histogram name="Conversions.HasAttributionHeaderInAttributionSrcResponse"
     enum="Boolean" expires_after="2025-05-03">
   <owner>linnan@chromium.org</owner>
@@ -864,10 +881,7 @@ chromium-metrics-reviews@google.com.
     this histogram are properly set up for alerting, but prefer not to version
     the histogram if possible.
   </summary>
-  <token key="Type">
-    <variant name="Source"/>
-    <variant name="Trigger"/>
-  </token>
+  <token key="Type" variants="AttributionReportingRegistrationType"/>
 </histogram>
 
 <histogram name="Conversions.OsRegistrationsBufferFlushReason"
@@ -1085,10 +1099,7 @@ chromium-metrics-reviews@google.com.
     Measures how many attribution scopes are in a {Type} registration. Recorded
     when a {Type} registration is successfully parsed.
   </summary>
-  <token key="Type">
-    <variant name="Source"/>
-    <variant name="Trigger"/>
-  </token>
+  <token key="Type" variants="AttributionReportingRegistrationType"/>
 </histogram>
 
 <histogram name="Conversions.SentVerboseDebugReportType4"
@@ -1508,10 +1519,7 @@ chromium-metrics-reviews@google.com.
     related to registrars. Recorded only when issue occured. Multiple samples
     may be recorded per attribution {Type} registration.
   </summary>
-  <token key="Type">
-    <variant name="Source"/>
-    <variant name="Trigger"/>
-  </token>
+  <token key="Type" variants="AttributionReportingRegistrationType"/>
 </histogram>
 
 </histograms>
