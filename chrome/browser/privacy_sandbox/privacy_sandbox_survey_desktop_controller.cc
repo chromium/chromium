@@ -56,7 +56,6 @@ void PrivacySandboxSurveyDesktopController::OnSentimentSurveyShown(
   survey_service_->RecordSentimentSurveyStatus(
       PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
           kSurveyShown);
-  survey_service_->OnSuccessfulSentimentSurvey();
 }
 
 void PrivacySandboxSurveyDesktopController::OnSentimentSurveyFailure() {

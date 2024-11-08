@@ -43,9 +43,6 @@ class PrivacySandboxSurveyService : public KeyedService {
   // does not guarantee that a survey is shown.
   bool ShouldShowSentimentSurvey();
 
-  // Called after the sentiment survey is successfully shown to the user.
-  void OnSuccessfulSentimentSurvey();
-
   // Fetch the required product specific bits for the sentiment survey.
   std::map<std::string, bool> GetSentimentSurveyPsb();
 

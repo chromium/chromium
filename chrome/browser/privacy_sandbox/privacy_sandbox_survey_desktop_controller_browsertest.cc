@@ -110,21 +110,4 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
   testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
-                       SurveyMarkedAsSeen) {
-  EXPECT_TRUE(
-      prefs()
-          ->FindPreference(prefs::kPrivacySandboxSentimentSurveyLastSeen)
-          ->IsDefaultValue());
-
-  // Simulate a call to the successful callback
-  OnSentimentSurveyShown();
-
-  // Expect that the survey was marked as seen.
-  EXPECT_FALSE(
-      prefs()
-          ->FindPreference(prefs::kPrivacySandboxSentimentSurveyLastSeen)
-          ->IsDefaultValue());
-}
-
 }  // namespace privacy_sandbox

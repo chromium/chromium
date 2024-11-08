@@ -77,43 +77,6 @@ TEST_F(PrivacySandboxSurveyServiceFeatureDisabledTest, SurveyDoesNotShow) {
   EXPECT_FALSE(survey_service()->ShouldShowSentimentSurvey());
 }
 
-class PrivacySandboxSurveyServiceCooldownTest
-    : public PrivacySandboxSurveyServiceTest {};
-
-TEST_F(PrivacySandboxSurveyServiceCooldownTest, SurveyShownByDefault) {
-  // By default the survey should be shown.
-  EXPECT_TRUE(survey_service()->ShouldShowSentimentSurvey());
-}
-
-TEST_F(PrivacySandboxSurveyServiceCooldownTest,
-       SurveyNotShownWithActiveCooldown) {
-  EXPECT_TRUE(survey_service()->ShouldShowSentimentSurvey());
-  survey_service()->OnSuccessfulSentimentSurvey();
-  // We just showed the survey, so the cooldown prevents showing it again.
-  EXPECT_FALSE(survey_service()->ShouldShowSentimentSurvey());
-}
-
-TEST_F(PrivacySandboxSurveyServiceCooldownTest,
-       SurveyShownWhenCooldownExpires) {
-  EXPECT_TRUE(survey_service()->ShouldShowSentimentSurvey());
-  survey_service()->OnSuccessfulSentimentSurvey();
-  // We just showed the survey, so the cooldown prevents showing it again.
-  EXPECT_FALSE(survey_service()->ShouldShowSentimentSurvey());
-  task_env_.FastForwardBy(base::Days(180));
-  EXPECT_TRUE(survey_service()->ShouldShowSentimentSurvey());
-}
-
-class PrivacySandboxSurveyServiceOnSuccessfulSentimentSurveyTest
-    : public PrivacySandboxSurveyServiceTest {};
-
-TEST_F(PrivacySandboxSurveyServiceOnSuccessfulSentimentSurveyTest,
-       SetsPrefToCurrentTime) {
-  base::Time current_time = base::Time::Now();
-  survey_service()->OnSuccessfulSentimentSurvey();
-  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxSentimentSurveyLastSeen),
-            current_time);
-}
-
 class PrivacySandboxSurveyServiceSentimentSurveyPsbTest
     : public PrivacySandboxSurveyServiceTest,
       public testing::WithParamInterface<
