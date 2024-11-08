@@ -602,6 +602,13 @@ void HTMLOptionElement::SetTextOnlyRendering(bool text_only) {
   }
 #endif
 
+  // If the label attribute is present, then we should be rendering that
+  // instead, even in appearance:base-select mode:
+  // https://github.com/openui/open-ui/issues/1115
+  if (!FastGetAttribute(html_names::kLabelAttr).empty()) {
+    text_only = true;
+  }
+
   if (auto* first_child = GetShadowRoot()->firstChild()) {
     bool currently_text_only = first_child->getNodeType() == kTextNode;
     CHECK_NE(currently_text_only, IsA<HTMLSlotElement>(first_child))
