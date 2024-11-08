@@ -22,6 +22,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -221,6 +222,12 @@ class FacilitatedPaymentsManager {
                            PixPayflowBlockedWhenFlagDisabled);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestInLandscapeMode,
                            PayflowExitedReason_LandscapeScreenOrientation);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
+                           NewScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
+                           ScreenClosedNotByUser);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
+                           ScreenClosedByUser);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
@@ -283,6 +290,9 @@ class FacilitatedPaymentsManager {
   void OnPurchaseActionResult(
       FacilitatedPaymentsApiClient::PurchaseActionResult result);
 
+  // Called by the view to communicate UI events.
+  void OnUiEvent(UiEvent ui_event_type);
+
   // Owner.
   const raw_ref<FacilitatedPaymentsDriver> driver_;
 
@@ -342,6 +352,11 @@ class FacilitatedPaymentsManager {
   // selector to show up. It is used for logging purposes. It is set whenever a
   // trigger occurs and reset if the FOP selector is not shown for some reason.
   TriggerSource trigger_source_ = TriggerSource::kUnknown;
+
+  // Represents the current state of the UI or the UI state that is intended. In
+  // the latter case, the UI state is always updated to reflect the current
+  // state via a callback.
+  UiState ui_state_ = UiState::kHidden;
 
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };

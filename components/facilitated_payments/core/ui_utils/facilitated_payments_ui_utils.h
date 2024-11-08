@@ -1,0 +1,43 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_UI_UTILS_FACILITATED_PAYMENTS_UI_UTILS_H_
+#define COMPONENTS_FACILITATED_PAYMENTS_CORE_UI_UTILS_FACILITATED_PAYMENTS_UI_UTILS_H_
+
+namespace payments::facilitated {
+
+// This enum is used to denote the UI screen shown by the feature in the
+// Facilitated Payments bottom sheet.
+enum class UiState {
+  // Represents no UI being shown.
+  kHidden = 0,
+  // Represents FOP selector being shown.
+  kFopSelector = 1,
+  // Represents loading screen being shown.
+  kLoadingScreen = 2,
+  // Represents error screen being shown.
+  kErrorScreen = 3,
+  // Max value, needs to be updated every time a new enum is added.
+  kMaxValue = kErrorScreen,
+};
+
+// This enum is used to denote the UI events in the Facilitated Payments bottom
+// sheet.
+enum class UiEvent {
+  // Represents a new screen being shown. This includes both opening the bottom
+  // sheet to show a screen, and replacing an existing screen to show a new
+  // screen.
+  kNewScreenShown = 0,
+  // Represents the bottom sheet being closed where the user did not close the
+  // bottom sheet.
+  kScreenClosedNotByUser = 1,
+  // Represents the bottom sheet being closed by the user.
+  kScreenClosedByUser = 2,
+  // Max value, needs to be updated every time a new enum is added.
+  kMaxValue = kScreenClosedByUser,
+};
+
+}  // namespace payments::facilitated
+
+#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_UI_UTILS_FACILITATED_PAYMENTS_UI_UTILS_H_

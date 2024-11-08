@@ -5,12 +5,14 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
@@ -70,6 +72,34 @@ void FacilitatedPaymentsController::Dismiss() {
   view_->Dismiss();
 }
 
+void FacilitatedPaymentsController::SetUiEventListener(
+    base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+        ui_event_listener) {
+  ui_event_listener_ = std::move(ui_event_listener);
+}
+
+void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
+  CHECK(event >= static_cast<jint>(
+                     payments::facilitated::UiEvent::kNewScreenShown) &&
+        event <= static_cast<jint>(payments::facilitated::UiEvent::kMaxValue))
+      << "Invalid payments::facilitated::UiEvent value: " << event;
+
+  // `payments::facilitated::UiEvent` is synced to the Java side.
+  payments::facilitated::UiEvent ui_event =
+      static_cast<payments::facilitated::UiEvent>(event);
+  switch (ui_event) {
+    case payments::facilitated::UiEvent::kScreenClosedNotByUser:
+    case payments::facilitated::UiEvent::kScreenClosedByUser:
+      ClearJavaViewComponents();
+      break;
+    case payments::facilitated::UiEvent::kNewScreenShown:
+      break;
+  }
+  ui_event_listener_.Run(ui_event);
+}
+
+// TODO: crbug.com/375089558 - Deprecate once Java side is able to call
+// OnUiEvent.
 void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
   ClearJavaViewComponents();
 

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 
@@ -105,6 +106,13 @@ void ChromeFacilitatedPaymentsClient::ShowErrorScreen() {
 
 void ChromeFacilitatedPaymentsClient::DismissPrompt() {
   facilitated_payments_controller_->Dismiss();
+}
+
+void ChromeFacilitatedPaymentsClient::SetUiEventListener(
+    base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+        ui_event_listener) {
+  facilitated_payments_controller_->SetUiEventListener(
+      std::move(ui_event_listener));
 }
 
 payments::facilitated::ContentFacilitatedPaymentsDriver*

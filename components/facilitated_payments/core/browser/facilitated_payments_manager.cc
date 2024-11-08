@@ -17,6 +17,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 
 namespace payments::facilitated {
 
@@ -34,6 +35,8 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
               FacilitatedPaymentsInitiatePaymentRequestDetails>()) {
   DCHECK(optimization_guide_decider_);
   RegisterPixAllowlist();
+  client_->SetUiEventListener(base::BindRepeating(
+      &FacilitatedPaymentsManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
 }
 
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() {
@@ -46,6 +49,7 @@ void FacilitatedPaymentsManager::Reset() {
   trigger_source_ = TriggerSource::kUnknown;
   initiate_payment_request_details_ =
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  ui_state_ = UiState::kHidden;
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -317,6 +321,25 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
   LogTransactionResult(transaction_result, trigger_source_,
                        base::TimeTicks::Now() - fop_selector_shown_time_,
                        ukm_source_id_);
+}
+
+void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
+  switch (ui_event_type) {
+    case UiEvent::kNewScreenShown: {
+      // TODO(crbug.com/375089558): Log metrics.
+      break;
+    }
+    case UiEvent::kScreenClosedNotByUser: {
+      // TODO(crbug.com/375089558): Based on the `ui_state_`, log metrics.
+      ui_state_ = UiState::kHidden;
+      break;
+    }
+    case UiEvent::kScreenClosedByUser: {
+      // TODO(crbug.com/375089558): Based on the `ui_state_`, log metrics.
+      ui_state_ = UiState::kHidden;
+      break;
+    }
+  }
 }
 
 }  // namespace payments::facilitated

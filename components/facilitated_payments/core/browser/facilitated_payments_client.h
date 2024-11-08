@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
@@ -73,6 +74,10 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
 
   // Closes the bottom sheet.
   virtual void DismissPrompt();
+
+  // Enables features to pass a callback to listen to UI events.
+  virtual void SetUiEventListener(
+      base::RepeatingCallback<void(UiEvent)> ui_event_listener);
 };
 
 }  // namespace payments::facilitated

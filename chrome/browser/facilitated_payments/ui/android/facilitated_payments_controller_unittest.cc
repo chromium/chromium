@@ -11,6 +11,7 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -165,6 +166,40 @@ TEST_F(FacilitatedPaymentsControllerTest, IsInLandscapeMode) {
   EXPECT_CALL(*mock_view_, IsInLandscapeMode);
 
   controller_->IsInLandscapeMode();
+}
+
+class FacilitatedPaymentsControllerTestForUiEvents
+    : public FacilitatedPaymentsControllerTest,
+      public testing::WithParamInterface<payments::facilitated::UiEvent> {
+ public:
+  payments::facilitated::UiEvent ui_event() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsControllerTest,
+    FacilitatedPaymentsControllerTestForUiEvents,
+    testing::Values(payments::facilitated::UiEvent::kNewScreenShown,
+                    payments::facilitated::UiEvent::kScreenClosedNotByUser,
+                    payments::facilitated::UiEvent::kScreenClosedByUser));
+
+TEST_P(FacilitatedPaymentsControllerTestForUiEvents, OnUiEvent) {
+  // Set the UI event listener.
+  base::MockCallback<
+      base::RepeatingCallback<void(payments::facilitated::UiEvent)>>
+      mock_ui_event_listener;
+  controller_->SetUiEventListener(mock_ui_event_listener.Get());
+
+  // Verify that the UI event is communicated to the feature via the callback.
+  EXPECT_CALL(mock_ui_event_listener, Run(ui_event()));
+  if (ui_event() == payments::facilitated::UiEvent::kScreenClosedNotByUser ||
+      ui_event() == payments::facilitated::UiEvent::kScreenClosedByUser) {
+    // Verify that the screen closing event is communicated to the
+    // view. The second OnDismissed call is triggered when the test
+    // fixture destroys the `controller`.
+    EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
+  }
+
+  controller_->OnUiEvent(nullptr, static_cast<jint>(ui_event()));
 }
 
 // Test controller forwards call for showing the eWallet FOP selector to the

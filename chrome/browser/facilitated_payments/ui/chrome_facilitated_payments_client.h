@@ -10,6 +10,7 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -76,6 +77,9 @@ class ChromeFacilitatedPaymentsClient
   void ShowProgressScreen() override;
   void ShowErrorScreen() override;
   void DismissPrompt() override;
+  void SetUiEventListener(
+      base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+          ui_event_listener) override;
 
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;

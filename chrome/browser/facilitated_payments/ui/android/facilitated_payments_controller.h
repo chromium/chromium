@@ -12,6 +12,7 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 
 namespace content {
 class WebContents;
@@ -54,6 +55,15 @@ class FacilitatedPaymentsController {
   // tests.
   virtual void Dismiss();
 
+  // Enables features to listen to `payments::facilitated::UiEvent` using
+  // `ui_event_listener`.
+  void SetUiEventListener(
+      base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+          ui_event_listener);
+
+  // Called by the Java view to communicate `payments::facilitated::UiEvent`.
+  void OnUiEvent(JNIEnv* env, jint event);
+
   // Called whenever the surface gets hidden (regardless of the cause).
   virtual void OnDismissed(JNIEnv* env);
 
@@ -77,11 +87,19 @@ class FacilitatedPaymentsController {
   // View that displays the surface.
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
       view_;
+
   // The corresponding Java FacilitatedPaymentsControllerBridge. This bridge is
   // used to delegate user actions from Java to native.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // TODO: crbug.com/375089558 - Make this on_user_selected_ when user decline
+  // can be routed using ui_event_listener_.
   // Called after showing PIX payment prompt.
   base::OnceCallback<void(bool, int64_t)> on_user_decision_callback_;
+
+  // Callback used to communicate view events to the feature.
+  base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+      ui_event_listener_;
 };
 
 #endif  // CHROME_BROWSER_FACILITATED_PAYMENTS_UI_ANDROID_FACILITATED_PAYMENTS_CONTROLLER_H_

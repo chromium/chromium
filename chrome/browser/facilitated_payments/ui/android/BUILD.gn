@@ -17,6 +17,7 @@ static_library("android") {
     "//base:base",
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser/autofill",
+    "//components/facilitated_payments/core/ui_utils",
     "//content/public/browser:browser",
     "//ui/android:android",
   ]
@@ -30,6 +31,7 @@ source_set("unit_tests") {
     ":android",
     "//base",
     "//chrome/test:test_support",
+    "//components/facilitated_payments/core/ui_utils",
     "//content/public/browser:browser",
     "//testing/gtest",
     "//ui/android:android",

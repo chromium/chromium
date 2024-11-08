@@ -29,6 +29,7 @@
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
@@ -998,6 +999,59 @@ TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
       "FacilitatedPayments.Pix.PayflowExitedReason",
       /*sample=*/PayflowExitedReason::kLandscapeScreenOrientation,
       /*expected_bucket_count=*/IsPaymentEnabledInLandscapeMode() ? 0 : 1);
+}
+
+class FacilitatedPaymentsManagerTestForUiScreens
+    : public FacilitatedPaymentsManagerTest,
+      public testing::WithParamInterface<UiState> {
+ public:
+  UiState ui_state() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(FacilitatedPaymentsManagerTest,
+                         FacilitatedPaymentsManagerTestForUiScreens,
+                         testing::Values(UiState::kFopSelector,
+                                         UiState::kLoadingScreen,
+                                         UiState::kErrorScreen));
+
+// Test that when a new screen is shown, UI state reflects the current UI being
+// shown.
+TEST_P(FacilitatedPaymentsManagerTestForUiScreens, NewScreenShown) {
+  // Default state.
+  EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
+
+  // Feature wants to show a new UI screen.
+  manager_->ui_state_ = ui_state();
+
+  // Simulate new screen was shown successfully.
+  manager_->OnUiEvent(UiEvent::kNewScreenShown);
+
+  // Verify feature has updated the UI state.
+  EXPECT_EQ(manager_->ui_state_, ui_state());
+}
+
+// Test that when the UI screen is closed, the feature updates the UI state.
+TEST_P(FacilitatedPaymentsManagerTestForUiScreens, ScreenClosedNotByUser) {
+  // Simulate that the feature intended UI is being shown.
+  manager_->ui_state_ = ui_state();
+
+  // Simulate UI screen was closed without user interaction.
+  manager_->OnUiEvent(UiEvent::kScreenClosedNotByUser);
+
+  // Verify that the feature updates the current UI state to hidden.
+  EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
+}
+
+// Test that when the UI screen is closed, the feature updates the UI state.
+TEST_P(FacilitatedPaymentsManagerTestForUiScreens, ScreenClosedByUser) {
+  // Simulate that the feature intended UI is being shown.
+  manager_->ui_state_ = ui_state();
+
+  // Simulate UI screen was closed by the user.
+  manager_->OnUiEvent(UiEvent::kScreenClosedNotByUser);
+
+  // Verify that the feature updates the current UI state to hidden.
+  EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
 }
 
 }  // namespace payments::facilitated

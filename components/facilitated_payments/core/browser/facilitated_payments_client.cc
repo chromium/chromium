@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 
 namespace payments::facilitated {
 
@@ -26,5 +27,8 @@ void FacilitatedPaymentsClient::ShowProgressScreen() {}
 void FacilitatedPaymentsClient::ShowErrorScreen() {}
 
 void FacilitatedPaymentsClient::DismissPrompt() {}
+
+void FacilitatedPaymentsClient::SetUiEventListener(
+    base::RepeatingCallback<void(UiEvent)> ui_event_listener) {}
 
 }  // namespace payments::facilitated
