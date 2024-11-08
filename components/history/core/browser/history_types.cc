@@ -141,8 +141,7 @@ void QueryResults::DeleteRange(size_t begin, size_t end) {
   for (const auto& url : urls_modified) {
     auto found = url_to_results_.find(url);
     if (found == url_to_results_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     // Need a signed loop type since we do -- which may take us to -1.

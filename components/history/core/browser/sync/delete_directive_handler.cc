@@ -126,7 +126,7 @@ void CheckDeleteDirectiveValid(
     DCHECK(url_directive.has_url());
     DCHECK_GT(url_directive.end_time_usec(), 0);
   } else {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Delete directive has no time range, global ID or url directive";
   }
 }
@@ -513,8 +513,7 @@ std::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
         // TODO(akalin): Keep track of existing delete directives.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

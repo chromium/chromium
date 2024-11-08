@@ -149,14 +149,14 @@ class FakeDataTypeLocalChangeProcessor
   void Delete(const std::string& storage_key,
               const syncer::DeletionOrigin& origin,
               syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void UpdateStorageKey(
       const syncer::EntityData& entity_data,
       const std::string& storage_key,
       syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void UntrackEntityForStorageKey(const std::string& storage_key) override {
@@ -195,14 +195,12 @@ class FakeDataTypeLocalChangeProcessor
 
   base::Time GetEntityCreationTime(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return base::Time();
+    NOTREACHED();
   }
 
   base::Time GetEntityModificationTime(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return base::Time();
+    NOTREACHED();
   }
 
   void OnModelStarting(syncer::DataTypeSyncBridge* bridge) override {}
@@ -236,14 +234,12 @@ class FakeDataTypeLocalChangeProcessor
 
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return sync_pb::EntitySpecifics::default_instance();
+    NOTREACHED();
   }
 
   sync_pb::UniquePosition UniquePositionAfter(

@@ -1289,7 +1289,7 @@ void HistoryBackend::InitImpl(
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Fill the in-memory database and send it back to the history service on the
