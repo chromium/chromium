@@ -26,6 +26,7 @@ component_files = [
   "genai-placeholder.ts",
   "language-dropdown.ts",
   "language-selection-dialog.ts",
+  "language-picker.ts",
   "mic-selection-button.ts",
   "onboarding-dialog.ts",
   "recording-file-list.ts",

@@ -83,6 +83,36 @@
   <message desc="Hint text for users to choose language from the dropdown." name="IDS_RECORDER_LANGUAGE_DROPDOWN_HINT_OPTION">
     Select language
   </message>
+  <message desc="Header of the available languages in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_AVAILABLE_LANGUAGES_HEADER">
+    Available languages
+  </message>
+  <message desc="Aria-label of the back button in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_BACK_BUTTON_ARIA_LABEL">
+    Back
+  </message>
+  <message desc="Tooltip of the back button in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_BACK_BUTTON_TOOLTIP">
+    Back
+  </message>
+  <message desc="Header of the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_HEADER">
+    Transcription language
+  </message>
+  <message desc="Button when language model is donwloading in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOADING_BUTTON">
+    Downloading…
+  </message>
+  <message desc="Description of language when language model is downloading in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOADING_PROGRESS_DESCRIPTION">
+    <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
+  </message>
+  <message desc="Button to download language model in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_BUTTON">
+    Download
+  </message>
+  <message desc="Description of language error state in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_ERROR_DESCRIPTION">
+    Can’t download. Try again or restart your Chromebook.
+  </message>
+  <message desc="Header of the selected language in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_SELECTED_LANGUAGE_HEADER">
+    Selected language
+  </message>
+  <message desc="Label of the selected language when there's no selected language in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_SELECTED_LANGUAGE_NONE_LABEL">
+    None
+  </message>
   <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_RECORDINGS_LIST_LANDMARK_ARIA_LABEL">
     List of audio recordings
   </message>
@@ -432,8 +462,14 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Button to download transcription model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOAD_BUTTON">
     Download
   </message>
+  <message desc="Description of transcription error state in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_ERROR_DESCRIPTION">
+    Can’t download. Try again or restart your Chromebook.
+  </message>
   <message desc="Label of the transcription toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LABEL">
     Audio transcription
+  </message>
+  <message desc="Label of the transcription language option in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LANGUAGE_LABEL">
+    Transcription language
   </message>
   <message desc="Header of the general section in settings." name="IDS_RECORDER_SETTINGS_SECTION_GENERAL_HEADER">
     General
