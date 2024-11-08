@@ -94,7 +94,7 @@ BASE_FEATURE(kPasswordGenerationChunking,
 
 BASE_FEATURE(kPasswordGenerationSoftNudge,
              "PasswordGenerationSoftNudge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif
 
