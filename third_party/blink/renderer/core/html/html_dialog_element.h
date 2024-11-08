@@ -106,6 +106,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void ParseAttribute(const AttributeModificationParams&) override;
 
  private:
+  void SetCloseWatcherEnabledState();
   void CreateCloseWatcher();
 
   void SetIsModal(bool is_modal);

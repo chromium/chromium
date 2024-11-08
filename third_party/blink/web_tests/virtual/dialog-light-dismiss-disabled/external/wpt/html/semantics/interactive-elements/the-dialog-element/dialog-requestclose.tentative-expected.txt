@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] requestClose requires user activation in order to be cancelable
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Non-modal: requestClose closes the dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Non-modal: requestClose can be cancelled
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Modal: requestClose closes the dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Modal: requestClose can be cancelled
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+Harness: the test ran to completion.
+

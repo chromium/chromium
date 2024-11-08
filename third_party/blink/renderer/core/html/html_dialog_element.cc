@@ -201,7 +201,13 @@ void HTMLDialogElement::close(const String& return_value,
 
 void HTMLDialogElement::requestClose(const String& return_value) {
   CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
-  // TODO(crbug.com/376516550): Implement this function.
+  if (!IsOpen()) {
+    return;
+  }
+  // The close watcher might be disabled if this is a non-modal dialog.
+  close_watcher_->setEnabled(true);
+  close_watcher_->requestClose();
+  SetCloseWatcherEnabledState();
 }
 
 ClosedByState HTMLDialogElement::ClosedBy() const {
@@ -401,6 +407,17 @@ class DialogCloseWatcherEventListener : public NativeEventListener {
   WeakMember<HTMLDialogElement> dialog_;
 };
 
+void HTMLDialogElement::SetCloseWatcherEnabledState() {
+  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
+  if (!IsOpen()) {
+    return;
+  }
+  CHECK(close_watcher_);
+  ClosedByState closed_by = ClosedBy();
+  close_watcher_->setEnabled(closed_by == ClosedByState::kAny ||
+                             closed_by == ClosedByState::kCloseRequest);
+}
+
 void HTMLDialogElement::CreateCloseWatcher() {
   CHECK(!close_watcher_);
   LocalDOMWindow* window = GetDocument().domWindow();
@@ -412,9 +429,7 @@ void HTMLDialogElement::CreateCloseWatcher() {
     return;
   }
   if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-    ClosedByState closed_by = ClosedBy();
-    close_watcher_->setEnabled(closed_by == ClosedByState::kAny ||
-                               closed_by == ClosedByState::kCloseRequest);
+    SetCloseWatcherEnabledState();
   }
   auto* event_listener =
       MakeGarbageCollected<DialogCloseWatcherEventListener>(this);
@@ -621,10 +636,7 @@ void HTMLDialogElement::AttributeChanged(
   if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled() &&
       params.name == html_names::kClosedbyAttr && IsOpen() &&
       params.old_value != params.new_value) {
-    CHECK(close_watcher_);
-    ClosedByState closed_by = ClosedBy();
-    close_watcher_->setEnabled(closed_by == ClosedByState::kAny ||
-                               closed_by == ClosedByState::kCloseRequest);
+    SetCloseWatcherEnabledState();
   }
 }
 
