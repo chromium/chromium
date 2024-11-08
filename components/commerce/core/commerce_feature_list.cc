@@ -248,7 +248,7 @@ BASE_FEATURE(kEnableDiscountInfoApi,
 
 const char kDiscountOnShoppyPageParam[] = "discount-on-shoppy-page";
 const base::FeatureParam<bool> kDiscountOnShoppyPage{
-    &kEnableDiscountInfoApi, kDiscountOnShoppyPageParam, true};
+    &kEnableDiscountInfoApi, kDiscountOnShoppyPageParam, false};
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
