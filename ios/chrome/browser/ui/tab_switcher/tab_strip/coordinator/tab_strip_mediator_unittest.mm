@@ -53,6 +53,7 @@ using tab_groups::SavedTabGroup;
 using tab_groups::SavedTabGroupTab;
 using tab_groups::TabGroupId;
 using testing::_;
+using testing::Eq;
 using testing::Return;
 
 namespace {
@@ -1355,8 +1356,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
                                web_state_id.identifier()))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(),
-                        TabTitleAndURLEq(new_title, new_url)))
+              NavigateTab(local_id, web_state_id.identifier(), Eq(new_url),
+                          Eq(new_title)))
       .Times(1);
 
   [mediator_ cancelMoveForTab:web_state_id
@@ -1406,7 +1407,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
   EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabGroupMapping(_, _, _))
       .Times(0);
   EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabId(_, _, _)).Times(0);
-  EXPECT_CALL(*tab_group_sync_service_, UpdateTab(_, _, _)).Times(0);
+  EXPECT_CALL(*tab_group_sync_service_, NavigateTab(_, _, _, _)).Times(0);
 
   [mediator_ cancelMoveForTab:web_state_id
                 originBrowser:browser_.get()
@@ -1460,8 +1461,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
                                web_state_id.identifier()))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(),
-                        TabTitleAndURLEq(new_title, new_url)))
+              NavigateTab(local_id, web_state_id.identifier(), Eq(new_url),
+                          Eq(new_title)))
       .Times(1);
 
   // Cancel the move to a position that is larger than the number of web states.
@@ -1523,8 +1524,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
                                web_state_id.identifier()))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(),
-                        TabTitleAndURLEq(new_title, new_url)))
+              NavigateTab(local_id, web_state_id.identifier(), Eq(new_url),
+                          Eq(new_title)))
       .Times(1);
 
   // Cancel the move to a position that is larger than the number of web states.

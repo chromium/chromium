@@ -301,11 +301,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
         localGroupID, savedGroup->saved_tabs()[0].saved_tab_guid(),
         tabID.identifier());
 
-    tab_groups::SavedTabGroupTabBuilder tab_builder;
-    tab_builder.SetURL(url);
-    tab_builder.SetTitle(title);
-    _tabGroupSyncService->UpdateTab(localGroupID, tabID.identifier(),
-                                    std::move(tab_builder));
+    _tabGroupSyncService->NavigateTab(localGroupID, tabID.identifier(), url,
+                                      title);
   }
 }
 

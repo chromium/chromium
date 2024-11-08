@@ -606,11 +606,10 @@ TEST_F(TabGroupSyncServiceTest, AddUpdateRemoveTabWithUnknownGroupId) {
   auto group = tab_group_sync_service_->GetGroup(unknown_group_id);
   EXPECT_FALSE(group.has_value());
 
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetTitle(u"random tab title");
-  tab_builder.SetURL(GURL("www.google.com"));
-  tab_group_sync_service_->UpdateTab(unknown_group_id, local_tab_id,
-                                     tab_builder);
+  const std::u16string title = u"random tab title";
+  GURL url = GURL("https://www.google.com");
+  tab_group_sync_service_->NavigateTab(unknown_group_id, local_tab_id, url,
+                                       title);
 
   group = tab_group_sync_service_->GetGroup(unknown_group_id);
   EXPECT_FALSE(group.has_value());
@@ -678,7 +677,7 @@ TEST_F(TabGroupSyncServiceTest, ForceRemoveClosedTabGroupsOnStartup) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateTab) {
+TEST_F(TabGroupSyncServiceTest, NavigateTab) {
   base::HistogramTester histogram_tester;
   auto local_tab_id_2 = test::GenerateRandomTabID();
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
@@ -696,15 +695,12 @@ TEST_F(TabGroupSyncServiceTest, UpdateTab) {
   // Update tab and verify observers.
   std::u16string new_title = u"tab title 2";
   GURL new_url = GURL("http://www.example.com");
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetTitle(new_title);
-  tab_builder.SetURL(new_url);
 
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
-  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_2,
-                                     tab_builder);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_2,
+                                       new_url, new_title);
   WaitForPostedTasks();
 
   group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
@@ -729,12 +725,12 @@ TEST_F(TabGroupSyncServiceTest, UpdateTab) {
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
       .Times(0);
-  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_2,
-                                     tab_builder2);
+  tab_group_sync_service_->UpdateTabProperties(local_group_id_1_,
+                                               local_tab_id_2, tab_builder2);
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateTabIgnoresSameUrl) {
+TEST_F(TabGroupSyncServiceTest, NavigateTabIgnoresSameUrl) {
   auto local_tab_id_2 = test::GenerateRandomTabID();
   std::u16string new_title = u"tab title 2";
   GURL new_url = GURL("https://www.example.com");
@@ -750,15 +746,11 @@ TEST_F(TabGroupSyncServiceTest, UpdateTabIgnoresSameUrl) {
                    std::nullopt);
 
   // Update tab and verify observers.
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetTitle(new_title);
-  tab_builder.SetURL(new_url);
-
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
       .Times(0);
-  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_2,
-                                     tab_builder);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_2,
+                                       new_url, new_title);
   WaitForPostedTasks();
 }
 
@@ -1173,20 +1165,15 @@ TEST_F(TabGroupSyncServiceTest, UpdateTabTitleForSharedTabGroup) {
   tab_group_sync_service_->UpdateLocalTabId(
       local_group_id_1_, tab.saved_tab_guid(), local_tab_id_1_);
 
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetTitle(u"title2");
-  tab_builder.SetURL(GURL("https://foo.com"));
-  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_1_,
-                                     tab_builder);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       GURL("https://foo.com"), u"title2");
   tab = tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
   EXPECT_TRUE(tab.is_pending_sanitization());
 }
 
 TEST_F(TabGroupSyncServiceTest, TabPendingSanitizationAfterMakeTabGroupShared) {
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetURL(GURL("https://foo.com"));
-  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_1_,
-                                     tab_builder);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       GURL("https://foo.com"), u"title");
   auto tab =
       tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
   EXPECT_FALSE(tab.is_pending_sanitization());

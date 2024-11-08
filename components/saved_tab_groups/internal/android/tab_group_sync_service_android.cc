@@ -210,14 +210,7 @@ void TabGroupSyncServiceAndroid::UpdateTab(
   auto tab_id = FromJavaTabId(j_tab_id);
   auto title = ConvertJavaStringToUTF16(env, j_title);
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
-
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetURL(url);
-  tab_builder.SetTitle(title);
-  if (j_position >= 0) {
-    tab_builder.SetPosition(j_position);
-  }
-  tab_group_sync_service_->UpdateTab(group_id, tab_id, std::move(tab_builder));
+  tab_group_sync_service_->NavigateTab(group_id, tab_id, url, title);
 }
 
 void TabGroupSyncServiceAndroid::RemoveTab(

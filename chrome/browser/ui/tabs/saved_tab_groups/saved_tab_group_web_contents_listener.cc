@@ -168,12 +168,8 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
         favicon::TabFaviconFromWebContents(contents()));
   }
 
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetURL(contents()->GetURL());
-  tab_builder.SetTitle(contents()->GetTitle());
-
-  service_->UpdateTab(group->local_group_id().value(), local_tab_id(),
-                      std::move(tab_builder));
+  service_->NavigateTab(group->local_group_id().value(), local_tab_id(),
+                        contents()->GetURL(), contents()->GetTitle());
 }
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
@@ -190,8 +186,8 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
   std::optional<SavedTabGroup> group = saved_group();
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
-  service_->UpdateTab(group->local_group_id().value(), local_tab_id(),
-                      tab_builder);
+  service_->UpdateTabProperties(group->local_group_id().value(), local_tab_id(),
+                                tab_builder);
 }
 
 const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {

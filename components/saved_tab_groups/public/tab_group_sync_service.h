@@ -132,14 +132,25 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                       const std::u16string& title,
                       const GURL& url,
                       std::optional<size_t> position) = 0;
-  virtual void UpdateTab(const LocalTabGroupID& group_id,
-                         const LocalTabID& tab_id,
-                         const SavedTabGroupTabBuilder& tab_builder) = 0;
   virtual void RemoveTab(const LocalTabGroupID& group_id,
                          const LocalTabID& tab_id) = 0;
   virtual void MoveTab(const LocalTabGroupID& group_id,
                        const LocalTabID& tab_id,
                        int new_group_index) = 0;
+
+  // Methods to update an existing tab. The primary method is `NavigateTab`
+  // which is invoked for local navigations which normally result in an update
+  // event sent to sync. On the other hand, `UpdateTabProperties` is reserved to
+  // be used for notifying non-navigation changes such as updating the URL
+  // redirect chain etc, which doesn't result in an update event sent to sync.
+  virtual void NavigateTab(const LocalTabGroupID& group_id,
+                           const LocalTabID& tab_id,
+                           const GURL& url,
+                           const std::u16string& title) = 0;
+  virtual void UpdateTabProperties(
+      const LocalTabGroupID& group_id,
+      const LocalTabID& tab_id,
+      const SavedTabGroupTabBuilder& tab_builder) = 0;
 
   // For metrics only.
   virtual void OnTabSelected(const LocalTabGroupID& group_id,

@@ -102,19 +102,6 @@ SavedTabGroupTabBuilder::SavedTabGroupTabBuilder(
 SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::operator=(
     const SavedTabGroupTabBuilder&) = default;
 
-SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetURL(const GURL& url) {
-  url_ = url;
-  has_url_ = true;
-  return *this;
-}
-
-SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetTitle(
-    const std::u16string& title) {
-  title_ = title;
-  has_title_ = true;
-  return *this;
-}
-
 SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetPosition(size_t position) {
   position_ = position;
   has_position_ = true;
@@ -133,12 +120,6 @@ SavedTabGroupTab SavedTabGroupTabBuilder::Build(
   SavedTabGroupTab updated_tab(tab);
 
   // Apply the updates from the builder.
-  if (has_url_) {
-    updated_tab.SetURL(url_);
-  }
-  if (has_title_) {
-    updated_tab.SetTitle(title_);
-  }
   if (has_position_) {
     updated_tab.SetPosition(position_);
   }

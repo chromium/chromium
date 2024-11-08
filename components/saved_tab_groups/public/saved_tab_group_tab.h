@@ -194,8 +194,6 @@ class SavedTabGroupTabBuilder {
   SavedTabGroupTabBuilder(const SavedTabGroupTabBuilder&);
   SavedTabGroupTabBuilder& operator=(const SavedTabGroupTabBuilder&);
 
-  SavedTabGroupTabBuilder& SetURL(const GURL& url);
-  SavedTabGroupTabBuilder& SetTitle(const std::u16string& title);
   SavedTabGroupTabBuilder& SetPosition(size_t position);
   SavedTabGroupTabBuilder& SetRedirectURLChain(
       const std::vector<GURL>& redirect_url_chain);
@@ -203,20 +201,14 @@ class SavedTabGroupTabBuilder {
   SavedTabGroupTab Build(const SavedTabGroupTab& tab) const;
 
   // Accessors for testing.
-  GURL url() const { return url_; }
-  std::u16string title() const { return title_; }
   size_t position() const { return position_; }
 
  private:
-  GURL url_;
-  std::u16string title_;
   size_t position_ = 0;
+  std::vector<GURL> redirect_url_chain_;
 
   // Flags to indicate which properties have been set.
-  bool has_url_ = false;
-  bool has_title_ = false;
   bool has_position_ = false;
-  std::vector<GURL> redirect_url_chain_;
   bool has_redirect_url_chain_ = false;
 };
 

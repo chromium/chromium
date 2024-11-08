@@ -40,7 +40,7 @@ static void JNI_TabGroupSyncUtils_OnDidFinishNavigation(
       reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
   tab_groups::SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
-  service->UpdateTab(group_id, tab_id, tab_builder);
+  service->UpdateTabProperties(group_id, tab_id, tab_builder);
 
   tab_groups::TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
       tab_id,

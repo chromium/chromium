@@ -108,7 +108,27 @@ void TabGroupSyncServiceProxy::AddTab(const LocalTabGroupID& group_id,
   service_->OnTabAddedToGroupLocally(group->saved_guid());
 }
 
-void TabGroupSyncServiceProxy::UpdateTab(
+void TabGroupSyncServiceProxy::NavigateTab(const LocalTabGroupID& group_id,
+                                           const LocalTabID& tab_id,
+                                           const GURL& url,
+                                           const std::u16string& title) {
+  std::optional<SavedTabGroup> group = GetGroup(group_id);
+  CHECK(group.has_value());
+  SavedTabGroupTab* tab = group->GetTab(tab_id);
+  CHECK(tab);
+
+  SavedTabGroupTab updated_tab(*tab);
+  updated_tab.SetURL(url);
+  updated_tab.SetTitle(title);
+
+  service_->model()->UpdateTabInGroup(group->saved_guid(),
+                                      std::move(updated_tab),
+                                      /*notify_observers=*/true);
+
+  service_->OnTabNavigatedLocally(group->saved_guid(), tab->saved_tab_guid());
+}
+
+void TabGroupSyncServiceProxy::UpdateTabProperties(
     const LocalTabGroupID& group_id,
     const LocalTabID& tab_id,
     const SavedTabGroupTabBuilder& tab_builder) {
@@ -120,7 +140,7 @@ void TabGroupSyncServiceProxy::UpdateTab(
   service_->UpdateAttributions(group_id);
   service_->model()->UpdateTabInGroup(group->saved_guid(),
                                       tab_builder.Build(*tab),
-                                      /*notify_observers=*/true);
+                                      /*notify_observers=*/false);
 
   service_->OnTabNavigatedLocally(group->saved_guid(), tab->saved_tab_guid());
 }

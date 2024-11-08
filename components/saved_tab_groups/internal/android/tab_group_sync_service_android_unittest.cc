@@ -237,16 +237,16 @@ TEST_F(TabGroupSyncServiceAndroidTest, AddTab) {
   Java_TabGroupSyncServiceAndroidUnitTest_testAddTab(env, j_test_);
 }
 
-TEST_F(TabGroupSyncServiceAndroidTest, UpdateTab) {
+TEST_F(TabGroupSyncServiceAndroidTest, NavigateTab) {
   auto* env = AttachCurrentThread();
 
   GURL url(kTestUrl);
   EXPECT_CALL(tab_group_sync_service_,
-              UpdateTab(Eq(test_tab_group_id_), Eq(kTabId1),
-                        TabBuilderEq(kTestTabTitle, url, kPosition)));
+              NavigateTab(Eq(test_tab_group_id_), Eq(kTabId1), Eq(url),
+                          Eq(kTestTabTitle)));
   EXPECT_CALL(tab_group_sync_service_,
-              UpdateTab(Eq(test_tab_group_id_), Eq(kTabId2),
-                        TabBuilderEq(kTestTabTitle, url, 0)));
+              NavigateTab(Eq(test_tab_group_id_), Eq(kTabId2), Eq(url),
+                          Eq(kTestTabTitle)));
   Java_TabGroupSyncServiceAndroidUnitTest_testUpdateTab(env, j_test_);
 }
 

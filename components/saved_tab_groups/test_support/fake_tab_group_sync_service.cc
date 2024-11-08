@@ -147,7 +147,29 @@ void FakeTabGroupSyncService::AddTab(const LocalTabGroupID& group_id,
   NotifyObserversOfTabGroupUpdated(group);
 }
 
-void FakeTabGroupSyncService::UpdateTab(
+void FakeTabGroupSyncService::NavigateTab(const LocalTabGroupID& group_id,
+                                          const LocalTabID& tab_id,
+                                          const GURL& url,
+                                          const std::u16string& title) {
+  std::optional<int> index = GetIndexOf(group_id);
+  if (!index.has_value()) {
+    return;
+  }
+  SavedTabGroup& group = groups_[index.value()];
+  for (const auto& tab : group.saved_tabs()) {
+    if (tab.local_tab_id() == tab_id) {
+      SavedTabGroupTab updated_tab(tab);
+      updated_tab.SetURL(url);
+      updated_tab.SetTitle(title);
+      group.UpdateTab(updated_tab);
+      return;
+    }
+  }
+
+  NotifyObserversOfTabGroupUpdated(group);
+}
+
+void FakeTabGroupSyncService::UpdateTabProperties(
     const LocalTabGroupID& group_id,
     const LocalTabID& tab_id,
     const SavedTabGroupTabBuilder& tab_builder) {

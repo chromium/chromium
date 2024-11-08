@@ -42,6 +42,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using testing::_;
+using testing::Eq;
 
 using ::testing::AllOf;
 using ::testing::Property;
@@ -199,8 +200,9 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateExistingTab) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        TabTitleEq(kNewTitle)))
+  EXPECT_CALL(
+      *mock_service_,
+      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)))
       .Times(1);
   web_state->SetTitle(kNewTitle);
 }
@@ -216,8 +218,9 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTab) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        TabTitleEq(kNewTitle)));
+  EXPECT_CALL(
+      *mock_service_,
+      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)));
   web_state->SetTitle(kNewTitle);
 }
 
@@ -233,8 +236,9 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTabSyncPaused) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        TabTitleEq(kNewTitle)))
+  EXPECT_CALL(
+      *mock_service_,
+      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)))
       .Times(0);
   web_state->SetTitle(kNewTitle);
 }
@@ -254,8 +258,9 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateList) {
   BrowserListFactory::GetForProfile(profile_.get())
       ->AddBrowser(browser_same_profile_.get());
 
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        TabTitleEq(kNewTitle)));
+  EXPECT_CALL(
+      *mock_service_,
+      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)));
   web_state->SetTitle(kNewTitle);
 }
 
@@ -277,8 +282,9 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateListInsert) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        TabTitleEq(kNewTitle)));
+  EXPECT_CALL(
+      *mock_service_,
+      NavigateTab(tab_group_id, web_state_id.identifier(), _, Eq(kNewTitle)));
   web_state->SetTitle(kNewTitle);
 }
 
@@ -292,8 +298,9 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdate) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        TabURLEq(GURL(kTestURL))));
+  EXPECT_CALL(*mock_service_,
+              NavigateTab(tab_group_id, web_state_id.identifier(),
+                          Eq(GURL(kTestURL)), _));
   web_state->SetCurrentURL(GURL(kTestURL));
   SetUpNavigationContext(web_state);
   web_state->OnNavigationFinished(navigation_context_.get());
@@ -310,7 +317,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, ActivateRegularTab) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
   web_state_list->ActivateWebStateAt(0);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_service_, NavigateTab(_, _, _, _)).Times(0);
   EXPECT_CALL(*mock_service_, AddTab(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_service_, RemoveTab(_, _)).Times(0);
   EXPECT_CALL(*mock_service_, MoveTab(_, _, _)).Times(0);
@@ -330,8 +337,9 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdateSyncPaused) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
-  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        TabURLEq(GURL(kTestURL))))
+  EXPECT_CALL(*mock_service_,
+              NavigateTab(tab_group_id, web_state_id.identifier(),
+                          Eq(GURL(kTestURL)), _))
       .Times(0);
   web_state->SetCurrentURL(GURL(kTestURL));
   SetUpNavigationContext(web_state);

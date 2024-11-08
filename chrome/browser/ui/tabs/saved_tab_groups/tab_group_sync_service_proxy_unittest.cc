@@ -314,7 +314,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, AddTab) {
 }
 
 // Verifies that we can update the title and url of a tab in a  saved group.
-TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, NavigateTab) {
   Browser* browser = AddBrowser();
   AddTabToBrowser(browser, 0);
 
@@ -334,10 +334,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
   const std::u16string new_title = u"This is the new title";
   GURL new_url = GURL("https://not_first_tab.com");
 
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetTitle(new_title);
-  tab_builder.SetURL(new_url);
-  service()->UpdateTab(local_id, tab_id, std::move(tab_builder));
+  service()->NavigateTab(local_id, tab_id, new_url, new_title);
   retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_TRUE(retrieved_group->ContainsTab(sync_tab_id));

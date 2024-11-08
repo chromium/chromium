@@ -329,10 +329,10 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabAdded, group_id, std::nullopt);
 }
 
-void TabGroupSyncServiceImpl::UpdateTab(
-    const LocalTabGroupID& group_id,
-    const LocalTabID& tab_id,
-    const SavedTabGroupTabBuilder& tab_builder) {
+void TabGroupSyncServiceImpl::NavigateTab(const LocalTabGroupID& group_id,
+                                          const LocalTabID& tab_id,
+                                          const GURL& url,
+                                          const std::u16string& title) {
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
@@ -350,19 +350,42 @@ void TabGroupSyncServiceImpl::UpdateTab(
   UpdateAttributions(group_id, tab_id);
 
   // Use the builder to create the updated tab.
-  bool will_update_url = tab_builder.url().SchemeIsHTTPOrHTTPS() &&
-                         tab_builder.url() != tab->url();
-  bool is_pending_sanitization =
-      IsSanitizationRequired(*group, tab_builder.url()) &&
-      !tab_builder.title().empty();
+  bool will_update_url = url.SchemeIsHTTPOrHTTPS() && url != tab->url();
+  bool is_pending_sanitization = IsSanitizationRequired(*group, url);
 
-  SavedTabGroupTabBuilder new_builder = tab_builder;
-  SavedTabGroupTab updated_tab = new_builder.Build(*tab);
+  SavedTabGroupTab updated_tab(*tab);
+  updated_tab.SetURL(url);
+  updated_tab.SetTitle(title);
   updated_tab.SetIsPendingSanitization(is_pending_sanitization);
+
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
                            /*notify_observers=*/will_update_url);
   LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
+}
+
+void TabGroupSyncServiceImpl::UpdateTabProperties(
+    const LocalTabGroupID& group_id,
+    const LocalTabID& tab_id,
+    const SavedTabGroupTabBuilder& tab_builder) {
+  VLOG(2) << __func__;
+  auto* group = model_->Get(group_id);
+  if (!group) {
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
+    return;
+  }
+
+  const auto* tab = group->GetTab(tab_id);
+  if (!tab) {
+    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
+    return;
+  }
+
+  // Use the builder to create the updated tab.
+  SavedTabGroupTabBuilder new_builder = tab_builder;
+  SavedTabGroupTab updated_tab = new_builder.Build(*tab);
+  model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
+                           /*notify_observers=*/false);
 }
 
 void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
