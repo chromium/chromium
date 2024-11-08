@@ -6,53 +6,34 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/stylus_handwriting/win/features.h"
+#include "content/browser/renderer_host/input/mock_tfhandwriting.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace content {
 
 namespace {
 
-enum class CreateError {
+enum class APIError {
   kNone,
   kShellHandwritingDisabled,
-  kBindInterfaces,
+  kQueryITfHandwriting,
+  kSetHandwritingState,
 };
 
-std::vector<CreateError> GetCreateErrors() {
-  return {CreateError::kNone, CreateError::kShellHandwritingDisabled,
-          CreateError::kBindInterfaces};
+std::vector<APIError> GetAPIErrors() {
+  return {APIError::kNone, APIError::kShellHandwritingDisabled,
+          APIError::kQueryITfHandwriting, APIError::kSetHandwritingState};
 }
 
-class MockStylusHandwritingControllerWin final
-    : public StylusHandwritingControllerWin {
- public:
-  explicit MockStylusHandwritingControllerWin(CreateError error)
-      : create_error_(error) {
-    MockBindInterfaces();
-  }
-  MockStylusHandwritingControllerWin(
-      const MockStylusHandwritingControllerWin&) = delete;
-  MockStylusHandwritingControllerWin& operator=(
-      const MockStylusHandwritingControllerWin&) = delete;
-  ~MockStylusHandwritingControllerWin() final = default;
-
-  void MockBindInterfaces() {
-    if (create_error_ != CreateError::kBindInterfaces) {
-      instance_resetter_.emplace(
-          StylusHandwritingControllerWin::SetInstanceForTesting(this));
-    }
-  }
-
- private:
-  CreateError create_error_ = CreateError::kNone;
-  std::optional<base::AutoReset<StylusHandwritingControllerWin*>>
-      instance_resetter_;
-};
-
 class StylusHandwritingControllerWinTestBase : public ContentBrowserTest {
- public:
+ protected:
   StylusHandwritingControllerWinTestBase() = default;
   StylusHandwritingControllerWinTestBase(
       const StylusHandwritingControllerWinTestBase&) = delete;
@@ -61,30 +42,79 @@ class StylusHandwritingControllerWinTestBase : public ContentBrowserTest {
   ~StylusHandwritingControllerWinTestBase() override = default;
 
   void SetUp() override {
-    if (GetCreateError() == CreateError::kShellHandwritingDisabled) {
+    // We cannot init the features in the constructor because GetAPIError()
+    // might rely on the test parameters (from GetParams()), e.g, in
+    // StylusHandwritingControllerWinCreationTest.
+    if (GetAPIError() == APIError::kShellHandwritingDisabled) {
       scoped_feature_list_.InitAndDisableFeature(
           stylus_handwriting::win::kStylusHandwritingWin);
     } else {
       scoped_feature_list_.InitAndEnableFeature(
           stylus_handwriting::win::kStylusHandwritingWin);
     }
-    mock_instance_ =
-        std::make_unique<MockStylusHandwritingControllerWin>(GetCreateError());
     ContentBrowserTest::SetUp();
   }
 
- protected:
-  virtual CreateError GetCreateError() const { return CreateError::kNone; }
+  void TearDown() override {
+    ContentBrowserTest::TearDown();
+    scoped_feature_list_.Reset();
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    SetUpMockTfHandwritingInstances();
+    SetUpMockTfImplMethods();
+    SetUpControllerInstance();
+  }
+
+  virtual APIError GetAPIError() const { return APIError::kNone; }
+
+  virtual void SetUpMockTfHandwritingInstances() {
+    mock_tf_impl_ = Microsoft::WRL::Make<NiceMock<MockTfImpl>>();
+  }
+
+  virtual void SetUpMockTfImplMethods() {
+    MockQueryInterfaceMethod();
+    MockSetHandwritingStateMethod();
+  }
+
+  void SetUpControllerInstance() {
+    controller_resetter_ = StylusHandwritingControllerWin::InitializeForTesting(
+        static_cast<ITfThreadMgr*>(mock_tf_impl()));
+  }
+
+  MockTfImpl* mock_tf_impl() { return mock_tf_impl_.Get(); }
+
+  StylusHandwritingControllerWin* controller() {
+    auto* instance = StylusHandwritingControllerWin::GetInstance();
+    EXPECT_TRUE(instance);
+    return instance;
+  }
+
+  void MockQueryInterfaceMethod() {
+    ON_CALL(*mock_tf_impl(), QueryInterface(Eq(__uuidof(::ITfHandwriting)), _))
+        .WillByDefault(SetComPointeeAndReturnResult<1>(
+            static_cast<::ITfHandwriting*>(mock_tf_impl()),
+            GetAPIError() == APIError::kQueryITfHandwriting ? E_NOINTERFACE
+                                                            : S_OK));
+  }
+
+  void MockSetHandwritingStateMethod() {
+    ON_CALL(*mock_tf_impl(), SetHandwritingState(_))
+        .WillByDefault(Return(
+            GetAPIError() == APIError::kSetHandwritingState ? E_FAIL : S_OK));
+  }
 
  private:
+  Microsoft::WRL::ComPtr<MockTfImpl> mock_tf_impl_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<MockStylusHandwritingControllerWin> mock_instance_;
+  base::ScopedClosureRunner controller_resetter_;
 };
 
 class StylusHandwritingControllerWinCreationTest
     : public StylusHandwritingControllerWinTestBase,
-      public ::testing::WithParamInterface<CreateError> {
- public:
+      public ::testing::WithParamInterface<APIError> {
+ protected:
   StylusHandwritingControllerWinCreationTest() = default;
   StylusHandwritingControllerWinCreationTest(
       const StylusHandwritingControllerWinCreationTest&) = delete;
@@ -92,20 +122,19 @@ class StylusHandwritingControllerWinCreationTest
       const StylusHandwritingControllerWinCreationTest&) = delete;
   ~StylusHandwritingControllerWinCreationTest() override = default;
 
- protected:
-  CreateError GetCreateError() const final { return GetParam(); }
+  APIError GetAPIError() const final { return GetParam(); }
 };
 
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(All,
                          StylusHandwritingControllerWinCreationTest,
-                         ::testing::ValuesIn(GetCreateErrors()));
+                         ::testing::ValuesIn(GetAPIErrors()));
 
 IN_PROC_BROWSER_TEST_P(StylusHandwritingControllerWinCreationTest,
                        APIAvailability) {
-  EXPECT_EQ(MockStylusHandwritingControllerWin::IsHandwritingAPIAvailable(),
-            GetParam() == CreateError::kNone);
+  EXPECT_EQ(StylusHandwritingControllerWin::IsHandwritingAPIAvailable(),
+            GetParam() == APIError::kNone);
 }
 
 }  // namespace content
