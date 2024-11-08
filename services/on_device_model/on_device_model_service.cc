@@ -26,6 +26,7 @@
 #include "services/on_device_model/ml/performance_class.h"
 #include "services/on_device_model/ml/ts_model.h"
 #include "services/on_device_model/public/cpp/features.h"
+#include "services/on_device_model/public/cpp/service_client.h"
 
 namespace on_device_model {
 namespace {
@@ -361,68 +362,6 @@ const ml::ChromeML* DefaultImpl() {
 #endif
 }
 
-class LoadFailedService : public mojom::OnDeviceModelService {
- public:
-  explicit LoadFailedService(
-      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver)
-      : receiver_(this, std::move(receiver)) {}
-
-  // mojom::OnDeviceModelService:
-  void LoadModel(mojom::LoadModelParamsPtr params,
-                 mojo::PendingReceiver<mojom::OnDeviceModel> model,
-                 LoadModelCallback callback) override {
-    std::move(callback).Run(
-        on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
-  }
-  void GetEstimatedPerformanceClass(
-      GetEstimatedPerformanceClassCallback callback) override {
-    std::move(callback).Run(
-        on_device_model::mojom::PerformanceClass::kFailedToLoadLibrary);
-  }
-  void LoadTextSafetyModel(
-      mojom::TextSafetyModelParamsPtr params,
-      mojo::PendingReceiver<mojom::TextSafetyModel> model) override {
-    model.ResetWithReason(
-        static_cast<uint32_t>(
-            on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary),
-        "Unable to load required shared library.");
-  }
-
- private:
-  mojo::Receiver<mojom::OnDeviceModelService> receiver_;
-};
-
-class GpuBlockedService : public mojom::OnDeviceModelService {
- public:
-  explicit GpuBlockedService(
-      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver)
-      : receiver_(this, std::move(receiver)) {}
-
-  // mojom::OnDeviceModelService:
-  void LoadModel(mojom::LoadModelParamsPtr params,
-                 mojo::PendingReceiver<mojom::OnDeviceModel> model,
-                 LoadModelCallback callback) override {
-    std::move(callback).Run(
-        on_device_model::mojom::LoadModelResult::kGpuBlocked);
-  }
-  void GetEstimatedPerformanceClass(
-      GetEstimatedPerformanceClassCallback callback) override {
-    std::move(callback).Run(
-        on_device_model::mojom::PerformanceClass::kGpuBlocked);
-  }
-  void LoadTextSafetyModel(
-      mojom::TextSafetyModelParamsPtr params,
-      mojo::PendingReceiver<mojom::TextSafetyModel> model) override {
-    model.ResetWithReason(
-        static_cast<uint32_t>(
-            on_device_model::mojom::LoadModelResult::kGpuBlocked),
-        "GPU is blocklisted.");
-  }
-
- private:
-  mojo::Receiver<mojom::OnDeviceModelService> receiver_;
-};
-
 }  // namespace
 
 OnDeviceModelService::OnDeviceModelService(
@@ -441,14 +380,17 @@ OnDeviceModelService::~OnDeviceModelService() = default;
 std::unique_ptr<mojom::OnDeviceModelService> OnDeviceModelService::Create(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver) {
   const ml::ChromeML* chrome_ml = DefaultImpl();
-  // Check for errors and return dummy services.
-  // These should probably just receiver.ResetWithReason, but callers
-  // are currently expecting these errors to resolve later.
   if (!chrome_ml) {
-    return std::make_unique<LoadFailedService>(std::move(receiver));
+    receiver.ResetWithReason(
+        static_cast<uint32_t>(ServiceDisconnectReason::kFailedToLoadLibrary),
+        "Unable to load chrome_ml library.");
+    return nullptr;
   }
   if (ml::IsGpuBlocked(chrome_ml->api())) {
-    return std::make_unique<GpuBlockedService>(std::move(receiver));
+    receiver.ResetWithReason(
+        static_cast<uint32_t>(ServiceDisconnectReason::kGpuBlocked),
+        "The device's GPU is not supported.");
+    return nullptr;
   }
   // No errors, return real service.
   return std::make_unique<OnDeviceModelService>(std::move(receiver),

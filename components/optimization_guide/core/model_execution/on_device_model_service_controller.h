@@ -118,8 +118,7 @@ class OnDeviceModelServiceController
       std::unique_ptr<OnDeviceModelAdaptationMetadata> adaptation_metadata);
 
   // Called when the model adaptation remote is disconnected.
-  void OnModelAdaptationRemoteDisconnected(ModelBasedCapabilityKey feature,
-                                           ModelRemoteDisconnectReason reason);
+  void OnModelAdaptationRemoteDisconnected();
 
   // Add/remove observers for notifying on-device model availability changes.
   void AddOnDeviceModelAvailabilityChangeObserver(
@@ -188,14 +187,14 @@ class OnDeviceModelServiceController
   void MaybeCreateBaseModelRemote(
       const on_device_model::ModelAssetPaths& model_paths);
 
-  // Invoked at the end of model load, to continue with model execution.
-  void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);
-
   // Called when the model assets have been loaded from disk and are ready to be
   // sent to the service.
   void OnModelAssetsLoaded(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       on_device_model::ModelAssets assets);
+
+  // Called when the service disconnects unexpectedly.
+  void OnServiceDisconnected(on_device_model::ServiceDisconnectReason reason);
 
   // Called when disconnected from the model.
   void OnBaseModelDisconnected();
