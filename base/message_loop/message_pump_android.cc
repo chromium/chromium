@@ -267,13 +267,18 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
     return;
   }
 
-  // At this point, the java looper might not be idle - it's impossible to know
-  // pre-Android-M, so we may end up doing Idle work while java tasks are still
-  // queued up. Note that this won't cause us to fail to run java tasks using
-  // QuitWhenIdle, as the JavaHandlerThread will finish running all currently
-  // scheduled tasks before it quits. Also note that we can't just add an idle
-  // callback to the java looper, as that will fire even if application tasks
-  // are still queued up.
+  // Do the idle work.
+  //
+  // At this point, the Java Looper might not be idle. It is possible to skip
+  // idle work if !MessageQueue.isIdle(), but this check is not very accurate
+  // because the MessageQueue does not know about the additional tasks
+  // potentially waiting in the Looper.
+  //
+  // Note that this won't cause us to fail to run java tasks using QuitWhenIdle,
+  // as the JavaHandlerThread will finish running all currently scheduled tasks
+  // before it quits. Also note that we can't just add an idle callback to the
+  // java looper, as that will fire even if application tasks are still queued
+  // up.
   delegate_->DoIdleWork();
   if (!next_work_info.delayed_run_time.is_max()) {
     ScheduleDelayedWork(next_work_info);
