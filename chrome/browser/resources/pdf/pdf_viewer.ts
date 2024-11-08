@@ -1110,8 +1110,15 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       return;
     }
 
+    let shouldSaveWithAnnotation = this.hasEnteredAnnotationMode_;
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled_) {
+      shouldSaveWithAnnotation = this.hasInk2Edits_;
+    }
+    // </if>
+
     let saveMode;
-    if (this.hasEnteredAnnotationMode_) {
+    if (shouldSaveWithAnnotation) {
       saveMode = SaveRequestType.ANNOTATION;
     } else if (this.hasEdits_) {
       saveMode = SaveRequestType.EDITED;
