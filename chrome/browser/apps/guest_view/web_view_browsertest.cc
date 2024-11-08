@@ -442,6 +442,15 @@ class LeftMouseClick {
 
 #endif
 
+// Wraps around the browser-initiated |NavigateToURL| to hide direct guest
+// WebContents access. For MPArch GuestView migration pre-work, we do not have
+// such a mechanism to trigger a browser-initiated navigation on GuestView or
+// guest RenderFrameHost.
+[[nodiscard]] bool BrowserInitNavigationToUrl(guest_view::GuestViewBase* guest,
+                                              const GURL& url) {
+  return NavigateToURL(guest->web_contents(), url);
+}
+
 }  // namespace
 
 // This class intercepts media access request from the embedder. The request
@@ -6606,6 +6615,8 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, InsertIntoDetachedIframe) {
 // Ensure that if a <webview>'s name is set, the guest preserves the
 // corresponding window.name across navigations and after a crash and reload.
 IN_PROC_BROWSER_TEST_P(WebViewTest, PreserveNameAcrossNavigationsAndCrashes) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   LoadAppWithGuest("web_view/simple");
@@ -6776,6 +6787,8 @@ INSTANTIATE_TEST_SUITE_P(
 // Ensure that an attempt to load Chrome Web Store in a <webview> is blocked
 // and does not result in a renderer kill.  See https://crbug.com/1197674.
 IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest = GetGuestRenderFrameHost();
   ASSERT_TRUE(guest);
@@ -6786,9 +6799,13 @@ IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   // page from this path for all the different webstore URLs under test.
   const GURL url = webstore_url().Resolve("/webstore/mock_store.html");
 
-  content::TestFrameNavigationObserver error_observer(guest);
+  content::TestNavigationObserver error_observer(
+      url, content::MessageLoopRunner::QuitMode::IMMEDIATE,
+      /*ignore_uncommitted_navigations=*/false);
+  error_observer.WatchExistingWebContents();
   EXPECT_TRUE(ExecJs(guest, "location.href = '" + url.spec() + "';"));
   error_observer.Wait();
+  EXPECT_FALSE(error_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
 
   guest = GetGuestRenderFrameHost();
@@ -6806,28 +6823,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
 
 // This is a group of tests that check site isolation properties in <webview>
 // guests.  Note that site isolation in <webview> is always enabled.
-class SitePerProcessWebViewTest : public WebViewTest {
- protected:
-  [[nodiscard]] bool BrowserInitNavigationToUrl(
-      guest_view::GuestViewBase* guest,
-      const GURL& url) {
-    if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-      content::NavigationController::LoadURLParams params(url);
-      // Some tests need a transition that will allow a BrowsingInstance swap.
-      params.transition_type = ui::PageTransitionFromInt(
-          ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-
-      content::TestFrameNavigationObserver load_observer(
-          guest->GetGuestMainFrame());
-      guest->GetController().LoadURLWithParams(params);
-      load_observer.Wait();
-
-      return load_observer.last_navigation_succeeded();
-    } else {
-      return NavigateToURL(guest->web_contents(), url);
-    }
-  }
-};
+using SitePerProcessWebViewTest = WebViewTest;
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          SitePerProcessWebViewTest,
@@ -6837,15 +6833,17 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // Checks basic site isolation properties when a <webview> main frame and
 // subframe navigate cross-site.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  guest_view::GuestViewBase* guest = GetGuestView();
-  ASSERT_TRUE(guest);
+  content::WebContents* guest_contents = GetGuestWebContents();
+  ASSERT_TRUE(guest_contents);
 
   // Ensure the <webview>'s SiteInstance is for a guest.
-  content::RenderFrameHost* main_frame = guest->GetGuestMainFrame();
+  content::RenderFrameHost* main_frame = guest_contents->GetPrimaryMainFrame();
   auto original_id = main_frame->GetGlobalId();
   scoped_refptr<content::SiteInstance> starting_instance =
       main_frame->GetSiteInstance();
@@ -6857,15 +6855,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
   const GURL start_url =
       embedded_test_server()->GetURL("a.test", "/iframe.html");
   {
-    content::TestFrameNavigationObserver load_observer(main_frame);
+    content::TestNavigationObserver load_observer(guest_contents);
     EXPECT_TRUE(
-        ExecJs(main_frame, "location.href = '" + start_url.spec() + "';"));
+        ExecJs(guest_contents, "location.href = '" + start_url.spec() + "';"));
     load_observer.Wait();
   }
 
   // Expect that the main frame swapped SiteInstances and RenderFrameHosts but
   // stayed in the same BrowsingInstance and StoragePartition.
-  main_frame = guest->GetGuestMainFrame();
+  main_frame = guest_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(main_frame->GetSiteInstance()->IsGuest());
   EXPECT_TRUE(main_frame->GetProcess()->IsForGuestsOnly());
   EXPECT_NE(main_frame->GetGlobalId(), original_id);
@@ -6888,10 +6886,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
   // separate guest SiteInstance and process, but same StoragePartition.
   const GURL frame_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
+  EXPECT_TRUE(NavigateIframeToURL(guest_contents, "test", frame_url));
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
-  ASSERT_TRUE(subframe);
-  EXPECT_TRUE(NavigateToURLFromRenderer(subframe, frame_url));
-  subframe = content::ChildFrameAt(main_frame, 0);
 
   EXPECT_NE(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
   EXPECT_NE(main_frame->GetProcess(), subframe->GetProcess());
@@ -6913,6 +6909,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
 // SiteInstance, which should still be a guest SiteInstance in the guest's
 // StoragePartition.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageIsolation) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(
       /*in_main_frame=*/true));
@@ -6990,6 +6988,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageIsolation) {
 // between the error page's SiteInstance and the origin to commit as calculated
 // in NavigationRequest.  See https://crbug.com/1366450.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageInSubframe) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
@@ -7042,6 +7042,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageInSubframe) {
 // Checks that a main frame navigation in a <webview> can swap
 // BrowsingInstances while staying in the same StoragePartition.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
@@ -7111,6 +7113,8 @@ class GuestProcessCreationObserver
 // recreate the guest process at OnResponseStarted time.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest,
                        NoExtraGuestProcessAtResponseTime) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
@@ -7136,6 +7140,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest,
 // Test that both webview-initiated and embedder-initiated navigations to
 // about:blank behave sanely.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, NavigateToAboutBlank) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
@@ -7485,6 +7491,8 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // StoragePartition.  Cross-site navigations in the guest should stay in the
 // same SiteInstance, and the guest process shouldn't be locked.
 IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
@@ -7617,6 +7625,8 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, FencedFrame) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   TestHelper("testAddFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
 
   auto* guest_rfh =

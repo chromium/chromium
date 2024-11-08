@@ -5,13 +5,10 @@
 #ifndef CONTENT_BROWSER_GUEST_PAGE_HOLDER_IMPL_H_
 #define CONTENT_BROWSER_GUEST_PAGE_HOLDER_IMPL_H_
 
-#include "base/callback_list.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/guest_page_holder.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -78,11 +75,8 @@ class GuestPageHolderImpl : public GuestPageHolder,
   // If the `render_frame_host` is within a guest, returns the guest's
   // associated GuestPageHolder. Will return null if `render_frame_host`
   // is not within a guest.
-  CONTENT_EXPORT static GuestPageHolderImpl* FromRenderFrameHost(
+  static GuestPageHolderImpl* FromRenderFrameHost(
       RenderFrameHostImpl& render_frame_host);
-
-  CONTENT_EXPORT base::CallbackListSubscription
-  RegisterLoadStopCallbackForTesting(base::RepeatingClosure callback);
 
  private:
   const raw_ref<WebContentsImpl> owner_web_contents_;
@@ -101,8 +95,6 @@ class GuestPageHolderImpl : public GuestPageHolder,
   bool audio_muted_ = false;
 
   blink::RendererPreferences renderer_preferences_;
-
-  base::RepeatingClosureList load_stop_callbacks_for_testing_;
 };
 
 }  // namespace content
