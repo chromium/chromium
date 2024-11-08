@@ -203,7 +203,10 @@ bool PerformanceInterventionButtonController::ContainsNonLastActiveProfile(
   Profile* const profile = chrome::FindLastActive()->profile();
   for (const resource_attribution::PageContext& context : result) {
     content::WebContents* const web_content = context.GetWebContents();
-    CHECK(web_content);
+    if (!web_content) {
+      // Without a WebContents, we can't check if it's from a different profile.
+      return true;
+    }
     Profile* const content_profile =
         Profile::FromBrowserContext(web_content->GetBrowserContext());
     if (profile != content_profile) {
