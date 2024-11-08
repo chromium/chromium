@@ -194,8 +194,7 @@ static bool ValuesIsValidForType(ColorMatrixType type,
     case FECOLORMATRIX_TYPE_UNKNOWN:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 StringBuilder& FEColorMatrix::ExternalRepresentation(StringBuilder& ts,

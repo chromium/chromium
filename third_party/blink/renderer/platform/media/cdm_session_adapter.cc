@@ -134,8 +134,7 @@ std::unique_ptr<media::CdmContextRef> CdmSessionAdapter::GetCdmContextRef() {
   DVLOG(2) << __func__;
 
   if (!cdm_->GetCdmContext()) {
-    NOTREACHED_IN_MIGRATION() << "All CDMs should support CdmContext.";
-    return nullptr;
+    NOTREACHED() << "All CDMs should support CdmContext.";
   }
 
   return std::make_unique<media::CdmContextRefImpl>(cdm_);

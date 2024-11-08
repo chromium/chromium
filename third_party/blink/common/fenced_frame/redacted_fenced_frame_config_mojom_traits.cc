@@ -19,8 +19,7 @@ EnumTraits<blink::mojom::Opaque, blink::FencedFrame::Opaque>::ToMojom(
     case blink::FencedFrame::Opaque::kOpaque:
       return blink::mojom::Opaque::kOpaque;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::Opaque::kOpaque;
+  NOTREACHED();
 }
 
 // static
@@ -32,8 +31,7 @@ bool EnumTraits<blink::mojom::Opaque, blink::FencedFrame::Opaque>::FromMojom(
       *out = blink::FencedFrame::Opaque::kOpaque;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -53,8 +51,7 @@ EnumTraits<blink::mojom::ReportingDestination,
     case blink::FencedFrame::ReportingDestination::kDirectSeller:
       return blink::mojom::ReportingDestination::kDirectSeller;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::ReportingDestination::kBuyer;
+  NOTREACHED();
 }
 
 // static
@@ -68,8 +65,7 @@ EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
     case blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds:
       return blink::mojom::DeprecatedFencedFrameMode::kOpaqueAds;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::DeprecatedFencedFrameMode::kDefault;
+  NOTREACHED();
 }
 
 // static
@@ -85,8 +81,7 @@ bool EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
       *out = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -111,8 +106,7 @@ bool EnumTraits<blink::mojom::ReportingDestination,
       *out = blink::FencedFrame::ReportingDestination::kDirectSeller;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -221,8 +215,7 @@ bool UnionTraits<blink::mojom::PotentiallyOpaqueURLDataView, Prop<GURL>>::Read(
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -255,8 +248,7 @@ bool UnionTraits<blink::mojom::PotentiallyOpaqueSizeDataView, Prop<gfx::Size>>::
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -286,8 +278,7 @@ bool UnionTraits<blink::mojom::PotentiallyOpaqueBoolDataView, Prop<bool>>::Read(
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -322,8 +313,7 @@ bool UnionTraits<blink::mojom::PotentiallyOpaqueAdAuctionDataDataView,
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -362,8 +352,7 @@ bool UnionTraits<
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -407,8 +396,7 @@ bool UnionTraits<
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

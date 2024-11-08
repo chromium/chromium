@@ -141,8 +141,7 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
 
   v8::Local<v8::Value> ToV8Value(base::ValueView,
                                  v8::Local<v8::Context> context) override {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Local<v8::Value>();
+    NOTREACHED();
   }
   std::unique_ptr<base::Value> FromV8Value(
       v8::Local<v8::Value> val,

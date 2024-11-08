@@ -104,8 +104,7 @@ cc::ScrollStateData CreateScrollStateDataForGesture(
       scroll_state_data.is_ending = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   scroll_state_data.is_direct_manipulation =
       event.SourceDevice() == WebGestureDevice::kTouchscreen;
@@ -132,8 +131,7 @@ ui::ScrollInputType GestureScrollInputType(WebGestureDevice device) {
     case WebGestureDevice::kScrollbar:
       return ui::ScrollInputType::kScrollbar;
     case WebGestureDevice::kUninitialized:
-      NOTREACHED_IN_MIGRATION();
-      return ui::ScrollInputType::kMaxValue;
+      NOTREACHED();
   }
 }
 
@@ -147,8 +145,7 @@ cc::SnapFlingController::GestureScrollType GestureScrollEventType(
     case WebInputEvent::Type::kGestureScrollEnd:
       return cc::SnapFlingController::GestureScrollType::kEnd;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return cc::SnapFlingController::GestureScrollType::kBegin;
+      NOTREACHED();
   }
 }
 
@@ -186,7 +183,7 @@ cc::ScrollBeginThreadState RecordScrollingThread(
     // TODO(crbug.com/1101502): Add support for
     // Renderer4.ScrollingThread.Scrollbar
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return status;
 }
@@ -830,8 +827,7 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
     // the renderer.
     case WebInputEvent::Type::kGestureFlingStart:
     case WebInputEvent::Type::kGestureFlingCancel:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     default:
       break;
@@ -1068,8 +1064,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
       result = DROP_EVENT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // TODO(bokan): Should we really be calling this in cases like DROP_EVENT and
@@ -1279,9 +1274,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
         result = DROP_EVENT;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        result = DROP_EVENT;
-        break;
+        NOTREACHED();
     }
   }
 

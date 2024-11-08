@@ -404,9 +404,8 @@ void AVIFImageDecoder::DecodeToYUV() {
         libyuv::HalfFloatPlane(src, src_row_bytes, dst, dst_row_bytes,
                                kHighBitDepthMultiplier, width, height);
       } else {
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported color type: "
-            << static_cast<int>(image_planes_->color_type());
+        NOTREACHED() << "Unsupported color type: "
+                     << static_cast<int>(image_planes_->color_type());
       }
     }
     if (plane == cc::YUVIndex::kY) {

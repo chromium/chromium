@@ -39,10 +39,7 @@ class PendingChildFrameAdapter : public UniqueNameHelper::FrameAdapter {
     // child to include it in the count.
     return parent_->GetChildCount();
   }
-  int GetChildCount() const override {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  int GetChildCount() const override { NOTREACHED(); }
   std::vector<std::string> CollectAncestorNames(
       BeginPoint begin_point,
       bool (*should_stop)(std::string_view)) const override {

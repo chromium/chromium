@@ -154,12 +154,10 @@ mojom::ResourceType RequestContextToResourceType(
     case mojom::blink::RequestContextType::LOCATION:
     case mojom::blink::RequestContextType::FRAME:
     case mojom::blink::RequestContextType::IFRAME:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::ResourceType::kSubResource;
+      NOTREACHED();
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::ResourceType::kSubResource;
+      NOTREACHED();
   }
 }
 

@@ -105,10 +105,7 @@ class MockDecodedImageCallback : public webrtc::DecodedImageCallback {
         p90_decode_time_ms_(p90_decode_time_ms) {}
 
   // Implementation of webrtc::DecodedImageCallback.
-  int32_t Decoded(webrtc::VideoFrame& decodedImage) override {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  int32_t Decoded(webrtc::VideoFrame& decodedImage) override { NOTREACHED(); }
   void Decoded(webrtc::VideoFrame& decodedImage,
                std::optional<int32_t> decode_time_ms,
                std::optional<uint8_t> qp) override {

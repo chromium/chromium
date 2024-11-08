@@ -60,8 +60,7 @@ bool XRFrameTransport::DrawingIntoSharedBuffer() {
         DRAW_INTO_TEXTURE_MAILBOX:
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -245,7 +244,7 @@ bool XRFrameTransport::FrameSubmit(
     vr_presentation_provider->SubmitFrameDrawnIntoTexture(
         vr_frame_id, sync_token, frame_wait_time_);
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unimplemented frame transport method";
+    NOTREACHED() << "Unimplemented frame transport method";
   }
 
   // Set the expected notifications the next frame should wait for.

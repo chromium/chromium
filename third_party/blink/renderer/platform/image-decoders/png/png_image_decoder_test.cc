@@ -1525,7 +1525,7 @@ static void FillPNGSamplesSourcePixels(Vector<PNGSample>& png_samples) {
                                        ? source_pixels_transparent_rec2020
                                        : source_pixels_opaque_rec2020;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }

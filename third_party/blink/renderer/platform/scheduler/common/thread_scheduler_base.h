@@ -93,8 +93,7 @@ class PLATFORM_EXPORT ThreadSchedulerBase : public VirtualTimeController,
   // virtual time control tasks (when VT budget is exhausted, callback will be
   // posted there).
   virtual base::SequencedTaskRunner* GetVirtualTimeTaskRunner() {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   virtual void OnVirtualTimeEnabled() {}
   virtual void OnVirtualTimeDisabled() {}

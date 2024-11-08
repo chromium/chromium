@@ -533,7 +533,7 @@ class RTCVideoEncoderTest {
         }
       } break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return codec;
   }
@@ -573,7 +573,7 @@ class RTCVideoEncoderTest {
         }
       } break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return codec;
   }

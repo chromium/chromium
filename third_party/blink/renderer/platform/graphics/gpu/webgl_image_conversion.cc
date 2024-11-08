@@ -860,7 +860,7 @@ float ConvertHalfFloatToFloat(uint16_t half) {
 // Pixel unpacking routines.
 template <int format, typename SourceType, typename DstType>
 void Unpack(const SourceType*, DstType*, unsigned) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 template <>
@@ -1191,7 +1191,7 @@ void Unpack<WebGLImageConversion::kDataFormatRGBA16F, uint16_t, uint8_t>(
 
 template <int format, int alphaOp, typename SourceType, typename DstType>
 void Pack(const SourceType*, DstType*, unsigned) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 template <>
@@ -3322,7 +3322,7 @@ void FormatConverter::Convert(WebGLImageConversion::DataFormat src_format,
     // Only used by ImageBitmap, when colorspace conversion is needed.
     FORMATCONVERTER_CASE_SRCFORMAT(WebGLImageConversion::kDataFormatRGBA16F)
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 #undef FORMATCONVERTER_CASE_SRCFORMAT
 }
@@ -3364,7 +3364,7 @@ void FormatConverter::Convert(WebGLImageConversion::DataFormat dst_format,
     FORMATCONVERTER_CASE_DSTFORMAT(WebGLImageConversion::kDataFormatRG16F)
     FORMATCONVERTER_CASE_DSTFORMAT(WebGLImageConversion::kDataFormatRG32F)
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
 #undef FORMATCONVERTER_CASE_DSTFORMAT
@@ -3382,7 +3382,7 @@ void FormatConverter::Convert(WebGLImageConversion::AlphaOp alpha_op) {
     FORMATCONVERTER_CASE_ALPHAOP(WebGLImageConversion::kAlphaDoPremultiply)
     FORMATCONVERTER_CASE_ALPHAOP(WebGLImageConversion::kAlphaDoUnmultiply)
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 #undef FORMATCONVERTER_CASE_ALPHAOP
 }
@@ -3420,14 +3420,12 @@ void FormatConverter::Convert() {
   // try to return immediately in these cases to avoid generating useless code.
   if (SrcFormat == DstFormat &&
       alphaOp == WebGLImageConversion::kAlphaDoNothing) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   // Note that ImageBitmaps with SrcFormat==kDataFormatRGBA16F return
   // false for IsFloatFormat since the input data is uint16_t.
   if (!IsFloatFormat<DstFormat>::value && IsFloatFormat<SrcFormat>::value) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Only textures uploaded from DOM elements or ImageData can allow DstFormat
@@ -3436,26 +3434,22 @@ void FormatConverter::Convert() {
       WebGLImageConversion::SrcFormatComesFromDOMElementOrImageData(SrcFormat);
   if (!src_format_comes_from_dom_element_or_image_data &&
       SrcFormat != DstFormat) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   // Likewise, only textures uploaded from DOM elements or ImageData can
   // possibly need to be unpremultiplied.
   if (!src_format_comes_from_dom_element_or_image_data &&
       alphaOp == WebGLImageConversion::kAlphaDoUnmultiply) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   if (src_format_comes_from_dom_element_or_image_data &&
       alphaOp == WebGLImageConversion::kAlphaDoUnmultiply &&
       !SupportsConversionFromDomElements<DstFormat>::value) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   if ((!HasAlpha(SrcFormat) || !HasColor(SrcFormat) || !HasColor(DstFormat)) &&
       alphaOp != WebGLImageConversion::kAlphaDoNothing) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   // If converting DOM element data to UNSIGNED_INT_5_9_9_9_REV or
   // UNSIGNED_INT_10F_11F_11F_REV, we should always switch to FLOAT instead to
@@ -3464,8 +3458,7 @@ void FormatConverter::Convert() {
       SrcFormat != DstFormat &&
       (DstFormat == WebGLImageConversion::kDataFormatRGB5999 ||
        DstFormat == WebGLImageConversion::kDataFormatRGB10F11F11F)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   typedef typename DataTypeForFormat<SrcFormat>::Type SrcType;
@@ -3565,8 +3558,7 @@ WebGLImageConversion::DataFormat WebGLImageConversion::SkColorTypeToDataFormat(
     case kRGBA_F32_SkColorType:
       return kDataFormatRGBA32F;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return kDataFormatNumFormats;
+      NOTREACHED();
   }
 }
 

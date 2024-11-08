@@ -66,8 +66,7 @@ ScriptRunIterator::UScriptCodeList GetHanScriptExtensions() {
     list.resize(count);
     return list;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ScriptRunIterator::UScriptCodeList();
+  NOTREACHED();
 }
 
 // This function updates the script list to the Han ideographic-based scripts if
@@ -108,8 +107,7 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
     if (han_scripts.empty()) [[unlikely]] {
       // When |GetHanScriptExtensions| returns an empty list, replacing with it
       // will crash later, which makes the analysis complicated.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     set->Shrink(0);
     set->AppendVector(han_scripts);

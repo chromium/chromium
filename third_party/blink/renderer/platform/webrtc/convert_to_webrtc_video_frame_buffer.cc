@@ -183,8 +183,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
       return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
           new rtc::RefCountedObject<NV12FrameAdapter>(std::move(video_frame)));
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -448,8 +447,7 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   if (!video_frame) {
     return nullptr;

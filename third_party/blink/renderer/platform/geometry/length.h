@@ -223,8 +223,7 @@ class PLATFORM_EXPORT Length {
 
   int IntValue() const {
     if (IsCalculated()) {
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     }
     DCHECK(!IsNone());
     return static_cast<int>(value_);

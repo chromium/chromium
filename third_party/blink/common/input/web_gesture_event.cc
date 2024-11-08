@@ -37,9 +37,8 @@ gfx::Transform GetTransformForEvent(const WebGestureEvent& gesture_event) {
     gesture_transform.Translate(gesture_event.PositionInWidget().x(),
                                 gesture_event.PositionInWidget().y());
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid event type for transform retrieval: "
-        << WebInputEvent::GetName(gesture_event.GetType());
+    NOTREACHED() << "Invalid event type for transform retrieval: "
+                 << WebInputEvent::GetName(gesture_event.GetType());
   }
   return gesture_transform;
 }
@@ -123,8 +122,7 @@ ui::ScrollInputType WebGestureEvent::GetScrollInputType() const {
     case WebGestureDevice::kUninitialized:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::ScrollInputType::kTouchscreen;
+  NOTREACHED();
 }
 
 float WebGestureEvent::DeltaXInRootFrame() const {

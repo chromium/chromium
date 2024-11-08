@@ -70,8 +70,7 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
   void Apply(gfx::Transform&, const gfx::SizeF& border_box_size) const override;
 
   TransformOperation* Accumulate(const TransformOperation&) override {
-    NOTREACHED_IN_MIGRATION();
-    return this;
+    NOTREACHED();
   }
 
   TransformOperation* Blend(const TransformOperation* from,

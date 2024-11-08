@@ -129,7 +129,7 @@ void CheckShapeResultRange(const ShapeResult* result,
   log.Append(", result=");
   result->ToString(&log);
 
-  NOTREACHED_IN_MIGRATION() << log.ToString();
+  NOTREACHED() << log.ToString();
 }
 #endif
 
@@ -457,9 +457,8 @@ HarfBuzzShaper::FallbackFontStage ChangeStageToVS(
       return fallback_stage;
     default:
       // We should not call this function on the second fallback pass.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return fallback_stage;
 }
 
 void QueueCharacters(RangeContext* range_data,

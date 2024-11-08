@@ -58,11 +58,9 @@ float FloatValueForLength(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 LayoutUnit MinimumValueForLengthInternal(const Length& length,
@@ -90,11 +88,9 @@ LayoutUnit MinimumValueForLengthInternal(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return LayoutUnit();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 LayoutUnit ValueForLength(const Length& length,
@@ -118,11 +114,9 @@ LayoutUnit ValueForLength(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return LayoutUnit();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 gfx::SizeF SizeForLengthSize(const LengthSize& length_size,

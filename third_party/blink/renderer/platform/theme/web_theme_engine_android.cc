@@ -22,9 +22,7 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
     case WebThemeEngine::kPartScrollbarHorizontalTrack:
     case WebThemeEngine::kPartScrollbarVerticalTrack: {
       // Android doesn't draw scrollbars.
-      NOTREACHED_IN_MIGRATION();
-      ui::NativeTheme::ExtraParams native_theme_extra_params;
-      return native_theme_extra_params;
+      NOTREACHED();
     }
     case WebThemeEngine::kPartCheckbox: {
       ui::NativeTheme::ButtonExtraParams native_button;

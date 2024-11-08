@@ -164,8 +164,7 @@ SkBlendMode ToBlendMode(CompositeOperationType mode) {
     case FECOMPOSITE_OPERATOR_LIGHTER:
       return SkBlendMode::kPlus;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SkBlendMode::kSrcOver;
+      NOTREACHED();
   }
 }
 

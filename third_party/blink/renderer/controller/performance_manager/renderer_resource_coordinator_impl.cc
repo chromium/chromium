@@ -171,8 +171,8 @@ void RendererResourceCoordinatorImpl::OnScriptStateCreated(
     } break;
     case DOMWrapperWorld::WorldType::kForV8ContextSnapshotNonMain: {
       // This should not happen in the production browser.
-      NOTREACHED_IN_MIGRATION();
-    } break;
+      NOTREACHED();
+    }
     case DOMWrapperWorld::WorldType::kWorkerOrWorklet: {
       v8_desc->world_type = V8ContextWorldType::kWorkerOrWorklet;
     } break;

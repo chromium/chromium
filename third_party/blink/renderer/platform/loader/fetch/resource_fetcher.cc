@@ -182,8 +182,7 @@ ResourceLoadPriority TypeToPriority(ResourceType type) {
       return ResourceLoadPriority::kVeryLow;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ResourceLoadPriority::kUnresolved;
+  NOTREACHED();
 }
 
 bool ShouldResourceBeAddedToMemoryCache(const FetchParameters& params,
@@ -458,8 +457,7 @@ mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
     case ResourceType::kDictionary:
       return mojom::blink::RequestContextType::SUBRESOURCE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojom::blink::RequestContextType::SUBRESOURCE;
+  NOTREACHED();
 }
 
 network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
@@ -491,8 +489,7 @@ network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
     case ResourceType::kDictionary:
       return network::mojom::RequestDestination::kEmpty;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::RequestDestination::kEmpty;
+  NOTREACHED();
 }
 
 void ResourceFetcher::AddPriorityObserverForTesting(
@@ -1854,8 +1851,7 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
 
   switch (status) {
     case Resource::MatchStatus::kOk:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case Resource::MatchStatus::kUnknownFailure:
       builder.Append("due to an unknown reason.");
       break;
@@ -1980,7 +1976,7 @@ const char* ResourceFetcher::GetNameFor(RevalidationPolicy policy) {
     case RevalidationPolicy::kLoad:
       return "load";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::pair<ResourceFetcher::RevalidationPolicy, const char*>
@@ -2715,7 +2711,7 @@ void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
   } else if (non_blocking_loaders_.Contains(loader)) {
     non_blocking_loaders_.erase(loader);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (loaders_.empty() && non_blocking_loaders_.empty()) {

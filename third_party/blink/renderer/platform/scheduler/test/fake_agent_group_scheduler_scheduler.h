@@ -38,10 +38,7 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
     return *web_thread_scheduler_;
   }
 
-  v8::Isolate* Isolate() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  v8::Isolate* Isolate() override { NOTREACHED(); }
 
   void AddAgent(Agent* agent) override {}
 

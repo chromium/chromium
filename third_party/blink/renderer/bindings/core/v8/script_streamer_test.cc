@@ -136,7 +136,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         scoped_refptr<BlobDataHandle>& downloaded_blob,
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper) override {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     void LoadAsynchronously(
         std::unique_ptr<network::ResourceRequest> request,
@@ -148,7 +148,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         URLLoaderClient*) override {}
     void Freeze(LoaderFreezeMode) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
         override {
@@ -829,7 +829,7 @@ class DummyLoaderFactory final : public ResourceFetcher::LoaderFactory {
         scoped_refptr<BlobDataHandle>& downloaded_blob,
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper) override {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     void LoadAsynchronously(
         std::unique_ptr<network::ResourceRequest> request,
@@ -843,7 +843,7 @@ class DummyLoaderFactory final : public ResourceFetcher::LoaderFactory {
     }
     void Freeze(LoaderFreezeMode) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     bool CanHandleResponseOnBackground() override { return true; }
     void SetBackgroundResponseProcessorFactory(

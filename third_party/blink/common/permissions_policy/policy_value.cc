@@ -99,8 +99,7 @@ bool operator==(const PolicyValue& lhs, const PolicyValue& rhs) {
     case mojom::PolicyValueType::kNull:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool operator!=(const PolicyValue& lhs, const PolicyValue& rhs) {
@@ -117,8 +116,7 @@ bool PolicyValue::IsCompatibleWith(const PolicyValue& required) const {
     case mojom::PolicyValueType::kEnum:
       return int_value_ == required.int_value_;
     case mojom::PolicyValueType::kNull:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return false;
 }
@@ -132,7 +130,7 @@ void PolicyValue::SetToMax() {
       double_value_ = std::numeric_limits<double>::infinity();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return;
 }
@@ -146,7 +144,7 @@ void PolicyValue::SetToMin() {
       double_value_ = 0.0;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return;
 }

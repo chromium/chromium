@@ -128,7 +128,7 @@ void URLLoaderFactoryBundle::CreateLoaderAndStart(
 
 void URLLoaderFactoryBundle::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>

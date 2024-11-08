@@ -52,9 +52,9 @@ class DummyResponseBodyLoaderClient
     decoded_data_ = decoded_data;
     digest_ = std::move(digest);
   }
-  void DidFinishLoadingBody() override { NOTREACHED_IN_MIGRATION(); }
-  void DidFailLoadingBody() override { NOTREACHED_IN_MIGRATION(); }
-  void DidCancelLoadingBody() override { NOTREACHED_IN_MIGRATION(); }
+  void DidFinishLoadingBody() override { NOTREACHED(); }
+  void DidFailLoadingBody() override { NOTREACHED(); }
+  void DidCancelLoadingBody() override { NOTREACHED(); }
 
   const Deque<Vector<char>>& raw_data() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

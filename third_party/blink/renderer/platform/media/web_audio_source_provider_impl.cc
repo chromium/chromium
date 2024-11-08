@@ -286,9 +286,7 @@ bool WebAudioSourceProviderImpl::SetVolume(double volume) {
 }
 
 media::OutputDeviceInfo WebAudioSourceProviderImpl::GetOutputDeviceInfo() {
-  NOTREACHED_IN_MIGRATION();  // The blocking API is intentionally not
-                              // supported.
-  return media::OutputDeviceInfo();
+  NOTREACHED();  // The blocking API is intentionally not supported.
 }
 
 void WebAudioSourceProviderImpl::GetOutputDeviceInfoAsync(

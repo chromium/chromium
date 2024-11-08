@@ -32,8 +32,7 @@ SerializedPredefinedColorSpace SerializeColorSpace(
     case PredefinedColorSpace::kSRGBLinear:
       return SerializedPredefinedColorSpace::kSRGBLinear;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SerializedPredefinedColorSpace::kSRGB;
+  NOTREACHED();
 }
 
 PredefinedColorSpace DeserializeColorSpace(
@@ -53,8 +52,7 @@ PredefinedColorSpace DeserializeColorSpace(
     case SerializedPredefinedColorSpace::kSRGBLinear:
       return PredefinedColorSpace::kSRGBLinear;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PredefinedColorSpace::kSRGB;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -97,8 +95,7 @@ ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
     case SerializedImageDataStorageFormat::kFloat32:
       return ImageDataStorageFormat::kFloat32;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ImageDataStorageFormat::kUint8;
+  NOTREACHED();
 }
 
 ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
@@ -291,8 +288,7 @@ ImageOrientationEnum SerializedImageBitmapSettings::GetImageOrientation()
     case SerializedImageOrientation::kLeftBottom:
       return ImageOrientationEnum::kOriginLeftBottom;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ImageOrientationEnum::kOriginTopLeft;
+  NOTREACHED();
 }
 
 }  // namespace blink

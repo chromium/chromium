@@ -48,7 +48,7 @@ class BLINK_EXPORT WebNavigationBodyLoader {
         const WebString& data,
         const WebEncodingData& encoding_data,
         base::SpanOrSize<const char> encoded_data) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // Called once at the end. If something went wrong, |error| will be set.

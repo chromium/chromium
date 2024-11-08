@@ -123,8 +123,7 @@ String BlendModeToString(BlendMode blend_op) {
     case BlendMode::kPlusLighter:
       return "plus-lighter";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 bool ParseImageEncodingMimeType(const String& mime_type_name,
@@ -273,8 +272,7 @@ String ImageDataStorageFormatName(ImageDataStorageFormat format) {
     case ImageDataStorageFormat::kFloat32:
       return "float32";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String PredefinedColorSpaceName(PredefinedColorSpace color_space) {
@@ -292,8 +290,7 @@ String PredefinedColorSpaceName(PredefinedColorSpace color_space) {
     case PredefinedColorSpace::kSRGBLinear:
       return "srgb-linear";
   };
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String CanvasPixelFormatName(CanvasPixelFormat pixel_format) {
@@ -303,8 +300,7 @@ String CanvasPixelFormatName(CanvasPixelFormat pixel_format) {
     case CanvasPixelFormat::kF16:
       return "float16";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 }  // namespace blink

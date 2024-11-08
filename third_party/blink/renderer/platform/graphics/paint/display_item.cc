@@ -95,8 +95,7 @@ static WTF::String PaintPhaseAsDebugString(int paint_phase) {
     case DisplayItem::kPaintPhaseMax:
       return "PaintPhaseMask";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "Unknown";
+      NOTREACHED();
   }
 }
 
@@ -110,10 +109,9 @@ static WTF::String PaintPhaseAsDebugString(int paint_phase) {
   case DisplayItem::k##DisplayItemName:    \
     return #DisplayItemName
 
-#define DEFAULT_CASE           \
-  default:                     \
-    NOTREACHED_IN_MIGRATION(); \
-    return "Unknown"
+#define DEFAULT_CASE \
+  default:           \
+    NOTREACHED();
 
 static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
   switch (type) {

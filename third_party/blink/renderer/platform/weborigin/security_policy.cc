@@ -152,8 +152,7 @@ Referrer SecurityPolicy::GenerateReferrer(
     case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
       break;
     case network::mojom::ReferrerPolicy::kDefault:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return Referrer(ShouldHideReferrer(url, referrer_url) ? Referrer::NoReferrer()
@@ -296,8 +295,7 @@ String SecurityPolicy::ReferrerPolicyAsString(
     case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return "strict-origin-when-cross-origin";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 namespace {

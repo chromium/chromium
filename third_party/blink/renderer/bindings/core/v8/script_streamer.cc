@@ -97,7 +97,7 @@ v8::ScriptType ScriptTypeForStreamingTask(ScriptResource* script_resource) {
       return v8::ScriptType::kClassic;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -626,8 +626,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
     std::array<char, kMaximumLengthOfBOM> maybe_bom = {};
     if (!script_resource_->ResourceBuffer()->GetBytes(
             base::as_writable_byte_span(maybe_bom))) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
 
     std::unique_ptr<TextResourceDecoder> decoder(
@@ -828,8 +827,7 @@ void ResourceScriptStreamer::OnDataPipeReadable(
       return;
 
     case MOJO_RESULT_SHOULD_WAIT:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
 
     default:
       // Some other error occurred.

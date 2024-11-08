@@ -216,8 +216,7 @@ const char* ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
     case network::mojom::FetchResponseSource::kCacheStorage:
       return "CacheStorage";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 }  // namespace blink

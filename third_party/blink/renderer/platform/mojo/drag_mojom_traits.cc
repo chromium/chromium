@@ -267,8 +267,7 @@ bool UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item>::
       return data.ReadFileSystemFile(
           &out->emplace<blink::WebDragData::FileSystemFileItem>());
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

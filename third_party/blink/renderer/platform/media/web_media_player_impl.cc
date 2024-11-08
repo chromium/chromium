@@ -374,7 +374,7 @@ WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
       return WebMediaPlayer::kNetworkStateDecodeError;
 
     case media::PIPELINE_OK:
-      NOTREACHED_IN_MIGRATION() << "Unexpected status! " << error;
+      NOTREACHED() << "Unexpected status! " << error;
   }
   return WebMediaPlayer::kNetworkStateFormatError;
 }
@@ -1722,9 +1722,7 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
       ToWebContentDecryptionModuleImpl(cdm);
   auto cdm_context_ref = web_cdm->GetCdmContextRef();
   if (!cdm_context_ref) {
-    NOTREACHED_IN_MIGRATION();
-    OnCdmAttached(false);
-    return;
+    NOTREACHED();
   }
 
   // Arrival of `cdm_config_` unblocks recording of encrypted stats. Attempt to
@@ -1964,10 +1962,13 @@ void WebMediaPlayerImpl::RestartForHls() {
       media::RendererType::kMediaPlayer);
 #else
   // Shouldn't be reachable from desktop where hls is not enabled.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
   SetMemoryReportingState(false);
   StartPipeline();
+#endif
 }
 
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {

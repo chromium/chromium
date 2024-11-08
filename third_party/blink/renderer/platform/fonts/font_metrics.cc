@@ -146,11 +146,7 @@ float FontMetrics::FloatAscentInternal(
     ApplyBaselineTable apply_baseline_table) const {
   switch (baseline_type) {
     case kAlphabeticBaseline:
-      NOTREACHED_IN_MIGRATION();
-      if (alphabetic_baseline_position_.has_value() && apply_baseline_table) {
-        return float_ascent_ - alphabetic_baseline_position_.value();
-      }
-      return float_ascent_;
+      NOTREACHED();
     case kCentralBaseline:
       return FloatHeight() / 2;
 
@@ -178,8 +174,7 @@ float FontMetrics::FloatAscentInternal(
     case kTextOverBaseline:
       return 0;
   }
-  NOTREACHED_IN_MIGRATION();
-  return float_ascent_;
+  NOTREACHED();
 }
 
 int FontMetrics::IntAscentInternal(
@@ -187,13 +182,7 @@ int FontMetrics::IntAscentInternal(
     ApplyBaselineTable apply_baseline_table) const {
   switch (baseline_type) {
     case kAlphabeticBaseline:
-      NOTREACHED_IN_MIGRATION();
-      if (alphabetic_baseline_position_.has_value() && apply_baseline_table) {
-        return static_cast<int>(
-            int_ascent_ -
-            static_cast<int>(lroundf(alphabetic_baseline_position_.value())));
-      }
-      return int_ascent_;
+      NOTREACHED();
     case kCentralBaseline:
       return Height() - Height() / 2;
 
@@ -224,7 +213,6 @@ int FontMetrics::IntAscentInternal(
     case kTextOverBaseline:
       return 0;
   }
-  NOTREACHED_IN_MIGRATION();
-  return int_ascent_;
+  NOTREACHED();
 }
 }

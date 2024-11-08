@@ -154,7 +154,7 @@ PLATFORM_EXPORT inline void V8SetReturnValue(
       info.GetReturnValue().Set(value == NamedPropertyDeleterResult::kDeleted);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // nullptr

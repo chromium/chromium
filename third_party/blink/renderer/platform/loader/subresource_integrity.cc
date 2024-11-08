@@ -107,7 +107,7 @@ String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
     case IntegrityAlgorithm::kSha512:
       return "SHA-512";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
@@ -120,7 +120,7 @@ blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
     case IntegrityAlgorithm::kSha512:
       return kHashAlgorithmSha512;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(

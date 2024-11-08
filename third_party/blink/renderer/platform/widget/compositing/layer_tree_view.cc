@@ -478,7 +478,7 @@ LayerTreeView::GetBeginMainFrameMetrics() {
 
 void LayerTreeView::NotifyThroughputTrackerResults(
     cc::CustomTrackerResults results) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LayerTreeView::DidObserveFirstScrollDelay(

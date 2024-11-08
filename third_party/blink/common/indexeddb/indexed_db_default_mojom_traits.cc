@@ -87,8 +87,7 @@ UnionTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey>::GetTag(
     case blink::mojom::IDBKeyType::Invalid:  // Only used in blink.
     case blink::mojom::IDBKeyType::Min:;     // Only used in the browser.
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::IDBKeyDataView::Tag::kOtherNone;
+  NOTREACHED();
 }
 
 // static
@@ -149,8 +148,7 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IndexedDBKeyPath>::data(
     case blink::mojom::IDBKeyPathType::Null:;  // No-op, fall out of switch
                                                // block to NOTREACHED().
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // static

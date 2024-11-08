@@ -25,8 +25,7 @@ viz::SharedImageFormat WGPUFormatToViz(wgpu::TextureFormat format) {
     case wgpu::TextureFormat::RGBA16Float:
       return viz::SinglePlaneFormat::kRGBA_F16;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return viz::SinglePlaneFormat::kRGBA_8888;
+      NOTREACHED();
   }
 }
 

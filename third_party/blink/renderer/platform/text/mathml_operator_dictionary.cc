@@ -207,8 +207,7 @@ MathMLOperatorDictionaryCategory FindCategory(
       return MathMLOperatorDictionaryCategory::kJ;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return MathMLOperatorDictionaryCategory::kNone;
+  NOTREACHED();
 }
 
 }  // namespace blink

@@ -16,10 +16,7 @@ class ErroredBytesConsumer final : public BytesConsumer {
     buffer = {};
     return Result::kError;
   }
-  Result EndRead(size_t read_size) override {
-    NOTREACHED_IN_MIGRATION();
-    return Result::kError;
-  }
+  Result EndRead(size_t read_size) override { NOTREACHED(); }
   void SetClient(BytesConsumer::Client*) override {}
   void ClearClient() override {}
 
@@ -38,19 +35,13 @@ class ClosedBytesConsumer final : public BytesConsumer {
     buffer = {};
     return Result::kDone;
   }
-  Result EndRead(size_t read_size) override {
-    NOTREACHED_IN_MIGRATION();
-    return Result::kError;
-  }
+  Result EndRead(size_t read_size) override { NOTREACHED(); }
   void SetClient(BytesConsumer::Client*) override {}
   void ClearClient() override {}
 
   void Cancel() override {}
   PublicState GetPublicState() const override { return PublicState::kClosed; }
-  Error GetError() const override {
-    NOTREACHED_IN_MIGRATION();
-    return Error();
-  }
+  Error GetError() const override { NOTREACHED(); }
   String DebugName() const override { return "ClosedBytesConsumer"; }
 };
 
@@ -74,7 +65,7 @@ std::ostream& operator<<(std::ostream& out,
     case BytesConsumer::PublicState::kErrored:
       return out << "kErrored";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -89,7 +80,7 @@ std::ostream& operator<<(std::ostream& out,
     case BytesConsumer::Result::kError:
       return out << "kError";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace blink

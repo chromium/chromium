@@ -169,8 +169,7 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "InternalPostMessageForwarding";
   }
   // FrameSchedulerImpl should not call this for invalid TaskTypes.
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace scheduler

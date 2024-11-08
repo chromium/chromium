@@ -109,10 +109,8 @@ inline WindRule SkFillTypeToWindRule(SkPathFillType fill_type) {
     case SkPathFillType::kEvenOdd:
       return static_cast<WindRule>(fill_type);
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return RULE_NONZERO;
 }
 
 inline SkPoint FloatPointToSkPoint(const gfx::PointF& point) {

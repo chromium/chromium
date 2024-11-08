@@ -1412,8 +1412,7 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
           internal_format = GL_RGBA;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
       gl_->TexImage2D(GL_TEXTURE_2D, 0, internal_format, size.width(),
@@ -1610,8 +1609,7 @@ bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
       color_buffer_format_ = viz::SinglePlaneFormat::kRGBA_F16;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   needs_reallocate |= requested_alpha_type_ != requested_alpha_type;
   requested_alpha_type_ = requested_alpha_type;
@@ -1959,7 +1957,7 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
         pixels[i + j] = (pixels[i + j] * alpha + 127) / 255;
     }
   } else if (op != WebGLImageConversion::kAlphaDoNothing) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

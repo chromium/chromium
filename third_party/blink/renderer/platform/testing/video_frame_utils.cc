@@ -61,9 +61,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           coded_size, visible_rect, natural_size, timestamp);
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported storage type or pixel format";
+      NOTREACHED() << "Unsupported storage type or pixel format";
   }
-  return nullptr;
 }
 
 }  // namespace blink

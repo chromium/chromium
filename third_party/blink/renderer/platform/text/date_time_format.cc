@@ -239,8 +239,7 @@ bool DateTimeFormat::Parse(const String& source, TokenHandler& token_handler) {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool IsASCIIAlphabetOrQuote(UChar ch) {

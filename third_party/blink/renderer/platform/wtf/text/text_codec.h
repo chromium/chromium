@@ -102,13 +102,11 @@ class WTF_EXPORT TextCodec {
   // buffer; therefore this method is only usefully overridden by TextCodecUTF8.
   virtual EncodeIntoResult EncodeInto(base::span<const LChar>,
                                       base::span<uint8_t> destination) {
-    NOTREACHED_IN_MIGRATION();
-    return EncodeIntoResult{0, 0};
+    NOTREACHED();
   }
   virtual EncodeIntoResult EncodeInto(base::span<const UChar>,
                                       base::span<uint8_t> destination) {
-    NOTREACHED_IN_MIGRATION();
-    return EncodeIntoResult{0, 0};
+    NOTREACHED();
   }
 
   static std::string GetUnencodableReplacement(UChar32 code_point,

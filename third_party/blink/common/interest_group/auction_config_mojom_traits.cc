@@ -86,8 +86,7 @@ bool AdConfigMaybePromiseTraitsHelper<View, Wrapper>::Read(View in,
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<

@@ -205,9 +205,7 @@ int32_t TextExtract(UText*,
                     UErrorCode* error_code) {
   // In the present context, this text provider is used only with ICU functions
   // that do not perform an extract operation.
-  NOTREACHED_IN_MIGRATION();
-  *error_code = U_UNSUPPORTED_ERROR;
-  return 0;
+  NOTREACHED();
 }
 
 void TextClose(UText* text) {

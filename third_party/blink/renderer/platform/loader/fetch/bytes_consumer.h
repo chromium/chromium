@@ -188,7 +188,7 @@ class PLATFORM_EXPORT BytesConsumer : public GarbageCollected<BytesConsumer> {
       case InternalState::kErrored:
         return PublicState::kErrored;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 

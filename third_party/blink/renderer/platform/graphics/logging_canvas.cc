@@ -85,8 +85,7 @@ String PointModeName(SkCanvas::PointMode mode) {
     case SkCanvas::kPolygon_PointMode:
       return "Polygon";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "?";
+      NOTREACHED();
   };
 }
 
@@ -129,8 +128,7 @@ String RrectTypeName(SkRRect::Type type) {
     case SkRRect::kComplex_Type:
       return "Complex";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "?";
+      NOTREACHED();
   };
 }
 
@@ -145,8 +143,7 @@ String RadiusName(SkRRect::Corner corner) {
     case SkRRect::kLowerLeft_Corner:
       return "lowerLeftRadius";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "?";
+      NOTREACHED();
   }
 }
 
@@ -174,8 +171,7 @@ String FillTypeName(SkPathFillType type) {
     case SkPathFillType::kInverseEvenOdd:
       return "InverseEvenOdd";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "?";
+      NOTREACHED();
   };
 }
 
@@ -196,8 +192,7 @@ VerbParams SegmentParams(SkPath::Verb verb) {
     case SkPath::kDone_Verb:
       return VerbParams("Done", 0, 0);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return VerbParams("?", 0, 0);
+      NOTREACHED();
   };
 }
 
@@ -282,8 +277,7 @@ String StrokeCapName(SkPaint::Cap cap) {
     case SkPaint::kSquare_Cap:
       return "Square";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "?";
+      NOTREACHED();
   };
 }
 
@@ -296,8 +290,7 @@ String StrokeJoinName(SkPaint::Join join) {
     case SkPaint::kBevel_Join:
       return "Bevel";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "?";
+      NOTREACHED();
   };
 }
 
@@ -308,8 +301,7 @@ String StyleName(SkPaint::Style style) {
     case SkPaint::kStroke_Style:
       return "Stroke";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "?";
+      NOTREACHED();
   };
 }
 

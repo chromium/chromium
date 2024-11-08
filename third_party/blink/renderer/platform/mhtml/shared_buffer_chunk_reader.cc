@@ -91,8 +91,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
     }
     segment_ = *it;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 String SharedBufferChunkReader::NextChunkAsUTF8StringWithLatin1Fallback(

@@ -240,7 +240,7 @@ void SynchronousCompositorProxy::SubmitCompositorFrame(
         .Run(std::move(common_renderer_params), NextMetadataVersion(),
              std::move(frame->metadata));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

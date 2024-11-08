@@ -496,7 +496,7 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
         LOG(ERROR) << "previous stack: " << previous_stack->ToString();
         crash_reporter::SetCrashKeyStringToStackTrace(&previous_stack_key,
                                                       *previous_stack);
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
     AddToIdIndexMap(id, new_display_item_list.size() - 1,

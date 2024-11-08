@@ -72,8 +72,7 @@ CompositorThreadSchedulerImpl::IdleTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadSchedulerImpl::V8TaskRunner() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

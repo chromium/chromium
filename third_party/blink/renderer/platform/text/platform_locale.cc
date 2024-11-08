@@ -553,8 +553,7 @@ String Locale::FormatDateTime(const DateComponents& date,
                         : DateTimeFormatWithSeconds());
       break;
     case DateComponents::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return builder.ToString();
 }

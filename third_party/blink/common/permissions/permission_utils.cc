@@ -22,8 +22,7 @@ mojom::PermissionStatus ToPermissionStatus(const std::string& status) {
     return mojom::PermissionStatus::ASK;
   if (status == "denied")
     return mojom::PermissionStatus::DENIED;
-  NOTREACHED_IN_MIGRATION();
-  return mojom::PermissionStatus::DENIED;
+  NOTREACHED();
 }
 
 std::string GetPermissionString(PermissionType permission) {
@@ -101,11 +100,9 @@ std::string GetPermissionString(PermissionType permission) {
     case PermissionType::WEB_APP_INSTALLATION:
       return "WebAppInstallation";
     case PermissionType::NUM:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::optional<mojom::PermissionsPolicyFeature>
@@ -177,11 +174,9 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return std::nullopt;
 
     case PermissionType::NUM:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 const std::vector<PermissionType>& GetAllPermissionTypes() {
@@ -312,8 +307,7 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
     case PermissionName::WEB_APP_INSTALLATION:
       return PermissionType::WEB_APP_INSTALLATION;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 }
 

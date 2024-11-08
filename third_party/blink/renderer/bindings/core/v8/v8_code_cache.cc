@@ -499,16 +499,11 @@ V8CodeCache::GetCompileOptionsInternal(
     case mojom::blink::V8CacheOptions::kNone:
       // Shouldn't happen, as this is handled above.
       // Case is here so that compiler can check all cases are handled.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // All switch branches should return and we should never get here.
-  // But some compilers aren't sure, hence this default.
-  NOTREACHED_IN_MIGRATION();
-  return std::make_tuple(no_code_cache_compile_options,
-                         ProduceCacheOptions::kNoProduceCache,
-                         v8::ScriptCompiler::kNoCacheNoReason);
+  NOTREACHED();
 }
 
 bool V8CodeCache::IsFull(const CachedMetadata* metadata) {

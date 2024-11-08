@@ -90,8 +90,7 @@ class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 
   void ForEach(ScriptState* script_state,
@@ -159,8 +158,7 @@ class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
                                         v8_value);
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 
   void ForEach(ScriptState* script_state,

@@ -103,8 +103,7 @@ CubicBezierTimingFunction* CubicBezierTimingFunction::Preset(
     case EaseType::EASE_IN_OUT:
       return ease_in_out;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -124,8 +123,7 @@ String CubicBezierTimingFunction::ToString() const {
              String::NumberToStringECMAScript(X2()) + ", " +
              String::NumberToStringECMAScript(Y2()) + ")";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -247,8 +245,7 @@ scoped_refptr<TimingFunction> CreateCompositorTimingFunctionFromCC(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -300,9 +297,8 @@ bool operator==(const TimingFunction& lhs, const TimingFunction& rhs) {
       return (step == rhs);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 // No need to define specific operator!= as they can all come via this function.

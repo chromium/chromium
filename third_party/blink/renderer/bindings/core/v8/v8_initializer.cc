@@ -146,7 +146,7 @@ mojom::ConsoleMessageLevel MessageLevelFromNonFatalErrorLevel(int error_level) {
       level = mojom::ConsoleMessageLevel::kInfo;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return level;
 }

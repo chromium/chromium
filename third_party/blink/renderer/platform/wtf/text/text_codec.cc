@@ -49,9 +49,7 @@ std::string TextCodec::GetUnencodableReplacement(UChar32 code_point,
     case kNoUnencodables:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace WTF

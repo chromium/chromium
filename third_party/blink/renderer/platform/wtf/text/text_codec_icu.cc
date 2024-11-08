@@ -637,7 +637,7 @@ static void NotReachedEntityCallback(const void* context,
                                      UChar32 code_point,
                                      UConverterCallbackReason reason,
                                      UErrorCode* err) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 class TextCodecInput final {

@@ -458,7 +458,7 @@ scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
   if (unicode::ConvertUTF8ToUTF16(&source, characters_end, &dptr,
                                   utf16_buf.get() + utf16_length) !=
       unicode::kConversionOK) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   UCharBuffer buffer(utf16_buf.get(), utf16_length,

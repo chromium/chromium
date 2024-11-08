@@ -31,9 +31,7 @@ wgpu::TextureFormat VizToWGPUFormat(const viz::SharedImageFormat& format) {
   if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return wgpu::TextureFormat::RGBA16Float;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected canvas format: " << format.ToString();
-  return wgpu::TextureFormat::RGBA8Unorm;
+  NOTREACHED() << "Unexpected canvas format: " << format.ToString();
 }
 
 }  // namespace

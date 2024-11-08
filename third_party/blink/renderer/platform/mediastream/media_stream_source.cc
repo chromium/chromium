@@ -54,9 +54,8 @@ const char* StreamTypeToString(MediaStreamSource::StreamType type) {
     case MediaStreamSource::kTypeVideo:
       return "Video";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "Invalid";
 }
 
 const char* ReadyStateToString(MediaStreamSource::ReadyState state) {
@@ -68,9 +67,8 @@ const char* ReadyStateToString(MediaStreamSource::ReadyState state) {
     case MediaStreamSource::kReadyStateEnded:
       return "Ended";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "Invalid";
 }
 
 void GetSourceSettings(const blink::WebMediaStreamSource& web_source,

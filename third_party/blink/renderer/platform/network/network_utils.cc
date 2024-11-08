@@ -38,8 +38,7 @@ getNetPrivateRegistryFilter(
   // There are only two network_utils::PrivateRegistryFilter enum entries, so
   // we should never reach this point. However, we must have a default return
   // value to avoid a compiler error.
-  NOTREACHED_IN_MIGRATION();
-  return net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
+  NOTREACHED();
 }
 
 }  // namespace

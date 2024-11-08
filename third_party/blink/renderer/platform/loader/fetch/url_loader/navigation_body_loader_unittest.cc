@@ -525,9 +525,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
 // single PostTask.
 class ChunkingLoaderClient : public WebNavigationBodyLoader::Client {
  public:
-  void BodyDataReceived(base::span<const char> data) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void BodyDataReceived(base::span<const char> data) override { NOTREACHED(); }
   void DecodedBodyDataReceived(
       const WebString& data,
       const WebEncodingData& encoding_data,

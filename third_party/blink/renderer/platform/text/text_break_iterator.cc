@@ -426,9 +426,7 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
                                    BreakSpaceType::kAfterEverySpace>(pos, str,
                                                                      len);
   }
-  NOTREACHED_IN_MIGRATION();
-  return NextBreakablePosition<CharacterType, lineBreakType,
-                               BreakSpaceType::kAfterSpaceRun>(pos, str, len);
+  NOTREACHED();
 }
 
 template <LineBreakType lineBreakType>
@@ -472,8 +470,7 @@ unsigned LazyLineBreakIterator::NextBreakablePosition(unsigned pos,
     case LineBreakType::kBreakCharacter:
       return NextBreakablePositionBreakCharacter(pos);
   }
-  NOTREACHED_IN_MIGRATION();
-  return NextBreakablePosition<LineBreakType::kNormal>(pos, len);
+  NOTREACHED();
 }
 
 unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset) const {
@@ -522,8 +519,7 @@ std::ostream& operator<<(std::ostream& ostream, LineBreakType line_break_type) {
     case LineBreakType::kPhrase:
       return ostream << "Phrase";
   }
-  NOTREACHED_IN_MIGRATION();
-  return ostream << "LineBreakType::" << static_cast<int>(line_break_type);
+  NOTREACHED() << "LineBreakType::" << static_cast<int>(line_break_type);
 }
 
 std::ostream& operator<<(std::ostream& ostream, BreakSpaceType break_space) {
@@ -533,8 +529,7 @@ std::ostream& operator<<(std::ostream& ostream, BreakSpaceType break_space) {
     case BreakSpaceType::kAfterEverySpace:
       return ostream << "kAfterEverySpace";
   }
-  NOTREACHED_IN_MIGRATION();
-  return ostream << "BreakSpaceType::" << static_cast<int>(break_space);
+  NOTREACHED() << "BreakSpaceType::" << static_cast<int>(break_space);
 }
 
 }  // namespace blink

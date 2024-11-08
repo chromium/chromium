@@ -22,8 +22,7 @@ gfx::RectF FEBoxReflect::MapEffect(const gfx::RectF& rect) const {
 StringBuilder& FEBoxReflect::ExternalRepresentation(StringBuilder& ts,
                                                     wtf_size_t indent) const {
   // Only called for SVG layout tree printing.
-  NOTREACHED_IN_MIGRATION();
-  return ts;
+  NOTREACHED();
 }
 
 sk_sp<PaintFilter> FEBoxReflect::CreateImageFilter() {

@@ -450,8 +450,7 @@ gfx::Size WEBPImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
     case cc::YUVIndex::kV:
       return gfx::Size((Size().width() + 1) / 2, (Size().height() + 1) / 2);
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Size(0, 0);
+  NOTREACHED();
 }
 
 wtf_size_t WEBPImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
@@ -462,8 +461,7 @@ wtf_size_t WEBPImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
     case cc::YUVIndex::kV:
       return base::checked_cast<wtf_size_t>((Size().width() + 1) / 2);
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 SkYUVColorSpace WEBPImageDecoder::GetYUVColorSpace() const {

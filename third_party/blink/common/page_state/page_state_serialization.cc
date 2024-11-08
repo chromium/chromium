@@ -416,8 +416,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
     }
   }
   WriteInteger64(request_body.identifier(), obj);
@@ -696,8 +695,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
         NOTIMPLEMENTED();
         continue;
       case network::DataElement::Tag::kChunkedDataPipe:
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
     }
     mojo_body->elements.push_back(std::move(data_element));
   }

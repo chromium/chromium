@@ -81,8 +81,7 @@ const WrapperTypeInfo& CallableHolder::wrapper_type_info_ =
     callable_holder_info;
 
 ScriptValue ScriptFunction::Callable::Call(ScriptState*, ScriptValue) {
-  NOTREACHED_IN_MIGRATION();
-  return ScriptValue();
+  NOTREACHED();
 }
 
 void ScriptFunction::Callable::CallRaw(

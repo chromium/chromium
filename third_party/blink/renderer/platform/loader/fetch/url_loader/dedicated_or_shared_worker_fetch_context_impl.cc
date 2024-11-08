@@ -456,7 +456,7 @@ DedicatedOrSharedWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
 void DedicatedOrSharedWorkerFetchContextImpl::SetIsOfflineMode(
     bool is_offline_mode) {
   // Worker doesn't support offline mode. There should be no callers.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DedicatedOrSharedWorkerFetchContextImpl::OnControllerChanged(

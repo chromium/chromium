@@ -235,8 +235,7 @@ class PLATFORM_EXPORT CanvasResource
   // NOTE: Will be called only if SupportsAcceleratedCompositing() is false.
   virtual bool PrepareUnacceleratedTransferableResource(
       viz::TransferableResource* out_resource) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   const SkColorInfo& GetSkColorInfo() const { return info_; }
 
@@ -257,8 +256,7 @@ class PLATFORM_EXPORT CanvasResource
   // verified.
   virtual const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) {
-    NOTREACHED_IN_MIGRATION();
-    return gpu::SyncToken();
+    NOTREACHED();
   }
 
   base::WeakPtr<CanvasResourceProvider> provider_;

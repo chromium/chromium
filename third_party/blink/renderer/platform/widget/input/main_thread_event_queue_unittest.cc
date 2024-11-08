@@ -105,10 +105,7 @@ class HandledEvent : public HandledTask {
   ~HandledEvent() override = default;
 
   blink::WebCoalescedInputEvent* taskAsEvent() override { return &event_; }
-  unsigned taskAsClosure() const override {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  unsigned taskAsClosure() const override { NOTREACHED(); }
 
   void Print(std::ostream* os) const override {
     *os << "event_type: " << event_.Event().GetType();
@@ -128,12 +125,9 @@ class HandledClosure : public HandledTask {
   explicit HandledClosure(unsigned closure_id) : closure_id_(closure_id) {}
   ~HandledClosure() override = default;
 
-  blink::WebCoalescedInputEvent* taskAsEvent() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  blink::WebCoalescedInputEvent* taskAsEvent() override { NOTREACHED(); }
   unsigned taskAsClosure() const override { return closure_id_; }
-  void Print(std::ostream* os) const override { NOTREACHED_IN_MIGRATION(); }
+  void Print(std::ostream* os) const override { NOTREACHED(); }
 
  private:
   unsigned closure_id_;

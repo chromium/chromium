@@ -75,11 +75,9 @@ QueueName MainThreadTaskQueue::NameForQueueType(
     case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
       return QueueName::IPC_TRACKING_FOR_CACHED_PAGES_TQ;
     case MainThreadTaskQueue::QueueType::kCount:
-      NOTREACHED_IN_MIGRATION();
-      return QueueName::UNKNOWN_TQ;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return QueueName::UNKNOWN_TQ;
+  NOTREACHED();
 }
 
 MainThreadTaskQueue::MainThreadTaskQueue(

@@ -226,8 +226,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       }
       switch (result) {
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kDone: {
@@ -438,7 +437,7 @@ class WasmDataLoaderClient final
   WasmDataLoaderClient& operator=(const WasmDataLoaderClient&) = delete;
 
   void DidFetchDataLoadedCustomFormat() override {}
-  void DidFetchDataLoadFailed() override { NOTREACHED_IN_MIGRATION(); }
+  void DidFetchDataLoadFailed() override { NOTREACHED(); }
   void Abort() override { loader_->AbortFromClient(); }
 
   void Trace(Visitor* visitor) const override {

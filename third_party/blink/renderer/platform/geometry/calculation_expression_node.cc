@@ -408,8 +408,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
           std::move(children), op);
     }
     case CalculationOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -562,8 +561,7 @@ float CalculationExpressionOperationNode::Evaluate(
       break;
       // TODO(crbug.com/1284199): Support other math functions.
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::numeric_limits<float>::quiet_NaN();
+  NOTREACHED();
 }
 
 bool CalculationExpressionOperationNode::Equals(
@@ -631,8 +629,7 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
       return CreateSimplified(std::move(cloned_operands), operator_);
     }
     case CalculationOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -740,8 +737,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kMediaProgress:
       return ResultType::kNumber;
     case CalculationOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return result_type_;
+      NOTREACHED();
   }
 }
 #endif

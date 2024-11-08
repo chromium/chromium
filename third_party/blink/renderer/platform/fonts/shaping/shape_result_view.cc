@@ -102,7 +102,7 @@ struct ShapeResultView::InitData {
       DCHECK(!first_segment.result);
       PopulateFromShapeResult(*first_segment.view);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // Compute start index offset for the overall run. This is added to the
@@ -130,7 +130,7 @@ struct ShapeResultView::InitData {
         DCHECK(!segment.result);
         ProcessShapeResult(*segment.view, segment);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
@@ -282,7 +282,7 @@ void ShapeResultView::PopulateRunInfoParts(const Segment& segment) {
     DCHECK(!segment.result);
     PopulateRunInfoParts(*segment.view, segment);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

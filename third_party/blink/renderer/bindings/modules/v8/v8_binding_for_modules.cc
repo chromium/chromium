@@ -565,8 +565,7 @@ bool InjectV8KeyIntoV8Value(v8::Isolate* isolate,
   // The conbination of a key generator and an empty key path is forbidden by
   // spec.
   if (!key_path_elements.size()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   v8::HandleScope handle_scope(isolate);

@@ -166,7 +166,7 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   EXPECT_EQ(test_passed, true);
 }

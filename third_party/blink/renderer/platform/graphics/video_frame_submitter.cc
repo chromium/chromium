@@ -131,8 +131,8 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
   }
 
   // Not used by VideoFrameSubmitter.
-  void SetWantsAnimateOnlyBeginFrames() override { NOTREACHED_IN_MIGRATION(); }
-  void SetAutoNeedsBeginFrame() override { NOTREACHED_IN_MIGRATION(); }
+  void SetWantsAnimateOnlyBeginFrames() override { NOTREACHED(); }
+  void SetAutoNeedsBeginFrame() override { NOTREACHED(); }
 
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
@@ -155,7 +155,7 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
       std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {

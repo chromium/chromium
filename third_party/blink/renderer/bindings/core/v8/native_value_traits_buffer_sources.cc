@@ -425,8 +425,7 @@ DOMArrayBufferView* ToDOMArrayBufferView(v8::Isolate* isolate,
     return ToDOMViewType<DOMDataView, allow_shared>(isolate, value);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 template <>

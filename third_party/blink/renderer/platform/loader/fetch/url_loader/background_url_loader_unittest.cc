@@ -331,7 +331,7 @@ class FakeURLLoaderClient : public URLLoaderClient {
     return std::move(will_follow_callback).Run(new_url);
   }
   void DidSendData(uint64_t bytesSent, uint64_t totalBytesToBeSent) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void DidReceiveResponse(
       const WebURLResponse& response,

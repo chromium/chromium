@@ -27,10 +27,7 @@ class PLATFORM_EXPORT SharedBufferBytesConsumer final : public BytesConsumer {
   void ClearClient() override {}
   void Cancel() override;
   PublicState GetPublicState() const override;
-  Error GetError() const override {
-    NOTREACHED_IN_MIGRATION();
-    return Error();
-  }
+  Error GetError() const override { NOTREACHED(); }
   String DebugName() const override;
 
  private:

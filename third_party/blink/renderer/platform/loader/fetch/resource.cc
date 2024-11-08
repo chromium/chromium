@@ -1221,8 +1221,7 @@ const char* Resource::ResourceTypeToString(
     case ResourceType::kDictionary:
       return "Dictionary";
   }
-  NOTREACHED_IN_MIGRATION();
-  return InitiatorTypeNameToString(fetch_initiator_name);
+  NOTREACHED();
 }
 
 bool Resource::IsLoadEventBlockingResourceType() const {
@@ -1247,8 +1246,7 @@ bool Resource::IsLoadEventBlockingResourceType() const {
     case ResourceType::kDictionary:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

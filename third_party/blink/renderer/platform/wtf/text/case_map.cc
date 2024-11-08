@@ -90,8 +90,7 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
       continue;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return source;
+    NOTREACHED();
   }
 }
 

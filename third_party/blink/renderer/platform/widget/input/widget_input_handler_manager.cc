@@ -115,8 +115,7 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
       return mojom::blink::InputEventResultState::kSetNonBlocking;
     case InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::blink::InputEventResultState::kUnknown;
+      NOTREACHED();
   }
 }
 

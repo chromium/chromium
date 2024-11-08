@@ -215,8 +215,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
       case kWebConnectionTypeUnknown:
         return false;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Can be called on any thread.

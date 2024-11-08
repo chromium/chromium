@@ -139,9 +139,7 @@ class FakeInputEvent : public blink::WebInputEvent {
     return false;
   }
 
-  void Coalesce(const WebInputEvent& event) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void Coalesce(const WebInputEvent& event) override { NOTREACHED(); }
 };
 
 class FakeTouchEvent : public blink::WebTouchEvent {
@@ -934,7 +932,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
                                         String::FromUTF8(task)));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }

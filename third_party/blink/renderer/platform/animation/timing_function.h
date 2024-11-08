@@ -206,8 +206,7 @@ class PLATFORM_EXPORT StepsTimingFunction final : public TimingFunction {
       case StepPosition::END:
         return end;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return end;
+        NOTREACHED();
     }
   }
 

@@ -307,13 +307,8 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       return script;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  // All switch branches should return and we should never get here.
-  // But some compilers aren't sure, hence this default.
-  NOTREACHED_IN_MIGRATION();
-  return v8::MaybeLocal<v8::Script>();
 }
 
 int GetMicrotasksScopeDepth(v8::Isolate* isolate,
@@ -470,7 +465,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

@@ -21,7 +21,7 @@ WTF::String OverscrollBehaviorTypeToString(cc::OverscrollBehavior::Type value) {
     case cc::OverscrollBehavior::Type::kContain:
       return "contain";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

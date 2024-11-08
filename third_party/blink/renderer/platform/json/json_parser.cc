@@ -28,8 +28,7 @@ String FormatErrorMessage(Error error, int line, int column) {
   String text;
   switch (error) {
     case Error::kNoError:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     case Error::kUnexpectedToken:
       text = "Unexpected token.";
       break;
@@ -376,8 +375,7 @@ inline int HexToInt(CharType c) {
     return c - 'A' + 10;
   if ('a' <= c && c <= 'f')
     return c - 'a' + 10;
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 template <typename CharType>
