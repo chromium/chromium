@@ -4,9 +4,6 @@
 LIBRARY  "chrome_elf.dll"
 
 EXPORTS
-  ; When functions are added to this file, they must also be added to
-  ; chrome_elf_x86.def and chrome_elf_x64.def
-
   ; From components/crash/core/app/crash_export_stubs.cc
   CrashForException_ExportThunk
   DumpHungProcessWithPtype_ExportThunk
