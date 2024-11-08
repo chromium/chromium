@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsFaceGazeSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes, SettingsCardElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -40,6 +40,33 @@ suite('<settings-facegaze-subpage>', () => {
 
   teardown(() => {
     Router.getInstance().resetRouteForTesting();
+  });
+
+  test('subpage contains three settings cards', async () => {
+    await initPage();
+
+    // Page should contain cards for the feature toggle button, the cursor
+    // settings, and the action settings.
+    const toggleCard =
+        faceGazeSubpage.shadowRoot!.querySelector<SettingsCardElement>(
+            'settings-card');
+    assertTrue(!!toggleCard);
+
+    const cursorCard =
+        faceGazeSubpage.shadowRoot!.querySelector('facegaze-cursor-card');
+    assertTrue(!!cursorCard);
+    const cursorSettingsCard =
+        cursorCard.shadowRoot!.querySelector<SettingsCardElement>(
+            'settings-card');
+    assertTrue(!!cursorSettingsCard);
+
+    const actionsCard =
+        faceGazeSubpage.shadowRoot!.querySelector('facegaze-actions-card');
+    assertTrue(!!actionsCard);
+    const actionsSettingsCard =
+        actionsCard.shadowRoot!.querySelector<SettingsCardElement>(
+            'settings-card');
+    assertTrue(!!actionsSettingsCard);
   });
 
   test('toggle button reflects pref value', async () => {
