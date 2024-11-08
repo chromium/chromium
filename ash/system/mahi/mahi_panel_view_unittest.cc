@@ -700,6 +700,21 @@ TEST_F(MahiPanelViewTest, ResizePanel) {
   // X and Y positions should be 0 as they are relative to the panel.
   EXPECT_EQ(panel_view()->layer()->GetTargetClipRect(),
             gfx::Rect(0, 0, resized_bounds.width(), resized_bounds.height()));
+
+  // Check that the text in the summary outlines elucidation section bounds has
+  // been resized.
+  const SummaryOutlinesElucidationSection*
+      summary_outlines_elucidation_section =
+          views::AsViewClass<SummaryOutlinesElucidationSection>(
+              panel_view()->GetViewByID(
+                  mahi_constants::ViewId::kSummaryOutlinesSection));
+  const views::Label* summary_text = views::AsViewClass<views::Label>(
+      summary_outlines_elucidation_section->GetViewByID(
+          mahi_constants::ViewId::kSummaryLabel));
+  EXPECT_EQ(
+      summary_text->GetMaximumWidth(),
+      resized_bounds.width() - mahi_constants::kPanelBorderAndPadding -
+          mahi_constants::kSummaryOutlinesElucidationSectionPadding.width());
 }
 
 // Tests that pressing on the send button with a valid textfield takes the user

@@ -65,9 +65,10 @@ inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
 inline constexpr int kPanelMaximumWidth = 540;
 inline constexpr int kPanelMaximumHeight = 600;
 
-inline constexpr int kScrollViewWidth = kPanelDefaultWidth -
-                                        views::kHighlightBorderThickness * 2 -
-                                        kPanelPadding.width();
+inline constexpr int kPanelBorderAndPadding =
+    views::kHighlightBorderThickness * 2 + kPanelPadding.width();
+inline constexpr int kScrollViewDefaultWidth =
+    kPanelDefaultWidth - kPanelBorderAndPadding;
 
 inline constexpr int kScrollContentsViewBottomPadding = 40;
 
@@ -113,6 +114,9 @@ inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 3;
 inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
 inline constexpr int kFakeMahiManagerLoadElucidationDelaySeconds = 4;
 inline constexpr int kFakeMahiManagerLoadOutlinesDelaySeconds = 6;
+
+inline constexpr gfx::Insets kSummaryOutlinesElucidationSectionPadding =
+    gfx::Insets(16);
 
 // Nudge constants
 inline constexpr char kMahiNudgeId[] = "mahi.nudge";

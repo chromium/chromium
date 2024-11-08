@@ -141,6 +141,7 @@ class ErrorContentsView : public views::FlexLayoutView,
       case MahiUiUpdateType::kAnswerLoaded:
       case MahiUiUpdateType::kContentsRefreshInitiated:
       case MahiUiUpdateType::kOutlinesLoaded:
+      case MahiUiUpdateType::kPanelBoundsChanged:
       case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
       case MahiUiUpdateType::kQuestionPosted:
       case MahiUiUpdateType::kQuestionReAsked:

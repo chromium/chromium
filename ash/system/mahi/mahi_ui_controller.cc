@@ -134,6 +134,11 @@ void MahiUiController::NotifyRefreshAvailabilityChanged(bool available) {
       MahiUiUpdate(MahiUiUpdateType::kRefreshAvailabilityUpdated, available));
 }
 
+void MahiUiController::NotifyPanelBoundsChanged(const gfx::Rect& panel_bounds) {
+  NotifyUiUpdate(
+      MahiUiUpdate(MahiUiUpdateType::kPanelBoundsChanged, panel_bounds));
+}
+
 void MahiUiController::RefreshContents() {
   most_recent_question_params_.reset();
   NavigateToSummaryOutlinesSection();

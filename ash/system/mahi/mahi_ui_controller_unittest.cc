@@ -206,6 +206,18 @@ TEST_F(MahiUiControllerTest, NotifyRefreshAvailabilityChanged) {
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
+// Checks `MahiUiController::Delegate` when the panel bounds change.
+TEST_F(MahiUiControllerTest, NotifyPanelBoundsChanged) {
+  const gfx::Rect expected_bounds = gfx::Rect(80, 80);
+  EXPECT_CALL(delegate(),
+              OnUpdated(AllOf(
+                  Property(&MahiUiUpdate::type,
+                           Eq(MahiUiUpdateType::kPanelBoundsChanged)),
+                  Property(&MahiUiUpdate::GetPanelBounds, expected_bounds))));
+  ui_controller().NotifyPanelBoundsChanged(expected_bounds);
+  Mock::VerifyAndClearExpectations(&delegate());
+}
+
 // Checks `MahiUiController::Delegate` when the contents get refreshed.
 TEST_F(MahiUiControllerTest, RefreshContents) {
   InSequence s;
@@ -226,8 +238,8 @@ TEST_F(MahiUiControllerTest, RefreshContents) {
 // panel is for elucidation purpose.
 TEST_F(MahiUiControllerTest, RefreshContentsForElucidation) {
   // Calls `OpenMahiPanel` to set `elucidation_in_use_` to false.
-  // This creates a panel widget and implicitly triggers `RefreshContents` call,
-  // hence the first sequence.
+  // This creates a panel widget and implicitly triggers `RefreshContents`
+  // and `PanelBoundsChanged` calls, hence the first sequence.
   {
     InSequence s;
     EXPECT_CALL(
@@ -238,6 +250,9 @@ TEST_F(MahiUiControllerTest, RefreshContentsForElucidation) {
     EXPECT_CALL(delegate(), OnUpdated(Property(
                                 &MahiUiUpdate::type,
                                 Eq(MahiUiUpdateType::kElucidationRequested))));
+    EXPECT_CALL(delegate(),
+                OnUpdated(Property(&MahiUiUpdate::type,
+                                   Eq(MahiUiUpdateType::kPanelBoundsChanged))));
   }
 
   ui_controller().OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),

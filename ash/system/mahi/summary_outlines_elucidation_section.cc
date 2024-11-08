@@ -42,10 +42,11 @@ namespace {
 
 constexpr int64_t kSectionHeaderChildSpacing = 4;
 constexpr int64_t kSectionHeaderIconSize = 16;
-constexpr gfx::Insets kSectionPadding = gfx::Insets(16);
 constexpr int64_t kSectionChildSpacing = 8;
 constexpr int kTextLabelDefaultMaximumWidth =
-    mahi_constants::kScrollViewWidth - kSectionPadding.width();
+    mahi_constants::kPanelDefaultWidth -
+    mahi_constants::kPanelBorderAndPadding -
+    mahi_constants::kSummaryOutlinesElucidationSectionPadding.width();
 
 std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
                                                  int name_id) {
@@ -79,7 +80,8 @@ SummaryOutlinesElucidationSection::SummaryOutlinesElucidationSection(
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
-  SetInsideBorderInsets(kSectionPadding);
+  SetInsideBorderInsets(
+      mahi_constants::kSummaryOutlinesElucidationSectionPadding);
   SetBetweenChildSpacing(kSectionChildSpacing);
 
   AddChildView(CreateSectionHeader(chromeos::kMahiSummarizeIcon,
@@ -189,6 +191,19 @@ void SummaryOutlinesElucidationSection::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kOutlinesLoaded:
       HandleOutlinesLoaded(update.GetOutlines());
       return;
+    case MahiUiUpdateType::kPanelBoundsChanged: {
+      const gfx::Rect& panel_bounds = update.GetPanelBounds();
+      // If the width of the panel has changed, update the maximum size of the
+      // text.
+      if (summary_or_elucidation_label_ != nullptr &&
+          summary_or_elucidation_label_->GetMaximumWidth() !=
+              panel_bounds.width()) {
+        summary_or_elucidation_label_->SetMaximumWidth(
+            panel_bounds.width() - mahi_constants::kPanelBorderAndPadding -
+            mahi_constants::kSummaryOutlinesElucidationSectionPadding.width());
+      }
+      return;
+    }
     case MahiUiUpdateType::kSummaryLoaded:
       HandleSummaryOrElucidationLoaded(update.GetSummary());
       return;

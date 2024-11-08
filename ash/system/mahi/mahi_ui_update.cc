@@ -66,6 +66,11 @@ MahiUiUpdate::MahiUiUpdate(MahiUiUpdateType type,
   CheckTypeMatchesPayload();
 }
 
+MahiUiUpdate::MahiUiUpdate(MahiUiUpdateType type, const gfx::Rect& payload)
+    : type_(type), payload_(payload) {
+  CheckTypeMatchesPayload();
+}
+
 MahiUiUpdate::~MahiUiUpdate() = default;
 
 const std::u16string& MahiUiUpdate::GetAnswer() const {
@@ -83,6 +88,11 @@ const std::vector<chromeos::MahiOutline>& MahiUiUpdate::GetOutlines() const {
   return std::get<
       std::reference_wrapper<const std::vector<chromeos::MahiOutline>>>(
       *payload_);
+}
+
+const gfx::Rect& MahiUiUpdate::GetPanelBounds() const {
+  CHECK_EQ(type_, MahiUiUpdateType::kPanelBoundsChanged);
+  return std::get<std::reference_wrapper<const gfx::Rect>>(*payload_);
 }
 
 const std::u16string& MahiUiUpdate::GetQuestion() const {
@@ -130,6 +140,11 @@ void MahiUiUpdate::CheckTypeMatchesPayload() {
       CHECK(payload_.has_value());
       CHECK(std::holds_alternative<
             std::reference_wrapper<const std::vector<chromeos::MahiOutline>>>(
+          *payload_));
+      break;
+    case MahiUiUpdateType::kPanelBoundsChanged:
+      CHECK(payload_.has_value());
+      CHECK(std::holds_alternative<std::reference_wrapper<const gfx::Rect>>(
           *payload_));
       break;
     case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:

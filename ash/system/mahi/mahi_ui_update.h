@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace chromeos {
 struct MahiOutline;
@@ -45,6 +46,9 @@ enum class MahiUiUpdateType {
 
   // Outlines are loaded successfully.
   kOutlinesLoaded,
+
+  // Panel bounds have changed (i.e. due to a resize)
+  kPanelBoundsChanged,
 
   // The question and answer view is requested to show.
   kQuestionAndAnswerViewNavigated,
@@ -120,6 +124,7 @@ class ASH_EXPORT MahiUiUpdate {
   MahiUiUpdate(MahiUiUpdateType type, const std::u16string& payload);
   MahiUiUpdate(MahiUiUpdateType type,
                const std::vector<chromeos::MahiOutline>& payload);
+  MahiUiUpdate(MahiUiUpdateType type, const gfx::Rect& payload);
 
   MahiUiUpdate(const MahiUiUpdate&) = delete;
   MahiUiUpdate& operator=(const MahiUiUpdate&) = delete;
@@ -136,6 +141,11 @@ class ASH_EXPORT MahiUiUpdate {
   // Returns the outlines from `payload`.
   // NOTE: This function should be called only if `type` is `kOutlinesLoaded`.
   const std::vector<chromeos::MahiOutline>& GetOutlines() const;
+
+  // Returns the outlines from `payload`.
+  // NOTE: This function should be called only if `type` is
+  // `kPanelBoundsChanged`.
+  const gfx::Rect& GetPanelBounds() const;
 
   // Returns the question from `payload`.
   // NOTE: This function should be called only if `type` is `kQuestionPosted`.
@@ -186,6 +196,7 @@ class ASH_EXPORT MahiUiUpdate {
       std::reference_wrapper<const MahiQuestionParams>,
       std::reference_wrapper<const MahiUiError>,
       std::reference_wrapper<const std::vector<chromeos::MahiOutline>>,
+      std::reference_wrapper<const gfx::Rect>,
       bool>;
   const std::optional<PayloadType> payload_;
 };

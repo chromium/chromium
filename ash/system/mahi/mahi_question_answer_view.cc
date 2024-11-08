@@ -75,11 +75,9 @@ constexpr auto kTextBubbleInteriorMargin =
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kTextBubbleCornerRadius = 12;
 
-// TODO(b/319731776): Use panel bounds here instead of `kPanelDefaultWidth` when
-// the panel is resizable.
 constexpr int kTextBubbleLabelDefaultMaximumWidth =
-    mahi_constants::kScrollViewWidth - kQuestionAnswerInteriorMargin.width() -
-    kTextBubbleInteriorMargin.width();
+    mahi_constants::kScrollViewDefaultWidth -
+    kQuestionAnswerInteriorMargin.width() - kTextBubbleInteriorMargin.width();
 
 // ErrorBubble -----------------------------------------------------------------
 
@@ -351,6 +349,7 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
       return;
     }
     case MahiUiUpdateType::kOutlinesLoaded:
+    case MahiUiUpdateType::kPanelBoundsChanged:
     case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
     case MahiUiUpdateType::kRefreshAvailabilityUpdated:
     case MahiUiUpdateType::kSummaryLoaded:
