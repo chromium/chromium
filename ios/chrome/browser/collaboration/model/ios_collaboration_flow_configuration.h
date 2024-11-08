@@ -39,6 +39,15 @@ class CollaborationFlowConfiguration {
   // Returns the type of the collaboration flow configuration.
   virtual Type type() const = 0;
 
+  // Returns the ShareKitService associated with the flow configuration.
+  virtual raw_ptr<ShareKitService> share_kit_service() const = 0;
+
+  // Returns the command dispatcher associated with the flow configuration.
+  virtual CommandDispatcher* command_dispatcher() const = 0;
+
+  // Returns the base view controller associated with the flow configuration.
+  virtual UIViewController* base_view_controller() const = 0;
+
   // Casts the dialog to the given type.
   template <typename T>
   const T& As() const {
@@ -59,29 +68,19 @@ class CollaborationFlowConfigurationShare final
   // Constructs a new CollaborationFlowConfigurationShare object.
   explicit CollaborationFlowConfigurationShare(
       ShareKitService* share_kit_service,
-      CommandDispatcher* command_dispatcher,
       base::WeakPtr<const TabGroup> tab_group,
+      CommandDispatcher* command_dispatcher,
       UIViewController* base_view_controller);
   ~CollaborationFlowConfigurationShare() override;
 
-  // Returns the type of the collaboration flow configuration.
+  // CollaborationFlowConfiguration.
   Type type() const final;
-
-  // Returns the ShareKitService associated with the flow configuration.
-  raw_ptr<ShareKitService> share_kit_service() const {
-    return share_kit_service_;
-  }
+  raw_ptr<ShareKitService> share_kit_service() const override;
+  CommandDispatcher* command_dispatcher() const override;
+  UIViewController* base_view_controller() const override;
 
   // Returns the tab group associated with the flow configuration.
   base::WeakPtr<const TabGroup> tab_group() const { return tab_group_; }
-
-  // Returns the command dispatcher associated with the flow configuration.
-  CommandDispatcher* command_dispatcher() const { return command_dispatcher_; }
-
-  // Returns the base view controller associated with the flow configuration.
-  UIViewController* base_view_controller() const {
-    return base_view_controller_;
-  }
 
  private:
   raw_ptr<ShareKitService> share_kit_service_;
@@ -100,28 +99,23 @@ class CollaborationFlowConfigurationJoin final
   explicit CollaborationFlowConfigurationJoin(
       ShareKitService* share_kit_service,
       const GURL& url,
+      CommandDispatcher* command_dispatcher,
       UIViewController* base_view_controller);
   ~CollaborationFlowConfigurationJoin() override;
 
-  // Returns the type of the collaboration flow configuration.
+  // CollaborationFlowConfiguration.
   Type type() const final;
-
-  // Returns the ShareKitService associated with the flow configuration.
-  raw_ptr<ShareKitService> share_kit_service() const {
-    return share_kit_service_;
-  }
+  raw_ptr<ShareKitService> share_kit_service() const override;
+  CommandDispatcher* command_dispatcher() const override;
+  UIViewController* base_view_controller() const override;
 
   // Returns URL containing the collab ID and the token.
   const GURL& url() const { return url_; }
 
-  // Returns the base view controller associated with the flow configuration.
-  UIViewController* base_view_controller() const {
-    return base_view_controller_;
-  }
-
  private:
   raw_ptr<ShareKitService> share_kit_service_;
   const GURL url_;
+  __weak CommandDispatcher* command_dispatcher_;
   __weak UIViewController* base_view_controller_;
 };
 

@@ -22,8 +22,8 @@ CollaborationFlowConfiguration::Type CollaborationFlowConfigurationShare::type()
 
 CollaborationFlowConfigurationShare::CollaborationFlowConfigurationShare(
     ShareKitService* share_kit_service,
-    CommandDispatcher* command_dispatcher,
     base::WeakPtr<const TabGroup> tab_group,
+    CommandDispatcher* command_dispatcher,
     UIViewController* base_view_controller)
     : share_kit_service_(share_kit_service),
       tab_group_(tab_group),
@@ -33,6 +33,21 @@ CollaborationFlowConfigurationShare::CollaborationFlowConfigurationShare(
   CHECK(command_dispatcher_);
   CHECK(tab_group_);
   CHECK(base_view_controller_);
+}
+
+raw_ptr<ShareKitService>
+CollaborationFlowConfigurationShare::share_kit_service() const {
+  return share_kit_service_;
+}
+
+CommandDispatcher* CollaborationFlowConfigurationShare::command_dispatcher()
+    const {
+  return command_dispatcher_;
+}
+
+UIViewController* CollaborationFlowConfigurationShare::base_view_controller()
+    const {
+  return base_view_controller_;
 }
 
 CollaborationFlowConfigurationShare::~CollaborationFlowConfigurationShare() {}
@@ -47,10 +62,27 @@ CollaborationFlowConfiguration::Type CollaborationFlowConfigurationJoin::type()
 CollaborationFlowConfigurationJoin::CollaborationFlowConfigurationJoin(
     ShareKitService* share_kit_service,
     const GURL& url,
+    CommandDispatcher* command_dispatcher,
     UIViewController* base_view_controller)
     : share_kit_service_(share_kit_service),
       url_(url),
+      command_dispatcher_(command_dispatcher),
       base_view_controller_(base_view_controller) {}
+
+CommandDispatcher* CollaborationFlowConfigurationJoin::command_dispatcher()
+    const {
+  return command_dispatcher_;
+}
+
+raw_ptr<ShareKitService> CollaborationFlowConfigurationJoin::share_kit_service()
+    const {
+  return share_kit_service_;
+}
+
+UIViewController* CollaborationFlowConfigurationJoin::base_view_controller()
+    const {
+  return base_view_controller_;
+}
 
 CollaborationFlowConfigurationJoin::~CollaborationFlowConfigurationJoin() {}
 

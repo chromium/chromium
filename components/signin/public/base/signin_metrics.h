@@ -249,6 +249,9 @@ enum class AccessPoint : int {
   ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION = 71,
   // Access point for the Drive file picker on iOS.
   ACCESS_POINT_DRIVE_FILE_PICKER_IOS = 72,
+  // Access point triggered when a user attempts to share or join a tab group
+  // without being signed in or synced.
+  ACCESS_POINT_COLLABORATION_TAB_GROUP = 73,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in

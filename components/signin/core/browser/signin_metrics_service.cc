@@ -189,6 +189,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return;
   }
