@@ -72,8 +72,13 @@ void GetInnerTextForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback) {
   TRACE_EVENT0("browser", "GetInnerTextForModelPrototyping");
   DCHECK(web_contents);
-  DCHECK(web_contents->GetPrimaryMainFrame());
-
+  // If the tab has not actually navigated, then the remote interfaces will be
+  // null, just leave off inner text in this case.
+  if (!web_contents->GetPrimaryMainFrame() ||
+      !web_contents->GetPrimaryMainFrame()->GetRemoteInterfaces()) {
+    return std::move(continue_callback)
+        .Run(std::make_optional<AiDataKeyedService::BrowserData>());
+  }
   content_extraction::GetInnerText(
       *web_contents->GetPrimaryMainFrame(), dom_node_id,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -159,6 +164,14 @@ void FillTabInfo(content::WebContents* web_contents,
                  std::string title,
                  std::string url) {
   TRACE_EVENT0("browser", "FillTabInfo");
+  DCHECK(web_contents);
+  // If the tab has not actually navigated, then the remote interfaces will be
+  // null, just leave off inner text in this case.
+  if (!web_contents->GetPrimaryMainFrame() ||
+      !web_contents->GetPrimaryMainFrame()->GetRemoteInterfaces()) {
+    return std::move(continue_callback)
+        .Run(std::make_optional<AiDataKeyedService::BrowserData>());
+  }
   content_extraction::GetInnerText(
       *web_contents->GetPrimaryMainFrame(), std::nullopt,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
