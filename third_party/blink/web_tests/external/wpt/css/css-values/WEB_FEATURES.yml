@@ -24,6 +24,15 @@ features:
 - name: rlh
   files:
   - rlh-*
+- name: ch
+  files:
+  - ch-*
+- name: rch
+  files:
+  - rch-*
+- name: rex
+  files:
+  - rex-*
 - name: round-mod-rem
   files:
   - round-function.html

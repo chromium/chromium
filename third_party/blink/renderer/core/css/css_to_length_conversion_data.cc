@@ -343,12 +343,14 @@ float CSSToLengthConversionData::RexFontSize(float zoom) const {
   // element does not necessarily cause a style difference for the root element,
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kRexRelative);
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Rex(zoom);
 }
 
 float CSSToLengthConversionData::ChFontSize(float zoom) const {
+  SetFlag(Flag::kChRelative);
   SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ch(zoom);
 }
@@ -360,6 +362,7 @@ float CSSToLengthConversionData::RchFontSize(float zoom) const {
   // element does not necessarily cause a style difference for the root element,
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kRchRelative);
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Rch(zoom);

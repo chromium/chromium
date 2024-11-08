@@ -270,7 +270,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     std::optional<PositionAreaOffsets> position_area_offsets_;
   };
 
-  using Flags = uint16_t;
+  using Flags = uint32_t;
 
   // Flags represent the units seen in a conversion. They are used for targeted
   // invalidation, e.g. when root font-size changes, only elements dependent on
@@ -308,6 +308,12 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kLhRelative = 1u << 13,
     // rlh
     kRlhRelative = 1u << 14,
+    // ch
+    kChRelative = 1u << 15,
+    // rch
+    kRchRelative = 1u << 16,
+    // rex
+    kRexRelative = 1u << 17,
     // Adjust the Flags type above if adding more bits below.
   };
 

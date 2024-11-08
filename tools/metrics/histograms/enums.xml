@@ -10855,6 +10855,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5169" label="CSSRoundModRemFunctions"/>
   <int value="5170" label="CSSTrigFunctions"/>
   <int value="5171" label="CSSCalcConstants"/>
+  <int value="5172" label="HasChUnits"/>
+  <int value="5173" label="HasRchUnits"/>
+  <int value="5174" label="HasRexUnits"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33870,6 +33873,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="203" label="Canvas2dColorManagement"/>
   <int value="204" label="Canvas2dDesynchronized"/>
   <int value="205" label="Canvas2dWillreadfrequently"/>
+  <int value="206" label="Ch"/>
+  <int value="207" label="Rch"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

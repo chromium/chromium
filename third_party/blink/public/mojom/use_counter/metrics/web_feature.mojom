@@ -4543,6 +4543,9 @@ enum WebFeature {
   kCSSRoundModRemFunctions = 5169,
   kCSSTrigFunctions = 5170,
   kCSSCalcConstants = 5171,
+  kHasChUnits = 5172,
+  kHasRchUnits = 5173,
+  kHasRexUnits = 5174,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

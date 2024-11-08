@@ -444,6 +444,12 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
     builder.SetHasLineHeightRelativeUnits();
     UseCounter::Count(state.GetDocument(), WebFeature::kHasRlhUnits);
   }
+  if (flags & static_cast<Flags>(Flag::kChRelative)) {
+    UseCounter::Count(state.GetDocument(), WebFeature::kHasChUnits);
+  }
+  if (flags & static_cast<Flags>(Flag::kRchRelative)) {
+    UseCounter::Count(state.GetDocument(), WebFeature::kHasRchUnits);
+  }
 }
 
 }  // namespace

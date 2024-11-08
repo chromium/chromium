@@ -261,6 +261,8 @@ enum WebDXFeature {
   kCanvas2dColorManagement = 203,
   kCanvas2dDesynchronized = 204,
   kCanvas2dWillreadfrequently = 205,
+  kCh = 206,
+  kRch = 207,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
