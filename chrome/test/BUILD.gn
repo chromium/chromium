@@ -4897,6 +4897,7 @@ if (!is_android) {
         "//chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash",
         "//chrome/browser/ash/policy/reporting/metrics_reporting/network",
         "//chrome/browser/ash/policy/reporting/os_updates",
+        "//chrome/browser/ash/policy/reporting/user_session_activity",
         "//chrome/browser/ash/policy/status_collector",
         "//chrome/browser/ash/printing/history",
         "//chrome/browser/ash/printing/history:test_support",

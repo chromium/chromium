@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("user_session_activity") {
+  sources = [
+    "user_session_activity_reporter.cc",
+    "user_session_activity_reporter.h",
+    "user_session_activity_reporter_delegate.cc",
+    "user_session_activity_reporter_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser/profiles" ]
+
+  deps = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/reporting",
+    "//chrome/browser/ash/policy/status_collector",
+    "//chrome/browser/ash/power/ml",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
+    "//chromeos/ash/components/settings",
+    "//components/viz/host",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "user_session_activity_reporter_delegate_unittest.cc",
+    "user_session_activity_reporter_unittest.cc",
+  ]
+
+  deps = [
+    ":user_session_activity",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core:core",
+    "//chrome/browser/ash/policy/reporting",
+    "//chrome/browser/ash/policy/reporting:test_support",
+    "//chrome/browser/ash/power/ml",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/power",
+    "//components/policy/core/common",
+    "//components/reporting/client:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock:gmock",
+  ]
+}

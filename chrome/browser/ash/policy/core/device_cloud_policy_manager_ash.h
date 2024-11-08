@@ -24,6 +24,7 @@ class MetricReportingManager;
 class OsUpdatesReporter;
 class UserAddedRemovedReporter;
 class UserEventReporterHelper;
+class UserSessionActivityReporter;
 }  // namespace reporting
 
 namespace ash {
@@ -60,6 +61,8 @@ class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
 class EventBasedLogManager;
+
+BASE_DECLARE_FEATURE(kEnableUserSessionActivityReporting);
 
 // CloudPolicyManager specialization for device policy in Ash.
 class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
@@ -190,6 +193,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // Object that handles reporting of ChromeOS updates, protected for
   // testing.
   std::unique_ptr<reporting::OsUpdatesReporter> os_updates_reporter_;
+
+  // Object that reports user active/idle times during a session.
+  std::unique_ptr<reporting::UserSessionActivityReporter>
+      user_session_activity_reporter_;
 
  private:
   // Caches removed users. Passed to the reporter, when it is created.

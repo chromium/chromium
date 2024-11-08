@@ -73,6 +73,9 @@ class KioskHeartbeatEventsBrowserTest
   KioskHeartbeatEventsBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kKioskHeartbeatsViaERP);
+
+    // Initialize the MockClock.
+    test::MockClock::Get();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -82,8 +85,6 @@ class KioskHeartbeatEventsBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    // Initialize the MockClock.
-    test::MockClock::Get();
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
     crypto_home_mixin_.ApplyAuthConfig(
         affiliation_mixin_.account_id(),

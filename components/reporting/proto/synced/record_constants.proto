@@ -127,6 +127,10 @@ enum Destination {
   // |CROS_SECURITY_FILE| is for events that read or modify sensitive files.
   CROS_SECURITY_FILE = 33;
 
+  // |USER_SESSION_ACTIVITY| is for user session start/end events and
+  // active/idle states during the session.
+  USER_SESSION_ACTIVITY = 34;
+
   reserved 8;
 }
 

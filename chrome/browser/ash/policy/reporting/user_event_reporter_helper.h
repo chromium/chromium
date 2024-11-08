@@ -65,9 +65,9 @@ class UserEventReporterHelper {
 
   virtual std::string GetDeviceDmToken() const;
 
-  // Generates a device-specific user ID for managed devices.
   // Returns a unique ID based on the user's email if the device is managed.
-  // Otherwise, returns an empty string.
+  // Otherwise, returns an empty string. The ID will be the same for a given
+  // email. It will only change if the device DM token changes.
   virtual std::string GetUniqueUserIdForThisDevice(
       std::string_view user_email) const;
 
