@@ -408,4 +408,29 @@ TEST_F(IncognitoReauthSceneAgentTest,
   EXPECT_TRUE(agent_.authenticationRequired);
 }
 
+// Test that when unlock is required, backgrounding and foregrounding the app
+// does not unlock Incognito.
+TEST_F(IncognitoReauthSceneAgentTest,
+       SoftLockRequiredDoesNotResetOnBackground) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled*/ true);
+
+  // Go background.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+
+  // Advance the clock and foreground the app.
+  AdvanceClock(kIOSSoftLockBackgroundThreshold.Get());
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent_.authenticationRequired);
+
+  // Re-background and foreground
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent_.authenticationRequired);
+}
+
 }  // namespace

@@ -180,17 +180,21 @@
   }
 }
 
-- (void)updateBackgroundedForEnoughTime:(SceneActivationLevel)level {
+- (void)updateBackgroundedForEnoughTimeOnBackground {
   if (!IsIOSSoftLockEnabled()) {
     return;
   }
 
-  if (level <= SceneActivationLevelBackground) {
+  if (!self.isAuthenticationRequired) {
     self.lastBackgroundedTime = base::Time::Now();
     self.backgroundedForEnoughTime = NO;
+  }
+}
+
+- (void)updateBackgroundedForEnoughTimeOnForeground {
+  if (!IsIOSSoftLockEnabled()) {
     return;
   }
-
   if (self.lastBackgroundedTime.is_null()) {
     self.backgroundedForEnoughTime = NO;
     return;
@@ -257,11 +261,11 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level <= SceneActivationLevelBackground) {
     [self updateWindowHasIncognitoContent:sceneState];
-    [self updateBackgroundedForEnoughTime:level];
+    [self updateBackgroundedForEnoughTimeOnBackground];
     self.authenticatedSinceLastForeground = NO;
   } else if (level >= SceneActivationLevelForegroundInactive) {
     [self updateWindowHasIncognitoContent:sceneState];
-    [self updateBackgroundedForEnoughTime:level];
+    [self updateBackgroundedForEnoughTimeOnForeground];
     // Close media presentations when the app is foregrounded rather than
     // backgrounded to avoid freezes.
     [self closeMediaPresentations];
