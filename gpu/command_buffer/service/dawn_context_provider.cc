@@ -121,10 +121,6 @@ std::vector<const char*> GetEnabledToggles(
   }
 #endif
 
-  if (backend_type == wgpu::BackendType::Vulkan) {
-    enabled_toggles.push_back("vulkan_monolithic_pipeline_cache");
-  }
-
   // Skip expensive swiftshader vkCmdDraw* for tests.
   // TODO(penghuang): rename kDisableGLDrawingForTests to
   // kDisableGpuDrawingForTests
