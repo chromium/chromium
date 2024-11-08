@@ -218,12 +218,11 @@ void DiscountsBubbleDialogView::CopyButtonClicked() {
       RecordDiscountsBubbleCopyButtonClicked(ukm_source_id_);
 
   auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab) {
+  if (!tab || !tab->GetTabFeatures()) {
     return;
   }
 
   auto* tab_helper = tab->GetTabFeatures()->commerce_ui_tab_helper();
-
   if (!tab_helper) {
     return;
   }
@@ -233,12 +232,11 @@ void DiscountsBubbleDialogView::CopyButtonClicked() {
 
 void DiscountsBubbleDialogView::OnDialogClosing() {
   auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab) {
+  if (!tab || !tab->GetTabFeatures()) {
     return;
   }
 
   auto* tab_helper = tab->GetTabFeatures()->commerce_ui_tab_helper();
-
   if (!tab_helper) {
     return;
   }
