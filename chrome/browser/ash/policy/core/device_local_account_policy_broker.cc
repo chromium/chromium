@@ -95,8 +95,7 @@ std::unique_ptr<CloudPolicyClient> CreateClient(
 
 base::Value::Dict GetAshPrefsFromPolicy(const policy::PolicyMap& policy_map) {
   extensions::ExtensionInstallForceListPolicyHandler policy_handler;
-  return policy_handler.GetAshPolicyDict(policy_map)
-      .value_or(base::Value::Dict());
+  return policy_handler.GetPolicyDict(policy_map).value_or(base::Value::Dict());
 }
 
 base::Value::Dict GetLacrosPrefsFromPolicy(
