@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ENTITY_TABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ENTITY_TABLE_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -46,13 +47,10 @@ class HTMLEntityTable {
   STATIC_ONLY(HTMLEntityTable);
 
  public:
-  static const HTMLEntityTableEntry* FirstEntry();
-  static const HTMLEntityTableEntry* LastEntry();
+  static base::span<const HTMLEntityTableEntry> AllEntries();
+  static base::span<const HTMLEntityTableEntry> EntriesStartingWith(UChar);
 
-  static const HTMLEntityTableEntry* FirstEntryStartingWith(UChar);
-  static const HTMLEntityTableEntry* LastEntryStartingWith(UChar);
-
-  static const LChar* EntityString(const HTMLEntityTableEntry&);
+  static base::span<const LChar> EntityString(const HTMLEntityTableEntry&);
 };
 
 }  // namespace blink
