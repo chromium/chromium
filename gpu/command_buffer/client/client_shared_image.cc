@@ -286,6 +286,7 @@ ClientSharedImage::ClientSharedImage(
               base::DoNothing(),
               gpu_memory_buffer_manager_.get(),
               std::move(shared_memory_pool))),
+      buffer_usage_(handle_info.buffer_usage),
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
