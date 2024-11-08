@@ -211,7 +211,8 @@ void EnrollmentLauncherImpl::EnrollUsingAttestation() {
 }
 
 void EnrollmentLauncherImpl::EnrollUsingEnrollmentToken() {
-  CHECK(enrollment_config_.is_mode_token());
+  CHECK(enrollment_config_.mode ==
+        policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED);
   CHECK(!enrollment_config_.enrollment_token.empty());
   DoEnroll(
       policy::DMAuth::FromEnrollmentToken(enrollment_config_.enrollment_token));
@@ -412,7 +413,8 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
   // Logging as "WARNING" to make sure it's preserved in the logs.
   LOG(WARNING) << "Enrollment finished, code: " << status.enrollment_code();
   ReportEnrollmentStatus(status);
-  if (enrollment_config_.is_mode_token()) {
+  if (enrollment_config_.mode ==
+      policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED) {
     TokenBasedEnrollmentOOBEConfigUMA(status,
                                       enrollment_config_.oobe_config_source);
   }

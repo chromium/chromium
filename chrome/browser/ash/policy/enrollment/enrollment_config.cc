@@ -102,8 +102,6 @@ std::string_view ToStringView(EnrollmentConfig::Mode mode) {
     CASE(MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK);
     CASE(MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED);
     CASE(MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
-    CASE(MODE_REMOTE_DEPLOYMENT_SERVER_FORCED);
-    CASE(MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK);
   }
 
   NOTREACHED();
@@ -174,8 +172,6 @@ EnrollmentConfig::Mode GetManualFallbackMode(
       return EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK;
     case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
       return EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
-    case EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED:
-      return EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK;
     case EnrollmentConfig::MODE_NONE:
     case EnrollmentConfig::MODE_MANUAL:
     case EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
@@ -191,7 +187,6 @@ EnrollmentConfig::Mode GetManualFallbackMode(
     case EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
     case EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
     case EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
-    case EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK:
       NOTREACHED_NORETURN()
           << "Mode does not have manual fallback: " << attestation_mode;
   }
@@ -255,23 +250,13 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
     // TODO(b/329271128): CHECK to ensure enrollment_token always has value
     // after this bug is fixed.
     if (enrollment_token.has_value()) {
-      OOBEConfigSource oobe_config_source = ConvertToOOBEConfigSource(
+      const std::string* oobe_config_source =
           oobe_configuration->configuration().FindString(
-              ash::configuration::kSource));
-      EnrollmentConfig::Mode mode;
-      switch (oobe_config_source) {
-        case policy::OOBEConfigSource::kRemoteDeployment:
-          mode = MODE_REMOTE_DEPLOYMENT_SERVER_FORCED;
-          break;
-        case policy::OOBEConfigSource::kPackagingTool:
-        case policy::OOBEConfigSource::kUnknown:
-        case policy::OOBEConfigSource::kNone:
-          mode = MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
-          break;
-      }
-      return {.mode = mode,
-              .enrollment_token = std::move(enrollment_token.value()),
-              .oobe_config_source = oobe_config_source};
+              ash::configuration::kSource);
+      return {
+          .mode = EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED,
+          .enrollment_token = std::move(enrollment_token.value()),
+          .oobe_config_source = ConvertToOOBEConfigSource(oobe_config_source)};
     } else {
       return {.mode = EnrollmentConfig::MODE_NONE};
     }

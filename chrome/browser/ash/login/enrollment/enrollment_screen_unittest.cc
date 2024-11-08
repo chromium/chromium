@@ -916,11 +916,10 @@ class EnrollmentScreenTokenBasedEnrollmentTest
  protected:
   EnrollmentScreenTokenBasedEnrollmentTest() = default;
 
-  policy::EnrollmentConfig GetEnrollmentConfig(
-      policy::EnrollmentConfig::Mode mode = policy::EnrollmentConfig::
-          MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED) {
+  policy::EnrollmentConfig GetEnrollmentConfig() {
     policy::EnrollmentConfig config;
-    config.mode = mode;
+    config.mode =
+        policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
     // The token isn't used directly by EnrollmentScreen, but let's set it here
     // for realism.
     config.enrollment_token = policy::test::kEnrollmentToken;
@@ -940,23 +939,6 @@ class EnrollmentScreenTokenBasedEnrollmentTest
 TEST_F(EnrollmentScreenTokenBasedEnrollmentTest, ShouldFinishEnrollmentScreen) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
-  ExpectEnrollmentConfig(config.mode, config.enrollment_token);
-
-  ExpectTokenBasedEnrollmentAndReportEnrolled();
-  ExpectGetDeviceAttributeUpdatePermission(false);
-  ExpectSuccessScreen();
-  ExpectClearAuth();
-
-  SetUpEnrollmentScreen(config);
-  ShowEnrollmentScreen();
-
-  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-}
-
-TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
-       ShouldFinishEnrollmentScreenRemoteDeployment) {
-  const policy::EnrollmentConfig config = GetEnrollmentConfig(
-      policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED);
   ExpectEnrollmentConfig(config.mode, config.enrollment_token);
 
   ExpectTokenBasedEnrollmentAndReportEnrolled();
@@ -1108,44 +1090,6 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
   const policy::EnrollmentConfig initial_config = GetEnrollmentConfig();
   const policy::EnrollmentConfig fallback_config =
       GetEnrollmentConfigForManualFallback();
-  {
-    testing::InSequence s;
-    // First view is shown for token-based failure.
-    ExpectEnrollmentConfig(initial_config.mode,
-                           initial_config.enrollment_token);
-    ExpectShowView();
-    ExpectTokenBasedEnrollmentAndReportFailure();
-    ExpectErrorScreen();
-
-    // Second view is shown for manual fallback. This should be triggered after
-    // user decides to fallback.
-    ExpectEnrollmentConfig(fallback_config.mode,
-                           fallback_config.enrollment_token);
-    ExpectShowViewWithLogin();
-    ExpectManualEnrollmentAndReportEnrolled();
-    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
-    ExpectSuccessScreen();
-  }
-
-  ExpectClearAuth();
-
-  SetUpEnrollmentScreen(initial_config);
-  ShowEnrollmentScreen();
-
-  EXPECT_FALSE(last_screen_result().has_value());
-
-  UserCancel();
-
-  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-}
-
-TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
-       RemoteDeploymentShouldFallbackToManualEnrollmentOnUserAction) {
-  const policy::EnrollmentConfig initial_config = GetEnrollmentConfig(
-      policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED);
-  const policy::EnrollmentConfig fallback_config =
-      initial_config.GetManualFallbackConfig();
-  EXPECT_TRUE(fallback_config.is_manual_fallback());
   {
     testing::InSequence s;
     // First view is shown for token-based failure.
