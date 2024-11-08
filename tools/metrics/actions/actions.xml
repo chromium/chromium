@@ -32293,6 +32293,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.FillStandaloneSuggestionAccepted">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>User accepted to fill a plus address suggestion.</description>
+</action>
+
 <action name="PlusAddresses.ManualFallbackDesktopContextManualFallbackSelected">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>

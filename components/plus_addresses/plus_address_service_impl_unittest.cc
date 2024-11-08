@@ -1502,6 +1502,17 @@ TEST_F(PlusAddressSuggestionsTest,
             1);
 }
 
+// Tests that a user action is recorded when a plus address suggestion fill is
+// reported.
+TEST_F(PlusAddressSuggestionsTest, RecordExistingPlusAddressChosenUserAction) {
+  base::UserActionTester user_action_tester;
+  service().RecordAutofillSuggestionEvent(
+      SuggestionEvent::kExistingPlusAddressChosen);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.FillStandaloneSuggestionAccepted"),
+            1);
+}
+
 // Tests that a user action is recorded when a create plus address suggestion is
 // shown to the user, and the user has already accepted the notice.
 TEST_F(PlusAddressSuggestionsTest, RecordCreateSuggestionUserAction) {
