@@ -1878,9 +1878,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // and may fail if that's not the case.
                 ArchivedTabModelOrchestrator archivedOrchestrator =
                         ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get());
+                @Nullable TabModel archivedTabModel = archivedOrchestrator.getTabModel();
                 @Nullable
                 Tab archivedTab =
-                        archivedOrchestrator == null
+                        archivedTabModel == null
                                 ? null
                                 : archivedOrchestrator
                                         .getTabModel()
