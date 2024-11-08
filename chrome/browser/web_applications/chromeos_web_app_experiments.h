@@ -63,6 +63,11 @@ class ChromeOsWebAppExperiments {
       const webapps::AppId& source_app_id,
       const GURL& url);
 
+  // Whether the app should be launched if a navigation goes to a URL controlled
+  // by the given app after one or multiple redirections.
+  static bool ShouldLaunchForRedirectedNavigation(
+      const webapps::AppId& target_app_id);
+
   static void SetAlwaysEnabledForTesting();
   static void SetScopeExtensionsForTesting(
       std::vector<const char*> scope_extensions_override);

@@ -68,7 +68,8 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
     Profile* profile,
     content::WebContents* web_contents,
     const GURL& url,
-    bool is_navigation_from_link) {
+    bool is_navigation_from_link,
+    int redirection_chain_size) {
   if (!is_navigation_from_link) {
     return std::nullopt;
   }

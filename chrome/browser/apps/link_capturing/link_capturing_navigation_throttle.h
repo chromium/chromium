@@ -61,7 +61,8 @@ class LinkCapturingNavigationThrottle : public content::NavigationThrottle {
         Profile* profile,
         content::WebContents* web_contents,
         const GURL& url,
-        bool is_navigation_from_link) = 0;
+        bool is_navigation_from_link,
+        int redirection_chain_size) = 0;
   };
 
   // Possibly creates a navigation throttle that checks if any installed apps

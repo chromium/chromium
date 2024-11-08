@@ -22,7 +22,8 @@ TEST_F(ChromeOsLinkCapturingDelegateTest, GetLaunchAppId_Preferred) {
 
   std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
-          app_ids_to_launch, /*is_navigation_from_link=*/true);
+          app_ids_to_launch, /*is_navigation_from_link=*/true,
+          /*redirection_chain_size=*/1);
 
   ASSERT_EQ(launch_id, "foo");
 }
@@ -33,7 +34,8 @@ TEST_F(ChromeOsLinkCapturingDelegateTest, GetLaunchAppId_NoPreferred) {
 
   std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
-          app_ids_to_launch, /*is_navigation_from_link=*/true);
+          app_ids_to_launch, /*is_navigation_from_link=*/true,
+          /*redirection_chain_size=*/1);
 
   ASSERT_EQ(launch_id, std::nullopt);
 }

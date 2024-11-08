@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event.mojom-shared.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_init_params.h"
@@ -150,23 +152,8 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
 
   ~ChromeOsWebAppExperimentsNavigationBrowserTest() override = default;
 
-  void SetUpOnMainThread() override {
-    ChromeOsWebAppExperimentsBrowserTest::SetUpOnMainThread();
-
-    // Turn on link capturing for the web app.
-    apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id_);
-
-    // Launch the app in a window.
-    Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
-    app_web_contents_ = app_browser->tab_strip_model()->GetActiveWebContents();
-  }
-
-  void TearDownOnMainThread() override {
-    app_web_contents_ = nullptr;
-    ChromeOsWebAppExperimentsBrowserTest::TearDownOnMainThread();
-  }
-
-  void AddAndClickLinkWithCode(const std::string& on_click_code) {
+  void AddAndClickLinkWithCode(content::WebContents* web_contents,
+                               const std::string& on_click_code) {
     const std::string script = base::StringPrintf(
         R"(
           (() => {
@@ -188,21 +175,38 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
           })();
         )",
         on_click_code.c_str());
-    ASSERT_TRUE(content::ExecJs(app_web_contents_, script));
-    content::SimulateMouseClick(app_web_contents_,
+    ASSERT_TRUE(content::ExecJs(web_contents, script));
+    content::SimulateMouseClick(web_contents,
                                 blink::WebInputEvent::Modifiers::kNoModifiers,
                                 blink::WebMouseEvent::Button::kLeft);
   }
 
+  std::string GetFormBasedRedirectorCode(const GURL& target_url) const {
+    const GURL redirector_url = https_server().GetURL(
+        "redirector-host", CreateServerRedirect(target_url));
+    return base::StringPrintf(
+        R"(
+          const f = document.createElement('form');
+          f.setAttribute('method', 'post');
+          f.setAttribute('action', '%s');
+          document.body.appendChild(f);
+          f.submit();
+        )",
+        redirector_url.spec().c_str());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_{
       chromeos::features::kOfficeNavigationCapturingReimpl};
-  raw_ptr<content::WebContents> app_web_contents_ = nullptr;
 };
 
 // Test that submitting a POST form in the app's window doesn't result in
 // leaving that window.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        PostForm) {
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  content::WebContents* app_web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
   const std::string on_click_code = base::StringPrintf(
       R"(
         const f = document.createElement('form');
@@ -219,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
       extended_scope_page_.spec().c_str());
 
   auto observer = GetTestNavigationObserver(extended_scope_page_);
-  AddAndClickLinkWithCode(on_click_code);
+  AddAndClickLinkWithCode(app_web_contents, on_click_code);
   observer->Wait();
 
   // The web app handles the navigation.
@@ -235,6 +239,10 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // window opened via target=_blank, ends up in a new app window.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        PostFormInBlankWindow) {
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  content::WebContents* app_web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
   const std::string on_click_code = base::StringPrintf(
       R"(
         const w = window.open('', '_blank');
@@ -252,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
       extended_scope_page_.spec().c_str());
 
   auto observer = GetTestNavigationObserver(extended_scope_page_);
-  AddAndClickLinkWithCode(on_click_code);
+  AddAndClickLinkWithCode(app_web_contents, on_click_code);
   observer->Wait();
 
   // The web app handles the navigation by opening a new app window.
@@ -268,6 +276,10 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // in a new app window.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OpenAsBlankWindow) {
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  content::WebContents* app_web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
   const std::string on_click_code = base::StringPrintf(
       R"(
         window.open('%s', '_blank');
@@ -275,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
       extended_scope_page_.spec().c_str());
 
   auto observer = GetTestNavigationObserver(extended_scope_page_);
-  AddAndClickLinkWithCode(on_click_code);
+  AddAndClickLinkWithCode(app_web_contents, on_click_code);
   observer->Wait();
 
   // The web app handles the navigation by opening a new app window.
@@ -291,6 +303,10 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // target=_top to an app-controlled URL ends up in a new app window.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OpenTopWindowInBlankWindow) {
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  content::WebContents* app_web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
   const std::string on_click_code = base::StringPrintf(
       R"(
         const w = window.open('', '_blank');
@@ -299,12 +315,64 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
       extended_scope_page_.spec().c_str());
 
   auto observer = GetTestNavigationObserver(extended_scope_page_);
-  AddAndClickLinkWithCode(on_click_code);
+  AddAndClickLinkWithCode(app_web_contents, on_click_code);
   observer->Wait();
 
   // The web app handles the navigation by opening a new app window.
   Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
+  EXPECT_EQ(active_browser->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            extended_scope_page_);
+}
+
+// Test that submitting a form that redirects to the app-controlled URL results
+// in launching that app - if it's marked as "open supported links".
+IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+                       OutOfScopeFormAndRedirectToPreferred) {
+  ASSERT_TRUE(https_server().Start());
+  // Start from a blank page - the form below will be added to it.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  content::WebContents* page_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  auto observer = GetTestNavigationObserver(extended_scope_page_);
+  AddAndClickLinkWithCode(page_web_contents,
+                          GetFormBasedRedirectorCode(extended_scope_page_));
+  observer->Wait();
+
+  // The web app handles the navigation by opening a new app window.
+  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
+  EXPECT_EQ(active_browser->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            extended_scope_page_);
+}
+
+// Opposite to the previous test, verifies that the app is NOT launched if it's
+// not marked as "open supported links".
+IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+                       OutOfScopeFormAndRedirectToNotPreferred) {
+  ASSERT_TRUE(https_server().Start());
+  // The link capturing is turned on by default; simulate the user opt-out here.
+  apps_util::RemoveSupportedLinksPreferenceAndWait(profile(), app_id_);
+  // Start from a blank page - the form below will be added to it.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  content::WebContents* page_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  auto observer = GetTestNavigationObserver(extended_scope_page_);
+  AddAndClickLinkWithCode(page_web_contents,
+                          GetFormBasedRedirectorCode(extended_scope_page_));
+  observer->Wait();
+
+  // The app window was not launched for the navigation.
+  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_FALSE(AppBrowserController::IsForWebApp(active_browser, app_id_));
   EXPECT_EQ(active_browser->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),

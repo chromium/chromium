@@ -123,6 +123,7 @@ class WebAppNavigationBrowserTest : public WebAppBrowserTestBase {
                                                 const GURL& target_url,
                                                 const std::string& rel = "");
 
+  const net::EmbeddedTestServer& https_server() const { return https_server_; }
   net::EmbeddedTestServer& https_server() { return https_server_; }
 
   const webapps::AppId& test_web_app_id() const { return test_web_app_; }

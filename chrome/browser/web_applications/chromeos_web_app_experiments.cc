@@ -151,6 +151,11 @@ bool ChromeOsWebAppExperiments::IsNavigationCapturingReimplEnabledForSourceApp(
          IsExperimentEnabled(source_app_id) && url == url::kAboutBlankURL;
 }
 
+bool ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
+    const webapps::AppId& target_app_id) {
+  return IsExperimentEnabled(target_app_id);
+}
+
 void ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting() {
   g_always_enabled_for_testing = true;
 }

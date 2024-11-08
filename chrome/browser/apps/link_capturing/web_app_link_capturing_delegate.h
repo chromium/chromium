@@ -30,7 +30,8 @@ class WebAppLinkCapturingDelegate
   CreateLinkCaptureLaunchClosure(Profile* profile,
                                  content::WebContents* web_contents,
                                  const GURL& url,
-                                 bool is_navigation_from_link) final;
+                                 bool is_navigation_from_link,
+                                 int redirection_chain_size) final;
 
   base::WeakPtrFactory<WebAppLinkCapturingDelegate> weak_factory_{this};
 };

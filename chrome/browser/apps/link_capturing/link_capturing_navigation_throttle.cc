@@ -305,8 +305,9 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::optional<LaunchCallback> launch_link_capture =
-      delegate_->CreateLinkCaptureLaunchClosure(profile, web_contents, url,
-                                                is_navigation_from_link);
+      delegate_->CreateLinkCaptureLaunchClosure(
+          profile, web_contents, url, is_navigation_from_link,
+          handle->GetRedirectChain().size());
   if (!launch_link_capture.has_value()) {
     return content::NavigationThrottle::PROCEED;
   }
