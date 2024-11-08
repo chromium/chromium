@@ -527,6 +527,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSRoundModRemFunctions, WebDXFeature::kRoundModRem},
           {WebFeature::kCSSExponentialFunctions, WebDXFeature::kExpFunctions},
           {WebFeature::kCSSLinearEasing, WebDXFeature::kLinearEasing},
+          {WebFeature::kOverflowMediaQuery, WebDXFeature::kOverflow},
       }};
 
   return *kMap;

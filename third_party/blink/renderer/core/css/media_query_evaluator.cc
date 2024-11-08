@@ -1411,6 +1411,9 @@ static bool VerticalViewportSegmentsMediaFeatureEval(
 static bool OverflowInlineMediaFeatureEval(const MediaQueryExpValue& value,
                                            MediaQueryOperator,
                                            const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kOverflowMediaQuery);
+
   bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:
@@ -1432,6 +1435,9 @@ static bool OverflowInlineMediaFeatureEval(const MediaQueryExpValue& value,
 static bool OverflowBlockMediaFeatureEval(const MediaQueryExpValue& value,
                                           MediaQueryOperator,
                                           const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kOverflowMediaQuery);
+
   bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:
