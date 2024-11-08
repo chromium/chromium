@@ -16,6 +16,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
@@ -188,6 +189,11 @@ void PWAConfirmationBubbleView::OnWidgetInitialized() {
     ok_button->SetProperty(views::kElementIdentifierKey,
                            PWAConfirmationBubbleView::kInstallButton);
   }
+
+  // Mark PWA install dialogs as security-sensitive for extension.
+  // This prevents extension bubbles from obsecuring a PWA install dialog.
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      GetWidget());
 }
 
 bool PWAConfirmationBubbleView::OnCloseRequested(

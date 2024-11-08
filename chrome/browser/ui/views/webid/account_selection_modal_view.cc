@@ -18,6 +18,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/browser/ui/views/webid/webid_utils.h"
@@ -196,6 +197,8 @@ void AccountSelectionModalView::InitDialogWidget() {
       views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       this, /*context=*/nullptr, /*parent=*/top_level_widget->GetNativeView());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
+
   widget->Show();
   UpdateDialogPosition();
 
