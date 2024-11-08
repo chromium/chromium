@@ -498,6 +498,12 @@ public class ToolbarManager
 
             mStartNavDuringOngoingGesture = false;
             mBackGestureInProgress = true;
+
+            assert mActivityTabProvider.get().canGoBack()
+                    : String.format(
+                            "Should be able to navigate back; edge %s; gesture mode %s",
+                            backEvent.getSwipeEdge(), mIsGestureMode);
+
             // This means the user is pressing a back button in 3-button mode.
             // The transition should only be triggered by swipe rather than a button press.
             // TODO(crbug.com/376306986): add some tests to ensure the this handler is not
