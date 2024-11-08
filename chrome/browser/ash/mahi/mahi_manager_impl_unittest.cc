@@ -197,6 +197,10 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     mahi_manager_impl_->GetContent(base::DoNothing());
   }
 
+  void UpdateCurrentSelectedText() {
+    mahi_manager_impl_->UpdateCurrentSelectedText();
+  }
+
   // void RequestSummary(const std::string& url = "http://url1.com/abc#skip",
   // bool incognito = false) {
   void RequestSummary(bool incognito = false,
@@ -507,6 +511,8 @@ TEST_F(MahiManagerImplTest, GetElucidation) {
 
   base::test::TestFuture<std::u16string, chromeos::MahiResponseStatus>
       test_future;
+
+  UpdateCurrentSelectedText();
   mahi_manager_impl_->GetElucidation(test_future.GetCallback());
 
   // Checks mahi provider receives the request.
@@ -535,6 +541,8 @@ TEST_F(MahiManagerImplTest, GetElucidationForMediaApp) {
 
   base::test::TestFuture<std::u16string, chromeos::MahiResponseStatus>
       test_future;
+
+  UpdateCurrentSelectedText();
   mahi_manager_impl_->GetElucidation(test_future.GetCallback());
 
   // Checks mahi provider receives the request.

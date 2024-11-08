@@ -95,6 +95,19 @@ TEST_F(MahiContentSourceButtonTest, ContentSourceTitleAfterRefresh) {
   EXPECT_EQ(content_source_button.GetText(), kRefreshedTitle);
 }
 
+TEST_F(MahiContentSourceButtonTest, ContentSourceTitleSelectedText) {
+  ON_CALL(mock_mahi_manager(), GetContentTitle)
+      .WillByDefault(Return(u"Initial content title"));
+  MahiContentSourceButton content_source_button;
+
+  const std::u16string kSelectedText(u"web selected text");
+  ON_CALL(mock_mahi_manager(), GetSelectedText)
+      .WillByDefault(Return(kSelectedText));
+  content_source_button.RefreshContentSourceInfo(/*elucidation_in_use=*/true);
+
+  EXPECT_EQ(content_source_button.GetText(), kSelectedText);
+}
+
 TEST_F(MahiContentSourceButtonTest, InitialContentSourceIcon) {
   const auto kInitialIcon =
       gfx::test::CreateImageSkia(/*size=*/128, SK_ColorRED);

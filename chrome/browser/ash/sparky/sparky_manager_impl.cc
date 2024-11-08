@@ -126,6 +126,10 @@ GURL SparkyManagerImpl::GetContentUrl() {
   return current_page_info_->url;
 }
 
+std::u16string SparkyManagerImpl::GetSelectedText() {
+  return u"";
+}
+
 void SparkyManagerImpl::GetContent(MahiContentCallback callback) {}
 
 void SparkyManagerImpl::GetSummary(MahiSummaryCallback callback) {

@@ -885,11 +885,17 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       send_button_->SetEnabled(true);
       return;
     case MahiUiUpdateType::kContentsRefreshInitiated: {
-      content_source_button_->RefreshContentSourceInfo();
+      content_source_button_->RefreshContentSourceInfo(
+          /*elucidation_in_use=*/false);
 
       // Reset feedback buttons when new content is requested.
       thumbs_up_button_->SetToggled(false);
       thumbs_down_button_->SetToggled(false);
+      return;
+    }
+    case MahiUiUpdateType::kElucidationRequested: {
+      content_source_button_->RefreshContentSourceInfo(
+          /*elucidation_in_use=*/true);
       return;
     }
     case MahiUiUpdateType::kErrorReceived:
@@ -905,7 +911,6 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kSummaryLoaded:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
     case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
-    case MahiUiUpdateType::kElucidationRequested:
     case MahiUiUpdateType::kElucidationLoaded:
       return;
   }

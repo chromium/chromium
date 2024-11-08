@@ -71,6 +71,10 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   virtual gfx::ImageSkia GetContentIcon() = 0;
   virtual GURL GetContentUrl() = 0;
 
+  // Gets the source selected text. Should only be called when the existing
+  // panel is an elucidation result.
+  virtual std::u16string GetSelectedText() = 0;
+
   // Returns the text content on the corresponding surface.
   using MahiContentCallback =
       base::OnceCallback<void(std::u16string, MahiGetContentResponseStatus)>;

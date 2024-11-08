@@ -46,6 +46,7 @@ class MahiManagerImpl : public chromeos::MahiManager,
   std::u16string GetContentTitle() override;
   gfx::ImageSkia GetContentIcon() override;
   GURL GetContentUrl() override;
+  std::u16string GetSelectedText() override;
   void GetContent(MahiContentCallback callback) override;
   void GetSummary(MahiSummaryCallback callback) override;
   void GetElucidation(MahiElucidationCallback callback) override;
@@ -150,6 +151,10 @@ class MahiManagerImpl : public chromeos::MahiManager,
 
   void CacheCurrentPanelContent(crosapi::mojom::MahiPageInfo request_page_info,
                                 crosapi::mojom::MahiPageContent mahi_content);
+
+  // Updates `current_selected_text_` from web contents manager or media app
+  // content manager.
+  void UpdateCurrentSelectedText();
 
   base::ScopedObservation<chromeos::MagicBoostState,
                           chromeos::MagicBoostState::Observer>

@@ -33,6 +33,8 @@ constexpr char16_t kDefaultAnswer[] = u"Fake answer";
 
 constexpr char16_t kDefaultContentTitle[] = u"fake content title";
 
+constexpr char16_t kDefaultSelectedText[] = u"fake selected text";
+
 constexpr char kDefaultContentUrl[] = "https://en.wikipedia.org/wiki/Wombat";
 
 const std::vector<chromeos::MahiOutline> kDefaultOutlines(
@@ -75,6 +77,10 @@ gfx::ImageSkia FakeMahiManager::GetContentIcon() {
 
 GURL FakeMahiManager::GetContentUrl() {
   return GURL(kDefaultContentUrl);
+}
+
+std::u16string FakeMahiManager::GetSelectedText() {
+  return current_selected_text_.value_or(kDefaultSelectedText);
 }
 
 void FakeMahiManager::GetContent(MahiContentCallback callback) {
