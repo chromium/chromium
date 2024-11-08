@@ -1371,6 +1371,22 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       params.tabstrip_index != -1) {
     return AppNavigationResult::CapturingDisabled();
   }
+  switch (params.disposition) {
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::NEW_WINDOW:
+      break;
+    case WindowOpenDisposition::UNKNOWN:
+    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      return AppNavigationResult::CapturingDisabled();
+  }
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
