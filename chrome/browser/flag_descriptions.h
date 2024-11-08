@@ -1669,6 +1669,9 @@ extern const char kPageVisibilityPageContentAnnotationsDescription[];
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 
+extern const char kPartitionAllocMemoryTaggingName[];
+extern const char kPartitionAllocMemoryTaggingDescription[];
+
 extern const char kPartitionAllocWithAdvancedChecksName[];
 extern const char kPartitionAllocWithAdvancedChecksDescription[];
 

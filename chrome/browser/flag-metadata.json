@@ -6866,6 +6866,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "partition-alloc-memory-tagging",
+    "owners": [ "keishi@google.com", "chrome-mte@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "partition-alloc-with-advanced-checks",
     "owners": [ "mikt@google.com", "chrome-memory-safety@google.com" ],
     "expiry_milestone": 150

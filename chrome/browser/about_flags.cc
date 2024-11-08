@@ -213,6 +213,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/websockets/websocket_basic_handshake_stream.h"
+#include "partition_alloc/buildflags.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -4207,6 +4208,62 @@ const FeatureEntry::FeatureVariation kSendTabIOSPushNotificationsVariations[] =
         {"With URL Image", kSendTabIOSPushNotificationsWithURLImage,
          std::size(kSendTabIOSPushNotificationsWithURLImage), nullptr},
 };
+
+#if BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) && \
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Feature variations for kPartitionAllocMemoryTagging.
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingParams_AsyncBrowserOnly[] = {
+        {"enabled-processes", "browser-only"},
+        {"memtag-mode", "async"}};
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingParams_AsyncNonRenderer[] = {
+        {"enabled-processes", "non-renderer"},
+        {"memtag-mode", "async"}};
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingParams_AsyncAllProcesses[] = {
+        {"enabled-processes", "all-processes"},
+        {"memtag-mode", "async"}};
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingParams_SyncBrowserOnly[] = {
+        {"enabled-processes", "browser-only"},
+        {"memtag-mode", "sync"}};
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingParams_SyncNonRenderer[] = {
+        {"enabled-processes", "non-renderer"},
+        {"memtag-mode", "sync"}};
+const FeatureEntry::FeatureParam
+    kPartitionAllocMemoryTaggingParams_SyncAllProcesses[] = {
+        {"enabled-processes", "all-processes"},
+        {"memtag-mode", "sync"}};
+const FeatureEntry::FeatureVariation
+    kPartitionAllocMemoryTaggingEnabledProcessesOptions[] = {
+        {"ASYNC mode on browser process only",
+         kPartitionAllocMemoryTaggingParams_AsyncBrowserOnly,
+         std::size(kPartitionAllocMemoryTaggingParams_AsyncBrowserOnly),
+         nullptr},
+        {"ASYNC mode on non renderer processes",
+         kPartitionAllocMemoryTaggingParams_AsyncNonRenderer,
+         std::size(kPartitionAllocMemoryTaggingParams_AsyncNonRenderer),
+         nullptr},
+        {"ASYNC mode on all processes",
+         kPartitionAllocMemoryTaggingParams_AsyncAllProcesses,
+         std::size(kPartitionAllocMemoryTaggingParams_AsyncAllProcesses),
+         nullptr},
+        {"SYNC mode on browser process only",
+         kPartitionAllocMemoryTaggingParams_SyncBrowserOnly,
+         std::size(kPartitionAllocMemoryTaggingParams_SyncBrowserOnly),
+         nullptr},
+        {"SYNC mode on non renderer processes",
+         kPartitionAllocMemoryTaggingParams_SyncNonRenderer,
+         std::size(kPartitionAllocMemoryTaggingParams_SyncNonRenderer),
+         nullptr},
+        {"SYNC mode on all processes",
+         kPartitionAllocMemoryTaggingParams_SyncAllProcesses,
+         std::size(kPartitionAllocMemoryTaggingParams_SyncAllProcesses),
+         nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) &&
+        // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
@@ -11844,6 +11901,18 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(::features::kUseHardwareBufferUsageFlagsFromVulkan)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) && \
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    {"partition-alloc-memory-tagging",
+     flag_descriptions::kPartitionAllocMemoryTaggingName,
+     flag_descriptions::kPartitionAllocMemoryTaggingDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         base::features::kPartitionAllocMemoryTagging,
+         kPartitionAllocMemoryTaggingEnabledProcessesOptions,
+         "PartitionAllocMemoryTagging")},
+#endif  // BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) &&
+        // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

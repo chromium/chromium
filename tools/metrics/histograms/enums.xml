@@ -16433,6 +16433,7 @@ from previous Chrome versions.
   <int value="-1536242739" label="security-chip"/>
   <int value="-1535758690" label="AutoplayIgnoreWebAudio:disabled"/>
   <int value="-1535694535" label="PageInfoPerformanceHints:enabled"/>
+  <int value="-1535690979" label="PartitionAllocMemoryTagging:disabled"/>
   <int value="-1535608870" label="JourneysLabel:enabled"/>
   <int value="-1534970225" label="FilesArchivemount:disabled"/>
   <int value="-1534702850" label="RenderPassDrawnRect:disabled"/>
@@ -20567,6 +20568,7 @@ from previous Chrome versions.
   <int value="134124472" label="NearbySharingWifiDirect:enabled"/>
   <int value="134136822" label="VcDlcUi:enabled"/>
   <int value="135017596" label="OverlayScrollbarsOSSetting:disabled"/>
+  <int value="136557248" label="PartitionAllocMemoryTagging:enabled"/>
   <int value="136924140" label="OfflineIndicatorV2:enabled"/>
   <int value="137866995" label="ImeKoreanModeSwitchDebug:enabled"/>
   <int value="138020994" label="LacrosProfileMigrationForAnyUser:enabled"/>
