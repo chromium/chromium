@@ -80,8 +80,7 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
   String mhtml_string = mhtml.ToString();
   if (!only_body_parts) {
     // Validate the generated MHTML.
-    MHTMLParser parser(SharedBuffer::Create(mhtml_string.Characters8(),
-                                            size_t(mhtml_string.length())));
+    MHTMLParser parser(SharedBuffer::Create(mhtml_string.Span8()));
     EXPECT_FALSE(parser.ParseArchive().empty())
         << "Generated MHTML is not well formed";
   }
