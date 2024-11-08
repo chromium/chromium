@@ -27,7 +27,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
@@ -193,7 +192,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.enable_elastic_overscroll = true;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Rasterized tiles must be overlay candidates to be forwarded.
   // This is very similar to the line above for Apple.
   settings.use_gpu_memory_buffer_resources =
@@ -357,9 +356,9 @@ void Compositor::SetLayerTreeFrameSink(
                                                   vsync_interval_);
     }
     display_private_->SetMaxVSyncAndVrr(max_vsync_interval_, vrr_state_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     display_private_->SetSupportedRefreshRates(seamless_refresh_rates_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   MaybeUpdateObserveBeginFrame();
@@ -1006,7 +1005,7 @@ void Compositor::MaybeUpdateObserveBeginFrame() {
       host_begin_frame_observer_->GetBoundRemote());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void Compositor::SetSeamlessRefreshRates(
     const std::vector<float>& seamless_refresh_rates) {
   seamless_refresh_rates_ = seamless_refresh_rates;
@@ -1020,6 +1019,6 @@ void Compositor::OnSetPreferredRefreshRate(float refresh_rate) {
   observer_list_.Notify(&CompositorObserver::OnSetPreferredRefreshRate, this,
                         refresh_rate);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui
