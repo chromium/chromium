@@ -2746,10 +2746,6 @@ extern const char kRelatedSearchesAllLanguageDescription[];
 extern const char kRelatedSearchesSwitchName[];
 extern const char kRelatedSearchesSwitchDescription[];
 
-extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
-extern const char
-    kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];
-
 extern const char kRichAutocompletionAndroidName[];
 extern const char kRichAutocompletionAndroidDescription[];
 

@@ -133,14 +133,6 @@ const char kSenderIdRegistrationDeprecatedMessage[] =
 // Notifications permission.
 const char kNotificationsPermissionRevocationGracePeriodDate[] =
     "notifications_permission_revocation_grace_period";
-
-// The grace period that will be applied before site-level Notifications
-// permissions will be revoked and FCM unsubscribed.
-int GetNotificationsRevocationGracePeriodInDays() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kRevokeNotificationsPermissionIfDisabledOnAppLevel,
-      features::kNotificationRevocationGracePeriodInDays, 3);
-}
 #endif
 
 void RecordDeliveryStatus(blink::mojom::PushEventStatus status) {
@@ -920,11 +912,6 @@ JNI_PushMessagingServiceBridge_VerifyAndRevokeNotificationsPermission(
     std::string& origin,
     std::string& profile_id,
     jboolean app_level_notifications_enabled) {
-  if (!base::FeatureList::IsEnabled(
-          features::kRevokeNotificationsPermissionIfDisabledOnAppLevel)) {
-    return;
-  }
-
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
 
@@ -958,8 +945,13 @@ void PushMessagingServiceImpl::RevokePermissionIfPossible(
   base::TimeDelta permission_revocation_activated_duration =
       base::Time::Now() -
       prefs->GetTime(kNotificationsPermissionRevocationGracePeriodDate);
+
+  // The grace period that will be applied before site-level Notifications
+  // permissions will be revoked and FCM unsubscribed.
+  constexpr int kNotificationsRevocationGracePeriodInDays = 3;
+
   if (permission_revocation_activated_duration.InDays() >=
-      GetNotificationsRevocationGracePeriodInDays()) {
+      kNotificationsRevocationGracePeriodInDays) {
     content::PermissionController* permission_controller =
         profile->GetPermissionController();
 

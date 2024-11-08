@@ -20,13 +20,4 @@ BASE_FEATURE(kPushMessagingGcmEndpointEnvironment,
              "PushMessagingGcmEndpointEnvironment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kRevokeNotificationsPermissionIfDisabledOnAppLevel,
-             "RevokeNotificationsPermissionIfDisabledOnAppLevel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kNotificationRevocationGracePeriodInDays[] =
-    "notifications_revocation_grace_period";
-#endif
-
 }  // namespace features

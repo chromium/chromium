@@ -618,8 +618,6 @@ INSTANTIATE_TEST_SUITE_P(WorkerBasedExtension,
 class FCMRevocationTest : public PushMessagingServiceTest {
  public:
   FCMRevocationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kRevokeNotificationsPermissionIfDisabledOnAppLevel);
     PushMessagingServiceImpl::RegisterPrefs(prefs_.registry());
   }
 
@@ -641,7 +639,6 @@ class FCMRevocationTest : public PushMessagingServiceTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   GURL origin_ = GURL("https://example.com");
   TestingPrefServiceSimple prefs_;
 };

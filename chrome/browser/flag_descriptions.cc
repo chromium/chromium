@@ -4734,12 +4734,6 @@ const char kRelatedSearchesSwitchName[] =
 const char kRelatedSearchesSwitchDescription[] =
     "Enables requesting related searches suggestions.";
 
-const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[] =
-    "Revoke site-level notification permission on Android";
-const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =
-    "Allow revoking site-level notification permission if Chrome has no "
-    "app-level notification permission on Android.";
-
 const char kRichAutocompletionAndroidName[] =
     "Omnibox rich inline autocompletion on Android";
 const char kRichAutocompletionAndroidDescription[] =
