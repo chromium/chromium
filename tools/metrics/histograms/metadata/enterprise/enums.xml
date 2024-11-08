@@ -2178,6 +2178,7 @@ chromium-metrics-reviews@google.com.
   <int value="1311" label="NTPOutlookCardVisible"/>
   <int value="1312" label="NTPSharepointCardVisible"/>
   <int value="1313" label="SharedWorkerBlobURLFixEnabled"/>
+  <int value="1314" label="DeviceNativeClientForceAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -25,8 +25,11 @@ namespace {
 bool ShouldNaClBeAllowed() {
 #if BUILDFLAG(IS_CHROMEOS)
   // ForceEnabled by policy.
+  // kDeviceNativeClientForceAllowed might not be properly initialized at this
+  // point, so we also check kDeviceNativeClientForceAllowedCache which has the
+  // last known value of kDeviceNativeClientForceAllowed.
   if (g_browser_process->local_state()->GetBoolean(
-          prefs::kNativeClientForceAllowed)) {
+          prefs::kDeviceNativeClientForceAllowedCache)) {
     return true;
   }
 
@@ -58,5 +61,36 @@ void ChromeBrowserMainExtraPartsNaclDeprecation::PostEarlyInitialization() {
   if (!ShouldNaClBeAllowed()) {
     DisallowNacl();
   }
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  // Observe policy changes and write them to the cache pref.
+  pref_change_registrar_.Init(g_browser_process->local_state());
+  pref_change_registrar_.Add(
+      prefs::kDeviceNativeClientForceAllowed,
+      base::BindRepeating(
+          &ChromeBrowserMainExtraPartsNaclDeprecation::NaclAllowedChanged,
+          base::Unretained(this)));
+  // If the policy is not set at all, the update won't trigger.
+  // Default to it's current value.
+  bool current_value = g_browser_process->local_state()->GetBoolean(
+      prefs::kDeviceNativeClientForceAllowed);
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kDeviceNativeClientForceAllowedCache, current_value);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_NACL)
+}
+
+void ChromeBrowserMainExtraPartsNaclDeprecation::PostMainMessageLoopRun() {
+#if BUILDFLAG(IS_CHROMEOS)
+  pref_change_registrar_.Reset();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+void ChromeBrowserMainExtraPartsNaclDeprecation::NaclAllowedChanged() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Update the cache with the new value.
+  bool new_value = g_browser_process->local_state()->GetBoolean(
+      prefs::kDeviceNativeClientForceAllowed);
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kDeviceNativeClientForceAllowedCache, new_value);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }

@@ -1312,6 +1312,7 @@ policies:
   1311: NTPOutlookCardVisible
   1312: NTPSharepointCardVisible
   1313: SharedWorkerBlobURLFixEnabled
+  1314: DeviceNativeClientForceAllowed
 
 atomic_groups:
   1: Homepage

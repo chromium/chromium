@@ -122,7 +122,7 @@ class ChromeBrowserMainExtraPartsNaclDeprecationTestWithPolicy
  private:
   void SetNativeClientForceAllowed(bool value) {
     policy::PolicyMap policies;
-    policies.Set(policy::key::kNativeClientForceAllowed,
+    policies.Set(policy::key::kDeviceNativeClientForceAllowed,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
                  policy::POLICY_SOURCE_CLOUD, base::Value(value),
                  /*external_data_fetcher=*/nullptr);
@@ -138,6 +138,11 @@ class ChromeBrowserMainExtraPartsNaclDeprecationTestManagedForceAllowedTrue
             /*forceEnable*/ true) {}
 };
 
+// The policy only takes effect after a restart.
+IN_PROC_BROWSER_TEST_F(
+    ChromeBrowserMainExtraPartsNaclDeprecationTestManagedForceAllowedTrue,
+    PRE_PolicyOverridesFieldTrialValue) {}
+
 IN_PROC_BROWSER_TEST_F(
     ChromeBrowserMainExtraPartsNaclDeprecationTestManagedForceAllowedTrue,
     PolicyOverridesFieldTrialValue) {
@@ -151,6 +156,11 @@ class ChromeBrowserMainExtraPartsNaclDeprecationTestManagedForceAllowedFalse
       : ChromeBrowserMainExtraPartsNaclDeprecationTestWithPolicy(
             /*forceEnable*/ false) {}
 };
+
+// The policy only takes effect after a restart.
+IN_PROC_BROWSER_TEST_F(
+    ChromeBrowserMainExtraPartsNaclDeprecationTestManagedForceAllowedFalse,
+    PRE_PolicyUsesFieldTrialValue) {}
 
 IN_PROC_BROWSER_TEST_F(
     ChromeBrowserMainExtraPartsNaclDeprecationTestManagedForceAllowedFalse,

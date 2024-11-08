@@ -1618,6 +1618,10 @@ inline constexpr char kImportDialogSearchEngine[] =
 // Boolean controlling whether native client is force allowed by policy.
 inline constexpr char kNativeClientForceAllowed[] =
     "native_client_force_allowed";
+inline constexpr char kDeviceNativeClientForceAllowed[] =
+    "device_native_client_force_allowed";
+inline constexpr char kDeviceNativeClientForceAllowedCache[] =
+    "device_native_client_force_allowed_cache";
 #endif
 
 // Profile avatar and name

@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceNativeClientForceAllowed": true
+        },
+        "prefs": {
+          "device_native_client_force_allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceNativeClientForceAllowed": false
+        },
+        "prefs": {
+          "device_native_client_force_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]
